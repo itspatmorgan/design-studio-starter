@@ -1,5 +1,6 @@
 // Prototype navigation: the prototype's title, a filterable list of its views
 // (groups as folders, with expand/collapse all), and About at the bottom.
+// Drag the right edge to resize it.
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
 import { formatDate, viewLabel, viewLink } from '@/studio/app/data/manifest';
@@ -10,6 +11,7 @@ import { Input } from '@/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
+import { NAV_WIDTH, useSectionNavWidth } from '@/studio/app/shell/appPrefs';
 import { cn } from '@/lib/utils';
 
 const row = 'mx-1 flex w-[calc(100%-8px)] min-w-0 items-center gap-1.5 rounded-md py-1 pr-1.5 text-[12px] leading-tight transition-colors';
@@ -121,8 +123,9 @@ export default function PrototypeNav({ proto, current }: { proto: Prototype; cur
     if (open) next.delete(g); else next.add(g);
     return next;
   });
+  const { width, resizing, handleProps } = useSectionNavWidth();
   return (
-    <aside aria-label="Prototype navigation" className="flex w-[220px] shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
+    <aside aria-label="Prototype navigation" style={{ width }} className="relative flex shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
       <div className="shrink-0 px-2 pt-3">
         <p className="flex h-8 items-center truncate px-2.5 text-sm font-semibold leading-tight">{proto.title}</p>
       </div>
@@ -179,6 +182,24 @@ export default function PrototypeNav({ proto, current }: { proto: Prototype; cur
         </div>
       </nav>
       <About proto={proto} />
+      {/* The resize handle: a thin strip over the right border that highlights on hover. */}
+      <div
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize prototype navigation"
+        aria-valuenow={width}
+        aria-valuemin={NAV_WIDTH.min}
+        aria-valuemax={NAV_WIDTH.max}
+        title="Drag to resize. Double-click to reset."
+        tabIndex={0}
+        {...handleProps}
+        className={cn(
+          'absolute inset-y-0 right-0 z-20 w-1.5 cursor-col-resize touch-none',
+          'after:absolute after:inset-y-0 after:right-0 after:w-px after:transition-colors',
+          'hover:after:bg-sidebar-ring focus-visible:outline-none focus-visible:after:bg-sidebar-ring',
+          resizing && 'after:bg-sidebar-ring',
+        )}
+      />
     </aside>
   );
 }
