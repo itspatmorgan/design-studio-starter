@@ -4,9 +4,8 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
 
-/* dark: utilities follow the app UI's color mode (the .dark class on <html>),
-   and never apply inside .product-theme, so prototypes keep the product look. */
-@custom-variant dark (&:where(.dark, .dark *):not(.product-theme, .product-theme *));
+/* dark: utilities follow the app's color mode (the .dark class on <html>). */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
     --font-heading: var(--font-sans);
@@ -123,8 +122,6 @@
 
 html { color-scheme: light; }
 html.dark { color-scheme: dark; }
-/* Native controls and scrollbars in prototypes stay light too. */
-.product-theme { color-scheme: light; }
 
 @media (prefers-reduced-motion: no-preference) {
     ::view-transition-old(root),

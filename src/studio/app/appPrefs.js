@@ -7,7 +7,7 @@ const SECTION_NAV_KEY = 'prototype-sandbox:section-nav'; // "open" | "closed"
 
 const systemMode = () => (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
-// Light or dark for the app UI only. Prototypes keep the product look from theme.css.
+// Light or dark for the whole app. Prototypes follow it through the .dark block in theme.css.
 // Follows the system until you pick a mode with the toggle.
 export function useColorMode() {
   const [colorMode, setColorMode] = useState(() => localStorage.getItem(COLOR_MODE_KEY) ?? systemMode());
