@@ -5,17 +5,19 @@ export function navigate(params, { replace = false } = {}) {
   window.dispatchEvent(new PopStateEvent('popstate'));
 }
 
-export function Link({ to, children, ...props }) {
+// Wrappers like tooltips pass their own onClick, so it runs first instead of replacing ours.
+export function Link({ to, children, onClick, ...props }) {
   const search = new URLSearchParams(Object.entries(to).filter(([, v]) => v != null && v !== '')).toString();
   return (
     <a
+      {...props}
       href={search ? `?${search}` : '.'}
       onClick={(e) => {
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        onClick?.(e);
+        if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
         e.preventDefault();
         navigate(to);
       }}
-      {...props}
     >
       {children}
     </a>
