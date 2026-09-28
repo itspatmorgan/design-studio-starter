@@ -219,10 +219,15 @@ export function ViewFrame({ Component, viewKey }: { Component: ComponentType; vi
     <div className="min-w-0 flex-1">
       {/* The boundary sits outside .product-theme, so its fallback keeps the app UI's look. */}
       <ErrorBoundary resetKeys={[viewKey]} FallbackComponent={ViewError}>
-        <div className="product-theme bg-background text-foreground relative h-full overflow-auto">
-          <PortalContext.Provider value={portal}>
-            <Component />
-          </PortalContext.Provider>
+        {/* contain: layout makes this box the frame for fixed-position overlays, so dialogs
+            and their backdrops center and dim within the prototype, not the whole app.
+            The box itself doesn't scroll; the inner div does, so overlays stay put. */}
+        <div className="product-theme bg-background text-foreground relative h-full [contain:layout]">
+          <div className="h-full overflow-auto">
+            <PortalContext.Provider value={portal}>
+              <Component />
+            </PortalContext.Provider>
+          </div>
           <div ref={setPortal} />
         </div>
       </ErrorBoundary>
