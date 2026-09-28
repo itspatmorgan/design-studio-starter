@@ -158,9 +158,9 @@ export const studio = {
     { name: 'Display', components: [
       { name: 'Avatar', file: 'avatar.jsx', demo: () => (
         <>
-          <ContributorAvatar name="Example Contributor" size={20} />
-          <ContributorAvatar name="Example Contributor" size={32} />
-          <ContributorAvatar name="Example Contributor" size={48} />
+          <ContributorAvatar name="Jordan Example" size={20} />
+          <ContributorAvatar name="Jordan Example" size={32} />
+          <ContributorAvatar name="Jordan Example" size={48} />
         </>
       ) },
       { name: 'Card', file: 'card.jsx', demo: () => (
