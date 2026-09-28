@@ -132,9 +132,8 @@ function ProductView({ contributor, prototype, group, view }) {
   const [portal, setPortal] = useState(null);
 
   return (
-    // The view sits in a rounded frame, inset on a gray background.
-    <div className="min-w-0 flex-1 bg-zinc-200 p-2 dark:bg-zinc-950">
-      <div className="product-theme bg-background text-foreground relative h-full overflow-auto rounded-xl">
+    <div className="min-w-0 flex-1">
+      <div className="product-theme bg-background text-foreground relative h-full overflow-auto">
         <PortalContext.Provider value={portal}>
           <TooltipProvider>
             <ErrorBoundary resetKeys={[key]} fallback={<p className="p-8">This view failed to load.</p>}>
@@ -162,7 +161,7 @@ function ViewerSkeleton({ sectionNavOpen }) {
           <div className="h-3 w-1/2 rounded bg-muted" />
         </div>
       )}
-      <div className="flex-1 bg-zinc-200 p-2 dark:bg-zinc-950"><div className="h-full rounded-xl bg-background/60" /></div>
+      <div className="flex-1" />
     </div>
   );
 }
