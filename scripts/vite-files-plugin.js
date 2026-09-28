@@ -170,6 +170,15 @@ export default function filesPlugin() {
   return {
     name: 'studio-files',
     apply: 'serve',
+    // When a prototype file is moved or deleted, Vite would try to hot-reload it at its old
+    // path and fail. The manifest and the view list (loadView.ts) already handle it, so drop
+    // Vite's copy of the deleted file (a new file at that path starts fresh) and let its
+    // importers update as usual.
+    hotUpdate({ type, file, modules }) {
+      if (type !== 'delete' || !file.startsWith(PROTOS + path.sep)) return;
+      for (const m of modules) if (m.file === file) this.environment.moduleGraph.invalidateModule(m);
+      return modules.filter((m) => m.file !== file);
+    },
     configureServer(server) {
       // Who you are, worked out once (it can call the GitHub CLI), and again if contributors.json changes.
       let key;

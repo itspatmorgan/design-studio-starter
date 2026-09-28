@@ -6,13 +6,14 @@ import { PortalContext } from '@/lib/portal';
 import ViewError from '@/studio/app/pages/prototype/ViewError';
 
 // The route's loader has already loaded Component.
-// viewKey (contributor/prototype/group/view) resets the error boundary when the view changes.
+// viewKey (contributor/prototype/group/view) resets the error boundary when the view changes,
+// and so does a new Component (the file was fixed, in dev).
 export default function ViewFrame({ Component, viewKey, themeClass }: { Component: ComponentType; viewKey: string; themeClass: string }) {
   const [portal, setPortal] = useState<HTMLElement | null>(null);
   return (
     <div className="min-w-0 flex-1">
       {/* The boundary sits outside the system's theme class, so its fallback keeps the app UI's look. */}
-      <ErrorBoundary resetKeys={[viewKey]} FallbackComponent={ViewError}>
+      <ErrorBoundary resetKeys={[viewKey, Component]} FallbackComponent={ViewError}>
         {/* contain: layout makes this box the frame for fixed-position overlays, so dialogs
             and their backdrops center and dim within the prototype, not the whole app.
             The box itself doesn't scroll; the inner div does, so overlays stay put. */}

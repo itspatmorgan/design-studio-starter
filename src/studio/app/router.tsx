@@ -133,8 +133,14 @@ async function viewLoader({ contributor, prototype, group, view }: ViewParams) {
   const inManifest = Boolean(proto?.views.some((x) => viewSlug(x.name) === v && (x.group ?? null) === g));
   const mod = proto && v ? await loadView({ contributor, prototype, group: g, view: v }, { inManifest }) : undefined;
   if (!proto || !v || !mod) throw notFound();
+  // A view file that doesn't export a component yet (say, one you're still writing) shows
+  // an error in its place, instead of breaking the page.
+  const file = `src/prototypes/${contributor}/${prototype}/${g ? `${g}/` : ''}${v}`;
+  const Component = typeof mod.default === 'function' || typeof mod.default === 'object'
+    ? mod.default
+    : () => { throw new Error(`${file} has no default export. A view needs one: export default function MyView() { ... }`); };
   return {
-    Component: mod.default,
+    Component,
     viewKey: [contributor, prototype, g, v].join('/'),
     themeClass: PROTOTYPE_SYSTEMS[(proto.system as PrototypeSystemId)]?.themeClass ?? PROTOTYPE_SYSTEMS[DEFAULT_SYSTEM].themeClass,
     title: [proto.title, viewLabel(v), APP_NAME].join(' — '),
@@ -195,6 +201,7 @@ declare module '@tanstack/react-router' {
 // invalidate() reruns the loaders, so lists and navigation update without a page reload.
 // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#using-routerinvalidate
 if (import.meta.hot) {
+  window.addEventListener('studio:views', () => router.invalidate());
   import.meta.hot.on('studio:manifest', (m: Manifest) => {
     setManifest(m);
     router.invalidate();
