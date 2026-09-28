@@ -14,13 +14,14 @@ jobs:
           fetch-depth: 0
       - uses: jdx/mise-action@v2
       - run: node scripts/check-scope.js --ci ${{ github.event.before }} ${{ github.event.after }}
+      - run: node scripts/check-asset-size.js --ci ${{ github.event.before }} ${{ github.event.after }}
       - if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh issue create \
-            --title "Out-of-scope push by ${{ github.actor }}" \
-            --body "Scope check failed for ${{ github.event.compare }} (run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+            --title "Scope or asset-size check failed for a push by ${{ github.actor }}" \
+            --body "The scope or asset-size check failed for ${{ github.event.compare }} (run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})."
   # Fails on type errors (tsc -b), import-guard errors, and broken meta.json files.
   build:
     runs-on: ubuntu-latest

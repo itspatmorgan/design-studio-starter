@@ -27,6 +27,12 @@ Adding or editing your own entry in `contributors.json` counts as in scope.
 
 A prototype can import from its own folder, its design system (`src/product/` unless it picks another), and `src/lib/`. It can't import from another prototype, so nobody's change breaks your work, or from `src/studio/`, so the app can change freely.
 
+It also can't import from a different design system than the one it picks in `meta.json`, so its look stays consistent.
+
 The import guard enforces this. It warns while the app runs, and fails the build.
 
 Styles stay contained too. Use Tailwind classes, or CSS Modules (`*.module.css`) for custom CSS, and never global CSS, which would leak into the whole app.
+
+## Keeping the repo fast
+
+Git keeps every version of every file forever, so one oversized image makes every future clone slower for everyone. Any file over 750 KB is blocked when you commit, and fails the check on push. Export images as WebP or compressed JPEG, at the size they're shown. If your agent hits the limit, it will shrink the file for you.

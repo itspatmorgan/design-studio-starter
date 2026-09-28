@@ -33,7 +33,7 @@ pnpm dev        # starts the app at localhost:5173
 - **Components.** shadcn/ui on [Base UI](https://base-ui.com/react/overview/quick-start) (`@base-ui/react`). Compose with the `render` prop, e.g. `<DialogTrigger render={<Button />}>Open</DialogTrigger>`.
 - **Icons.** The app UI (`src/studio/`) uses HugeIcons. Product components and prototypes use `lucide-react`, which shadcn/ui brings in.
 - **Guide.** Pages are `.mdx` files in `src/guide/`. Frontmatter sets the `title`, `description`, sidebar `section`, and `order`, plus `toc: true` for an "On this page" list. Adding a file adds the page.
-- **Errors.** A view that throws shows its error with a Copy button. `pnpm build` fails on a broken `meta.json` or an out-of-scope import, and CI runs it on every push to main.
+- **Errors.** A view that throws shows its error with a Copy button. `pnpm build` fails on a broken `meta.json` or an out-of-scope import (another prototype, `src/studio/`, or a design system the prototype doesn't use), and CI runs it on every push to main. Files over 750 KB are blocked at commit and in CI (`scripts/check-asset-size.js`).
 
 ## Commands
 
