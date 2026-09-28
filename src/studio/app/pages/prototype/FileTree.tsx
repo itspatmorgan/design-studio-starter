@@ -208,12 +208,13 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
       }
       await router.invalidate();
       reload();
-      if (result.trashedTo) setStatus({ text: `Moved to ${result.trashedTo}.` });
+      // Only worth saying when there's no Trash on this computer.
+      if (result.trashedTo && result.trashedTo !== 'the Trash') setStatus({ text: `Moved to ${result.trashedTo} in the repo, since this computer has no Trash.` });
       return result;
     } catch (e) {
       const message = (e as Error).message;
       // The name may belong to a file the nav is hiding.
-      const hint = !showAll && message.startsWith("There's already") ? ' It may be hidden: choose Show all files to see it.' : '';
+      const hint = !showAll && message.includes('already exists') ? " If you don't see it, choose Show all files." : '';
       setStatus({ text: message + hint, error: true });
     }
   }
@@ -449,15 +450,15 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
       <Dialog open={confirmDelete !== null} onOpenChange={(o) => { if (!o) setConfirmDelete(null); }}>
         <DialogContent showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle>Delete {confirmDelete?.name}?</DialogTitle>
+            <DialogTitle>Delete “{confirmDelete && (confirmDelete.dir || items.has(confirmDelete.path) ? itemLabel(confirmDelete.name) : confirmDelete.name)}”?</DialogTitle>
             <DialogDescription>
-              {confirmDelete?.dir ? 'The folder and everything in it go' : 'It goes'} to the Trash, so you can put it back from there.
+              {confirmDelete?.dir ? 'The folder and everything in it move' : 'It moves'} to the Trash, where you can restore it.
               {confirmDelete?.dir && !showAll && (() => {
                 const full = findNode(files ?? [], confirmDelete.path);
                 const hidden = full ? hiddenInside(full, items) : [];
                 if (!hidden.length) return null;
                 const names = [...new Set(hidden.map((p) => (p.includes('/') ? `${p.split('/')[0]}/` : p)))];
-                return ` Also deletes ${hidden.length} ${hidden.length === 1 ? 'file' : 'files'} not shown here (${names.slice(0, 3).join(', ')}${names.length > 3 ? ', …' : ''}).`;
+                return ` This includes ${hidden.length} ${hidden.length === 1 ? 'file' : 'files'} not shown in the nav: ${names.slice(0, 3).join(', ')}${names.length > 3 ? ', …' : ''}.`;
               })()}
             </DialogDescription>
           </DialogHeader>
@@ -467,7 +468,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
               const node = confirmDelete;
               setConfirmDelete(null);
               if (node) run({ op: 'delete', path: node.path });
-            }}>Move to Trash</Button>
+            }}>Delete</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

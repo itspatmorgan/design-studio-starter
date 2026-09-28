@@ -53,7 +53,7 @@ function NewPrototype() {
           <form key={String(open)} action={create} className="grid gap-4">
             <DialogHeader>
               <DialogTitle>New prototype</DialogTitle>
-              <DialogDescription>It goes in your folder, src/prototypes/{me}/, and opens right away.</DialogDescription>
+              <DialogDescription>It's created in your folder, src/prototypes/{me}/, and opens when it's ready.</DialogDescription>
             </DialogHeader>
             <label className="grid gap-1.5 text-sm font-medium">
               Title

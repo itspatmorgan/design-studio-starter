@@ -82,7 +82,7 @@ export async function fileOp(p: Prototype, op: FileOp): Promise<FileOpResult> {
     body: JSON.stringify({ contributor: p.contributorKey, prototype: p.id, ...op }),
   });
   const body = await res.json();
-  if (!res.ok) throw new Error(body.error ?? 'That didn\'t work.');
+  if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');
   return body;
 }
 
@@ -94,7 +94,7 @@ export async function createPrototype(title: string, description: string) {
     body: JSON.stringify({ title, description }),
   });
   const body = await res.json();
-  if (!res.ok) throw new Error(body.error ?? 'That didn\'t work.');
+  if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');
   return body as { contributor: string; prototype: string; manifest: Manifest };
 }
 
@@ -106,7 +106,7 @@ export async function deletePrototype(p: Prototype) {
     body: JSON.stringify({ contributor: p.contributorKey, prototype: p.id }),
   });
   const body = await res.json();
-  if (!res.ok) throw new Error(body.error ?? 'That didn\'t work.');
+  if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');
   return body as { trashedTo: string; manifest: Manifest };
 }
 

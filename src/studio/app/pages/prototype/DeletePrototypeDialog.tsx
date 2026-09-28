@@ -37,15 +37,15 @@ export default function DeletePrototypeDialog({ proto, open, onOpenChange }: Pro
     <Dialog open={open} onOpenChange={(o) => { setError(null); onOpenChange(o); }}>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle>Delete {proto.title}?</DialogTitle>
+          <DialogTitle>Delete “{proto.title}”?</DialogTitle>
           <DialogDescription>
-            The whole prototype, src/prototypes/{proto.contributorKey}/{proto.id}/, goes to the Trash, so you can put it back from there. Its link stops working.
+            The prototype and everything in it move to the Trash, where you can restore it. Its link stops working until you do.
           </DialogDescription>
         </DialogHeader>
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button variant="destructive" disabled={deleting} onClick={remove}>{deleting ? 'Deleting…' : 'Move to Trash'}</Button>
+          <Button variant="destructive" disabled={deleting} onClick={remove}>{deleting ? 'Deleting…' : 'Delete prototype'}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -15,12 +15,12 @@ export const slugify = (title) => title.toLowerCase().normalize('NFKD').replace(
 // and rebuilds the manifest. Returns { slug, manifest }, or throws a message.
 export function createPrototype({ title, description = '', key }) {
   title = (title ?? '').trim();
-  if (!title) throw new Error('Give the prototype a title.');
+  if (!title) throw new Error('Add a title.');
   const slug = slugify(title);
-  if (!slug) throw new Error(`Can't make a folder name from "${title}". Use some letters or numbers.`);
-  if (!key) throw new Error('You are not in contributors.json. Add yourself first (pnpm join).');
+  if (!slug) throw new Error('Use at least one letter or number in the title.');
+  if (!key) throw new Error("You're not set up as a contributor yet. Ask your agent to add you.");
   const dest = path.join(ROOT, 'src', 'prototypes', key, slug);
-  if (fs.existsSync(dest)) throw new Error(`src/prototypes/${key}/${slug} already exists. Pick a different title.`);
+  if (fs.existsSync(dest)) throw new Error(`You already have a prototype named “${title}”. Choose a different title.`);
 
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   fs.cpSync(path.join(ROOT, 'scripts', 'templates', 'prototype'), dest, { recursive: true });

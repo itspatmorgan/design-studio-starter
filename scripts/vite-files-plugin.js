@@ -95,6 +95,11 @@ function viewTemplate(name) {
   return `import { Placeholder } from '@/lib/placeholder';\n\nexport default function ${safe}() {\n  return <Placeholder file={import.meta.url} />;\n}\n`;
 }
 
+// Why you can't change a prototype: it's someone else's, or you aren't set up yet.
+const ownerError = (key) => (key
+  ? 'This prototype belongs to someone else. You can change only your own.'
+  : "You're not set up as a contributor yet. Ask your agent to add you.");
+
 // Moves a file or folder to the Trash with macOS's built-in trash command, or, where
 // there isn't one, into .trash/ at the repo root (ignored by Git).
 function trash(file) {
@@ -128,10 +133,10 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, descripti
   const relOf = (abs) => path.relative(fs.realpathSync(dir), abs).split(path.sep).join('/');
   if (op === 'create') {
     const parent = inside(rel);
-    if (!parent || !fs.statSync(parent).isDirectory()) throw new Error('That folder doesn\'t exist.');
-    if (!validName(name)) throw new Error('Use a name without slashes that doesn\'t start with a dot.');
+    if (!parent || !fs.statSync(parent).isDirectory()) throw new Error('That folder no longer exists. It may have been moved or deleted.');
+    if (!validName(name)) throw new Error('Names can\'t contain slashes or start with a dot.');
     const target = path.join(parent, name);
-    if (fs.existsSync(target)) throw new Error(`There's already something called ${name} here.`);
+    if (fs.existsSync(target)) throw new Error(`Something named “${name}” already exists here.`);
     if (isDir) fs.mkdirSync(target);
     else fs.writeFileSync(target, /\.[jt]sx$/.test(name) ? viewTemplate(name) : '');
     return { path: relOf(target) };
@@ -149,28 +154,28 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, descripti
     if (start === '') delete meta.start;
     else if (start !== undefined) {
       const items = buildManifest().manifest.prototypes.find((p) => path.join(PROTOS, p.contributorKey, p.id) === dir)?.items ?? [];
-      if (!items.some((i) => viewKey(i.path) === start)) throw new Error(`"${start}" isn't an item in this prototype.`);
+      if (!items.some((i) => viewKey(i.path) === start)) throw new Error(`“${start}” isn't a view in this prototype.`);
       meta.start = start;
     }
     fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
     return {};
   }
   const source = inside(rel);
-  if (!source || source === fs.realpathSync(dir)) throw new Error('That file doesn\'t exist.');
-  if (rel === 'meta.json') throw new Error('meta.json describes the prototype, so it can\'t be renamed, moved, or deleted. Edit it instead.');
+  if (!source || source === fs.realpathSync(dir)) throw new Error('That file no longer exists. It may have been moved or deleted.');
+  if (rel === 'meta.json') throw new Error('meta.json holds the prototype\'s info, so it stays put. To change the title or description, choose Edit info.');
   if (op === 'rename' || op === 'move') {
     let target;
     if (op === 'rename') {
-      if (!validName(name)) throw new Error('Use a name without slashes that doesn\'t start with a dot.');
+      if (!validName(name)) throw new Error('Names can\'t contain slashes or start with a dot.');
       target = path.join(path.dirname(source), name);
     } else {
       const folder = inside(to ?? '');
-      if (!folder || !fs.statSync(folder).isDirectory()) throw new Error('That folder doesn\'t exist.');
-      if (folder === source || folder.startsWith(source + path.sep)) throw new Error('A folder can\'t move into itself.');
+      if (!folder || !fs.statSync(folder).isDirectory()) throw new Error('That folder no longer exists. It may have been moved or deleted.');
+      if (folder === source || folder.startsWith(source + path.sep)) throw new Error('A folder can\'t move inside itself.');
       target = path.join(folder, path.basename(source));
     }
     if (target === source) return { path: rel };
-    if (fs.existsSync(target)) throw new Error(`There's already something called ${path.basename(target)} there.`);
+    if (fs.existsSync(target)) throw new Error(`Something named “${path.basename(target)}” already exists there.`);
     fs.renameSync(source, target);
     const next = relOf(target);
     fixStart(dir, rel, next);
@@ -216,16 +221,16 @@ export default function filesPlugin() {
         const url = new URL(req.url ?? '/', 'http://localhost');
         if (req.method === 'GET' && url.pathname === '/files') {
           const dir = prototypeDir(url.searchParams.get('contributor'), url.searchParams.get('prototype'));
-          if (!dir) return send(res, 404, { error: 'No such prototype.' });
+          if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
           return send(res, 200, { files: readTree(dir) });
         }
         if (req.method === 'GET' && url.pathname === '/me') return send(res, 200, { key: me() });
         if (req.method === 'POST' && url.pathname === '/op') {
           const body = await readJson(req);
           const dir = prototypeDir(body.contributor, body.prototype);
-          if (!dir) return send(res, 404, { error: 'No such prototype.' });
+          if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
           // Contributor scope: you can change only your own folder.
-          if (body.contributor !== me()) return send(res, 403, { error: `You can change only your own prototypes (you're ${me() ?? 'not in contributors.json'}).` });
+          if (body.contributor !== me()) return send(res, 403, { error: ownerError(me()) });
           try {
             const result = runOp(dir, body);
             const { manifest } = buildManifest();
@@ -249,8 +254,8 @@ export default function filesPlugin() {
         if (req.method === 'POST' && url.pathname === '/prototype-delete') {
           const { contributor, prototype } = await readJson(req);
           const dir = prototypeDir(contributor, prototype);
-          if (!dir) return send(res, 404, { error: 'No such prototype.' });
-          if (contributor !== me()) return send(res, 403, { error: `You can delete only your own prototypes (you're ${me() ?? 'not in contributors.json'}).` });
+          if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
+          if (contributor !== me()) return send(res, 403, { error: ownerError(me()) });
           const trashedTo = trash(dir);
           const { manifest } = buildManifest();
           publishManifest(server, manifest, req.headers['x-studio-tab']);
@@ -260,7 +265,7 @@ export default function filesPlugin() {
           const { contributor, prototype, path: rel } = await readJson(req);
           const dir = prototypeDir(contributor, prototype);
           const file = dir && resolveInside(dir, rel ?? '');
-          if (!file) return send(res, 404, { error: 'No such file.' });
+          if (!file) return send(res, 404, { error: 'This file no longer exists.' });
           reveal(file);
           return send(res, 200, { ok: true });
         }

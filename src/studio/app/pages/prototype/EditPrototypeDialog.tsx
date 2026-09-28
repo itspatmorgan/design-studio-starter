@@ -44,7 +44,7 @@ export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props
         <form key={String(open)} action={save} className="grid gap-4">
           <DialogHeader>
             <DialogTitle>Edit prototype</DialogTitle>
-            <DialogDescription>Saved to its meta.json.</DialogDescription>
+            <DialogDescription>Changes save to the prototype's meta.json.</DialogDescription>
           </DialogHeader>
           <label className="grid gap-1.5 text-sm font-medium">
             Title
