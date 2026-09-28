@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import Index from './Index.jsx';
 import PrototypeViewer from './PrototypeViewer.jsx';
 import SystemsPage from './SystemsPage.jsx';
-import { Link } from './navigate.jsx';
+import MainNav from './MainNav.jsx';
+import { TooltipProvider } from '@/studio/components/tooltip';
 
 const readUrl = () => Object.fromEntries(new URLSearchParams(location.search));
 
@@ -32,18 +33,12 @@ export default function App() {
   else if (params.contributor && params.prototype) page = <PrototypeViewer params={params} manifest={manifest} />;
   else page = <Index manifest={manifest} />;
 
-  const tab = (active) => `rounded-md px-3 py-1.5 hover:bg-muted ${active ? 'bg-muted font-medium' : 'text-muted-foreground'}`;
-
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="flex h-14 shrink-0 items-center gap-6 border-b px-6 text-sm">
-        <span className="font-semibold">Prototype Sandbox</span>
-        <nav className="flex gap-1" aria-label="Main">
-          <Link to={{}} className={tab(params.page !== 'systems')}>Prototypes</Link>
-          <Link to={{ page: 'systems' }} className={tab(params.page === 'systems')}>Systems</Link>
-        </nav>
-      </header>
-      {page}
-    </div>
+    <TooltipProvider>
+      <div className="flex h-screen overflow-hidden">
+        <MainNav page={params.page} />
+        <div className="flex min-w-0 flex-1 flex-col overflow-auto">{page}</div>
+      </div>
+    </TooltipProvider>
   );
 }
