@@ -5,7 +5,7 @@
 import { execFileSync } from 'node:child_process';
 import { resolveContributor, keyForGithub } from './resolve-contributor.js';
 
-const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
+const git = (...args) => execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
 const lines = (s) => s.split('\n').filter(Boolean);
 const [mode, before, after] = process.argv.slice(2);
 const ZERO = /^0+$/;
