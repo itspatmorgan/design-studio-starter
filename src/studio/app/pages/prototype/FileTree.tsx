@@ -207,6 +207,8 @@ export default function FileTree({ proto, current }: { proto: Prototype; current
 
   // Called as functions, not rendered as components, so rows keep their identity across
   // renders (a drag in progress would be cancelled otherwise).
+  // Menu actions run after the menu has closed, so a dialog or field they open isn't
+  // dismissed by the same click.
   function rowMenu(key: string, node: FileNode, children: ReactNode) {
     // import.meta.env.DEV is false in the build, so the menu isn't in the deployed site.
     if (!import.meta.env.DEV || !live) return <div key={key}>{children}</div>;
@@ -217,23 +219,23 @@ export default function FileTree({ proto, current }: { proto: Prototype; current
         <ContextMenuContent className="min-w-44">
           {node.dir && editable && (
             <>
-              <ContextMenuItem onClick={() => startCreate(node.path, false)}><HugeiconsIcon icon={FileAddIcon} /> New file</ContextMenuItem>
-              <ContextMenuItem onClick={() => startCreate(node.path, true)}><HugeiconsIcon icon={FolderAddIcon} /> New folder</ContextMenuItem>
+              <ContextMenuItem onClick={() => setTimeout(() => startCreate(node.path, false))}><HugeiconsIcon icon={FileAddIcon} /> New file</ContextMenuItem>
+              <ContextMenuItem onClick={() => setTimeout(() => startCreate(node.path, true))}><HugeiconsIcon icon={FolderAddIcon} /> New folder</ContextMenuItem>
               <ContextMenuSeparator />
             </>
           )}
           {!node.dir && (
-            <ContextMenuItem onClick={() => openInEditor(proto, node.path)}><HugeiconsIcon icon={FileEditIcon} /> Open in editor</ContextMenuItem>
+            <ContextMenuItem onClick={() => setTimeout(() => openInEditor(proto, node.path))}><HugeiconsIcon icon={FileEditIcon} /> Open in editor</ContextMenuItem>
           )}
           {changeable && (
             <>
-              <ContextMenuItem onClick={() => setEditing({ kind: 'rename', path: node.path })}><HugeiconsIcon icon={PencilEdit02Icon} /> Rename</ContextMenuItem>
-              <ContextMenuItem variant="destructive" onClick={() => setConfirmDelete(node)}><HugeiconsIcon icon={Delete02Icon} /> Delete</ContextMenuItem>
+              <ContextMenuItem onClick={() => setTimeout(() => setEditing({ kind: 'rename', path: node.path }))}><HugeiconsIcon icon={PencilEdit02Icon} /> Rename</ContextMenuItem>
+              <ContextMenuItem variant="destructive" onClick={() => setTimeout(() => setConfirmDelete(node))}><HugeiconsIcon icon={Delete02Icon} /> Delete</ContextMenuItem>
             </>
           )}
           <ContextMenuSeparator />
-          <ContextMenuItem onClick={() => revealInFinder(proto, node.path)}><HugeiconsIcon icon={Folder01Icon} /> Reveal in Finder</ContextMenuItem>
-          <ContextMenuItem onClick={() => navigator.clipboard.writeText(repoPath(proto, node.path))}><HugeiconsIcon icon={Copy01Icon} /> Copy path</ContextMenuItem>
+          <ContextMenuItem onClick={() => setTimeout(() => revealInFinder(proto, node.path))}><HugeiconsIcon icon={Folder01Icon} /> Reveal in Finder</ContextMenuItem>
+          <ContextMenuItem onClick={() => setTimeout(() => navigator.clipboard.writeText(repoPath(proto, node.path)))}><HugeiconsIcon icon={Copy01Icon} /> Copy path</ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
     );

@@ -1,0 +1,53 @@
+// Confirms deleting a prototype you own, in dev. The whole folder goes to the Trash
+// (scripts/vite-files-plugin.js), and the app goes back to the Prototypes page.
+import { useState } from 'react';
+import { useNavigate, useRouter } from '@tanstack/react-router';
+import { deletePrototype } from '@/studio/app/data/files';
+import { setManifest } from '@/studio/app/data/manifest';
+import type { Prototype } from '@/studio/app/data/types';
+import { Button } from '@/studio/components/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
+
+type Props = { proto: Prototype; open: boolean; onOpenChange: (open: boolean) => void };
+
+export default function DeletePrototypeDialog({ proto, open, onOpenChange }: Props) {
+  const router = useRouter();
+  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  async function remove() {
+    setDeleting(true);
+    setError(null);
+    try {
+      const result = await deletePrototype(proto);
+      setManifest(result.manifest);
+      onOpenChange(false);
+      // Leave first, so the deleted prototype's page is never reloaded.
+      await navigate({ to: '/' });
+      await router.invalidate();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => { setError(null); onOpenChange(o); }}>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>Delete {proto.title}?</DialogTitle>
+          <DialogDescription>
+            The whole prototype, src/prototypes/{proto.contributorKey}/{proto.id}/, goes to the Trash, so you can put it back from there. Its link stops working.
+          </DialogDescription>
+        </DialogHeader>
+        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button variant="destructive" disabled={deleting} onClick={remove}>{deleting ? 'Deleting…' : 'Move to Trash'}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

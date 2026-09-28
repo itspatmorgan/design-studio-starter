@@ -1,0 +1,149 @@
+// The top of the prototype navigation: everything about the prototype, in one place.
+// Its title, a "…" menu (also on right-click), who made it and when, and its description.
+//
+// In dev, on your own prototypes, the menu can edit its info or delete it, and
+// double-clicking the title renames it in place. Everywhere else, the menu copies its link.
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useRouter } from '@tanstack/react-router';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Delete02Icon, Folder01Icon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon } from '@hugeicons/core-free-icons';
+import { fileOp, revealInFinder, useMe } from '@/studio/app/data/files';
+import { formatDate, prototypeLink, setManifest, viewSlug } from '@/studio/app/data/manifest';
+import type { Prototype } from '@/studio/app/data/types';
+import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
+import { Input } from '@/studio/components/input';
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@/studio/components/context-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/studio/components/dropdown-menu';
+import EditPrototypeDialog from '@/studio/app/pages/prototype/EditPrototypeDialog';
+import DeletePrototypeDialog from '@/studio/app/pages/prototype/DeletePrototypeDialog';
+import { cn } from '@/lib/utils';
+
+type Action = { label: string; icon: typeof Link01Icon; onSelect: () => void; destructive?: boolean } | 'separator';
+
+// The title, renamed in place: Enter or leaving the field saves, Escape cancels.
+function TitleInput({ initial, onDone }: { initial: string; onDone: (title: string | null) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
+  const done = useRef(false);
+  const finish = (t: string | null) => { if (!done.current) { done.current = true; onDone(t); } };
+  useEffect(() => { ref.current?.select(); }, []);
+  return (
+    <Input
+      ref={ref}
+      defaultValue={initial}
+      aria-label="Prototype title"
+      className="h-7 rounded-sm px-1.5 text-sm font-semibold shadow-none"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') { e.preventDefault(); finish(e.currentTarget.value.trim()); }
+        if (e.key === 'Escape') { e.preventDefault(); finish(null); }
+      }}
+      onBlur={(e) => finish(e.currentTarget.value.trim())}
+    />
+  );
+}
+
+export default function PrototypeHeader({ proto }: { proto: Prototype }) {
+  const router = useRouter();
+  const me = useMe();
+  // import.meta.env.DEV is false in the build, so editing isn't in the deployed site.
+  const local = import.meta.env.DEV && me !== null;
+  const editable = local && me === proto.contributorKey;
+  const [renaming, setRenaming] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
+  useEffect(() => {
+    if (!note) return;
+    const t = setTimeout(() => setNote(null), 3000);
+    return () => clearTimeout(t);
+  }, [note]);
+
+  async function rename(title: string | null) {
+    setRenaming(false);
+    if (!title || title === proto.title) return;
+    try {
+      const start = proto.start ? [proto.start.group, viewSlug(proto.start.name)].filter(Boolean).join('/') : '';
+      const result = await fileOp(proto, { op: 'meta', title, description: proto.description, start });
+      setManifest(result.manifest);
+      await router.invalidate();
+    } catch (e) {
+      setNote((e as Error).message);
+    }
+  }
+
+  const copyLink = () => {
+    const href = router.buildLocation(prototypeLink(proto)).href;
+    navigator.clipboard.writeText(new URL(href, location.origin).href);
+    setNote('Link copied.');
+  };
+
+  const actions: Action[] = [
+    ...(editable ? [{ label: 'Edit info…', icon: PencilEdit02Icon, onSelect: () => setEditing(true) }] : []),
+    { label: 'Copy link', icon: Link01Icon, onSelect: copyLink },
+    ...(local ? [{ label: 'Reveal in Finder', icon: Folder01Icon, onSelect: () => revealInFinder(proto, '') }] : []),
+    ...(editable ? ['separator' as const, { label: 'Delete prototype…', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }] : []),
+  ];
+  // Actions run after the menu has closed, so a dialog they open isn't closed by the same click.
+  const menuItems = (Item: typeof DropdownMenuItem | typeof ContextMenuItem, Separator: typeof DropdownMenuSeparator) =>
+    actions.map((a, i) => (a === 'separator'
+      ? <Separator key={i} />
+      : <Item key={a.label} variant={a.destructive ? 'destructive' : 'default'} onClick={() => setTimeout(a.onSelect)}><HugeiconsIcon icon={a.icon} /> {a.label}</Item>));
+
+  // Right-click anywhere on the header opens the same menu, in dev.
+  const withContextMenu = (children: ReactNode) => (!local ? children : (
+    <ContextMenu>
+      <ContextMenuTrigger>{children}</ContextMenuTrigger>
+      <ContextMenuContent className="min-w-44">{menuItems(ContextMenuItem, ContextMenuSeparator)}</ContextMenuContent>
+    </ContextMenu>
+  ));
+
+  return (
+    <div className="shrink-0 border-b border-sidebar-border px-2 pt-3 pb-3">
+      {withContextMenu(
+        <div className="px-2.5">
+          <div className="flex min-h-8 items-center gap-1">
+            {renaming ? (
+              <div className="min-w-0 flex-1"><TitleInput initial={proto.title} onDone={rename} /></div>
+            ) : (
+              <h2
+                className="min-w-0 flex-1 truncate text-sm font-semibold leading-tight"
+                title={editable ? 'Double-click to rename' : proto.title}
+                onDoubleClick={editable ? () => setRenaming(true) : undefined}
+              >
+                {proto.title}
+              </h2>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                aria-label="Prototype actions"
+                className="-mr-1.5 inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground"
+              >
+                <HugeiconsIcon icon={MoreHorizontalIcon} size={16} />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-44">{menuItems(DropdownMenuItem, DropdownMenuSeparator)}</DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          {(proto.contributor || proto.created) && (
+            <p className="mt-1 flex min-w-0 items-center gap-1.5 text-[12px] text-muted-foreground">
+              {proto.contributor && <ContributorAvatar name={proto.contributor} />}
+              <span className="truncate" title={proto.contributor}>{[proto.contributor.split(' ')[0], formatDate(proto.created)].filter(Boolean).join(' · ')}</span>
+            </p>
+          )}
+          {proto.description && (
+            <button
+              type="button"
+              aria-expanded={expanded}
+              onClick={() => setExpanded((x) => !x)}
+              className={cn('mt-2 block w-full rounded-sm text-left text-[12px] leading-relaxed text-muted-foreground outline-none hover:text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring', !expanded && 'line-clamp-2')}
+            >
+              {proto.description}
+            </button>
+          )}
+          {note && <p role="status" className="mt-2 text-[12px] text-muted-foreground">{note}</p>}
+        </div>,
+      )}
+      {editable && <EditPrototypeDialog proto={proto} open={editing} onOpenChange={setEditing} />}
+      {editable && <DeletePrototypeDialog proto={proto} open={deleting} onOpenChange={setDeleting} />}
+    </div>
+  );
+}
