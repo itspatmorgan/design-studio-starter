@@ -22,7 +22,7 @@ pnpm dev        # starts the app at localhost:5173
 
 `pnpm join` reads your name and email from Git and your username from the GitHub CLI, and creates your folder in `src/prototypes/`. Use your work email. (It's `join`, not `setup`, because `pnpm setup` is a built-in pnpm command.)
 
-`jordan` is an example contributor, a made-up person, so you can see the shape: one entry in `contributors.json`, and one folder in `src/prototypes/` that only Jordan can change. Delete both once you've added yourself.
+`patrick` is me, the kit's author, left in as an example contributor: one entry in `contributors.json`, and one folder in `src/prototypes/` that only I can change. Delete both once you've added yourself.
 
 ## Notes
 
