@@ -31,7 +31,7 @@ export default function importGuard() {
       const inStudio = target.startsWith(path.join(SRC, 'studio') + path.sep);
       const inOtherProto = target.startsWith(PROTOS + path.sep) && !inOwn;
       if (inStudio || inOtherProto) {
-        const msg = `Prototype scope: ${path.relative(SRC, importerPath)} imports ${path.relative(SRC, target)}. A prototype can depend only on its own folder, src/product/, and src/lib/.`;
+        const msg = `Prototype scope: ${path.relative(SRC, importerPath)} imports ${path.relative(SRC, target)}. A prototype can depend only on its own folder, its design system, and src/lib/.`;
         if (isBuild) this.error(msg); else this.warn(msg);
       }
       return resolved;

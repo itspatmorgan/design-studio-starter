@@ -8,8 +8,8 @@ The full docs live in the app itself: run it and open the Guide (`/guide`), or r
 
 - **Three contracts.** A prototype is a folder. A script turns folders into a manifest. The app reads the manifest and the URL.
 - **Contributor scope.** You can change anything in your folder, but only your own folder. Everything else is the platform.
-- **Two systems.** The studio system (`src/studio/`) is the app's own wrapper: nav, index, prototype navigation, palette, and the Systems page. The product system (`src/product/`) is a placeholder for your real product design system. Replace all of it with your own components and theme, keeping it in `src/product/` and scoped under `.product-theme`.
-- **Prototype scope.** A prototype can depend only on its own folder, the product system (`src/product/`), and shared utilities (`src/lib/`).
+- **Scoped design systems.** The studio system (`src/studio/`) is the app's own UI: nav, index, prototype navigation, palette, Systems pages, and Guide. Prototypes build with a prototype system instead, each in its own folder with its theme scoped under a class, listed in `src/systems.ts`. The kit ships one, `product` (`src/product/`), a placeholder for your product's design system. Replace it, or add others, like a `brand` system for marketing work.
+- **Prototype scope.** A prototype can depend only on its own folder, its design system (`src/product/` by default), and shared utilities (`src/lib/`).
 
 ## Getting started
 
@@ -62,7 +62,8 @@ scripts/               manifest, create, scope check, Vite plugins (plain Node .
 .husky/                pre-commit and pre-push scope checks
 .github/workflows/     scope check and build on push to main, build for deploy
 src/studio/            the app wrapper and its components (routes in app/router.tsx)
-src/product/           placeholder product system; replace with your own
+src/systems.ts         the design systems prototypes can use
+src/product/           placeholder product system; replace it, or add others beside it
 src/guide/             the Guide's pages (MDX)
 src/lib/               shared utilities
 src/prototypes/        one folder per contributor

@@ -5,6 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/studio/components/tabs';
 import { NotFound } from '@/studio/app/shell/App';
 import { ColorTokens, ComponentDemo, IconsPage, PageHeader, RadiusScale, TypeScale, slug } from '@/studio/app/pages/systems/foundations';
 import type { DesignSystem } from '@/studio/app/data/types';
+import type { PrototypeSystemId } from '@/systems';
 import { product } from '@/studio/app/pages/systems/productSystem';
 import { studio } from '@/studio/app/pages/systems/studioSystem';
 
@@ -12,8 +13,10 @@ import { studio } from '@/studio/app/pages/systems/studioSystem';
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
 // Pages come from each system's spec (productSystem.tsx, studioSystem.tsx), so adding
 // a component there adds its page. Optional pages show only when the system defines them.
-export const SYSTEMS = { product, studio };
-export type SystemId = keyof typeof SYSTEMS;
+// One spec per system in src/systems.ts (a type error if one is missing), then Studio.
+const PROTOTYPE_SPECS: Record<PrototypeSystemId, DesignSystem> = { product };
+const SYSTEMS: Record<string, DesignSystem> = { ...PROTOTYPE_SPECS, studio };
+type SystemId = string;
 type NavGroup = { heading?: string; items: [id: string | null, label: string][] };
 
 // Sidebar groups, in order. A null id is the system's introduction.
@@ -34,7 +37,7 @@ function SystemNav({ system }: { system: SystemId }) {
   const navigate = useNavigate();
   return (
     <nav aria-label="Systems" className="flex min-h-0 w-52 shrink-0 flex-col border-r border-border bg-muted/40">
-      <Tabs value={system} onValueChange={(id) => navigate({ to: '/systems/$system', params: { system: id as SystemId } })} className="border-b border-border p-3">
+      <Tabs value={system} onValueChange={(id) => navigate({ to: '/systems/$system', params: { system: id as string } })} className="border-b border-border p-3">
         <TabsList className="w-full">
           {Object.entries(SYSTEMS).map(([id, s]) => (
             <TabsTrigger key={id} value={id}>{s.label}</TabsTrigger>
@@ -88,7 +91,7 @@ function SystemPage({ sys, page }: { sys: DesignSystem; page?: string }) {
   return (
     <>
       <PageHeader title={component.name} description={component.description} />
-      <ComponentDemo component={component} Frame={sys.Frame} dir={sys.dir} />
+      <ComponentDemo component={component} themeClass={scopeClass} dir={sys.dir} />
     </>
   );
 }

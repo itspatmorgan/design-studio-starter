@@ -1,5 +1,6 @@
+import { PortalContext } from '@/lib/portal';
 import type { DesignSystem } from '@/studio/app/data/types';
-import { useEffect, useRef, useState, type ComponentType, type ElementType, type ReactNode, type Ref } from 'react';
+import { useEffect, useRef, useState, type ComponentType, type ReactNode, type Ref } from 'react';
 import { cn } from '@/lib/utils';
 
 // Shared building blocks for the Systems page. Everything here reads live values
@@ -233,21 +234,34 @@ export function IconsPage({ icons, scopeClass }: { icons: NonNullable<DesignSyst
 export const slug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
 // One component page: its name, what it's for, where it lives, a live demo, and its docs.
-// Frame wraps the demo: plain for studio, ProductFrame for product.
+// Prototype systems' demos render in SystemFrame, so they get the system's theme.
 export type ComponentSpec = { name: string; file: string; description?: string; demo: ComponentType };
 
 // shadcn/ui's page for a component, from its file name ("input-group.tsx" → .../base/input-group).
 export const shadcnDocs = (file: string) => `https://ui.shadcn.com/docs/components/base/${file.replace(/\.tsx$/, '')}`;
 
-export function ComponentDemo({ component, Frame = 'div', dir }: { component: ComponentSpec; Frame?: ElementType; dir: string }) {
+// A prototype system's theme class and portal container, like ViewFrame gives each view,
+// so demos and their pop-ups keep the system's look. The studio system has no class.
+export function SystemFrame({ themeClass, children }: { themeClass: string; children: ReactNode }) {
+  const [portal, setPortal] = useState<HTMLElement | null>(null);
+  if (!themeClass) return <>{children}</>;
+  return (
+    <div className={cn(themeClass, 'text-foreground')}>
+      <PortalContext.Provider value={portal}>{children}</PortalContext.Provider>
+      <div ref={setPortal} />
+    </div>
+  );
+}
+
+export function ComponentDemo({ component, themeClass, dir }: { component: ComponentSpec; themeClass: string; dir: string }) {
   const { file, demo: Demo } = component;
   return (
     <>
-      <Frame>
+      <SystemFrame themeClass={themeClass}>
         <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-background p-6">
           <Demo />
         </div>
-      </Frame>
+      </SystemFrame>
       <dl className="mt-8 space-y-3 text-sm">
         <div>
           <dt className="text-muted-foreground">File</dt>

@@ -38,11 +38,14 @@ A common group is `lofi/`: rough, grayscale sketches of an idea, before it's wor
   "title": "Hello World",
   "description": "A first prototype.",
   "created": "2026-09-28",
+  "system": "product",
   "start": "lofi/main"
 }
 ```
 
 Only `title` is required. `pnpm new` fills in `created`. Your name comes from `contributors.json`, so it isn't repeated here.
+
+`system` is the [design system](/guide/systems) it builds with. Leave it out to use the default, which is all you need until your team has more than one.
 
 `start` is the view the prototype opens on, written the way it appears in the URL. Leave it out to open on `prototype.tsx`. Change it whenever a different view becomes the one to show first, and the prototype's link still works.
 

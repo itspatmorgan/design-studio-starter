@@ -1,4 +1,4 @@
-import type { ComponentType, ElementType, ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import type { ComponentSpec, TypeSampleSpec } from '@/studio/app/pages/systems/foundations';
 
 // public/prototypes/manifest.json, written by scripts/build-manifest.js.
@@ -14,6 +14,7 @@ export type Prototype = {
   description: string;
   contributor: string;    // display name, from contributors.json
   created: string | null;
+  system: string;         // meta.json "system", or the first in src/systems.ts
   start: View | null;     // meta.json "start": the view it opens on
   views: View[];
 };
@@ -36,7 +37,6 @@ export type DesignSystem = {
   label: string;
   dir: string;            // where its components live, e.g. "src/studio/components/"
   scopeClass: string;
-  Frame: ElementType;
   intro: ReactNode;
   theme: ReactNode;
   showRadius?: boolean;

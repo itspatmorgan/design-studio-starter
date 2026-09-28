@@ -1,30 +1,17 @@
-import { useState, type ReactNode } from 'react';
 import { Mail } from 'lucide-react';
-// Product system: what prototypes build with. Demos render inside .product-theme.
+// Product system: the placeholder prototype system (see src/systems.ts). Demos render inside .product-theme.
 // Kept short on purpose: it shows how the product look differs from the app UI.
-import { PortalContext } from '@/product/components/portal';
+import { PROTOTYPE_SYSTEMS } from '@/systems';
 import { Button } from '@/product/components/button';
 import { Input } from '@/product/components/input';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/product/components/dialog';
 import { Code, CodeBlock, Prose } from '@/studio/app/pages/systems/foundations';
 import type { DesignSystem } from '@/studio/app/data/types';
 
-// Same wrapper and portal container as ViewFrame (pages/prototype), so pop-ups stay inside .product-theme.
-export function ProductFrame({ children }: { children: ReactNode }) {
-  const [portal, setPortal] = useState<HTMLElement | null>(null);
-  return (
-    <div className="product-theme text-foreground">
-      <PortalContext.Provider value={portal}>{children}</PortalContext.Provider>
-      <div ref={setPortal} />
-    </div>
-  );
-}
-
 export const product: DesignSystem = {
-  label: 'Product',
-  dir: 'src/product/components/',
-  scopeClass: 'product-theme',
-  Frame: ProductFrame,
+  label: PROTOTYPE_SYSTEMS.product.label,
+  dir: `${PROTOTYPE_SYSTEMS.product.dir}components/`,
+  scopeClass: PROTOTYPE_SYSTEMS.product.themeClass,
   intro: (
     <div className="rounded-xl border-2 border-dashed border-foreground/25 bg-muted/40 p-6">
       <p className="mb-2 text-base font-semibold text-foreground">Replace this with your product's design system.</p>

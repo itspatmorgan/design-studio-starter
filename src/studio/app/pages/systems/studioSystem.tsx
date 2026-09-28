@@ -52,7 +52,6 @@ export const studio: DesignSystem = {
   label: 'Studio',
   dir: 'src/studio/components/',
   scopeClass: '',
-  Frame: 'div',
   intro: (
     <Prose>
       <p>The app's own system. It is the wrapper that makes the sandbox work: the nav rail, the index, prototype navigation, the command palette, and this page.</p>

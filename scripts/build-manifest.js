@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -50,9 +51,12 @@ for (const contributorKey of dirs(PROTOS)) {
       start = views.find((v) => [v.group, v.name.replace(/\.[jt]sx$/, '')].filter(Boolean).join('/') === meta.start) ?? null;
       if (!start) { skip(`has "start": "${meta.start}", which isn't a view in this prototype`); continue; }
     }
+    // "system" (optional) is the design system it builds with, from src/systems.ts.
+    const system = meta.system ?? DEFAULT_SYSTEM;
+    if (!(system in PROTOTYPE_SYSTEMS)) { skip(`has "system": "${system}", which isn't in src/systems.ts (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`); continue; }
     prototypes.push({
       id, contributorKey, title: meta.title, description: meta.description ?? '',
-      contributor: contributors[contributorKey]?.name ?? '', created: meta.created ?? null, start, views,
+      contributor: contributors[contributorKey]?.name ?? '', created: meta.created ?? null, system, start, views,
     });
   }
 }

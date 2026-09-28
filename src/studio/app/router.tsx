@@ -15,6 +15,7 @@ import PrototypeLayout from '@/studio/app/pages/prototype/PrototypeLayout';
 import ViewFrame from '@/studio/app/pages/prototype/ViewFrame';
 import { findPrototype, firstView, loadManifest, viewLabel, viewSlug } from '@/studio/app/data/manifest';
 import { loadView } from '@/studio/app/data/loadView';
+import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS, type PrototypeSystemId } from '@/systems';
 
 const APP_NAME = 'Design Studio';
 
@@ -133,6 +134,7 @@ async function viewLoader({ contributor, prototype, group, view }: ViewParams) {
   return {
     Component: mod.default,
     viewKey: [contributor, prototype, g, v].join('/'),
+    themeClass: PROTOTYPE_SYSTEMS[(proto.system as PrototypeSystemId)]?.themeClass ?? PROTOTYPE_SYSTEMS[DEFAULT_SYSTEM].themeClass,
     title: [proto.title, viewLabel(v), APP_NAME].join(' — '),
   };
 }
