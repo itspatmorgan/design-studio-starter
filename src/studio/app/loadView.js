@@ -1,5 +1,5 @@
 const views = import.meta.glob([
-  '/prototypes/**/*.jsx',
+  '/prototypes/**/*.{jsx,tsx}',
   '!/prototypes/_*/**',            // skip _templates
   '!/prototypes/**/components/**', // skip helpers
 ]);

@@ -5,9 +5,9 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, Search01Icon } from '@hugeicons/core-free-icons';
 import { Link, navigate } from './navigate.jsx';
 
-// A prototype opens on prototype.jsx, or its first view if there isn't one.
+// A prototype opens on prototype.jsx (or .tsx), or its first view if there isn't one.
 export function firstView(p) {
-  return p.views.find((v) => v.name === 'prototype.jsx' && !v.group) ?? p.views[0];
+  return p.views.find((v) => /^prototype\.[jt]sx$/.test(v.name) && !v.group) ?? p.views[0];
 }
 
 // "2026-09-27" → "Sep 27, 2026"

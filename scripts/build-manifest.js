@@ -9,7 +9,7 @@ const OUT = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
 const dirs = (p) => fs.existsSync(p)
   ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory() && !d.name.startsWith('_')).map((d) => d.name).sort()
   : [];
-const jsx = (p) => fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isFile() && d.name.endsWith('.jsx')).map((d) => d.name).sort();
+const jsx = (p) => fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isFile() && /\.[jt]sx$/.test(d.name)).map((d) => d.name).sort();
 
 const prototypes = [];
 let errors = 0;

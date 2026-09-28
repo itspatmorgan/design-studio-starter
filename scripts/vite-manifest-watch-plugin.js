@@ -10,7 +10,7 @@ function relevant(file) {
   if (rel.startsWith('..')) return false;
   const parts = rel.split(path.sep);
   if (parts.some((p) => p.startsWith('_')) || parts.includes('components')) return false;
-  return rel.endsWith('.jsx') || path.basename(rel) === 'meta.json';
+  return /\.[jt]sx$/.test(rel) || path.basename(rel) === 'meta.json';
 }
 
 export default function manifestWatch() {

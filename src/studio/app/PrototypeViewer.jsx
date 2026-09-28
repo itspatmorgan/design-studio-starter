@@ -6,13 +6,14 @@ import { firstView, formatDate } from './Index.jsx';
 import { loadView } from './loadView.js';
 import { Link } from './navigate.jsx';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowDown01Icon, CodeIcon } from '@hugeicons/core-free-icons';
+import { ArrowDown01Icon, CodeIcon, Copy01Icon, Tick02Icon } from '@hugeicons/core-free-icons';
+import { Button } from '@/studio/components/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
 import { ContributorAvatar } from '@/studio/components/avatar';
 import { cn } from '@/lib/utils';
 
-// "session-done.jsx" → "Session Done"
-export const viewLabel = (name) => name.replace(/\.jsx$/, '').split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+// "session-done.jsx" (or .tsx) → "Session Done"
+export const viewLabel = (name) => name.replace(/\.[jt]sx$/, '').split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
 const row = 'mx-1 flex w-[calc(100%-8px)] min-w-0 items-center gap-1.5 rounded-md py-1 pr-1.5 text-[12px] leading-tight transition-colors';
 
