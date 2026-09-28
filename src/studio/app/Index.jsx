@@ -41,7 +41,7 @@ function PrototypeCard({ prototype: p }) {
 function SearchBox({ value }) {
   const set = (q) => navigate({ q }, { replace: true });
   return (
-    <form role="search" onSubmit={(e) => e.preventDefault()} className="relative ml-auto w-full max-w-xs">
+    <form role="search" onSubmit={(e) => e.preventDefault()} className="relative w-full max-w-xs">
       <HugeiconsIcon icon={Search01Icon} size={16} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
       <Input
         name="q"
