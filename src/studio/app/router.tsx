@@ -13,7 +13,8 @@ import Index from '@/studio/app/pages/index/Index';
 import { loadGuidePage } from '@/studio/app/data/loadGuide';
 import PrototypeLayout from '@/studio/app/pages/prototype/PrototypeLayout';
 import ViewFrame from '@/studio/app/pages/prototype/ViewFrame';
-import { findPrototype, firstView, loadManifest, viewLabel, viewSlug } from '@/studio/app/data/manifest';
+import { findPrototype, firstView, loadManifest, setManifest, viewLabel, viewSlug } from '@/studio/app/data/manifest';
+import type { Manifest } from '@/studio/app/data/types';
 import { loadView } from '@/studio/app/data/loadView';
 import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS, type PrototypeSystemId } from '@/systems';
 
@@ -187,4 +188,14 @@ declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router;
   }
+}
+
+// In dev, the manifest updates live as files change (scripts/vite-manifest-watch-plugin.js).
+// invalidate() reruns the loaders, so lists and navigation update without a page reload.
+// https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#using-routerinvalidate
+if (import.meta.hot) {
+  import.meta.hot.on('studio:manifest', (m: Manifest) => {
+    setManifest(m);
+    router.invalidate();
+  });
 }

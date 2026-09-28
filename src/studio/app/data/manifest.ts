@@ -1,8 +1,9 @@
 import { linkOptions } from '@tanstack/react-router';
 import type { Manifest, Prototype, View } from '@/studio/app/data/types';
 
-// Fetched once, then shared by every route loader.
+// Fetched once, then shared by every route loader. In dev, replaced whenever it changes.
 let manifest: Promise<Manifest> | undefined;
+export const setManifest = (m: Manifest) => { manifest = Promise.resolve(m); };
 export function loadManifest(): Promise<Manifest> {
   manifest ??= fetch(`${import.meta.env.BASE_URL}prototypes/manifest.json`)
     .then((r) => r.json() as Promise<Manifest>)

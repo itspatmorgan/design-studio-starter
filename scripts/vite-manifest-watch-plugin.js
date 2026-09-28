@@ -1,18 +1,30 @@
+// Keeps the manifest live during `pnpm dev`, without reloading the page.
+//
+// Vite already watches every file. When something under src/prototypes/ or src/guide/
+// changes (from the app, an agent, or your editor), this rebuilds the manifest in-process
+// and pushes it to the app over Vite's dev connection. The app swaps it in and refreshes
+// only the routes that use it (see router.tsx), so the open view and scroll position stay.
+// Bursts of changes, like moving a folder, are batched into one update.
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { buildManifest } from './build-manifest.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const GUIDE = path.join(ROOT, 'src', 'guide');
+const CONTRIBUTORS = path.join(ROOT, 'contributors.json');
+const BATCH_MS = 50;
 
-function relevant(file) {
-  if (path.dirname(file) === GUIDE) return file.endsWith('.mdx');
-  const rel = path.relative(PROTOS, file);
-  if (rel.startsWith('..')) return false;
-  const parts = rel.split(path.sep);
-  if (parts.includes('components')) return false;
-  return /\.[jt]sx$/.test(rel) || path.basename(rel) === 'meta.json';
+const inside = (dir, file) => file === dir || file.startsWith(dir + path.sep);
+
+// Adding or removing anything can change the list of views; editing a file only matters
+// for meta.json, Guide frontmatter, and contributor names. Edits to a view's code are
+// left to Vite's hot reload.
+function relevant(file, kind) {
+  if (file === CONTRIBUTORS) return true;
+  if (inside(GUIDE, file)) return file.endsWith('.mdx');
+  if (!inside(PROTOS, file)) return false;
+  return kind !== 'change' || path.basename(file) === 'meta.json';
 }
 
 export default function manifestWatch() {
@@ -20,19 +32,23 @@ export default function manifestWatch() {
     name: 'prototype-manifest-watch',
     apply: 'serve',
     configureServer(server) {
-      server.watcher.add([PROTOS, GUIDE]);
-      const rebuild = (file, kind) => {
-        if (!relevant(file)) return;
-        // Edits to a view need no rebuild; edits to meta.json or a Guide page's frontmatter might.
-        if (kind === 'change' && path.basename(file) !== 'meta.json' && !file.endsWith('.mdx')) return;
-        try {
-          execFileSync(process.execPath, [path.join(ROOT, 'scripts/build-manifest.js')], { stdio: 'inherit' });
-        } catch { return; }
-        server.ws.send({ type: 'full-reload' });
+      server.watcher.add([PROTOS, GUIDE, CONTRIBUTORS]);
+      let timer = null;
+      let last = '';
+      const flush = () => {
+        timer = null;
+        const { manifest } = buildManifest();
+        const json = JSON.stringify(manifest);
+        if (json === last) return;
+        last = json;
+        server.ws.send({ type: 'custom', event: 'studio:manifest', data: manifest });
       };
-      server.watcher.on('add', (f) => rebuild(f, 'add'));
-      server.watcher.on('unlink', (f) => rebuild(f, 'unlink'));
-      server.watcher.on('change', (f) => rebuild(f, 'change'));
+      const onEvent = (kind) => (file) => {
+        if (!relevant(file, kind)) return;
+        clearTimeout(timer);
+        timer = setTimeout(flush, BATCH_MS);
+      };
+      for (const kind of ['add', 'unlink', 'addDir', 'unlinkDir', 'change']) server.watcher.on(kind, onEvent(kind));
     },
   };
 }

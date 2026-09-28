@@ -1,7 +1,7 @@
 import type { ViewModule } from '@/studio/app/data/types';
 
 // Every view file, .tsx or .jsx. Vite only loads one when it is asked for.
-const views = import.meta.glob<ViewModule>([
+export let views = import.meta.glob<ViewModule>([
   '/prototypes/**/*.{tsx,jsx}',
   '!/prototypes/**/components/**', // skip helpers
 ]);
@@ -22,4 +22,14 @@ export function loadView(path: ViewPath): Promise<ViewModule> | undefined {
   const key = [path.contributor, path.prototype, path.group ?? '', path.view].join('/');
   if (!loaded.has(key)) loaded.set(key, load());
   return loaded.get(key);
+}
+
+// In dev, adding or removing a view file changes the list above. Take the new list in place
+// instead of letting Vite reload the page.
+if (import.meta.hot) {
+  import.meta.hot.accept((next) => {
+    if (!next) return;
+    views = next.views;
+    loaded.clear();
+  });
 }

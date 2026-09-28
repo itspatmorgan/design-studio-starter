@@ -18,105 +18,117 @@ const dirs = (p) => fs.existsSync(p)
   : [];
 const viewFiles = (p) => fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isFile() && /\.[jt]sx$/.test(d.name)).map((d) => d.name).sort();
 
-// Display names come from contributors.json, so they live in one place.
-const contributorsFile = path.join(ROOT, 'contributors.json');
-const contributors = fs.existsSync(contributorsFile) ? JSON.parse(fs.readFileSync(contributorsFile, 'utf8')) : {};
+// Scans src/prototypes/ and src/guide/, writes public/prototypes/manifest.json, and returns it.
+// Problems are printed; errors counts them. The dev server calls this on every change
+// (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
+export function buildManifest() {
+  // Display names come from contributors.json, so they live in one place.
+  const contributorsFile = path.join(ROOT, 'contributors.json');
+  const contributors = fs.existsSync(contributorsFile) ? JSON.parse(fs.readFileSync(contributorsFile, 'utf8')) : {};
 
-const prototypes = [];
-let errors = 0;
-for (const contributorKey of dirs(PROTOS)) {
-  if (RESERVED_KEYS.has(contributorKey)) {
-    console.error(`[manifest] Skipped src/prototypes/${contributorKey}/: "${contributorKey}" is an app page URL, so it can't be a contributor folder`);
-    errors++; continue;
+  const prototypes = [];
+  let errors = 0;
+  for (const contributorKey of dirs(PROTOS)) {
+    if (RESERVED_KEYS.has(contributorKey)) {
+      console.error(`[manifest] Skipped src/prototypes/${contributorKey}/: "${contributorKey}" is an app page URL, so it can't be a contributor folder`);
+      errors++; continue;
+    }
+    for (const id of dirs(path.join(PROTOS, contributorKey))) {
+      const dir = path.join(PROTOS, contributorKey, id);
+      const metaFile = path.relative(ROOT, path.join(dir, 'meta.json'));
+      const skip = (why) => { console.error(`[manifest] Skipped ${contributorKey}/${id}: ${metaFile} ${why}`); errors++; };
+      if (!fs.existsSync(path.join(dir, 'meta.json'))) { skip('is missing'); continue; }
+      let meta;
+      try {
+        meta = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8'));
+      } catch (e) {
+        skip(`is not valid JSON (${e.message})`); continue;
+      }
+      if (typeof meta?.title !== 'string' || !meta.title.trim()) { skip('needs a "title"'); continue; }
+      const views = viewFiles(dir).map((name) => ({ name, group: null }));
+      for (const group of dirs(dir).filter((g) => !NOT_GROUPS.has(g))) {
+        for (const name of viewFiles(path.join(dir, group))) views.push({ name, group });
+      }
+      // Every view needs a default export (the component the app renders), and a name no
+      // other view in its group has: main.tsx and main.jsx would share one URL.
+      const seen = new Set();
+      for (const v of views) {
+        const file = path.relative(ROOT, path.join(dir, v.group ?? '', v.name));
+        const url = `${v.group ?? ''}/${v.name.replace(/\.[jt]sx$/, '')}`;
+        if (seen.has(url)) { console.error(`[manifest] ${file}: another view in this folder has the same name. Rename one; they'd share a URL.`); errors++; }
+        seen.add(url);
+        const code = fs.readFileSync(path.join(ROOT, file), 'utf8');
+        if (!/export\s+default\b|export\s*\{[^}]*\bas\s+default\b/.test(code)) { console.error(`[manifest] ${file}: a view needs a default export, the component the app renders (export default function MyView() { ... }). Helpers belong in components/.`); errors++; }
+      }
+      // "start" (optional) is the view the prototype opens on, as in its URL: "main" or "lofi/main".
+      let start = null;
+      if (meta.start !== undefined) {
+        start = views.find((v) => [v.group, v.name.replace(/\.[jt]sx$/, '')].filter(Boolean).join('/') === meta.start) ?? null;
+        if (!start) { skip(`has "start": "${meta.start}", which isn't a view in this prototype`); continue; }
+      }
+      // "system" (optional) is the design system it builds with, from src/systems.ts.
+      const system = meta.system ?? DEFAULT_SYSTEM;
+      if (!(system in PROTOTYPE_SYSTEMS)) { skip(`has "system": "${system}", which isn't in src/systems.ts (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`); continue; }
+      prototypes.push({
+        id, contributorKey, title: meta.title, description: meta.description ?? '',
+        contributor: contributors[contributorKey]?.name ?? '', created: meta.created ?? null, system, start, views,
+      });
+    }
   }
-  for (const id of dirs(path.join(PROTOS, contributorKey))) {
-    const dir = path.join(PROTOS, contributorKey, id);
-    const metaFile = path.relative(ROOT, path.join(dir, 'meta.json'));
-    const skip = (why) => { console.error(`[manifest] Skipped ${contributorKey}/${id}: ${metaFile} ${why}`); errors++; };
-    if (!fs.existsSync(path.join(dir, 'meta.json'))) { skip('is missing'); continue; }
-    let meta;
-    try {
-      meta = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8'));
-    } catch (e) {
-      skip(`is not valid JSON (${e.message})`); continue;
+
+  // Each prototype system's theme.css may only set values under its own class, like
+  // .product-theme, so it can't leak into the app UI or another system.
+  for (const [id, sys] of Object.entries(PROTOTYPE_SYSTEMS)) {
+    const file = path.join(ROOT, sys.dir, 'styles', 'theme.css');
+    if (!fs.existsSync(file)) { console.error(`[manifest] ${path.relative(ROOT, file)} is missing (the ${id} system's theme)`); errors++; continue; }
+    const css = fs.readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    // Every selector: the text before each "{", skipping at-rules (@media, @layer, ...) and keyframe steps.
+    for (const m of css.matchAll(/([^{};]+)\{/g)) {
+      const selector = m[1].trim();
+      if (selector.startsWith('@') || /^(from|to|[\d.]+%)(\s*,\s*(from|to|[\d.]+%))*$/.test(selector)) continue;
+      const leaks = selector.split(',').map((s) => s.trim()).filter((s) => !s.includes(`.${sys.themeClass}`));
+      if (leaks.length) { console.error(`[manifest] ${path.relative(ROOT, file)}: "${leaks.join(', ')}" isn't under .${sys.themeClass}, so it would style the whole app. Put it inside .${sys.themeClass} (or .dark .${sys.themeClass}).`); errors++; }
     }
-    if (typeof meta?.title !== 'string' || !meta.title.trim()) { skip('needs a "title"'); continue; }
-    const views = viewFiles(dir).map((name) => ({ name, group: null }));
-    for (const group of dirs(dir).filter((g) => !NOT_GROUPS.has(g))) {
-      for (const name of viewFiles(path.join(dir, group))) views.push({ name, group });
-    }
-    // Every view needs a default export (the component the app renders), and a name no
-    // other view in its group has: main.tsx and main.jsx would share one URL.
-    const seen = new Set();
-    for (const v of views) {
-      const file = path.relative(ROOT, path.join(dir, v.group ?? '', v.name));
-      const url = `${v.group ?? ''}/${v.name.replace(/\.[jt]sx$/, '')}`;
-      if (seen.has(url)) { console.error(`[manifest] ${file}: another view in this folder has the same name. Rename one; they'd share a URL.`); errors++; }
-      seen.add(url);
-      const code = fs.readFileSync(path.join(ROOT, file), 'utf8');
-      if (!/export\s+default\b|export\s*\{[^}]*\bas\s+default\b/.test(code)) { console.error(`[manifest] ${file}: a view needs a default export, the component the app renders (export default function MyView() { ... }). Helpers belong in components/.`); errors++; }
-    }
-    // "start" (optional) is the view the prototype opens on, as in its URL: "main" or "lofi/main".
-    let start = null;
-    if (meta.start !== undefined) {
-      start = views.find((v) => [v.group, v.name.replace(/\.[jt]sx$/, '')].filter(Boolean).join('/') === meta.start) ?? null;
-      if (!start) { skip(`has "start": "${meta.start}", which isn't a view in this prototype`); continue; }
-    }
-    // "system" (optional) is the design system it builds with, from src/systems.ts.
-    const system = meta.system ?? DEFAULT_SYSTEM;
-    if (!(system in PROTOTYPE_SYSTEMS)) { skip(`has "system": "${system}", which isn't in src/systems.ts (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`); continue; }
-    prototypes.push({
-      id, contributorKey, title: meta.title, description: meta.description ?? '',
-      contributor: contributors[contributorKey]?.name ?? '', created: meta.created ?? null, system, start, views,
-    });
   }
+
+  // Guide pages: src/guide/*.mdx, ordered by `order` in each page's frontmatter.
+  // Frontmatter is simple `key: value` lines; strings may be quoted.
+  function frontmatter(text) {
+    const block = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    if (!block) return null;
+    const data = {};
+    for (const line of block[1].split(/\r?\n/)) {
+      const m = line.match(/^(\w+):\s*(.*)$/);
+      if (!m) continue;
+      let v = m[2].trim();
+      if (/^(["']).*\1$/.test(v)) v = v.slice(1, -1);
+      else if (v === 'true' || v === 'false') v = v === 'true';
+      else if (v !== '' && !Number.isNaN(Number(v))) v = Number(v);
+      data[m[1]] = v;
+    }
+    return data;
+  }
+  const guide = [];
+  const guideFiles = fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.mdx')).sort() : [];
+  for (const file of guideFiles) {
+    const fm = frontmatter(fs.readFileSync(path.join(GUIDE, file), 'utf8'));
+    const where = `src/guide/${file}`;
+    if (!fm || typeof fm.title !== 'string' || !fm.title) { console.error(`[manifest] Skipped ${where}: needs frontmatter with a "title"`); errors++; continue; }
+    if (typeof fm.order !== 'number') { console.error(`[manifest] Skipped ${where}: needs a numeric "order" in its frontmatter`); errors++; continue; }
+    guide.push({ slug: file.replace(/\.mdx$/, ''), title: fm.title, description: fm.description ?? '', section: fm.section || null, order: fm.order });
+  }
+  guide.sort((a, b) => a.order - b.order);
+
+  fs.mkdirSync(path.dirname(OUT), { recursive: true });
+  const manifest = { prototypes, guide: guide.map(({ order, ...page }) => page) };
+    fs.writeFileSync(OUT, JSON.stringify(manifest, null, 2) + '\n');
+  console.log(`[manifest] ${prototypes.length} prototype(s), ${guide.length} guide page(s)${errors ? `, ${errors} problem(s) above` : ''}`);
+  return { manifest, errors };
 }
 
-// Each prototype system's theme.css may only set values under its own class, like
-// .product-theme, so it can't leak into the app UI or another system.
-for (const [id, sys] of Object.entries(PROTOTYPE_SYSTEMS)) {
-  const file = path.join(ROOT, sys.dir, 'styles', 'theme.css');
-  if (!fs.existsSync(file)) { console.error(`[manifest] ${path.relative(ROOT, file)} is missing (the ${id} system's theme)`); errors++; continue; }
-  const css = fs.readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
-  // Every selector: the text before each "{", skipping at-rules (@media, @layer, ...) and keyframe steps.
-  for (const m of css.matchAll(/([^{};]+)\{/g)) {
-    const selector = m[1].trim();
-    if (selector.startsWith('@') || /^(from|to|[\d.]+%)(\s*,\s*(from|to|[\d.]+%))*$/.test(selector)) continue;
-    const leaks = selector.split(',').map((s) => s.trim()).filter((s) => !s.includes(`.${sys.themeClass}`));
-    if (leaks.length) { console.error(`[manifest] ${path.relative(ROOT, file)}: "${leaks.join(', ')}" isn't under .${sys.themeClass}, so it would style the whole app. Put it inside .${sys.themeClass} (or .dark .${sys.themeClass}).`); errors++; }
-  }
+// Run as a script: node scripts/build-manifest.js [--strict]
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const { errors } = buildManifest();
+  // pnpm build passes --strict, so a broken meta.json or Guide page fails the build. In dev it's only a warning.
+  if (errors && process.argv.includes('--strict')) process.exit(1);
 }
-
-// Guide pages: src/guide/*.mdx, ordered by `order` in each page's frontmatter.
-// Frontmatter is simple `key: value` lines; strings may be quoted.
-function frontmatter(text) {
-  const block = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  if (!block) return null;
-  const data = {};
-  for (const line of block[1].split(/\r?\n/)) {
-    const m = line.match(/^(\w+):\s*(.*)$/);
-    if (!m) continue;
-    let v = m[2].trim();
-    if (/^(["']).*\1$/.test(v)) v = v.slice(1, -1);
-    else if (v === 'true' || v === 'false') v = v === 'true';
-    else if (v !== '' && !Number.isNaN(Number(v))) v = Number(v);
-    data[m[1]] = v;
-  }
-  return data;
-}
-const guide = [];
-const guideFiles = fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.mdx')).sort() : [];
-for (const file of guideFiles) {
-  const fm = frontmatter(fs.readFileSync(path.join(GUIDE, file), 'utf8'));
-  const where = `src/guide/${file}`;
-  if (!fm || typeof fm.title !== 'string' || !fm.title) { console.error(`[manifest] Skipped ${where}: needs frontmatter with a "title"`); errors++; continue; }
-  if (typeof fm.order !== 'number') { console.error(`[manifest] Skipped ${where}: needs a numeric "order" in its frontmatter`); errors++; continue; }
-  guide.push({ slug: file.replace(/\.mdx$/, ''), title: fm.title, description: fm.description ?? '', section: fm.section || null, order: fm.order });
-}
-guide.sort((a, b) => a.order - b.order);
-
-fs.mkdirSync(path.dirname(OUT), { recursive: true });
-fs.writeFileSync(OUT, JSON.stringify({ prototypes, guide: guide.map(({ order, ...page }) => page) }, null, 2) + '\n');
-console.log(`[manifest] ${prototypes.length} prototype(s), ${guide.length} guide page(s)${errors ? `, ${errors} problem(s) above` : ''}`);
-// pnpm build passes --strict, so a broken meta.json or Guide page fails the build. In dev it's only a warning.
-if (errors && process.argv.includes('--strict')) process.exit(1);

@@ -5,6 +5,12 @@
 @import "@fontsource-variable/inter";
 @plugin "@tailwindcss/typography";
 
+/* Tailwind scans the project for class names and reloads the page when a scanned file
+   that isn't code changes. These are data, never classes, so skip them: editing a
+   prototype's meta.json then updates the app live instead of reloading it. */
+@source not "../../prototypes/**/meta.json";
+@source not "../../../contributors.json";
+
 /* dark: utilities follow the app's color mode (the .dark class on <html>). */
 @custom-variant dark (&:where(.dark, .dark *));
 
