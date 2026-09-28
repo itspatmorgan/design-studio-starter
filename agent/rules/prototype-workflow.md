@@ -7,14 +7,15 @@ A prototype can depend only on its own folder, the product system, and shared ut
 ```
 src/prototypes/<contributor>/<prototype>/
 ├── meta.json
-├── prototype.jsx   # a view (opens first)
+├── prototype.tsx   # a view (opens first)
 ├── lofi/           # a group
-│   └── main.jsx    # a view in that group
+│   └── main.tsx    # a view in that group
 └── components/     # helpers, not views
 ```
 
-- **View**: a `.jsx` or `.tsx` file at the prototype's top level that default-exports a React component. The prototype opens on `prototype.jsx` (or `.tsx`), or its first view.
-- **Group**: a subfolder (not `components/`) whose `.jsx`/`.tsx` files are views listed under the group's name. Groups are one level deep.
+- **View**: a `.tsx` file (or plain `.jsx`) at the prototype's top level that default-exports a React component. Write new views as `.tsx`. The prototype opens on `prototype.tsx` (or `.jsx`), or its first view.
+- **Group**: a subfolder (not `components/`) whose `.tsx`/`.jsx` files are views listed under the group's name. Groups are one level deep.
+- **URLs**: `/<contributor>/<prototype>` opens the default view; `/<contributor>/<prototype>/<view>` and `/<contributor>/<prototype>/<group>/<view>` open a view, named without its extension (`/patrick/hello-world/lofi/main`). To link between views, use TanStack Router's `Link` (https://tanstack.com/router/latest/docs/framework/react/guide/navigation).
 - **components/**: helper components, never listed as views.
 - **meta.json**: `title` is required. `description`, `contributor` (display name), `created`, and `updated` (`YYYY-MM-DD`) are optional. If it's missing, isn't valid JSON, or has no title, the prototype is skipped with a warning naming the file in dev, and `pnpm build` fails.
 
@@ -26,7 +27,8 @@ src/prototypes/<contributor>/<prototype>/
 - Use lucide-react for icons, and theme variables for color (see systems.md).
 - If a view throws, the viewer shows "This view failed to load." with the error and a Copy button. Read the error before guessing.
 - If the product system doesn't have a component you need, build it in the prototype's `components/` folder, using `radix-ui` primitives and theme classes. Adding it to `src/product/` is a platform change: suggest it, and only do it if the person agrees.
-- Check your work with `pnpm build` before you commit. It writes `dist/`, which is disposable and ignored by Git.
+- Type props in `.tsx` views; keep types light. `.jsx` views aren't type-checked.
+- Check your work with `pnpm build` before you commit. It type-checks (`pnpm typecheck`, which is `tsc -b`), then writes `dist/`, which is disposable and ignored by Git. Fix type errors rather than silencing them.
 
 ## Saving and sharing
 

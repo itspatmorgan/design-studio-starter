@@ -26,7 +26,8 @@ pnpm dev        # starts the app at localhost:5173
 
 ## Notes
 
-- **TypeScript.** Views can be `.jsx` or `.tsx`. The kit itself is JavaScript.
+- **TypeScript.** The kit is TypeScript (strict), and new views are `.tsx`. Plain `.jsx` views work too; they just aren't type-checked. `pnpm build` runs `pnpm typecheck` (`tsc -b`) first, so a type error fails the build and CI.
+- **Routing.** [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview), with code-based routes in `src/studio/app/router.tsx`. URLs are paths: `/` (search with `?q=`), `/systems`, `/<contributor>/<prototype>`, `/<contributor>/<prototype>/<view>`, and `/<contributor>/<prototype>/<group>/<view>`, like `/patrick/hello-world/lofi/main`. For anything about routes, links, or search params, TanStack's docs are the reference. `systems` is reserved, so it can't be a contributor key.
 - **Icons.** The app UI (`src/studio/`) uses HugeIcons. Product components and prototypes use `lucide-react`, which shadcn/ui brings in.
 - **Errors.** A view that throws shows its error with a Copy button. `pnpm build` fails on a broken `meta.json` or an out-of-scope import, and CI runs it on every push to main.
 
@@ -34,11 +35,17 @@ pnpm dev        # starts the app at localhost:5173
 
 ```sh
 pnpm dev                     # rebuild the manifest and start the dev server
-pnpm build                   # rebuild the manifest and build the static site to dist/
+pnpm build                   # rebuild the manifest, type-check, and build the static site to dist/
+pnpm typecheck               # type-check only (tsc -b)
+pnpm preview                 # serve dist/ locally
 pnpm new "Prototype Name"    # create a prototype in your folder
 pnpm join                    # add yourself to contributors.json
 node scripts/resolve-contributor.js   # print your contributors.json key
 ```
+
+## Hosting
+
+The app uses TanStack Router's browser history, so URLs are clean paths like `/patrick/hello-world`. Configure your host to rewrite all paths to `index.html` ([history types](https://tanstack.com/router/latest/docs/framework/react/guide/history-types)). Until then, the build copies `index.html` to `404.html`, which keeps deep links working on hosts that serve `404.html` for unknown paths. If your host can do neither, switch to hash history: a one-line change where the router is created in `src/studio/app/router.tsx` (see the comment there, and the [docs](https://tanstack.com/router/latest/docs/framework/react/guide/history-types)).
 
 ## Repo map
 
@@ -47,10 +54,10 @@ AGENTS.md              agent entry point; points to agent/rules/
 agent/rules/           systems, prototype workflow, contributor scope
 agent/skills/          agent skills (linked from .claude/skills, .agents/skills)
 contributors.json      who owns which folder
-scripts/               manifest, create, scope check, Vite plugins
+scripts/               manifest, create, scope check, Vite plugins (plain Node .js)
 .husky/                pre-commit and pre-push scope checks
 .github/workflows/     scope check and build on push to main, build for deploy
-src/studio/            the app wrapper and its components
+src/studio/            the app wrapper and its components (routes in app/router.tsx)
 src/product/           placeholder product system; replace with your own
 src/lib/               shared utilities
 src/prototypes/        one folder per contributor
