@@ -31,7 +31,7 @@ export function Section({ id, title, description, children }) {
   return (
     <section id={id} data-section className="mb-14 scroll-mt-6">
       <h2 className="mb-1 text-lg font-semibold tracking-tight text-foreground">{title}</h2>
-      {description && <p className="mb-5 max-w-2xl text-sm text-muted-foreground">{description}</p>}
+      {description && <p className="mb-5 text-sm text-muted-foreground">{description}</p>}
       {!description && <div className="mb-4" />}
       {children}
     </section>
@@ -98,10 +98,14 @@ function TokenRow({ name, utility, role }) {
   return (
     <div ref={ref} className="flex items-center gap-3 py-1.5">
       <div className="h-7 w-10 shrink-0 rounded border border-border" style={{ background: `var(--${name})` }} data-swatch={name} />
-      <code className="w-[13rem] shrink-0 text-[13px] text-foreground">--{name}</code>
-      <code className="w-52 shrink-0 truncate text-[12px] text-muted-foreground">{utility}</code>
-      <code className="w-48 shrink-0 truncate text-[12px] text-muted-foreground" data-token={name} data-value={value ?? ''}>{value || 'not set'}</code>
-      <span className="min-w-0 text-[13px] text-muted-foreground">{role}</span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline gap-2">
+          <code className="text-[13px] text-foreground">--{name}</code>
+          <code className="truncate text-[12px] text-muted-foreground">{utility}</code>
+        </div>
+        <p className="truncate text-[12px] text-muted-foreground">{role}</p>
+      </div>
+      <code className="shrink-0 text-right text-[12px] text-muted-foreground" data-token={name} data-value={value ?? ''}>{value || 'not set'}</code>
     </div>
   );
 }

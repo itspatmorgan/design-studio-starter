@@ -28,13 +28,9 @@ function SystemNav({ system, setSystem, active, onPick }) {
   return (
     <nav aria-label="Systems" className="flex min-h-0 w-52 shrink-0 flex-col border-r border-border bg-muted/40">
       <Tabs value={system} onValueChange={setSystem} className="border-b border-border p-3">
-        <TabsList className="h-auto w-full gap-1 bg-transparent p-0">
+        <TabsList className="w-full">
           {Object.entries(SYSTEMS).map(([id, s]) => (
-            <TabsTrigger
-              key={id}
-              value={id}
-              className="h-auto py-1.5 text-[12px] text-muted-foreground hover:bg-muted data-active:bg-muted data-active:shadow-none dark:data-active:border-transparent dark:data-active:bg-muted"
-            >
+            <TabsTrigger key={id} value={id}>
               {s.label}
             </TabsTrigger>
           ))}
@@ -91,7 +87,7 @@ function SystemContent({ sys }) {
         <RadiusScale scopeClass={scopeClass} />
       </Section>}
       {sys.icons && <Section id="icons" title="Icons" description={`This system uses ${sys.icons.library}.`}>
-        <div className="mb-4 max-w-2xl"><CodeBlock>{sys.icons.snippet}</CodeBlock></div>
+        <div className="mb-4"><CodeBlock>{sys.icons.snippet}</CodeBlock></div>
         <p className="mb-4 text-sm">
           <a href={sys.icons.href} target="_blank" rel="noreferrer" className="font-medium text-foreground underline underline-offset-4">
             Browse all icons
@@ -146,7 +142,7 @@ export default function SystemsPage() {
     <div className="flex min-h-0 flex-1">
       <SystemNav system={system} setSystem={switchSystem} active={active} onPick={pick} />
       <main ref={mainRef} className="min-w-0 flex-1 overflow-y-auto">
-        <div className="max-w-5xl px-8 py-8" data-testid={`${system}-set`}>
+        <div className="mx-auto w-full max-w-3xl px-8 py-10" data-testid={`${system}-set`}>
           <SystemContent key={system} sys={SYSTEMS[system]} />
         </div>
       </main>
