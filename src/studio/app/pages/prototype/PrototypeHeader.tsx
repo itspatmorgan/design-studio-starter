@@ -130,7 +130,7 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
                   <HugeiconsIcon icon={Add01Icon} size={14} />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-40">
-                  {/* One menu for everything you can make in a prototype (see src/kinds.ts). */}
+                  {/* One menu for everything you can make in a prototype (see src/fileTypes.ts). */}
                   <DropdownMenuItem onClick={() => setTimeout(() => onNew(false))}><HugeiconsIcon icon={FileAddIcon} /> New view</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setTimeout(() => onNew(true))}><HugeiconsIcon icon={FolderAddIcon} /> New folder</DropdownMenuItem>
                 </DropdownMenuContent>

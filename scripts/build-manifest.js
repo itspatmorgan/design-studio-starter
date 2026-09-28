@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems.ts';
-import { HELPER_FOLDER, itemSlug, kindOf } from '../src/kinds.ts';
+import { HELPER_FOLDER, itemSlug, fileTypeOf } from '../src/fileTypes.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -16,13 +16,13 @@ const dirs = (p) => fs.existsSync(p)
   ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort()
   : [];
 
-// A prototype's items (see src/kinds.ts), in the order the file tree shows them: at each
+// A prototype's items (see src/fileTypes.ts), in the order the file tree shows them: at each
 // level, files first, then folders, each alphabetical. Hidden files and components/ are skipped.
 function itemsIn(dir, base = '') {
   const entries = fs.readdirSync(dir, { withFileTypes: true }).filter((e) => !e.name.startsWith('.'));
   const byName = (a, b) => a.name.localeCompare(b.name);
   const files = entries.filter((e) => e.isFile()).sort(byName)
-    .flatMap((e) => { const kind = kindOf(e.name); return kind ? [{ path: base + e.name, kind }] : []; });
+    .flatMap((e) => { const fileType = fileTypeOf(e.name); return fileType ? [{ path: base + e.name, fileType }] : []; });
   const folders = entries.filter((e) => e.isDirectory() && e.name !== HELPER_FOLDER).sort(byName)
     .flatMap((e) => itemsIn(path.join(dir, e.name), `${base}${e.name}/`));
   return [...files, ...folders];
@@ -63,7 +63,7 @@ export function buildManifest() {
         const file = path.relative(ROOT, path.join(dir, item.path));
         if (seen.has(itemSlug(item.path))) { console.error(`[manifest] ${file}: another file here has the same name. Rename one; they'd share a URL.`); errors++; }
         seen.add(itemSlug(item.path));
-        if (item.kind === 'view') {
+        if (item.fileType === 'view') {
           const code = fs.readFileSync(path.join(ROOT, file), 'utf8');
           if (!/export\s+default\b|export\s*\{[^}]*\bas\s+default\b/.test(code)) { console.error(`[manifest] ${file}: a view needs a default export, the component the app renders (export default function MyView() { ... }). Helpers belong in components/.`); errors++; }
         }

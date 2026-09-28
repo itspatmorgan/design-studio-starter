@@ -122,8 +122,8 @@ const prototypeRoute = createRoute({
 });
 
 // Loads an item before the route renders, so the current one stays on screen until the next
-// one is ready. An unknown address shows the not-found page. (Views are the one kind today;
-// see src/kinds.ts.)
+// one is ready. An unknown address shows the not-found page. (Views are the one file type today;
+// see src/fileTypes.ts.)
 async function itemLoader({ contributor, prototype, _splat }: { contributor: string; prototype: string; _splat?: string }) {
   const proto = findPrototype(await loadManifest(), contributor, prototype);
   // No path in the URL: the prototype's start item, or its first.

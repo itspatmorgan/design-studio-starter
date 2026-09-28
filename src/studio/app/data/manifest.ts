@@ -1,5 +1,5 @@
 import { linkOptions } from '@tanstack/react-router';
-import { itemSlug } from '@/kinds';
+import { itemSlug } from '@/fileTypes';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 
 // Fetched once, then shared by every route loader. In dev, replaced whenever it changes.

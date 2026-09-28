@@ -2,7 +2,7 @@
 //
 // In `pnpm dev`, it's the prototype's real files and folders, live from the dev server
 // (data/files.ts). It shows what you open and organize: items (views, at any depth; see
-// src/kinds.ts) and their folders. Everything else in the folder (meta.json, which the header
+// src/fileTypes.ts) and their folders. Everything else in the folder (meta.json, which the header
 // edits; components/ helpers; images and other files) is hidden until you choose Show all
 // files, and then opens in your editor. In your own prototypes you can also create, rename (F2), move
 // (drag and drop), and delete (to the Trash) files and folders, like a file browser, and
@@ -21,7 +21,7 @@ import {
   fileOp, openInEditor, repoPath, revealInFinder, useFileTree, useMe, type FileNode, type FileOp,
 } from '@/studio/app/data/files';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
-import { HELPER_FOLDER } from '@/kinds';
+import { HELPER_FOLDER } from '@/fileTypes';
 import { Button } from '@/studio/components/button';
 import { Input } from '@/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';

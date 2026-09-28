@@ -1,13 +1,13 @@
 import type { ComponentType, ReactNode } from 'react';
 import type { ComponentSpec, TypeSampleSpec } from '@/studio/app/pages/systems/foundations';
 
-import type { ItemKind } from '@/kinds';
+import type { FileType } from '@/fileTypes';
 
 // public/prototypes/manifest.json, written by scripts/build-manifest.js.
-// One thing in a prototype the app can open (see src/kinds.ts).
+// One thing in a prototype the app can open (see src/fileTypes.ts).
 export type Item = {
   path: string;   // file path in the prototype, e.g. "prototype.tsx" or "checkout/step-1.tsx"
-  kind: ItemKind; // from its extension
+  fileType: FileType; // from its extension
 };
 
 export type Prototype = {

@@ -4,7 +4,7 @@ A prototype can depend only on its own folder, its design system, and shared uti
 
 ## Shape
 
-A file's kind comes from its extension, and folders are only for organizing, at any depth (`src/kinds.ts`). Organize by topic, however the person likes.
+A file's type comes from its extension, and folders are only for organizing, at any depth (`src/fileTypes.ts`). Organize by topic, however the person likes.
 
 ```
 src/prototypes/<contributor>/<prototype>/
