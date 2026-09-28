@@ -7,12 +7,9 @@
 //   /$contributor/$prototype                 a prototype, on its default view
 //   /$contributor/$prototype/$view           a top-level view
 //   /$contributor/$prototype/$group/$view    a view in a group
-import { createRootRoute, createRoute, createRouter, notFound } from '@tanstack/react-router';
+import { createRootRoute, createRoute, createRouter, lazyRouteComponent, notFound } from '@tanstack/react-router';
 import App, { NotFound } from '@/studio/app/shell/App';
 import Index from '@/studio/app/pages/index/Index';
-import SystemsPage from '@/studio/app/pages/systems/SystemsPage';
-import GuideLayout from '@/studio/app/pages/guide/GuideLayout';
-import { DocLayout } from '@/studio/app/docs/DocLayout';
 import { loadGuidePage } from '@/studio/app/data/loadGuide';
 import PrototypeLayout from '@/studio/app/pages/prototype/PrototypeLayout';
 import ViewFrame from '@/studio/app/pages/prototype/ViewFrame';
@@ -46,15 +43,20 @@ const systemsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: 'systems',
   head: () => ({ meta: [{ title: `Systems — ${APP_NAME}` }] }),
-  component: SystemsPage,
+  // Loaded on first visit, so it isn't in the main bundle:
+  // https://tanstack.com/router/latest/docs/framework/react/guide/code-splitting
+  component: lazyRouteComponent(() => import('@/studio/app/pages/systems/SystemsPage')),
 });
 
 // The Guide's sidebar, around whichever page is open.
 const guideRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: 'guide',
-  component: GuideLayout,
+  component: lazyRouteComponent(() => import('@/studio/app/pages/guide/GuideLayout')),
 });
+
+// Guide pages render in DocLayout, loaded with the first Guide page.
+const DocLayout = lazyRouteComponent(() => import('@/studio/app/docs/DocLayout'), 'DocLayout');
 
 // Loads a Guide page before it renders, like views. /guide opens index.mdx.
 async function guideLoader(slug: string) {
