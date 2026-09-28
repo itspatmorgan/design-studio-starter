@@ -15,6 +15,14 @@ const GUIDE = path.join(ROOT, 'src', 'guide');
 const CONTRIBUTORS = path.join(ROOT, 'contributors.json');
 const BATCH_MS = 50;
 
+// The last manifest sent to the app. The files plugin publishes right after its own changes
+// (with the tab that made them), so the watcher skips the same manifest a moment later.
+let last = '';
+export function publishManifest(server, manifest, origin) {
+  last = JSON.stringify(manifest);
+  server.ws.send({ type: 'custom', event: 'studio:manifest', data: { manifest, origin } });
+}
+
 const inside = (dir, file) => file === dir || file.startsWith(dir + path.sep);
 
 // Adding or removing anything can change the list of views; editing a file only matters
@@ -34,14 +42,10 @@ export default function manifestWatch() {
     configureServer(server) {
       server.watcher.add([PROTOS, GUIDE, CONTRIBUTORS]);
       let timer = null;
-      let last = '';
       const flush = () => {
         timer = null;
         const { manifest } = buildManifest();
-        const json = JSON.stringify(manifest);
-        if (json === last) return;
-        last = json;
-        server.ws.send({ type: 'custom', event: 'studio:manifest', data: manifest });
+        if (JSON.stringify(manifest) !== last) publishManifest(server, manifest);
       };
       const onEvent = (kind) => (file) => {
         if (!relevant(file, kind)) return;

@@ -15,7 +15,8 @@ import PrototypeLayout from '@/studio/app/pages/prototype/PrototypeLayout';
 import ViewFrame from '@/studio/app/pages/prototype/ViewFrame';
 import { findPrototype, firstView, loadManifest, setManifest, viewLabel, viewSlug } from '@/studio/app/data/manifest';
 import type { Manifest } from '@/studio/app/data/types';
-import { loadView } from '@/studio/app/data/loadView';
+import { loadView, viewsWithoutComponent } from '@/studio/app/data/loadView';
+import { TAB_ID } from '@/studio/app/data/files';
 import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS, type PrototypeSystemId } from '@/systems';
 
 const APP_NAME = 'Design Studio';
@@ -136,7 +137,9 @@ async function viewLoader({ contributor, prototype, group, view }: ViewParams) {
   // A view file that doesn't export a component yet (say, one you're still writing) shows
   // an error in its place, instead of breaking the page.
   const file = `src/prototypes/${contributor}/${prototype}/${g ? `${g}/` : ''}${v}`;
-  const Component = typeof mod.default === 'function' || typeof mod.default === 'object'
+  const valid = typeof mod.default === 'function' || typeof mod.default === 'object';
+  if (!valid) viewsWithoutComponent.add(file);
+  const Component = valid
     ? mod.default
     : () => { throw new Error(`${file} has no default export. A view needs one: export default function MyView() { ... }`); };
   return {
@@ -147,12 +150,19 @@ async function viewLoader({ contributor, prototype, group, view }: ViewParams) {
   };
 }
 
+// The open view. A view route shows its own not-found page, inside the prototype's navigation,
+// and never renders without its loader's data.
+function ViewPage({ data }: { data: Awaited<ReturnType<typeof viewLoader>> | undefined }) {
+  return data ? <ViewFrame {...data} /> : null;
+}
+
 const prototypeIndexRoute = createRoute({
   getParentRoute: () => prototypeRoute,
   path: '/',
   loader: ({ params }) => viewLoader(params),
   head: ({ loaderData }) => ({ meta: [{ title: loaderData?.title ?? APP_NAME }] }),
-  component: () => <ViewFrame {...prototypeIndexRoute.useLoaderData()} />,
+  component: () => <ViewPage data={prototypeIndexRoute.useLoaderData()} />,
+  notFoundComponent: NotFound,
 });
 
 const viewRoute = createRoute({
@@ -160,7 +170,8 @@ const viewRoute = createRoute({
   path: '$view',
   loader: ({ params }) => viewLoader(params),
   head: ({ loaderData }) => ({ meta: [{ title: loaderData?.title ?? APP_NAME }] }),
-  component: () => <ViewFrame {...viewRoute.useLoaderData()} />,
+  component: () => <ViewPage data={viewRoute.useLoaderData()} />,
+  notFoundComponent: NotFound,
 });
 
 const groupViewRoute = createRoute({
@@ -168,7 +179,8 @@ const groupViewRoute = createRoute({
   path: '$group/$view',
   loader: ({ params }) => viewLoader(params),
   head: ({ loaderData }) => ({ meta: [{ title: loaderData?.title ?? APP_NAME }] }),
-  component: () => <ViewFrame {...groupViewRoute.useLoaderData()} />,
+  component: () => <ViewPage data={groupViewRoute.useLoaderData()} />,
+  notFoundComponent: NotFound,
 });
 
 const routeTree = rootRoute.addChildren([
@@ -202,8 +214,9 @@ declare module '@tanstack/react-router' {
 // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#using-routerinvalidate
 if (import.meta.hot) {
   window.addEventListener('studio:views', () => router.invalidate());
-  import.meta.hot.on('studio:manifest', (m: Manifest) => {
-    setManifest(m);
+  import.meta.hot.on('studio:manifest', ({ manifest, origin }: { manifest: Manifest; origin?: string }) => {
+    if (origin === TAB_ID) return; // this tab made the change and already applied it
+    setManifest(manifest);
     router.invalidate();
   });
 }

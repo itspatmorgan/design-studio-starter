@@ -146,21 +146,22 @@ export default function FileTree({ proto, current }: { proto: Prototype; current
   });
   const noun = live ? 'files' : 'views';
 
-  // Runs a change, then takes the new manifest and follows the open view if it moved.
+  // Runs a change, then takes the new manifest. If it moved or removed the open view, go to
+  // its new place (or the prototype's first view) first, so the old address is never reloaded.
   async function run(op: FileOp) {
     try {
       const result = await fileOp(proto, op);
       setManifest(result.manifest);
-      await router.invalidate();
-      reload();
       const open = current && viewPath(current);
       if (open && (op.op === 'rename' || op.op === 'move' || op.op === 'delete') && within(open, op.path)) {
         const moved = result.path && `${result.path}${open.slice(op.path.length)}`;
         const next = moved && result.manifest.prototypes
           .find((p) => p.contributorKey === proto.contributorKey && p.id === proto.id)?.views
           .find((v) => viewPath(v) === moved);
-        navigate(next ? viewLink(proto, next) : prototypeLink(proto));
+        await navigate(next ? viewLink(proto, next) : prototypeLink(proto));
       }
+      await router.invalidate();
+      reload();
       if (result.trashedTo) setStatus({ text: `Moved to ${result.trashedTo}.` });
       return result;
     } catch (e) {

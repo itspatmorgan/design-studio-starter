@@ -25,6 +25,7 @@ import { execFile, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { buildManifest } from './build-manifest.js';
 import { createPrototype } from './create-prototype.js';
+import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from './resolve-contributor.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -188,12 +189,13 @@ export default function filesPlugin() {
   return {
     name: 'studio-files',
     apply: 'serve',
-    // When a prototype file is moved or deleted, Vite would try to hot-reload it at its old
-    // path and fail. The manifest and the view list (loadView.ts) already handle it, so drop
-    // Vite's copy of the deleted file (a new file at that path starts fresh) and let its
-    // importers update as usual.
+    // When a prototype file is moved, created, or deleted, Vite would try to hot-reload it
+    // (at its old path, or at a path the page loaded before), fail, and reload the page. The
+    // manifest and the view list (loadView.ts) already handle these, so drop Vite's copy of
+    // the file itself and let its importers, like the view list, update as usual. Edits to a
+    // file are left to Vite's normal hot reload.
     hotUpdate({ type, file, modules }) {
-      if (type !== 'delete' || !file.startsWith(PROTOS + path.sep)) return;
+      if (type === 'update' || !file.startsWith(PROTOS + path.sep)) return;
       for (const m of modules) if (m.file === file) this.environment.moduleGraph.invalidateModule(m);
       return modules.filter((m) => m.file !== file);
     },
@@ -221,6 +223,8 @@ export default function filesPlugin() {
           try {
             const result = runOp(dir, body);
             const { manifest } = buildManifest();
+            // Other tabs update now; the tab that asked (X-Studio-Tab) handles it from the reply.
+            publishManifest(server, manifest, req.headers['x-studio-tab']);
             return send(res, 200, { ...result, manifest });
           } catch (e) {
             return send(res, 400, { error: e.message });
@@ -230,6 +234,7 @@ export default function filesPlugin() {
           const { title, description } = await readJson(req);
           try {
             const { slug, manifest } = createPrototype({ title, description, key: me() });
+            publishManifest(server, manifest, req.headers['x-studio-tab']);
             return send(res, 200, { contributor: me(), prototype: slug, manifest });
           } catch (e) {
             return send(res, 400, { error: e.message });

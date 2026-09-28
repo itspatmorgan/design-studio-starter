@@ -7,6 +7,10 @@ export type FileNode = { name: string; path: string; dir: boolean; children?: Fi
 
 const key = (p: Prototype) => `${p.contributorKey}/${p.id}`;
 
+// This tab, sent with every change, so the manifest update it causes isn't applied twice
+// (router.tsx): the tab that made the change applies it from the reply, in order.
+export const TAB_ID = Math.random().toString(36).slice(2);
+
 async function fetchFiles(p: Prototype): Promise<FileNode[] | null> {
   const res = await fetch(`/__studio/files?contributor=${encodeURIComponent(p.contributorKey)}&prototype=${encodeURIComponent(p.id)}`);
   return res.ok ? ((await res.json()) as { files: FileNode[] }).files : null;
@@ -74,7 +78,7 @@ export type FileOpResult = { path?: string; trashedTo?: string; manifest: Manife
 export async function fileOp(p: Prototype, op: FileOp): Promise<FileOpResult> {
   const res = await fetch('/__studio/op', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },
     body: JSON.stringify({ contributor: p.contributorKey, prototype: p.id, ...op }),
   });
   const body = await res.json();
@@ -86,7 +90,7 @@ export async function fileOp(p: Prototype, op: FileOp): Promise<FileOpResult> {
 export async function createPrototype(title: string, description: string) {
   const res = await fetch('/__studio/prototype', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },
     body: JSON.stringify({ title, description }),
   });
   const body = await res.json();

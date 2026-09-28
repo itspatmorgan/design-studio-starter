@@ -3,14 +3,20 @@ import type { MDXContent } from 'mdx/types';
 export type GuideModule = { default: MDXContent; frontmatter?: { title?: string; description?: string; toc?: boolean } };
 
 // Every Guide page. Vite only loads one when it is asked for.
-export let pages = import.meta.glob<GuideModule>('/guide/*.mdx');
+const glob = import.meta.glob<GuideModule>('/guide/*.mdx');
+
+// In dev, adding or removing a page makes Vite run this file again with a new list. The app
+// keeps calling the function from the first run, so the list lives in state Vite keeps
+// across runs (like loadView.ts).
+const state: { pages: typeof glob } = import.meta.hot?.data.state ?? { pages: glob };
 
 // A Guide page's module, by its slug (file name without .mdx), or undefined.
 export function loadGuidePage(slug: string) {
-  return pages[`/guide/${slug}.mdx`]?.();
+  return state.pages[`/guide/${slug}.mdx`]?.();
 }
 
-// In dev, adding or removing a page changes the list above. Take it in place, like loadView.ts.
 if (import.meta.hot) {
-  import.meta.hot.accept((next) => { if (next) pages = next.pages; });
+  import.meta.hot.data.state = state;
+  state.pages = glob;
+  import.meta.hot.accept();
 }
