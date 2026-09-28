@@ -65,7 +65,8 @@ export type FileOp =
   | { op: 'create'; path: string; name: string; dir?: boolean }
   | { op: 'rename'; path: string; name: string }
   | { op: 'move'; path: string; to: string }
-  | { op: 'delete'; path: string };
+  | { op: 'delete'; path: string }
+  | { op: 'meta'; title: string; description: string; start: string };
 
 export type FileOpResult = { path?: string; trashedTo?: string; manifest: Manifest };
 
@@ -81,3 +82,14 @@ export async function fileOp(p: Prototype, op: FileOp): Promise<FileOpResult> {
   return body;
 }
 
+// Creates a prototype in your folder, like pnpm new. Returns its URL parts and the new manifest.
+export async function createPrototype(title: string, description: string) {
+  const res = await fetch('/__studio/prototype', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, description }),
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error ?? 'That didn\'t work.');
+  return body as { contributor: string; prototype: string; manifest: Manifest };
+}

@@ -19,7 +19,7 @@ src/prototypes/patrick/hello-world/
 └── components/      # helpers, not views
 ```
 
-Always create a prototype with `pnpm new "Prototype Name"`, or by asking your agent for one. It sets everything up the same way every time.
+Always create a prototype with `pnpm new "Prototype Name"`, by asking your agent for one, or with **New prototype** on the Prototypes page while the app runs locally. All three set it up the same way.
 
 While the app is running locally, the prototype's navigation shows all of its files and folders, and it updates as they change. Views open in the app. Other files, like `meta.json` or a component, open in your code editor. Right-click any file to reveal it in Finder or copy its path. On the deployed site, the navigation lists just the views.
 
@@ -31,6 +31,8 @@ In your own prototypes, the navigation works like a file browser:
 - **Delete:** right-click, or press Delete. It goes to the Trash, so you can put it back.
 
 Each of these is an ordinary change to the files, the same as your agent would make, so you can mix both ways of working. If you rename or move the view you're looking at, the app follows it, and `start` in `meta.json` is updated to match.
+
+To change the prototype's title, description, or the view it opens on, use the edit button in About, at the bottom of the navigation. It saves to `meta.json`. The title can change freely; the prototype's folder name, and so its link, stays the same.
 
 ## Views
 

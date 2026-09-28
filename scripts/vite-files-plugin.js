@@ -9,6 +9,8 @@
 //        rename   { path, name }
 //        move     { path, to: folder }           "" is the prototype's top level
 //        delete   { path }                        to the Trash (or .trash/ at the repo root)
+//        meta     { title, description, start }   edit meta.json (start "" opens the default view)
+//   POST /__studio/prototype { title, description }   a new prototype in your folder, like pnpm new
 //     It replies with the new path and the updated manifest, so the app can follow a renamed view.
 //
 // Opening a file in your editor uses Vite's built-in /__open-in-editor.
@@ -22,6 +24,7 @@ import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { buildManifest } from './build-manifest.js';
+import { createPrototype } from './create-prototype.js';
 import { resolveContributor } from './resolve-contributor.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -117,7 +120,7 @@ function fixStart(dir, fromRel, toRel) {
 }
 
 // One file operation. Returns { path } (the new path, for create, rename, and move) or throws a message.
-function runOp(dir, { op, path: rel = '', name, dir: isDir, to }) {
+function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, description, start }) {
   const inside = (r) => resolveInside(dir, r);
   const relOf = (abs) => path.relative(fs.realpathSync(dir), abs).split(path.sep).join('/');
   if (op === 'create') {
@@ -129,6 +132,21 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to }) {
     if (isDir) fs.mkdirSync(target);
     else fs.writeFileSync(target, /\.[jt]sx$/.test(name) ? viewTemplate(name) : '');
     return { path: relOf(target) };
+  }
+  if (op === 'meta') {
+    const metaFile = path.join(dir, 'meta.json');
+    const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
+    if (typeof title !== 'string' || !title.trim()) throw new Error('The prototype needs a title.');
+    meta.title = title.trim();
+    if (typeof description === 'string') meta.description = description.trim();
+    if (start === '' || start === undefined) delete meta.start;
+    else {
+      const views = buildManifest().manifest.prototypes.find((p) => path.join(PROTOS, p.contributorKey, p.id) === dir)?.views ?? [];
+      if (!views.some((v) => viewKey(v.group ? `${v.group}/${v.name}` : v.name) === start)) throw new Error(`"${start}" isn't a view in this prototype.`);
+      meta.start = start;
+    }
+    fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
+    return {};
   }
   const source = inside(rel);
   if (!source || source === fs.realpathSync(dir)) throw new Error('That file doesn\'t exist.');
@@ -204,6 +222,15 @@ export default function filesPlugin() {
             const result = runOp(dir, body);
             const { manifest } = buildManifest();
             return send(res, 200, { ...result, manifest });
+          } catch (e) {
+            return send(res, 400, { error: e.message });
+          }
+        }
+        if (req.method === 'POST' && url.pathname === '/prototype') {
+          const { title, description } = await readJson(req);
+          try {
+            const { slug, manifest } = createPrototype({ title, description, key: me() });
+            return send(res, 200, { contributor: me(), prototype: slug, manifest });
           } catch (e) {
             return send(res, 400, { error: e.message });
           }

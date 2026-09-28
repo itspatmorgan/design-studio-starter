@@ -6,6 +6,7 @@ import { Cancel01Icon, Search01Icon } from '@hugeicons/core-free-icons';
 import { getRouteApi, Link, useNavigate } from '@tanstack/react-router';
 import { formatDate, newestFirst, prototypeLink } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
+import NewPrototypeButton from '@/studio/app/pages/index/NewPrototypeDialog';
 
 const rootApi = getRouteApi('__root__');
 const indexApi = getRouteApi('/');
@@ -68,7 +69,7 @@ export default function Index() {
   const search = indexApi.useSearch().q ?? '';
   const q = search.trim().toLowerCase();
   let body;
-  if (!manifest.prototypes.length) body = <p className="text-sm text-muted-foreground">No prototypes yet. Ask your agent to make one.</p>;
+  if (!manifest.prototypes.length) body = <p className="text-sm text-muted-foreground">No prototypes yet. Ask your agent to make one, or use New prototype.</p>;
   else {
     // Newest first, by meta.json "created".
     const prototypes = manifest.prototypes
@@ -95,7 +96,7 @@ export default function Index() {
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Prototypes</h1>
         <p className="mt-2 text-sm text-muted-foreground">Every prototype in the sandbox, newest first.</p>
       </header>
-      <div className="mb-6 flex"><SearchBox value={search} /></div>
+      <div className="mb-6 flex items-center justify-between gap-3"><SearchBox value={search} /><NewPrototypeButton /></div>
       {body}
     </main>
   );
