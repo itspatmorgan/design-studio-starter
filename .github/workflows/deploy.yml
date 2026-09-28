@@ -1,4 +1,3 @@
-# Host-specific. Fill in for your static host; this only builds.
 name: Deploy
 on:
   push:
@@ -11,4 +10,8 @@ jobs:
       - uses: jdx/mise-action@v2
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      # - publish dist/ to your host here
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist/
+      # Add your host's deploy step here to publish dist/.
