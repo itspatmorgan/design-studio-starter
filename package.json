@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/build-manifest.js && vite",
-    "build": "node scripts/build-manifest.js && vite build",
+    "build": "node scripts/build-manifest.js --strict && vite build",
     "new": "node scripts/create-prototype.js",
     "join": "node scripts/setup-contributor.js",
     "prepare": "husky"
