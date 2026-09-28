@@ -34,6 +34,9 @@ if (RESERVED.has(flag('key'))) {
 const existing = resolveContributor();
 if (existing) {
   console.log(`You're already a contributor: "${existing}". Your folder is src/prototypes/${existing}/.`);
+  const entryName = loadContributors()[existing]?.name;
+  const gitName = run('git', ['config', 'user.name']);
+  if (entryName && gitName && entryName !== gitName) console.log(`Warning: that entry is for ${entryName}, but your Git name is ${gitName}. If that's not you, your GitHub account is shared with their entry.`);
   process.exit(0);
 }
 
