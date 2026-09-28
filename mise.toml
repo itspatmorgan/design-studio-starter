@@ -1,0 +1,3 @@
+[tools]
+node = "24"   # an LTS release
+pnpm = "11"

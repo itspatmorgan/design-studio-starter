@@ -1,0 +1,8 @@
+# Contributor scope
+
+You can change anything in your folder, but only your own folder. Everything else is the platform.
+
+- First, work out who you're working with: run `node scripts/resolve-contributor.js`. It prints their key; their folder is `src/prototypes/<key>/`.
+- Edit only files in that designer's folder.
+- For anything in the platform (everything else), describe the change and ask the user if they're sure before making it. Don't make it blindly.
+- The pre-commit and pre-push hooks print a scope summary. If they report platform files, tell the user.
