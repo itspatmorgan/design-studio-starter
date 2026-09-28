@@ -9,9 +9,7 @@ export default function Prototype() {
       <h1 className="text-2xl font-semibold">Hello World</h1>
       <p className="text-muted-foreground">Built with the product components, so it picks up the product theme.</p>
       <Dialog>
-        <DialogTrigger asChild>
-          <Button>Open dialog</Button>
-        </DialogTrigger>
+        <DialogTrigger render={<Button />}>Open dialog</DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Hello from the product system</DialogTitle>

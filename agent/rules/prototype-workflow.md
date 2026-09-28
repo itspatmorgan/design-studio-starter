@@ -27,7 +27,7 @@ src/prototypes/<contributor>/<prototype>/
 - Style with Tailwind classes. For custom CSS, use CSS Modules (`*.module.css`). Never a plain `.css` file or global rules like `body { … }`; they leak into the whole app.
 - Use lucide-react for icons, and theme variables for color (see systems.md).
 - If a view throws, the viewer shows "This view failed to load." with the error and a Copy button. Read the error before guessing.
-- If the product system doesn't have a component you need, build it in the prototype's `components/` folder, using `radix-ui` primitives and theme classes. Adding it to `src/product/` is a platform change: suggest it, and only do it if the person agrees.
+- If the product system doesn't have a component you need, build it in the prototype's `components/` folder, using [Base UI](https://base-ui.com/react/overview/quick-start) primitives (`@base-ui/react`) and theme classes; compose with the `render` prop, not `asChild`. Adding it to `src/product/` is a platform change: suggest it, and only do it if the person agrees.
 - Type props in `.tsx` views; keep types light. `.jsx` views aren't type-checked.
 - Check your work with `pnpm build` before you commit. It type-checks (`pnpm typecheck`, which is `tsc -b`), then writes `dist/`, which is disposable and ignored by Git. Fix type errors rather than silencing them.
 

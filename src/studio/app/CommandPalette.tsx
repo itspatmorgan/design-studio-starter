@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { getRouteApi, useMatchRoute, useNavigate, useParams, type NavigateOptions } from '@tanstack/react-router';
 import {
-  CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
+  Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
 } from '@/studio/components/command';
 import { firstView, newestFirst, prototypeLink, viewLabel, viewLink, viewSlug } from './manifest';
 import { isTyping } from './appPrefs';
@@ -52,53 +52,55 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
     <PaletteContext.Provider value={() => setOpen(true)}>
       {children}
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Search prototypes, views, pages..." />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-
-          {current && (
-            <>
-              <CommandGroup heading={`Views · ${current.title}`}>
-                {current.views.map((v) => (
-                  <CommandItem
-                    key={`${v.group}/${v.name}`}
-                    value={`${v.group ?? ''} ${viewLabel(v.name)} ${v.name}`}
-                    disabled={isCurrentView(v)}
-                    onSelect={() => go(viewLink(current, v))}
-                  >
-                    {v.group && <span className="shrink-0 text-xs text-muted-foreground">{viewLabel(v.group)}</span>}
-                    <span className="truncate">{viewLabel(v.name)}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-              <CommandSeparator />
-            </>
-          )}
-
-          <CommandGroup heading="Places">
-            <CommandItem value="prototypes index home" disabled={onIndex} onSelect={() => go({ to: '/' })}>Prototypes</CommandItem>
-            <CommandItem value="systems components" disabled={onSystems} onSelect={() => go({ to: '/systems' })}>Systems</CommandItem>
-          </CommandGroup>
-
-          {prototypes.length > 0 && (
-            <>
-              <CommandSeparator />
-              <CommandGroup heading="Prototypes">
-                {prototypes.map((p) => (
-                  <CommandItem
-                    key={`${p.contributorKey}/${p.id}`}
-                    value={`${p.title} ${p.description ?? ''} ${p.contributor ?? ''} ${p.contributorKey}/${p.id}`}
-                    disabled={p === current}
-                    onSelect={() => go(prototypeLink(p))}
-                  >
-                    <span className="truncate">{p.title}</span>
-                    <span className="ml-auto shrink-0 text-xs text-muted-foreground">{(p.contributor || p.contributorKey).split(' ')[0]}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </>
-          )}
-        </CommandList>
+        <Command>
+          <CommandInput placeholder="Search prototypes, views, pages..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+  
+            {current && (
+              <>
+                <CommandGroup heading={`Views · ${current.title}`}>
+                  {current.views.map((v) => (
+                    <CommandItem
+                      key={`${v.group}/${v.name}`}
+                      value={`${v.group ?? ''} ${viewLabel(v.name)} ${v.name}`}
+                      disabled={isCurrentView(v)}
+                      onSelect={() => go(viewLink(current, v))}
+                    >
+                      {v.group && <span className="shrink-0 text-xs text-muted-foreground">{viewLabel(v.group)}</span>}
+                      <span className="truncate">{viewLabel(v.name)}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+                <CommandSeparator />
+              </>
+            )}
+  
+            <CommandGroup heading="Places">
+              <CommandItem value="prototypes index home" disabled={onIndex} onSelect={() => go({ to: '/' })}>Prototypes</CommandItem>
+              <CommandItem value="systems components" disabled={onSystems} onSelect={() => go({ to: '/systems' })}>Systems</CommandItem>
+            </CommandGroup>
+  
+            {prototypes.length > 0 && (
+              <>
+                <CommandSeparator />
+                <CommandGroup heading="Prototypes">
+                  {prototypes.map((p) => (
+                    <CommandItem
+                      key={`${p.contributorKey}/${p.id}`}
+                      value={`${p.title} ${p.description ?? ''} ${p.contributor ?? ''} ${p.contributorKey}/${p.id}`}
+                      disabled={p === current}
+                      onSelect={() => go(prototypeLink(p))}
+                    >
+                      <span className="truncate">{p.title}</span>
+                      <span className="ml-auto shrink-0 text-xs text-muted-foreground">{(p.contributor || p.contributorKey).split(' ')[0]}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </>
+            )}
+          </CommandList>
+        </Command>
       </CommandDialog>
     </PaletteContext.Provider>
   );

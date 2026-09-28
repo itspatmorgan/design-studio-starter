@@ -20,16 +20,18 @@ type RailLinkProps = { to: LinkProps['to']; label: string; active?: boolean; chi
 function RailLink({ to, label, active, children, className }: RailLinkProps) {
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <Link
-          to={to}
-          aria-label={label}
-          activeOptions={{ exact: true }}
-          aria-current={active ? 'page' : undefined}
-          className={cn(railButton, active && 'bg-sidebar-accent-active text-sidebar-accent-foreground', className)}
-        >
-          {children}
-        </Link>
+      <TooltipTrigger
+        render={
+          <Link
+            to={to}
+            aria-label={label}
+            activeOptions={{ exact: true }}
+            aria-current={active ? 'page' : undefined}
+            className={cn(railButton, active && 'bg-sidebar-accent-active text-sidebar-accent-foreground', className)}
+          />
+        }
+      >
+        {children}
       </TooltipTrigger>
       <TooltipContent side="right">{label}</TooltipContent>
     </Tooltip>
@@ -40,8 +42,8 @@ function RailLink({ to, label, active, children, className }: RailLinkProps) {
 function RailButton({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <button type="button" onClick={onClick} aria-label={label} className={railButton}>{children}</button>
+      <TooltipTrigger render={<button type="button" onClick={onClick} aria-label={label} className={railButton} />}>
+        {children}
       </TooltipTrigger>
       <TooltipContent side="right">{label}</TooltipContent>
     </Tooltip>

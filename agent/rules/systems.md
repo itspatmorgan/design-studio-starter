@@ -7,6 +7,16 @@ There are two component systems.
 
 When the product system is replaced, keep these true: it lives in `src/product/`, prototypes import from `@/product/...`, styles stay scoped under `.product-theme` (with a `.dark .product-theme` block if the product has dark mode), and pop-ups render into the portal container (see Portals).
 
+## Components
+
+Both systems are shadcn/ui components on [Base UI](https://base-ui.com/react/overview/quick-start) (`components.json` style `base-nova`), not Radix. To make a trigger render as another element, use the `render` prop, not `asChild`:
+
+```tsx
+<DialogTrigger render={<Button variant="outline" />}>Open</DialogTrigger>
+```
+
+See [shadcn/ui](https://ui.shadcn.com/docs) (Base UI pages) and [Base UI composition](https://base-ui.com/react/handbook/composition).
+
 ## Icons
 
 - App UI (`src/studio/`) uses HugeIcons (`@hugeicons/react` with `@hugeicons/core-free-icons`).
@@ -14,7 +24,7 @@ When the product system is replaced, keep these true: it lives in `src/product/`
 
 ## Portals
 
-Pop-ups such as dialogs render into a portal. In the product system, each one passes `usePortalContainer()` from `src/product/components/portal.tsx` as the portal's `container`, so pop-ups stay inside `.product-theme` and keep the product look. When you add a product component that renders a portal, do the same.
+Pop-ups such as dialogs render into a portal. In the product system, each one passes `usePortalContainer()` from `src/product/components/portal.tsx` as the Base UI Portal's `container` prop (`<DialogPrimitive.Portal container={usePortalContainer()} />`), so pop-ups stay inside `.product-theme` and keep the product look. When you add a product component that renders a portal, do the same.
 
 ## Dark mode
 

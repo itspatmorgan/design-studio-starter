@@ -65,14 +65,14 @@ export const product: DesignSystem = {
       ) },
       { name: 'Dialog', file: 'dialog.tsx', demo: () => (
         <Dialog>
-          <DialogTrigger asChild><Button variant="outline">Open dialog</Button></DialogTrigger>
+          <DialogTrigger render={<Button variant="outline" />}>Open dialog</DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Product dialog</DialogTitle>
               <DialogDescription>Rendered in the portal container, so it keeps the product look.</DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+              <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
               <Button>Save</Button>
             </DialogFooter>
           </DialogContent>

@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { ContributorAvatar } from '@/studio/components/avatar';
-import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/studio/components/command';
+import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/studio/components/command';
 import { Code, CodeBlock, IconGrid, Prose } from './foundations';
 import type { DesignSystem } from '../types';
 
@@ -29,18 +29,20 @@ function CommandDemo() {
     <>
       <Button variant="outline" onClick={() => setOpen(true)}>Open command menu</Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command" />
-        <CommandList>
-          <CommandEmpty>No results.</CommandEmpty>
-          <CommandGroup heading="Pages">
-            <CommandItem onSelect={() => setOpen(false)}>Prototypes</CommandItem>
-            <CommandItem onSelect={() => setOpen(false)}>Systems</CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="Settings">
-            <CommandItem onSelect={() => setOpen(false)}>Toggle dark mode</CommandItem>
-          </CommandGroup>
-        </CommandList>
+        <Command>
+          <CommandInput placeholder="Type a command" />
+          <CommandList>
+            <CommandEmpty>No results.</CommandEmpty>
+            <CommandGroup heading="Pages">
+              <CommandItem onSelect={() => setOpen(false)}>Prototypes</CommandItem>
+              <CommandItem onSelect={() => setOpen(false)}>Systems</CommandItem>
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Settings">
+              <CommandItem onSelect={() => setOpen(false)}>Toggle dark mode</CommandItem>
+            </CommandGroup>
+          </CommandList>
+        </Command>
       </CommandDialog>
     </>
   );
@@ -115,7 +117,7 @@ export const studio: DesignSystem = {
         <>
           {(['top', 'right', 'bottom', 'left'] as const).map((side) => (
             <Tooltip key={side}>
-              <TooltipTrigger asChild><Button variant="outline">{side}</Button></TooltipTrigger>
+              <TooltipTrigger render={<Button variant="outline" />}>{side}</TooltipTrigger>
               <TooltipContent side={side}>Tooltip on {side}</TooltipContent>
             </Tooltip>
           ))}
@@ -149,7 +151,7 @@ export const studio: DesignSystem = {
       { name: 'Collapsible', file: 'collapsible.tsx', demo: () => (
         <Collapsible className="w-64 text-sm">
           <CollapsibleTrigger className="group flex items-center gap-1.5 font-medium">
-            <HugeiconsIcon icon={ArrowDown01Icon} size={14} className="text-muted-foreground transition-transform group-data-[state=closed]:-rotate-90" />
+            <HugeiconsIcon icon={ArrowDown01Icon} size={14} className="text-muted-foreground transition-transform group-not-data-panel-open:-rotate-90" />
             Toggle details
           </CollapsibleTrigger>
           <CollapsibleContent className="pt-2 pl-5 text-muted-foreground">Hidden until opened.</CollapsibleContent>

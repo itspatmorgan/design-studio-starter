@@ -96,11 +96,11 @@ const iconButton = 'inline-flex size-7 shrink-0 items-center justify-center roun
 function IconButton({ label, onClick, pressed, children }: { label: string; onClick: () => void; pressed?: boolean; children: ReactNode }) {
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <button type="button" aria-label={label} aria-pressed={pressed} onClick={onClick}
-          className={cn(iconButton, pressed && 'bg-sidebar-accent text-sidebar-accent-foreground')}>
-          {children}
-        </button>
+      <TooltipTrigger
+        render={<button type="button" aria-label={label} aria-pressed={pressed} onClick={onClick}
+          className={cn(iconButton, pressed && 'bg-sidebar-accent text-sidebar-accent-foreground')} />}
+      >
+        {children}
       </TooltipTrigger>
       <TooltipContent side="bottom">{label}</TooltipContent>
     </Tooltip>
