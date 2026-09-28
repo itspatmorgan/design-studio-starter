@@ -15,7 +15,7 @@ import ViewFrame from '@/studio/app/pages/prototype/ViewFrame';
 import { findPrototype, firstView, loadManifest, viewLabel, viewSlug } from '@/studio/app/data/manifest';
 import { loadView } from '@/studio/app/data/loadView';
 
-const APP_NAME = 'Prototype Sandbox';
+const APP_NAME = 'Design Studio';
 
 const rootRoute = createRootRoute({
   loader: () => loadManifest(),

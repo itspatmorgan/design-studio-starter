@@ -1,6 +1,6 @@
-# Prototype Sandbox
+# Design Studio Starter
 
-A starter template for a shared prototyping sandbox: one repo where designers and their coding agents build React prototypes side by side. It's the scaffold described in [How I Set Up a Prototyping Sandbox](https://www.unknownarts.com/p/TODO).
+The starter kit behind Design Studio, the prototype sandbox I built at Sublime Security: one repo where designers and their coding agents build React prototypes side by side. It's the scaffold described in [How I Set Up a Prototyping Sandbox](https://www.unknownarts.com/p/TODO).
 
 ## Core ideas
 

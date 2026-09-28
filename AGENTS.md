@@ -1,4 +1,4 @@
-# Prototype Sandbox
+# Design Studio Starter
 
 If `node_modules/` doesn't exist, or the person is new, follow [agents/skills/setup-contributor/SKILL.md](agents/skills/setup-contributor/SKILL.md) first.
 

@@ -2,8 +2,8 @@
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
 
-const COLOR_MODE_KEY = 'prototype-sandbox:color-mode';   // "light" | "dark"; unset = follow the system
-const SECTION_NAV_KEY = 'prototype-sandbox:section-nav'; // "open" | "closed"
+const COLOR_MODE_KEY = 'design-studio:color-mode';   // "light" | "dark"; unset = follow the system
+const SECTION_NAV_KEY = 'design-studio:section-nav'; // "open" | "closed"
 
 const systemMode = () => (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 

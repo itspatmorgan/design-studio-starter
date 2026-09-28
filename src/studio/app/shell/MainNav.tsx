@@ -67,7 +67,7 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
       data-testid="main-nav"
       className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-sidebar-border bg-sidebar py-3"
     >
-      <RailLink to="/" label="Prototype Sandbox" className="active:scale-95">
+      <RailLink to="/" label="Design Studio" className="active:scale-95">
         {/* Placeholder mark. Swap in your own logo. */}
         <span className="grid size-4 place-items-center rounded-[5px] bg-foreground">
           <span className="size-1.5 rounded-full bg-background" />
