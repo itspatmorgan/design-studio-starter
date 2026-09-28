@@ -109,7 +109,7 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
     <div className={cn('shrink-0 px-2 pt-3', showInfo ? 'border-b border-sidebar-border pb-3' : 'pb-0')}>
       {withContextMenu(
         <div className="px-2.5">
-          <div className="flex min-h-8 items-center gap-1">
+          <div className="-mr-2 flex min-h-8 items-center gap-0.5">
             {renaming ? (
               <div className="min-w-0 flex-1"><TitleInput initial={proto.title} onDone={rename} /></div>
             ) : (
@@ -127,7 +127,7 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
                   aria-label="New"
                   className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground"
                 >
-                  <HugeiconsIcon icon={Add01Icon} size={16} />
+                  <HugeiconsIcon icon={Add01Icon} size={14} />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-40">
                   {/* One menu for everything you can make in a prototype (see src/kinds.ts). */}
@@ -139,9 +139,9 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
             <DropdownMenu>
               <DropdownMenuTrigger
                 aria-label="Prototype actions"
-                className="-mr-1.5 inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground"
+                className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground"
               >
-                <HugeiconsIcon icon={MoreHorizontalIcon} size={16} />
+                <HugeiconsIcon icon={MoreHorizontalIcon} size={14} />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="min-w-44">{menuItems(DropdownMenuItem, DropdownMenuSeparator)}</DropdownMenuContent>
             </DropdownMenu>
