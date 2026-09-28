@@ -1,22 +1,25 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { Link, useNavigate, useParams } from '@tanstack/react-router';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/studio/components/tabs';
-import { CodeBlock, ColorTokens, ComponentDemo, RadiusScale, Section, TypeScale, slug } from '@/studio/app/pages/systems/foundations';
+import { NotFound } from '@/studio/app/shell/App';
+import { ColorTokens, ComponentDemo, IconsPage, PageHeader, RadiusScale, TypeScale, slug } from '@/studio/app/pages/systems/foundations';
 import type { DesignSystem } from '@/studio/app/data/types';
 import { product } from '@/studio/app/pages/systems/productSystem';
 import { studio } from '@/studio/app/pages/systems/studioSystem';
 
-// Systems page: one tab per design system. Each documents its purpose, theme,
-// foundations (read live from the CSS), icons, and components. Optional sections
-// (typography, radius, icons) show only when the system defines them.
-const SYSTEMS = { product, studio };
-type SystemId = keyof typeof SYSTEMS;
-type NavGroup = { heading?: string; items: [id: string, label: string][] };
+// Systems: one tab per design system, and one page per foundation and component,
+// at /systems/<system>/<page> (the system's introduction at /systems/<system>).
+// Pages come from each system's spec (productSystem.tsx, studioSystem.tsx), so adding
+// a component there adds its page. Optional pages show only when the system defines them.
+export const SYSTEMS = { product, studio };
+export type SystemId = keyof typeof SYSTEMS;
+type NavGroup = { heading?: string; items: [id: string | null, label: string][] };
 
-// Sidebar groups, in page order. Component categories come from the system.
+// Sidebar groups, in order. A null id is the system's introduction.
 function navGroups(sys: DesignSystem): NavGroup[] {
   return [
-    { items: [['intro', 'Introduction'], ['theme', 'Theme']] },
+    { items: [[null, 'Introduction'], ['theme', 'Theme']] },
     { heading: 'Foundations', items: [
       ['colors', 'Colors'],
       sys.typeSamples && ['typography', 'Typography'],
@@ -27,17 +30,14 @@ function navGroups(sys: DesignSystem): NavGroup[] {
   ];
 }
 
-type SystemNavProps = { system: SystemId; setSystem: (id: SystemId) => void; active: string; onPick: (id: string) => void };
-
-function SystemNav({ system, setSystem, active, onPick }: SystemNavProps) {
+function SystemNav({ system }: { system: SystemId }) {
+  const navigate = useNavigate();
   return (
     <nav aria-label="Systems" className="flex min-h-0 w-52 shrink-0 flex-col border-r border-border bg-muted/40">
-      <Tabs value={system} onValueChange={(id) => setSystem(id as SystemId)} className="border-b border-border p-3">
+      <Tabs value={system} onValueChange={(id) => navigate({ to: '/systems/$system', params: { system: id as SystemId } })} className="border-b border-border p-3">
         <TabsList className="w-full">
           {Object.entries(SYSTEMS).map(([id, s]) => (
-            <TabsTrigger key={id} value={id}>
-              {s.label}
-            </TabsTrigger>
+            <TabsTrigger key={id} value={id}>{s.label}</TabsTrigger>
           ))}
         </TabsList>
       </Tabs>
@@ -46,7 +46,18 @@ function SystemNav({ system, setSystem, active, onPick }: SystemNavProps) {
           <div key={g.heading ?? i}>
             {g.heading && <p className="mt-5 mb-2 px-2.5 text-sm font-semibold text-foreground">{g.heading}</p>}
             {g.items.map(([id, label]) => (
-              <NavItem key={id} label={label} active={active === id} onClick={() => onPick(id)} />
+              <Link
+                key={id ?? 'intro'}
+                {...(id ? { to: '/systems/$system/$page', params: { system, page: id } } : { to: '/systems/$system', params: { system } })}
+                activeOptions={{ exact: true }}
+                className={cn(
+                  'block rounded-md px-2.5 py-1.5 text-sm text-foreground/80 transition-colors',
+                  'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                  'data-[status=active]:bg-sidebar-accent-active data-[status=active]:font-medium data-[status=active]:text-sidebar-accent-foreground',
+                )}
+              >
+                {label}
+              </Link>
             ))}
           </div>
         ))}
@@ -55,103 +66,49 @@ function SystemNav({ system, setSystem, active, onPick }: SystemNavProps) {
   );
 }
 
-function NavItem({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-current={active ? 'true' : undefined}
-      className={cn(
-        'block w-full rounded-md px-2.5 py-2 text-left text-sm font-medium transition-colors',
-        active
-          ? 'bg-sidebar-accent-active font-semibold text-sidebar-accent-foreground'
-          : 'text-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-      )}
-    >
-      {label}
-    </button>
-  );
-}
-
-function SystemContent({ sys }: { sys: DesignSystem }) {
-  const { scopeClass, Frame } = sys;
+// One page of a system, or null if the system doesn't have it.
+function SystemPage({ sys, page }: { sys: DesignSystem; page?: string }) {
+  const { scopeClass } = sys;
+  switch (page) {
+    case undefined:
+      return <><PageHeader title={`${sys.label} system`} />{sys.intro}</>;
+    case 'theme':
+      return <><PageHeader title="Theme" />{sys.theme}</>;
+    case 'colors':
+      return <><PageHeader title="Colors" description="Every semantic token, read live from the theme. Values follow the current mode." /><ColorTokens scopeClass={scopeClass} extraTokens={sys.extraColorTokens} /></>;
+    case 'typography':
+      return sys.typeSamples ? <><PageHeader title="Typography" description="The font and the sizes and weights the components use. Values are measured live." /><TypeScale scopeClass={scopeClass} samples={sys.typeSamples} /></> : null;
+    case 'radius':
+      return sys.showRadius ? <><PageHeader title="Radius" description="Tailwind radius classes, measured live from the theme." /><RadiusScale scopeClass={scopeClass} /></> : null;
+    case 'icons':
+      return sys.icons ? <><PageHeader title="Icons" description={`This system uses ${sys.icons.library}.`} /><IconsPage icons={sys.icons} scopeClass={scopeClass} /></> : null;
+  }
+  const component = sys.categories.flatMap((c) => c.components).find((c) => slug(c.name) === page);
+  if (!component) return null;
   return (
     <>
-      <header id="intro" data-section className="mb-14 scroll-mt-6">
-        <h1 className="mb-4 text-[26px] font-semibold leading-9 tracking-[-0.01em] text-foreground">{sys.label}</h1>
-        {sys.intro}
-      </header>
-      <Section id="theme" title="Theme">{sys.theme}</Section>
-      <Section id="colors" title="Colors" description="Every semantic token, read live from the theme. Values follow the current mode.">
-        <ColorTokens scopeClass={scopeClass} extraTokens={sys.extraColorTokens} />
-      </Section>
-      {sys.typeSamples && <Section id="typography" title="Typography" description="The font and the sizes and weights the components use. Values are measured live.">
-        <TypeScale scopeClass={scopeClass} samples={sys.typeSamples} />
-      </Section>}
-      {sys.showRadius && <Section id="radius" title="Radius" description="Tailwind radius classes, measured live from the theme.">
-        <RadiusScale scopeClass={scopeClass} />
-      </Section>}
-      {sys.icons && <Section id="icons" title="Icons" description={`This system uses ${sys.icons.library}.`}>
-        <div className="mb-4"><CodeBlock>{sys.icons.snippet}</CodeBlock></div>
-        <p className="mb-4 text-sm">
-          <a href={sys.icons.href} target="_blank" rel="noreferrer" className="font-medium text-foreground underline underline-offset-4">
-            Browse all icons
-          </a>
-        </p>
-        <div className={cn(scopeClass, 'text-foreground')}>{sys.icons.grid}</div>
-      </Section>}
-      {sys.categories.map((cat) => (
-        <div key={cat.name} className="mb-6">
-          <h2 className="mb-5 border-b border-border pb-2 text-lg font-semibold tracking-tight text-foreground">{cat.name}</h2>
-          {cat.components.map((c) => <ComponentDemo key={c.name} component={c} Frame={Frame} />)}
-        </div>
-      ))}
+      <PageHeader title={component.name} description={component.description} />
+      <ComponentDemo component={component} Frame={sys.Frame} dir={sys.dir} />
     </>
   );
 }
 
 export default function SystemsPage() {
-  const [system, setSystem] = useState<SystemId>('product');
-  const [active, setActive] = useState('intro');
+  const params = useParams({ strict: false });
+  const system = params.system as SystemId;
+  const sys = SYSTEMS[system];
   const mainRef = useRef<HTMLElement>(null);
-  const lockUntil = useRef(0);
+  useEffect(() => { mainRef.current?.scrollTo({ top: 0 }); }, [system, params.page]);
 
-  // Scroll spy: the active item is the last section whose top has passed the top of the pane.
-  useEffect(() => {
-    const main = mainRef.current;
-    if (!main) return;
-    const onScroll = () => {
-      if (Date.now() < lockUntil.current) return;
-      const top = main.getBoundingClientRect().top + 80;
-      const all = [...main.querySelectorAll('[data-section]')];
-      let current = 'intro';
-      for (const el of all as HTMLElement[]) if (el.getBoundingClientRect().top <= top) current = el.id;
-      if (main.scrollTop + main.clientHeight >= main.scrollHeight - 2) current = all.at(-1)?.id ?? current;
-      setActive(current);
-    };
-    main.addEventListener('scroll', onScroll, { passive: true });
-    return () => main.removeEventListener('scroll', onScroll);
-  }, [system]);
-
-  const pick = (id: string) => {
-    setActive(id);
-    lockUntil.current = Date.now() + 800; // keep the clicked item active during the smooth scroll
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-  const switchSystem = (id: SystemId) => {
-    setSystem(id);
-    setActive('intro');
-    mainRef.current?.scrollTo({ top: 0 });
-  };
-
+  const content = sys ? SystemPage({ sys, page: params.page }) : null;
+  if (!sys || !content) return <NotFound />;
   return (
     <div className="flex min-h-0 flex-1">
-      <SystemNav system={system} setSystem={switchSystem} active={active} onPick={pick} />
+      <SystemNav system={system} />
       <main ref={mainRef} className="min-w-0 flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-3xl px-8 py-10" data-testid={`${system}-set`}>
-          <SystemContent key={system} sys={SYSTEMS[system]} />
-        </div>
+        <div className="mx-auto w-full max-w-3xl px-8 py-10" data-testid={`${system}-set`}>{content}</div>
       </main>
     </div>
   );
 }
+

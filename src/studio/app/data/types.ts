@@ -34,6 +34,7 @@ export type ViewModule = { default: ComponentType };
 // One tab on the Systems page.
 export type DesignSystem = {
   label: string;
+  dir: string;            // where its components live, e.g. "src/studio/components/"
   scopeClass: string;
   Frame: ElementType;
   intro: ReactNode;

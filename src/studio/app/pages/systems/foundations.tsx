@@ -1,3 +1,4 @@
+import type { DesignSystem } from '@/studio/app/data/types';
 import { useEffect, useRef, useState, type ComponentType, type ElementType, type ReactNode, type Ref } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -27,14 +28,13 @@ function useComputed<T extends HTMLElement = HTMLDivElement>(read: (s: CSSStyleD
   return [ref, value];
 }
 
-export function Section({ id, title, description, children }: { id: string; title: string; description?: string; children: ReactNode }) {
+// A page's header: title and an optional one-line description.
+export function PageHeader({ title, description }: { title: string; description?: ReactNode }) {
   return (
-    <section id={id} data-section className="mb-14 scroll-mt-6">
-      <h2 className="mb-1 text-lg font-semibold tracking-tight text-foreground">{title}</h2>
-      {description && <p className="mb-5 text-sm text-muted-foreground">{description}</p>}
-      {!description && <div className="mb-4" />}
-      {children}
-    </section>
+    <header className="mb-8">
+      <h1 className="mb-2 text-[26px] font-semibold leading-9 tracking-[-0.01em] text-foreground">{title}</h1>
+      {description && <p className="text-sm text-muted-foreground">{description}</p>}
+    </header>
   );
 }
 
@@ -216,24 +216,54 @@ export function IconGrid({ icons }: { icons: { name: string; node: ReactNode }[]
 
 // --- Components -------------------------------------------------------------
 
+// The Icons page: how to use the system's icon library, and a sample.
+export function IconsPage({ icons, scopeClass }: { icons: NonNullable<DesignSystem['icons']>; scopeClass: string }) {
+  return (
+    <>
+      <div className="mb-4"><CodeBlock>{icons.snippet}</CodeBlock></div>
+      <p className="mb-4 text-sm">
+        <a href={icons.href} target="_blank" rel="noreferrer" className="font-medium text-foreground underline underline-offset-4">
+          Browse all icons
+        </a>
+      </p>
+      <div className={cn(scopeClass, 'text-foreground')}>{icons.grid}</div>
+    </>
+  );
+}
+
 export const slug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
-// Frame wraps each demo box: plain for studio, ProductFrame for product.
-export type ComponentSpec = { name: string; file: string; demo: ComponentType };
+// One component page: its name, what it's for, where it lives, a live demo, and its docs.
+// Frame wraps the demo: plain for studio, ProductFrame for product.
+export type ComponentSpec = { name: string; file: string; description?: string; demo: ComponentType };
 
-export function ComponentDemo({ component, Frame = 'div' }: { component: ComponentSpec; Frame?: ElementType }) {
-  const { name, file, demo: Demo } = component;
+// shadcn/ui's page for a component, from its file name ("input-group.tsx" → .../base/input-group).
+export const shadcnDocs = (file: string) => `https://ui.shadcn.com/docs/components/base/${file.replace(/\.tsx$/, '')}`;
+
+export function ComponentDemo({ component, Frame = 'div', dir }: { component: ComponentSpec; Frame?: ElementType; dir: string }) {
+  const { file, demo: Demo } = component;
   return (
-    <section id={slug(name)} data-section className="mb-10 scroll-mt-6">
-      <div className="mb-3 flex items-baseline gap-3">
-        <h3 className="text-base font-semibold tracking-tight text-foreground">{name}</h3>
-        <span className="font-mono text-xs text-muted-foreground">{file}</span>
-      </div>
+    <>
       <Frame>
         <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-background p-6">
           <Demo />
         </div>
       </Frame>
-    </section>
+      <dl className="mt-8 space-y-3 text-sm">
+        <div>
+          <dt className="text-muted-foreground">File</dt>
+          <dd className="font-mono text-xs text-foreground">{dir}{file}</dd>
+        </div>
+        <div>
+          <dt className="text-muted-foreground">Docs</dt>
+          <dd>
+            <a href={shadcnDocs(file)} target="_blank" rel="noreferrer" className="font-medium text-foreground underline underline-offset-4">
+              shadcn/ui
+            </a>
+            <span className="text-muted-foreground">, which links to the Base UI API it's built on</span>
+          </dd>
+        </div>
+      </dl>
+    </>
   );
 }

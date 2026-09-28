@@ -61,7 +61,7 @@ type MainNavProps = {
 export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: MainNavProps) {
   const openPalette = useOpenPalette();
   const matchRoute = useMatchRoute();
-  const onSystems = Boolean(matchRoute({ to: '/systems' }));
+  const onSystems = Boolean(matchRoute({ to: '/systems', fuzzy: true }));
   const onGuide = Boolean(matchRoute({ to: '/guide', fuzzy: true }));
   return (
     <nav

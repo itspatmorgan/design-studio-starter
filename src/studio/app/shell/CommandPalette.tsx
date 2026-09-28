@@ -46,7 +46,7 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
     return viewSlug(v.name) === params.view && (v.group ?? undefined) === params.group;
   };
   const onIndex = Boolean(matchRoute({ to: '/' }));
-  const onSystems = Boolean(matchRoute({ to: '/systems' }));
+  const onSystem = (system: 'product' | 'studio') => matchRoute({ to: '/systems/$system', params: { system }, fuzzy: true }) !== false;
 
   return (
     <PaletteContext.Provider value={() => setOpen(true)}>
@@ -78,7 +78,8 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
   
             <CommandGroup heading="Places">
               <CommandItem value="prototypes index home" disabled={onIndex} onSelect={() => go({ to: '/' })}>Prototypes</CommandItem>
-              <CommandItem value="systems components" disabled={onSystems} onSelect={() => go({ to: '/systems' })}>Systems</CommandItem>
+              <CommandItem value="product system components" disabled={onSystem('product')} onSelect={() => go({ to: '/systems/$system', params: { system: 'product' } })}>Product system</CommandItem>
+              <CommandItem value="studio system components" disabled={onSystem('studio')} onSelect={() => go({ to: '/systems/$system', params: { system: 'studio' } })}>Studio system</CommandItem>
             </CommandGroup>
 
             <CommandSeparator />

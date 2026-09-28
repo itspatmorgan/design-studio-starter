@@ -50,6 +50,7 @@ function CommandDemo() {
 
 export const studio: DesignSystem = {
   label: 'Studio',
+  dir: 'src/studio/components/',
   scopeClass: '',
   Frame: 'div',
   intro: (
@@ -84,7 +85,7 @@ export const studio: DesignSystem = {
   },
   categories: [
     { name: 'Actions', components: [
-      { name: 'Button', file: 'button.tsx', demo: () => (
+      { name: 'Button', file: 'button.tsx', description: 'Actions in the app UI, like opening a dialog. Variants for emphasis, sizes for density.', demo: () => (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <Button>Primary</Button>
@@ -105,7 +106,7 @@ export const studio: DesignSystem = {
       ) },
     ] },
     { name: 'Form controls', components: [
-      { name: 'Input', file: 'input.tsx', demo: () => (
+      { name: 'Input', file: 'input.tsx', description: 'A single-line text field, like the search box on the Prototypes page.', demo: () => (
         <>
           <Input placeholder="Search prototypes" className="w-56" />
           <Input placeholder="Disabled" disabled className="w-56" />
@@ -113,7 +114,7 @@ export const studio: DesignSystem = {
       ) },
     ] },
     { name: 'Overlays', components: [
-      { name: 'Tooltip', file: 'tooltip.tsx', demo: () => (
+      { name: 'Tooltip', file: 'tooltip.tsx', description: 'A short label on hover or focus, used for the icon buttons on the rail.', demo: () => (
         <>
           {(['top', 'right', 'bottom', 'left'] as const).map((side) => (
             <Tooltip key={side}>
@@ -123,10 +124,10 @@ export const studio: DesignSystem = {
           ))}
         </>
       ) },
-      { name: 'Command', file: 'command.tsx', demo: CommandDemo },
+      { name: 'Command', file: 'command.tsx', description: 'A searchable list of actions. The ⌘K palette is built on it.', demo: CommandDemo },
     ] },
     { name: 'Layout', components: [
-      { name: 'Tabs', file: 'tabs.tsx', demo: () => (
+      { name: 'Tabs', file: 'tabs.tsx', description: 'Switches between views of the same content, like the systems at the top of this sidebar.', demo: () => (
         <div className="flex flex-wrap gap-10">
           <Tabs defaultValue="overview" className="w-72">
             <TabsList>
@@ -148,7 +149,7 @@ export const studio: DesignSystem = {
           </Tabs>
         </div>
       ) },
-      { name: 'Collapsible', file: 'collapsible.tsx', demo: () => (
+      { name: 'Collapsible', file: 'collapsible.tsx', description: 'Shows and hides a section, like groups in the prototype navigation and the About panel.', demo: () => (
         <Collapsible className="w-64 text-sm">
           <CollapsibleTrigger className="group flex items-center gap-1.5 font-medium">
             <HugeiconsIcon icon={ArrowDown01Icon} size={14} className="text-muted-foreground transition-transform group-not-data-panel-open:-rotate-90" />
@@ -159,14 +160,14 @@ export const studio: DesignSystem = {
       ) },
     ] },
     { name: 'Display', components: [
-      { name: 'Avatar', file: 'avatar.tsx', demo: () => (
+      { name: 'Avatar', file: 'avatar.tsx', description: "A person's photo or initials. The app shows contributors' initials.", demo: () => (
         <>
           <ContributorAvatar name="Patrick Morgan" />
           <ContributorAvatar name="Patrick Morgan" size="default" />
           <ContributorAvatar name="Patrick Morgan" size="lg" />
         </>
       ) },
-      { name: 'Card', file: 'card.tsx', demo: () => (
+      { name: 'Card', file: 'card.tsx', description: 'A bordered container for one item, like each prototype on the Prototypes page.', demo: () => (
         <Card className="w-80">
           <CardHeader>
             <CardTitle>Card title</CardTitle>

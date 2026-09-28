@@ -2,12 +2,12 @@
 // https://tanstack.com/router/latest/docs/framework/react/routing/code-based-routing
 //
 //   /                                        Index (search: ?q=)
-//   /systems                                 Systems page
+//   /systems/$system, /systems/$system/$page  Systems (/systems opens the product system)
 //   /guide, /guide/$page                     the Guide (pages in src/guide/)
 //   /$contributor/$prototype                 a prototype, on its default view
 //   /$contributor/$prototype/$view           a top-level view
 //   /$contributor/$prototype/$group/$view    a view in a group
-import { createRootRoute, createRoute, createRouter, lazyRouteComponent, notFound } from '@tanstack/react-router';
+import { createRootRoute, createRoute, createRouter, lazyRouteComponent, notFound, redirect } from '@tanstack/react-router';
 import App, { NotFound } from '@/studio/app/shell/App';
 import Index from '@/studio/app/pages/index/Index';
 import { loadGuidePage } from '@/studio/app/data/loadGuide';
@@ -39,13 +39,36 @@ const indexRoute = createRoute({
   component: Index,
 });
 
+// Systems: /systems opens the product system; each system has one page per foundation
+// and component. The page is loaded on first visit, so it isn't in the main bundle:
+// https://tanstack.com/router/latest/docs/framework/react/guide/code-splitting
 const systemsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: 'systems',
-  head: () => ({ meta: [{ title: `Systems — ${APP_NAME}` }] }),
-  // Loaded on first visit, so it isn't in the main bundle:
-  // https://tanstack.com/router/latest/docs/framework/react/guide/code-splitting
-  component: lazyRouteComponent(() => import('@/studio/app/pages/systems/SystemsPage')),
+});
+
+const systemsIndexRoute = createRoute({
+  getParentRoute: () => systemsRoute,
+  path: '/',
+  beforeLoad: () => { throw redirect({ to: '/systems/$system', params: { system: 'product' }, replace: true }); },
+});
+
+const SystemsPage = lazyRouteComponent(() => import('@/studio/app/pages/systems/SystemsPage'));
+const systemsTitle = (...parts: (string | undefined)[]) =>
+  [...parts.filter(Boolean).map((p) => viewLabel(p!)), 'Systems', APP_NAME].join(' — ');
+
+const systemRoute = createRoute({
+  getParentRoute: () => systemsRoute,
+  path: '$system',
+  head: ({ params }) => ({ meta: [{ title: systemsTitle(params.system) }] }),
+  component: SystemsPage,
+});
+
+const systemPageRoute = createRoute({
+  getParentRoute: () => systemsRoute,
+  path: '$system/$page',
+  head: ({ params }) => ({ meta: [{ title: systemsTitle(params.page, params.system) }] }),
+  component: SystemsPage,
 });
 
 // The Guide's sidebar, around whichever page is open.
@@ -140,7 +163,7 @@ const groupViewRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  systemsRoute,
+  systemsRoute.addChildren([systemsIndexRoute, systemRoute, systemPageRoute]),
   guideRoute.addChildren([guideIndexRoute, guidePageRoute]),
   prototypeRoute.addChildren([prototypeIndexRoute, viewRoute, groupViewRoute]),
 ]);

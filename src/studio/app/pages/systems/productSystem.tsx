@@ -22,6 +22,7 @@ export function ProductFrame({ children }: { children: ReactNode }) {
 
 export const product: DesignSystem = {
   label: 'Product',
+  dir: 'src/product/components/',
   scopeClass: 'product-theme',
   Frame: ProductFrame,
   intro: (
@@ -48,7 +49,7 @@ export const product: DesignSystem = {
   ),
   categories: [
     { name: 'Components', components: [
-      { name: 'Button', file: 'button.tsx', demo: () => (
+      { name: 'Button', file: 'button.tsx', description: "The placeholder product button. Replace it with your product's.", demo: () => (
         <>
           <Button>Primary</Button>
           <Button variant="secondary">Secondary</Button>
@@ -57,13 +58,13 @@ export const product: DesignSystem = {
           <Button><Mail data-icon="inline-start" />With icon</Button>
         </>
       ) },
-      { name: 'Input', file: 'input.tsx', demo: () => (
+      { name: 'Input', file: 'input.tsx', description: 'The placeholder product text field.', demo: () => (
         <>
           <Input placeholder="Type something" className="w-56" />
           <Input placeholder="Disabled" disabled className="w-56" />
         </>
       ) },
-      { name: 'Dialog', file: 'dialog.tsx', demo: () => (
+      { name: 'Dialog', file: 'dialog.tsx', description: "A modal that renders inside the prototype's frame, not over the whole app.", demo: () => (
         <Dialog>
           <DialogTrigger render={<Button variant="outline" />}>Open dialog</DialogTrigger>
           <DialogContent>

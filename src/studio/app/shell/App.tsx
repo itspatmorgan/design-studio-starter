@@ -34,7 +34,7 @@ export function NotFound() {
     <div className="space-y-2 p-8">
       <p className="text-sm font-medium text-foreground">Page not found</p>
       <p className="text-sm text-muted-foreground">
-        There's no prototype or view at this address. <Link to="/" className="text-primary hover:underline">View all prototypes</Link>
+        There's nothing at this address. <Link to="/" className="text-primary hover:underline">View all prototypes</Link>
       </p>
     </div>
   );

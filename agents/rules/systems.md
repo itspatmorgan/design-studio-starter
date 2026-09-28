@@ -32,4 +32,4 @@ The app puts `.dark` on `<html>`, and `theme.css` sets dark values under `.dark 
 
 Until it is replaced, the product system is a small placeholder set (button, dialog, input) on shadcn/ui's indigo preset. `npx shadcn add <name>` adds more shadcn/ui components to `src/product/components/`; if one renders a portal, wire it to `usePortalContainer()` as above.
 
-To see what the product system offers, look in `src/product/components/` or open the Systems page (`/systems`).
+To see what the product system offers, look in `src/product/components/` or open its page in the app (`/systems/product`, one page per component).
