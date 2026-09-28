@@ -127,6 +127,26 @@ function getView(params, key) {
   return lazyViews.get(key);
 }
 
+// Shown in place of a view that throws, with the error so it can be copied into a bug report or an agent chat.
+function ViewError({ error }) {
+  const [copied, setCopied] = useState(false);
+  const message = error?.message || String(error);
+  const copy = async () => {
+    await navigator.clipboard.writeText(error?.stack || message);
+    setCopied(true);
+  };
+  return (
+    <div role="alert" className="max-w-2xl space-y-3 p-8">
+      <p className="text-sm font-medium">This view failed to load.</p>
+      <pre className="overflow-auto rounded-md bg-muted p-3 text-sm whitespace-pre-wrap text-muted-foreground">{message}</pre>
+      <Button variant="outline" size="sm" onClick={copy}>
+        <HugeiconsIcon icon={copied ? Tick02Icon : Copy01Icon} size={14} />
+        {copied ? 'Copied' : 'Copy error'}
+      </Button>
+    </div>
+  );
+}
+
 function ProductView({ contributor, prototype, group, view }) {
   const key = [contributor, prototype, group, view].join('/');
   const View = getView({ contributor, prototype, group, view }, key);
@@ -134,18 +154,19 @@ function ProductView({ contributor, prototype, group, view }) {
 
   return (
     <div className="min-w-0 flex-1">
-      <div className="product-theme bg-background text-foreground relative h-full overflow-auto">
-        <PortalContext.Provider value={portal}>
-          <TooltipProvider>
-            <ErrorBoundary resetKeys={[key]} fallback={<p className="p-8">This view failed to load.</p>}>
+      {/* The boundary sits outside .product-theme, so its fallback keeps the app UI's look. */}
+      <ErrorBoundary resetKeys={[key]} FallbackComponent={ViewError}>
+        <div className="product-theme bg-background text-foreground relative h-full overflow-auto">
+          <PortalContext.Provider value={portal}>
+            <TooltipProvider>
               <Suspense fallback={null}>
                 <View />
               </Suspense>
-            </ErrorBoundary>
-          </TooltipProvider>
-        </PortalContext.Provider>
-        <div ref={setPortal} />
-      </div>
+            </TooltipProvider>
+          </PortalContext.Provider>
+          <div ref={setPortal} />
+        </div>
+      </ErrorBoundary>
     </div>
   );
 }
