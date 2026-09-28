@@ -19,7 +19,8 @@ import { cn } from '@/lib/utils';
 function About({ proto }: { proto: Prototype }) {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
-  const editable = useMe() === proto.contributorKey;
+  const me = useMe();
+  const editable = import.meta.env.DEV && me === proto.contributorKey;
   const opensOn = firstView(proto);
   const labelClass = 'text-[11px] text-muted-foreground';
   const valueClass = 'mt-0.5 text-[12px] leading-snug text-sidebar-foreground';

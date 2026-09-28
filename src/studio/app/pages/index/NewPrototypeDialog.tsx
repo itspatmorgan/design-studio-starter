@@ -12,6 +12,12 @@ import { Textarea } from '@/studio/components/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
 
 export default function NewPrototypeButton() {
+  // Dev only: in the build, this is false and the rest is left out of the deployed site.
+  if (!import.meta.env.DEV) return null;
+  return <NewPrototype />;
+}
+
+function NewPrototype() {
   const me = useMe();
   const router = useRouter();
   const navigate = useNavigate();

@@ -113,7 +113,7 @@ export default function FileTree({ proto, current }: { proto: Prototype; current
   const me = useMe();
   const router = useRouter();
   const navigate = useNavigate();
-  const live = files !== null;
+  const live = import.meta.env.DEV && files !== null;
   const editable = live && me === proto.contributorKey;
   const nodes = files ?? viewsAsNodes(proto);
   const views = new Map(proto.views.map((v) => [viewPath(v), v]));
@@ -208,7 +208,8 @@ export default function FileTree({ proto, current }: { proto: Prototype; current
   // Called as functions, not rendered as components, so rows keep their identity across
   // renders (a drag in progress would be cancelled otherwise).
   function rowMenu(key: string, node: FileNode, children: ReactNode) {
-    if (!live) return <div key={key}>{children}</div>;
+    // import.meta.env.DEV is false in the build, so the menu isn't in the deployed site.
+    if (!import.meta.env.DEV || !live) return <div key={key}>{children}</div>;
     const changeable = editable && node.path !== 'meta.json';
     return (
       <ContextMenu key={key}>
