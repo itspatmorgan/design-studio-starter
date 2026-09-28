@@ -24,8 +24,8 @@ function changedFiles() {
   if (mode === '--ci') {
     if (!after) { console.error('--ci needs <before> <after>'); process.exit(2); }
     if (!before || ZERO.test(before)) {
-      // New branch: every commit reachable from after.
-      return lines(git('log', '--name-only', '--pretty=format:', after));
+      // First push of a branch: check only the latest commit.
+      return lines(git('diff-tree', '--no-commit-id', '--name-only', '-r', '--root', after));
     }
     return lines(git('diff', '--name-only', `${before}..${after}`));
   }
