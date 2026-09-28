@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/too
 import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 import { Link, useMatchRoute, type LinkProps } from '@tanstack/react-router';
-import { useOpenPalette } from './CommandPalette';
+import { useOpenPalette } from '@/studio/app/shell/CommandPalette';
 
 const railButton = cn(
   'flex size-8 items-center justify-center rounded-md text-sidebar-foreground transition-colors',

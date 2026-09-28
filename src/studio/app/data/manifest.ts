@@ -1,5 +1,5 @@
 import { linkOptions } from '@tanstack/react-router';
-import type { Manifest, Prototype, View } from './types';
+import type { Manifest, Prototype, View } from '@/studio/app/data/types';
 
 // Fetched once, then shared by every route loader.
 let manifest: Promise<Manifest> | undefined;

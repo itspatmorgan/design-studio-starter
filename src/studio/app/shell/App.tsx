@@ -1,8 +1,8 @@
 import { HeadContent, Link, Outlet, useMatch } from '@tanstack/react-router';
-import MainNav from './MainNav';
+import MainNav from '@/studio/app/shell/MainNav';
 import { TooltipProvider } from '@/studio/components/tooltip';
-import { CommandPaletteProvider } from './CommandPalette';
-import { SectionNavContext, useColorMode, useSectionNav } from './appPrefs';
+import { CommandPaletteProvider } from '@/studio/app/shell/CommandPalette';
+import { SectionNavContext, useColorMode, useSectionNav } from '@/studio/app/shell/appPrefs';
 
 // The root route's layout: the rail, the current page, and the ⌘K palette.
 export default function App() {

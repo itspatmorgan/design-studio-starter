@@ -7,12 +7,13 @@
 //   /$contributor/$prototype/$view           a top-level view
 //   /$contributor/$prototype/$group/$view    a view in a group
 import { createRootRoute, createRoute, createRouter, notFound } from '@tanstack/react-router';
-import App, { NotFound } from './App';
-import Index from './Index';
-import SystemsPage from './SystemsPage';
-import { PrototypeLayout, ViewFrame } from './PrototypeViewer';
-import { findPrototype, firstView, loadManifest, viewLabel, viewSlug } from './manifest';
-import { loadView } from './loadView';
+import App, { NotFound } from '@/studio/app/shell/App';
+import Index from '@/studio/app/pages/index/Index';
+import SystemsPage from '@/studio/app/pages/systems/SystemsPage';
+import PrototypeLayout from '@/studio/app/pages/prototype/PrototypeLayout';
+import ViewFrame from '@/studio/app/pages/prototype/ViewFrame';
+import { findPrototype, firstView, loadManifest, viewLabel, viewSlug } from '@/studio/app/data/manifest';
+import { loadView } from '@/studio/app/data/loadView';
 
 const APP_NAME = 'Prototype Sandbox';
 

@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/studio/components/tabs';
-import { CodeBlock, ColorTokens, ComponentDemo, RadiusScale, Section, TypeScale, slug } from './systems/foundations';
-import type { DesignSystem } from './types';
-import { product } from './systems/productSystem';
-import { studio } from './systems/studioSystem';
+import { CodeBlock, ColorTokens, ComponentDemo, RadiusScale, Section, TypeScale, slug } from '@/studio/app/pages/systems/foundations';
+import type { DesignSystem } from '@/studio/app/data/types';
+import { product } from '@/studio/app/pages/systems/productSystem';
+import { studio } from '@/studio/app/pages/systems/studioSystem';
 
 // Systems page: one tab per design system. Each documents its purpose, theme,
 // foundations (read live from the CSS), icons, and components. Optional sections

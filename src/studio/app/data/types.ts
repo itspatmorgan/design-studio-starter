@@ -1,5 +1,5 @@
 import type { ComponentType, ElementType, ReactNode } from 'react';
-import type { ComponentSpec, TypeSampleSpec } from './systems/foundations';
+import type { ComponentSpec, TypeSampleSpec } from '@/studio/app/pages/systems/foundations';
 
 // public/prototypes/manifest.json, written by scripts/build-manifest.js.
 export type View = {

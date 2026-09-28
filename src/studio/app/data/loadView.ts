@@ -1,4 +1,4 @@
-import type { ViewModule } from './types';
+import type { ViewModule } from '@/studio/app/data/types';
 
 // Every view file, .tsx or .jsx. Vite only loads one when it is asked for.
 const views = import.meta.glob<ViewModule>([

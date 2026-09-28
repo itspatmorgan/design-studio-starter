@@ -14,8 +14,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/co
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { ContributorAvatar } from '@/studio/components/avatar';
 import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/studio/components/command';
-import { Code, CodeBlock, IconGrid, Prose } from './foundations';
-import type { DesignSystem } from '../types';
+import { Code, CodeBlock, IconGrid, Prose } from '@/studio/app/pages/systems/foundations';
+import type { DesignSystem } from '@/studio/app/data/types';
 
 const ICONS = {
   Search01Icon, Add01Icon, Settings01Icon, UserIcon, Notification01Icon, Delete02Icon, PencilEdit01Icon, Tick02Icon,

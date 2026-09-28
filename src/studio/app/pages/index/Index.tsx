@@ -4,8 +4,8 @@ import { Input } from '@/studio/components/input';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, Search01Icon } from '@hugeicons/core-free-icons';
 import { getRouteApi, Link, useNavigate } from '@tanstack/react-router';
-import { formatDate, newestFirst, prototypeLink } from './manifest';
-import type { Prototype } from './types';
+import { formatDate, newestFirst, prototypeLink } from '@/studio/app/data/manifest';
+import type { Prototype } from '@/studio/app/data/types';
 
 const rootApi = getRouteApi('__root__');
 const indexApi = getRouteApi('/');

@@ -5,9 +5,9 @@ import { getRouteApi, useMatchRoute, useNavigate, useParams, type NavigateOption
 import {
   Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
 } from '@/studio/components/command';
-import { firstView, newestFirst, prototypeLink, viewLabel, viewLink, viewSlug } from './manifest';
-import { isTyping } from './appPrefs';
-import type { View } from './types';
+import { firstView, newestFirst, prototypeLink, viewLabel, viewLink, viewSlug } from '@/studio/app/data/manifest';
+import { isTyping } from '@/studio/app/shell/appPrefs';
+import type { View } from '@/studio/app/data/types';
 
 const PaletteContext = createContext(() => {});
 const rootApi = getRouteApi('__root__');

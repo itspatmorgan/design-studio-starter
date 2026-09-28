@@ -6,10 +6,10 @@ import { PortalContext } from '@/product/components/portal';
 import { Button } from '@/product/components/button';
 import { Input } from '@/product/components/input';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/product/components/dialog';
-import { Code, CodeBlock, Prose } from './foundations';
-import type { DesignSystem } from '../types';
+import { Code, CodeBlock, Prose } from '@/studio/app/pages/systems/foundations';
+import type { DesignSystem } from '@/studio/app/data/types';
 
-// Same wrapper and portal container as the viewer, so pop-ups stay inside .product-theme.
+// Same wrapper and portal container as ViewFrame (pages/prototype), so pop-ups stay inside .product-theme.
 export function ProductFrame({ children }: { children: ReactNode }) {
   const [portal, setPortal] = useState<HTMLElement | null>(null);
   return (
