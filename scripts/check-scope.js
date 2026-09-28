@@ -10,12 +10,16 @@ const lines = (s) => s.split('\n').filter(Boolean);
 const [mode, before, after] = process.argv.slice(2);
 const ZERO = /^0+$/;
 
+// The "before" side of the change, so contributors.json can be compared.
+let baseRef = 'HEAD';
+
 function changedFiles() {
   if (mode === '--staged') return lines(git('diff', '--cached', '--name-only'));
   if (mode === '--push') {
     let range;
     try { range = `${git('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}')}..HEAD`; }
     catch { range = null; }
+    baseRef = range ? range.split('..')[0] : null;
     // No upstream yet: everything not on any remote.
     return range
       ? lines(git('diff', '--name-only', range))
@@ -25,8 +29,10 @@ function changedFiles() {
     if (!after) { console.error('--ci needs <before> <after>'); process.exit(2); }
     if (!before || ZERO.test(before)) {
       // First push of a branch: check only the latest commit.
+      baseRef = `${after}^`;
       return lines(git('diff-tree', '--no-commit-id', '--name-only', '-r', '--root', after));
     }
+    baseRef = before;
     return lines(git('diff', '--name-only', `${before}..${after}`));
   }
   console.error('Usage: check-scope.js --staged | --push | --ci <before> <after>');
@@ -36,8 +42,28 @@ function changedFiles() {
 const files = [...new Set(changedFiles())];
 const key = mode === '--ci' ? keyForGithub(process.env.GITHUB_ACTOR) : resolveContributor();
 const prefix = key ? `src/prototypes/${key}/` : null;
-const inScope = files.filter((f) => prefix && f.startsWith(prefix));
-const platform = files.filter((f) => !(prefix && f.startsWith(prefix)));
+// contributors.json at a ref (null means the working version being checked).
+function contributorsAt(ref) {
+  try {
+    if (ref === null && mode === '--staged') return JSON.parse(git('show', ':contributors.json'));
+    if (ref === null) return JSON.parse(git('show', `${mode === '--ci' ? after : 'HEAD'}:contributors.json`));
+    return JSON.parse(git('show', `${ref}:contributors.json`));
+  } catch { return {}; }
+}
+
+// Adding or editing only your own entry in contributors.json counts as in scope,
+// so joining (pnpm join) doesn't get flagged as a platform change.
+function onlyOwnEntryChanged() {
+  if (!key || !baseRef) return false;
+  const before = contributorsAt(baseRef);
+  const now = contributorsAt(null);
+  const others = (o) => JSON.stringify(Object.entries(o).filter(([k]) => k !== key).sort());
+  return others(before) === others(now);
+}
+
+const isInScope = (f) => (prefix && f.startsWith(prefix)) || (f === 'contributors.json' && onlyOwnEntryChanged());
+const inScope = files.filter(isInScope);
+const platform = files.filter((f) => !isInScope(f));
 
 const who = key ?? (mode === '--ci' ? `unknown actor "${process.env.GITHUB_ACTOR ?? ''}"` : 'unknown contributor');
 console.log(`Scope check (${who}): ${inScope.length} in scope, ${platform.length} platform.`);
