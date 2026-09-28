@@ -10,6 +10,10 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/co
 import { Tooltip as StudioTooltip, TooltipContent as StudioTooltipContent, TooltipTrigger as StudioTooltipTrigger } from '@/studio/components/tooltip';
 import { ContributorAvatar } from '@/studio/components/avatar';
 // Product system: what prototypes build with. Shown here inside .product-theme.
+import { Switch } from '@/product/components/switch';
+import { Checkbox } from '@/product/components/checkbox';
+import { Label } from '@/product/components/label';
+import { Card as ProductCard, CardContent as ProductCardContent, CardDescription as ProductCardDescription, CardHeader as ProductCardHeader, CardTitle as ProductCardTitle } from '@/product/components/card';
 import { PortalContext } from '@/product/components/portal';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/product/components/tooltip';
 import { Button } from '@/product/components/button';
@@ -39,6 +43,19 @@ const SYSTEMS = {
         </>
       ) },
       { name: 'Input', demo: () => <Input placeholder="Type something" className="w-64" /> },
+      { name: 'Label', demo: () => <Label htmlFor="demo-label">Email</Label> },
+      { name: 'Checkbox', demo: () => (
+        <div className="flex items-center gap-2"><Checkbox id="demo-checkbox" /><Label htmlFor="demo-checkbox">Remember me</Label></div>
+      ) },
+      { name: 'Switch', demo: () => (
+        <div className="flex items-center gap-2"><Switch id="demo-switch" /><Label htmlFor="demo-switch">Notifications</Label></div>
+      ) },
+      { name: 'Card', demo: () => (
+        <ProductCard className="w-72">
+          <ProductCardHeader><ProductCardTitle>Card title</ProductCardTitle><ProductCardDescription>A short description.</ProductCardDescription></ProductCardHeader>
+          <ProductCardContent className="text-sm">Card content.</ProductCardContent>
+        </ProductCard>
+      ) },
       { name: 'Select', demo: () => (
         <Select>
           <SelectTrigger className="w-48"><SelectValue placeholder="Pick one" /></SelectTrigger>

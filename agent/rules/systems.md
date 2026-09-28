@@ -17,3 +17,5 @@ Dialogs, dropdown menus, popovers, selects, sheets, and tooltips render into a p
 ## Dark mode
 
 The app puts `.dark` on `<html>`, and `theme.css` sets dark values under `.dark .product-theme`, so prototypes follow the app's color mode. Use the theme's variables through Tailwind classes (`bg-background`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-primary`), not hard-coded colors like `bg-white` or `#333`, or the view breaks in one of the modes.
+
+To see what the product system offers, look in `src/product/components/` or open the Systems page (`?page=systems`).

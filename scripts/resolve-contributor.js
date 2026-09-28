@@ -34,7 +34,7 @@ export function resolveContributor() {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const key = resolveContributor();
   if (!key) {
-    console.error('Not in contributors.json. Add yourself (key = your folder name) with name, github, email.');
+    console.error('Not a contributor yet. Run `pnpm join` to add yourself.');
     process.exit(1);
   }
   console.log(key);

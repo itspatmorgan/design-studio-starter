@@ -55,7 +55,8 @@ if (problems.length) {
 }
 
 const entry = { name, github, email };
-console.log(`Proposed contributors.json entry:\n${JSON.stringify({ [key]: entry }, null, 2)}`);
+console.log(`${yes ? 'Adding' : 'Proposed'} contributors.json entry:\n${JSON.stringify({ [key]: entry }, null, 2)}`);
+if (!yes) console.log('Name and email come from your Git config, and the GitHub username from the GitHub CLI, unless passed as flags.');
 console.log(`Your folder will be src/prototypes/${key}/.`);
 if (!github) console.log('Warning: no GitHub username (is the GitHub CLI installed and signed in?). Pass --github, or CI will not recognize your pushes.');
 if (PERSONAL.test(email)) console.log(`Warning: ${email} looks like a personal email. Use your work email, the one in your Git config.`);

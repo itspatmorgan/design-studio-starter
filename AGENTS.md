@@ -1,5 +1,7 @@
 # Prototype Sandbox
 
+If `node_modules/` doesn't exist, or the person is new, follow agent/skills/setup-contributor/SKILL.md first.
+
 At the start of every session, read:
 - agent/rules/systems.md
 - agent/rules/prototype-workflow.md
