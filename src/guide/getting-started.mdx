@@ -1,0 +1,44 @@
+---
+title: "Getting started"
+description: "Get set up and make your first prototype, with your agent doing the typing."
+order: 2
+toc: true
+---
+
+You don't need to run commands yourself. Open this repo in your coding agent and ask it to get you set up. It follows the setup skill in `agents/skills/setup-contributor/`, and checks with you before it writes anything.
+
+## Before you start
+
+On a Mac, you'll need:
+
+- [Git](https://git-scm.com), with your name and work email set
+- A [GitHub](https://github.com) account, plus the [GitHub CLI](https://cli.github.com), signed in
+- [mise](https://mise.jdx.dev), [activated in your shell](https://mise.jdx.dev/getting-started.html). It installs the right versions of Node and pnpm for this project.
+- A coding agent you're comfortable with
+
+## Get set up
+
+Ask your agent: "Get me set up." Under the hood, it runs these:
+
+```sh
+mise install    # installs the pinned Node and pnpm
+pnpm install    # installs the project's packages
+pnpm join       # proposes your contributors.json entry; --yes writes it
+pnpm dev        # starts the app at localhost:5173
+```
+
+`pnpm join` reads your name and email from Git and your username from GitHub, then proposes an entry for `contributors.json`. Your agent confirms it with you before writing it, and creates your folder in `src/prototypes/`.
+
+<Callout title="Use your work email">
+Every commit is tied to the email in your Git config, so use the same work email in both places.
+</Callout>
+
+## Make your first prototype
+
+Ask your agent for one, like "Make a prototype called Hello World." It runs `pnpm new "Hello World"`, which creates the folder, fills in `meta.json`, and prints the URL. It shows up on the Prototypes page right away.
+
+From there, describe what you want to see. The agent builds it with the product components, so it looks like your product and not like this app.
+
+## Save and share
+
+Ask your agent to commit when a piece of work feels done. When you're ready for your team to see it, ask it to push. Pushing to main publishes it, and the checks described in [Scopes](/guide/scopes) run automatically.

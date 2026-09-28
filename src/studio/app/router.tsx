@@ -3,6 +3,7 @@
 //
 //   /                                        Index (search: ?q=)
 //   /systems                                 Systems page
+//   /guide, /guide/$page                     the Guide (pages in src/guide/)
 //   /$contributor/$prototype                 a prototype, on its default view
 //   /$contributor/$prototype/$view           a top-level view
 //   /$contributor/$prototype/$group/$view    a view in a group
@@ -10,6 +11,9 @@ import { createRootRoute, createRoute, createRouter, notFound } from '@tanstack/
 import App, { NotFound } from '@/studio/app/shell/App';
 import Index from '@/studio/app/pages/index/Index';
 import SystemsPage from '@/studio/app/pages/systems/SystemsPage';
+import GuideLayout from '@/studio/app/pages/guide/GuideLayout';
+import { DocLayout } from '@/studio/app/docs/DocLayout';
+import { loadGuidePage } from '@/studio/app/data/loadGuide';
 import PrototypeLayout from '@/studio/app/pages/prototype/PrototypeLayout';
 import ViewFrame from '@/studio/app/pages/prototype/ViewFrame';
 import { findPrototype, firstView, loadManifest, viewLabel, viewSlug } from '@/studio/app/data/manifest';
@@ -43,6 +47,37 @@ const systemsRoute = createRoute({
   path: 'systems',
   head: () => ({ meta: [{ title: `Systems — ${APP_NAME}` }] }),
   component: SystemsPage,
+});
+
+// The Guide's sidebar, around whichever page is open.
+const guideRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: 'guide',
+  component: GuideLayout,
+});
+
+// Loads a Guide page before it renders, like views. /guide opens index.mdx.
+async function guideLoader(slug: string) {
+  const mod = await loadGuidePage(slug);
+  if (!mod) throw notFound();
+  const { title, description, toc } = mod.frontmatter ?? {};
+  return { Component: mod.default, title, description, toc, pageTitle: [title, 'Guide', APP_NAME].filter(Boolean).join(' — ') };
+}
+
+const guideIndexRoute = createRoute({
+  getParentRoute: () => guideRoute,
+  path: '/',
+  loader: () => guideLoader('index'),
+  head: ({ loaderData }) => ({ meta: [{ title: loaderData?.pageTitle ?? APP_NAME }] }),
+  component: () => <DocLayout {...guideIndexRoute.useLoaderData()} />,
+});
+
+const guidePageRoute = createRoute({
+  getParentRoute: () => guideRoute,
+  path: '$page',
+  loader: ({ params }) => guideLoader(params.page),
+  head: ({ loaderData }) => ({ meta: [{ title: loaderData?.pageTitle ?? APP_NAME }] }),
+  component: () => <DocLayout {...guidePageRoute.useLoaderData()} />,
 });
 
 // The prototype's navigation, around whichever view is open.
@@ -104,6 +139,7 @@ const groupViewRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   systemsRoute,
+  guideRoute.addChildren([guideIndexRoute, guidePageRoute]),
   prototypeRoute.addChildren([prototypeIndexRoute, viewRoute, groupViewRoute]),
 ]);
 

@@ -6,7 +6,7 @@ let manifest: Promise<Manifest> | undefined;
 export function loadManifest(): Promise<Manifest> {
   manifest ??= fetch(`${import.meta.env.BASE_URL}prototypes/manifest.json`)
     .then((r) => r.json() as Promise<Manifest>)
-    .catch(() => ({ prototypes: [] }));
+    .catch(() => ({ prototypes: [], guide: [] }));
   return manifest;
 }
 

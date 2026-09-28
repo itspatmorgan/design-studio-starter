@@ -1,0 +1,29 @@
+---
+title: "Systems"
+description: "The two component systems, and why prototypes use only one of them."
+section: "Core concepts"
+order: 11
+toc: true
+---
+
+The kit has two design systems, each with its own components and theme. You can browse both on the [Systems page](/systems).
+
+## Studio system
+
+`src/studio/` is the app's own system: the navigation, the Prototypes page, the prototype navigation, the command palette, and this Guide. It uses shadcn/ui's default neutral theme and HugeIcons.
+
+It's part of the platform. Prototypes never import it, and the build fails if one does. That way, changing the app's look never changes anyone's prototype.
+
+## Product system
+
+`src/product/` is what prototypes build with. It starts as a placeholder: a few shadcn/ui components and one of shadcn/ui's preset themes, so you can see that the two systems are separate.
+
+Replace all of it with your real product's components and theme. Keep it in `src/product/`, and keep the theme scoped under `.product-theme`, the wrapper every view renders inside.
+
+## Themes and color mode
+
+Both themes use CSS variables, like `--background` and `--primary`, through Tailwind classes like `bg-background`. Prototypes should use those instead of hard-coded colors, so they work in both light and dark mode. Prototypes follow the app's color mode.
+
+## Dialogs and other overlays
+
+Overlays like dialogs render inside the prototype's frame, not over the whole app. Product components that render an overlay pass `usePortalContainer()` to it. Follow the same pattern for any you add.

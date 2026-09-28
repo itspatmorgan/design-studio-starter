@@ -4,8 +4,10 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
+const GUIDE = path.join(ROOT, 'src', 'guide');
 
 function relevant(file) {
+  if (path.dirname(file) === GUIDE) return file.endsWith('.mdx');
   const rel = path.relative(PROTOS, file);
   if (rel.startsWith('..')) return false;
   const parts = rel.split(path.sep);
@@ -18,10 +20,11 @@ export default function manifestWatch() {
     name: 'prototype-manifest-watch',
     apply: 'serve',
     configureServer(server) {
-      server.watcher.add(PROTOS);
+      server.watcher.add([PROTOS, GUIDE]);
       const rebuild = (file, kind) => {
         if (!relevant(file)) return;
-        if (kind === 'change' && path.basename(file) !== 'meta.json') return;
+        // Edits to a view need no rebuild; edits to meta.json or a Guide page's frontmatter might.
+        if (kind === 'change' && path.basename(file) !== 'meta.json' && !file.endsWith('.mdx')) return;
         try {
           execFileSync(process.execPath, [path.join(ROOT, 'scripts/build-manifest.js')], { stdio: 'inherit' });
         } catch { return; }

@@ -1,6 +1,6 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  Layers01Icon, Moon02Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Shapes01Icon, Sun01Icon,
+  BookOpen01Icon, Layers01Icon, Moon02Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Shapes01Icon, Sun01Icon,
 } from '@hugeicons/core-free-icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { cn } from '@/lib/utils';
@@ -60,7 +60,9 @@ type MainNavProps = {
 
 export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: MainNavProps) {
   const openPalette = useOpenPalette();
-  const onSystems = Boolean(useMatchRoute()({ to: '/systems' }));
+  const matchRoute = useMatchRoute();
+  const onSystems = Boolean(matchRoute({ to: '/systems' }));
+  const onGuide = Boolean(matchRoute({ to: '/guide', fuzzy: true }));
   return (
     <nav
       aria-label="Main"
@@ -77,11 +79,14 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
         <HugeiconsIcon icon={Search01Icon} size={16} />
       </RailButton>
       <div className="h-2" />
-      <RailLink to="/" label="Prototypes" active={!onSystems}>
+      <RailLink to="/" label="Prototypes" active={!onSystems && !onGuide}>
         <HugeiconsIcon icon={Layers01Icon} size={16} />
       </RailLink>
       <RailLink to="/systems" label="Systems" active={onSystems}>
         <HugeiconsIcon icon={Shapes01Icon} size={16} />
+      </RailLink>
+      <RailLink to="/guide" label="Guide" active={onGuide}>
+        <HugeiconsIcon icon={BookOpen01Icon} size={16} />
       </RailLink>
 
       <div className="mt-auto" />

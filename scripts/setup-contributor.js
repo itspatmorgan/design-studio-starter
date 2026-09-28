@@ -9,8 +9,8 @@ import { fileURLToPath } from 'node:url';
 import { resolveContributor, loadContributors } from './resolve-contributor.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-// Keys that are app page URLs, so they can't be contributor folders (/systems is the Systems page).
-const RESERVED = new Set(['systems']);
+// Keys that are app page URLs, so they can't be contributor folders (/systems, /guide).
+const RESERVED = new Set(['systems', 'guide']);
 const PERSONAL = /@(gmail|googlemail|yahoo|hotmail|outlook|live|icloud|me|mac|aol|proton|protonmail|hey)\./i;
 
 function run(cmd, args) {

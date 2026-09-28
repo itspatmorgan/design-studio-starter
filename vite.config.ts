@@ -1,6 +1,12 @@
 import { defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
+import mdx from '@mdx-js/rollup';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
+import remarkGfm from 'remark-gfm';
+import rehypeSlug from 'rehype-slug';
+import rehypePrettyCode from 'rehype-pretty-code';
 import tailwindcss from '@tailwindcss/vite';
 import importGuard from './scripts/vite-import-guard-plugin.js';
 import manifestWatch from './scripts/vite-manifest-watch-plugin.js';
@@ -14,7 +20,17 @@ export default defineConfig({
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
   plugins: [
-    react(),
+    // Guide pages (src/guide/*.mdx): frontmatter, GitHub-style Markdown, heading ids,
+    // and code highlighting with Shiki in both color modes.
+    {
+      enforce: 'pre',
+      ...mdx({
+        providerImportSource: '@mdx-js/react',
+        remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter, remarkGfm],
+        rehypePlugins: [rehypeSlug, [rehypePrettyCode, { theme: { light: 'github-light', dark: 'github-dark' }, keepBackground: false }]],
+      }),
+    },
+    react({ include: /\.(mdx|[jt]sx)$/ }),
     tailwindcss(),
     importGuard(),
     manifestWatch(),

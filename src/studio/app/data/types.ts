@@ -18,7 +18,15 @@ export type Prototype = {
   views: View[];
 };
 
-export type Manifest = { prototypes: Prototype[] };
+// One Guide page (src/guide/<slug>.mdx), from its frontmatter.
+export type GuidePage = {
+  slug: string;           // file name without .mdx, e.g. "getting-started"
+  title: string;
+  description: string;
+  section: string | null; // sidebar heading, e.g. "Core concepts"
+};
+
+export type Manifest = { prototypes: Prototype[]; guide: GuidePage[] };
 
 // A view file's default export.
 export type ViewModule = { default: ComponentType };

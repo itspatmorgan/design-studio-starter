@@ -3,6 +3,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
+@plugin "@tailwindcss/typography";
 
 /* dark: utilities follow the app's color mode (the .dark class on <html>). */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -124,6 +125,10 @@
     --sidebar-ring: oklch(0.556 0 0);
     --sidebar-accent-active: oklch(0.3 0 0);
 }
+
+/* Code highlighting in Guide pages (Shiki), following the color mode. */
+[data-rehype-pretty-code-figure] code span { color: var(--shiki-light); }
+.dark [data-rehype-pretty-code-figure] code span { color: var(--shiki-dark); }
 
 html { color-scheme: light; }
 html.dark { color-scheme: dark; }

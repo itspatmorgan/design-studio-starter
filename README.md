@@ -2,6 +2,8 @@
 
 The starter kit behind Design Studio, the prototype sandbox I built at Sublime Security: one repo where designers and their coding agents build React prototypes side by side. It's the scaffold described in [How I Set Up a Prototyping Sandbox](https://www.unknownarts.com/p/TODO).
 
+The full docs live in the app itself: run it and open the Guide (`/guide`), or read the pages in [`src/guide/`](src/guide/). This is a beta (0.1.0), so expect changes.
+
 ## Core ideas
 
 - **Three contracts.** A prototype is a folder. A script turns folders into a manifest. The app reads the manifest and the URL.
@@ -27,9 +29,10 @@ pnpm dev        # starts the app at localhost:5173
 ## Notes
 
 - **TypeScript.** The kit is TypeScript (strict), and new views are `.tsx`. Plain `.jsx` views work too; they just aren't type-checked. `pnpm build` runs `pnpm typecheck` (`tsc -b`) first, so a type error fails the build and CI.
-- **Routing.** [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview), with code-based routes in `src/studio/app/router.tsx`. URLs are paths: `/` (search with `?q=`), `/systems`, `/<contributor>/<prototype>`, `/<contributor>/<prototype>/<view>`, and `/<contributor>/<prototype>/<group>/<view>`, like `/patrick/hello-world/lofi/main`. For anything about routes, links, or search params, TanStack's docs are the reference. `systems` is reserved, so it can't be a contributor key.
+- **Routing.** [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview), with code-based routes in `src/studio/app/router.tsx`. URLs are paths: `/` (search with `?q=`), `/systems`, `/guide`, `/<contributor>/<prototype>`, `/<contributor>/<prototype>/<view>`, and `/<contributor>/<prototype>/<group>/<view>`, like `/patrick/hello-world/lofi/main`. For anything about routes, links, or search params, TanStack's docs are the reference. `systems` and `guide` are reserved, so they can't be contributor keys.
 - **Components.** shadcn/ui on [Base UI](https://base-ui.com/react/overview/quick-start) (`@base-ui/react`). Compose with the `render` prop, e.g. `<DialogTrigger render={<Button />}>Open</DialogTrigger>`.
 - **Icons.** The app UI (`src/studio/`) uses HugeIcons. Product components and prototypes use `lucide-react`, which shadcn/ui brings in.
+- **Guide.** Pages are `.mdx` files in `src/guide/`. Frontmatter sets the `title`, `description`, sidebar `section`, and `order`, plus `toc: true` for an "On this page" list. Adding a file adds the page.
 - **Errors.** A view that throws shows its error with a Copy button. `pnpm build` fails on a broken `meta.json` or an out-of-scope import, and CI runs it on every push to main.
 
 ## Commands
@@ -60,6 +63,7 @@ scripts/               manifest, create, scope check, Vite plugins (plain Node .
 .github/workflows/     scope check and build on push to main, build for deploy
 src/studio/            the app wrapper and its components (routes in app/router.tsx)
 src/product/           placeholder product system; replace with your own
+src/guide/             the Guide's pages (MDX)
 src/lib/               shared utilities
 src/prototypes/        one folder per contributor
 ```

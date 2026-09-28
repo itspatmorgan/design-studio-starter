@@ -1,0 +1,60 @@
+---
+title: "Prototypes"
+description: "What a prototype is, and how its folder turns into pages in the app."
+section: "Core concepts"
+order: 10
+toc: true
+---
+
+A prototype is a folder in your space, `src/prototypes/<you>/`. The app finds it automatically. You never have to register it anywhere.
+
+## The shape of a prototype
+
+```text
+src/prototypes/patrick/hello-world/
+├── meta.json        # title and description
+├── prototype.tsx    # a view (opens first)
+├── lofi/            # a group of views
+│   └── main.tsx
+└── components/      # helpers, not views
+```
+
+Always create a prototype with `pnpm new "Prototype Name"`, or by asking your agent for one. It sets everything up the same way every time.
+
+## Views
+
+A view is one screen of your prototype. Any `.tsx` file at the top level of the folder is a view, as long as it exports a React component. The prototype opens on `prototype.tsx`, or its first view if there isn't one.
+
+## Groups
+
+A subfolder is a group of views, shown under its name in the prototype's navigation. Groups are one level deep. Two folder names are special: `components/` holds helper components that aren't views, and `documents/` is set aside for a future feature.
+
+A common group is `lofi/`: rough, grayscale sketches of an idea, before it's worth polishing.
+
+## meta.json
+
+```json
+{
+  "title": "Hello World",
+  "description": "A first prototype.",
+  "contributor": "Patrick Morgan",
+  "created": "2026-09-28",
+  "updated": "2026-09-28"
+}
+```
+
+Only `title` is required. If `meta.json` is missing or broken, the app skips the prototype with a warning, and the build fails until it's fixed.
+
+## URLs
+
+Every view has its own link, so you can share exactly what you mean:
+
+| URL | Opens |
+| --- | --- |
+| `/patrick/hello-world` | The prototype's first view |
+| `/patrick/hello-world/prototype` | A view |
+| `/patrick/hello-world/lofi/main` | A view in a group |
+
+## When a view breaks
+
+If a view throws an error, the app shows the error with a Copy button, and everything else keeps working. Paste the error to your agent.

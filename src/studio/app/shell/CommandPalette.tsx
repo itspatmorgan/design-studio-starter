@@ -80,6 +80,20 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
               <CommandItem value="prototypes index home" disabled={onIndex} onSelect={() => go({ to: '/' })}>Prototypes</CommandItem>
               <CommandItem value="systems components" disabled={onSystems} onSelect={() => go({ to: '/systems' })}>Systems</CommandItem>
             </CommandGroup>
+
+            <CommandSeparator />
+            <CommandGroup heading="Guide">
+              {manifest.guide.map((page) => (
+                <CommandItem
+                  key={page.slug}
+                  value={`guide ${page.title} ${page.description}`}
+                  disabled={matchRoute({ to: '/guide/$page', params: { page: page.slug } }) !== false || (page.slug === 'index' && matchRoute({ to: '/guide' }) !== false)}
+                  onSelect={() => go(page.slug === 'index' ? { to: '/guide' } : { to: '/guide/$page', params: { page: page.slug } })}
+                >
+                  {page.title}
+                </CommandItem>
+              ))}
+            </CommandGroup>
   
             {prototypes.length > 0 && (
               <>

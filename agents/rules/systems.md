@@ -2,7 +2,7 @@
 
 There are two component systems.
 
-- **Studio system**: `src/studio/components/` and `src/studio/styles/`. The app's own system, the wrapper that makes the sandbox work (nav rail, index, prototype navigation, command palette, systems page, the error message shown when a view fails). Maintained with the platform. Prototypes never import it.
+- **Studio system**: `src/studio/components/` and `src/studio/styles/`. The app's own system, the wrapper that makes the sandbox work (nav rail, index, prototype navigation, command palette, systems page, Guide, the error message shown when a view fails). Maintained with the platform. Prototypes never import it.
 - **Product system**: `src/product/components/` and `src/product/styles/theme.css`. What prototypes build with. It is a placeholder: teams are expected to replace all of it with their real product design system, ideally the components and tokens their production app uses. Its look applies inside the `.product-theme` wrapper the viewer puts around every view.
 
 When the product system is replaced, keep these true: it lives in `src/product/`, prototypes import from `@/product/...`, styles stay scoped under `.product-theme` (with a `.dark .product-theme` block if the product has dark mode), and pop-ups render into the portal container (see Portals).

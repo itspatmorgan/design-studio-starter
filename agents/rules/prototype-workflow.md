@@ -18,6 +18,7 @@ src/prototypes/<contributor>/<prototype>/
 - **Lofi**: a rough, grayscale sketch of an idea, usually in a `lofi/` group. Use theme colors only (`bg-muted`, `border-border`, `text-muted-foreground`), dashed outlines for placeholders, and gray bars for text. Skip polish.
 - **URLs**: `/<contributor>/<prototype>` opens the default view; `/<contributor>/<prototype>/<view>` and `/<contributor>/<prototype>/<group>/<view>` open a view, named without its extension (`/patrick/hello-world/lofi/main`). To link between views, use TanStack Router's `Link` (https://tanstack.com/router/latest/docs/framework/react/guide/navigation).
 - **components/**: helper components, never listed as views.
+- **documents/**: reserved for a future prototype documents feature. Don't use it for views; it isn't listed.
 - **meta.json**: `title` is required. `description`, `contributor` (display name), `created`, and `updated` (`YYYY-MM-DD`) are optional. If it's missing, isn't valid JSON, or has no title, the prototype is skipped with a warning naming the file in dev, and `pnpm build` fails.
 
 ## Rules
