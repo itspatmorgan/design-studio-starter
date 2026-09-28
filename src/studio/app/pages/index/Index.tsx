@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/studio/components/card';
-import { ContributorAvatar } from '@/studio/components/avatar';
-import { Input } from '@/studio/components/input';
+import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/studio/components/input-group';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, Search01Icon } from '@hugeicons/core-free-icons';
 import { getRouteApi, Link, useNavigate } from '@tanstack/react-router';
@@ -14,10 +14,10 @@ function PrototypeCard({ prototype: p }: { prototype: Prototype }) {
   const name = p.contributor || p.contributorKey;
   return (
     <Link {...prototypeLink(p)} className="block">
-      <Card className="gap-0 rounded-lg border py-0 shadow-sm ring-0 transition-colors hover:border-foreground/20 hover:bg-muted/40 hover:shadow-md">
-        <CardContent className="flex flex-col gap-2.5 p-4">
+      <Card className="transition-colors hover:bg-muted/40">
+        <CardContent className="flex flex-col gap-2.5">
           <div className="flex h-7 items-center gap-2">
-            <ContributorAvatar name={name} size={20} />
+            <ContributorAvatar name={name} />
             <span className="truncate text-xs font-medium text-muted-foreground">{name.split(' ')[0]}</span>
           </div>
           <div className="text-sm font-semibold leading-snug text-foreground">{p.title}</div>
@@ -35,27 +35,27 @@ function SearchBox({ value }: { value: string }) {
   // replace: typing doesn't add a history entry per keystroke.
   const set = (q: string) => navigate({ search: { q: q || undefined }, replace: true });
   return (
-    <form role="search" onSubmit={(e) => e.preventDefault()} className="relative w-full max-w-xs">
-      <HugeiconsIcon icon={Search01Icon} size={16} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
-      <Input
-        name="q"
-        inputMode="search"
-        aria-label="Search prototypes"
-        placeholder="Search prototypes..."
-        value={value}
-        onChange={(e) => set(e.target.value)}
-        className={value ? 'px-9' : 'pl-9'}
-      />
-      {value && (
-        <button
-          type="button"
-          aria-label="Clear search"
-          onClick={() => set('')}
-          className="absolute top-1/2 right-2 inline-flex size-6 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
-        >
-          <HugeiconsIcon icon={Cancel01Icon} size={14} />
-        </button>
-      )}
+    <form role="search" onSubmit={(e) => e.preventDefault()} className="w-full max-w-xs">
+      <InputGroup>
+        <InputGroupAddon>
+          <HugeiconsIcon icon={Search01Icon} />
+        </InputGroupAddon>
+        <InputGroupInput
+          name="q"
+          inputMode="search"
+          aria-label="Search prototypes"
+          placeholder="Search prototypes..."
+          value={value}
+          onChange={(e) => set(e.target.value)}
+        />
+        {value && (
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton size="icon-xs" aria-label="Clear search" onClick={() => set('')}>
+              <HugeiconsIcon icon={Cancel01Icon} />
+            </InputGroupButton>
+          </InputGroupAddon>
+        )}
+      </InputGroup>
     </form>
   );
 }

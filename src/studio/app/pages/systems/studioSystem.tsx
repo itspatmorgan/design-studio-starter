@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/studio/components/ta
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/studio/components/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
-import { ContributorAvatar } from '@/studio/components/avatar';
+import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/studio/components/command';
 import { Code, CodeBlock, IconGrid, Prose } from '@/studio/app/pages/systems/foundations';
 import type { DesignSystem } from '@/studio/app/data/types';
@@ -80,7 +80,7 @@ export const studio: DesignSystem = {
     library: 'HugeIcons (@hugeicons/react + @hugeicons/core-free-icons)',
     href: 'https://hugeicons.com/icons',
     snippet: `import { HugeiconsIcon } from '@hugeicons/react';\nimport { Search01Icon } from '@hugeicons/core-free-icons';\n\n<HugeiconsIcon icon={Search01Icon} size={16} />`,
-    grid: <IconGrid icons={Object.entries(ICONS).map(([name, icon]) => ({ name, node: <HugeiconsIcon icon={icon} size={20} /> }))} />,
+    grid: <IconGrid icons={Object.entries(ICONS).map(([name, icon]) => ({ name, node: <HugeiconsIcon icon={icon} /> }))} />,
   },
   categories: [
     { name: 'Actions', components: [
@@ -161,9 +161,9 @@ export const studio: DesignSystem = {
     { name: 'Display', components: [
       { name: 'Avatar', file: 'avatar.tsx', demo: () => (
         <>
-          <ContributorAvatar name="Patrick Morgan" size={20} />
-          <ContributorAvatar name="Patrick Morgan" size={32} />
-          <ContributorAvatar name="Patrick Morgan" size={48} />
+          <ContributorAvatar name="Patrick Morgan" />
+          <ContributorAvatar name="Patrick Morgan" size="default" />
+          <ContributorAvatar name="Patrick Morgan" size="lg" />
         </>
       ) },
       { name: 'Card', file: 'card.tsx', demo: () => (

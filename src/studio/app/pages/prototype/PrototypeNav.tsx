@@ -9,7 +9,7 @@ import { ArrowDown01Icon, Cancel01Icon, CodeIcon, Search01Icon, UnfoldLessIcon, 
 import { Input } from '@/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
-import { ContributorAvatar } from '@/studio/components/avatar';
+import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { cn } from '@/lib/utils';
 
 const row = 'mx-1 flex w-[calc(100%-8px)] min-w-0 items-center gap-1.5 rounded-md py-1 pr-1.5 text-[12px] leading-tight transition-colors';
@@ -64,7 +64,7 @@ function About({ proto }: { proto: Prototype }) {
               <div>
                 <dt className={labelClass}>Owner</dt>
                 <dd className={cn(valueClass, 'flex min-w-0 items-center gap-2')}>
-                  <ContributorAvatar name={proto.contributor} size={18} />
+                  <ContributorAvatar name={proto.contributor} />
                   <span className="truncate">{proto.contributor}</span>
                 </dd>
               </div>
