@@ -1,22 +1,26 @@
 // The top of the prototype navigation: everything about the prototype, in one place.
-// Its title, a "…" menu (also on right-click), who made it and when, and its description.
+// Its title and a "…" menu (also on right-click). Who made it, when, and its description are
+// occasional reference, so they stay hidden behind the info button until you want them.
 //
 // In dev, on your own prototypes, the menu can edit its info or delete it, and
 // double-clicking the title renames it in place. Everywhere else, the menu copies its link.
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Delete02Icon, Folder01Icon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon } from '@hugeicons/core-free-icons';
+import { Delete02Icon, Folder01Icon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon } from '@hugeicons/core-free-icons';
 import { fileOp, revealInFinder, useMe } from '@/studio/app/data/files';
 import { formatDate, prototypeLink, setManifest, viewSlug } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { Input } from '@/studio/components/input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@/studio/components/context-menu';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/studio/components/dropdown-menu';
 import EditPrototypeDialog from '@/studio/app/pages/prototype/EditPrototypeDialog';
 import DeletePrototypeDialog from '@/studio/app/pages/prototype/DeletePrototypeDialog';
 import { cn } from '@/lib/utils';
+
+const INFO_KEY = 'design-studio:prototype-info'; // "shown" | "hidden"
 
 type Action = { label: string; icon: typeof Link01Icon; onSelect: () => void; destructive?: boolean } | 'separator';
 
@@ -51,6 +55,9 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  // Shown or hidden for every prototype, and remembered.
+  const [showInfo, setShowInfo] = useState(() => localStorage.getItem(INFO_KEY) === 'shown');
+  const toggleInfo = () => setShowInfo((v) => { localStorage.setItem(INFO_KEY, v ? 'hidden' : 'shown'); return !v; });
   const [note, setNote] = useState<string | null>(null);
   useEffect(() => {
     if (!note) return;
@@ -98,7 +105,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
   ));
 
   return (
-    <div className="shrink-0 border-b border-sidebar-border px-2 pt-3 pb-3">
+    <div className={cn('shrink-0 px-2 pt-3', showInfo ? 'border-b border-sidebar-border pb-3' : 'pb-0')}>
       {withContextMenu(
         <div className="px-2.5">
           <div className="flex min-h-8 items-center gap-1">
@@ -113,6 +120,15 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
                 {proto.title}
               </h2>
             )}
+            <Tooltip>
+              <TooltipTrigger
+                render={<button type="button" aria-label={showInfo ? 'Hide details' : 'Show details'} aria-pressed={showInfo} onClick={toggleInfo}
+                  className={cn('inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground', showInfo && 'bg-sidebar-foreground/10 text-sidebar-accent-foreground')} />}
+              >
+                <HugeiconsIcon icon={InformationCircleIcon} size={16} />
+              </TooltipTrigger>
+              <TooltipContent side="bottom">{showInfo ? 'Hide details' : 'Show details'}</TooltipContent>
+            </Tooltip>
             <DropdownMenu>
               <DropdownMenuTrigger
                 aria-label="Prototype actions"
@@ -123,13 +139,13 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
               <DropdownMenuContent align="end" className="min-w-44">{menuItems(DropdownMenuItem, DropdownMenuSeparator)}</DropdownMenuContent>
             </DropdownMenu>
           </div>
-          {(proto.contributor || proto.created) && (
+          {showInfo && (proto.contributor || proto.created) && (
             <p className="mt-1 flex min-w-0 items-center gap-1.5 text-[12px] text-muted-foreground">
               {proto.contributor && <ContributorAvatar name={proto.contributor} />}
               <span className="truncate" title={proto.contributor}>{[proto.contributor.split(' ')[0], formatDate(proto.created)].filter(Boolean).join(' · ')}</span>
             </p>
           )}
-          {proto.description && (
+          {showInfo && proto.description && (
             <button
               type="button"
               aria-expanded={expanded}
