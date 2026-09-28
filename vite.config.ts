@@ -11,6 +11,7 @@ import tailwindcss from '@tailwindcss/vite';
 import importGuard from './scripts/vite-import-guard-plugin.js';
 import manifestWatch from './scripts/vite-manifest-watch-plugin.js';
 import spa404 from './scripts/vite-spa-404-plugin.js';
+import files from './scripts/vite-files-plugin.js';
 
 export default defineConfig({
   root: 'src',
@@ -34,6 +35,7 @@ export default defineConfig({
     tailwindcss(),
     importGuard(),
     manifestWatch(),
+    files(),
     spa404(),
   ],
 });

@@ -1,48 +1,141 @@
-// Prototype navigation: the prototype's title, a filterable list of its views
-// (groups as folders, with expand/collapse all), and About at the bottom.
+// Prototype navigation: the prototype's title, a filterable tree, and About at the bottom.
 // Drag the right edge to resize it.
+//
+// In `pnpm dev`, the tree is the prototype's real files and folders, live from the dev server
+// (data/files.ts): views open in the app, and other files open in your editor. Right-click any
+// row for more. On the deployed site, it lists the prototype's views, from the manifest.
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
 import { formatDate, viewLabel, viewLink } from '@/studio/app/data/manifest';
+import { openInEditor, repoPath, revealInFinder, useFileTree, type FileNode } from '@/studio/app/data/files';
 import type { Prototype, View } from '@/studio/app/data/types';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowDown01Icon, Cancel01Icon, CodeIcon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon } from '@hugeicons/core-free-icons';
+import { ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, File01Icon, FileEditIcon, Folder01Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon } from '@hugeicons/core-free-icons';
 import { Input } from '@/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@/studio/components/context-menu';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { NAV_WIDTH, useSectionNavWidth } from '@/studio/app/shell/appPrefs';
 import { cn } from '@/lib/utils';
 
 const row = 'mx-1 flex w-[calc(100%-8px)] min-w-0 items-center gap-1.5 rounded-md py-1 pr-1.5 text-[12px] leading-tight transition-colors';
 
-function ViewLink({ proto, view, active, depth }: { proto: Prototype; view: View; active: boolean; depth: number }) {
+const indent = (depth: number) => ({ paddingLeft: 8 + depth * 16 });
+const viewPath = (v: View) => `${v.group ? `${v.group}/` : ''}${v.name}`;
+
+// The deployed site has no dev server, so the tree is the prototype's views, from the manifest.
+function viewsAsNodes(proto: Prototype): FileNode[] {
+  const top = proto.views.filter((v) => !v.group).map((v) => ({ name: v.name, path: v.name, dir: false }));
+  const groups = [...new Set(proto.views.flatMap((v) => (v.group ? [v.group] : [])))];
+  return [...top, ...groups.map((g) => ({
+    name: g, path: g, dir: true,
+    children: proto.views.filter((v) => v.group === g).map((v) => ({ name: v.name, path: viewPath(v), dir: false })),
+  }))];
+}
+
+// While filtering, keep files whose name matches, and folders with a match inside.
+function filterNodes(nodes: FileNode[], q: string): FileNode[] {
+  return nodes.flatMap((n) => {
+    if (!n.dir) return n.name.toLowerCase().includes(q) || viewLabel(n.name).toLowerCase().includes(q) ? [n] : [];
+    const children = filterNodes(n.children ?? [], q);
+    return children.length || n.name.toLowerCase().includes(q) ? [{ ...n, children }] : [];
+  });
+}
+
+const allDirs = (nodes: FileNode[]): string[] => nodes.flatMap((n) => (n.dir ? [n.path, ...allDirs(n.children ?? [])] : []));
+
+type TreeProps = {
+  proto: Prototype;
+  views: Map<string, View>;
+  current: View | undefined;
+  live: boolean;                 // real files (dev) rather than views (deployed)
+  isOpen: (dir: string) => boolean;
+  setOpen: (dir: string, open: boolean) => void;
+};
+
+// Right-click menu for a row, in dev.
+function RowMenu({ proto, node, live, children }: { proto: Prototype; node: FileNode; live: boolean; children: ReactNode }) {
+  if (!live) return <>{children}</>;
   return (
-    <Link
-      {...viewLink(proto, view)}
-      aria-current={active ? 'page' : undefined}
-      style={{ paddingLeft: 8 + depth * 16 }}
-      className={cn(row, active
-        ? 'bg-sidebar-foreground/10 font-medium text-sidebar-accent-foreground'
-        : 'text-muted-foreground hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground')}
-    >
-      <HugeiconsIcon icon={CodeIcon} size={14} className="shrink-0 text-muted-foreground" />
-      <span className="min-w-0 flex-1 truncate">{viewLabel(view.name)}</span>
-    </Link>
+    <ContextMenu>
+      <ContextMenuTrigger>{children}</ContextMenuTrigger>
+      <ContextMenuContent className="min-w-44">
+        {!node.dir && (
+          <ContextMenuItem onClick={() => openInEditor(proto, node.path)}>
+            <HugeiconsIcon icon={FileEditIcon} /> Open in editor
+          </ContextMenuItem>
+        )}
+        <ContextMenuItem onClick={() => revealInFinder(proto, node.path)}>
+          <HugeiconsIcon icon={Folder01Icon} /> Reveal in Finder
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem onClick={() => navigator.clipboard.writeText(repoPath(proto, node.path))}>
+          <HugeiconsIcon icon={Copy01Icon} /> Copy path
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }
 
-// A group is a collapsible folder of views. PrototypeNav owns which ones are open.
-function GroupFolder({ name, open, onOpenChange, children }: { name: string; open: boolean; onOpenChange: (open: boolean) => void; children: ReactNode }) {
-  return (
-    <Collapsible open={open} onOpenChange={onOpenChange}>
-      <CollapsibleTrigger className={cn(row, 'pl-2 text-left font-medium text-sidebar-foreground hover:bg-sidebar-foreground/5')}>
-        <HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !open && '-rotate-90')} />
-        <span className="min-w-0 flex-1 truncate">{viewLabel(name)}</span>
-      </CollapsibleTrigger>
-      <CollapsibleContent>{children}</CollapsibleContent>
-    </Collapsible>
-  );
+// A file name with its extension dimmed: "main" + ".tsx".
+function FileName({ name }: { name: string }) {
+  const dot = name.lastIndexOf('.');
+  if (dot <= 0) return <span className="min-w-0 flex-1 truncate">{name}</span>;
+  return <span className="min-w-0 flex-1 truncate">{name.slice(0, dot)}<span className="text-muted-foreground/70">{name.slice(dot)}</span></span>;
+}
+
+function TreeItems({ nodes, depth, ...tree }: TreeProps & { nodes: FileNode[]; depth: number }) {
+  const { proto, views, current, live, isOpen, setOpen } = tree;
+  return nodes.map((node) => {
+    if (node.dir) {
+      const open = isOpen(node.path);
+      return (
+        <Collapsible key={node.path} open={open} onOpenChange={(o) => setOpen(node.path, o)}>
+          <RowMenu proto={proto} node={node} live={live}>
+            <CollapsibleTrigger style={indent(depth)} className={cn(row, 'text-left font-medium text-sidebar-foreground hover:bg-sidebar-foreground/5')}>
+              <HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !open && '-rotate-90')} />
+              <span className="min-w-0 flex-1 truncate">{live ? node.name : viewLabel(node.name)}</span>
+            </CollapsibleTrigger>
+          </RowMenu>
+          <CollapsibleContent>
+            <TreeItems nodes={node.children ?? []} depth={depth + 1} {...tree} />
+          </CollapsibleContent>
+        </Collapsible>
+      );
+    }
+    const view = views.get(node.path);
+    const label = live ? <FileName name={node.name} /> : <span className="min-w-0 flex-1 truncate">{viewLabel(node.name)}</span>;
+    // Views open in the app.
+    if (view) {
+      const active = view === current;
+      return (
+        <RowMenu key={node.path} proto={proto} node={node} live={live}>
+          <Link
+            {...viewLink(proto, view)}
+            aria-current={active ? 'page' : undefined}
+            style={indent(depth)}
+            className={cn(row, active
+              ? 'bg-sidebar-foreground/10 font-medium text-sidebar-accent-foreground'
+              : 'text-sidebar-foreground/80 hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground')}
+          >
+            <HugeiconsIcon icon={CodeIcon} size={14} className="shrink-0 text-muted-foreground" />
+            {label}
+          </Link>
+        </RowMenu>
+      );
+    }
+    // Everything else (meta.json, components/, images) opens in your editor.
+    return (
+      <RowMenu key={node.path} proto={proto} node={node} live={live}>
+        <button type="button" title="Open in editor" onClick={() => openInEditor(proto, node.path)} style={indent(depth)}
+          className={cn(row, 'text-left text-muted-foreground hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground')}>
+          <HugeiconsIcon icon={File01Icon} size={14} className="shrink-0 opacity-70" />
+          {label}
+        </button>
+      </RowMenu>
+    );
+  });
 }
 
 // About: the prototype's meta.json, collapsed at the bottom of its navigation.
@@ -108,21 +201,23 @@ export default function PrototypeNav({ proto, current }: { proto: Prototype; cur
   const filterRef = useRef<HTMLInputElement>(null);
   useEffect(() => { if (filterOpen) filterRef.current?.focus(); }, [filterOpen]);
 
+  const files = useFileTree(proto);
+  const live = files !== null;
+  const nodes = files ?? viewsAsNodes(proto);
+  const views = new Map(proto.views.map((v) => [viewPath(v), v]));
   const q = filter.trim().toLowerCase();
-  const views = q ? proto.views.filter((v) => `${viewLabel(v.name)} ${v.group ?? ''}`.toLowerCase().includes(q)) : proto.views;
-  const groupsOf = (vs: View[]) => [...new Set(vs.flatMap((v) => (v.group ? [v.group] : [])))];
-  const allGroups = groupsOf(proto.views);
-  const groups = groupsOf(views);
-  const isActive = (v: View) => v === current;
-  // While filtering, every matching group shows open.
-  const isOpen = (g: string) => Boolean(q) || !closedGroups.has(g);
-  const allOpen = allGroups.every((g) => !closedGroups.has(g));
-  const toggleAll = () => setClosedGroups(allOpen ? new Set(allGroups) : new Set());
-  const setGroupOpen = (g: string, open: boolean) => setClosedGroups((prev) => {
+  const shown = q ? filterNodes(nodes, q) : nodes;
+  const dirs = allDirs(nodes);
+  // While filtering, every folder with a match shows open.
+  const isOpen = (d: string) => Boolean(q) || !closedGroups.has(d);
+  const allOpen = dirs.every((d) => !closedGroups.has(d));
+  const toggleAll = () => setClosedGroups(allOpen ? new Set(dirs) : new Set());
+  const setOpen = (d: string, open: boolean) => setClosedGroups((prev) => {
     const next = new Set(prev);
-    if (open) next.delete(g); else next.add(g);
+    if (open) next.delete(d); else next.add(d);
     return next;
   });
+  const noun = live ? 'files' : 'views';
   const { width, resizing, handleProps } = useSectionNavWidth();
   return (
     <aside aria-label="Prototype navigation" style={{ width }} className="relative flex shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
@@ -131,12 +226,12 @@ export default function PrototypeNav({ proto, current }: { proto: Prototype; cur
       </div>
       <nav className="min-h-0 flex-1 space-y-1.5 overflow-y-auto px-2 pt-3 pb-3">
         <div className="flex h-7 items-center justify-between gap-1 px-2.5 pr-0.5">
-          <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">Views</p>
+          <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{live ? 'Files' : 'Views'}</p>
           <div className="flex items-center gap-0.5">
-            <IconButton label="Filter views" pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
+            <IconButton label={`Filter ${noun}`} pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
               <HugeiconsIcon icon={Search01Icon} size={14} />
             </IconButton>
-            {allGroups.length > 0 && (
+            {dirs.length > 0 && (
               <IconButton label={allOpen ? 'Collapse all' : 'Expand all'} onClick={toggleAll}>
                 <HugeiconsIcon icon={allOpen ? UnfoldLessIcon : UnfoldMoreIcon} size={14} />
               </IconButton>
@@ -155,8 +250,8 @@ export default function PrototypeNav({ proto, current }: { proto: Prototype; cur
                 if (filter) setFilter('');
                 else setFilterOpen(false);
               }}
-              placeholder="Filter views…"
-              aria-label="Filter views"
+              placeholder={`Filter ${noun}…`}
+              aria-label={`Filter ${noun}`}
               className={cn('h-8 border-sidebar-border bg-sidebar-accent text-[13px] shadow-none', filter && 'pr-8')}
             />
             {filter && (
@@ -168,17 +263,8 @@ export default function PrototypeNav({ proto, current }: { proto: Prototype; cur
           </div>
         )}
         <div className="space-y-1">
-          {q && views.length === 0 && <p className="px-2.5 py-1 text-[12px] text-muted-foreground">No matching views.</p>}
-          {views.filter((v) => !v.group).map((v) => (
-            <ViewLink key={v.name} proto={proto} view={v} active={isActive(v)} depth={0} />
-          ))}
-          {groups.map((g) => (
-            <GroupFolder key={g} name={g} open={isOpen(g)} onOpenChange={(open) => setGroupOpen(g, open)}>
-              {views.filter((v) => v.group === g).map((v) => (
-                <ViewLink key={v.name} proto={proto} view={v} active={isActive(v)} depth={1} />
-              ))}
-            </GroupFolder>
-          ))}
+          {q && shown.length === 0 && <p className="px-2.5 py-1 text-[12px] text-muted-foreground">No matching {noun}.</p>}
+          <TreeItems nodes={shown} depth={0} proto={proto} views={views} current={current} live={live} isOpen={isOpen} setOpen={setOpen} />
         </div>
       </nav>
       <About proto={proto} />
