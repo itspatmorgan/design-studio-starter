@@ -13,7 +13,7 @@ src/prototypes/<contributor>/<prototype>/
 └── components/     # helpers, not views
 ```
 
-- **View**: a `.tsx` file (or plain `.jsx`) at the prototype's top level that default-exports a React component. Write new views as `.tsx`. The prototype opens on its `start` view (see meta.json), then `prototype.tsx` (or `.jsx`), then its first view.
+- **View**: a `.tsx` file (or plain `.jsx`) at the prototype's top level that default-exports a React component. Write new views as `.tsx`. The build fails on a view without a default export (put helpers in `components/`), or on two views with the same name in one folder, like `main.tsx` and `main.jsx`. The prototype opens on its `start` view (see meta.json), then `prototype.tsx` (or `.jsx`), then its first view.
 - **Group**: a subfolder (not `components/`) whose `.tsx`/`.jsx` files are views listed under the group's name. Groups are one level deep.
 - **Lofi**: a rough, grayscale sketch of an idea, usually in a `lofi/` group. Use theme colors only (`bg-muted`, `border-border`, `text-muted-foreground`), dashed outlines for placeholders, and gray bars for text. Skip polish.
 - **URLs**: `/<contributor>/<prototype>` opens the default view; `/<contributor>/<prototype>/<view>` and `/<contributor>/<prototype>/<group>/<view>` open a view, named without its extension (`/patrick/hello-world/lofi/main`). To link between views, use TanStack Router's `Link` (https://tanstack.com/router/latest/docs/framework/react/guide/navigation).
@@ -25,7 +25,7 @@ src/prototypes/<contributor>/<prototype>/
 
 - Always create prototypes with `pnpm new "Prototype Name"`. Never copy folders by hand.
 - Import only from the prototype's own folder, its design system (`@/product/` by default), and `@/lib/` (plus installed packages). The import guard warns in `pnpm dev` and fails `pnpm build` otherwise, including for imports from a different prototype system than the one in `meta.json`.
-- Style with Tailwind classes. For custom CSS, use CSS Modules (`*.module.css`). Never a plain `.css` file or global rules like `body { … }`; they leak into the whole app.
+- Style with Tailwind classes. For custom CSS, use CSS Modules (`*.module.css`). Never a plain `.css` file or global rules like `body { … }`; they leak into the whole app. The import guard fails the build on a plain `.css` import from a prototype.
 - Use lucide-react for icons, and theme variables for color (see systems.md).
 - If a view throws, the viewer shows "This view failed to load." with the error and a Copy button. Read the error before guessing.
 - If its design system doesn't have a component you need, build it in the prototype's `components/` folder, using [Base UI](https://base-ui.com/react/overview/quick-start) primitives (`@base-ui/react`) and theme classes; compose with the `render` prop, not `asChild`. Adding it to the system is a platform change: suggest it, and only do it if the person agrees.

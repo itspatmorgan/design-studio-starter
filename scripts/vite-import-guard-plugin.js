@@ -36,6 +36,12 @@ export default function importGuard() {
       const importerPath = importer.split('?')[0];
       const root = prototypeRoot(importerPath);
       if (!root) return null;
+      // Plain CSS is global: it restyles the whole app and stays after you navigate away.
+      // Only CSS Modules (*.module.css), which Vite scopes to the file, are allowed.
+      if (/\.css($|\?)/.test(source) && !/\.module\.css($|\?)/.test(source)) {
+        const msg = `Prototype scope: ${path.relative(SRC, importerPath)} imports ${source}, a global stylesheet that would restyle the whole app. Style with Tailwind classes, or rename it to *.module.css (a CSS Module) for custom CSS.`;
+        if (isBuild) this.error(msg); else this.warn(msg);
+      }
       const resolved = await this.resolve(source, importer, { ...options, skipSelf: true });
       if (!resolved || resolved.external) return resolved;
       const target = resolved.id.split('?')[0];

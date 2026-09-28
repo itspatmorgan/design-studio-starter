@@ -45,6 +45,17 @@ for (const contributorKey of dirs(PROTOS)) {
     for (const group of dirs(dir).filter((g) => !NOT_GROUPS.has(g))) {
       for (const name of viewFiles(path.join(dir, group))) views.push({ name, group });
     }
+    // Every view needs a default export (the component the app renders), and a name no
+    // other view in its group has: main.tsx and main.jsx would share one URL.
+    const seen = new Set();
+    for (const v of views) {
+      const file = path.relative(ROOT, path.join(dir, v.group ?? '', v.name));
+      const url = `${v.group ?? ''}/${v.name.replace(/\.[jt]sx$/, '')}`;
+      if (seen.has(url)) { console.error(`[manifest] ${file}: another view in this folder has the same name. Rename one; they'd share a URL.`); errors++; }
+      seen.add(url);
+      const code = fs.readFileSync(path.join(ROOT, file), 'utf8');
+      if (!/export\s+default\b|export\s*\{[^}]*\bas\s+default\b/.test(code)) { console.error(`[manifest] ${file}: a view needs a default export, the component the app renders (export default function MyView() { ... }). Helpers belong in components/.`); errors++; }
+    }
     // "start" (optional) is the view the prototype opens on, as in its URL: "main" or "lofi/main".
     let start = null;
     if (meta.start !== undefined) {
@@ -58,6 +69,21 @@ for (const contributorKey of dirs(PROTOS)) {
       id, contributorKey, title: meta.title, description: meta.description ?? '',
       contributor: contributors[contributorKey]?.name ?? '', created: meta.created ?? null, system, start, views,
     });
+  }
+}
+
+// Each prototype system's theme.css may only set values under its own class, like
+// .product-theme, so it can't leak into the app UI or another system.
+for (const [id, sys] of Object.entries(PROTOTYPE_SYSTEMS)) {
+  const file = path.join(ROOT, sys.dir, 'styles', 'theme.css');
+  if (!fs.existsSync(file)) { console.error(`[manifest] ${path.relative(ROOT, file)} is missing (the ${id} system's theme)`); errors++; continue; }
+  const css = fs.readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  // Every selector: the text before each "{", skipping at-rules (@media, @layer, ...) and keyframe steps.
+  for (const m of css.matchAll(/([^{};]+)\{/g)) {
+    const selector = m[1].trim();
+    if (selector.startsWith('@') || /^(from|to|[\d.]+%)(\s*,\s*(from|to|[\d.]+%))*$/.test(selector)) continue;
+    const leaks = selector.split(',').map((s) => s.trim()).filter((s) => !s.includes(`.${sys.themeClass}`));
+    if (leaks.length) { console.error(`[manifest] ${path.relative(ROOT, file)}: "${leaks.join(', ')}" isn't under .${sys.themeClass}, so it would style the whole app. Put it inside .${sys.themeClass} (or .dark .${sys.themeClass}).`); errors++; }
   }
 }
 
@@ -91,6 +117,6 @@ guide.sort((a, b) => a.order - b.order);
 
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify({ prototypes, guide: guide.map(({ order, ...page }) => page) }, null, 2) + '\n');
-console.log(`[manifest] ${prototypes.length} prototype(s), ${guide.length} guide page(s)${errors ? `, ${errors} skipped` : ''}`);
+console.log(`[manifest] ${prototypes.length} prototype(s), ${guide.length} guide page(s)${errors ? `, ${errors} problem(s) above` : ''}`);
 // pnpm build passes --strict, so a broken meta.json or Guide page fails the build. In dev it's only a warning.
 if (errors && process.argv.includes('--strict')) process.exit(1);

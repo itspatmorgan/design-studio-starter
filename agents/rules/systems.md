@@ -10,7 +10,7 @@ There are two kinds of design system, each in its own scope.
 Every prototype system has the same parts. Keep them true when replacing one, and follow them when adding one:
 
 1. **A folder**: `src/<system>/`, with `components/` and `styles/theme.css`. Prototypes import from `@/<system>/...`.
-2. **A scoped theme**: every variable in `theme.css` is set under `.<system>-theme`, with a `.dark .<system>-theme` block for dark mode. Nothing is global, so systems can't leak into each other or into the app UI.
+2. **A scoped theme**: every variable in `theme.css` is set under `.<system>-theme`, with a `.dark .<system>-theme` block for dark mode. Nothing is global, so systems can't leak into each other or into the app UI. The build fails on any rule in a system's `theme.css` that isn't under its class, like `:root` or `body`, which themes pasted from a theme builder often include.
 3. **Portals**: components that render a pop-up pass `usePortalContainer()` from `@/lib/portal` as the Base UI Portal's `container` (`<DialogPrimitive.Portal container={usePortalContainer()} />`), so pop-ups stay inside the system's theme and the prototype frame.
 4. **An entry in `src/systems.ts`** (label, folder, theme class), and **a spec** for its Systems pages, like `src/studio/app/pages/systems/productSystem.tsx`, added to `PROTOTYPE_SPECS` in `SystemsPage.tsx`. Import its `theme.css` in `src/studio/styles/index.css`, next to the product one.
 
