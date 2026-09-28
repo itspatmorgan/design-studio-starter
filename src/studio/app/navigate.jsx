@@ -1,6 +1,7 @@
-export function navigate(params) {
+// replace: update the URL without adding a history entry (used while typing in search).
+export function navigate(params, { replace = false } = {}) {
   const search = new URLSearchParams(Object.entries(params).filter(([, v]) => v != null && v !== '')).toString();
-  history.pushState(null, '', search ? `?${search}` : location.pathname);
+  history[replace ? 'replaceState' : 'pushState'](null, '', search ? `?${search}` : location.pathname);
   window.dispatchEvent(new PopStateEvent('popstate'));
 }
 

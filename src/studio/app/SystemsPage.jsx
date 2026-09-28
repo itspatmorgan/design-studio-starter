@@ -210,27 +210,28 @@ function NavItem({ label, active, onClick }) {
   );
 }
 
-function ComponentList({ components }) {
+// Frame wraps each demo box: plain for studio, ProductFrame for product.
+function ComponentList({ components, Frame = 'div' }) {
   return components.map((c) => (
     <section key={c.name} id={slug(c.name)} className="mb-12 scroll-mt-8">
       <h2 className="mb-4 text-base font-semibold tracking-tight text-foreground">{c.name}</h2>
-      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-background p-6">
-        <c.demo />
-      </div>
+      <Frame>
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-background p-6">
+          <c.demo />
+        </div>
+      </Frame>
     </section>
   ));
 }
 
-// The product set gets the same wrapper, portal container, and TooltipProvider as the viewer.
-function ProductSet({ components }) {
+// Each product demo gets the same wrapper, portal container, and TooltipProvider as the viewer.
+// Headings stay outside it, in the app UI look (so they follow dark mode).
+function ProductFrame({ children }) {
   const [portal, setPortal] = useState(null);
   return (
-    // No background on the wrapper here: each demo box paints the product background itself.
-    <div className="product-theme text-foreground" data-testid="product-set">
+    <div className="product-theme text-foreground">
       <PortalContext.Provider value={portal}>
-        <TooltipProvider>
-          <ComponentList components={components} />
-        </TooltipProvider>
+        <TooltipProvider>{children}</TooltipProvider>
       </PortalContext.Provider>
       <div ref={setPortal} />
     </div>
@@ -261,7 +262,7 @@ export default function SystemsPage() {
             <p className="max-w-2xl text-sm text-muted-foreground">{intro}</p>
           </header>
           {system === 'product'
-            ? <ProductSet components={components} />
+            ? <div data-testid="product-set"><ComponentList components={components} Frame={ProductFrame} /></div>
             : <div data-testid="studio-set"><ComponentList components={components} /></div>}
         </div>
       </main>

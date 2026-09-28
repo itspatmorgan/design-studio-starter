@@ -4,6 +4,10 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
 
+/* dark: utilities follow the app UI's color mode (the .dark class on <html>),
+   and never apply inside .product-theme, so prototypes keep the product look. */
+@custom-variant dark (&:where(.dark, .dark *):not(.product-theme, .product-theme *));
+
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
@@ -85,6 +89,50 @@
     --sidebar-ring: hsl(240 5% 64.9%);
 }
 
+/* App UI dark mode, toggled from the rail. .product-theme redefines every variable,
+   so prototypes are unaffected. */
+.dark {
+    --background: hsl(240 10% 3.9%);
+    --foreground: hsl(0 0% 98%);
+    --card: hsl(240 10% 3.9%);
+    --card-foreground: hsl(0 0% 98%);
+    --popover: hsl(240 10% 3.9%);
+    --popover-foreground: hsl(0 0% 98%);
+    --primary: hsl(0 0% 98%);
+    --primary-foreground: hsl(240 5.9% 10%);
+    --secondary: hsl(240 3.7% 15.9%);
+    --secondary-foreground: hsl(0 0% 98%);
+    --muted: hsl(240 3.7% 15.9%);
+    --muted-foreground: hsl(240 5% 64.9%);
+    --accent: hsl(240 3.7% 15.9%);
+    --accent-foreground: hsl(0 0% 98%);
+    --destructive: hsl(0 62.8% 30.6%);
+    --border: hsl(240 3.7% 15.9%);
+    --input: hsl(240 3.7% 15.9%);
+    --ring: hsl(240 4.9% 83.9%);
+    --sidebar: hsl(240 5.9% 10%);
+    --sidebar-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-primary: hsl(0 0% 98%);
+    --sidebar-primary-foreground: hsl(240 5.9% 10%);
+    --sidebar-accent: hsl(240 3.7% 15.9%);
+    --sidebar-accent-active: hsl(240 3.7% 17%);
+    --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-border: hsl(240 3.7% 15.9%);
+    --sidebar-ring: hsl(240 4.9% 83.9%);
+}
+
+html { color-scheme: light; }
+html.dark { color-scheme: dark; }
+/* Native controls and scrollbars in prototypes stay light too. */
+.product-theme { color-scheme: light; }
+
+@media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation-duration: 0.35s;
+        animation-timing-function: ease-in-out;
+    }
+}
 
 @layer base {
   * {

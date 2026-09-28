@@ -31,7 +31,7 @@ for (const contributorKey of dirs(PROTOS)) {
     }
     prototypes.push({
       id, contributorKey, title: meta.title, description: meta.description ?? '',
-      contributor: meta.contributor ?? '', created: meta.created ?? null, views,
+      contributor: meta.contributor ?? '', created: meta.created ?? null, updated: meta.updated ?? null, views,
     });
   }
 }

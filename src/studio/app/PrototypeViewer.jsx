@@ -2,16 +2,17 @@ import { lazy, Suspense, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { PortalContext } from '@/product/components/portal';
 import { TooltipProvider } from '@/product/components/tooltip';
-import { firstView } from './Index.jsx';
+import { firstView, formatDate } from './Index.jsx';
 import { loadView } from './loadView.js';
 import { Link } from './navigate.jsx';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowDown01Icon, CodeIcon } from '@hugeicons/core-free-icons';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
+import { ContributorAvatar } from '@/studio/components/avatar';
 import { cn } from '@/lib/utils';
 
 // "session-done.jsx" → "Session Done"
-const label = (name) => name.replace(/\.jsx$/, '').split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+export const viewLabel = (name) => name.replace(/\.jsx$/, '').split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
 const row = 'mx-1 flex w-[calc(100%-8px)] min-w-0 items-center gap-1.5 rounded-md py-1 pr-1.5 text-[12px] leading-tight transition-colors';
 
@@ -26,7 +27,7 @@ function ViewLink({ proto, view, active, depth }) {
         : 'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground')}
     >
       <HugeiconsIcon icon={CodeIcon} size={14} className="shrink-0 text-muted-foreground" />
-      <span className="min-w-0 flex-1 truncate">{label(view.name)}</span>
+      <span className="min-w-0 flex-1 truncate">{viewLabel(view.name)}</span>
     </Link>
   );
 }
@@ -38,9 +39,52 @@ function GroupFolder({ name, children }) {
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger className={cn(row, 'pl-2 text-left font-medium text-sidebar-foreground hover:bg-sidebar-accent')}>
         <HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !open && '-rotate-90')} />
-        <span className="min-w-0 flex-1 truncate">{label(name)}</span>
+        <span className="min-w-0 flex-1 truncate">{viewLabel(name)}</span>
       </CollapsibleTrigger>
       <CollapsibleContent>{children}</CollapsibleContent>
+    </Collapsible>
+  );
+}
+
+// About: the prototype's meta.json, collapsed at the bottom of its navigation.
+function About({ proto }) {
+  const [open, setOpen] = useState(false);
+  const date = proto.updated && proto.updated !== proto.created
+    ? `Updated ${formatDate(proto.updated)}`
+    : proto.created && `Created ${formatDate(proto.created)}`;
+  const labelClass = 'text-[11px] text-muted-foreground';
+  const valueClass = 'mt-0.5 text-[12px] leading-snug text-sidebar-foreground';
+  return (
+    <Collapsible open={open} onOpenChange={setOpen} className="shrink-0 border-t border-sidebar-border">
+      <CollapsibleTrigger
+        aria-label={open ? 'Collapse prototype info' : 'Expand prototype info'}
+        className="flex h-9 w-full items-center gap-1.5 px-2.5 text-left hover:bg-sidebar-accent"
+      >
+        <span className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">About</span>
+        <HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', open && 'rotate-180')} />
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="space-y-3 px-2.5 pt-0.5 pb-3">
+          <dl className="space-y-2.5">
+            {proto.contributor && (
+              <div>
+                <dt className={labelClass}>Owner</dt>
+                <dd className={cn(valueClass, 'flex min-w-0 items-center gap-2')}>
+                  <ContributorAvatar name={proto.contributor} size={18} />
+                  <span className="truncate">{proto.contributor}</span>
+                </dd>
+              </div>
+            )}
+            {date && (
+              <div>
+                <dt className={labelClass}>Last updated</dt>
+                <dd className={valueClass}>{date}</dd>
+              </div>
+            )}
+          </dl>
+          {proto.description && <p className="text-xs leading-relaxed text-muted-foreground">{proto.description}</p>}
+        </div>
+      </CollapsibleContent>
     </Collapsible>
   );
 }
@@ -69,6 +113,7 @@ function PrototypeNav({ proto, current }) {
           ))}
         </div>
       </nav>
+      <About proto={proto} />
     </aside>
   );
 }
@@ -83,7 +128,7 @@ function ProductView({ contributor, prototype, group, view }) {
 
   return (
     // The view sits in a rounded frame, inset on a gray background.
-    <div className="min-w-0 flex-1 bg-zinc-200 p-2">
+    <div className="min-w-0 flex-1 bg-zinc-200 p-2 dark:bg-zinc-950">
       <div className="product-theme bg-background text-foreground relative h-full overflow-auto rounded-xl">
         <PortalContext.Provider value={portal}>
           <TooltipProvider>
@@ -100,9 +145,27 @@ function ProductView({ contributor, prototype, group, view }) {
   );
 }
 
-export default function PrototypeViewer({ params, manifest }) {
+// Placeholder bars while the manifest loads, shaped like the navigation and frame.
+function ViewerSkeleton({ sectionNavOpen }) {
+  return (
+    <div className="flex min-h-0 flex-1" aria-busy="true">
+      {sectionNavOpen && (
+        <div className="w-[220px] shrink-0 space-y-3 border-r border-sidebar-border bg-sidebar px-4 pt-5">
+          <div className="h-4 w-2/3 rounded bg-muted" />
+          <div className="h-3 w-1/3 rounded bg-muted" />
+          <div className="h-3 w-3/4 rounded bg-muted" />
+          <div className="h-3 w-1/2 rounded bg-muted" />
+        </div>
+      )}
+      <div className="flex-1 bg-zinc-200 p-2 dark:bg-zinc-950"><div className="h-full rounded-xl bg-background/60" /></div>
+    </div>
+  );
+}
+
+// sectionNavOpen: show the prototype navigation (toggled from the rail or with ⌘;).
+export default function PrototypeViewer({ params, manifest, sectionNavOpen = true }) {
   const { contributor, prototype } = params;
-  if (!manifest) return <p className="p-8 text-muted-foreground">Loading…</p>;
+  if (!manifest) return <ViewerSkeleton sectionNavOpen={sectionNavOpen} />;
 
   const proto = manifest.prototypes.find((p) => p.contributorKey === contributor && p.id === prototype);
   if (!proto) return <p className="p-8 text-muted-foreground">Prototype not found: {contributor}/{prototype}</p>;
@@ -115,7 +178,7 @@ export default function PrototypeViewer({ params, manifest }) {
 
   return (
     <div className="flex min-h-0 flex-1">
-      <PrototypeNav proto={proto} current={{ group, view }} />
+      {sectionNavOpen && <PrototypeNav proto={proto} current={{ group, view }} />}
       <ProductView contributor={contributor} prototype={prototype} group={group} view={view} />
     </div>
   );
