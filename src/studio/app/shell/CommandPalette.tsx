@@ -5,9 +5,9 @@ import { getRouteApi, useMatchRoute, useNavigate, useParams, type NavigateOption
 import {
   Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
 } from '@/studio/components/command';
-import { firstView, newestFirst, prototypeLink, viewLabel, viewLink, viewSlug } from '@/studio/app/data/manifest';
+import { findItem, firstItem, itemFolder, itemLabel, itemLink, newestFirst, prototypeLink } from '@/studio/app/data/manifest';
 import { isTyping } from '@/studio/app/shell/appPrefs';
-import type { View } from '@/studio/app/data/types';
+import type { Item } from '@/studio/app/data/types';
 
 const PaletteContext = createContext(() => {});
 const rootApi = getRouteApi('__root__');
@@ -41,10 +41,8 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
 
   const prototypes = [...manifest.prototypes].sort(newestFirst);
   const current = prototypes.find((p) => p.contributorKey === params.contributor && p.id === params.prototype);
-  const isCurrentView = (v: View) => {
-    if (!params.view) return v === (current && firstView(current));
-    return viewSlug(v.name) === params.view && (v.group ?? undefined) === params.group;
-  };
+  const openItem = current && (params._splat ? findItem(current, params._splat) : firstItem(current));
+  const isOpen = (item: Item) => item === openItem;
   const onIndex = Boolean(matchRoute({ to: '/' }));
   const onSystem = (system: 'product' | 'studio') => matchRoute({ to: '/systems/$system', params: { system }, fuzzy: true }) !== false;
 
@@ -60,15 +58,15 @@ export function CommandPaletteProvider({ children }: { children: ReactNode }) {
             {current && (
               <>
                 <CommandGroup heading={`Views · ${current.title}`}>
-                  {current.views.map((v) => (
+                  {current.items.map((item) => (
                     <CommandItem
-                      key={`${v.group}/${v.name}`}
-                      value={`${v.group ?? ''} ${viewLabel(v.name)} ${v.name}`}
-                      disabled={isCurrentView(v)}
-                      onSelect={() => go(viewLink(current, v))}
+                      key={item.path}
+                      value={`${itemLabel(item.path)} ${item.path}`}
+                      disabled={isOpen(item)}
+                      onSelect={() => go(itemLink(current, item))}
                     >
-                      {v.group && <span className="shrink-0 text-xs text-muted-foreground">{viewLabel(v.group)}</span>}
-                      <span className="truncate">{viewLabel(v.name)}</span>
+                      {itemFolder(item.path) && <span className="shrink-0 text-xs text-muted-foreground">{itemFolder(item.path)}</span>}
+                      <span className="truncate">{itemLabel(item.path)}</span>
                     </CommandItem>
                   ))}
                 </CommandGroup>

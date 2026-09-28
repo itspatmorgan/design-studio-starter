@@ -4,22 +4,27 @@ A prototype can depend only on its own folder, its design system, and shared uti
 
 ## Shape
 
+A file's kind comes from its extension, and folders are only for organizing, at any depth (`src/kinds.ts`). Organize by topic, however the person likes.
+
 ```
 src/prototypes/<contributor>/<prototype>/
 ├── meta.json
-├── prototype.tsx   # a view (opens first)
-├── lofi/           # a group
-│   └── main.tsx    # a view in that group
-└── components/     # helpers, not views
+├── prototype.tsx          # a view
+├── lofi/
+│   └── main.tsx           # a view, in a folder
+├── checkout/
+│   ├── steps/
+│   │   └── done.tsx       # a view, two folders deep
+│   └── components/        # helpers, not views (at any depth)
+└── hero.webp              # a plain file
 ```
 
-- **View**: a `.tsx` file (or plain `.jsx`) at the prototype's top level that default-exports a React component. Write new views as `.tsx`. The build fails on a view without a default export (put helpers in `components/`), or on two views with the same name in one folder, like `main.tsx` and `main.jsx`. The prototype opens on its `start` view (see meta.json), then `prototype.tsx` (or `.jsx`), then its first view.
-- **Group**: a subfolder (not `components/`) whose `.tsx`/`.jsx` files are views listed under the group's name. Groups are one level deep.
-- **Lofi**: a rough, grayscale sketch of an idea, usually in a `lofi/` group. Use theme colors only (`bg-muted`, `border-border`, `text-muted-foreground`), dashed outlines for placeholders, and gray bars for text. Skip polish.
-- **URLs**: `/<contributor>/<prototype>` opens the default view; `/<contributor>/<prototype>/<view>` and `/<contributor>/<prototype>/<group>/<view>` open a view, named without its extension (`/patrick/hello-world/lofi/main`). To link between views, use TanStack Router's `Link` (https://tanstack.com/router/latest/docs/framework/react/guide/navigation).
-- **components/**: helper components, never listed as views.
-- **documents/**: reserved for a future prototype documents feature. Don't use it for views; it isn't listed.
-- **meta.json**: `title` is required. `description`, `created` (`YYYY-MM-DD`, set by `pnpm new`), `system`, and `start` are optional. `system` is the design system it builds with, from `src/systems.ts`; leave it out to use the first one. `start` is the view the prototype opens on, written like its URL: `"main"` or `"lofi/main"`. When the person wants a different view to open first, change `start`; don't rename files. Don't add other fields. The contributor's name comes from `contributors.json`. If it's missing, isn't valid JSON, has no title, names a `system` that isn't listed, or has a `start` that isn't a view, the prototype is skipped with a warning naming the file in dev, and `pnpm build` fails.
+- **View**: any `.tsx` file (or plain `.jsx`) that default-exports a React component, at any depth, except inside a `components/` folder. Write new views as `.tsx`. The build fails on a view without a default export (put helpers in `components/`), or on two files that would share a URL, like `main.tsx` and `main.jsx` in one folder.
+- **Folders**: any folder, at any depth, just for organizing. A folder's name never changes what's in it. The one exception is `components/`, at any depth: its files are helpers, never listed.
+- **Opens on**: the prototype opens on its `start` item (see meta.json), or else the first item in its navigation (files before folders, alphabetical at each level). To choose a different one, set `start`; don't rename files to change the order.
+- **Lofi**: a rough, grayscale sketch of an idea, often in a `lofi/` folder. Use theme colors only (`bg-muted`, `border-border`, `text-muted-foreground`), dashed outlines for placeholders, and gray bars for text. Skip polish.
+- **URLs**: `/<contributor>/<prototype>` opens the start item; `/<contributor>/<prototype>/<path>` opens an item by its path without the extension, at any depth (`/patrick/hello-world/lofi/main`, `/patrick/hello-world/checkout/steps/done`). To link between views, use TanStack Router's `Link` (https://tanstack.com/router/latest/docs/framework/react/guide/navigation).
+- **meta.json**: `title` is required. `description`, `created` (`YYYY-MM-DD`, set by `pnpm new`), `system`, and `start` are optional. `system` is the design system it builds with, from `src/systems.ts`; leave it out to use the first one. `start` is the item the prototype opens on, as its path without the extension: `"lofi/main"`. Moving or renaming the start item (or its folder) must update `start`; the app does this for its own changes. Don't add other fields. The contributor's name comes from `contributors.json`. If it's missing, isn't valid JSON, has no title, names a `system` that isn't listed, or has a `start` that isn't an item, the prototype is skipped with a warning naming the file in dev, and `pnpm build` fails.
 
 ## Rules
 

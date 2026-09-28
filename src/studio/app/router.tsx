@@ -4,16 +4,16 @@
 //   /                                        Index (search: ?q=)
 //   /systems/$system, /systems/$system/$page  Systems (/systems opens the product system)
 //   /guide, /guide/$page                     the Guide (pages in src/guide/)
-//   /$contributor/$prototype                 a prototype, on its default view
-//   /$contributor/$prototype/$view           a top-level view
-//   /$contributor/$prototype/$group/$view    a view in a group
+//   /$contributor/$prototype                 a prototype, on its start item (or its first)
+//   /$contributor/$prototype/$               an item, by its path without the extension,
+//                                            at any depth: /patrick/hello-world/lofi/main
 import { createRootRoute, createRoute, createRouter, lazyRouteComponent, notFound, redirect } from '@tanstack/react-router';
 import App, { NotFound } from '@/studio/app/shell/App';
 import Index from '@/studio/app/pages/index/Index';
 import { loadGuidePage } from '@/studio/app/data/loadGuide';
 import PrototypeLayout from '@/studio/app/pages/prototype/PrototypeLayout';
 import ViewFrame from '@/studio/app/pages/prototype/ViewFrame';
-import { findPrototype, firstView, loadManifest, setManifest, viewLabel, viewSlug } from '@/studio/app/data/manifest';
+import { findItem, findPrototype, firstItem, itemLabel, itemSlug, loadManifest, setManifest } from '@/studio/app/data/manifest';
 import type { Manifest } from '@/studio/app/data/types';
 import { loadView, viewsWithoutComponent } from '@/studio/app/data/loadView';
 import { TAB_ID } from '@/studio/app/data/files';
@@ -58,7 +58,7 @@ const systemsIndexRoute = createRoute({
 
 const SystemsPage = lazyRouteComponent(() => import('@/studio/app/pages/systems/SystemsPage'));
 const systemsTitle = (...parts: (string | undefined)[]) =>
-  [...parts.filter(Boolean).map((p) => viewLabel(p!)), 'Systems', APP_NAME].join(' — ');
+  [...parts.filter(Boolean).map((p) => itemLabel(p!)), 'Systems', APP_NAME].join(' — ');
 
 const systemRoute = createRoute({
   getParentRoute: () => systemsRoute,
@@ -108,7 +108,7 @@ const guidePageRoute = createRoute({
   component: () => <DocLayout {...guidePageRoute.useLoaderData()} />,
 });
 
-// The prototype's navigation, around whichever view is open.
+// The prototype's navigation, around whichever item is open.
 const prototypeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '$contributor/$prototype',
@@ -121,22 +121,18 @@ const prototypeRoute = createRoute({
   notFoundComponent: NotFound,
 });
 
-// Loads a view's module before the route renders, so the current view stays on
-// screen until the next one is ready. Unknown views show the not-found page.
-type ViewParams = { contributor: string; prototype: string; group?: string; view?: string };
-
-async function viewLoader({ contributor, prototype, group, view }: ViewParams) {
+// Loads an item before the route renders, so the current one stays on screen until the next
+// one is ready. An unknown address shows the not-found page. (Views are the one kind today;
+// see src/kinds.ts.)
+async function itemLoader({ contributor, prototype, _splat }: { contributor: string; prototype: string; _splat?: string }) {
   const proto = findPrototype(await loadManifest(), contributor, prototype);
-  // No view in the URL: the prototype's default view.
-  const entry = proto && !view ? firstView(proto) : undefined;
-  const g = view ? group ?? null : entry?.group ?? null;
-  const v = view ?? (entry && viewSlug(entry.name));
-  const inManifest = Boolean(proto?.views.some((x) => viewSlug(x.name) === v && (x.group ?? null) === g));
-  const mod = proto && v ? await loadView({ contributor, prototype, group: g, view: v }, { inManifest }) : undefined;
-  if (!proto || !v || !mod) throw notFound();
+  // No path in the URL: the prototype's start item, or its first.
+  const item = proto && (_splat ? findItem(proto, _splat) : firstItem(proto));
+  const mod = proto && item ? await loadView({ contributor, prototype, path: item.path }, { inManifest: true }) : undefined;
+  if (!proto || !item || !mod) throw notFound();
   // A view file that doesn't export a component yet (say, one you're still writing) shows
   // an error in its place, instead of breaking the page.
-  const file = `src/prototypes/${contributor}/${prototype}/${g ? `${g}/` : ''}${v}`;
+  const file = `src/prototypes/${contributor}/${prototype}/${item.path}`;
   const valid = typeof mod.default === 'function' || typeof mod.default === 'object';
   if (!valid) viewsWithoutComponent.add(file);
   const Component = valid
@@ -144,42 +140,35 @@ async function viewLoader({ contributor, prototype, group, view }: ViewParams) {
     : () => { throw new Error(`${file} has no default export. A view needs one: export default function MyView() { ... }`); };
   return {
     Component,
-    viewKey: [contributor, prototype, g, v].join('/'),
+    viewKey: `${contributor}/${prototype}/${itemSlug(item.path)}`,
     themeClass: PROTOTYPE_SYSTEMS[(proto.system as PrototypeSystemId)]?.themeClass ?? PROTOTYPE_SYSTEMS[DEFAULT_SYSTEM].themeClass,
-    title: [proto.title, viewLabel(v), APP_NAME].join(' — '),
+    title: [proto.title, itemLabel(item.path), APP_NAME].join(' — '),
   };
 }
 
-// The open view. A view route shows its own not-found page, inside the prototype's navigation,
-// and never renders without its loader's data.
-function ViewPage({ data }: { data: Awaited<ReturnType<typeof viewLoader>> | undefined }) {
+// The open item. It shows its own not-found page, inside the prototype's navigation, and
+// never renders without its loader's data.
+function ItemPage({ data }: { data: Awaited<ReturnType<typeof itemLoader>> | undefined }) {
   return data ? <ViewFrame {...data} /> : null;
 }
 
 const prototypeIndexRoute = createRoute({
   getParentRoute: () => prototypeRoute,
   path: '/',
-  loader: ({ params }) => viewLoader(params),
+  loader: ({ params }) => itemLoader(params),
   head: ({ loaderData }) => ({ meta: [{ title: loaderData?.title ?? APP_NAME }] }),
-  component: () => <ViewPage data={prototypeIndexRoute.useLoaderData()} />,
+  component: () => <ItemPage data={prototypeIndexRoute.useLoaderData()} />,
   notFoundComponent: NotFound,
 });
 
-const viewRoute = createRoute({
+// Splat route: everything after the prototype is the item's path.
+// https://tanstack.com/router/latest/docs/framework/react/routing/routing-concepts#splat--catch-all-routes
+const itemRoute = createRoute({
   getParentRoute: () => prototypeRoute,
-  path: '$view',
-  loader: ({ params }) => viewLoader(params),
+  path: '$',
+  loader: ({ params }) => itemLoader(params),
   head: ({ loaderData }) => ({ meta: [{ title: loaderData?.title ?? APP_NAME }] }),
-  component: () => <ViewPage data={viewRoute.useLoaderData()} />,
-  notFoundComponent: NotFound,
-});
-
-const groupViewRoute = createRoute({
-  getParentRoute: () => prototypeRoute,
-  path: '$group/$view',
-  loader: ({ params }) => viewLoader(params),
-  head: ({ loaderData }) => ({ meta: [{ title: loaderData?.title ?? APP_NAME }] }),
-  component: () => <ViewPage data={groupViewRoute.useLoaderData()} />,
+  component: () => <ItemPage data={itemRoute.useLoaderData()} />,
   notFoundComponent: NotFound,
 });
 
@@ -187,7 +176,7 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   systemsRoute.addChildren([systemsIndexRoute, systemRoute, systemPageRoute]),
   guideRoute.addChildren([guideIndexRoute, guidePageRoute]),
-  prototypeRoute.addChildren([prototypeIndexRoute, viewRoute, groupViewRoute]),
+  prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]),
 ]);
 
 export const router = createRouter({

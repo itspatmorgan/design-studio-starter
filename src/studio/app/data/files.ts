@@ -70,7 +70,7 @@ export type FileOp =
   | { op: 'rename'; path: string; name: string }
   | { op: 'move'; path: string; to: string }
   | { op: 'delete'; path: string }
-  | { op: 'meta'; title: string; description: string; start: string };
+  | { op: 'meta'; title?: string; description?: string; start?: string };
 
 export type FileOpResult = { path?: string; trashedTo?: string; manifest: Manifest };
 

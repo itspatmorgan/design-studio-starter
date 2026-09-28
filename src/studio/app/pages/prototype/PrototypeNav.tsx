@@ -1,17 +1,20 @@
 // Prototype navigation: everything about the prototype at the top (PrototypeHeader.tsx),
 // then its files (FileTree.tsx). Drag the right edge to resize it.
-import type { Prototype, View } from '@/studio/app/data/types';
+import { useRef } from 'react';
+import type { Item, Prototype } from '@/studio/app/data/types';
 import { NAV_WIDTH, useSectionNavWidth } from '@/studio/app/shell/appPrefs';
 import PrototypeHeader from '@/studio/app/pages/prototype/PrototypeHeader';
-import FileTree from '@/studio/app/pages/prototype/FileTree';
+import FileTree, { type FileTreeHandle } from '@/studio/app/pages/prototype/FileTree';
 import { cn } from '@/lib/utils';
 
-export default function PrototypeNav({ proto, current }: { proto: Prototype; current: View | undefined }) {
+export default function PrototypeNav({ proto, current }: { proto: Prototype; current: Item | undefined }) {
   const { width, resizing, handleProps } = useSectionNavWidth();
+  // The header's "+" menu creates in the tree.
+  const tree = useRef<FileTreeHandle>(null);
   return (
     <aside aria-label="Prototype navigation" style={{ width }} className="relative flex shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
-      <PrototypeHeader proto={proto} />
-      <FileTree proto={proto} current={current} />
+      <PrototypeHeader proto={proto} onNew={(dir) => tree.current?.startCreate('', dir)} />
+      <FileTree proto={proto} current={current} handle={tree} />
       {/* The resize handle: a thin strip over the right border that highlights on hover. */}
       <div
         role="separator"

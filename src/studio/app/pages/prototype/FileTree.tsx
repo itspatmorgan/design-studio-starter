@@ -1,23 +1,24 @@
 // The prototype's files, in its navigation: a filterable tree with expand/collapse all.
 //
 // In `pnpm dev`, it's the prototype's real files and folders, live from the dev server
-// (data/files.ts). Views open in the app; other files open in your editor. In your own
-// prototypes you can also create, rename (F2), move (drag and drop), and delete (to the
-// Trash) files and folders, like a file browser. Every change is a plain file change, so
-// agents see the same thing. On the deployed site, it lists the prototype's views, from
-// the manifest.
-import { useEffect, useRef, useState, type DragEvent, type ReactNode } from 'react';
+// (data/files.ts). Items (views, at any depth; see src/kinds.ts) open in the app; other
+// files open in your editor. In your own prototypes you can also create, rename (F2), move
+// (drag and drop), and delete (to the Trash) files and folders, like a file browser, and
+// choose which item the prototype opens on (Set as start; it shows a home icon). Every change
+// is a plain file change, so agents see the same thing. On the deployed site, it lists the
+// prototype's items, from the manifest.
+import { useEffect, useImperativeHandle, useRef, useState, type DragEvent, type ReactNode, type Ref } from 'react';
 import { Link, useNavigate, useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileAddIcon, FileEditIcon,
-  Folder01Icon, FolderAddIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
+  Folder01Icon, FolderAddIcon, Home01Icon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
-import { prototypeLink, setManifest, viewLabel, viewLink } from '@/studio/app/data/manifest';
+import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import {
   fileOp, openInEditor, repoPath, revealInFinder, useFileTree, useMe, type FileNode, type FileOp,
 } from '@/studio/app/data/files';
-import type { Prototype, View } from '@/studio/app/data/types';
+import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { Button } from '@/studio/components/button';
 import { Input } from '@/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
@@ -28,24 +29,36 @@ import { cn } from '@/lib/utils';
 
 const row = 'mx-1 flex w-[calc(100%-8px)] min-w-0 items-center gap-1.5 rounded-md py-1 pr-1.5 text-[12px] leading-tight transition-colors';
 const indent = (depth: number) => ({ paddingLeft: 8 + depth * 16 });
-const viewPath = (v: View) => `${v.group ? `${v.group}/` : ''}${v.name}`;
 const parentOf = (p: string) => (p.includes('/') ? p.slice(0, p.lastIndexOf('/')) : '');
 const within = (p: string, dir: string) => p === dir || p.startsWith(`${dir}/`);
 
-// The deployed site has no dev server, so the tree is the prototype's views, from the manifest.
-function viewsAsNodes(proto: Prototype): FileNode[] {
-  const top = proto.views.filter((v) => !v.group).map((v) => ({ name: v.name, path: v.name, dir: false }));
-  const groups = [...new Set(proto.views.flatMap((v) => (v.group ? [v.group] : [])))];
-  return [...top, ...groups.map((g) => ({
-    name: g, path: g, dir: true,
-    children: proto.views.filter((v) => v.group === g).map((v) => ({ name: v.name, path: viewPath(v), dir: false })),
-  }))];
+// The deployed site has no dev server, so the tree is the prototype's items, from the
+// manifest, with their folders.
+function itemsAsNodes(proto: Prototype): FileNode[] {
+  const root: FileNode[] = [];
+  for (const item of proto.items) {
+    const parts = item.path.split('/');
+    let level = root;
+    parts.slice(0, -1).forEach((name, i) => {
+      const path = parts.slice(0, i + 1).join('/');
+      let folder = level.find((n) => n.dir && n.path === path);
+      if (!folder) { folder = { name, path, dir: true, children: [] }; level.push(folder); }
+      level = folder.children!;
+    });
+    level.push({ name: parts.at(-1)!, path: item.path, dir: false });
+  }
+  // Files first, then folders, like the dev server's tree (the manifest is already in order).
+  const order = (nodes: FileNode[]): FileNode[] => [...nodes.filter((n) => !n.dir), ...nodes.filter((n) => n.dir).map((n) => ({ ...n, children: order(n.children ?? []) }))];
+  return order(root);
 }
+
+// The items of a prototype in a manifest.
+const itemsOf = (m: Manifest, p: Prototype) => m.prototypes.find((x) => x.contributorKey === p.contributorKey && x.id === p.id)?.items ?? [];
 
 // While filtering, keep files whose name matches, and folders with a match inside.
 function filterNodes(nodes: FileNode[], q: string): FileNode[] {
   return nodes.flatMap((n) => {
-    if (!n.dir) return n.name.toLowerCase().includes(q) || viewLabel(n.name).toLowerCase().includes(q) ? [n] : [];
+    if (!n.dir) return n.name.toLowerCase().includes(q) || itemLabel(n.name).toLowerCase().includes(q) ? [n] : [];
     const children = filterNodes(n.children ?? [], q);
     return children.length || n.name.toLowerCase().includes(q) ? [{ ...n, children }] : [];
   });
@@ -108,15 +121,22 @@ function IconButton({ label, onClick, pressed, children }: { label: string; onCl
   );
 }
 
-export default function FileTree({ proto, current }: { proto: Prototype; current: View | undefined }) {
+// What the prototype's header can ask of the tree: its "+" menu creates at the top level.
+export type FileTreeHandle = { startCreate: (parent: string, dir: boolean) => void };
+
+type FileTreeProps = { proto: Prototype; current: Item | undefined; handle?: Ref<FileTreeHandle> };
+
+export default function FileTree({ proto, current, handle }: FileTreeProps) {
   const { files, reload } = useFileTree(proto);
   const me = useMe();
   const router = useRouter();
   const navigate = useNavigate();
   const live = import.meta.env.DEV && files !== null;
   const editable = live && me === proto.contributorKey;
-  const nodes = files ?? viewsAsNodes(proto);
-  const views = new Map(proto.views.map((v) => [viewPath(v), v]));
+  const nodes = files ?? itemsAsNodes(proto);
+  const items = new Map(proto.items.map((i) => [i.path, i]));
+  // The item the prototype opens on: its start, or its first item. It gets a home icon.
+  const opensOn = firstItem(proto);
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [filter, setFilter] = useState('');
@@ -152,13 +172,11 @@ export default function FileTree({ proto, current }: { proto: Prototype; current
     try {
       const result = await fileOp(proto, op);
       setManifest(result.manifest);
-      const open = current && viewPath(current);
+      const open = current?.path;
       if (open && (op.op === 'rename' || op.op === 'move' || op.op === 'delete') && within(open, op.path)) {
         const moved = result.path && `${result.path}${open.slice(op.path.length)}`;
-        const next = moved && result.manifest.prototypes
-          .find((p) => p.contributorKey === proto.contributorKey && p.id === proto.id)?.views
-          .find((v) => viewPath(v) === moved);
-        await navigate(next ? viewLink(proto, next) : prototypeLink(proto));
+        const next = moved && itemsOf(result.manifest, proto).find((i) => i.path === moved);
+        await navigate(next ? itemLink(proto, next) : prototypeLink(proto));
       }
       await router.invalidate();
       reload();
@@ -173,6 +191,7 @@ export default function FileTree({ proto, current }: { proto: Prototype; current
     if (parent) setOpen(parent, true);
     setEditing({ kind: 'create', parent, dir });
   };
+  useImperativeHandle(handle, () => ({ startCreate }));
 
   // Drag and drop: drag a row onto a folder (or the empty space below the tree, for the top level).
   const dragProps = (node: FileNode) => (editable && node.path !== 'meta.json' ? {
@@ -219,13 +238,18 @@ export default function FileTree({ proto, current }: { proto: Prototype; current
         <ContextMenuContent className="min-w-44">
           {node.dir && editable && (
             <>
-              <ContextMenuItem onClick={() => setTimeout(() => startCreate(node.path, false))}><HugeiconsIcon icon={FileAddIcon} /> New file</ContextMenuItem>
+              <ContextMenuItem onClick={() => setTimeout(() => startCreate(node.path, false))}><HugeiconsIcon icon={FileAddIcon} /> New view</ContextMenuItem>
               <ContextMenuItem onClick={() => setTimeout(() => startCreate(node.path, true))}><HugeiconsIcon icon={FolderAddIcon} /> New folder</ContextMenuItem>
               <ContextMenuSeparator />
             </>
           )}
           {!node.dir && (
             <ContextMenuItem onClick={() => setTimeout(() => openInEditor(proto, node.path))}><HugeiconsIcon icon={FileEditIcon} /> Open in editor</ContextMenuItem>
+          )}
+          {editable && items.has(node.path) && (
+            proto.start === node.path
+              ? <ContextMenuItem onClick={() => setTimeout(() => run({ op: 'meta', start: '' }))}><HugeiconsIcon icon={Home01Icon} /> Remove as start</ContextMenuItem>
+              : opensOn?.path !== node.path && <ContextMenuItem onClick={() => setTimeout(() => run({ op: 'meta', start: itemSlug(node.path) }))}><HugeiconsIcon icon={Home01Icon} /> Set as start</ContextMenuItem>
           )}
           {changeable && (
             <>
@@ -252,14 +276,14 @@ export default function FileTree({ proto, current }: { proto: Prototype; current
           setEditing(null);
           if (name) run({ op: 'create', path: parent, name, dir }).then((r) => {
             // A new view opens right away.
-            const v = r?.path && r.manifest.prototypes.find((p) => p.contributorKey === proto.contributorKey && p.id === proto.id)?.views.find((x) => viewPath(x) === r.path);
-            if (v) navigate(viewLink(proto, v));
+            const item = r?.path && itemsOf(r.manifest, proto).find((i) => i.path === r.path);
+            if (item) navigate(itemLink(proto, item));
           });
         }}
       />
     );
 
-  function items(list: FileNode[], depth: number): ReactNode {
+  function rows(list: FileNode[], depth: number): ReactNode {
     return list.map((node) => {
       if (editing?.kind === 'rename' && editing.path === node.path) {
         return (
@@ -278,26 +302,26 @@ export default function FileTree({ proto, current }: { proto: Prototype; current
                 <CollapsibleTrigger {...dragProps(node)} {...keyProps(node)} style={indent(depth)}
                   className={cn(row, 'text-left font-medium text-sidebar-foreground hover:bg-sidebar-foreground/5')}>
                   <HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !open && '-rotate-90')} />
-                  <span className="min-w-0 flex-1 truncate">{live ? node.name : viewLabel(node.name)}</span>
+                  <span className="min-w-0 flex-1 truncate">{live ? node.name : itemLabel(node.name)}</span>
                 </CollapsibleTrigger>
               ))}
               <CollapsibleContent>
                 {createField(node.path, depth + 1)}
-                {items(node.children ?? [], depth + 1)}
+                {rows(node.children ?? [], depth + 1)}
               </CollapsibleContent>
             </div>
           </Collapsible>
         );
       }
-      const view = views.get(node.path);
-      const label = live ? <FileName name={node.name} /> : <span className="min-w-0 flex-1 truncate">{viewLabel(node.name)}</span>;
-      // Views open in the app.
-      if (view) {
-        const active = view === current;
+      const item = items.get(node.path);
+      const label = live ? <FileName name={node.name} /> : <span className="min-w-0 flex-1 truncate">{itemLabel(node.name)}</span>;
+      // Items open in the app.
+      if (item) {
+        const active = item === current;
         return (
           rowMenu(node.path, node, (
             <Link
-              {...viewLink(proto, view)}
+              {...itemLink(proto, item)}
               {...dragProps(node)}
               {...keyProps(node)}
               aria-current={active ? 'page' : undefined}
@@ -308,6 +332,11 @@ export default function FileTree({ proto, current }: { proto: Prototype; current
             >
               <HugeiconsIcon icon={CodeIcon} size={14} className="shrink-0 text-muted-foreground" />
               {label}
+              {item === opensOn && (
+                <span title="The prototype opens on this" className="shrink-0 text-muted-foreground">
+                  <HugeiconsIcon icon={Home01Icon} size={12} aria-label="Opens first" />
+                </span>
+              )}
             </Link>
           ))
         );
@@ -327,16 +356,11 @@ export default function FileTree({ proto, current }: { proto: Prototype; current
   }
 
   return (
-    <nav className="flex min-h-0 flex-1 flex-col space-y-1.5 overflow-y-auto px-2 pt-3 pb-3">
+    <nav className="group/tree flex min-h-0 flex-1 flex-col space-y-1.5 overflow-y-auto px-2 pt-3 pb-3">
       <div className="flex h-7 shrink-0 items-center justify-between gap-1 px-2.5 pr-0.5">
         <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{live ? 'Files' : 'Views'}</p>
-        <div className="flex items-center gap-0.5">
-          {editable && (
-            <>
-              <IconButton label="New file" onClick={() => startCreate('', false)}><HugeiconsIcon icon={FileAddIcon} size={14} /></IconButton>
-              <IconButton label="New folder" onClick={() => startCreate('', true)}><HugeiconsIcon icon={FolderAddIcon} size={14} /></IconButton>
-            </>
-          )}
+        {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
+        <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
           <IconButton label={`Filter ${noun}`} pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
             <HugeiconsIcon icon={Search01Icon} size={14} />
           </IconButton>
@@ -378,7 +402,7 @@ export default function FileTree({ proto, current }: { proto: Prototype; current
       <div {...dropProps('')} className={cn('min-h-0 flex-1 space-y-1 rounded-md', dropTarget === '' && 'bg-sidebar-foreground/5')}>
         {q && shown.length === 0 && <p className="px-2.5 py-1 text-[12px] text-muted-foreground">No matching {noun}.</p>}
         {createField('', 0)}
-        {items(shown, 0)}
+        {rows(shown, 0)}
       </div>
 
       <Dialog open={confirmDelete !== null} onOpenChange={(o) => { if (!o) setConfirmDelete(null); }}>

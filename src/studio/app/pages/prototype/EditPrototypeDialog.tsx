@@ -1,18 +1,15 @@
-// Edits a prototype's meta.json from the app, in dev: its title, description, and the view
-// it opens on. Saving writes meta.json (scripts/vite-files-plugin.js), the same file an agent
+// Edits a prototype's meta.json from the app, in dev: its title and description. (Which
+// item it opens on is set from the file tree: right-click, Set as start.) Saving writes meta.json (scripts/vite-files-plugin.js), the same file an agent
 // would edit, and the app updates live.
 import { useState } from 'react';
 import { useRouter } from '@tanstack/react-router';
 import { fileOp } from '@/studio/app/data/files';
-import { setManifest, viewSlug } from '@/studio/app/data/manifest';
+import { setManifest } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
 import { Button } from '@/studio/components/button';
 import { Input } from '@/studio/components/input';
 import { Textarea } from '@/studio/components/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
-
-// A view's name in meta.json "start": its path without the extension ("lofi/main").
-const startKey = (v: { name: string; group: string | null }) => [v.group, viewSlug(v.name)].filter(Boolean).join('/');
 
 type Props = { proto: Prototype; open: boolean; onOpenChange: (open: boolean) => void };
 
@@ -20,7 +17,6 @@ export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const start = proto.start ? startKey(proto.start) : '';
 
   async function save(form: FormData) {
     setSaving(true);
@@ -30,7 +26,6 @@ export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props
         op: 'meta',
         title: String(form.get('title') ?? ''),
         description: String(form.get('description') ?? ''),
-        start: String(form.get('start') ?? ''),
       });
       setManifest(result.manifest);
       await router.invalidate();
@@ -58,20 +53,6 @@ export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props
           <label className="grid gap-1.5 text-sm font-medium">
             Description
             <Textarea name="description" defaultValue={proto.description} rows={3} placeholder="What is it exploring?" />
-          </label>
-          <label className="grid gap-1.5 text-sm font-medium">
-            Opens on
-            <select
-              name="start"
-              defaultValue={start}
-              className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-            >
-              <option value="">The default (prototype.tsx, or the first view)</option>
-              {proto.views.map((v) => {
-                const key = startKey(v);
-                return <option key={key} value={key}>{key}</option>;
-              })}
-            </select>
           </label>
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
           <DialogFooter>

@@ -1,6 +1,7 @@
 import type { ViewModule } from '@/studio/app/data/types';
 
-// Every view file, .tsx or .jsx. Vite only loads one when it is asked for.
+// Every view file, .tsx or .jsx, at any depth (src/kinds.ts). Vite only loads one when it
+// is asked for.
 const glob = import.meta.glob<ViewModule>([
   '/prototypes/**/*.{tsx,jsx}',
   '!/prototypes/**/components/**', // skip helpers
@@ -24,13 +25,13 @@ const state: State = import.meta.hot?.data.state ?? {
   views: glob, stamp: Date.now(), loaded: new Map(), waiting: [], withoutComponent: new Set(),
 };
 
-type ViewPath = { contributor: string; prototype: string; group?: string | null; view: string };
+// A view file in a prototype: its path in the prototype, like "checkout/step-1.tsx".
+type ViewFile = { contributor: string; prototype: string; path: string };
 
-// The loader for a view, by its URL parts (view name without extension), or undefined.
-export function findView({ contributor, prototype, group, view }: ViewPath) {
-  const base = `/prototypes/${contributor}/${prototype}/${group ? `${group}/` : ''}${view}`;
-  const key = state.views[`${base}.tsx`] ? `${base}.tsx` : state.views[`${base}.jsx`] ? `${base}.jsx` : null;
-  if (!key) return undefined;
+// The loader for a view file, or undefined.
+export function findView({ contributor, prototype, path }: ViewFile) {
+  const key = `/prototypes/${contributor}/${prototype}/${path}`;
+  if (!state.views[key]) return undefined;
   if (import.meta.hot) return () => import(/* @vite-ignore */ `${key}?t=${state.stamp}`) as Promise<ViewModule>;
   return state.views[key];
 }
@@ -47,14 +48,14 @@ const nextViews = (ms: number) => new Promise<void>((resolve) => {
 // One import per view, reused on every later visit. In dev, a view the app just created or
 // moved can be in the manifest a moment before Vite adds it here: pass inManifest to wait
 // for it briefly. An unknown address doesn't wait.
-export async function loadView(path: ViewPath, { inManifest = false } = {}): Promise<ViewModule | undefined> {
-  let load = findView(path);
+export async function loadView(file: ViewFile, { inManifest = false } = {}): Promise<ViewModule | undefined> {
+  let load = findView(file);
   if (!load && inManifest && import.meta.hot) {
     await nextViews(2000);
-    load = findView(path);
+    load = findView(file);
   }
   if (!load) return undefined;
-  const key = [path.contributor, path.prototype, path.group ?? '', path.view].join('/');
+  const key = [file.contributor, file.prototype, file.path].join('/');
   if (!state.loaded.has(key)) state.loaded.set(key, load());
   return state.loaded.get(key);
 }

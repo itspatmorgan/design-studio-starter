@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems.ts';
+import { HELPER_FOLDER, itemSlug, kindOf } from '../src/kinds.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -10,13 +11,22 @@ const GUIDE = path.join(ROOT, 'src', 'guide');
 const OUT = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
 // App page URLs, so they can't be contributor folders. Keep in sync with setup-contributor.js.
 const RESERVED_KEYS = new Set(['systems', 'guide']);
-// Folder names inside a prototype that aren't view groups (documents/ is set aside for prototype docs).
-const NOT_GROUPS = new Set(['components', 'documents']);
 
 const dirs = (p) => fs.existsSync(p)
   ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort()
   : [];
-const viewFiles = (p) => fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isFile() && /\.[jt]sx$/.test(d.name)).map((d) => d.name).sort();
+
+// A prototype's items (see src/kinds.ts), in the order the file tree shows them: at each
+// level, files first, then folders, each alphabetical. Hidden files and components/ are skipped.
+function itemsIn(dir, base = '') {
+  const entries = fs.readdirSync(dir, { withFileTypes: true }).filter((e) => !e.name.startsWith('.'));
+  const byName = (a, b) => a.name.localeCompare(b.name);
+  const files = entries.filter((e) => e.isFile()).sort(byName)
+    .flatMap((e) => { const kind = kindOf(e.name); return kind ? [{ path: base + e.name, kind }] : []; });
+  const folders = entries.filter((e) => e.isDirectory() && e.name !== HELPER_FOLDER).sort(byName)
+    .flatMap((e) => itemsIn(path.join(dir, e.name), `${base}${e.name}/`));
+  return [...files, ...folders];
+}
 
 // Scans src/prototypes/ and src/guide/, writes public/prototypes/manifest.json, and returns it.
 // Problems are printed; errors counts them. The dev server calls this on every change
@@ -45,33 +55,32 @@ export function buildManifest() {
         skip(`is not valid JSON (${e.message})`); continue;
       }
       if (typeof meta?.title !== 'string' || !meta.title.trim()) { skip('needs a "title"'); continue; }
-      const views = viewFiles(dir).map((name) => ({ name, group: null }));
-      for (const group of dirs(dir).filter((g) => !NOT_GROUPS.has(g))) {
-        for (const name of viewFiles(path.join(dir, group))) views.push({ name, group });
-      }
-      // Every view needs a default export (the component the app renders), and a name no
-      // other view in its group has: main.tsx and main.jsx would share one URL.
+      const items = itemsIn(dir);
+      // Two items can't share a URL (main.tsx and main.jsx side by side), and every view needs
+      // a default export: the component the app renders.
       const seen = new Set();
-      for (const v of views) {
-        const file = path.relative(ROOT, path.join(dir, v.group ?? '', v.name));
-        const url = `${v.group ?? ''}/${v.name.replace(/\.[jt]sx$/, '')}`;
-        if (seen.has(url)) { console.error(`[manifest] ${file}: another view in this folder has the same name. Rename one; they'd share a URL.`); errors++; }
-        seen.add(url);
-        const code = fs.readFileSync(path.join(ROOT, file), 'utf8');
-        if (!/export\s+default\b|export\s*\{[^}]*\bas\s+default\b/.test(code)) { console.error(`[manifest] ${file}: a view needs a default export, the component the app renders (export default function MyView() { ... }). Helpers belong in components/.`); errors++; }
+      for (const item of items) {
+        const file = path.relative(ROOT, path.join(dir, item.path));
+        if (seen.has(itemSlug(item.path))) { console.error(`[manifest] ${file}: another file here has the same name. Rename one; they'd share a URL.`); errors++; }
+        seen.add(itemSlug(item.path));
+        if (item.kind === 'view') {
+          const code = fs.readFileSync(path.join(ROOT, file), 'utf8');
+          if (!/export\s+default\b|export\s*\{[^}]*\bas\s+default\b/.test(code)) { console.error(`[manifest] ${file}: a view needs a default export, the component the app renders (export default function MyView() { ... }). Helpers belong in components/.`); errors++; }
+        }
       }
-      // "start" (optional) is the view the prototype opens on, as in its URL: "main" or "lofi/main".
+      // "start" (optional) is the item the prototype opens on, as in its URL: "checkout/step-1".
+      // Without it, the prototype opens on its first item.
       let start = null;
       if (meta.start !== undefined) {
-        start = views.find((v) => [v.group, v.name.replace(/\.[jt]sx$/, '')].filter(Boolean).join('/') === meta.start) ?? null;
-        if (!start) { skip(`has "start": "${meta.start}", which isn't a view in this prototype`); continue; }
+        start = items.find((i) => itemSlug(i.path) === meta.start)?.path ?? null;
+        if (!start) { skip(`has "start": "${meta.start}", which isn't an item in this prototype`); continue; }
       }
       // "system" (optional) is the design system it builds with, from src/systems.ts.
       const system = meta.system ?? DEFAULT_SYSTEM;
       if (!(system in PROTOTYPE_SYSTEMS)) { skip(`has "system": "${system}", which isn't in src/systems.ts (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`); continue; }
       prototypes.push({
         id, contributorKey, title: meta.title, description: meta.description ?? '',
-        contributor: contributors[contributorKey]?.name ?? '', created: meta.created ?? null, system, start, views,
+        contributor: contributors[contributorKey]?.name ?? '', created: meta.created ?? null, system, start, items,
       });
     }
   }

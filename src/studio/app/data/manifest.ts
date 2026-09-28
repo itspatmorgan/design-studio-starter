@@ -1,5 +1,6 @@
 import { linkOptions } from '@tanstack/react-router';
-import type { Manifest, Prototype, View } from '@/studio/app/data/types';
+import { itemSlug } from '@/kinds';
+import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 
 // Fetched once, then shared by every route loader. In dev, replaced whenever it changes.
 let manifest: Promise<Manifest> | undefined;
@@ -14,18 +15,23 @@ export function loadManifest(): Promise<Manifest> {
 export const findPrototype = (m: Manifest, contributor: string, prototype: string) =>
   m.prototypes.find((p) => p.contributorKey === contributor && p.id === prototype);
 
-// "main.tsx" → "main": the view's name in the URL.
-export const viewSlug = (name: string) => name.replace(/\.[jt]sx$/, '');
+export { itemSlug };
 
-// A prototype opens on its meta.json "start" view, then prototype.tsx (or .jsx), then its first view.
-export function firstView(p: Prototype): View | undefined {
-  if (p.start) return p.views.find((v) => v.name === p.start!.name && v.group === p.start!.group);
-  return p.views.find((v) => viewSlug(v.name) === 'prototype' && !v.group) ?? p.views[0];
+// A prototype opens on its meta.json "start" item, or else its first item (the top of its
+// file tree).
+export function firstItem(p: Prototype): Item | undefined {
+  return (p.start && p.items.find((i) => i.path === p.start)) || p.items[0];
 }
 
-// "session-done.tsx" → "Session Done"
-export const viewLabel = (name: string) =>
-  viewSlug(name).split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+// The item at a URL path ("lofi/main"), or undefined.
+export const findItem = (p: Prototype, slug: string) => p.items.find((i) => itemSlug(i.path) === slug);
+
+// "checkout/session-done.tsx" → "Session Done": an item's name, without its folder.
+export const itemLabel = (path: string) =>
+  itemSlug(path).split('/').pop()!.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+// "checkout/steps/done.tsx" → "checkout/steps": the folder it's in, or "".
+export const itemFolder = (path: string) => (path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : '');
 
 // "2026-09-27" → "Sep 27, 2026"
 export function formatDate(date: string | null) {
@@ -40,9 +46,6 @@ export const newestFirst = (a: Prototype, b: Prototype) => (b.created ?? '').loc
 export const prototypeLink = (p: Prototype) =>
   linkOptions({ to: '/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.id } });
 
-export const viewLink = (p: Prototype, v: View) => {
-  const params = { contributor: p.contributorKey, prototype: p.id, view: viewSlug(v.name) };
-  return v.group
-    ? linkOptions({ to: '/$contributor/$prototype/$group/$view', params: { ...params, group: v.group } })
-    : linkOptions({ to: '/$contributor/$prototype/$view', params });
-};
+// An item's URL: the prototype's, plus the item's path without its extension.
+export const itemLink = (p: Prototype, item: Item) =>
+  linkOptions({ to: '/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: itemSlug(item.path) } });

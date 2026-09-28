@@ -1,10 +1,13 @@
 import type { ComponentType, ReactNode } from 'react';
 import type { ComponentSpec, TypeSampleSpec } from '@/studio/app/pages/systems/foundations';
 
+import type { ItemKind } from '@/kinds';
+
 // public/prototypes/manifest.json, written by scripts/build-manifest.js.
-export type View = {
-  name: string;          // file name with extension, e.g. "prototype.tsx" or "main.jsx"
-  group: string | null;  // subfolder, e.g. "lofi"
+// One thing in a prototype the app can open (see src/kinds.ts).
+export type Item = {
+  path: string;   // file path in the prototype, e.g. "prototype.tsx" or "checkout/step-1.tsx"
+  kind: ItemKind; // from its extension
 };
 
 export type Prototype = {
@@ -15,8 +18,8 @@ export type Prototype = {
   contributor: string;    // display name, from contributors.json
   created: string | null;
   system: string;         // meta.json "system", or the first in src/systems.ts
-  start: View | null;     // meta.json "start": the view it opens on
-  views: View[];
+  start: string | null;   // meta.json "start", as an item path: the item it opens on
+  items: Item[];          // in file-tree order
 };
 
 // One Guide page (src/guide/<slug>.mdx), from its frontmatter.

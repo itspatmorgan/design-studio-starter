@@ -1,19 +1,20 @@
 // The top of the prototype navigation: everything about the prototype, in one place.
-// Its title and a "…" menu (also on right-click). Who made it, when, and its description are
-// occasional reference, so they stay hidden behind the info button until you want them.
+// Its title, a "+" menu for making new things in it, and a "…" menu (also on right-click).
+// Who made it, when, and its description are occasional reference, so they stay hidden until
+// you choose Show details.
 //
-// In dev, on your own prototypes, the menu can edit its info or delete it, and
-// double-clicking the title renames it in place. Everywhere else, the menu copies its link.
+// In dev, on your own prototypes, "+" creates views and folders, the "…" menu can edit its
+// info or delete it, and double-clicking the title renames it in place. Everywhere else, the
+// "…" menu copies its link and shows details.
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Delete02Icon, Folder01Icon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon } from '@hugeicons/core-free-icons';
+import { Add01Icon, Delete02Icon, FileAddIcon, Folder01Icon, FolderAddIcon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon } from '@hugeicons/core-free-icons';
 import { fileOp, revealInFinder, useMe } from '@/studio/app/data/files';
-import { formatDate, prototypeLink, setManifest, viewSlug } from '@/studio/app/data/manifest';
+import { formatDate, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { Input } from '@/studio/components/input';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@/studio/components/context-menu';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/studio/components/dropdown-menu';
 import EditPrototypeDialog from '@/studio/app/pages/prototype/EditPrototypeDialog';
@@ -45,7 +46,7 @@ function TitleInput({ initial, onDone }: { initial: string; onDone: (title: stri
   );
 }
 
-export default function PrototypeHeader({ proto }: { proto: Prototype }) {
+export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; onNew: (dir: boolean) => void }) {
   const router = useRouter();
   const me = useMe();
   // import.meta.env.DEV is false in the build, so editing isn't in the deployed site.
@@ -69,8 +70,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
     setRenaming(false);
     if (!title || title === proto.title) return;
     try {
-      const start = proto.start ? [proto.start.group, viewSlug(proto.start.name)].filter(Boolean).join('/') : '';
-      const result = await fileOp(proto, { op: 'meta', title, description: proto.description, start });
+      const result = await fileOp(proto, { op: 'meta', title });
       setManifest(result.manifest);
       await router.invalidate();
     } catch (e) {
@@ -85,6 +85,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
   };
 
   const actions: Action[] = [
+    { label: showInfo ? 'Hide details' : 'Show details', icon: InformationCircleIcon, onSelect: toggleInfo },
     ...(editable ? [{ label: 'Edit info…', icon: PencilEdit02Icon, onSelect: () => setEditing(true) }] : []),
     { label: 'Copy link', icon: Link01Icon, onSelect: copyLink },
     ...(local ? [{ label: 'Reveal in Finder', icon: Folder01Icon, onSelect: () => revealInFinder(proto, '') }] : []),
@@ -120,15 +121,21 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
                 {proto.title}
               </h2>
             )}
-            <Tooltip>
-              <TooltipTrigger
-                render={<button type="button" aria-label={showInfo ? 'Hide details' : 'Show details'} aria-pressed={showInfo} onClick={toggleInfo}
-                  className={cn('inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground', showInfo && 'bg-sidebar-foreground/10 text-sidebar-accent-foreground')} />}
-              >
-                <HugeiconsIcon icon={InformationCircleIcon} size={16} />
-              </TooltipTrigger>
-              <TooltipContent side="bottom">{showInfo ? 'Hide details' : 'Show details'}</TooltipContent>
-            </Tooltip>
+            {editable && (
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  aria-label="New"
+                  className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground"
+                >
+                  <HugeiconsIcon icon={Add01Icon} size={16} />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-40">
+                  {/* One menu for everything you can make in a prototype (see src/kinds.ts). */}
+                  <DropdownMenuItem onClick={() => setTimeout(() => onNew(false))}><HugeiconsIcon icon={FileAddIcon} /> New view</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTimeout(() => onNew(true))}><HugeiconsIcon icon={FolderAddIcon} /> New folder</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger
                 aria-label="Prototype actions"

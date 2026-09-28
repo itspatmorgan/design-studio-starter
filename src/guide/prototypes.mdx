@@ -10,13 +10,18 @@ A prototype is a folder in your space, `src/prototypes/<you>/`. The app finds it
 
 ## The shape of a prototype
 
+A file's kind comes from its extension, and folders are just for organizing, as deep as you like. Keep a flow's screens together in one folder, or sort them however makes sense to you.
+
 ```text
 src/prototypes/patrick/hello-world/
 ├── meta.json        # title and description
-├── prototype.tsx    # a view (opens first)
-├── lofi/            # a group of views
-│   └── main.tsx
-└── components/      # helpers, not views
+├── prototype.tsx    # a view
+├── lofi/
+│   └── main.tsx     # a view, in a folder
+└── checkout/
+    ├── steps/
+    │   └── done.tsx # a view, two folders deep
+    └── components/  # helpers, not views
 ```
 
 Always create a prototype with `pnpm new "Prototype Name"`, by asking your agent for one, or with **New prototype** on the Prototypes page while the app runs locally. All three set it up the same way.
@@ -25,24 +30,27 @@ While the app is running locally, the prototype's navigation shows all of its fi
 
 In your own prototypes, the navigation works like a file browser:
 
-- **New file or folder:** the buttons next to Files, or right-click a folder. A new `.tsx` file starts as a view and opens right away.
+- **New view or folder:** the **+** next to the prototype's title, or right-click a folder. A new view starts working right away, and opens.
 - **Rename:** right-click, or select a file and press F2.
 - **Move:** drag a file or folder onto another folder, or onto the empty space below the list for the top level.
 - **Delete:** right-click, or press Delete. It goes to the Trash, so you can put it back.
 
 Each of these is an ordinary change to the files, the same as your agent would make, so you can mix both ways of working. If you rename or move the view you're looking at, the app follows it, and `start` in `meta.json` is updated to match.
+- **Choose what opens first:** right-click a view and choose **Set as start**. A small home icon marks the view the prototype opens on.
 
-Everything about the prototype sits at the top of its navigation. The info button next to the title shows who made it, when, and its description, and the app remembers whether you leave it open. The **…** menu next to the title (or a right-click) has the rest. In your own prototypes, double-click the title to rename it, or choose **Edit info** to change the title, description, or the view it opens on. It saves to `meta.json`. The title can change freely; the prototype's folder name, and so its link, stays the same. **Delete prototype** moves the whole folder to the Trash, so you can put it back.
+Everything about the prototype sits at the top of its navigation. The **…** menu next to the title (or a right-click) has everything else: **Show details** shows who made it, when, and its description, and the app remembers whether you leave them open. In your own prototypes, double-click the title to rename it, or choose **Edit info** to change the title and description. It saves to `meta.json`. The title can change freely; the prototype's folder name, and so its link, stays the same. **Delete prototype** moves the whole folder to the Trash, so you can put it back.
 
 ## Views
 
-A view is one screen of your prototype. Any `.tsx` file at the top level of the folder is a view, as long as it exports a React component. The prototype opens on `prototype.tsx`, unless `meta.json` says to start somewhere else.
+A view is one screen of your prototype: any `.tsx` file that exports a React component, in any folder except `components/`.
 
-## Groups
+The prototype opens on its first view, the one at the top of its navigation, unless you choose another with **Set as start**. That saves to `start` in `meta.json`.
 
-A subfolder is a group of views, shown under its name in the prototype's navigation. Groups are one level deep. Two folder names are special: `components/` holds helper components that aren't views, and `documents/` is set aside for a future feature.
+## Folders
 
-A common group is `lofi/`: rough, grayscale sketches of an idea, before it's worth polishing.
+Folders are only for organizing, at any depth. A folder's name never changes what's inside it, with one exception: files in a `components/` folder are helpers, not views.
+
+A common folder is `lofi/`: rough, grayscale sketches of an idea, before it's worth polishing.
 
 ## meta.json
 
@@ -60,7 +68,7 @@ Only `title` is required. `pnpm new` fills in `created`. Your name comes from `c
 
 `system` is the [design system](/guide/systems) it builds with. Leave it out to use the default, which is all you need until your team has more than one.
 
-`start` is the view the prototype opens on, written the way it appears in the URL. Leave it out to open on `prototype.tsx`. Change it whenever a different view becomes the one to show first, and the prototype's link still works.
+`start` is the view the prototype opens on, written the way it appears in the URL. Leave it out to open on the first view. **Set as start** in the navigation sets it for you, and it follows the view if you rename or move it.
 
 If `meta.json` is missing or broken, the app skips the prototype with a warning, and the build fails until it's fixed.
 
@@ -70,9 +78,10 @@ Every view has its own link, so you can share exactly what you mean:
 
 | URL | Opens |
 | --- | --- |
-| `/patrick/hello-world` | The prototype's first view |
+| `/patrick/hello-world` | The view it opens on |
 | `/patrick/hello-world/prototype` | A view |
-| `/patrick/hello-world/lofi/main` | A view in a group |
+| `/patrick/hello-world/lofi/main` | A view in a folder |
+| `/patrick/hello-world/checkout/steps/done` | A view, two folders deep |
 
 ## When a view breaks
 

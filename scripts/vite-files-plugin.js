@@ -9,7 +9,7 @@
 //        rename   { path, name }
 //        move     { path, to: folder }           "" is the prototype's top level
 //        delete   { path }                        to the Trash (or .trash/ at the repo root)
-//        meta     { title, description, start }   edit meta.json (start "" opens the default view)
+//        meta     { title?, description?, start? }  edit meta.json (start "" opens the first item)
 //   POST /__studio/prototype { title, description }   a new prototype in your folder, like pnpm new
 //   POST /__studio/prototype-delete { contributor, prototype }   move a prototype you own to the Trash
 //     It replies with the new path and the updated manifest, so the app can follow a renamed view.
@@ -83,8 +83,8 @@ async function readJson(req) {
 // A file or folder name you can create or rename to: no slashes, not hidden, not "." or "..".
 const validName = (name) => typeof name === 'string' && /^[^/\\\0]+$/.test(name) && !name.startsWith('.') && name.trim() === name;
 
-// A view's name in meta.json "start": its path without the extension ("lofi/main").
-const viewKey = (rel) => rel.replace(/\.[jt]sx$/, '');
+// An item's name in meta.json "start" and URLs: its path without the extension ("lofi/main").
+const viewKey = (rel) => rel.replace(/\.[^./]+$/, '');
 
 // A new view: a component named after the file ("user-settings.tsx" → UserSettings).
 function viewTemplate(name) {
@@ -136,15 +136,19 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, descripti
     return { path: relOf(target) };
   }
   if (op === 'meta') {
+    // Only the fields given change; others in meta.json (created, system) are kept.
     const metaFile = path.join(dir, 'meta.json');
     const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
-    if (typeof title !== 'string' || !title.trim()) throw new Error('The prototype needs a title.');
-    meta.title = title.trim();
+    if (title !== undefined) {
+      if (typeof title !== 'string' || !title.trim()) throw new Error('The prototype needs a title.');
+      meta.title = title.trim();
+    }
     if (typeof description === 'string') meta.description = description.trim();
-    if (start === '' || start === undefined) delete meta.start;
-    else {
-      const views = buildManifest().manifest.prototypes.find((p) => path.join(PROTOS, p.contributorKey, p.id) === dir)?.views ?? [];
-      if (!views.some((v) => viewKey(v.group ? `${v.group}/${v.name}` : v.name) === start)) throw new Error(`"${start}" isn't a view in this prototype.`);
+    // start: an item's path without its extension, or "" to open on the first item.
+    if (start === '') delete meta.start;
+    else if (start !== undefined) {
+      const items = buildManifest().manifest.prototypes.find((p) => path.join(PROTOS, p.contributorKey, p.id) === dir)?.items ?? [];
+      if (!items.some((i) => viewKey(i.path) === start)) throw new Error(`"${start}" isn't an item in this prototype.`);
       meta.start = start;
     }
     fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
