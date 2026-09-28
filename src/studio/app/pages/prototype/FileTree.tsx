@@ -6,7 +6,7 @@
 // edits; components/ helpers; images and other files) is hidden until you choose Show all
 // files, and then opens in your editor. In your own prototypes you can also create, rename (F2), move
 // (drag and drop), and delete (to the Trash) files and folders, like a file browser, and
-// choose which item the prototype opens on (Set as start; it shows a home icon). Every change
+// choose which item the prototype opens on (Set as start; it shows a flag). Every change
 // is a plain file change, so agents see the same thing. On the deployed site, it lists the
 // prototype's items, from the manifest.
 import { useEffect, useImperativeHandle, useRef, useState, type DragEvent, type ReactNode, type Ref } from 'react';
@@ -14,7 +14,7 @@ import { Link, useNavigate, useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileAddIcon, FileEditIcon,
-  Folder01Icon, FolderAddIcon, Home01Icon, ViewIcon, ViewOffSlashIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
+  Folder01Icon, FolderAddIcon, Flag02Icon, ViewIcon, ViewOffSlashIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import {
@@ -163,7 +163,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
   const [showAll, setShowAll] = useState(() => localStorage.getItem(SHOW_ALL_KEY) === 'shown');
   const toggleShowAll = () => setShowAll((v) => { localStorage.setItem(SHOW_ALL_KEY, v ? 'hidden' : 'shown'); return !v; });
   const nodes = !files ? itemsAsNodes(proto) : showAll ? files : visibleNodes(files, items);
-  // The item the prototype opens on: its start, or its first item. It gets a home icon.
+  // The item the prototype opens on: its start, or its first item. It gets a flag.
   const opensOn = firstItem(proto);
 
   const [filterOpen, setFilterOpen] = useState(false);
@@ -279,8 +279,8 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
           )}
           {editable && items.has(node.path) && (
             proto.start === node.path
-              ? <ContextMenuItem onClick={() => setTimeout(() => run({ op: 'meta', start: '' }))}><HugeiconsIcon icon={Home01Icon} /> Remove as start</ContextMenuItem>
-              : opensOn?.path !== node.path && <ContextMenuItem onClick={() => setTimeout(() => run({ op: 'meta', start: itemSlug(node.path) }))}><HugeiconsIcon icon={Home01Icon} /> Set as start</ContextMenuItem>
+              ? <ContextMenuItem onClick={() => setTimeout(() => run({ op: 'meta', start: '' }))}><HugeiconsIcon icon={Flag02Icon} /> Remove as start</ContextMenuItem>
+              : opensOn?.path !== node.path && <ContextMenuItem onClick={() => setTimeout(() => run({ op: 'meta', start: itemSlug(node.path) }))}><HugeiconsIcon icon={Flag02Icon} /> Set as start</ContextMenuItem>
           )}
           {changeable && (
             <>
@@ -365,7 +365,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
               {label}
               {item === opensOn && (
                 <span title="The prototype opens on this" className="shrink-0 text-muted-foreground">
-                  <HugeiconsIcon icon={Home01Icon} size={12} aria-label="Opens first" />
+                  <HugeiconsIcon icon={Flag02Icon} size={12} aria-label="Opens first" />
                 </span>
               )}
             </Link>
