@@ -137,7 +137,7 @@ export const studio: DesignSystem = {
           <TabsContent value="notes" className="text-muted-foreground">Notes content.</TabsContent>
         </Tabs>
       ) },
-      { name: 'Collapsible', file: 'collapsible.tsx', description: 'Shows and hides a section, like groups in the prototype navigation and the About panel.', demo: () => (
+      { name: 'Collapsible', file: 'collapsible.tsx', description: 'Shows and hides a section, like folders in the prototype navigation.', demo: () => (
         <Collapsible className="w-64 text-sm">
           <CollapsibleTrigger className="group flex items-center gap-1.5 font-medium">
             <HugeiconsIcon icon={ArrowDown01Icon} size={14} className="text-muted-foreground transition-transform group-not-data-panel-open:-rotate-90" />
