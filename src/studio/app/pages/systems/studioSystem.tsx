@@ -127,26 +127,16 @@ export const studio: DesignSystem = {
     ] },
     { name: 'Layout', components: [
       { name: 'Tabs', file: 'tabs.tsx', description: 'Switches between views of the same content, like the systems at the top of this sidebar.', demo: () => (
-        <div className="flex flex-wrap gap-10">
-          <Tabs defaultValue="overview" className="w-72">
-            <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="views">Views</TabsTrigger>
-              <TabsTrigger value="notes">Notes</TabsTrigger>
-            </TabsList>
-            <TabsContent value="overview" className="text-muted-foreground">Overview content.</TabsContent>
-            <TabsContent value="views" className="text-muted-foreground">Views content.</TabsContent>
-            <TabsContent value="notes" className="text-muted-foreground">Notes content.</TabsContent>
-          </Tabs>
-          <Tabs defaultValue="light" className="w-72">
-            <TabsList variant="line">
-              <TabsTrigger value="light">Light</TabsTrigger>
-              <TabsTrigger value="dark">Dark</TabsTrigger>
-            </TabsList>
-            <TabsContent value="light" className="text-muted-foreground">Line variant.</TabsContent>
-            <TabsContent value="dark" className="text-muted-foreground">Line variant.</TabsContent>
-          </Tabs>
-        </div>
+        <Tabs defaultValue="overview" className="w-72">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="views">Views</TabsTrigger>
+            <TabsTrigger value="notes">Notes</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview" className="text-muted-foreground">Overview content.</TabsContent>
+          <TabsContent value="views" className="text-muted-foreground">Views content.</TabsContent>
+          <TabsContent value="notes" className="text-muted-foreground">Notes content.</TabsContent>
+        </Tabs>
       ) },
       { name: 'Collapsible', file: 'collapsible.tsx', description: 'Shows and hides a section, like groups in the prototype navigation and the About panel.', demo: () => (
         <Collapsible className="w-64 text-sm">
