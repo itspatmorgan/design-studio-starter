@@ -23,7 +23,6 @@ export const product = {
   label: 'Product',
   scopeClass: 'product-theme',
   Frame: ProductFrame,
-  badge: 'Placeholder',
   intro: (
     <div className="rounded-xl border-2 border-dashed border-foreground/25 bg-muted/40 p-6">
       <p className="mb-2 text-base font-semibold text-foreground">Replace this with your product's design system.</p>

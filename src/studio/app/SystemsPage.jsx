@@ -73,10 +73,7 @@ function SystemContent({ sys }) {
   return (
     <>
       <header id="intro" data-section className="mb-14 scroll-mt-6">
-        <h1 className="mb-4 flex items-center gap-3 text-[26px] font-semibold leading-9 tracking-[-0.01em] text-foreground">
-          {sys.label}
-          {sys.badge && <span className="rounded-full border border-dashed border-foreground/40 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{sys.badge}</span>}
-        </h1>
+        <h1 className="mb-4 text-[26px] font-semibold leading-9 tracking-[-0.01em] text-foreground">{sys.label}</h1>
         {sys.intro}
       </header>
       <Section id="theme" title="Theme">{sys.theme}</Section>
