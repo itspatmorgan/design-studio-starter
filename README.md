@@ -11,7 +11,7 @@ A starter template for a shared prototyping sandbox: one repo where designers an
 
 ## Getting started
 
-Ask your agent to get you set up. It follows `agent/skills/setup-contributor/SKILL.md`. Under the hood, once [mise](https://mise.jdx.dev) is activated in your shell, that's:
+Ask your agent to get you set up. It follows `.agents/skills/setup-contributor/SKILL.md`. Under the hood, once [mise](https://mise.jdx.dev) is activated in your shell, that's:
 
 ```sh
 mise install    # installs the pinned Node and pnpm
@@ -53,7 +53,7 @@ The app uses TanStack Router's browser history, so URLs are clean paths like `/p
 ```
 AGENTS.md              agent entry point; points to agent/rules/
 agent/rules/           systems, prototype workflow, contributor scope
-agent/skills/          agent skills (linked from .claude/skills, .agents/skills)
+.agents/skills/        agent skills (.claude/skills links here for Claude Code)
 contributors.json      who owns which folder
 scripts/               manifest, create, scope check, Vite plugins (plain Node .js)
 .husky/                pre-commit and pre-push scope checks
