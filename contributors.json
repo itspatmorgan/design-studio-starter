@@ -1,7 +1,7 @@
 {
-  "patrick": {
-    "name": "Patrick Morgan",
-    "github": "itspatmorgan",
-    "email": "patrick@example.com"
+  "example": {
+    "name": "Example Contributor",
+    "github": "",
+    "email": "you@yourcompany.com"
   }
 }

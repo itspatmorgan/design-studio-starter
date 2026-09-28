@@ -5,8 +5,9 @@ import {
 
 export default function Prototype() {
   return (
-    <main className="p-8 space-y-4">
+    <main className="space-y-4 p-8">
       <h1 className="text-2xl font-semibold">Hello World</h1>
+      <p className="text-muted-foreground">Built with the product components, so it picks up the product theme.</p>
       <Dialog>
         <DialogTrigger asChild>
           <Button>Open dialog</Button>
