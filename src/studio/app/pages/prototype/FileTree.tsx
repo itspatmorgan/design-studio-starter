@@ -1,8 +1,10 @@
 // The prototype's files, in its navigation: a filterable tree with expand/collapse all.
 //
 // In `pnpm dev`, it's the prototype's real files and folders, live from the dev server
-// (data/files.ts). Items (views, at any depth; see src/kinds.ts) open in the app; other
-// files open in your editor. In your own prototypes you can also create, rename (F2), move
+// (data/files.ts). It shows what you open and organize: items (views, at any depth; see
+// src/kinds.ts) and their folders. Everything else in the folder (meta.json, which the header
+// edits; components/ helpers; images and other files) is hidden until you choose Show all
+// files, and then opens in your editor. In your own prototypes you can also create, rename (F2), move
 // (drag and drop), and delete (to the Trash) files and folders, like a file browser, and
 // choose which item the prototype opens on (Set as start; it shows a home icon). Every change
 // is a plain file change, so agents see the same thing. On the deployed site, it lists the
@@ -12,13 +14,14 @@ import { Link, useNavigate, useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileAddIcon, FileEditIcon,
-  Folder01Icon, FolderAddIcon, Home01Icon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
+  Folder01Icon, FolderAddIcon, Home01Icon, ViewIcon, ViewOffSlashIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import {
   fileOp, openInEditor, repoPath, revealInFinder, useFileTree, useMe, type FileNode, type FileOp,
 } from '@/studio/app/data/files';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
+import { HELPER_FOLDER } from '@/kinds';
 import { Button } from '@/studio/components/button';
 import { Input } from '@/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
@@ -63,6 +66,28 @@ function filterNodes(nodes: FileNode[], q: string): FileNode[] {
     return children.length || n.name.toLowerCase().includes(q) ? [{ ...n, children }] : [];
   });
 }
+
+// What the nav shows by default: items, folders with an item inside, and empty folders (you
+// made those to organize, so they stay). Helpers, meta.json, and assets are hidden.
+function visibleNodes(nodes: FileNode[], items: Map<string, Item>): FileNode[] {
+  return nodes.flatMap((n) => {
+    if (!n.dir) return items.has(n.path) ? [n] : [];
+    if (n.name === HELPER_FOLDER) return [];
+    const children = visibleNodes(n.children ?? [], items);
+    return children.length || !n.children?.length ? [{ ...n, children }] : [];
+  });
+}
+
+// The files inside a folder the nav isn't showing, for the delete confirmation.
+function hiddenInside(node: FileNode, items: Map<string, Item>): string[] {
+  const all = (n: FileNode): string[] => (n.dir ? (n.children ?? []).flatMap(all) : [n.path]);
+  return all(node).filter((p) => !items.has(p)).map((p) => p.slice(node.path.length + 1));
+}
+
+const findNode = (nodes: FileNode[], path: string): FileNode | undefined =>
+  nodes.map((n) => (n.path === path ? n : n.dir ? findNode(n.children ?? [], path) : undefined)).find(Boolean);
+
+const SHOW_ALL_KEY = 'design-studio:show-all-files'; // "shown" | "hidden"
 
 const allDirs = (nodes: FileNode[]): string[] => nodes.flatMap((n) => (n.dir ? [n.path, ...allDirs(n.children ?? [])] : []));
 
@@ -133,8 +158,11 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
   const navigate = useNavigate();
   const live = import.meta.env.DEV && files !== null;
   const editable = live && me === proto.contributorKey;
-  const nodes = files ?? itemsAsNodes(proto);
   const items = new Map(proto.items.map((i) => [i.path, i]));
+  // Remembered for every prototype, like Show details.
+  const [showAll, setShowAll] = useState(() => localStorage.getItem(SHOW_ALL_KEY) === 'shown');
+  const toggleShowAll = () => setShowAll((v) => { localStorage.setItem(SHOW_ALL_KEY, v ? 'hidden' : 'shown'); return !v; });
+  const nodes = !files ? itemsAsNodes(proto) : showAll ? files : visibleNodes(files, items);
   // The item the prototype opens on: its start, or its first item. It gets a home icon.
   const opensOn = firstItem(proto);
 
@@ -183,7 +211,10 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
       if (result.trashedTo) setStatus({ text: `Moved to ${result.trashedTo}.` });
       return result;
     } catch (e) {
-      setStatus({ text: (e as Error).message, error: true });
+      const message = (e as Error).message;
+      // The name may belong to a file the nav is hiding.
+      const hint = !showAll && message.startsWith("There's already") ? ' It may be hidden: choose Show all files to see it.' : '';
+      setStatus({ text: message + hint, error: true });
     }
   }
 
@@ -364,6 +395,11 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
           <IconButton label={`Filter ${noun}`} pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
             <HugeiconsIcon icon={Search01Icon} size={14} />
           </IconButton>
+          {live && (
+            <IconButton label={showAll ? 'Hide other files' : 'Show all files'} pressed={showAll} onClick={toggleShowAll}>
+              <HugeiconsIcon icon={showAll ? ViewOffSlashIcon : ViewIcon} size={14} />
+            </IconButton>
+          )}
           {dirs.length > 0 && (
             <IconButton label={allOpen ? 'Collapse all' : 'Expand all'} onClick={() => setClosed(allOpen ? new Set(dirs) : new Set())}>
               <HugeiconsIcon icon={allOpen ? UnfoldLessIcon : UnfoldMoreIcon} size={14} />
@@ -411,6 +447,13 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
             <DialogTitle>Delete {confirmDelete?.name}?</DialogTitle>
             <DialogDescription>
               {confirmDelete?.dir ? 'The folder and everything in it go' : 'It goes'} to the Trash, so you can put it back from there.
+              {confirmDelete?.dir && !showAll && (() => {
+                const full = findNode(files ?? [], confirmDelete.path);
+                const hidden = full ? hiddenInside(full, items) : [];
+                if (!hidden.length) return null;
+                const names = [...new Set(hidden.map((p) => (p.includes('/') ? `${p.split('/')[0]}/` : p)))];
+                return ` Also deletes ${hidden.length} ${hidden.length === 1 ? 'file' : 'files'} not shown here (${names.slice(0, 3).join(', ')}${names.length > 3 ? ', …' : ''}).`;
+              })()}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
