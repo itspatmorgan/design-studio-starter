@@ -23,25 +23,27 @@ export const product = {
   label: 'Product',
   scopeClass: 'product-theme',
   Frame: ProductFrame,
+  badge: 'Placeholder',
   intro: (
-    <Prose>
-      <p>A placeholder for your real product design system. Prototypes build with it so they look like your product, not like this app.</p>
-      <p>Expect to replace all of it, components and theme, with your own. Ideally that is the same components and tokens your production app uses, so prototypes match what ships.</p>
-      <p>Until then it is a few shadcn/ui components (button, dialog, input) on the indigo preset, so you can see the two systems are separate. Prototypes use <Code>lucide-react</Code> for icons.</p>
-      <CodeBlock>{`import { Button } from '@/product/components/button';`}</CodeBlock>
-    </Prose>
+    <div className="rounded-xl border-2 border-dashed border-foreground/25 bg-muted/40 p-6">
+      <p className="mb-2 text-base font-semibold text-foreground">Replace this with your product's design system.</p>
+      <Prose>
+        <p>This is a stand-in so the sandbox works out of the box. Swap in the components and theme your production app uses, so prototypes look like what ships.</p>
+        <p>Whatever you bring in, keep these four things true:</p>
+        <ol className="list-decimal space-y-1 pl-5">
+          <li>It lives in <Code>src/product/</Code>.</li>
+          <li>Prototypes import from <Code>@/product/...</Code>.</li>
+          <li>Its styles are scoped under <Code>.product-theme</Code>, with a <Code>.dark .product-theme</Code> block if your product has dark mode.</li>
+          <li>Pop-ups render into the portal container from <Code>portal.jsx</Code>, so they keep the product look.</li>
+        </ol>
+      </Prose>
+    </div>
   ),
   theme: (
     <Prose>
-      <p>The placeholder theme is in <Code>src/product/styles/theme.css</Code>. It is shadcn/ui's indigo preset:</p>
+      <p>The placeholder is a few shadcn/ui components (button, input, dialog) on shadcn/ui's indigo preset, in <Code>src/product/styles/theme.css</Code>. Indigo is there only so you can see it's a separate system from the app UI.</p>
       <CodeBlock>{`npx shadcn apply a2r6bw --only theme`}</CodeBlock>
-      <p>When you replace the system, keep these true:</p>
-      <ul className="list-disc space-y-1 pl-5">
-        <li>It lives in <Code>src/product/</Code>.</li>
-        <li>Prototypes import from <Code>@/product/...</Code>.</li>
-        <li>Styles stay scoped under <Code>.product-theme</Code>, with a <Code>.dark .product-theme</Code> block if your product has dark mode.</li>
-        <li>Pop-ups render into the portal container from <Code>portal.jsx</Code>, so they stay inside <Code>.product-theme</Code>.</li>
-      </ul>
+      <p>Prototypes use <Code>lucide-react</Code> for icons until your system brings its own.</p>
     </Prose>
   ),
   categories: [
