@@ -9,7 +9,7 @@ function relevant(file) {
   const rel = path.relative(PROTOS, file);
   if (rel.startsWith('..')) return false;
   const parts = rel.split(path.sep);
-  if (parts.some((p) => p.startsWith('_')) || parts.includes('components')) return false;
+  if (parts.includes('components')) return false;
   return /\.[jt]sx$/.test(rel) || path.basename(rel) === 'meta.json';
 }
 

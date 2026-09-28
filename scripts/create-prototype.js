@@ -18,7 +18,7 @@ const dest = path.join(ROOT, 'src', 'prototypes', key, slug);
 if (fs.existsSync(dest)) { console.error(`src/prototypes/${key}/${slug} already exists.`); process.exit(1); }
 
 fs.mkdirSync(path.dirname(dest), { recursive: true });
-fs.cpSync(path.join(ROOT, 'src', 'prototypes', '_templates'), dest, { recursive: true });
+fs.cpSync(path.join(ROOT, 'scripts', 'templates', 'prototype'), dest, { recursive: true });
 const metaPath = path.join(dest, 'meta.json');
 const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
 const d = new Date();

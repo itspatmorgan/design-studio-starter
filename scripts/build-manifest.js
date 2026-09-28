@@ -8,7 +8,7 @@ const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const OUT = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
 
 const dirs = (p) => fs.existsSync(p)
-  ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory() && !d.name.startsWith('_')).map((d) => d.name).sort()
+  ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort()
   : [];
 const viewFiles = (p) => fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isFile() && /\.[jt]sx$/.test(d.name)).map((d) => d.name).sort();
 

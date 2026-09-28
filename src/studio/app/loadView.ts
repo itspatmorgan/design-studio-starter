@@ -3,7 +3,6 @@ import type { ViewModule } from './types';
 // Every view file, .tsx or .jsx. Vite only loads one when it is asked for.
 const views = import.meta.glob<ViewModule>([
   '/prototypes/**/*.{tsx,jsx}',
-  '!/prototypes/_*/**',            // skip _templates
   '!/prototypes/**/components/**', // skip helpers
 ]);
 

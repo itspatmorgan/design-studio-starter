@@ -30,5 +30,5 @@
     /* shadcn/ui import alias */
     "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["src"]
+  "include": ["src", "scripts/templates"]
 }
