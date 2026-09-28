@@ -12,10 +12,12 @@ There are two component systems.
 
 ## Portals
 
-Dialogs, dropdown menus, popovers, selects, sheets, and tooltips render into a portal. In the product system, each one passes `usePortalContainer()` from `src/product/components/portal.jsx` as the portal's `container`, so pop-ups stay inside `.product-theme` and keep the product look. When you add a product component that renders a portal, do the same.
+Pop-ups such as dialogs render into a portal. In the product system, each one passes `usePortalContainer()` from `src/product/components/portal.jsx` as the portal's `container`, so pop-ups stay inside `.product-theme` and keep the product look. When you add a product component that renders a portal, do the same.
 
 ## Dark mode
 
 The app puts `.dark` on `<html>`, and `theme.css` sets dark values under `.dark .product-theme`, so prototypes follow the app's color mode. Use the theme's variables through Tailwind classes (`bg-background`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-primary`), not hard-coded colors like `bg-white` or `#333`, or the view breaks in one of the modes.
+
+The product system is a small starter set (button, card, dialog, input). `npx shadcn add <name>` adds more shadcn/ui components to `src/product/components/`; if one renders a portal, wire it to `usePortalContainer()` as above.
 
 To see what the product system offers, look in `src/product/components/` or open the Systems page (`?page=systems`).

@@ -5,14 +5,20 @@ import { product } from './systems/productSystem';
 import { studio } from './systems/studioSystem';
 
 // Systems page: one tab per design system. Each documents its purpose, theme,
-// foundations (read live from the CSS), icons, and every component.
+// foundations (read live from the CSS), icons, and components. Optional sections
+// (typography, radius, icons) show only when the system defines them.
 const SYSTEMS = { product, studio };
 
 // Sidebar groups, in page order. Component categories come from the system.
 function navGroups(sys) {
   return [
     { items: [['intro', 'Introduction'], ['theme', 'Theme']] },
-    { heading: 'Foundations', items: [['colors', 'Colors'], ['typography', 'Typography'], ['radius', 'Radius'], ['icons', 'Icons']] },
+    { heading: 'Foundations', items: [
+      ['colors', 'Colors'],
+      sys.typeSamples && ['typography', 'Typography'],
+      sys.showRadius && ['radius', 'Radius'],
+      sys.icons && ['icons', 'Icons'],
+    ].filter(Boolean) },
     ...sys.categories.map((cat) => ({ heading: cat.name, items: cat.components.map((c) => [slug(c.name), c.name]) })),
   ];
 }
@@ -80,13 +86,13 @@ function SystemContent({ sys }) {
       <Section id="colors" title="Colors" description="Every semantic token, read live from the theme. Values follow the current mode.">
         <ColorTokens scopeClass={scopeClass} extraGroups={sys.extraColorGroups} />
       </Section>
-      <Section id="typography" title="Typography" description="The font and the sizes and weights the components use. Values are measured live.">
+      {sys.typeSamples && <Section id="typography" title="Typography" description="The font and the sizes and weights the components use. Values are measured live.">
         <TypeScale scopeClass={scopeClass} samples={sys.typeSamples} />
-      </Section>
-      <Section id="radius" title="Radius" description="Tailwind radius classes, measured live from the theme.">
+      </Section>}
+      {sys.showRadius && <Section id="radius" title="Radius" description="Tailwind radius classes, measured live from the theme.">
         <RadiusScale scopeClass={scopeClass} />
-      </Section>
-      <Section id="icons" title="Icons" description={`This system uses ${sys.icons.library}.`}>
+      </Section>}
+      {sys.icons && <Section id="icons" title="Icons" description={`This system uses ${sys.icons.library}.`}>
         <div className="mb-4 max-w-2xl"><CodeBlock>{sys.icons.snippet}</CodeBlock></div>
         <p className="mb-4 text-sm">
           <a href={sys.icons.href} target="_blank" rel="noreferrer" className="font-medium text-foreground underline underline-offset-4">
@@ -94,7 +100,7 @@ function SystemContent({ sys }) {
           </a>
         </p>
         <div className={cn(scopeClass, 'text-foreground')}>{sys.icons.grid}</div>
-      </Section>
+      </Section>}
       {sys.categories.map((cat) => (
         <div key={cat.name} className="mb-6">
           <h2 className="mb-5 border-b border-border pb-2 text-lg font-semibold tracking-tight text-foreground">{cat.name}</h2>

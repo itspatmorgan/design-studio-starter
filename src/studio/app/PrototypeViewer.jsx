@@ -1,7 +1,6 @@
 import { lazy, Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { PortalContext } from '@/product/components/portal';
-import { TooltipProvider } from '@/product/components/tooltip';
 import { firstView, formatDate } from './Index.jsx';
 import { loadView } from './loadView.js';
 import { Link } from './navigate.jsx';
@@ -158,11 +157,9 @@ function ProductView({ contributor, prototype, group, view }) {
       <ErrorBoundary resetKeys={[key]} FallbackComponent={ViewError}>
         <div className="product-theme bg-background text-foreground relative h-full overflow-auto">
           <PortalContext.Provider value={portal}>
-            <TooltipProvider>
-              <Suspense fallback={null}>
-                <View />
-              </Suspense>
-            </TooltipProvider>
+            <Suspense fallback={null}>
+              <View />
+            </Suspense>
           </PortalContext.Provider>
           <div ref={setPortal} />
         </div>

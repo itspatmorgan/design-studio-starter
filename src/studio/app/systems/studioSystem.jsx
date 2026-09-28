@@ -66,6 +66,7 @@ export const studio = {
       <p>Studio pop-ups render into <Code>document.body</Code>, outside the product wrapper, on purpose.</p>
     </Prose>
   ),
+  showRadius: true,
   extraColorGroups: [{ name: 'Studio only', tokens: [['sidebar-accent-active', 'sidebar-accent-foreground']] }],
   typeSamples: [
     { label: 'text-[26px] font-semibold', className: 'text-[26px] font-semibold tracking-[-0.01em]' },
