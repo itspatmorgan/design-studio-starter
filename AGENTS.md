@@ -1,11 +1,11 @@
 # Prototype Sandbox
 
-If `node_modules/` doesn't exist, or the person is new, follow .agents/skills/setup-contributor/SKILL.md first.
+If `node_modules/` doesn't exist, or the person is new, follow agents/skills/setup-contributor/SKILL.md first.
 
 At the start of every session, read:
-- agent/rules/systems.md
-- agent/rules/prototype-workflow.md
-- agent/rules/contributor-scope.md
+- agents/rules/systems.md
+- agents/rules/prototype-workflow.md
+- agents/rules/contributor-scope.md
 
 Find out who you're working with by running `node scripts/resolve-contributor.js`.
 Create prototypes with `pnpm new "Prototype Name"`.
