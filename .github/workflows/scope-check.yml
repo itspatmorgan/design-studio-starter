@@ -21,7 +21,7 @@ jobs:
           gh issue create \
             --title "Out-of-scope push by ${{ github.actor }}" \
             --body "Scope check failed for ${{ github.event.compare }} (run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})."
-  # Fails on import-guard errors and broken meta.json files.
+  # Fails on type errors (tsc -b), import-guard errors, and broken meta.json files.
   build:
     runs-on: ubuntu-latest
     steps:

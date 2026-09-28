@@ -9,6 +9,8 @@ import { fileURLToPath } from 'node:url';
 import { resolveContributor, loadContributors } from './resolve-contributor.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+// Keys that are app page URLs, so they can't be contributor folders (/systems is the Systems page).
+const RESERVED = new Set(['systems']);
 const PERSONAL = /@(gmail|googlemail|yahoo|hotmail|outlook|live|icloud|me|mac|aol|proton|protonmail|hey)\./i;
 
 function run(cmd, args) {
@@ -23,6 +25,11 @@ const flag = (name) => {
   return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1].trim() : null;
 };
 const yes = args.includes('--yes');
+
+if (RESERVED.has(flag('key'))) {
+  console.error(`Key "${flag('key')}" is reserved (it's an app page URL, /${flag('key')}). Pass a different --key.`);
+  process.exit(1);
+}
 
 const existing = resolveContributor();
 if (existing) {
@@ -40,12 +47,13 @@ let key = flag('key');
 if (!key) {
   const base = (name.split(/\s+/)[0] ?? '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '');
   key = base;
-  for (let n = 2; key && contributors[key]; n++) key = `${base}${n}`;
+  for (let n = 2; key && (contributors[key] || RESERVED.has(key)); n++) key = `${base}${n}`;
 }
 
 const problems = [];
 if (!key) problems.push('No key. Pass --key, or set your Git name (git config user.name).');
 else if (!/^[a-z0-9][a-z0-9-]*$/.test(key)) problems.push(`Key "${key}" should be lowercase letters, numbers, and dashes.`);
+else if (RESERVED.has(key)) problems.push(`Key "${key}" is reserved (it's an app page URL, /${key}). Pass a different --key.`);
 else if (contributors[key]) problems.push(`Key "${key}" is already taken. Pass a different --key.`);
 if (!name) problems.push('No name. Pass --name, or set git config user.name.');
 if (!email) problems.push('No email. Pass --email, or set git config user.email.');

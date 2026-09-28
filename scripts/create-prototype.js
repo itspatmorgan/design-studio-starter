@@ -28,4 +28,4 @@ fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2) + '\n');
 
 execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build-manifest.js')], { stdio: 'inherit' });
 console.log(`Created src/prototypes/${key}/${slug}/`);
-console.log(`Open it with pnpm dev, at /?contributor=${key}&prototype=${slug}`);
+console.log(`Open it with pnpm dev, at /${key}/${slug}`);
