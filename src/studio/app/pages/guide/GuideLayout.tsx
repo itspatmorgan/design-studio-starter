@@ -33,8 +33,8 @@ export default function GuideLayout() {
                 activeOptions={{ exact: true }}
                 className={cn(
                   'block rounded-md px-2.5 py-1.5 text-sm text-foreground/80 transition-colors',
-                  'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                  'data-[status=active]:bg-sidebar-accent-active data-[status=active]:font-medium data-[status=active]:text-sidebar-accent-foreground',
+                  'hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground',
+                  'data-[status=active]:bg-sidebar-foreground/10 data-[status=active]:font-medium data-[status=active]:text-sidebar-accent-foreground',
                 )}
               >
                 {page.title}

@@ -62,13 +62,12 @@ export const studio: DesignSystem = {
   ),
   theme: (
     <Prose>
-      <p>shadcn/ui's default theme with the neutral base color, in <Code>src/studio/styles/index.css</Code>. Light values are on <Code>:root</Code>, dark values on <Code>.dark</Code>. It adds one token, <Code>--sidebar-accent-active</Code>, for the selected nav item.</p>
+      <p>shadcn/ui's default theme with the neutral base color, in <Code>src/studio/styles/index.css</Code>. Light values are on <Code>:root</Code>, dark values on <Code>.dark</Code>.</p>
       <p>To restyle the app for your team, change the values in those two blocks, or paste a theme from the shadcn/ui theme builder. Keep the variable names.</p>
       <p>The dark mode toggle in the rail puts <Code>.dark</Code> on the page. Both systems follow it.</p>
     </Prose>
   ),
   showRadius: true,
-  extraColorTokens: [['Sidebar', ['sidebar-accent-active', 'bg-sidebar-accent-active', 'Sidebar active item (studio only)']]],
   typeSamples: [
     { label: 'text-[26px] font-semibold', className: 'text-[26px] font-semibold tracking-[-0.01em]' },
     { label: 'text-base font-semibold', className: 'text-base font-semibold' },

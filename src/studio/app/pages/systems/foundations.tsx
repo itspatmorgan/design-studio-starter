@@ -114,15 +114,14 @@ function TokenRow({ name, utility, role }: { name: string; utility: string; role
 }
 
 // scopeClass puts the rows inside the system's theme (e.g. .product-theme).
-// extraTokens: [groupName, [name, utility, role]] rows appended to an existing group.
-export function ColorTokens({ scopeClass, extraTokens = [] }: { scopeClass: string; extraTokens?: [group: string, token: Token][] }) {
+export function ColorTokens({ scopeClass }: { scopeClass: string }) {
   return (
     <div className={cn(scopeClass, 'space-y-10 text-foreground')}>
       {COLOR_GROUPS.map((g) => (
         <div key={g.name}>
           <h3 className="mb-3 text-[16px] font-semibold leading-6 tracking-tight text-foreground">{g.name}</h3>
           <div className="divide-y divide-border/60">
-            {[...g.tokens, ...extraTokens.filter(([group]) => group === g.name).map(([, t]) => t)].map(([name, utility, role]) => (
+            {g.tokens.map(([name, utility, role]) => (
               <TokenRow key={name} name={name} utility={utility} role={role} />
             ))}
           </div>

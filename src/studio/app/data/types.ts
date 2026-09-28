@@ -40,7 +40,6 @@ export type DesignSystem = {
   intro: ReactNode;
   theme: ReactNode;
   showRadius?: boolean;
-  extraColorTokens?: [group: string, token: [name: string, utility: string, role: string]][];
   typeSamples?: TypeSampleSpec[];
   icons?: { library: string; href: string; snippet: string; grid: ReactNode };
   categories: { name: string; components: ComponentSpec[] }[];

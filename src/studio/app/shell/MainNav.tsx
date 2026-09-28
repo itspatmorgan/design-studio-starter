@@ -10,7 +10,7 @@ import { useOpenPalette } from '@/studio/app/shell/CommandPalette';
 
 const railButton = cn(
   'flex size-8 items-center justify-center rounded-md text-sidebar-foreground transition-colors',
-  'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+  'hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground',
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring',
 );
 
@@ -27,7 +27,7 @@ function RailLink({ to, label, active, children, className }: RailLinkProps) {
             aria-label={label}
             activeOptions={{ exact: true }}
             aria-current={active ? 'page' : undefined}
-            className={cn(railButton, active && 'bg-sidebar-accent-active text-sidebar-accent-foreground', className)}
+            className={cn(railButton, active && 'bg-sidebar-foreground/10 text-sidebar-accent-foreground', className)}
           />
         }
       >

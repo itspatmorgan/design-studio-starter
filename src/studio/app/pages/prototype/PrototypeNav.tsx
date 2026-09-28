@@ -21,8 +21,8 @@ function ViewLink({ proto, view, active, depth }: { proto: Prototype; view: View
       aria-current={active ? 'page' : undefined}
       style={{ paddingLeft: 8 + depth * 16 }}
       className={cn(row, active
-        ? 'bg-sidebar-accent-active font-medium text-sidebar-accent-foreground'
-        : 'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground')}
+        ? 'bg-sidebar-foreground/10 font-medium text-sidebar-accent-foreground'
+        : 'text-muted-foreground hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground')}
     >
       <HugeiconsIcon icon={CodeIcon} size={14} className="shrink-0 text-muted-foreground" />
       <span className="min-w-0 flex-1 truncate">{viewLabel(view.name)}</span>
@@ -34,7 +34,7 @@ function ViewLink({ proto, view, active, depth }: { proto: Prototype; view: View
 function GroupFolder({ name, open, onOpenChange, children }: { name: string; open: boolean; onOpenChange: (open: boolean) => void; children: ReactNode }) {
   return (
     <Collapsible open={open} onOpenChange={onOpenChange}>
-      <CollapsibleTrigger className={cn(row, 'pl-2 text-left font-medium text-sidebar-foreground hover:bg-sidebar-accent')}>
+      <CollapsibleTrigger className={cn(row, 'pl-2 text-left font-medium text-sidebar-foreground hover:bg-sidebar-foreground/5')}>
         <HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !open && '-rotate-90')} />
         <span className="min-w-0 flex-1 truncate">{viewLabel(name)}</span>
       </CollapsibleTrigger>
@@ -52,7 +52,7 @@ function About({ proto }: { proto: Prototype }) {
     <Collapsible open={open} onOpenChange={setOpen} className="shrink-0 border-t border-sidebar-border">
       <CollapsibleTrigger
         aria-label={open ? 'Collapse prototype info' : 'Expand prototype info'}
-        className="flex h-9 w-full items-center gap-1.5 px-2.5 text-left hover:bg-sidebar-accent"
+        className="flex h-9 w-full items-center gap-1.5 px-2.5 text-left hover:bg-sidebar-foreground/5"
       >
         <span className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">About</span>
         <HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', open && 'rotate-180')} />
@@ -83,14 +83,14 @@ function About({ proto }: { proto: Prototype }) {
   );
 }
 
-const iconButton = 'inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground';
+const iconButton = 'inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground';
 
 function IconButton({ label, onClick, pressed, children }: { label: string; onClick: () => void; pressed?: boolean; children: ReactNode }) {
   return (
     <Tooltip>
       <TooltipTrigger
         render={<button type="button" aria-label={label} aria-pressed={pressed} onClick={onClick}
-          className={cn(iconButton, pressed && 'bg-sidebar-accent text-sidebar-accent-foreground')} />}
+          className={cn(iconButton, pressed && 'bg-sidebar-foreground/10 text-sidebar-accent-foreground')} />}
       >
         {children}
       </TooltipTrigger>

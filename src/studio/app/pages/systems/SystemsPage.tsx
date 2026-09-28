@@ -52,8 +52,8 @@ function SystemNav({ system }: { system: SystemId }) {
                 activeOptions={{ exact: true }}
                 className={cn(
                   'block rounded-md px-2.5 py-1.5 text-sm text-foreground/80 transition-colors',
-                  'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                  'data-[status=active]:bg-sidebar-accent-active data-[status=active]:font-medium data-[status=active]:text-sidebar-accent-foreground',
+                  'hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground',
+                  'data-[status=active]:bg-sidebar-foreground/10 data-[status=active]:font-medium data-[status=active]:text-sidebar-accent-foreground',
                 )}
               >
                 {label}
@@ -75,7 +75,7 @@ function SystemPage({ sys, page }: { sys: DesignSystem; page?: string }) {
     case 'theme':
       return <><PageHeader title="Theme" />{sys.theme}</>;
     case 'colors':
-      return <><PageHeader title="Colors" description="Every semantic token, read live from the theme. Values follow the current mode." /><ColorTokens scopeClass={scopeClass} extraTokens={sys.extraColorTokens} /></>;
+      return <><PageHeader title="Colors" description="Every semantic token, read live from the theme. Values follow the current mode." /><ColorTokens scopeClass={scopeClass} /></>;
     case 'typography':
       return sys.typeSamples ? <><PageHeader title="Typography" description="The font and the sizes and weights the components use. Values are measured live." /><TypeScale scopeClass={scopeClass} samples={sys.typeSamples} /></> : null;
     case 'radius':
