@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { PortalContext } from '@/product/components/portal';
 import { TooltipProvider } from '@/product/components/tooltip';
@@ -118,12 +118,17 @@ function PrototypeNav({ proto, current }) {
   );
 }
 
+// One lazy component per view, created once, so React can pause and retry
+// while a view loads without starting the load over.
+const lazyViews = new Map();
+function getView(params, key) {
+  if (!lazyViews.has(key)) lazyViews.set(key, lazy(() => loadView(params)));
+  return lazyViews.get(key);
+}
+
 function ProductView({ contributor, prototype, group, view }) {
   const key = [contributor, prototype, group, view].join('/');
-  const View = useMemo(
-    () => lazy(() => loadView({ contributor, prototype, group, view })),
-    [key],
-  );
+  const View = getView({ contributor, prototype, group, view }, key);
   const [portal, setPortal] = useState(null);
 
   return (
@@ -133,7 +138,7 @@ function ProductView({ contributor, prototype, group, view }) {
         <PortalContext.Provider value={portal}>
           <TooltipProvider>
             <ErrorBoundary resetKeys={[key]} fallback={<p className="p-8">This view failed to load.</p>}>
-              <Suspense fallback={<p className="p-8">Loading…</p>}>
+              <Suspense fallback={null}>
                 <View />
               </Suspense>
             </ErrorBoundary>

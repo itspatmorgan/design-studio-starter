@@ -2,7 +2,7 @@
 export function navigate(params, { replace = false } = {}) {
   const search = new URLSearchParams(Object.entries(params).filter(([, v]) => v != null && v !== '')).toString();
   history[replace ? 'replaceState' : 'pushState'](null, '', search ? `?${search}` : location.pathname);
-  window.dispatchEvent(new PopStateEvent('popstate'));
+  window.dispatchEvent(new PopStateEvent('popstate', { state: { replace } }));
 }
 
 // Wrappers like tooltips pass their own onClick, so it runs first instead of replacing ours.

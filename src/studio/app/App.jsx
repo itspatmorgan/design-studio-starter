@@ -1,5 +1,5 @@
 import '../styles/index.css';
-import { useEffect, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 import Index, { firstView } from './Index.jsx';
 import PrototypeViewer, { viewLabel } from './PrototypeViewer.jsx';
 import SystemsPage from './SystemsPage.jsx';
@@ -36,7 +36,12 @@ export default function App() {
   const [params, setParams] = useState(readUrl);
   const manifest = useManifest();
   useEffect(() => {
-    const onPop = () => setParams(readUrl());
+    // A transition keeps the current view on screen while the next one loads.
+    // Search updates skip it, so typing stays instant.
+    const onPop = (e) => {
+      if (e.state?.replace) setParams(readUrl());
+      else startTransition(() => setParams(readUrl()));
+    };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);
