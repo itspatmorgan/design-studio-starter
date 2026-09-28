@@ -1,184 +1,21 @@
-import { useState } from 'react';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { ArrowDown01Icon } from '@hugeicons/core-free-icons';
+import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-// Studio system: the app UI's own components.
-import { Button as StudioButton } from '@/studio/components/button';
-import { Badge } from '@/studio/components/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/studio/components/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
-import { Tooltip as StudioTooltip, TooltipContent as StudioTooltipContent, TooltipTrigger as StudioTooltipTrigger } from '@/studio/components/tooltip';
-import { ContributorAvatar } from '@/studio/components/avatar';
-// Product system: what prototypes build with. Shown here inside .product-theme.
-import { Switch } from '@/product/components/switch';
-import { Checkbox } from '@/product/components/checkbox';
-import { Label } from '@/product/components/label';
-import { Card as ProductCard, CardContent as ProductCardContent, CardDescription as ProductCardDescription, CardHeader as ProductCardHeader, CardTitle as ProductCardTitle } from '@/product/components/card';
-import { PortalContext } from '@/product/components/portal';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/product/components/tooltip';
-import { Button } from '@/product/components/button';
-import { Input } from '@/product/components/input';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/product/components/dialog';
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
-  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
-} from '@/product/components/alert-dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/product/components/dropdown-menu';
-import { Popover, PopoverContent, PopoverTrigger } from '@/product/components/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/product/components/select';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/product/components/sheet';
+import { CodeBlock, ColorTokens, ComponentDemo, RadiusScale, Section, TypeScale, slug } from './systems/foundations';
+import { product } from './systems/productSystem';
+import { studio } from './systems/studioSystem';
 
-// Each system: a title, a short intro, and one live demo per component.
-const SYSTEMS = {
-  product: {
-    label: 'Product',
-    intro: 'The components prototypes build with, from src/product/components. They take the product look from theme.css, inside the .product-theme wrapper.',
-    components: [
-      { name: 'Button', demo: () => (
-        <>
-          <Button>Primary</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="outline">Outline</Button>
-          <Button variant="ghost">Ghost</Button>
-        </>
-      ) },
-      { name: 'Input', demo: () => <Input placeholder="Type something" className="w-64" /> },
-      { name: 'Label', demo: () => <Label htmlFor="demo-label">Email</Label> },
-      { name: 'Checkbox', demo: () => (
-        <div className="flex items-center gap-2"><Checkbox id="demo-checkbox" /><Label htmlFor="demo-checkbox">Remember me</Label></div>
-      ) },
-      { name: 'Switch', demo: () => (
-        <div className="flex items-center gap-2"><Switch id="demo-switch" /><Label htmlFor="demo-switch">Notifications</Label></div>
-      ) },
-      { name: 'Card', demo: () => (
-        <ProductCard className="w-72">
-          <ProductCardHeader><ProductCardTitle>Card title</ProductCardTitle><ProductCardDescription>A short description.</ProductCardDescription></ProductCardHeader>
-          <ProductCardContent className="text-sm">Card content.</ProductCardContent>
-        </ProductCard>
-      ) },
-      { name: 'Select', demo: () => (
-        <Select>
-          <SelectTrigger className="w-48"><SelectValue placeholder="Pick one" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="one">One</SelectItem>
-            <SelectItem value="two">Two</SelectItem>
-          </SelectContent>
-        </Select>
-      ) },
-      { name: 'Dialog', demo: () => (
-        <Dialog>
-          <DialogTrigger asChild><Button variant="outline">Open dialog</Button></DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Product dialog</DialogTitle>
-              <DialogDescription>Rendered in the portal container, so it keeps the product look.</DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-      ) },
-      { name: 'Alert dialog', demo: () => (
-        <AlertDialog>
-          <AlertDialogTrigger asChild><Button variant="outline">Delete item</Button></AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete this item?</AlertDialogTitle>
-              <AlertDialogDescription>This is only a demo.</AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction>Delete</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      ) },
-      { name: 'Dropdown menu', demo: () => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild><Button variant="outline">Open menu</Button></DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem>Duplicate</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) },
-      { name: 'Popover', demo: () => (
-        <Popover>
-          <PopoverTrigger asChild><Button variant="outline">Open popover</Button></PopoverTrigger>
-          <PopoverContent>Popover content</PopoverContent>
-        </Popover>
-      ) },
-      { name: 'Sheet', demo: () => (
-        <Sheet>
-          <SheetTrigger asChild><Button variant="outline">Open sheet</Button></SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>Product sheet</SheetTitle>
-              <SheetDescription>A panel that slides in from the side.</SheetDescription>
-            </SheetHeader>
-          </SheetContent>
-        </Sheet>
-      ) },
-      { name: 'Tooltip', demo: () => (
-        <Tooltip>
-          <TooltipTrigger asChild><Button variant="outline">Hover me</Button></TooltipTrigger>
-          <TooltipContent>Product tooltip</TooltipContent>
-        </Tooltip>
-      ) },
-    ],
-  },
-  studio: {
-    label: 'Studio',
-    intro: 'The components for the app UI, from src/studio/components: navigation, the index, and this page. Prototypes never import them.',
-    components: [
-      { name: 'Button', demo: () => (
-        <>
-          <StudioButton>Primary</StudioButton>
-          <StudioButton variant="secondary">Secondary</StudioButton>
-          <StudioButton variant="outline">Outline</StudioButton>
-          <StudioButton variant="ghost">Ghost</StudioButton>
-        </>
-      ) },
-      { name: 'Badge', demo: () => (
-        <>
-          <Badge>Default</Badge>
-          <Badge variant="secondary">Secondary</Badge>
-          <Badge variant="outline">Outline</Badge>
-        </>
-      ) },
-      { name: 'Card', demo: () => (
-        <Card className="w-72">
-          <CardHeader>
-            <CardTitle>Card title</CardTitle>
-            <CardDescription>A short description.</CardDescription>
-          </CardHeader>
-          <CardContent className="text-muted-foreground">Card content</CardContent>
-        </Card>
-      ) },
-      { name: 'Collapsible', demo: () => (
-        <Collapsible className="w-64 text-sm">
-          <CollapsibleTrigger className="group flex items-center gap-1.5 font-medium">
-            <HugeiconsIcon icon={ArrowDown01Icon} size={14} className="text-muted-foreground transition-transform group-data-[state=closed]:-rotate-90" />
-            Toggle details
-          </CollapsibleTrigger>
-          <CollapsibleContent className="pt-2 pl-5 text-muted-foreground">Hidden until opened.</CollapsibleContent>
-        </Collapsible>
-      ) },
-      { name: 'Tooltip', demo: () => (
-        <StudioTooltip>
-          <StudioTooltipTrigger asChild><StudioButton variant="outline">Hover me</StudioButton></StudioTooltipTrigger>
-          <StudioTooltipContent>Studio tooltip</StudioTooltipContent>
-        </StudioTooltip>
-      ) },
-      { name: 'Avatar', demo: () => (
-        <>
-          <ContributorAvatar name="Example Contributor" size={20} />
-          <ContributorAvatar name="Example Contributor" size={32} />
-        </>
-      ) },
-    ],
-  },
-};
+// Systems page: one tab per design system. Each documents its purpose, theme,
+// foundations (read live from the CSS), icons, and every component.
+const SYSTEMS = { product, studio };
 
-const slug = (name) => name.toLowerCase().replace(/\s+/g, '-');
+// Sidebar groups, in page order. Component categories come from the system.
+function navGroups(sys) {
+  return [
+    { items: [['intro', 'Introduction'], ['theme', 'Theme']] },
+    { heading: 'Foundations', items: [['colors', 'Colors'], ['typography', 'Typography'], ['radius', 'Radius'], ['icons', 'Icons']] },
+    ...sys.categories.map((cat) => ({ heading: cat.name, items: cat.components.map((c) => [slug(c.name), c.name]) })),
+  ];
+}
 
 function SystemNav({ system, setSystem, active, onPick }) {
   return (
@@ -200,10 +37,13 @@ function SystemNav({ system, setSystem, active, onPick }) {
         ))}
       </div>
       <div className="flex-1 overflow-y-auto px-2.5 py-4">
-        <NavItem label="Introduction" active={active === 'intro'} onClick={() => onPick('intro')} />
-        <p className="mt-5 mb-2 px-2.5 text-sm font-semibold text-foreground">Components</p>
-        {SYSTEMS[system].components.map((c) => (
-          <NavItem key={c.name} label={c.name} active={active === slug(c.name)} onClick={() => onPick(slug(c.name))} />
+        {navGroups(SYSTEMS[system]).map((g, i) => (
+          <div key={g.heading ?? i}>
+            {g.heading && <p className="mt-5 mb-2 px-2.5 text-sm font-semibold text-foreground">{g.heading}</p>}
+            {g.items.map(([id, label]) => (
+              <NavItem key={id} label={label} active={active === id} onClick={() => onPick(id)} />
+            ))}
+          </div>
         ))}
       </div>
     </nav>
@@ -215,6 +55,7 @@ function NavItem({ label, active, onClick }) {
     <button
       type="button"
       onClick={onClick}
+      aria-current={active ? 'true' : undefined}
       className={cn(
         'block w-full rounded-md px-2.5 py-2 text-left text-sm font-medium transition-colors',
         active
@@ -227,60 +68,82 @@ function NavItem({ label, active, onClick }) {
   );
 }
 
-// Frame wraps each demo box: plain for studio, ProductFrame for product.
-function ComponentList({ components, Frame = 'div' }) {
-  return components.map((c) => (
-    <section key={c.name} id={slug(c.name)} className="mb-12 scroll-mt-8">
-      <h2 className="mb-4 text-base font-semibold tracking-tight text-foreground">{c.name}</h2>
-      <Frame>
-        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-background p-6">
-          <c.demo />
-        </div>
-      </Frame>
-    </section>
-  ));
-}
-
-// Each product demo gets the same wrapper, portal container, and TooltipProvider as the viewer.
-// Headings stay outside it, in the app UI look (so they follow dark mode).
-function ProductFrame({ children }) {
-  const [portal, setPortal] = useState(null);
+function SystemContent({ sys }) {
+  const { scopeClass, Frame } = sys;
   return (
-    <div className="product-theme text-foreground">
-      <PortalContext.Provider value={portal}>
-        <TooltipProvider>{children}</TooltipProvider>
-      </PortalContext.Provider>
-      <div ref={setPortal} />
-    </div>
+    <>
+      <header id="intro" data-section className="mb-14 scroll-mt-6">
+        <h1 className="mb-4 text-[26px] font-semibold leading-9 tracking-[-0.01em] text-foreground">{sys.label}</h1>
+        {sys.intro}
+      </header>
+      <Section id="theme" title="Theme">{sys.theme}</Section>
+      <Section id="colors" title="Colors" description="Every semantic token, read live from the theme. Values follow the current mode.">
+        <ColorTokens scopeClass={scopeClass} extraGroups={sys.extraColorGroups} />
+      </Section>
+      <Section id="typography" title="Typography" description="The font and the sizes and weights the components use. Values are measured live.">
+        <TypeScale scopeClass={scopeClass} samples={sys.typeSamples} />
+      </Section>
+      <Section id="radius" title="Radius" description="Tailwind radius classes, measured live from the theme.">
+        <RadiusScale scopeClass={scopeClass} />
+      </Section>
+      <Section id="icons" title="Icons" description={`This system uses ${sys.icons.library}.`}>
+        <div className="mb-4 max-w-2xl"><CodeBlock>{sys.icons.snippet}</CodeBlock></div>
+        <p className="mb-4 text-sm">
+          <a href={sys.icons.href} target="_blank" rel="noreferrer" className="font-medium text-foreground underline underline-offset-4">
+            Browse all icons
+          </a>
+        </p>
+        <div className={cn(scopeClass, 'text-foreground')}>{sys.icons.grid}</div>
+      </Section>
+      {sys.categories.map((cat) => (
+        <div key={cat.name} className="mb-6">
+          <h2 className="mb-5 border-b border-border pb-2 text-lg font-semibold tracking-tight text-foreground">{cat.name}</h2>
+          {cat.components.map((c) => <ComponentDemo key={c.name} component={c} Frame={Frame} />)}
+        </div>
+      ))}
+    </>
   );
 }
 
 export default function SystemsPage() {
   const [system, setSystem] = useState('product');
   const [active, setActive] = useState('intro');
-  const { label, intro, components } = SYSTEMS[system];
+  const mainRef = useRef(null);
+  const lockUntil = useRef(0);
+
+  // Scroll spy: the active item is the last section whose top has passed the top of the pane.
+  useEffect(() => {
+    const main = mainRef.current;
+    const onScroll = () => {
+      if (Date.now() < lockUntil.current) return;
+      const top = main.getBoundingClientRect().top + 80;
+      const all = [...main.querySelectorAll('[data-section]')];
+      let current = 'intro';
+      for (const el of all) if (el.getBoundingClientRect().top <= top) current = el.id;
+      if (main.scrollTop + main.clientHeight >= main.scrollHeight - 2) current = all.at(-1)?.id ?? current;
+      setActive(current);
+    };
+    main.addEventListener('scroll', onScroll, { passive: true });
+    return () => main.removeEventListener('scroll', onScroll);
+  }, [system]);
 
   const pick = (id) => {
     setActive(id);
+    lockUntil.current = Date.now() + 800; // keep the clicked item active during the smooth scroll
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
   const switchSystem = (id) => {
     setSystem(id);
     setActive('intro');
+    mainRef.current?.scrollTo({ top: 0 });
   };
 
   return (
     <div className="flex min-h-0 flex-1">
       <SystemNav system={system} setSystem={switchSystem} active={active} onPick={pick} />
-      <main className="min-w-0 flex-1 overflow-y-auto">
-        <div className="max-w-5xl px-8 py-8">
-          <header id="intro" className="mb-12">
-            <h1 className="mb-2 text-[26px] font-semibold leading-9 tracking-[-0.01em] text-foreground">{label}</h1>
-            <p className="max-w-2xl text-sm text-muted-foreground">{intro}</p>
-          </header>
-          {system === 'product'
-            ? <div data-testid="product-set"><ComponentList components={components} Frame={ProductFrame} /></div>
-            : <div data-testid="studio-set"><ComponentList components={components} /></div>}
+      <main ref={mainRef} className="min-w-0 flex-1 overflow-y-auto">
+        <div className="max-w-5xl px-8 py-8" data-testid={`${system}-set`}>
+          <SystemContent key={system} sys={SYSTEMS[system]} />
         </div>
       </main>
     </div>
