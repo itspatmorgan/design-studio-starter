@@ -91,7 +91,8 @@ function viewTemplate(name) {
   const base = name.replace(/\.[jt]sx$/, '');
   const component = base.split(/[^a-z0-9]+/i).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join('') || 'View';
   const safe = /^[A-Z]/.test(component) ? component : `View${component}`;
-  return `export default function ${safe}() {\n  return <main className="p-8">${base}</main>;\n}\n`;
+  // It starts as a placeholder (src/lib/placeholder.tsx) until something is built in it.
+  return `import { Placeholder } from '@/lib/placeholder';\n\nexport default function ${safe}() {\n  return <Placeholder file={import.meta.url} />;\n}\n`;
 }
 
 // Moves a file or folder to the Trash with macOS's built-in trash command, or, where

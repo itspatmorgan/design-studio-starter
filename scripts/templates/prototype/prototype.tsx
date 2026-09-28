@@ -1,9 +1,5 @@
-import { Button } from '@/product/components/button';
+import { Placeholder } from '@/lib/placeholder';
 
 export default function Prototype() {
-  return (
-    <main className="p-8">
-      <Button>Start here</Button>
-    </main>
-  );
+  return <Placeholder file={import.meta.url} />;
 }
