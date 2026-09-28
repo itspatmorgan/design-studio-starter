@@ -97,3 +97,16 @@ export async function createPrototype(title: string, description: string) {
   if (!res.ok) throw new Error(body.error ?? 'That didn\'t work.');
   return body as { contributor: string; prototype: string; manifest: Manifest };
 }
+
+// Moves a prototype you own to the Trash. Returns where it went and the new manifest.
+export async function deletePrototype(p: Prototype) {
+  const res = await fetch('/__studio/prototype-delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },
+    body: JSON.stringify({ contributor: p.contributorKey, prototype: p.id }),
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error ?? 'That didn\'t work.');
+  return body as { trashedTo: string; manifest: Manifest };
+}
+

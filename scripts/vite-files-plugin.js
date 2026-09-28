@@ -11,6 +11,7 @@
 //        delete   { path }                        to the Trash (or .trash/ at the repo root)
 //        meta     { title, description, start }   edit meta.json (start "" opens the default view)
 //   POST /__studio/prototype { title, description }   a new prototype in your folder, like pnpm new
+//   POST /__studio/prototype-delete { contributor, prototype }   move a prototype you own to the Trash
 //     It replies with the new path and the updated manifest, so the app can follow a renamed view.
 //
 // Opening a file in your editor uses Vite's built-in /__open-in-editor.
@@ -239,6 +240,16 @@ export default function filesPlugin() {
           } catch (e) {
             return send(res, 400, { error: e.message });
           }
+        }
+        if (req.method === 'POST' && url.pathname === '/prototype-delete') {
+          const { contributor, prototype } = await readJson(req);
+          const dir = prototypeDir(contributor, prototype);
+          if (!dir) return send(res, 404, { error: 'No such prototype.' });
+          if (contributor !== me()) return send(res, 403, { error: `You can delete only your own prototypes (you're ${me() ?? 'not in contributors.json'}).` });
+          const trashedTo = trash(dir);
+          const { manifest } = buildManifest();
+          publishManifest(server, manifest, req.headers['x-studio-tab']);
+          return send(res, 200, { trashedTo, manifest });
         }
         if (req.method === 'POST' && url.pathname === '/reveal') {
           const { contributor, prototype, path: rel } = await readJson(req);

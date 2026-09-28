@@ -1,9 +1,9 @@
 // Edits a prototype's meta.json from the app, in dev: its title, description, and the view
 // it opens on. Saving writes meta.json (scripts/vite-files-plugin.js), the same file an agent
-// would edit, and the app updates live.
+// would edit, and the app updates live. The prototype can also be deleted from here.
 import { useState } from 'react';
-import { useRouter } from '@tanstack/react-router';
-import { fileOp } from '@/studio/app/data/files';
+import { useNavigate, useRouter } from '@tanstack/react-router';
+import { deletePrototype, fileOp } from '@/studio/app/data/files';
 import { setManifest, viewSlug } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
 import { Button } from '@/studio/components/button';
@@ -18,6 +18,8 @@ type Props = { proto: Prototype; open: boolean; onOpenChange: (open: boolean) =>
 
 export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props) {
   const router = useRouter();
+  const navigate = useNavigate();
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const start = proto.start ? startKey(proto.start) : '';
@@ -42,7 +44,26 @@ export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props
     }
   }
 
+  async function remove() {
+    setSaving(true);
+    setError(null);
+    try {
+      const result = await deletePrototype(proto);
+      setManifest(result.manifest);
+      setConfirmingDelete(false);
+      onOpenChange(false);
+      // Leave first, so the deleted prototype's page is never reloaded.
+      await navigate({ to: '/' });
+      await router.invalidate();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
+    <>
     <Dialog open={open} onOpenChange={(o) => { setError(null); onOpenChange(o); }}>
       <DialogContent>
         {/* key: reset the fields to the saved values each time it opens */}
@@ -75,11 +96,30 @@ export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props
           </label>
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
+            <Button type="button" variant="ghost" className="mr-auto text-destructive hover:text-destructive" onClick={() => setConfirmingDelete(true)}>
+              Delete prototype
+            </Button>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
+    <Dialog open={confirmingDelete} onOpenChange={setConfirmingDelete}>
+      <DialogContent showCloseButton={false}>
+        <DialogHeader>
+          <DialogTitle>Delete {proto.title}?</DialogTitle>
+          <DialogDescription>
+            The whole prototype, src/prototypes/{proto.contributorKey}/{proto.id}/, goes to the Trash, so you can put it back from there. Its link stops working.
+          </DialogDescription>
+        </DialogHeader>
+        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setConfirmingDelete(false)}>Cancel</Button>
+          <Button variant="destructive" disabled={saving} onClick={remove}>{saving ? 'Deleting…' : 'Move to Trash'}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
