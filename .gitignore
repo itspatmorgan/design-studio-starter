@@ -2,3 +2,4 @@ node_modules/
 dist/
 public/prototypes/manifest.json
 .trash/
+.DS_Store
