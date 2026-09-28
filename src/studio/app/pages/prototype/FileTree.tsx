@@ -333,7 +333,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
                 <CollapsibleTrigger {...dragProps(node)} {...keyProps(node)} style={indent(depth)}
                   className={cn(row, 'text-left font-medium text-sidebar-foreground hover:bg-sidebar-foreground/5')}>
                   <HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !open && '-rotate-90')} />
-                  <span className="min-w-0 flex-1 truncate">{live ? node.name : itemLabel(node.name)}</span>
+                  <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{itemLabel(node.name)}</span>
                 </CollapsibleTrigger>
               ))}
               <CollapsibleContent>
@@ -345,7 +345,12 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
         );
       }
       const item = items.get(node.path);
-      const label = live ? <FileName name={node.name} /> : <span className="min-w-0 flex-1 truncate">{itemLabel(node.name)}</span>;
+      // Items and folders show readable names ("user-settings.tsx" → "User Settings"), like the
+      // rest of the app; the file name is in the tooltip and the rename field. Other files, shown
+      // with Show all files, keep their real names, since they open in your editor.
+      const label = item
+        ? <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{itemLabel(node.name)}</span>
+        : <FileName name={node.name} />;
       // Items open in the app.
       if (item) {
         const active = item === current;
