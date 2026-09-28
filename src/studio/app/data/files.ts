@@ -1,7 +1,7 @@
 // A prototype's files, from the dev server (scripts/vite-files-plugin.js). Dev only: on the
 // deployed site these return null, and the prototype navigation lists views from the manifest.
 import { useEffect, useState } from 'react';
-import type { Prototype } from '@/studio/app/data/types';
+import type { Manifest, Prototype } from '@/studio/app/data/types';
 
 export type FileNode = { name: string; path: string; dir: boolean; children?: FileNode[] };
 
@@ -13,18 +13,21 @@ async function fetchFiles(p: Prototype): Promise<FileNode[] | null> {
 }
 
 // The prototype's file tree, refreshed whenever its files are added or removed.
+// reload() refreshes it right away, after the app changes a file itself.
 export function useFileTree(proto: Prototype) {
   const [files, setFiles] = useState<FileNode[] | null>(null);
+  const [reload, setReload] = useState(() => () => {});
   useEffect(() => {
     if (!import.meta.hot) return;
     let live = true;
     const load = () => fetchFiles(proto).then((f) => { if (live) setFiles(f); }).catch(() => {});
+    setReload(() => load);
     load();
     const onChange = (changed: string[]) => { if (changed.includes(key(proto))) load(); };
     import.meta.hot.on('studio:files', onChange);
     return () => { live = false; import.meta.hot?.off('studio:files', onChange); };
   }, [proto.contributorKey, proto.id]);
-  return files;
+  return { files, reload };
 }
 
 // The file's path from the repo root, like src/prototypes/patrick/hello-world/meta.json.
@@ -44,3 +47,37 @@ export function revealInFinder(p: Prototype, file: string) {
     body: JSON.stringify({ contributor: p.contributorKey, prototype: p.id, path: file }),
   });
 }
+
+// Your contributors.json key, from the dev server, or null (on the deployed site, or if
+// you're not a contributor). The app lets you change files only in your own prototypes.
+let meRequest: Promise<string | null> | undefined;
+export function useMe() {
+  const [me, setMe] = useState<string | null>(null);
+  useEffect(() => {
+    if (!import.meta.hot) return;
+    meRequest ??= fetch('/__studio/me').then((r) => r.json()).then((j: { key: string | null }) => j.key).catch(() => null);
+    meRequest.then(setMe);
+  }, []);
+  return me;
+}
+
+export type FileOp =
+  | { op: 'create'; path: string; name: string; dir?: boolean }
+  | { op: 'rename'; path: string; name: string }
+  | { op: 'move'; path: string; to: string }
+  | { op: 'delete'; path: string };
+
+export type FileOpResult = { path?: string; trashedTo?: string; manifest: Manifest };
+
+// Changes a file in your prototype (scripts/vite-files-plugin.js). Throws the server's message.
+export async function fileOp(p: Prototype, op: FileOp): Promise<FileOpResult> {
+  const res = await fetch('/__studio/op', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contributor: p.contributorKey, prototype: p.id, ...op }),
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error ?? 'That didn\'t work.');
+  return body;
+}
+

@@ -23,6 +23,15 @@ Always create a prototype with `pnpm new "Prototype Name"`, or by asking your ag
 
 While the app is running locally, the prototype's navigation shows all of its files and folders, and it updates as they change. Views open in the app. Other files, like `meta.json` or a component, open in your code editor. Right-click any file to reveal it in Finder or copy its path. On the deployed site, the navigation lists just the views.
 
+In your own prototypes, the navigation works like a file browser:
+
+- **New file or folder:** the buttons next to Files, or right-click a folder. A new `.tsx` file starts as a view and opens right away.
+- **Rename:** right-click, or select a file and press F2.
+- **Move:** drag a file or folder onto another folder, or onto the empty space below the list for the top level.
+- **Delete:** right-click, or press Delete. It goes to the Trash, so you can put it back.
+
+Each of these is an ordinary change to the files, the same as your agent would make, so you can mix both ways of working. If you rename or move the view you're looking at, the app follows it, and `start` in `meta.json` is updated to match.
+
 ## Views
 
 A view is one screen of your prototype. Any `.tsx` file at the top level of the folder is a view, as long as it exports a React component. The prototype opens on `prototype.tsx`, unless `meta.json` says to start somewhere else.

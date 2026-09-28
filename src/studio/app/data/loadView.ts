@@ -14,10 +14,23 @@ export function findView({ contributor, prototype, group, view }: ViewPath) {
   return views[`${base}.tsx`] ?? views[`${base}.jsx`];
 }
 
-// One import per view, reused on every later visit.
+// In dev, resolves when Vite next updates the list above (or after a timeout).
+let waiting: (() => void)[] = [];
+const nextViews = (ms: number) => new Promise<void>((resolve) => {
+  waiting.push(resolve);
+  setTimeout(resolve, ms);
+});
+
+// One import per view, reused on every later visit. In dev, a view the app just created or
+// renamed can be in the manifest a moment before Vite adds it here: pass inManifest to wait
+// for it briefly. An unknown address doesn't wait.
 const loaded = new Map<string, Promise<ViewModule>>();
-export function loadView(path: ViewPath): Promise<ViewModule> | undefined {
-  const load = findView(path);
+export async function loadView(path: ViewPath, { inManifest = false } = {}): Promise<ViewModule | undefined> {
+  let load = findView(path);
+  if (!load && inManifest && import.meta.hot) {
+    await nextViews(2000);
+    load = findView(path);
+  }
   if (!load) return undefined;
   const key = [path.contributor, path.prototype, path.group ?? '', path.view].join('/');
   if (!loaded.has(key)) loaded.set(key, load());
@@ -31,5 +44,7 @@ if (import.meta.hot) {
     if (!next) return;
     views = next.views;
     loaded.clear();
+    waiting.forEach((resolve) => resolve());
+    waiting = [];
   });
 }

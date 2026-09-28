@@ -130,7 +130,8 @@ async function viewLoader({ contributor, prototype, group, view }: ViewParams) {
   const entry = proto && !view ? firstView(proto) : undefined;
   const g = view ? group ?? null : entry?.group ?? null;
   const v = view ?? (entry && viewSlug(entry.name));
-  const mod = proto && v ? await loadView({ contributor, prototype, group: g, view: v }) : undefined;
+  const inManifest = Boolean(proto?.views.some((x) => viewSlug(x.name) === v && (x.group ?? null) === g));
+  const mod = proto && v ? await loadView({ contributor, prototype, group: g, view: v }, { inManifest }) : undefined;
   if (!proto || !v || !mod) throw notFound();
   return {
     Component: mod.default,

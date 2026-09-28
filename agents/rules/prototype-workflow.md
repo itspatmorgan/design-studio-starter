@@ -34,6 +34,8 @@ src/prototypes/<contributor>/<prototype>/
 
 - Keep every committed file under 750 KB. Export images as WebP or compressed JPEG, at the size they're shown. The pre-commit hook blocks larger files, and CI fails on them; when it does, make the file smaller rather than working around the check.
 
+- The person may also create, rename, move, and delete files from the app's file tree while `pnpm dev` runs. Those are ordinary file changes: re-read the folder rather than assuming it's as you left it.
+
 ## Saving and sharing
 
 - Commit when a piece of work is done, with a short message like "Add Settings Page" or "Settings Page: add save state".
