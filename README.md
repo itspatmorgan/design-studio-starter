@@ -6,6 +6,7 @@ A starter template for a shared prototyping sandbox: one repo where designers an
 
 - **Three contracts.** A prototype is a folder. A script turns folders into a manifest. The app reads the manifest and the URL.
 - **Contributor scope.** You can change anything in your folder, but only your own folder. Everything else is the platform.
+- **Two systems.** The studio system (`src/studio/`) is the app's own wrapper: nav, index, prototype navigation, palette, and the Systems page. The product system (`src/product/`) is a placeholder for your real product design system. Replace all of it with your own components and theme, keeping it in `src/product/` and scoped under `.product-theme`.
 - **Prototype scope.** A prototype can depend only on its own folder, the product system (`src/product/`), and shared utilities (`src/lib/`).
 
 ## Getting started
@@ -49,8 +50,8 @@ contributors.json      who owns which folder
 scripts/               manifest, create, scope check, Vite plugins
 .husky/                pre-commit and pre-push scope checks
 .github/workflows/     scope check and build on push to main, build for deploy
-src/studio/            the app UI and its components
-src/product/           components and theme that prototypes build with
+src/studio/            the app wrapper and its components
+src/product/           placeholder product system; replace with your own
 src/lib/               shared utilities
 src/prototypes/        one folder per contributor
 ```

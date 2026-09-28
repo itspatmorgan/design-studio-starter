@@ -7,8 +7,8 @@ import {
 } from '@hugeicons/core-free-icons';
 // Studio system: the app UI's own components.
 import { Button } from '@/studio/components/button';
-import { Badge } from '@/studio/components/badge';
 import { Input } from '@/studio/components/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/studio/components/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/studio/components/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
@@ -51,23 +51,20 @@ export const studio = {
   Frame: 'div',
   intro: (
     <Prose>
-      <p>The components for the app UI: navigation, the index, the command menu, and this page.</p>
-      <p>They live in <Code>src/studio/components</Code>, with the theme in <Code>src/studio/styles/index.css</Code>.</p>
+      <p>The app's own system. It is the wrapper that makes the sandbox work: the nav rail, the index, prototype navigation, the command palette, and this page.</p>
+      <p>It is maintained with the platform, not per prototype. Components live in <Code>src/studio/components</Code>, and only app UI code imports them. Prototypes never do.</p>
       <CodeBlock>{`import { Button } from '@/studio/components/button';`}</CodeBlock>
-      <p>Only the app UI uses this system. Prototypes never import it; they use Product.</p>
     </Prose>
   ),
   theme: (
     <Prose>
-      <p>Defined in <Code>src/studio/styles/index.css</Code>, on <Code>:root</Code> for light and <Code>.dark</Code> for dark. It applies everywhere outside <Code>.product-theme</Code>.</p>
-      <p>It is shadcn/ui's default theme, neutral base color. It adds one token of its own, <Code>--sidebar-accent-active</Code>, for the selected nav item.</p>
-      <p>To use your own colors, edit the values in <Code>:root</Code> and <Code>.dark</Code>, or paste a theme from the shadcn/ui theme builder. Keep the variable names the same.</p>
-      <p>The dark mode toggle in the rail adds <Code>.dark</Code> to the page, and both systems switch together.</p>
-      <p>Studio pop-ups render into <Code>document.body</Code>, outside the product wrapper, on purpose.</p>
+      <p>shadcn/ui's default theme with the neutral base color, in <Code>src/studio/styles/index.css</Code>. Light values are on <Code>:root</Code>, dark values on <Code>.dark</Code>. It adds one token, <Code>--sidebar-accent-active</Code>, for the selected nav item.</p>
+      <p>To restyle the app for your team, change the values in those two blocks, or paste a theme from the shadcn/ui theme builder. Keep the variable names.</p>
+      <p>The dark mode toggle in the rail puts <Code>.dark</Code> on the page. Both systems follow it.</p>
     </Prose>
   ),
   showRadius: true,
-  extraColorGroups: [{ name: 'Studio only', tokens: [['sidebar-accent-active', 'sidebar-accent-foreground']] }],
+  extraColorTokens: [['Sidebar', ['sidebar-accent-active', 'bg-sidebar-accent-active', 'Sidebar active item (studio only)']]],
   typeSamples: [
     { label: 'text-[26px] font-semibold', className: 'text-[26px] font-semibold tracking-[-0.01em]' },
     { label: 'text-base font-semibold', className: 'text-base font-semibold' },
@@ -126,6 +123,28 @@ export const studio = {
       { name: 'Command', file: 'command.jsx', demo: CommandDemo },
     ] },
     { name: 'Layout', components: [
+      { name: 'Tabs', file: 'tabs.jsx', demo: () => (
+        <div className="flex flex-wrap gap-10">
+          <Tabs defaultValue="overview" className="w-72">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="views">Views</TabsTrigger>
+              <TabsTrigger value="notes">Notes</TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview" className="text-muted-foreground">Overview content.</TabsContent>
+            <TabsContent value="views" className="text-muted-foreground">Views content.</TabsContent>
+            <TabsContent value="notes" className="text-muted-foreground">Notes content.</TabsContent>
+          </Tabs>
+          <Tabs defaultValue="light" className="w-72">
+            <TabsList variant="line">
+              <TabsTrigger value="light">Light</TabsTrigger>
+              <TabsTrigger value="dark">Dark</TabsTrigger>
+            </TabsList>
+            <TabsContent value="light" className="text-muted-foreground">Line variant.</TabsContent>
+            <TabsContent value="dark" className="text-muted-foreground">Line variant.</TabsContent>
+          </Tabs>
+        </div>
+      ) },
       { name: 'Collapsible', file: 'collapsible.jsx', demo: () => (
         <Collapsible className="w-64 text-sm">
           <CollapsibleTrigger className="group flex items-center gap-1.5 font-medium">
@@ -137,15 +156,6 @@ export const studio = {
       ) },
     ] },
     { name: 'Display', components: [
-      { name: 'Badge', file: 'badge.jsx', demo: () => (
-        <>
-          <Badge>Default</Badge>
-          <Badge variant="secondary">Secondary</Badge>
-          <Badge variant="outline">Outline</Badge>
-          <Badge variant="destructive">Destructive</Badge>
-          <Badge variant="ghost">Ghost</Badge>
-        </>
-      ) },
       { name: 'Avatar', file: 'avatar.jsx', demo: () => (
         <>
           <ContributorAvatar name="Example Contributor" size={20} />

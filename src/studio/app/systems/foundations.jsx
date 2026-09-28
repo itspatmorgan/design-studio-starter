@@ -54,58 +54,70 @@ export function Prose({ children }) {
   return <div className="max-w-2xl space-y-3 text-sm leading-6 text-foreground/90">{children}</div>;
 }
 
-export function SubHeading({ children }) {
-  return <h3 className="mt-8 mb-3 text-sm font-semibold text-foreground">{children}</h3>;
-}
-
 // --- Colors -----------------------------------------------------------------
 
-// Semantic tokens, grouped. A pair renders the background with its foreground on top.
-export const COLOR_GROUPS = [
-  { name: 'Surfaces', tokens: [['background', 'foreground'], ['card', 'card-foreground'], ['popover', 'popover-foreground']] },
-  { name: 'Roles', tokens: [['primary', 'primary-foreground'], ['secondary', 'secondary-foreground'], ['muted', 'muted-foreground'], ['accent', 'accent-foreground'], ['destructive']] },
-  { name: 'Lines and focus', tokens: [['border'], ['input'], ['ring']] },
-  { name: 'Charts', tokens: [['chart-1'], ['chart-2'], ['chart-3'], ['chart-4'], ['chart-5']] },
-  { name: 'Sidebar', tokens: [['sidebar', 'sidebar-foreground'], ['sidebar-primary', 'sidebar-primary-foreground'], ['sidebar-accent', 'sidebar-accent-foreground'], ['sidebar-border'], ['sidebar-ring']] },
+// Semantic tokens, grouped, one compact row each: [name, utility, role].
+const COLOR_GROUPS = [
+  { name: 'Surfaces', tokens: [
+    ['background', 'bg-background', 'Page background'],
+    ['foreground', 'text-foreground', 'Primary text'],
+    ['card', 'bg-card', 'Card surfaces'],
+    ['card-foreground', 'text-card-foreground', 'Text on cards'],
+    ['popover', 'bg-popover', 'Menus and dialogs'],
+    ['popover-foreground', 'text-popover-foreground', 'Text on popovers'],
+    ['muted', 'bg-muted', 'Muted backgrounds'],
+    ['muted-foreground', 'text-muted-foreground', 'Secondary text'],
+    ['accent', 'bg-accent', 'Hover and focus highlights'],
+    ['accent-foreground', 'text-accent-foreground', 'Text on accent'],
+    ['secondary', 'bg-secondary', 'Secondary surfaces'],
+    ['secondary-foreground', 'text-secondary-foreground', 'Text on secondary'],
+    ['border', 'border-border', 'Borders and dividers'],
+    ['input', 'border-input', 'Input borders'],
+    ['ring', 'ring-ring', 'Focus rings'],
+  ] },
+  { name: 'Actions', tokens: [
+    ['primary', 'bg-primary', 'Primary actions'],
+    ['primary-foreground', 'text-primary-foreground', 'Text on primary'],
+    ['destructive', 'bg-destructive', 'Destructive actions'],
+  ] },
+  { name: 'Charts', tokens: [1, 2, 3, 4, 5].map((n) => [`chart-${n}`, `bg-chart-${n}`, `Chart series ${n}`]) },
+  { name: 'Sidebar', tokens: [
+    ['sidebar', 'bg-sidebar', 'Sidebar background'],
+    ['sidebar-foreground', 'text-sidebar-foreground', 'Sidebar text'],
+    ['sidebar-primary', 'bg-sidebar-primary', 'Sidebar primary'],
+    ['sidebar-primary-foreground', 'text-sidebar-primary-foreground', 'Text on sidebar primary'],
+    ['sidebar-accent', 'bg-sidebar-accent', 'Sidebar hover'],
+    ['sidebar-accent-foreground', 'text-sidebar-accent-foreground', 'Sidebar accent text'],
+    ['sidebar-border', 'border-sidebar-border', 'Sidebar border'],
+    ['sidebar-ring', 'ring-sidebar-ring', 'Sidebar focus ring'],
+  ] },
 ];
 
-function TokenValue({ name }) {
+function TokenRow({ name, utility, role }) {
   const [ref, value] = useComputed((s) => s.getPropertyValue(`--${name}`).trim());
   return (
-    <div ref={ref} className="text-xs leading-5">
-      <div className="font-mono text-foreground">--{name}</div>
-      <div className="font-mono break-all text-muted-foreground" data-token={name} data-value={value ?? ''}>{value || 'not set'}</div>
+    <div ref={ref} className="flex items-center gap-3 py-1.5">
+      <div className="h-7 w-10 shrink-0 rounded border border-border" style={{ background: `var(--${name})` }} data-swatch={name} />
+      <code className="w-[13rem] shrink-0 text-[13px] text-foreground">--{name}</code>
+      <code className="w-52 shrink-0 truncate text-[12px] text-muted-foreground">{utility}</code>
+      <code className="w-48 shrink-0 truncate text-[12px] text-muted-foreground" data-token={name} data-value={value ?? ''}>{value || 'not set'}</code>
+      <span className="min-w-0 text-[13px] text-muted-foreground">{role}</span>
     </div>
   );
 }
 
-function Swatch({ bg, fg }) {
+// scopeClass puts the rows inside the system's theme (e.g. .product-theme).
+// extraTokens: [groupName, [name, utility, role]] rows appended to an existing group.
+export function ColorTokens({ scopeClass, extraTokens = [] }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-border">
-      <div
-        className="flex h-16 items-center px-3 text-sm font-medium"
-        style={{ background: `var(--${bg})`, color: fg ? `var(--${fg})` : undefined }}
-        data-swatch={bg}
-      >
-        {fg ? 'Aa' : null}
-      </div>
-      <div className="space-y-2 border-t border-border bg-background p-2.5">
-        <TokenValue name={bg} />
-        {fg && <TokenValue name={fg} />}
-      </div>
-    </div>
-  );
-}
-
-// scopeClass puts swatches inside the system's theme (e.g. .product-theme).
-export function ColorTokens({ scopeClass, extraGroups = [] }) {
-  return (
-    <div className={cn(scopeClass, 'text-foreground')}>
-      {[...COLOR_GROUPS, ...extraGroups].map((g) => (
-        <div key={g.name} className="mb-6">
-          <p className="mb-2 text-xs font-medium text-muted-foreground">{g.name}</p>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3">
-            {g.tokens.map(([bg, fg]) => <Swatch key={bg} bg={bg} fg={fg} />)}
+    <div className={cn(scopeClass, 'space-y-10 text-foreground')}>
+      {COLOR_GROUPS.map((g) => (
+        <div key={g.name}>
+          <h3 className="mb-3 text-[16px] font-semibold leading-6 tracking-tight text-foreground">{g.name}</h3>
+          <div className="divide-y divide-border/60">
+            {[...g.tokens, ...extraTokens.filter(([group]) => group === g.name).map(([, t]) => t)].map(([name, utility, role]) => (
+              <TokenRow key={name} name={name} utility={utility} role={role} />
+            ))}
           </div>
         </div>
       ))}

@@ -25,19 +25,23 @@ export const product = {
   Frame: ProductFrame,
   intro: (
     <Prose>
-      <p>The components prototypes build with. Use them for anything that should look like your product.</p>
-      <p>They live in <Code>src/product/components</Code>: a small starter set of button, card, dialog, and input. Add more with <Code>npx shadcn add</Code>.</p>
+      <p>A placeholder for your real product design system. Prototypes build with it so they look like your product, not like this app.</p>
+      <p>Expect to replace all of it, components and theme, with your own. Ideally that is the same components and tokens your production app uses, so prototypes match what ships.</p>
+      <p>Until then it is a few shadcn/ui components (button, dialog, input) on the indigo preset, so you can see the two systems are separate. Prototypes use <Code>lucide-react</Code> for icons.</p>
       <CodeBlock>{`import { Button } from '@/product/components/button';`}</CodeBlock>
-      <p>Only prototypes use this system. The app UI around them uses Studio. Prototypes use <Code>lucide-react</Code> for icons.</p>
     </Prose>
   ),
   theme: (
     <Prose>
-      <p>Defined in <Code>src/product/styles/theme.css</Code>, scoped to the <Code>.product-theme</Code> class. Prototypes render inside that wrapper, so the product look never leaks into the app UI.</p>
-      <p>It is shadcn/ui's indigo theme, from preset <Code>a2r6bw</Code>:</p>
+      <p>The placeholder theme is in <Code>src/product/styles/theme.css</Code>. It is shadcn/ui's indigo preset:</p>
       <CodeBlock>{`npx shadcn apply a2r6bw --only theme`}</CodeBlock>
-      <p>To use your own colors, edit the values in theme.css, or paste a theme from the shadcn/ui theme builder. Keep the variable names the same. The <Code>.dark .product-theme</Code> block follows the app's light and dark mode.</p>
-      <p>Pop-ups like dialogs render into a container inside the wrapper. <Code>portal.jsx</Code> provides it, which is what keeps them themed.</p>
+      <p>When you replace the system, keep these true:</p>
+      <ul className="list-disc space-y-1 pl-5">
+        <li>It lives in <Code>src/product/</Code>.</li>
+        <li>Prototypes import from <Code>@/product/...</Code>.</li>
+        <li>Styles stay scoped under <Code>.product-theme</Code>, with a <Code>.dark .product-theme</Code> block if your product has dark mode.</li>
+        <li>Pop-ups render into the portal container from <Code>portal.jsx</Code>, so they stay inside <Code>.product-theme</Code>.</li>
+      </ul>
     </Prose>
   ),
   categories: [

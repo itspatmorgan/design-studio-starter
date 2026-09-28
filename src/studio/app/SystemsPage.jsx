@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { Tabs, TabsList, TabsTrigger } from '@/studio/components/tabs';
 import { CodeBlock, ColorTokens, ComponentDemo, RadiusScale, Section, TypeScale, slug } from './systems/foundations';
 import { product } from './systems/productSystem';
 import { studio } from './systems/studioSystem';
@@ -26,22 +27,19 @@ function navGroups(sys) {
 function SystemNav({ system, setSystem, active, onPick }) {
   return (
     <nav aria-label="Systems" className="flex min-h-0 w-52 shrink-0 flex-col border-r border-border bg-muted/40">
-      <div className="flex gap-1 border-b border-border p-3">
-        {Object.entries(SYSTEMS).map(([id, s]) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setSystem(id)}
-            aria-pressed={system === id}
-            className={cn(
-              'flex-1 rounded-md py-1.5 text-[12px] font-medium transition-colors',
-              system === id ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-            )}
-          >
-            {s.label}
-          </button>
-        ))}
-      </div>
+      <Tabs value={system} onValueChange={setSystem} className="border-b border-border p-3">
+        <TabsList className="h-auto w-full gap-1 bg-transparent p-0">
+          {Object.entries(SYSTEMS).map(([id, s]) => (
+            <TabsTrigger
+              key={id}
+              value={id}
+              className="h-auto py-1.5 text-[12px] text-muted-foreground hover:bg-muted data-active:bg-muted data-active:shadow-none dark:data-active:border-transparent dark:data-active:bg-muted"
+            >
+              {s.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
       <div className="flex-1 overflow-y-auto px-2.5 py-4">
         {navGroups(SYSTEMS[system]).map((g, i) => (
           <div key={g.heading ?? i}>
@@ -84,7 +82,7 @@ function SystemContent({ sys }) {
       </header>
       <Section id="theme" title="Theme">{sys.theme}</Section>
       <Section id="colors" title="Colors" description="Every semantic token, read live from the theme. Values follow the current mode.">
-        <ColorTokens scopeClass={scopeClass} extraGroups={sys.extraColorGroups} />
+        <ColorTokens scopeClass={scopeClass} extraTokens={sys.extraColorTokens} />
       </Section>
       {sys.typeSamples && <Section id="typography" title="Typography" description="The font and the sizes and weights the components use. Values are measured live.">
         <TypeScale scopeClass={scopeClass} samples={sys.typeSamples} />
