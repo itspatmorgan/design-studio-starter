@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { resolveContributor, loadContributors } from './resolve-contributor.js';
+import { resolveContributor } from './resolve-contributor.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const title = process.argv.slice(2).join(' ').trim();
@@ -23,7 +23,7 @@ const metaPath = path.join(dest, 'meta.json');
 const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
 const d = new Date();
 const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-Object.assign(meta, { title, contributor: loadContributors()[key].name, created: today });
+Object.assign(meta, { title, created: today });
 fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2) + '\n');
 
 execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build-manifest.js')], { stdio: 'inherit' });

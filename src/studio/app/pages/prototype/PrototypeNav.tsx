@@ -46,9 +46,6 @@ function GroupFolder({ name, open, onOpenChange, children }: { name: string; ope
 // About: the prototype's meta.json, collapsed at the bottom of its navigation.
 function About({ proto }: { proto: Prototype }) {
   const [open, setOpen] = useState(false);
-  const date = proto.updated && proto.updated !== proto.created
-    ? `Updated ${formatDate(proto.updated)}`
-    : proto.created && `Created ${formatDate(proto.created)}`;
   const labelClass = 'text-[11px] text-muted-foreground';
   const valueClass = 'mt-0.5 text-[12px] leading-snug text-sidebar-foreground';
   return (
@@ -72,10 +69,10 @@ function About({ proto }: { proto: Prototype }) {
                 </dd>
               </div>
             )}
-            {date && (
+            {proto.created && (
               <div>
-                <dt className={labelClass}>Last updated</dt>
-                <dd className={valueClass}>{date}</dd>
+                <dt className={labelClass}>Created</dt>
+                <dd className={valueClass}>{formatDate(proto.created)}</dd>
               </div>
             )}
           </dl>

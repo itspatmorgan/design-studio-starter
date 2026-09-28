@@ -16,8 +16,9 @@ export const findPrototype = (m: Manifest, contributor: string, prototype: strin
 // "main.tsx" → "main": the view's name in the URL.
 export const viewSlug = (name: string) => name.replace(/\.[jt]sx$/, '');
 
-// A prototype opens on prototype.tsx (or .jsx), or its first view if there isn't one.
+// A prototype opens on its meta.json "start" view, then prototype.tsx (or .jsx), then its first view.
 export function firstView(p: Prototype): View | undefined {
+  if (p.start) return p.views.find((v) => v.name === p.start!.name && v.group === p.start!.group);
   return p.views.find((v) => viewSlug(v.name) === 'prototype' && !v.group) ?? p.views[0];
 }
 

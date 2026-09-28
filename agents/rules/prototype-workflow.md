@@ -13,13 +13,13 @@ src/prototypes/<contributor>/<prototype>/
 └── components/     # helpers, not views
 ```
 
-- **View**: a `.tsx` file (or plain `.jsx`) at the prototype's top level that default-exports a React component. Write new views as `.tsx`. The prototype opens on `prototype.tsx` (or `.jsx`), or its first view.
+- **View**: a `.tsx` file (or plain `.jsx`) at the prototype's top level that default-exports a React component. Write new views as `.tsx`. The prototype opens on its `start` view (see meta.json), then `prototype.tsx` (or `.jsx`), then its first view.
 - **Group**: a subfolder (not `components/`) whose `.tsx`/`.jsx` files are views listed under the group's name. Groups are one level deep.
 - **Lofi**: a rough, grayscale sketch of an idea, usually in a `lofi/` group. Use theme colors only (`bg-muted`, `border-border`, `text-muted-foreground`), dashed outlines for placeholders, and gray bars for text. Skip polish.
 - **URLs**: `/<contributor>/<prototype>` opens the default view; `/<contributor>/<prototype>/<view>` and `/<contributor>/<prototype>/<group>/<view>` open a view, named without its extension (`/patrick/hello-world/lofi/main`). To link between views, use TanStack Router's `Link` (https://tanstack.com/router/latest/docs/framework/react/guide/navigation).
 - **components/**: helper components, never listed as views.
 - **documents/**: reserved for a future prototype documents feature. Don't use it for views; it isn't listed.
-- **meta.json**: `title` is required. `description`, `contributor` (display name), `created`, and `updated` (`YYYY-MM-DD`) are optional. If it's missing, isn't valid JSON, or has no title, the prototype is skipped with a warning naming the file in dev, and `pnpm build` fails.
+- **meta.json**: `title` is required. `description`, `created` (`YYYY-MM-DD`, set by `pnpm new`), and `start` are optional. `start` is the view the prototype opens on, written like its URL: `"main"` or `"lofi/main"`. When the person wants a different view to open first, change `start`; don't rename files. Don't add other fields. The contributor's name comes from `contributors.json`. If it's missing, isn't valid JSON, has no title, or `start` isn't a view, the prototype is skipped with a warning naming the file in dev, and `pnpm build` fails.
 
 ## Rules
 

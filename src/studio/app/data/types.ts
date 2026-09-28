@@ -12,9 +12,9 @@ export type Prototype = {
   contributorKey: string; // contributors.json key, e.g. "patrick"
   title: string;
   description: string;
-  contributor: string;
+  contributor: string;    // display name, from contributors.json
   created: string | null;
-  updated: string | null;
+  start: View | null;     // meta.json "start": the view it opens on
   views: View[];
 };
 

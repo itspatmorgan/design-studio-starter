@@ -17,6 +17,10 @@ const dirs = (p) => fs.existsSync(p)
   : [];
 const viewFiles = (p) => fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isFile() && /\.[jt]sx$/.test(d.name)).map((d) => d.name).sort();
 
+// Display names come from contributors.json, so they live in one place.
+const contributorsFile = path.join(ROOT, 'contributors.json');
+const contributors = fs.existsSync(contributorsFile) ? JSON.parse(fs.readFileSync(contributorsFile, 'utf8')) : {};
+
 const prototypes = [];
 let errors = 0;
 for (const contributorKey of dirs(PROTOS)) {
@@ -40,9 +44,15 @@ for (const contributorKey of dirs(PROTOS)) {
     for (const group of dirs(dir).filter((g) => !NOT_GROUPS.has(g))) {
       for (const name of viewFiles(path.join(dir, group))) views.push({ name, group });
     }
+    // "start" (optional) is the view the prototype opens on, as in its URL: "main" or "lofi/main".
+    let start = null;
+    if (meta.start !== undefined) {
+      start = views.find((v) => [v.group, v.name.replace(/\.[jt]sx$/, '')].filter(Boolean).join('/') === meta.start) ?? null;
+      if (!start) { skip(`has "start": "${meta.start}", which isn't a view in this prototype`); continue; }
+    }
     prototypes.push({
       id, contributorKey, title: meta.title, description: meta.description ?? '',
-      contributor: meta.contributor ?? '', created: meta.created ?? null, updated: meta.updated ?? null, views,
+      contributor: contributors[contributorKey]?.name ?? '', created: meta.created ?? null, start, views,
     });
   }
 }
