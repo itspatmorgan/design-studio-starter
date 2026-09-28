@@ -4,8 +4,9 @@ import {
 } from '@hugeicons/core-free-icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { cn } from '@/lib/utils';
-import { Link } from './navigate.jsx';
-import { useOpenPalette } from './CommandPalette.jsx';
+import type { ReactNode } from 'react';
+import { Link, useMatchRoute, type LinkProps } from '@tanstack/react-router';
+import { useOpenPalette } from './CommandPalette';
 
 const railButton = cn(
   'flex size-8 items-center justify-center rounded-md text-sidebar-foreground transition-colors',
@@ -14,13 +15,16 @@ const railButton = cn(
 );
 
 // One square button on the rail: a link with a tooltip to its right.
-function RailLink({ to, label, active, children, className }) {
+type RailLinkProps = { to: LinkProps['to']; label: string; active?: boolean; children: ReactNode; className?: string };
+
+function RailLink({ to, label, active, children, className }: RailLinkProps) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <Link
           to={to}
           aria-label={label}
+          activeOptions={{ exact: true }}
           aria-current={active ? 'page' : undefined}
           className={cn(railButton, active && 'bg-sidebar-accent-active text-sidebar-accent-foreground', className)}
         >
@@ -33,7 +37,7 @@ function RailLink({ to, label, active, children, className }) {
 }
 
 // One square button on the rail that runs an action, like opening search.
-function RailButton({ label, onClick, children }) {
+function RailButton({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -46,15 +50,22 @@ function RailButton({ label, onClick, children }) {
 
 // Main navigation: a narrow icon rail, visible on every page.
 // sectionNav is set only while a prototype is open, to show/hide its navigation.
-export default function MainNav({ page, colorMode, onToggleColorMode, sectionNav }) {
+type MainNavProps = {
+  colorMode: string;
+  onToggleColorMode: () => void;
+  sectionNav: { open: boolean; toggle: () => void } | null;
+};
+
+export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: MainNavProps) {
   const openPalette = useOpenPalette();
+  const onSystems = Boolean(useMatchRoute()({ to: '/systems' }));
   return (
     <nav
       aria-label="Main"
       data-testid="main-nav"
       className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-sidebar-border bg-sidebar py-3"
     >
-      <RailLink to={{}} label="Prototype Sandbox" className="active:scale-95">
+      <RailLink to="/" label="Prototype Sandbox" className="active:scale-95">
         {/* Placeholder mark. Swap in your own logo. */}
         <span className="grid size-4 place-items-center rounded-[5px] bg-foreground">
           <span className="size-1.5 rounded-full bg-background" />
@@ -64,10 +75,10 @@ export default function MainNav({ page, colorMode, onToggleColorMode, sectionNav
         <HugeiconsIcon icon={Search01Icon} size={16} />
       </RailButton>
       <div className="h-2" />
-      <RailLink to={{}} label="Prototypes" active={page !== 'systems'}>
+      <RailLink to="/" label="Prototypes" active={!onSystems}>
         <HugeiconsIcon icon={Layers01Icon} size={16} />
       </RailLink>
-      <RailLink to={{ page: 'systems' }} label="Systems" active={page === 'systems'}>
+      <RailLink to="/systems" label="Systems" active={onSystems}>
         <HugeiconsIcon icon={Shapes01Icon} size={16} />
       </RailLink>
 

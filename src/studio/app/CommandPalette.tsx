@@ -1,29 +1,29 @@
 // The ⌘K command palette (Ctrl+K on Windows): jump to any prototype, a view of the
 // open prototype, or an app page. Arrow keys move, Enter opens, Esc closes.
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { getRouteApi, useMatchRoute, useNavigate, useParams, type NavigateOptions } from '@tanstack/react-router';
 import {
   CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
 } from '@/studio/components/command';
-import { firstView } from './Index.jsx';
-import { viewLabel } from './PrototypeViewer.jsx';
-import { isTyping } from './appPrefs.js';
-import { navigate } from './navigate.jsx';
+import { firstView, newestFirst, prototypeLink, viewLabel, viewLink, viewSlug } from './manifest';
+import { isTyping } from './appPrefs';
+import type { View } from './types';
 
 const PaletteContext = createContext(() => {});
+const rootApi = getRouteApi('__root__');
 
 // Opens the palette from anywhere, like the search button on the rail.
 export const useOpenPalette = () => useContext(PaletteContext);
 
-const entryParams = (p) => {
-  const v = firstView(p);
-  return { contributor: p.contributorKey, prototype: p.id, group: v?.group, view: v?.name };
-};
-
-export function CommandPaletteProvider({ params, manifest, children }) {
+export function CommandPaletteProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const manifest = rootApi.useLoaderData();
+  const params = useParams({ strict: false });
+  const matchRoute = useMatchRoute();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const onKeyDown = (e) => {
+    const onKeyDown = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() !== 'k' || !(e.metaKey || e.ctrlKey) || e.repeat) return;
       // When closed, leave ⌘K to text fields (a prototype may use it). When open, always toggle.
       if (!open && isTyping(e.target)) return;
@@ -34,19 +34,19 @@ export function CommandPaletteProvider({ params, manifest, children }) {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [open]);
 
-  const go = (to) => {
+  const go = (to: NavigateOptions) => {
     setOpen(false);
     navigate(to);
   };
 
-  const prototypes = [...(manifest?.prototypes ?? [])].sort((a, b) => (b.created ?? '').localeCompare(a.created ?? ''));
+  const prototypes = [...manifest.prototypes].sort(newestFirst);
   const current = prototypes.find((p) => p.contributorKey === params.contributor && p.id === params.prototype);
-  const isCurrentView = (v) => {
-    const entry = firstView(current);
-    const view = params.view ?? entry?.name;
-    const group = params.view ? params.group ?? null : entry?.group ?? null;
-    return v.name === view && (v.group ?? null) === group;
+  const isCurrentView = (v: View) => {
+    if (!params.view) return v === (current && firstView(current));
+    return viewSlug(v.name) === params.view && (v.group ?? undefined) === params.group;
   };
+  const onIndex = Boolean(matchRoute({ to: '/' }));
+  const onSystems = Boolean(matchRoute({ to: '/systems' }));
 
   return (
     <PaletteContext.Provider value={() => setOpen(true)}>
@@ -64,7 +64,7 @@ export function CommandPaletteProvider({ params, manifest, children }) {
                     key={`${v.group}/${v.name}`}
                     value={`${v.group ?? ''} ${viewLabel(v.name)} ${v.name}`}
                     disabled={isCurrentView(v)}
-                    onSelect={() => go({ contributor: current.contributorKey, prototype: current.id, group: v.group, view: v.name })}
+                    onSelect={() => go(viewLink(current, v))}
                   >
                     {v.group && <span className="shrink-0 text-xs text-muted-foreground">{viewLabel(v.group)}</span>}
                     <span className="truncate">{viewLabel(v.name)}</span>
@@ -76,8 +76,8 @@ export function CommandPaletteProvider({ params, manifest, children }) {
           )}
 
           <CommandGroup heading="Places">
-            <CommandItem value="prototypes index home" disabled={!params.page && !current} onSelect={() => go({})}>Prototypes</CommandItem>
-            <CommandItem value="systems components" disabled={params.page === 'systems'} onSelect={() => go({ page: 'systems' })}>Systems</CommandItem>
+            <CommandItem value="prototypes index home" disabled={onIndex} onSelect={() => go({ to: '/' })}>Prototypes</CommandItem>
+            <CommandItem value="systems components" disabled={onSystems} onSelect={() => go({ to: '/systems' })}>Systems</CommandItem>
           </CommandGroup>
 
           {prototypes.length > 0 && (
@@ -89,7 +89,7 @@ export function CommandPaletteProvider({ params, manifest, children }) {
                     key={`${p.contributorKey}/${p.id}`}
                     value={`${p.title} ${p.description ?? ''} ${p.contributor ?? ''} ${p.contributorKey}/${p.id}`}
                     disabled={p === current}
-                    onSelect={() => go(entryParams(p))}
+                    onSelect={() => go(prototypeLink(p))}
                   >
                     <span className="truncate">{p.title}</span>
                     <span className="ml-auto shrink-0 text-xs text-muted-foreground">{(p.contributor || p.contributorKey).split(' ')[0]}</span>

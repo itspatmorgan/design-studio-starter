@@ -15,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/too
 import { ContributorAvatar } from '@/studio/components/avatar';
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/studio/components/command';
 import { Code, CodeBlock, IconGrid, Prose } from './foundations';
+import type { DesignSystem } from '../types';
 
 const ICONS = {
   Search01Icon, Add01Icon, Settings01Icon, UserIcon, Notification01Icon, Delete02Icon, PencilEdit01Icon, Tick02Icon,
@@ -45,7 +46,7 @@ function CommandDemo() {
   );
 }
 
-export const studio = {
+export const studio: DesignSystem = {
   label: 'Studio',
   scopeClass: '',
   Frame: 'div',
@@ -81,7 +82,7 @@ export const studio = {
   },
   categories: [
     { name: 'Actions', components: [
-      { name: 'Button', file: 'button.jsx', demo: () => (
+      { name: 'Button', file: 'button.tsx', demo: () => (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <Button>Primary</Button>
@@ -102,7 +103,7 @@ export const studio = {
       ) },
     ] },
     { name: 'Form controls', components: [
-      { name: 'Input', file: 'input.jsx', demo: () => (
+      { name: 'Input', file: 'input.tsx', demo: () => (
         <>
           <Input placeholder="Search prototypes" className="w-56" />
           <Input placeholder="Disabled" disabled className="w-56" />
@@ -110,9 +111,9 @@ export const studio = {
       ) },
     ] },
     { name: 'Overlays', components: [
-      { name: 'Tooltip', file: 'tooltip.jsx', demo: () => (
+      { name: 'Tooltip', file: 'tooltip.tsx', demo: () => (
         <>
-          {['top', 'right', 'bottom', 'left'].map((side) => (
+          {(['top', 'right', 'bottom', 'left'] as const).map((side) => (
             <Tooltip key={side}>
               <TooltipTrigger asChild><Button variant="outline">{side}</Button></TooltipTrigger>
               <TooltipContent side={side}>Tooltip on {side}</TooltipContent>
@@ -120,10 +121,10 @@ export const studio = {
           ))}
         </>
       ) },
-      { name: 'Command', file: 'command.jsx', demo: CommandDemo },
+      { name: 'Command', file: 'command.tsx', demo: CommandDemo },
     ] },
     { name: 'Layout', components: [
-      { name: 'Tabs', file: 'tabs.jsx', demo: () => (
+      { name: 'Tabs', file: 'tabs.tsx', demo: () => (
         <div className="flex flex-wrap gap-10">
           <Tabs defaultValue="overview" className="w-72">
             <TabsList>
@@ -145,7 +146,7 @@ export const studio = {
           </Tabs>
         </div>
       ) },
-      { name: 'Collapsible', file: 'collapsible.jsx', demo: () => (
+      { name: 'Collapsible', file: 'collapsible.tsx', demo: () => (
         <Collapsible className="w-64 text-sm">
           <CollapsibleTrigger className="group flex items-center gap-1.5 font-medium">
             <HugeiconsIcon icon={ArrowDown01Icon} size={14} className="text-muted-foreground transition-transform group-data-[state=closed]:-rotate-90" />
@@ -156,14 +157,14 @@ export const studio = {
       ) },
     ] },
     { name: 'Display', components: [
-      { name: 'Avatar', file: 'avatar.jsx', demo: () => (
+      { name: 'Avatar', file: 'avatar.tsx', demo: () => (
         <>
           <ContributorAvatar name="Patrick Morgan" size={20} />
           <ContributorAvatar name="Patrick Morgan" size={32} />
           <ContributorAvatar name="Patrick Morgan" size={48} />
         </>
       ) },
-      { name: 'Card', file: 'card.jsx', demo: () => (
+      { name: 'Card', file: 'card.tsx', demo: () => (
         <Card className="w-80">
           <CardHeader>
             <CardTitle>Card title</CardTitle>

@@ -1,9 +1,10 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
+import { getRouteApi, Link, Outlet, useParams } from '@tanstack/react-router';
+import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { PortalContext } from '@/product/components/portal';
-import { firstView, formatDate } from './Index.jsx';
-import { loadView } from './loadView.js';
-import { Link } from './navigate.jsx';
+import { firstView, formatDate, viewLabel, viewLink, viewSlug } from './manifest';
+import { useSectionNavOpen } from './appPrefs';
+import type { Prototype, View } from './types';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Search01Icon, Tick02Icon, UnfoldLessIcon, UnfoldMoreIcon } from '@hugeicons/core-free-icons';
 import { Button } from '@/studio/components/button';
@@ -13,15 +14,14 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/co
 import { ContributorAvatar } from '@/studio/components/avatar';
 import { cn } from '@/lib/utils';
 
-// "session-done.jsx" (or .tsx) → "Session Done"
-export const viewLabel = (name) => name.replace(/\.[jt]sx$/, '').split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+const prototypeApi = getRouteApi('/$contributor/$prototype');
 
 const row = 'mx-1 flex w-[calc(100%-8px)] min-w-0 items-center gap-1.5 rounded-md py-1 pr-1.5 text-[12px] leading-tight transition-colors';
 
-function ViewLink({ proto, view, active, depth }) {
+function ViewLink({ proto, view, active, depth }: { proto: Prototype; view: View; active: boolean; depth: number }) {
   return (
     <Link
-      to={{ contributor: proto.contributorKey, prototype: proto.id, group: view.group, view: view.name }}
+      {...viewLink(proto, view)}
       aria-current={active ? 'page' : undefined}
       style={{ paddingLeft: 8 + depth * 16 }}
       className={cn(row, active
@@ -35,7 +35,7 @@ function ViewLink({ proto, view, active, depth }) {
 }
 
 // A group is a collapsible folder of views. PrototypeNav owns which ones are open.
-function GroupFolder({ name, open, onOpenChange, children }) {
+function GroupFolder({ name, open, onOpenChange, children }: { name: string; open: boolean; onOpenChange: (open: boolean) => void; children: ReactNode }) {
   return (
     <Collapsible open={open} onOpenChange={onOpenChange}>
       <CollapsibleTrigger className={cn(row, 'pl-2 text-left font-medium text-sidebar-foreground hover:bg-sidebar-accent')}>
@@ -48,7 +48,7 @@ function GroupFolder({ name, open, onOpenChange, children }) {
 }
 
 // About: the prototype's meta.json, collapsed at the bottom of its navigation.
-function About({ proto }) {
+function About({ proto }: { proto: Prototype }) {
   const [open, setOpen] = useState(false);
   const date = proto.updated && proto.updated !== proto.created
     ? `Updated ${formatDate(proto.updated)}`
@@ -93,7 +93,7 @@ function About({ proto }) {
 // Prototype navigation: the prototype's title, then its views, with groups as folders.
 const iconButton = 'inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground';
 
-function IconButton({ label, onClick, pressed, children }) {
+function IconButton({ label, onClick, pressed, children }: { label: string; onClick: () => void; pressed?: boolean; children: ReactNode }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -107,23 +107,24 @@ function IconButton({ label, onClick, pressed, children }) {
   );
 }
 
-function PrototypeNav({ proto, current }) {
+function PrototypeNav({ proto, current }: { proto: Prototype; current: View | undefined }) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [filter, setFilter] = useState('');
-  const [closedGroups, setClosedGroups] = useState(() => new Set());
-  const filterRef = useRef(null);
+  const [closedGroups, setClosedGroups] = useState(() => new Set<string>());
+  const filterRef = useRef<HTMLInputElement>(null);
   useEffect(() => { if (filterOpen) filterRef.current?.focus(); }, [filterOpen]);
 
   const q = filter.trim().toLowerCase();
   const views = q ? proto.views.filter((v) => `${viewLabel(v.name)} ${v.group ?? ''}`.toLowerCase().includes(q)) : proto.views;
-  const allGroups = [...new Set(proto.views.map((v) => v.group).filter(Boolean))];
-  const groups = [...new Set(views.map((v) => v.group).filter(Boolean))];
-  const isActive = (v) => v.name === current.view && (v.group ?? null) === current.group;
+  const groupsOf = (vs: View[]) => [...new Set(vs.flatMap((v) => (v.group ? [v.group] : [])))];
+  const allGroups = groupsOf(proto.views);
+  const groups = groupsOf(views);
+  const isActive = (v: View) => v === current;
   // While filtering, every matching group shows open.
-  const isOpen = (g) => Boolean(q) || !closedGroups.has(g);
+  const isOpen = (g: string) => Boolean(q) || !closedGroups.has(g);
   const allOpen = allGroups.every((g) => !closedGroups.has(g));
   const toggleAll = () => setClosedGroups(allOpen ? new Set(allGroups) : new Set());
-  const setGroupOpen = (g, open) => setClosedGroups((prev) => {
+  const setGroupOpen = (g: string, open: boolean) => setClosedGroups((prev) => {
     const next = new Set(prev);
     if (open) next.delete(g); else next.add(g);
     return next;
@@ -190,20 +191,12 @@ function PrototypeNav({ proto, current }) {
   );
 }
 
-// One lazy component per view, created once, so React can pause and retry
-// while a view loads without starting the load over.
-const lazyViews = new Map();
-function getView(params, key) {
-  if (!lazyViews.has(key)) lazyViews.set(key, lazy(() => loadView(params)));
-  return lazyViews.get(key);
-}
-
 // Shown in place of a view that throws, with the error so it can be copied into a bug report or an agent chat.
-function ViewError({ error }) {
+function ViewError({ error }: FallbackProps) {
   const [copied, setCopied] = useState(false);
-  const message = error?.message || String(error);
+  const message = error instanceof Error ? error.message : String(error);
   const copy = async () => {
-    await navigator.clipboard.writeText(error?.stack || message);
+    await navigator.clipboard.writeText((error instanceof Error && error.stack) || message);
     setCopied(true);
   };
   return (
@@ -218,20 +211,17 @@ function ViewError({ error }) {
   );
 }
 
-function ProductView({ contributor, prototype, group, view }) {
-  const key = [contributor, prototype, group, view].join('/');
-  const View = getView({ contributor, prototype, group, view }, key);
-  const [portal, setPortal] = useState(null);
-
+// One view, in the product theme. The route's loader has already loaded Component.
+// viewKey (contributor/prototype/group/view) resets the error boundary when the view changes.
+export function ViewFrame({ Component, viewKey }: { Component: ComponentType; viewKey: string }) {
+  const [portal, setPortal] = useState<HTMLElement | null>(null);
   return (
     <div className="min-w-0 flex-1">
       {/* The boundary sits outside .product-theme, so its fallback keeps the app UI's look. */}
-      <ErrorBoundary resetKeys={[key]} FallbackComponent={ViewError}>
+      <ErrorBoundary resetKeys={[viewKey]} FallbackComponent={ViewError}>
         <div className="product-theme bg-background text-foreground relative h-full overflow-auto">
           <PortalContext.Provider value={portal}>
-            <Suspense fallback={null}>
-              <View />
-            </Suspense>
+            <Component />
           </PortalContext.Provider>
           <div ref={setPortal} />
         </div>
@@ -240,41 +230,20 @@ function ProductView({ contributor, prototype, group, view }) {
   );
 }
 
-// Placeholder bars while the manifest loads, shaped like the navigation and frame.
-function ViewerSkeleton({ sectionNavOpen }) {
-  return (
-    <div className="flex min-h-0 flex-1" aria-busy="true">
-      {sectionNavOpen && (
-        <div className="w-[220px] shrink-0 space-y-3 border-r border-sidebar-border bg-sidebar px-4 pt-5">
-          <div className="h-4 w-2/3 rounded bg-muted" />
-          <div className="h-3 w-1/3 rounded bg-muted" />
-          <div className="h-3 w-3/4 rounded bg-muted" />
-          <div className="h-3 w-1/2 rounded bg-muted" />
-        </div>
-      )}
-      <div className="flex-1" />
-    </div>
-  );
-}
-
-// sectionNavOpen: show the prototype navigation (toggled from the rail or with ⌘;).
-export default function PrototypeViewer({ params, manifest, sectionNavOpen = true }) {
-  const { contributor, prototype } = params;
-  if (!manifest) return <ViewerSkeleton sectionNavOpen={sectionNavOpen} />;
-
-  const proto = manifest.prototypes.find((p) => p.contributorKey === contributor && p.id === prototype);
-  if (!proto) return <p className="p-8 text-muted-foreground">Prototype not found: {contributor}/{prototype}</p>;
-
-  // With no view in the URL, open the prototype's default view.
-  const fallback = firstView(proto);
-  const view = params.view ?? fallback?.name;
-  const group = params.view ? params.group ?? null : fallback?.group ?? null;
-  if (!view) return <p className="p-8 text-muted-foreground">This prototype has no views yet.</p>;
-
+// The /$contributor/$prototype route: the prototype's navigation (toggled from the
+// rail or with ⌘;) beside the open view.
+export function PrototypeLayout() {
+  const { proto } = prototypeApi.useLoaderData();
+  const params = useParams({ strict: false });
+  const sectionNavOpen = useSectionNavOpen();
+  // With no view in the URL, the default view is open.
+  const current = params.view
+    ? proto.views.find((v) => viewSlug(v.name) === params.view && (v.group ?? undefined) === params.group)
+    : firstView(proto);
   return (
     <div className="flex min-h-0 flex-1">
-      {sectionNavOpen && <PrototypeNav proto={proto} current={{ group, view }} />}
-      <ProductView contributor={contributor} prototype={prototype} group={group} view={view} />
+      {sectionNavOpen && <PrototypeNav proto={proto} current={current} />}
+      <Outlet />
     </div>
   );
 }

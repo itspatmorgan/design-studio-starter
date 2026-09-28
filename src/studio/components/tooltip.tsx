@@ -1,15 +1,16 @@
+import type * as React from "react"
 import { Tooltip as TooltipPrimitive } from "radix-ui"
 import { cn } from "@/lib/utils"
 
 // App UI tooltip. Renders into document.body, outside .product-theme, on purpose.
-function TooltipProvider({ delayDuration = 0, ...props }) {
+function TooltipProvider({ delayDuration = 0, ...props }: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
   return <TooltipPrimitive.Provider delayDuration={delayDuration} {...props} />
 }
 
 const Tooltip = TooltipPrimitive.Root
 const TooltipTrigger = TooltipPrimitive.Trigger
 
-function TooltipContent({ className, sideOffset = 8, ...props }) {
+function TooltipContent({ className, sideOffset = 8, ...props }: React.ComponentProps<typeof TooltipPrimitive.Content>) {
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content

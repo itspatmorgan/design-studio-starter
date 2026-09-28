@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/studio/components/tabs';
 import { CodeBlock, ColorTokens, ComponentDemo, RadiusScale, Section, TypeScale, slug } from './systems/foundations';
+import type { DesignSystem } from './types';
 import { product } from './systems/productSystem';
 import { studio } from './systems/studioSystem';
 
@@ -9,9 +10,11 @@ import { studio } from './systems/studioSystem';
 // foundations (read live from the CSS), icons, and components. Optional sections
 // (typography, radius, icons) show only when the system defines them.
 const SYSTEMS = { product, studio };
+type SystemId = keyof typeof SYSTEMS;
+type NavGroup = { heading?: string; items: [id: string, label: string][] };
 
 // Sidebar groups, in page order. Component categories come from the system.
-function navGroups(sys) {
+function navGroups(sys: DesignSystem): NavGroup[] {
   return [
     { items: [['intro', 'Introduction'], ['theme', 'Theme']] },
     { heading: 'Foundations', items: [
@@ -19,15 +22,17 @@ function navGroups(sys) {
       sys.typeSamples && ['typography', 'Typography'],
       sys.showRadius && ['radius', 'Radius'],
       sys.icons && ['icons', 'Icons'],
-    ].filter(Boolean) },
-    ...sys.categories.map((cat) => ({ heading: cat.name, items: cat.components.map((c) => [slug(c.name), c.name]) })),
+    ].filter((item): item is [string, string] => Boolean(item)) },
+    ...sys.categories.map((cat) => ({ heading: cat.name, items: cat.components.map((c): [string, string] => [slug(c.name), c.name]) })),
   ];
 }
 
-function SystemNav({ system, setSystem, active, onPick }) {
+type SystemNavProps = { system: SystemId; setSystem: (id: SystemId) => void; active: string; onPick: (id: string) => void };
+
+function SystemNav({ system, setSystem, active, onPick }: SystemNavProps) {
   return (
     <nav aria-label="Systems" className="flex min-h-0 w-52 shrink-0 flex-col border-r border-border bg-muted/40">
-      <Tabs value={system} onValueChange={setSystem} className="border-b border-border p-3">
+      <Tabs value={system} onValueChange={(id) => setSystem(id as SystemId)} className="border-b border-border p-3">
         <TabsList className="w-full">
           {Object.entries(SYSTEMS).map(([id, s]) => (
             <TabsTrigger key={id} value={id}>
@@ -50,7 +55,7 @@ function SystemNav({ system, setSystem, active, onPick }) {
   );
 }
 
-function NavItem({ label, active, onClick }) {
+function NavItem({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <button
       type="button"
@@ -68,7 +73,7 @@ function NavItem({ label, active, onClick }) {
   );
 }
 
-function SystemContent({ sys }) {
+function SystemContent({ sys }: { sys: DesignSystem }) {
   const { scopeClass, Frame } = sys;
   return (
     <>
@@ -106,20 +111,21 @@ function SystemContent({ sys }) {
 }
 
 export default function SystemsPage() {
-  const [system, setSystem] = useState('product');
+  const [system, setSystem] = useState<SystemId>('product');
   const [active, setActive] = useState('intro');
-  const mainRef = useRef(null);
+  const mainRef = useRef<HTMLElement>(null);
   const lockUntil = useRef(0);
 
   // Scroll spy: the active item is the last section whose top has passed the top of the pane.
   useEffect(() => {
     const main = mainRef.current;
+    if (!main) return;
     const onScroll = () => {
       if (Date.now() < lockUntil.current) return;
       const top = main.getBoundingClientRect().top + 80;
       const all = [...main.querySelectorAll('[data-section]')];
       let current = 'intro';
-      for (const el of all) if (el.getBoundingClientRect().top <= top) current = el.id;
+      for (const el of all as HTMLElement[]) if (el.getBoundingClientRect().top <= top) current = el.id;
       if (main.scrollTop + main.clientHeight >= main.scrollHeight - 2) current = all.at(-1)?.id ?? current;
       setActive(current);
     };
@@ -127,12 +133,12 @@ export default function SystemsPage() {
     return () => main.removeEventListener('scroll', onScroll);
   }, [system]);
 
-  const pick = (id) => {
+  const pick = (id: string) => {
     setActive(id);
     lockUntil.current = Date.now() + 800; // keep the clicked item active during the smooth scroll
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
-  const switchSystem = (id) => {
+  const switchSystem = (id: SystemId) => {
     setSystem(id);
     setActive('intro');
     mainRef.current?.scrollTo({ top: 0 });

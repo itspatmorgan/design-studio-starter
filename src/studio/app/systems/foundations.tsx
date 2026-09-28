@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ComponentType, type ElementType, type ReactNode, type Ref } from 'react';
 import { cn } from '@/lib/utils';
 
 // Shared building blocks for the Systems page. Everything here reads live values
@@ -17,17 +17,17 @@ export function useColorMode() {
 }
 
 // Read a computed style from an element after each render that changes the mode.
-function useComputed(read) {
-  const ref = useRef(null);
+function useComputed<T extends HTMLElement = HTMLDivElement>(read: (s: CSSStyleDeclaration) => string): [Ref<T>, string | null] {
+  const ref = useRef<T>(null);
   const mode = useColorMode();
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState<string | null>(null);
   useEffect(() => {
     if (ref.current) setValue(read(getComputedStyle(ref.current)));
   }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
   return [ref, value];
 }
 
-export function Section({ id, title, description, children }) {
+export function Section({ id, title, description, children }: { id: string; title: string; description?: string; children: ReactNode }) {
   return (
     <section id={id} data-section className="mb-14 scroll-mt-6">
       <h2 className="mb-1 text-lg font-semibold tracking-tight text-foreground">{title}</h2>
@@ -38,11 +38,13 @@ export function Section({ id, title, description, children }) {
   );
 }
 
-export function Code({ children }) {
+type Children = { children: ReactNode };
+
+export function Code({ children }: Children) {
   return <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[13px] text-foreground">{children}</code>;
 }
 
-export function CodeBlock({ children }) {
+export function CodeBlock({ children }: Children) {
   return (
     <pre className="overflow-x-auto rounded-lg border border-border bg-muted/50 p-4 font-mono text-[13px] leading-6 text-foreground">
       {children}
@@ -50,14 +52,15 @@ export function CodeBlock({ children }) {
   );
 }
 
-export function Prose({ children }) {
+export function Prose({ children }: Children) {
   return <div className="max-w-2xl space-y-3 text-sm leading-6 text-foreground/90">{children}</div>;
 }
 
 // --- Colors -----------------------------------------------------------------
 
 // Semantic tokens, grouped, one compact row each: [name, utility, role].
-const COLOR_GROUPS = [
+type Token = [name: string, utility: string, role: string];
+const COLOR_GROUPS: { name: string; tokens: Token[] }[] = [
   { name: 'Surfaces', tokens: [
     ['background', 'bg-background', 'Page background'],
     ['foreground', 'text-foreground', 'Primary text'],
@@ -93,7 +96,7 @@ const COLOR_GROUPS = [
   ] },
 ];
 
-function TokenRow({ name, utility, role }) {
+function TokenRow({ name, utility, role }: { name: string; utility: string; role: string }) {
   const [ref, value] = useComputed((s) => s.getPropertyValue(`--${name}`).trim());
   return (
     <div ref={ref} className="flex items-center gap-3 py-1.5">
@@ -112,7 +115,7 @@ function TokenRow({ name, utility, role }) {
 
 // scopeClass puts the rows inside the system's theme (e.g. .product-theme).
 // extraTokens: [groupName, [name, utility, role]] rows appended to an existing group.
-export function ColorTokens({ scopeClass, extraTokens = [] }) {
+export function ColorTokens({ scopeClass, extraTokens = [] }: { scopeClass: string; extraTokens?: [group: string, token: Token][] }) {
   return (
     <div className={cn(scopeClass, 'space-y-10 text-foreground')}>
       {COLOR_GROUPS.map((g) => (
@@ -141,8 +144,10 @@ function FontFamily() {
   );
 }
 
-function TypeSample({ label, className }) {
-  const [ref, value] = useComputed((s) => `${s.fontSize} / ${s.lineHeight}, ${s.fontWeight}`);
+export type TypeSampleSpec = { label: string; className: string };
+
+function TypeSample({ label, className }: TypeSampleSpec) {
+  const [ref, value] = useComputed<HTMLSpanElement>((s) => `${s.fontSize} / ${s.lineHeight}, ${s.fontWeight}`);
   return (
     <div className="grid grid-cols-[180px_1fr_200px] items-baseline gap-4 border-b border-border py-3 last:border-0">
       <span className="font-mono text-xs text-muted-foreground">{label}</span>
@@ -152,7 +157,7 @@ function TypeSample({ label, className }) {
   );
 }
 
-export function TypeScale({ scopeClass, samples }) {
+export function TypeScale({ scopeClass, samples }: { scopeClass: string; samples: TypeSampleSpec[] }) {
   return (
     <div className={cn(scopeClass, 'text-foreground')}>
       <FontFamily />
@@ -167,7 +172,7 @@ export function TypeScale({ scopeClass, samples }) {
 
 const RADII = ['rounded-sm', 'rounded-md', 'rounded-lg', 'rounded-xl', 'rounded-2xl', 'rounded-3xl', 'rounded-4xl', 'rounded-full'];
 
-function RadiusBox({ cls }) {
+function RadiusBox({ cls }: { cls: string }) {
   const [ref, value] = useComputed((s) => s.borderTopLeftRadius);
   return (
     <div className="flex flex-col items-center gap-2">
@@ -179,11 +184,11 @@ function RadiusBox({ cls }) {
 }
 
 function BaseRadius() {
-  const [ref, value] = useComputed((s) => s.getPropertyValue('--radius').trim());
+  const [ref, value] = useComputed<HTMLParagraphElement>((s) => s.getPropertyValue('--radius').trim());
   return <p ref={ref} className="mb-4 text-sm text-muted-foreground">Base <Code>--radius</Code> is <Code>{value}</Code>. The scale is calculated from it.</p>;
 }
 
-export function RadiusScale({ scopeClass }) {
+export function RadiusScale({ scopeClass }: { scopeClass: string }) {
   return (
     <div className={cn(scopeClass, 'text-foreground')}>
       <BaseRadius />
@@ -196,7 +201,7 @@ export function RadiusScale({ scopeClass }) {
 
 // --- Icons ------------------------------------------------------------------
 
-export function IconGrid({ icons }) {
+export function IconGrid({ icons }: { icons: { name: string; node: ReactNode }[] }) {
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-2">
       {icons.map(({ name, node }) => (
@@ -211,10 +216,12 @@ export function IconGrid({ icons }) {
 
 // --- Components -------------------------------------------------------------
 
-export const slug = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+export const slug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
 // Frame wraps each demo box: plain for studio, ProductFrame for product.
-export function ComponentDemo({ component, Frame = 'div' }) {
+export type ComponentSpec = { name: string; file: string; demo: ComponentType };
+
+export function ComponentDemo({ component, Frame = 'div' }: { component: ComponentSpec; Frame?: ElementType }) {
   const { name, file, demo: Demo } = component;
   return (
     <section id={slug(name)} data-section className="mb-10 scroll-mt-6">

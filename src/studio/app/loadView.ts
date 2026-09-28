@@ -1,0 +1,26 @@
+import type { ViewModule } from './types';
+
+// Every view file, .tsx or .jsx. Vite only loads one when it is asked for.
+const views = import.meta.glob<ViewModule>([
+  '/prototypes/**/*.{tsx,jsx}',
+  '!/prototypes/_*/**',            // skip _templates
+  '!/prototypes/**/components/**', // skip helpers
+]);
+
+type ViewPath = { contributor: string; prototype: string; group?: string | null; view: string };
+
+// The loader for a view, by its URL parts (view name without extension), or undefined.
+export function findView({ contributor, prototype, group, view }: ViewPath) {
+  const base = `/prototypes/${contributor}/${prototype}/${group ? `${group}/` : ''}${view}`;
+  return views[`${base}.tsx`] ?? views[`${base}.jsx`];
+}
+
+// One import per view, reused on every later visit.
+const loaded = new Map<string, Promise<ViewModule>>();
+export function loadView(path: ViewPath): Promise<ViewModule> | undefined {
+  const load = findView(path);
+  if (!load) return undefined;
+  const key = [path.contributor, path.prototype, path.group ?? '', path.view].join('/');
+  if (!loaded.has(key)) loaded.set(key, load());
+  return loaded.get(key);
+}

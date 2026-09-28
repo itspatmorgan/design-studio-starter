@@ -1,3 +1,4 @@
+import type * as React from "react"
 import { Command as CommandPrimitive } from "cmdk"
 import { Dialog as DialogPrimitive } from "radix-ui"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -5,7 +6,7 @@ import { Search01Icon } from "@hugeicons/core-free-icons"
 import { cn } from "@/lib/utils"
 
 // App UI command menu (shadcn's Command, on cmdk). Renders into document.body, in the app UI look.
-function CommandDialog({ title = "Command menu", children, ...props }) {
+function CommandDialog({ title = "Command menu", children, ...props }: React.ComponentProps<typeof DialogPrimitive.Root> & { title?: string }) {
   return (
     <DialogPrimitive.Root {...props}>
       <DialogPrimitive.Portal>
@@ -22,7 +23,7 @@ function CommandDialog({ title = "Command menu", children, ...props }) {
   )
 }
 
-function CommandInput({ className, ...props }) {
+function CommandInput({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
     <div className="flex items-center border-b border-border px-3">
       <HugeiconsIcon icon={Search01Icon} size={16} className="mr-2 shrink-0 opacity-50" />
@@ -34,15 +35,15 @@ function CommandInput({ className, ...props }) {
   )
 }
 
-function CommandList({ className, ...props }) {
+function CommandList({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.List>) {
   return <CommandPrimitive.List className={cn("max-h-[min(420px,60vh)] overflow-x-hidden overflow-y-auto", className)} {...props} />
 }
 
-function CommandEmpty(props) {
+function CommandEmpty(props: React.ComponentProps<typeof CommandPrimitive.Empty>) {
   return <CommandPrimitive.Empty className="py-6 text-center text-sm" {...props} />
 }
 
-function CommandGroup({ className, ...props }) {
+function CommandGroup({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Group>) {
   return (
     <CommandPrimitive.Group
       className={cn(
@@ -55,11 +56,11 @@ function CommandGroup({ className, ...props }) {
   )
 }
 
-function CommandSeparator({ className, ...props }) {
+function CommandSeparator({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Separator>) {
   return <CommandPrimitive.Separator className={cn("h-px bg-border", className)} {...props} />
 }
 
-function CommandItem({ className, ...props }) {
+function CommandItem({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Item>) {
   return (
     <CommandPrimitive.Item
       className={cn(

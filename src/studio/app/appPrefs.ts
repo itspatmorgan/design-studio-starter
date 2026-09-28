@@ -1,5 +1,5 @@
 // App UI preferences, saved in localStorage so they survive a reload.
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
 
 const COLOR_MODE_KEY = 'prototype-sandbox:color-mode';   // "light" | "dark"; unset = follow the system
@@ -39,7 +39,7 @@ export function useColorMode() {
 }
 
 // True when focus is in a text field, so shortcuts don't steal keystrokes.
-export const isTyping = (target) =>
+export const isTyping = (target: EventTarget | null) =>
   target instanceof HTMLElement && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
 
 // The prototype navigation's open/closed state. ⌘; (Ctrl+; on Windows) toggles it.
@@ -53,7 +53,7 @@ export function useSectionNav() {
   const toggle = useCallback(() => setOpen((o) => !o), []);
 
   useEffect(() => {
-    const onKeyDown = (e) => {
+    const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== ';' || !(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey || e.repeat || isTyping(e.target)) return;
       e.preventDefault();
       toggle();
@@ -64,3 +64,7 @@ export function useSectionNav() {
 
   return { open, toggle };
 }
+
+// Whether the prototype navigation is showing, for the prototype layout.
+export const SectionNavContext = createContext(true);
+export const useSectionNavOpen = () => useContext(SectionNavContext);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Mail } from 'lucide-react';
 // Product system: what prototypes build with. Demos render inside .product-theme.
 // Kept short on purpose: it shows how the product look differs from the app UI.
@@ -7,10 +7,11 @@ import { Button } from '@/product/components/button';
 import { Input } from '@/product/components/input';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/product/components/dialog';
 import { Code, CodeBlock, Prose } from './foundations';
+import type { DesignSystem } from '../types';
 
 // Same wrapper and portal container as the viewer, so pop-ups stay inside .product-theme.
-export function ProductFrame({ children }) {
-  const [portal, setPortal] = useState(null);
+export function ProductFrame({ children }: { children: ReactNode }) {
+  const [portal, setPortal] = useState<HTMLElement | null>(null);
   return (
     <div className="product-theme text-foreground">
       <PortalContext.Provider value={portal}>{children}</PortalContext.Provider>
@@ -19,7 +20,7 @@ export function ProductFrame({ children }) {
   );
 }
 
-export const product = {
+export const product: DesignSystem = {
   label: 'Product',
   scopeClass: 'product-theme',
   Frame: ProductFrame,
@@ -33,7 +34,7 @@ export const product = {
           <li>It lives in <Code>src/product/</Code>.</li>
           <li>Prototypes import from <Code>@/product/...</Code>.</li>
           <li>Its styles are scoped under <Code>.product-theme</Code>, with a <Code>.dark .product-theme</Code> block if your product has dark mode.</li>
-          <li>Pop-ups render into the portal container from <Code>portal.jsx</Code>, so they keep the product look.</li>
+          <li>Pop-ups render into the portal container from <Code>portal.tsx</Code>, so they keep the product look.</li>
         </ol>
       </Prose>
     </div>
@@ -47,7 +48,7 @@ export const product = {
   ),
   categories: [
     { name: 'Components', components: [
-      { name: 'Button', file: 'button.jsx', demo: () => (
+      { name: 'Button', file: 'button.tsx', demo: () => (
         <>
           <Button>Primary</Button>
           <Button variant="secondary">Secondary</Button>
@@ -56,13 +57,13 @@ export const product = {
           <Button><Mail data-icon="inline-start" />With icon</Button>
         </>
       ) },
-      { name: 'Input', file: 'input.jsx', demo: () => (
+      { name: 'Input', file: 'input.tsx', demo: () => (
         <>
           <Input placeholder="Type something" className="w-56" />
           <Input placeholder="Disabled" disabled className="w-56" />
         </>
       ) },
-      { name: 'Dialog', file: 'dialog.jsx', demo: () => (
+      { name: 'Dialog', file: 'dialog.tsx', demo: () => (
         <Dialog>
           <DialogTrigger asChild><Button variant="outline">Open dialog</Button></DialogTrigger>
           <DialogContent>

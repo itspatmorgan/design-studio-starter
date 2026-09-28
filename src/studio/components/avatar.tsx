@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 
 // Initials in a gray circle, like a contributor avatar without a photo.
-function ContributorAvatar({ name, size = 20, className }) {
+function ContributorAvatar({ name, size = 20, className }: { name?: string; size?: number; className?: string }) {
   const initials = name ? name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() : "?"
   return (
     <span

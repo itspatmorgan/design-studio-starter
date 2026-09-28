@@ -1,7 +1,8 @@
+import type * as React from "react"
 import { cn } from "@/lib/utils"
 
 // App UI text input (shadcn's Input).
-function Input({ className, type = "text", ...props }) {
+function Input({ className, type = "text", ...props }: React.ComponentProps<"input">) {
   return (
     <input
       type={type}
