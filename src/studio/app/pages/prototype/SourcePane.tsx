@@ -39,6 +39,8 @@ const theme = EditorView.theme({
 
 // Syntax colors from the theme's chart colors, so there are no new tokens to keep in step.
 const highlight = HighlightStyle.define([
+  // First, so it is the weakest: a quote's text keeps its own styles (code, bold), which come later.
+  { tag: t.quote, color: 'var(--muted-foreground)', fontStyle: 'italic' },
   { tag: [t.keyword, t.controlKeyword, t.moduleKeyword, t.operatorKeyword], color: 'var(--chart-1)' },
   { tag: [t.string, t.special(t.string), t.regexp], color: 'var(--chart-2)' },
   { tag: [t.number, t.bool, t.null, t.atom], color: 'var(--chart-4)' },
@@ -52,11 +54,14 @@ const highlight = HighlightStyle.define([
   { tag: [t.link, t.url], color: 'var(--chart-2)' },
   { tag: t.monospace, color: 'var(--chart-2)' },
   { tag: t.attributeName, color: 'var(--chart-4)' },
+  { tag: t.contentSeparator, color: 'var(--muted-foreground)' },
+  { tag: t.strikethrough, color: 'var(--muted-foreground)', textDecoration: 'line-through' },
+  { tag: t.labelName, color: 'var(--chart-4)' },
 ]);
 
 // The file type's syntax, loaded when it's needed.
 async function languageExtension(language: 'tsx' | 'markdown'): Promise<Extension> {
-  if (language === 'markdown') return (await import('@codemirror/lang-markdown')).markdown();
+  if (language === 'markdown') return (await import('@/studio/app/pages/prototype/mdxLanguage')).mdxLanguage();
   return (await import('@codemirror/lang-javascript')).javascript({ jsx: true, typescript: true });
 }
 
