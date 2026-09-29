@@ -75,6 +75,16 @@ const layout = EditorView.theme({
     backgroundColor: 'transparent', color: 'var(--muted-foreground)', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer',
   },
   [`${panels(' [name=close]:hover')}, ${panels(' .cm-dialog-close:hover')}`]: { backgroundColor: 'var(--muted)', color: 'var(--foreground)' },
+  // Folding: the chevrons show while the pointer is over the gutter, or where a fold is closed.
+  '.cm-foldGutter': { width: '16px' },
+  '.cm-foldGutter span': { display: 'flex', justifyContent: 'center', color: 'var(--muted-foreground)', cursor: 'pointer', opacity: '0', transition: 'opacity 120ms' },
+  '.cm-gutters:hover .cm-foldGutter span, .cm-foldGutter span[title="Unfold line"]': { opacity: '1' },
+  '.cm-foldGutter span:hover': { color: 'var(--foreground)' },
+  '.cm-foldPlaceholder': {
+    padding: '0 6px', margin: '0 2px', color: 'var(--muted-foreground)', backgroundColor: 'var(--muted)',
+    border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', cursor: 'pointer',
+  },
+  '.cm-selectionMatch': { backgroundColor: 'color-mix(in oklab, var(--fx-blue) 16%, transparent)' },
   '.cm-searchMatch': { backgroundColor: 'color-mix(in oklab, var(--fx-yellow) 30%, transparent)' },
   '.cm-searchMatch.cm-searchMatch-selected': { backgroundColor: 'color-mix(in oklab, var(--fx-orange) 45%, transparent)' },
 });

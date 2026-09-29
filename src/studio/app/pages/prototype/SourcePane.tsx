@@ -10,8 +10,9 @@ import { useBlocker } from '@tanstack/react-router';
 import { EditorState, type Extension } from '@codemirror/state';
 import { EditorView, drawSelection, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
-import { bracketMatching, indentOnInput } from '@codemirror/language';
-import { search, searchKeymap } from '@codemirror/search';
+import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete';
+import { bracketMatching, foldGutter, foldKeymap, indentOnInput } from '@codemirror/language';
+import { highlightSelectionMatches, search, searchKeymap } from '@codemirror/search';
 import { FILE_TYPES } from '@/studio/app/data/fileTypes';
 import { readSource, SourceChanged, useMe, writeSource } from '@/studio/app/data/files';
 import type { Item, Prototype } from '@/studio/app/data/types';
@@ -76,7 +77,7 @@ export default function SourcePane({ proto, item }: { proto: Prototype; item: It
           doc: first.content,
           extensions: [
             lineNumbers(), highlightActiveLine(), highlightActiveLineGutter(), drawSelection(),
-            history(), bracketMatching(), indentOnInput(), search({ top: true }),
+            history(), bracketMatching(), closeBrackets(), indentOnInput(), foldGutter(), highlightSelectionMatches(), search({ top: true }),
             sourceTheme, language,
             ...(FILE_TYPES[item.fileType].language === 'markdown' ? [EditorView.lineWrapping] : []),
             EditorState.readOnly.of(!editable),
@@ -84,7 +85,7 @@ export default function SourcePane({ proto, item }: { proto: Prototype; item: It
             // Named for screen readers. A read-only editor isn't focusable by default, which would leave
             // it without ⌘F, go to line, and keyboard selection, so it gets a tab stop.
             EditorView.contentAttributes.of({ 'aria-label': `Source of ${item.path}`, ...(editable ? {} : { tabindex: '0' }) }),
-            keymap.of([{ key: 'Mod-s', preventDefault: true, run: () => { save.current(); return true; } }, ...defaultKeymap, ...historyKeymap, ...searchKeymap]),
+            keymap.of([{ key: 'Mod-s', preventDefault: true, run: () => { save.current(); return true; } }, ...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, ...foldKeymap, ...searchKeymap]),
             EditorView.updateListener.of((update) => {
               if (!update.docChanged) return;
               const now = update.state.doc.toString() !== disk.current?.content;
