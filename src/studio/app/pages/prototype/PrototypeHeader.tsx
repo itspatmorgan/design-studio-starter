@@ -90,10 +90,10 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
   const actions: Action[] = [
     { label: showInfo ? 'Hide details' : 'Show details', icon: InformationCircleIcon, onSelect: toggleInfo },
     ...(local ? [{ label: showAll ? 'Hide other files' : 'Show all files', icon: showAll ? ViewOffSlashIcon : ViewIcon, onSelect: toggleShowAll }] : []),
-    ...(editable ? [{ label: 'Edit info…', icon: PencilEdit02Icon, onSelect: () => setEditing(true) }] : []),
+    ...(editable ? [{ label: 'Edit info', icon: PencilEdit02Icon, onSelect: () => setEditing(true) }] : []),
     { label: 'Copy link', icon: Link01Icon, onSelect: copyLink },
     ...(local ? [{ label: 'Reveal in Finder', icon: Folder01Icon, onSelect: () => revealInFinder(proto, '') }] : []),
-    ...(editable ? ['separator' as const, { label: 'Delete prototype…', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }] : []),
+    ...(editable ? ['separator' as const, { label: 'Delete prototype', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }] : []),
   ];
   // Actions run after the menu has closed, so a dialog they open isn't closed by the same click.
   const menuItems = (Item: typeof DropdownMenuItem | typeof ContextMenuItem, Separator: typeof DropdownMenuSeparator) =>
