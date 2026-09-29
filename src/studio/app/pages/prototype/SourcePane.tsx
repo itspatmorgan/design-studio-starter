@@ -48,7 +48,7 @@ const highlight = HighlightStyle.define([
   { tag: [t.definition(t.variableName), t.function(t.variableName), t.propertyName], color: 'var(--foreground)', fontWeight: '500' },
   { tag: [t.comment, t.meta], color: 'var(--muted-foreground)', fontStyle: 'italic' },
   { tag: [t.punctuation, t.separator, t.bracket, t.processingInstruction], color: 'var(--muted-foreground)' },
-  { tag: t.heading, fontWeight: '600', color: 'var(--foreground)' },
+  { tag: t.heading, fontWeight: '600', color: 'var(--chart-1)' },
   { tag: t.strong, fontWeight: '600' },
   { tag: t.emphasis, fontStyle: 'italic' },
   { tag: [t.link, t.url], color: 'var(--chart-2)' },
