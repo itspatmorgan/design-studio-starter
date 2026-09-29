@@ -78,6 +78,15 @@
 
 }
 
+/* The search field's background is hard-coded (lavender in dark mode); use the app's muted color. */
+.canvas .excalidraw .layer-ui__search-header .ExcTextField__input,
+.canvas .excalidraw.theme--dark.excalidraw .layer-ui__search-header .ExcTextField__input {
+  background-color: var(--muted);
+}
+.canvas .excalidraw .layer-ui__search-header .ExcTextField__input input::placeholder {
+  color: var(--muted-foreground);
+}
+
 /* Every floating island: card-colored, bordered, light shadow. */
 .canvas .excalidraw .Island {
   background: var(--card);
