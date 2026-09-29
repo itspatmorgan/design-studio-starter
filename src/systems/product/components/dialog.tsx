@@ -3,7 +3,7 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import { cn } from "@/lib/utils"
 import { usePortalContainer } from "@/lib/portal"
 
-import { Button } from "@/product/components/button"
+import { Button } from "@/systems/product/components/button"
 import { XIcon } from "lucide-react"
 
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {

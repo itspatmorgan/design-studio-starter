@@ -16,7 +16,7 @@ export type Prototype = {
   description: string;
   contributor: string;    // display name, from contributors.json
   created: string | null;
-  system: string;         // meta.json "system", or the first in src/systems.ts
+  system: string;         // meta.json "system", or the first in src/systems/index.ts
   start: string | null;   // meta.json "start", as an item path: the item it opens on
   items: Item[];          // in file-tree order
 };

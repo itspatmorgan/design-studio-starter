@@ -8,8 +8,8 @@ The full docs live in the app itself: run it and open the Guide (`/guide`), or r
 
 - **Three contracts.** A prototype is a folder. A script turns folders into a manifest. The app reads the manifest and the URL.
 - **Contributor scope.** You can change anything in your folder, but only your own folder. Everything else is the platform.
-- **Scoped design systems.** The studio system (`src/studio/`) is the app's own UI: nav, index, prototype navigation, palette, Systems pages, and Guide. Prototypes build with a prototype system instead, each in its own folder with its theme scoped under a class, listed in `src/systems.ts`. The kit ships one, `product` (`src/product/`), a placeholder for your product's design system. Replace it, or add others, like a `brand` system for marketing work.
-- **Prototype scope.** A prototype can depend only on its own folder, its design system (`src/product/` by default), and shared utilities (`src/lib/`).
+- **Scoped design systems.** The studio system (`src/studio/`) is the app's own UI: nav, index, prototype navigation, palette, Systems pages, and Guide. Prototypes build with a prototype system instead, each in its own folder with its theme scoped under a class, listed in `src/systems/index.ts`. The kit ships one, `product` (`src/systems/product/`), a placeholder for your product's design system. Replace it, or add others, like a `brand` system for marketing work.
+- **Prototype scope.** A prototype can depend only on its own folder, its design system (`src/systems/product/` by default), and shared utilities (`src/lib/`).
 
 ## Getting started
 
@@ -67,8 +67,8 @@ scripts/               manifest, create, scope check, Vite plugins (plain Node .
 .github/workflows/     scope check and build on push to main, build for deploy
 src/studio/            the app: routes (app/router.tsx), components, the Guide's pages (guide/, MDX),
                        and the kinds of file a prototype holds (fileTypes/: views, documents, canvases), one removable folder each
-src/systems.ts         the design systems prototypes can use
-src/product/           placeholder product system; replace it, or add others beside it
+src/systems/           the design systems prototypes build with (index.ts lists them)
+  product/            placeholder product system; replace it, or add others beside it
 src/lib/               shared utilities
 src/prototypes/        one folder per contributor
 ```

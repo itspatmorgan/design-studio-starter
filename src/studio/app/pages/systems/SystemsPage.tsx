@@ -13,7 +13,7 @@ import { studio } from '@/studio/app/pages/systems/studioSystem';
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
 // Pages come from each system's spec (productSystem.tsx, studioSystem.tsx), so adding
 // a component there adds its page. Optional pages show only when the system defines them.
-// One spec per system in src/systems.ts (a type error if one is missing), then Studio.
+// One spec per system in src/systems/index.ts (a type error if one is missing), then Studio.
 const PROTOTYPE_SPECS: Record<PrototypeSystemId, DesignSystem> = { product };
 const SYSTEMS: Record<string, DesignSystem> = { ...PROTOTYPE_SPECS, studio };
 type SystemId = string;

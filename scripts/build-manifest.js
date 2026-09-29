@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems.ts';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems/index.ts';
 import { HELPER_FOLDER, itemSlug } from '../src/studio/fileTypes/index.ts';
 import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
 import { frontmatter } from './lib/frontmatter.js';
@@ -78,9 +78,9 @@ export function buildManifest() {
         start = items.find((i) => itemSlug(i.path) === meta.start)?.path ?? null;
         if (!start) { skip(`has "start": "${meta.start}", which isn't an item in this prototype`); continue; }
       }
-      // "system" (optional) is the design system it builds with, from src/systems.ts.
+      // "system" (optional) is the design system it builds with, from src/systems/index.ts.
       const system = meta.system ?? DEFAULT_SYSTEM;
-      if (!(system in PROTOTYPE_SYSTEMS)) { skip(`has "system": "${system}", which isn't in src/systems.ts (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`); continue; }
+      if (!(system in PROTOTYPE_SYSTEMS)) { skip(`has "system": "${system}", which isn't in src/systems/index.ts (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`); continue; }
       prototypes.push({
         id, contributorKey, title: meta.title, description: meta.description ?? '',
         contributor: contributors[contributorKey]?.name ?? '', created: meta.created ?? null, system, start, items,

@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "../../product/styles/theme.css";
+@import "../../systems/product/styles/theme.css";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";

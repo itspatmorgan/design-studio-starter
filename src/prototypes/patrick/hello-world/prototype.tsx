@@ -1,7 +1,7 @@
-import { Button } from '@/product/components/button';
+import { Button } from '@/systems/product/components/button';
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
-} from '@/product/components/dialog';
+} from '@/systems/product/components/dialog';
 
 export default function Prototype() {
   return (
