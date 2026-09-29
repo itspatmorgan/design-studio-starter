@@ -5,7 +5,7 @@
 //   GET  /__studio/files?contributor=<key>&prototype=<id>   the prototype's files and folders
 //   POST /__studio/reveal   { contributor, prototype, path }  show a file in Finder
 //   POST /__studio/op       { contributor, prototype, op, ... }  change files, in your folder only:
-//        create   { path: folder, name, dir? }   a new file (a view if it's .tsx/.jsx) or folder
+//        create   { path: folder, name, dir? }   a new file (from its type's template, by extension) or folder
 //        rename   { path, name }
 //        move     { path, to: folder }           "" is the prototype's top level
 //        delete   { path }                        to the Trash (or .trash/ at the repo root)
@@ -28,6 +28,7 @@ import { buildManifest } from './build-manifest.js';
 import { createPrototype } from './create-prototype.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from './resolve-contributor.js';
+import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -86,14 +87,9 @@ const validName = (name) => typeof name === 'string' && /^[^/\\\0]+$/.test(name)
 // An item's name in meta.json "start" and URLs: its path without the extension ("lofi/main").
 const viewKey = (rel) => rel.replace(/\.[^./]+$/, '');
 
-// A new view: a component named after the file ("user-settings.tsx" → UserSettings).
-function viewTemplate(name) {
-  const base = name.replace(/\.[jt]sx$/, '');
-  const component = base.split(/[^a-z0-9]+/i).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join('') || 'View';
-  const safe = /^[A-Z]/.test(component) ? component : `View${component}`;
-  // It starts as a placeholder (src/lib/placeholder.tsx) until something is built in it.
-  return `import { Placeholder } from '@/lib/placeholder';\n\nexport default function ${safe}() {\n  return <Placeholder file={import.meta.url} />;\n}\n`;
-}
+// The contents of a new file: its file type's template, by extension (src/fileTypes/<type>/type.ts).
+// Files of no type start empty.
+const templateFor = (name) => FILE_TYPES[fileTypeOf(name)]?.template?.(name) ?? '';
 
 // Why you can't change a prototype: it's someone else's, or you aren't set up yet.
 const ownerError = (key) => (key
@@ -111,14 +107,14 @@ function trash(file) {
   return '.trash/';
 }
 
-// Keeps meta.json "start" pointing at a real view when that view moves or is deleted.
+// Keeps meta.json "start" pointing at a real item when that item moves or is deleted.
 function fixStart(dir, fromRel, toRel) {
   const metaFile = path.join(dir, 'meta.json');
   let meta;
   try { meta = JSON.parse(fs.readFileSync(metaFile, 'utf8')); } catch { return; }
   if (typeof meta.start !== 'string') return;
   const from = viewKey(fromRel);
-  // A moved folder takes the views inside it along.
+  // A moved folder takes the items inside it along.
   let next;
   if (meta.start === from) next = toRel ? viewKey(toRel) : undefined;
   else if (meta.start.startsWith(`${from}/`)) next = toRel ? `${toRel}${meta.start.slice(from.length)}` : undefined;
@@ -138,7 +134,7 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, descripti
     const target = path.join(parent, name);
     if (fs.existsSync(target)) throw new Error(`Something named “${name}” already exists here.`);
     if (isDir) fs.mkdirSync(target);
-    else fs.writeFileSync(target, /\.[jt]sx$/.test(name) ? viewTemplate(name) : '');
+    else fs.writeFileSync(target, templateFor(name));
     return { path: relOf(target) };
   }
   if (op === 'meta') {
@@ -202,8 +198,8 @@ export default function filesPlugin() {
     apply: 'serve',
     // When a prototype file is moved, created, or deleted, Vite would try to hot-reload it
     // (at its old path, or at a path the page loaded before), fail, and reload the page. The
-    // manifest and the view list (loadView.ts) already handle these, so drop Vite's copy of
-    // the file itself and let its importers, like the view list, update as usual. Edits to a
+    // manifest and the item lists (src/fileTypes/<type>/loader.ts) already handle these, so drop Vite's copy of
+    // the file itself and let its importers, like those lists, update as usual. Edits to a
     // file are left to Vite's normal hot reload.
     hotUpdate({ type, file, modules }) {
       if (type === 'update' || !file.startsWith(PROTOS + path.sep)) return;

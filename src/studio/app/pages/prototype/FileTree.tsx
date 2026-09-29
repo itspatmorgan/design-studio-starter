@@ -13,7 +13,7 @@ import { useEffect, useImperativeHandle, useRef, useState, type DragEvent, type 
 import { Link, useNavigate, useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileAddIcon, FileEditIcon,
+  ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon,
   Folder01Icon, FolderAddIcon, StarIcon, ViewIcon, ViewOffSlashIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
@@ -22,6 +22,7 @@ import {
 } from '@/studio/app/data/files';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { HELPER_FOLDER } from '@/fileTypes';
+import { creatableTypes, FILE_TYPES, fileTypeModules } from '@/studio/app/data/fileTypes';
 import { Button } from '@/studio/components/button';
 import { Input } from '@/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
@@ -128,7 +129,10 @@ function NameInput({ initial, depth, onDone }: { initial: string; depth: number;
   );
 }
 
-type Editing = { kind: 'rename'; path: string } | { kind: 'create'; parent: string; dir: boolean } | null;
+// What "+" makes: a folder, or a file of a type (its id, like "view" or "document").
+type NewTarget = 'folder' | string;
+
+type Editing = { kind: 'rename'; path: string } | { kind: 'create'; parent: string; target: NewTarget } | null;
 
 const iconButton = 'inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground';
 
@@ -147,7 +151,7 @@ function IconButton({ label, onClick, pressed, children }: { label: string; onCl
 }
 
 // What the prototype's header can ask of the tree: its "+" menu creates at the top level.
-export type FileTreeHandle = { startCreate: (parent: string, dir: boolean) => void };
+export type FileTreeHandle = { startCreate: (parent: string, target: NewTarget) => void };
 
 type FileTreeProps = { proto: Prototype; current: Item | undefined; handle?: Ref<FileTreeHandle> };
 
@@ -192,7 +196,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
     if (open) next.delete(d); else next.add(d);
     return next;
   });
-  const noun = live ? 'files' : 'views';
+  const noun = live ? 'files' : 'pages';
 
   // Runs a change, then takes the new manifest. If it moved or removed the open view, go to
   // its new place (or the prototype's first view) first, so the old address is never reloaded.
@@ -219,9 +223,9 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
     }
   }
 
-  const startCreate = (parent: string, dir: boolean) => {
+  const startCreate = (parent: string, target: NewTarget) => {
     if (parent) setOpen(parent, true);
-    setEditing({ kind: 'create', parent, dir });
+    setEditing({ kind: 'create', parent, target });
   };
   useImperativeHandle(handle, () => ({ startCreate }));
 
@@ -270,8 +274,10 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
         <ContextMenuContent className="min-w-44">
           {node.dir && editable && (
             <>
-              <ContextMenuItem onClick={() => setTimeout(() => startCreate(node.path, false))}><HugeiconsIcon icon={FileAddIcon} /> New view</ContextMenuItem>
-              <ContextMenuItem onClick={() => setTimeout(() => startCreate(node.path, true))}><HugeiconsIcon icon={FolderAddIcon} /> New folder</ContextMenuItem>
+              {creatableTypes.map((t) => (
+                <ContextMenuItem key={t.id} onClick={() => setTimeout(() => startCreate(node.path, t.id))}><HugeiconsIcon icon={t.icon} /> New {t.label.toLowerCase()}</ContextMenuItem>
+              ))}
+              <ContextMenuItem onClick={() => setTimeout(() => startCreate(node.path, 'folder'))}><HugeiconsIcon icon={FolderAddIcon} /> New folder</ContextMenuItem>
               <ContextMenuSeparator />
             </>
           )}
@@ -297,23 +303,30 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
     );
   }
 
-  // The new-file or new-folder field, at the top of the folder it's being created in.
-  const createField = (parent: string, depth: number) =>
-    editing?.kind === 'create' && editing.parent === parent && (
+  // The new-file or new-folder field, at the top of the folder it's being created in. A new
+  // file starts with its type's extension, and gets it back if you delete it from the name.
+  const createField = (parent: string, depth: number) => {
+    if (editing?.kind !== 'create' || editing.parent !== parent) return null;
+    const { target } = editing;
+    const dir = target === 'folder';
+    const extension = FILE_TYPES[target]?.extensions[0] ?? '';
+    return (
       <NameInput
-        initial={editing.dir ? 'new-folder' : 'untitled.tsx'}
+        initial={dir ? 'new-folder' : `untitled${extension}`}
         depth={depth}
         onDone={(name) => {
-          const { dir } = editing;
           setEditing(null);
-          if (name) run({ op: 'create', path: parent, name, dir }).then((r) => {
-            // A new view opens right away.
+          if (!name) return;
+          const fileName = dir || name.lastIndexOf('.') > 0 ? name : name + extension;
+          run({ op: 'create', path: parent, name: fileName, dir }).then((r) => {
+            // A new item opens right away.
             const item = r?.path && itemsOf(r.manifest, proto).find((i) => i.path === r.path);
             if (item) navigate(itemLink(proto, item));
           });
         }}
       />
     );
+  };
 
   function rows(list: FileNode[], depth: number): ReactNode {
     return list.map((node) => {
@@ -367,7 +380,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
                 ? 'bg-sidebar-foreground/10 font-medium text-sidebar-accent-foreground'
                 : 'text-sidebar-foreground/80 hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground')}
             >
-              <HugeiconsIcon icon={CodeIcon} size={14} className="shrink-0 text-muted-foreground" />
+              <HugeiconsIcon icon={fileTypeModules[item.fileType]?.icon ?? CodeIcon} size={14} className="shrink-0 text-muted-foreground" />
               {label}
               {item === opensOn && (
                 <span title="The prototype opens on this" className="shrink-0 text-muted-foreground">
@@ -395,7 +408,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
   return (
     <nav className="group/tree flex min-h-0 flex-1 flex-col space-y-1.5 overflow-y-auto px-2 pt-3 pb-3">
       <div className="flex h-7 shrink-0 items-center justify-between gap-1 px-2.5 pr-0.5">
-        <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{live ? 'Files' : 'Views'}</p>
+        <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{live ? 'Files' : 'Pages'}</p>
         {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
         <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
           <IconButton label={`Filter ${noun}`} pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>

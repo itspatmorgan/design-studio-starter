@@ -29,7 +29,7 @@ pnpm dev        # starts the app at localhost:5173
 ## Notes
 
 - **TypeScript.** The kit is TypeScript (strict), and new views are `.tsx`. Plain `.jsx` views work too; they just aren't type-checked. `pnpm build` runs `pnpm typecheck` (`tsc -b`) first, so a type error fails the build and CI.
-- **Routing.** [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview), with code-based routes in `src/studio/app/router.tsx`. URLs are paths: `/` (search with `?q=`), `/systems/<system>/<page>`, `/guide`, `/<contributor>/<prototype>`, and `/<contributor>/<prototype>/<path>` for any item at any depth, like `/patrick/hello-world/lofi/main`. A file's type comes from its extension (`src/fileTypes.ts`); folders are only for organizing. For anything about routes, links, or search params, TanStack's docs are the reference. `systems` and `guide` are reserved, so they can't be contributor keys.
+- **Routing.** [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview), with code-based routes in `src/studio/app/router.tsx`. URLs are paths: `/` (search with `?q=`), `/systems/<system>/<page>`, `/guide`, `/<contributor>/<prototype>`, and `/<contributor>/<prototype>/<path>` for any item at any depth, like `/patrick/hello-world/lofi/main`. A file's type comes from its extension (views are `.tsx`, documents are `.mdx`); folders are only for organizing. Each type is a self-contained folder in `src/fileTypes/` that the platform runs without: see its README. For anything about routes, links, or search params, TanStack's docs are the reference. `systems` and `guide` are reserved, so they can't be contributor keys.
 - **Components.** shadcn/ui on [Base UI](https://base-ui.com/react/overview/quick-start) (`@base-ui/react`). Compose with the `render` prop, e.g. `<DialogTrigger render={<Button />}>Open</DialogTrigger>`.
 - **Icons.** The app UI (`src/studio/`) uses HugeIcons. Product components and prototypes use `lucide-react`, which shadcn/ui brings in.
 - **Guide.** Pages are `.mdx` files in `src/guide/`. Frontmatter sets the `title`, `description`, sidebar `section`, and `order`, plus `toc: true` for an "On this page" list. Adding a file adds the page.
@@ -66,6 +66,7 @@ src/studio/            the app wrapper and its components (routes in app/router.
 src/systems.ts         the design systems prototypes can use
 src/product/           placeholder product system; replace it, or add others beside it
 src/guide/             the Guide's pages (MDX)
+src/fileTypes/         the kinds of file a prototype holds (views, documents), one removable folder each
 src/lib/               shared utilities
 src/prototypes/        one folder per contributor
 ```

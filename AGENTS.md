@@ -7,6 +7,8 @@ At the start of every session, read:
 - [agents/rules/prototype-workflow.md](agents/rules/prototype-workflow.md)
 - [agents/rules/contributor-scope.md](agents/rules/contributor-scope.md)
 
+When the person asks for a document (written context in a prototype), read [agents/rules/documents.md](agents/rules/documents.md).
+
 Find out who you're working with by running `node scripts/resolve-contributor.js`.
 Create prototypes with `pnpm new "Prototype Name"`.
 You can change only your own folder in src/prototypes/.

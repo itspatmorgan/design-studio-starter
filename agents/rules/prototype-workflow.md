@@ -4,7 +4,7 @@ A prototype can depend only on its own folder, its design system, and shared uti
 
 ## Shape
 
-A file's type comes from its extension, and folders are only for organizing, at any depth (`src/fileTypes.ts`). Organize by topic, however the person likes.
+A file's type comes from its extension (`src/fileTypes/`: `.tsx` and `.jsx` are views, `.mdx` are documents), and folders are only for organizing, at any depth. Organize by topic, however the person likes.
 
 ```
 src/prototypes/<contributor>/<prototype>/
@@ -16,10 +16,12 @@ src/prototypes/<contributor>/<prototype>/
 │   ├── steps/
 │   │   └── done.tsx       # a view, two folders deep
 │   └── components/        # helpers, not views (at any depth)
+├── problem-framing.mdx    # a document (see documents.md)
 └── hero.webp              # a plain file
 ```
 
-- **View**: any `.tsx` file (or plain `.jsx`) that default-exports a React component, at any depth, except inside a `components/` folder. Write new views as `.tsx`. The build fails on a view without a default export (put helpers in `components/`), or on two files that would share a URL, like `main.tsx` and `main.jsx` in one folder.
+- **View**: any `.tsx` file (or plain `.jsx`) that default-exports a React component, at any depth, except inside a `components/` folder. Write new views as `.tsx`. The build fails on a view without a default export (put helpers in `components/`), or on two files that would share a URL, like `main.tsx` and `main.jsx` (or `main.mdx`) in one folder.
+- **Document**: any `.mdx` file, at any depth, except inside `components/`. See [documents.md](documents.md).
 - **Folders**: any folder, at any depth, just for organizing. A folder's name never changes what's in it. The one exception is `components/`, at any depth: its files are helpers, never listed.
 - **Opens on**: the prototype opens on its `start` item (see meta.json), or else the first item in its navigation (files before folders, alphabetical at each level). To choose a different one, set `start`; don't rename files to change the order.
 - **Lofi**: a rough, grayscale sketch of an idea, often in a `lofi/` folder. Use theme colors only (`bg-muted`, `border-border`, `text-muted-foreground`), dashed outlines for placeholders, and gray bars for text. Skip polish.
@@ -32,7 +34,7 @@ src/prototypes/<contributor>/<prototype>/
 - Import only from the prototype's own folder, its design system (`@/product/` by default), and `@/lib/` (plus installed packages). The import guard warns in `pnpm dev` and fails `pnpm build` otherwise, including for imports from a different prototype system than the one in `meta.json`.
 - Style with Tailwind classes. For custom CSS, use CSS Modules (`*.module.css`). Never a plain `.css` file or global rules like `body { … }`; they leak into the whole app. The import guard fails the build on a plain `.css` import from a prototype.
 - Use lucide-react for icons, and theme variables for color (see systems.md).
-- If a view throws, the viewer shows "This view failed to load." with the error and a Copy button. Read the error before guessing.
+- If a view throws, the viewer shows "This page couldn't load." with the error and a Copy button. Read the error before guessing.
 - If its design system doesn't have a component you need, build it in the prototype's `components/` folder, using [Base UI](https://base-ui.com/react/overview/quick-start) primitives (`@base-ui/react`) and theme classes; compose with the `render` prop, not `asChild`. Adding it to the system is a platform change: suggest it, and only do it if the person agrees.
 - Type props in `.tsx` views; keep types light. `.jsx` views aren't type-checked.
 - Check your work with `pnpm build` before you commit. It type-checks (`pnpm typecheck`, which is `tsc -b`), then writes `dist/`, which is disposable and ignored by Git. Fix type errors rather than silencing them.
@@ -40,7 +42,7 @@ src/prototypes/<contributor>/<prototype>/
 - Keep every committed file under 750 KB. Export images as WebP or compressed JPEG, at the size they're shown. The pre-commit hook blocks larger files, and CI fails on them; when it does, make the file smaller rather than working around the check.
 
 - New views and prototypes start as `<Placeholder file={import.meta.url} />` (`src/lib/placeholder.tsx`), an empty state that asks the person to describe what to build. When you build the view, replace the placeholder and remove its import.
-- The person may also create, rename, move, and delete files from the app's file tree while `pnpm dev` runs. Those are ordinary file changes: re-read the folder rather than assuming it's as you left it. The tree hides `meta.json`, `components/`, and non-view files by default, so the person may not see a helper or asset you mention; point them to it by path, or to Show all files.
+- The person may also create, rename, move, and delete files from the app's file tree while `pnpm dev` runs. Those are ordinary file changes: re-read the folder rather than assuming it's as you left it. The tree hides `meta.json`, `components/`, and files that aren't views or documents by default, so the person may not see a helper or asset you mention; point them to it by path, or to Show all files.
 
 ## Saving and sharing
 

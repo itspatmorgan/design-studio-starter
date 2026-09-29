@@ -1,13 +1,12 @@
-import type { ComponentType, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { ComponentSpec, TypeSampleSpec } from '@/studio/app/pages/systems/foundations';
 
-import type { FileType } from '@/fileTypes';
 
 // public/prototypes/manifest.json, written by scripts/build-manifest.js.
-// One thing in a prototype the app can open (see src/fileTypes.ts).
+// One thing in a prototype the app can open (see src/fileTypes/).
 export type Item = {
   path: string;   // file path in the prototype, e.g. "prototype.tsx" or "checkout/step-1.tsx"
-  fileType: FileType; // from its extension
+  fileType: string; // the id of the file type that owns it, from its extension ("view", "document")
 };
 
 export type Prototype = {
@@ -31,9 +30,6 @@ export type GuidePage = {
 };
 
 export type Manifest = { prototypes: Prototype[]; guide: GuidePage[] };
-
-// A view file's default export.
-export type ViewModule = { default: ComponentType };
 
 // One tab on the Systems page.
 export type DesignSystem = {

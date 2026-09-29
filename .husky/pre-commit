@@ -1,3 +1,4 @@
 node scripts/check-asset-size.js --staged || exit 1
 node scripts/check-scope.js --staged
 node scripts/check-identity.js
+node scripts/check-file-types.js || exit 1

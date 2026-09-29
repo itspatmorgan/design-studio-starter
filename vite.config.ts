@@ -12,6 +12,7 @@ import importGuard from './scripts/vite-import-guard-plugin.js';
 import manifestWatch from './scripts/vite-manifest-watch-plugin.js';
 import spa404 from './scripts/vite-spa-404-plugin.js';
 import files from './scripts/vite-files-plugin.js';
+import mdxRefresh from './scripts/vite-mdx-refresh-plugin.js';
 
 export default defineConfig({
   root: 'src',
@@ -21,8 +22,8 @@ export default defineConfig({
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
   plugins: [
-    // Guide pages (src/guide/*.mdx): frontmatter, GitHub-style Markdown, heading ids,
-    // and code highlighting with Shiki in both color modes.
+    // Markdown pages (Guide pages in src/guide/, and prototype documents): frontmatter,
+    // GitHub-style Markdown, heading ids, and code highlighting with Shiki in both color modes.
     {
       enforce: 'pre',
       ...mdx({
@@ -31,7 +32,9 @@ export default defineConfig({
         rehypePlugins: [rehypeSlug, [rehypePrettyCode, { theme: { light: 'github-light', dark: 'github-dark' }, keepBackground: false }]],
       }),
     },
-    react({ include: /\.(mdx|[jt]sx)$/ }),
+    // Prototype documents refresh through scripts/vite-mdx-refresh-plugin.js instead.
+    react({ include: /\.(mdx|[jt]sx)$/, exclude: /[\\/]prototypes[\\/].*\.mdx$/ }),
+    mdxRefresh(),
     tailwindcss(),
     importGuard(),
     manifestWatch(),

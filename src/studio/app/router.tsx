@@ -7,17 +7,16 @@
 //   /$contributor/$prototype                 a prototype, on its start item (or its first)
 //   /$contributor/$prototype/$               an item, by its path without the extension,
 //                                            at any depth: /patrick/hello-world/lofi/main
+import { Suspense } from 'react';
 import { createRootRoute, createRoute, createRouter, lazyRouteComponent, notFound, redirect } from '@tanstack/react-router';
 import App, { NotFound } from '@/studio/app/shell/App';
 import Index from '@/studio/app/pages/index/Index';
 import { loadGuidePage } from '@/studio/app/data/loadGuide';
 import PrototypeLayout from '@/studio/app/pages/prototype/PrototypeLayout';
-import ViewFrame from '@/studio/app/pages/prototype/ViewFrame';
-import { findItem, findPrototype, firstItem, itemLabel, itemSlug, loadManifest, setManifest } from '@/studio/app/data/manifest';
+import { findItem, findPrototype, firstItem, itemLabel, loadManifest, setManifest } from '@/studio/app/data/manifest';
+import { fileTypeModules } from '@/studio/app/data/fileTypes';
 import type { Manifest } from '@/studio/app/data/types';
-import { loadView, viewsWithoutComponent } from '@/studio/app/data/loadView';
 import { TAB_ID } from '@/studio/app/data/files';
-import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS, type PrototypeSystemId } from '@/systems';
 
 const APP_NAME = 'Design Studio';
 
@@ -122,34 +121,28 @@ const prototypeRoute = createRoute({
 });
 
 // Loads an item before the route renders, so the current one stays on screen until the next
-// one is ready. An unknown address shows the not-found page. (Views are the one file type today;
-// see src/fileTypes.ts.)
+// one is ready. Its file type (src/fileTypes/) loads the file. An unknown address, or a type
+// that isn't installed, shows the not-found page.
 async function itemLoader({ contributor, prototype, _splat }: { contributor: string; prototype: string; _splat?: string }) {
   const proto = findPrototype(await loadManifest(), contributor, prototype);
   // No path in the URL: the prototype's start item, or its first.
   const item = proto && (_splat ? findItem(proto, _splat) : firstItem(proto));
-  const mod = proto && item ? await loadView({ contributor, prototype, path: item.path }, { inManifest: true }) : undefined;
-  if (!proto || !item || !mod) throw notFound();
-  // A view file that doesn't export a component yet (say, one you're still writing) shows
-  // an error in its place, instead of breaking the page.
-  const file = `src/prototypes/${contributor}/${prototype}/${item.path}`;
-  const valid = typeof mod.default === 'function' || typeof mod.default === 'object';
-  if (!valid) viewsWithoutComponent.add(file);
-  const Component = valid
-    ? mod.default
-    : () => { throw new Error(`${file} has no default export. A view needs one: export default function MyView() { ... }`); };
+  const type = item && fileTypeModules[item.fileType];
+  const props = proto && item && type ? await type.load({ proto, item }) : undefined;
+  if (!proto || !item || !props) throw notFound();
   return {
-    Component,
-    viewKey: `${contributor}/${prototype}/${itemSlug(item.path)}`,
-    themeClass: PROTOTYPE_SYSTEMS[(proto.system as PrototypeSystemId)]?.themeClass ?? PROTOTYPE_SYSTEMS[DEFAULT_SYSTEM].themeClass,
+    fileType: item.fileType,
+    props,
     title: [proto.title, itemLabel(item.path), APP_NAME].join(' — '),
   };
 }
 
-// The open item. It shows its own not-found page, inside the prototype's navigation, and
-// never renders without its loader's data.
+// The open item, in its file type's page. It shows its own not-found page, inside the
+// prototype's navigation, and never renders without its loader's data.
 function ItemPage({ data }: { data: Awaited<ReturnType<typeof itemLoader>> | undefined }) {
-  return data ? <ViewFrame {...data} /> : null;
+  if (!data) return null;
+  const { Page } = fileTypeModules[data.fileType];
+  return <Suspense fallback={null}><Page {...data.props} /></Suspense>;
 }
 
 const prototypeIndexRoute = createRoute({

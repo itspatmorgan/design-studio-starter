@@ -10,12 +10,13 @@ A prototype is a folder in your space, `src/prototypes/<you>/`. The app finds it
 
 ## The shape of a prototype
 
-A file's type comes from its extension, and folders are just for organizing, as deep as you like. Keep a flow's screens together in one folder, or sort them however makes sense to you.
+A file's type comes from its extension (`.tsx` files are views, `.mdx` files are [documents](/guide/documents)), and folders are just for organizing, as deep as you like. Keep a flow's screens together in one folder, or sort them however makes sense to you.
 
 ```text
 src/prototypes/patrick/hello-world/
 ├── meta.json        # title and description
 ├── prototype.tsx    # a view
+├── notes.mdx        # a document
 ├── lofi/
 │   └── main.tsx     # a view, in a folder
 └── checkout/
@@ -26,18 +27,18 @@ src/prototypes/patrick/hello-world/
 
 Always create a prototype with `pnpm new "Prototype Name"`, by asking your agent for one, or with **New prototype** on the Prototypes page while the app runs locally. All three set it up the same way.
 
-While the app is running locally, the prototype's navigation shows what you open and organize: its views and their folders, updating as they change. Helpers in `components/`, images, and `meta.json` (which the header edits for you) live beside them in the folder but stay out of the way. Choose **Show all files**, next to the Files heading, to list everything; those other files open in your code editor. Right-click any file to reveal it in Finder or copy its path. On the deployed site, the navigation lists just the views.
+While the app is running locally, the prototype's navigation shows what you open and organize: its views, documents, and their folders, updating as they change. Helpers in `components/`, images, and `meta.json` (which the header edits for you) live beside them in the folder but stay out of the way. Choose **Show all files**, next to the Files heading, to list everything; those other files open in your code editor. Right-click any file to reveal it in Finder or copy its path. On the deployed site, the navigation lists just the views and documents.
 
 In your own prototypes, the navigation works like a file browser:
 
-- **New view or folder:** the **+** next to the prototype's title, or right-click a folder. A new view starts working right away, and opens.
+- **New view, document, or folder:** the **+** next to the prototype's title, or right-click a folder. A new file starts working right away, and opens.
 - **Rename:** right-click, or select a file and press F2.
 - **Move:** drag a file or folder onto another folder, or onto the empty space below the list for the top level.
 - **Delete:** right-click, or press Delete. It goes to the Trash, so you can put it back.
+- **Choose what opens first:** right-click a view or document and choose **Set as start**. A small star marks what the prototype opens on.
 
-Each of these is an ordinary change to the files, the same as your agent would make, so you can mix both ways of working. If you rename or move the view you're looking at, the app follows it, and `start` in `meta.json` is updated to match.
-- **Choose what opens first:** right-click a view and choose **Set as start**. A small star marks the view the prototype opens on.
 
+Each of these is an ordinary change to the files, the same as your agent would make, so you can mix both ways of working. If you rename or move the file you're looking at, the app follows it, and `start` in `meta.json` is updated to match.
 Everything about the prototype sits at the top of its navigation. The **…** menu next to the title (or a right-click) has everything else: **Show details** shows who made it, when, and its description, and the app remembers whether you leave them open. In your own prototypes, double-click the title to rename it, or choose **Edit info** to change the title and description. It saves to `meta.json`. The title can change freely; the prototype's folder name, and so its link, stays the same. **Delete prototype** moves the whole folder to the Trash, so you can put it back.
 
 ## Views

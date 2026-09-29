@@ -1,6 +1,7 @@
 import type { MDXContent } from 'mdx/types';
+import type { DocFrontmatter } from '@/studio/app/docs/types';
 
-export type GuideModule = { default: MDXContent; frontmatter?: { title?: string; description?: string; toc?: boolean } };
+export type GuideModule = { default: MDXContent; frontmatter?: DocFrontmatter };
 
 // Every Guide page. Vite only loads one when it is asked for.
 const glob = import.meta.glob<GuideModule>('/guide/*.mdx');

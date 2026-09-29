@@ -13,7 +13,7 @@ export default function PrototypeNav({ proto, current }: { proto: Prototype; cur
   const tree = useRef<FileTreeHandle>(null);
   return (
     <aside aria-label="Prototype navigation" style={{ width }} className="relative flex shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
-      <PrototypeHeader proto={proto} onNew={(dir) => tree.current?.startCreate('', dir)} />
+      <PrototypeHeader proto={proto} onNew={(target) => tree.current?.startCreate('', target)} />
       <FileTree proto={proto} current={current} handle={tree} />
       {/* The resize handle: a thin strip over the right border that highlights on hover. */}
       <div

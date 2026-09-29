@@ -4,12 +4,13 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/build-manifest.js && vite",
-    "build": "node scripts/build-manifest.js --strict && pnpm typecheck && vite build",
+    "build": "node scripts/build-manifest.js --strict && node scripts/check-file-types.js && pnpm typecheck && vite build",
     "typecheck": "tsc -b",
     "preview": "vite preview",
     "new": "node scripts/create-prototype.js",
     "join": "node scripts/setup-contributor.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "check": "node scripts/check-file-types.js"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

@@ -9,8 +9,9 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Add01Icon, Delete02Icon, FileAddIcon, Folder01Icon, FolderAddIcon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon } from '@hugeicons/core-free-icons';
+import { Add01Icon, Delete02Icon, Folder01Icon, FolderAddIcon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon } from '@hugeicons/core-free-icons';
 import { fileOp, revealInFinder, useMe } from '@/studio/app/data/files';
+import { creatableTypes } from '@/studio/app/data/fileTypes';
 import { formatDate, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
@@ -46,7 +47,7 @@ function TitleInput({ initial, onDone }: { initial: string; onDone: (title: stri
   );
 }
 
-export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; onNew: (dir: boolean) => void }) {
+export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; onNew: (target: 'folder' | string) => void }) {
   const router = useRouter();
   const me = useMe();
   // import.meta.env.DEV is false in the build, so editing isn't in the deployed site.
@@ -130,9 +131,12 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
                   <HugeiconsIcon icon={Add01Icon} size={14} />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-40">
-                  {/* One menu for everything you can make in a prototype (see src/fileTypes.ts). */}
-                  <DropdownMenuItem onClick={() => setTimeout(() => onNew(false))}><HugeiconsIcon icon={FileAddIcon} /> New view</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTimeout(() => onNew(true))}><HugeiconsIcon icon={FolderAddIcon} /> New folder</DropdownMenuItem>
+                  {/* One menu for everything you can make in a prototype: each installed file type
+                      (src/fileTypes/) that has a template, and folders. */}
+                  {creatableTypes.map((t) => (
+                    <DropdownMenuItem key={t.id} onClick={() => setTimeout(() => onNew(t.id))}><HugeiconsIcon icon={t.icon} /> New {t.label.toLowerCase()}</DropdownMenuItem>
+                  ))}
+                  <DropdownMenuItem onClick={() => setTimeout(() => onNew('folder'))}><HugeiconsIcon icon={FolderAddIcon} /> New folder</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}

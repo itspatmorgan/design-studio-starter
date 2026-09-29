@@ -3,7 +3,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems.ts';
-import { HELPER_FOLDER, itemSlug, fileTypeOf } from '../src/fileTypes.ts';
+import { HELPER_FOLDER, itemSlug } from '../src/fileTypes/index.ts';
+import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
+import { frontmatter } from './lib/frontmatter.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -16,7 +18,7 @@ const dirs = (p) => fs.existsSync(p)
   ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort()
   : [];
 
-// A prototype's items (see src/fileTypes.ts), in the order the file tree shows them: at each
+// A prototype's items (see src/fileTypes/), in the order the file tree shows them: at each
 // level, files first, then folders, each alphabetical. Hidden files and components/ are skipped.
 function itemsIn(dir, base = '') {
   const entries = fs.readdirSync(dir, { withFileTypes: true }).filter((e) => !e.name.startsWith('.'));
@@ -56,16 +58,17 @@ export function buildManifest() {
       }
       if (typeof meta?.title !== 'string' || !meta.title.trim()) { skip('needs a "title"'); continue; }
       const items = itemsIn(dir);
-      // Two items can't share a URL (main.tsx and main.jsx side by side), and every view needs
-      // a default export: the component the app renders.
+      // Two items can't share a URL (main.tsx next to main.jsx or main.mdx), and each file type
+      // checks its own files (src/fileTypes/<type>/type.ts): a view needs a default export, and so on.
       const seen = new Set();
       for (const item of items) {
         const file = path.relative(ROOT, path.join(dir, item.path));
         if (seen.has(itemSlug(item.path))) { console.error(`[manifest] ${file}: another file here has the same name. Rename one; they'd share a URL.`); errors++; }
         seen.add(itemSlug(item.path));
-        if (item.fileType === 'view') {
-          const code = fs.readFileSync(path.join(ROOT, file), 'utf8');
-          if (!/export\s+default\b|export\s*\{[^}]*\bas\s+default\b/.test(code)) { console.error(`[manifest] ${file}: a view needs a default export, the component the app renders (export default function MyView() { ... }). Helpers belong in components/.`); errors++; }
+        const check = FILE_TYPES[item.fileType].check;
+        if (check) {
+          const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
+          for (const problem of check({ source, frontmatter: frontmatter(source) })) { console.error(`[manifest] ${file}: ${problem}`); errors++; }
         }
       }
       // "start" (optional) is the item the prototype opens on, as in its URL: "checkout/step-1".
@@ -100,23 +103,8 @@ export function buildManifest() {
     }
   }
 
-  // Guide pages: src/guide/*.mdx, ordered by `order` in each page's frontmatter.
-  // Frontmatter is simple `key: value` lines; strings may be quoted.
-  function frontmatter(text) {
-    const block = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-    if (!block) return null;
-    const data = {};
-    for (const line of block[1].split(/\r?\n/)) {
-      const m = line.match(/^(\w+):\s*(.*)$/);
-      if (!m) continue;
-      let v = m[2].trim();
-      if (/^(["']).*\1$/.test(v)) v = v.slice(1, -1);
-      else if (v === 'true' || v === 'false') v = v === 'true';
-      else if (v !== '' && !Number.isNaN(Number(v))) v = Number(v);
-      data[m[1]] = v;
-    }
-    return data;
-  }
+  // Guide pages: src/guide/*.mdx, ordered by `order` in each page's frontmatter. They share
+  // the title, description, and toc fields with prototype documents, and add order and section.
   const guide = [];
   const guideFiles = fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.mdx')).sort() : [];
   for (const file of guideFiles) {
