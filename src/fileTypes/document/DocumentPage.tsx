@@ -18,8 +18,10 @@ export default function DocumentPage({ Component, frontmatter, docKey, base }: {
   return (
     <div className="min-w-0 flex-1">
       <ErrorBoundary resetKeys={[docKey, Component]} FallbackComponent={ViewError}>
-        {/* data-doc-scroll: where DocLayout scrolls to the top or to a heading */}
-        <div data-doc-scroll className="h-full overflow-y-auto bg-background text-foreground">
+        {/* data-doc-scroll: where DocLayout scrolls to the top or to a heading. `relative` keeps the
+            hidden heading Markdown footnotes add (position: absolute) inside this box; otherwise it
+            sits against the page, which then scrolls when you follow a footnote link. */}
+        <div data-doc-scroll className="relative h-full overflow-y-auto bg-background text-foreground">
           <DocBase.Provider value={base}>
             <DocLayout Component={Component} title={frontmatter.title} description={frontmatter.description} toc={frontmatter.toc} scrollKey={docKey} />
           </DocBase.Provider>

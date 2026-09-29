@@ -43,7 +43,7 @@ export default function GuideLayout() {
           </div>
         ))}
       </nav>
-      <main data-doc-scroll className="min-w-0 flex-1 overflow-y-auto">
+      <main data-doc-scroll className="relative min-w-0 flex-1 overflow-y-auto">
         <Outlet />
       </main>
     </div>
