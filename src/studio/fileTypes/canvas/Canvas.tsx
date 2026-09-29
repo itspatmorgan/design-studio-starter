@@ -53,7 +53,7 @@ function OpenCanvas({ proto, item, text, version }: Props) {
   const loaded = useMemo<Loaded | { error: string }>(() => {
     try {
       const parsed = parseCanvas(text);
-      const elements = restoreElements(parsed.elements as never, null) as ExcalidrawElement[];
+      const elements = restoreElements(parsed.elements as never, null, { refreshDimensions: true }) as ExcalidrawElement[];
       return { parsed, elements, sceneVersion: getSceneVersion(elements) };
     } catch (error) {
       return { error: error instanceof Error ? error.message : String(error) };
@@ -88,7 +88,7 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
   loaded: Loaded;
 }) {
   useHelpDialogPruning();
-  const { onChange: saveChanges } = useCanvasFile({ proto, item, api, editable, initial: { text, version, elements: loaded.elements, sceneVersion: loaded.sceneVersion } });
+  const { onChange: saveChanges, persist } = useCanvasFile({ proto, item, api, editable, initial: { text, version, elements: loaded.elements, sceneVersion: loaded.sceneVersion } });
   const onScrollChange = useRememberCamera(cameraKey(file));
   const { controlsHidden, toggleControls, onPointerUpdate } = useCanvasShortcuts(api, container, { editable });
   const [itemsOnly, setItemsOnly] = useState(false);
@@ -121,6 +121,26 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
     api.updateLibrary({ libraryItems: STICKY_LIBRARY as unknown as LibraryItems, merge: true });
     if (editable) normalizeEmbeds(api, api.getSceneElementsIncludingDeleted(), manifestRef.current);
   }, [api, editable]);
+
+  // For an agent with a browser: the canvas tools (agent.ts), dev only. Loaded on demand, so the
+  // deployed site doesn't carry them.
+  const editableRef = useRef(editable);
+  editableRef.current = editable;
+  useEffect(() => {
+    if (!api || !import.meta.env.DEV) return undefined;
+    let installed: object | undefined;
+    let cancelled = false;
+    import('./agent').then(({ createCanvasAgent }) => {
+      if (cancelled) return;
+      installed = createCanvasAgent({ api, proto, item, manifest: () => manifestRef.current, editable: () => editableRef.current, persist });
+      (window as unknown as { __studioCanvas?: object }).__studioCanvas = installed;
+    });
+    return () => {
+      cancelled = true;
+      const w = window as unknown as { __studioCanvas?: object };
+      if (w.__studioCanvas === installed) delete w.__studioCanvas;
+    };
+  }, [api]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const lastVersion = useRef(0);
   const onChange = useCallback((elements: readonly ExcalidrawElement[], appState: AppState) => {

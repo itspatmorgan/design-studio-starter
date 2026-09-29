@@ -1,55 +1,45 @@
 # Canvases
 
-A canvas is a page to arrange things on: live views and documents from any prototype, beside sticky notes, text, and arrows. It's for overview, handoff, critique, and comparing screens side by side. Read this when the person asks for one, or asks you to put something on one. Human docs: the Guide's Canvases page (`src/studio/guide/canvases.mdx`).
+A canvas is a surface to think and communicate on: live views and documents from any prototype, beside sticky notes, text, shapes, and arrows. Use it to lay out a flow, compare directions side by side, annotate a screen, ask a question where the person will see it, or hand someone the map. Read this when the person asks for a canvas, or asks you to put something on one. Human docs: the Guide's Canvases page (`src/studio/guide/canvases.mdx`).
 
-- A canvas is any `.excalidraw` file in the prototype, at any depth, outside `components/`. Its URL is its path without the extension, and its name in the navigation comes from the file name (`onboarding-flow.excalidraw` is "Onboarding Flow"). There's no title field.
-- The file is an Excalidraw scene (JSON). The app draws it with Excalidraw, edits it while `pnpm dev` runs, and saves it back in a small, stable form. The deployed site shows it read-only.
-- A canvas points at things; it doesn't hold them. Each view or document on it is an `embeddable` element whose `link` is the item's address in the app: `/<contributor>/<prototype>/<path without extension>`, for example `/patrick/checkout/lofi/step-1`. It can be in any prototype. A view renders live, other types (documents, other canvases) as a small card, and a link to nothing as a "Not found" card.
-- **No images.** Excalidraw stores an image's bytes inside the file, which bloats the repo. The image tool is off, the app never saves one, and `pnpm build` fails on one. Put the real view on the canvas instead of a screenshot of it.
-- No external links or embeds. Only addresses of items in this app become embeds.
+- A canvas is any `.excalidraw` file in a prototype, outside `components/`. It's an Excalidraw scene, so everything Excalidraw draws is fair game. Its URL is its path without the extension, and its name in the navigation comes from the file name.
+- It points at things instead of holding them: an **item** on a canvas shows a view live, or a document as a card, from any prototype. If the file moves, the spot says "Not found".
+- **No images.** Their bytes would be stored inside the file. Put the real view on the canvas instead of a screenshot of it.
+- You can change only canvases in the person's own prototypes.
 
-## Edit the file
+## The tools
 
-Write the file and the app shows it. If it's open, it updates as you edit, and your changes merge with anything the person has changed since. Keep edits small, and don't rearrange what the person placed.
+The same tools work two ways, with the same arguments. Run `help` for the full list with examples, and `help("create")` for every element type.
 
-A new, empty canvas:
+| Tool | What it does |
+|------|--------------|
+| `context` | What the person has selected and is looking at. Start here: "this one" and "here" mean their selection and screen. (Live only.) |
+| `describe` | Read the canvas: every element, with kind, position, size, text, colors, and items named by title. `scope: "selection"` or `"view"` narrows it. |
+| `create` | Make things: `note`, `text`, `rectangle`, `ellipse`, `diamond`, `arrow`, `line`, `item`, `section`. Style with `color`, `stroke`, `background`, `strokeStyle`, `rounded`. Place with `x`/`y`, or `below`, `rightOf`, `section`. `ref` names a result for later elements in the call. |
+| `update` | Change any of that on something that's there: text, color, size, position, an arrow's ends. |
+| `move`, `delete` | Move (a section takes its contents; arrows follow) or remove (labels and attached arrows go too). |
+| `point` | Select and scroll to something, so the person sees which one you mean. (Live only.) |
+| `screenshot`, `persist` | A picture of the canvas; write the file now. (Live only.) |
 
-```json
-{ "type": "excalidraw", "version": 2, "studioVersion": 1, "elements": [], "appState": { "viewBackgroundColor": "#ffffff" }, "files": {} }
-```
+**With a browser** (the app is running and the canvas is open, visible in a tab): call them on `window.__studioCanvas`, for example `__studioCanvas.create({ elements: [...] })`. Each change appears as you make it, and each call is one undo step for the person.
 
-Every element needs a unique `id` (never reuse one, even after deleting it), a `version`, and a `versionNonce`. Leave out `index`: elements stack in the order they're listed. When you change an element that's already there, raise its `version` and change its `versionNonce`, or an open canvas may keep its own copy. Other fields can be left out; Excalidraw fills in defaults.
+**Without one:** `pnpm canvas <file.excalidraw> <tool> '<json>'`, for example `pnpm canvas src/prototypes/patrick/checkout/flow.excalidraw create '{"type":"note","text":"Retry keeps the draft"}'`. It reads and writes the file, and prints the result. If the person has the canvas open, they see the change as it's written. Text sizes are estimated until the canvas is opened.
 
-**A view or document.** A view is 480 × 338 (a 1440 × 900 screen at one third); a card is 480 × 88. Space things 80 px apart. Keep `customData` and `strokeColor` exactly as shown:
+Ids come from `describe` or `create`. Make a new empty canvas by choosing + → New canvas in the app, or by writing `{ "type": "excalidraw", "version": 2, "studioVersion": 1, "elements": [], "appState": { "viewBackgroundColor": "#ffffff" }, "files": {} }` to a `.excalidraw` file.
 
-```json
-{ "id": "view-1", "type": "embeddable", "x": 0, "y": 0, "width": 480, "height": 338, "version": 1, "versionNonce": 1, "seed": 1,
-  "link": "/patrick/hello-world/lofi/main", "strokeColor": "transparent", "customData": { "frame": true, "hideLinkIcon": true } }
-```
+## Working with the person
 
-**A sticky note** is a square with text bound to it: two elements. Breaking long text with `\n` keeps it inside the square (about 16 characters per line at this size).
+- **Look first.** `describe` (and `context`, if you can) before you change things, and again after. The person may have moved or added things since you last looked.
+- **Add, don't rearrange.** What the person placed is theirs. Put new things in clear space or beside what they refer to; move their things only when asked.
+- **Say what you mean, on the canvas.** A heading over each group, a sticky note under a screen saying what to look at, a question note where the decision is. Keep notes short; break long thoughts into several.
+- **Point.** When you refer to a specific thing, `point` at it.
+- **Small steps.** One idea per call, so a single ⌘Z undoes it. Don't hide a whole redesign in one call.
+- **Use the shapes.** Boxes and arrows for a flow, a dashed outline for "not built yet", color to group or flag, a section to frame a set. It's a sketchpad, not only a gallery of screens.
 
-```json
-{ "id": "note-1", "type": "rectangle", "x": 0, "y": 398, "width": 200, "height": 200, "version": 1, "versionNonce": 2, "seed": 2,
-  "backgroundColor": "#ffec99", "strokeColor": "#ecd67a", "strokeWidth": 1, "roughness": 0, "fillStyle": "solid",
-  "boundElements": [{ "id": "note-1-text", "type": "text" }] },
-{ "id": "note-1-text", "type": "text", "x": 10, "y": 408, "width": 180, "height": 25, "version": 1, "versionNonce": 3, "seed": 3,
-  "text": "Empty state is\nmissing here", "originalText": "Empty state is\nmissing here", "fontSize": 20, "fontFamily": 6,
-  "textAlign": "left", "verticalAlign": "top", "containerId": "note-1", "lineHeight": 1.25 }
-```
+## Sizes and layout
 
-Note colors: `#ffec99` (yellow, edge `#ecd67a`), `#ffc9c9` (pink, `#eeaeae`), `#a5d8ff` (blue, `#87c0ec`), `#b2f2bb` (green, `#94dc9f`).
+A view is 480 × 338 (a 1440 × 900 screen at a third); a document card is 480 × 88; a note is 200 × 200. Space things 80 apart in a row, 24 under a view for its note, 120 between groups. `create` places things for you (below everything, or beside another element) when you don't give coordinates.
 
-**A heading or label** is a plain `text` element (`fontSize` 28 for a heading, 20 for a label, `fontFamily` 6), without `containerId`.
+## Reading the file
 
-Arrows are easier drawn in the app than written by hand; leave them to the person, or skip them.
-
-## Layout
-
-Lay out in rows and columns: views in a row 80 px apart, a sticky note under each view that needs one, a heading above each group. Group related views close together and leave more space between groups. Explain what to look at in the notes, not in a paragraph.
-
-## Don't
-
-- Don't write raw Excalidraw elements you haven't seen above, or change the file format.
-- Don't put a screenshot or an image on a canvas.
-- Don't edit `.excalidraw` files someone else owns; a canvas in another person's prototype is theirs.
+A canvas is JSON: a list of `elements`. An item is `{ "type": "embeddable", "link": "/patrick/hello-world/lofi/main" }`, a note is a rectangle with a text element bound to it (`containerId`), an arrow's `startBinding`/`endBinding` name what it joins. Prefer the tools to editing this by hand: they keep both sides of every binding and raise each element's `version`, which is how an open canvas knows to take your change.

@@ -35,6 +35,14 @@ A canvas doesn't own what's on it, it points at it. If a file is moved or delete
 
 The tools in the toolbar are Excalidraw's. Its menu (the button at the bottom left, or the top left on a wide screen) has undo, redo, grid, snapping, and the background color. **⌘.** hides all the controls, for a clean view.
 
+## With your agent
+
+A canvas is a good place to work with your agent: to ask it to lay out a flow, put the screens of two directions side by side, or annotate what you're looking at. Your agent can see what you've selected and what's on your screen, so "this one" and "here" mean what you'd expect. It adds things while you watch, points at what it's talking about, and uses the whole of Excalidraw (boxes, arrows, colors, notes), not only screens. Each thing it does is one step you can undo with ⌘Z.
+
+Ask for what you want in your own words. For example: "Put the checkout screens on a canvas in order, with arrows, and a note under any that has an open question."
+
+Your agent works on the canvas whether or not you have a browser open: with the canvas open it changes it live, and without, it edits the file. You'll see changes as they're made if you have it open. Its tools are listed in `agents/rules/canvases.md`.
+
 ## Saving
 
 While the app is running locally, a canvas saves itself a moment after you stop editing, into the file, and your agent can edit the same file: changes show up on the open canvas as they're made, and merge with yours. On the deployed site, a canvas is read-only.

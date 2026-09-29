@@ -67,7 +67,7 @@ export function useCanvasFile({ proto, item, api, initial, editable }: {
     if (!a) return false;
     let parsed;
     try { parsed = parseCanvas(next.content); } catch { return false; } // half written, or not a canvas: wait for the next change
-    const remote = restoreElements(parsed.elements as never, null) as ExcalidrawElement[];
+    const remote = restoreElements(parsed.elements as never, null, { refreshDimensions: true }) as ExcalidrawElement[];
     let elements = remote;
     let needsWriteBack = false;
     if (dirty.current || saving.current) ({ elements, needsWriteBack } = mergeRemote(a.getSceneElementsIncludingDeleted() as ExcalidrawElement[], remote, disk.current.ids, a.getAppState()));
@@ -134,6 +134,16 @@ export function useCanvasFile({ proto, item, api, initial, editable }: {
     schedule();
   }, [schedule]);
 
+  // Writes what's unsaved now, and resolves whether nothing is left (for the agent's `persist`).
+  const persist = useCallback(async () => {
+    for (let waited = 0; waited < 5000; waited += 100) {
+      if (!dirty.current && !saving.current) return true;
+      if (editableRef.current && !saving.current) await saveRef.current();
+      else await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    return false;
+  }, []);
+
   // The file changed on disk. Our own saves come back here too, and are recognized.
   useEffect(() => {
     const hot = import.meta.hot;
@@ -156,5 +166,5 @@ export function useCanvasFile({ proto, item, api, initial, editable }: {
     return () => { document.removeEventListener('visibilitychange', onVisibility); window.clearTimeout(timer.current); flush(); };
   }, []);
 
-  return { onChange };
+  return { onChange, persist };
 }

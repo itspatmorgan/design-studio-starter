@@ -16,6 +16,10 @@ export type FileTypeSpec = {
   // The syntax the Source view highlights (src/studio/app/pages/prototype/SourcePane.tsx). Leave it
   // out for a type with no source to show.
   language?: 'tsx' | 'markdown' | 'json';
+  // True if the type shows itself live where another item includes it (on a canvas), and false or
+  // absent for a card. Its module.tsx provides the Embed; this is for code that can't load that
+  // (the command line), to size things.
+  preview?: boolean;
   // The contents of a new file called `name` ("user-settings.tsx"). Without it, the "+" menu
   // doesn't offer to make this type.
   template?: (name: string) => string;

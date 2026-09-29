@@ -43,6 +43,8 @@ pnpm dev        # starts the app at localhost:5173
 pnpm dev                     # rebuild the manifest and start the dev server
 pnpm build                   # rebuild the manifest, type-check, and build the static site to dist/
 pnpm typecheck               # type-check only (tsc -b)
+pnpm test                    # the canvas tools' tests
+pnpm canvas <file> <tool> '<json>'   # run a canvas tool on a canvas file (for agents; pnpm canvas help)
 pnpm preview                 # serve dist/ locally
 pnpm new "Prototype Name"    # create a prototype in your folder
 pnpm join                    # add yourself to contributors.json

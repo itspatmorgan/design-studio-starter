@@ -12,6 +12,7 @@ export default defineFileType({
   label: 'View',
   extensions: ['.tsx', '.jsx'],
   language: 'tsx',
+  preview: true,
 
   // It starts as a placeholder (src/lib/placeholder.tsx) until something is built in it.
   template: (name) =>
