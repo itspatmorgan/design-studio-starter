@@ -9,20 +9,22 @@ Each type is a self-contained folder here, and the platform runs with any of the
 src/studio/fileTypes/
 ├── index.ts        what every type shares (FileTypeSpec, itemSlug)
 ├── view/           .tsx, .jsx: React components, opened as pages
-└── document/       .mdx: Markdown pages
+├── document/       .mdx: Markdown pages
+└── canvas/         .excalidraw: pages to arrange views, documents, and notes on
 ```
 
 ## What's in a type's folder
 
 | File | Used by | Holds |
 |------|---------|-------|
-| `type.ts` | the build and the app | `label`, `extensions`, an optional `template` (what "New" writes into a new file), an optional `check` (problems to report, like a missing default export), and an optional `language` (`tsx` or `markdown`), which gives the type a source button in the navigation. It imports only `../index.ts`, because Node loads it directly. |
-| `module.tsx` | the app | `icon` (in the navigation), `load` (loads the file before its page renders), and `Page` (the page itself) |
+| `type.ts` | the build and the app | `label`, `extensions`, an optional `template` (what "New" writes into a new file), an optional `check` (problems to report, like a missing default export), and an optional `language` (`tsx`, `markdown`, or `json`), which gives the type a source button in the navigation. It imports only `../index.ts`, because Node loads it directly. |
+| `module.tsx` | the app | `icon` (in the navigation), `load` (loads the file before its page renders), `Page` (the page itself), and optionally `Embed` (how the type looks when another item, like a canvas, includes it live; without one it shows as a card) |
 | `loader.ts` | the type's own `module.tsx` | a Vite glob of the type's files. It's a separate file because Vite needs the pattern written out, and the file must call `import.meta.hot.accept()` itself. |
 
 The build (`scripts/lib/file-types.js`) and the app (`src/studio/app/data/fileTypes.ts`) find the
 folders on their own. Nothing else lists them: the navigation, the **+** menu, routes, the
-manifest, and the file layer all read the types they find.
+manifest, and the file layer all read the types they find. The dev server looks for types when it starts, so
+restart `pnpm dev` after adding or removing a folder.
 
 ## Remove a type
 
@@ -39,4 +41,5 @@ one type imports another, so a folder that passes stays removable.
 1. Make `src/studio/fileTypes/<name>/` with a `type.ts`, `module.tsx`, and `loader.ts`. Copy `document/`
    as a starting point: it's the smaller one.
 2. Two types can't share an extension; the build says so if they do.
-3. If the type needs something the app can't do yet, that belongs in the type's folder, not in core.
+3. Types don't import each other. To show another item, a type asks the registry: `src/studio/app/items/itemLinks.ts` turns a link into an item, and the item's type provides its `Embed`.
+4. If the type needs something the app can't do yet, that belongs in the type's folder, not in core.

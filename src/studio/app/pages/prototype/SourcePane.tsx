@@ -22,9 +22,10 @@ import { sourceTheme } from '@/studio/app/pages/prototype/sourceTheme';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
 
 // The file type's syntax, loaded when it's needed.
-async function languageExtension(language: 'tsx' | 'markdown'): Promise<Extension> {
+async function languageExtension(language: 'tsx' | 'markdown' | 'json'): Promise<Extension> {
   if (language === 'markdown') return (await import('@/studio/app/pages/prototype/mdxLanguage')).mdxLanguage();
-  return (await import('@codemirror/lang-javascript')).javascript({ jsx: true, typescript: true });
+  const { javascript } = await import('@codemirror/lang-javascript');
+  return language === 'json' ? javascript() : javascript({ jsx: true, typescript: true });
 }
 
 type Disk = { content: string; version: string };

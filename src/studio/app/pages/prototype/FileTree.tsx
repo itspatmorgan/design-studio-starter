@@ -14,7 +14,7 @@ import { useEffect, useImperativeHandle, useRef, useState, type DragEvent, type 
 import { Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon,
+  ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
   Folder01Icon, FolderAddIcon, StarIcon, SourceCodeIcon, BrowserIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
@@ -23,6 +23,7 @@ import {
 } from '@/studio/app/data/files';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { HELPER_FOLDER } from '@/studio/fileTypes';
+import { itemUrl } from '@/studio/app/items/itemLinks';
 import { creatableTypes, FILE_TYPES, fileTypeModules } from '@/studio/app/data/fileTypes';
 import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
 import { Button } from '@/studio/components/button';
@@ -288,6 +289,9 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
           )}
           {!node.dir && (
             <ContextMenuItem onClick={() => setTimeout(() => openInEditor(proto, node.path))}><HugeiconsIcon icon={FileEditIcon} /> Open in editor</ContextMenuItem>
+          )}
+          {items.has(node.path) && (
+            <ContextMenuItem onClick={() => setTimeout(() => { navigator.clipboard.writeText(itemUrl(proto, proto.items.find((i) => i.path === node.path)!)); toast.add({ title: 'Link copied' }); })}><HugeiconsIcon icon={Link01Icon} /> Copy link</ContextMenuItem>
           )}
           {editable && items.has(node.path) && (
             proto.start === node.path

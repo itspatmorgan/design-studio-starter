@@ -10,7 +10,7 @@ A prototype is a folder in your space, `src/prototypes/<you>/`. The app finds it
 
 ## The shape of a prototype
 
-A file's type comes from its extension (`.tsx` files are views, `.mdx` files are [documents](/guide/documents)), and folders are just for organizing, as deep as you like. Keep a flow's screens together in one folder, or sort them however makes sense to you.
+A file's type comes from its extension (`.tsx` files are views, `.mdx` files are [documents](/guide/documents), `.excalidraw` files are [canvases](/guide/canvases)), and folders are just for organizing, as deep as you like. Keep a flow's screens together in one folder, or sort them however makes sense to you.
 
 ```text
 src/prototypes/patrick/hello-world/
@@ -27,7 +27,7 @@ src/prototypes/patrick/hello-world/
 
 Always create a prototype with `pnpm new "Prototype Name"`, by asking your agent for one, or with **New prototype** on the Prototypes page while the app runs locally. All three set it up the same way.
 
-While the app is running locally, the prototype's navigation shows what you open and organize: its views, documents, and their folders, updating as they change. Helpers in `components/`, images, and `meta.json` (which the header edits for you) live beside them in the folder but stay out of the way. Choose **Show all files** in the **…** menu next to the prototype's title to list everything; those other files open in your code editor. Right-click any file to reveal it in Finder or copy its path. On the deployed site, the navigation lists just the views and documents.
+While the app is running locally, the prototype's navigation shows what you open and organize: its views, documents, canvases, and their folders, updating as they change. Helpers in `components/`, images, and `meta.json` (which the header edits for you) live beside them in the folder but stay out of the way. Choose **Show all files** in the **…** menu next to the prototype's title to list everything; those other files open in your code editor. Right-click any file to reveal it in Finder or copy its path. On the deployed site, the navigation lists just the views and documents.
 
 In your own prototypes, the navigation works like a file browser:
 

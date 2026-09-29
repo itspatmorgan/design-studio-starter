@@ -6,6 +6,10 @@ import type { Item, Prototype } from '@/studio/app/data/types';
 // about the type is in its type.ts.
 export type ItemContext = { proto: Prototype; item: Item };
 
+// What a type shows where another item includes it (on a canvas): a live preview, in a box of
+// this size. A type without one is shown as a card.
+export type EmbedProps = { proto: Prototype; item: Item; width: number; height: number };
+
 export type FileTypeModule<Props extends object = any> = { // eslint-disable-line @typescript-eslint/no-explicit-any
   icon: typeof CodeIcon;
   // Loads the item's file before its page renders, so the open item stays on screen until the
@@ -13,4 +17,5 @@ export type FileTypeModule<Props extends object = any> = { // eslint-disable-lin
   // not-found page).
   load(context: ItemContext): Promise<Props | undefined>;
   Page: ComponentType<Props>;
+  Embed?: ComponentType<EmbedProps>;
 };

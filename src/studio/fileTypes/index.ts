@@ -15,7 +15,7 @@ export type FileTypeSpec = {
   extensions: readonly string[];        // ".tsx", ".mdx"
   // The syntax the Source view highlights (src/studio/app/pages/prototype/SourcePane.tsx). Leave it
   // out for a type with no source to show.
-  language?: 'tsx' | 'markdown';
+  language?: 'tsx' | 'markdown' | 'json';
   // The contents of a new file called `name` ("user-settings.tsx"). Without it, the "+" menu
   // doesn't offer to make this type.
   template?: (name: string) => string;

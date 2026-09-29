@@ -64,7 +64,7 @@ scripts/               manifest, create, scope check, Vite plugins (plain Node .
 .husky/                pre-commit and pre-push scope checks
 .github/workflows/     scope check and build on push to main, build for deploy
 src/studio/            the app: routes (app/router.tsx), components, the Guide's pages (guide/, MDX),
-                       and the kinds of file a prototype holds (fileTypes/: views, documents), one removable folder each
+                       and the kinds of file a prototype holds (fileTypes/: views, documents, canvases), one removable folder each
 src/systems.ts         the design systems prototypes can use
 src/product/           placeholder product system; replace it, or add others beside it
 src/lib/               shared utilities

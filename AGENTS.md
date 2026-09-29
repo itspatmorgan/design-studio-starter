@@ -8,6 +8,7 @@ At the start of every session, read:
 - [agents/rules/contributor-scope.md](agents/rules/contributor-scope.md)
 
 When the person asks for a document (written context in a prototype), read [agents/rules/documents.md](agents/rules/documents.md).
+When the person asks for a canvas (a page of views, documents, and notes arranged together), read [agents/rules/canvases.md](agents/rules/canvases.md).
 
 Find out who you're working with by running `node scripts/resolve-contributor.js`.
 Create prototypes with `pnpm new "Prototype Name"`.

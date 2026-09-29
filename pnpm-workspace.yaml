@@ -1,0 +1,6 @@
+patchedDependencies:
+  # Excalidraw draws a link icon on every element with a `link`, and a canvas needs `link`
+  # (it's the URL of the view it shows). The patch skips the icon, and its hover tooltip and
+  # click target, when `customData.hideLinkIcon` is set, which every view on a canvas has (its
+  # title bar already opens the view). See patches/README.md before upgrading Excalidraw.
+  '@excalidraw/excalidraw@0.18.1': patches/@excalidraw__excalidraw@0.18.1.patch
