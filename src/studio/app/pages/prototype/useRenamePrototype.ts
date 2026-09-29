@@ -1,5 +1,6 @@
 import { useRouter } from '@tanstack/react-router';
 import { renamePrototype } from '@/studio/app/data/files';
+import { toast } from '@/studio/components/toast';
 import { setManifest } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
 
@@ -22,5 +23,8 @@ export function useRenamePrototype(proto: Prototype) {
       });
     }
     await router.invalidate();
+    if (result.prototype !== proto.id) {
+      toast.add({ type: 'info', title: 'Renamed', description: `Its link is now /${proto.contributorKey}/${result.prototype}` });
+    }
   };
 }

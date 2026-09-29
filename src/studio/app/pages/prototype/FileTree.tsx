@@ -28,6 +28,7 @@ import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
 import { Button } from '@/studio/components/button';
 import { Input } from '@/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
+import { toast } from '@/studio/components/toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@/studio/components/context-menu';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
@@ -180,14 +181,8 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
   const [editing, setEditing] = useState<Editing>(null);
   const [confirmDelete, setConfirmDelete] = useState<FileNode | null>(null);
   const [dropTarget, setDropTarget] = useState<string | null>(null);
-  const [status, setStatus] = useState<{ text: string; error?: boolean } | null>(null);
   const filterRef = useRef<HTMLInputElement>(null);
   useEffect(() => { if (filterOpen) filterRef.current?.focus(); }, [filterOpen]);
-  useEffect(() => {
-    if (!status) return;
-    const t = setTimeout(() => setStatus(null), 5000);
-    return () => clearTimeout(t);
-  }, [status]);
 
   const q = filter.trim().toLowerCase();
   const shown = q ? filterNodes(nodes, q) : nodes;
@@ -204,7 +199,14 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
 
   // Runs a change, then takes the new manifest. If it moved or removed the open view, go to
   // its new place (or the prototype's first view) first, so the old address is never reloaded.
+  const failure: Record<FileOp['op'], string> = {
+    create: "Couldn't create it", rename: "Couldn't rename it", move: "Couldn't move it",
+    delete: "Couldn't delete it", meta: "Couldn't update the prototype",
+  };
   async function run(op: FileOp) {
+    // What a delete removed, named the way the tree shows it, for the message after.
+    const base = 'path' in op ? op.path.split('/').pop() ?? '' : '';
+    const deleted = op.op === 'delete' ? (findNode(files ?? [], op.path)?.dir || items.has(op.path) ? itemLabel(base) : base) : '';
     try {
       const result = await fileOp(proto, op);
       setManifest(result.manifest);
@@ -216,14 +218,21 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
       }
       await router.invalidate();
       reload();
-      // Only worth saying when there's no Trash on this computer.
-      if (result.trashedTo && result.trashedTo !== 'the Trash') setStatus({ text: `Moved to ${result.trashedTo} in the repo, since this computer has no Trash.` });
+      if (result.trashedTo) {
+        toast.add({
+          type: 'success',
+          title: result.trashedTo === 'the Trash' ? 'Moved to the Trash' : `Moved to ${result.trashedTo} in the repo`,
+          description: result.trashedTo === 'the Trash' ? deleted : `${deleted}. This computer has no Trash.`,
+        });
+      }
       return result;
     } catch (e) {
       const message = (e as Error).message;
       // The name may belong to a file the nav is hiding.
-      const hint = !showAll && message.includes('already exists') ? " If you don't see it, choose Show all files in the … menu." : '';
-      setStatus({ text: message + hint, error: true });
+      const clash = message.match(/“(.+?)”/)?.[1];
+      const named = (list: FileNode[], name: string): boolean => list.some((n) => n.name === name || named(n.children ?? [], name));
+      const hint = clash && files && named(files, clash) && !named(nodes, clash) ? " It's hidden: choose Show all files in the … menu." : '';
+      toast.add({ type: 'error', title: failure[op.op], description: message + hint });
     }
   }
 
@@ -301,7 +310,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
           )}
           <ContextMenuSeparator />
           <ContextMenuItem onClick={() => setTimeout(() => revealInFinder(proto, node.path))}><HugeiconsIcon icon={Folder01Icon} /> Reveal in Finder</ContextMenuItem>
-          <ContextMenuItem onClick={() => setTimeout(() => navigator.clipboard.writeText(repoPath(proto, node.path)))}><HugeiconsIcon icon={Copy01Icon} /> Copy path</ContextMenuItem>
+          <ContextMenuItem onClick={() => setTimeout(() => { navigator.clipboard.writeText(repoPath(proto, node.path)); toast.add({ type: 'success', title: 'Path copied', description: repoPath(proto, node.path) }); })}><HugeiconsIcon icon={Copy01Icon} /> Copy path</ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
     );
@@ -454,9 +463,6 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
             </button>
           )}
         </div>
-      )}
-      {status && (
-        <p role="status" className={cn('shrink-0 px-2.5 text-[12px] leading-snug', status.error ? 'text-destructive' : 'text-muted-foreground')}>{status.text}</p>
       )}
       {/* The whole list is the drop target for the top level. */}
       <div {...dropProps('')} className={cn('min-h-0 flex-1 space-y-1 rounded-md', dropTarget === '' && 'bg-sidebar-foreground/5')}>

@@ -1,6 +1,7 @@
 import { HeadContent, Link, Outlet, useMatch } from '@tanstack/react-router';
 import MainNav from '@/studio/app/shell/MainNav';
 import { TooltipProvider } from '@/studio/components/tooltip';
+import { Toaster } from '@/studio/components/toast';
 import { CommandPaletteProvider } from '@/studio/app/shell/CommandPalette';
 import { SectionNavContext, useColorMode, useSectionNav } from '@/studio/app/shell/appPrefs';
 
@@ -24,6 +25,7 @@ export default function App() {
           </div>
         </CommandPaletteProvider>
       </SectionNavContext.Provider>
+      <Toaster />
     </TooltipProvider>
   );
 }

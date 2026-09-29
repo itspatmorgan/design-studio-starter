@@ -5,6 +5,7 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import { deletePrototype } from '@/studio/app/data/files';
 import { setManifest } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
+import { toast } from '@/studio/components/toast';
 import { Button } from '@/studio/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
 
@@ -26,6 +27,7 @@ export default function DeletePrototypeDialog({ proto, open, onOpenChange }: Pro
       // Leave first, so the deleted prototype's page is never reloaded.
       await navigate({ to: '/' });
       await router.invalidate();
+      toast.add({ type: 'success', title: 'Moved to the Trash', description: proto.title });
     } catch (e) {
       setError((e as Error).message);
     } finally {

@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/studio/components/ta
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/studio/components/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
+import { toast } from '@/studio/components/toast';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/studio/components/command';
 import { Code, CodeBlock, IconGrid, Prose } from '@/studio/app/pages/systems/foundations';
@@ -120,6 +121,13 @@ export const studio: DesignSystem = {
               <TooltipContent side={side}>Tooltip on {side}</TooltipContent>
             </Tooltip>
           ))}
+        </>
+      ) },
+      { name: 'Toast', file: 'toast.tsx', description: 'A brief message in the corner, like "Saved" or "Link copied". Call toast.add() from anywhere.', demo: () => (
+        <>
+          <Button variant="outline" onClick={() => toast.add({ type: 'success', title: 'Saved', description: 'lofi/main.tsx' })}>Success</Button>
+          <Button variant="outline" onClick={() => toast.add({ type: 'error', title: "Couldn't rename it", description: 'Something named “main.tsx” already exists here.' })}>Error</Button>
+          <Button variant="outline" onClick={() => toast.add({ type: 'info', title: 'Renamed', description: 'Its link is now /patrick/checkout-flow' })}>Info</Button>
         </>
       ) },
       { name: 'Command', file: 'command.tsx', description: 'A searchable list of actions. The ⌘K palette is built on it.', demo: CommandDemo },

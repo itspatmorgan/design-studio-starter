@@ -17,6 +17,7 @@ import { FILE_TYPES } from '@/studio/app/data/fileTypes';
 import { readSource, SourceChanged, useMe, writeSource } from '@/studio/app/data/files';
 import type { Item, Prototype } from '@/studio/app/data/types';
 import { Button } from '@/studio/components/button';
+import { toast } from '@/studio/components/toast';
 import { sourceTheme } from '@/studio/app/pages/prototype/sourceTheme';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
 
@@ -125,9 +126,10 @@ export default function SourcePane({ proto, item }: { proto: Prototype; item: It
       disk.current = { content, version };
       dirty.current = v.state.doc.toString() !== content;
       setIsDirty(dirty.current);
+      toast.add({ type: 'success', title: 'Saved', description: item.path, timeout: 2000 });
     } catch (e) {
       if (e instanceof SourceChanged) setConflict(await readSource(proto, item.path).catch(() => null));
-      else setError((e as Error).message);
+      else toast.add({ type: 'error', title: "Couldn't save it", description: (e as Error).message });
     } finally {
       setSaving(false);
     }

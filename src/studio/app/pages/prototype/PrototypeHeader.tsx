@@ -17,6 +17,7 @@ import { formatDate, prototypeLink } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { Input } from '@/studio/components/input';
+import { toast } from '@/studio/components/toast';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@/studio/components/context-menu';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/studio/components/dropdown-menu';
 import { useRenamePrototype } from '@/studio/app/pages/prototype/useRenamePrototype';
@@ -64,12 +65,6 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
   const [showInfo, setShowInfo] = useState(() => localStorage.getItem(INFO_KEY) === 'shown');
   const toggleInfo = () => setShowInfo((v) => { localStorage.setItem(INFO_KEY, v ? 'hidden' : 'shown'); return !v; });
   const [showAll, toggleShowAll] = useShowAllFiles();
-  const [note, setNote] = useState<string | null>(null);
-  useEffect(() => {
-    if (!note) return;
-    const t = setTimeout(() => setNote(null), 3000);
-    return () => clearTimeout(t);
-  }, [note]);
 
   async function rename(title: string | null) {
     setRenaming(false);
@@ -77,14 +72,14 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
     try {
       await applyRename({ title });
     } catch (e) {
-      setNote((e as Error).message);
+      toast.add({ type: 'error', title: "Couldn't rename it", description: (e as Error).message });
     }
   }
 
   const copyLink = () => {
     const href = router.buildLocation(prototypeLink(proto)).href;
     navigator.clipboard.writeText(new URL(href, location.origin).href);
-    setNote('Link copied.');
+    toast.add({ type: 'success', title: 'Link copied' });
   };
 
   const actions: Action[] = [
@@ -169,7 +164,6 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
               {proto.description}
             </button>
           )}
-          {note && <p role="status" className="mt-2 text-[12px] text-muted-foreground">{note}</p>}
         </div>,
       )}
       {editable && <EditPrototypeDialog proto={proto} open={editing} onOpenChange={setEditing} />}
