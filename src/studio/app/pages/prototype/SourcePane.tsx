@@ -81,6 +81,9 @@ export default function SourcePane({ proto, item }: { proto: Prototype; item: It
             ...(FILE_TYPES[item.fileType].language === 'markdown' ? [EditorView.lineWrapping] : []),
             EditorState.readOnly.of(!editable),
             EditorView.editable.of(editable),
+            // Named for screen readers. A read-only editor isn't focusable by default, which would leave
+            // it without ⌘F, go to line, and keyboard selection, so it gets a tab stop.
+            EditorView.contentAttributes.of({ 'aria-label': `Source of ${item.path}`, ...(editable ? {} : { tabindex: '0' }) }),
             keymap.of([{ key: 'Mod-s', preventDefault: true, run: () => { save.current(); return true; } }, ...defaultKeymap, ...historyKeymap, ...searchKeymap]),
             EditorView.updateListener.of((update) => {
               if (!update.docChanged) return;
