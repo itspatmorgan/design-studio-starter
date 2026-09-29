@@ -93,6 +93,9 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
   const { controlsHidden, toggleControls, onPointerUpdate } = useCanvasShortcuts(api, container, { editable });
   const [itemsOnly, setItemsOnly] = useState(false);
   const [empty, setEmpty] = useState(!loaded.elements.some((el) => !el.isDeleted));
+  // The hint shows only once the canvas has stayed empty for a moment, so a scene that is still
+  // arriving (opening, or a change from the file landing) never flashes it.
+  const [hintReady, setHintReady] = useState(false);
 
   // The opening camera needs the container's size, so Excalidraw mounts once that is known.
   const [initialData, setInitialData] = useState<ExcalidrawProps['initialData']>(null);
@@ -113,6 +116,12 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
     const timer = window.setTimeout(() => setRevealed(true), 120);
     return () => window.clearTimeout(timer);
   }, [api]);
+
+  useEffect(() => {
+    if (!empty || !revealed) { setHintReady(false); return undefined; }
+    const timer = window.setTimeout(() => setHintReady(true), 500);
+    return () => window.clearTimeout(timer);
+  }, [empty, revealed]);
 
   const manifestRef = useRef(manifest);
   manifestRef.current = manifest;
@@ -229,8 +238,8 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
           </Excalidraw>
         )}
       </div>
-      {empty && revealed && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-8">
+      {empty && revealed && hintReady && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-8 duration-300 animate-in fade-in">
           <div className="max-w-sm rounded-xl border border-dashed border-border bg-background/80 px-8 py-8 text-center">
             <p className="text-sm font-medium text-foreground">This canvas is empty</p>
             <p className="mt-1.5 text-sm text-muted-foreground">
