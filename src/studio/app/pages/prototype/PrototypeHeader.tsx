@@ -10,15 +10,16 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Add01Icon, Delete02Icon, Folder01Icon, FolderAddIcon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
-import { fileOp, revealInFinder, useMe } from '@/studio/app/data/files';
+import { revealInFinder, useMe } from '@/studio/app/data/files';
 import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
 import { creatableTypes } from '@/studio/app/data/fileTypes';
-import { formatDate, prototypeLink, setManifest } from '@/studio/app/data/manifest';
+import { formatDate, prototypeLink } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { Input } from '@/studio/components/input';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@/studio/components/context-menu';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/studio/components/dropdown-menu';
+import { useRenamePrototype } from '@/studio/app/pages/prototype/useRenamePrototype';
 import EditPrototypeDialog from '@/studio/app/pages/prototype/EditPrototypeDialog';
 import DeletePrototypeDialog from '@/studio/app/pages/prototype/DeletePrototypeDialog';
 import { cn } from '@/lib/utils';
@@ -50,6 +51,7 @@ function TitleInput({ initial, onDone }: { initial: string; onDone: (title: stri
 
 export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; onNew: (target: 'folder' | string) => void }) {
   const router = useRouter();
+  const applyRename = useRenamePrototype(proto);
   const me = useMe();
   // import.meta.env.DEV is false in the build, so editing isn't in the deployed site.
   const local = import.meta.env.DEV && me !== null;
@@ -73,9 +75,7 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
     setRenaming(false);
     if (!title || title === proto.title) return;
     try {
-      const result = await fileOp(proto, { op: 'meta', title });
-      setManifest(result.manifest);
-      await router.invalidate();
+      await applyRename({ title });
     } catch (e) {
       setNote((e as Error).message);
     }

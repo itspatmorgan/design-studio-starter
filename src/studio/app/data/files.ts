@@ -124,6 +124,19 @@ export async function createPrototype(title: string, description: string) {
   return body as { contributor: string; prototype: string; manifest: Manifest };
 }
 
+// Changes a prototype's title (and description). A new title renames its folder too, so its link
+// changes: `prototype` in the reply is the folder name now. Throws the server's message.
+export async function renamePrototype(p: Prototype, change: { title: string; description?: string }) {
+  const res = await fetch('/__studio/prototype-rename', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },
+    body: JSON.stringify({ contributor: p.contributorKey, prototype: p.id, ...change }),
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');
+  return body as { prototype: string; manifest: Manifest };
+}
+
 // Moves a prototype you own to the Trash. Returns where it went and the new manifest.
 export async function deletePrototype(p: Prototype) {
   const res = await fetch('/__studio/prototype-delete', {

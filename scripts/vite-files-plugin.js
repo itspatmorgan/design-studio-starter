@@ -13,6 +13,7 @@
 //        delete   { path }                        to the Trash (or .trash/ at the repo root)
 //        meta     { title?, description?, start? }  edit meta.json (start "" opens the first item)
 //   POST /__studio/prototype { title, description }   a new prototype in your folder, like pnpm new
+//   POST /__studio/prototype-rename { contributor, prototype, title, description? }   retitle a prototype you own; a new title renames its folder too
 //   POST /__studio/prototype-delete { contributor, prototype }   move a prototype you own to the Trash
 //     It replies with the new path and the updated manifest, so the app can follow a renamed view.
 //
@@ -28,7 +29,7 @@ import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { buildManifest } from './build-manifest.js';
-import { createPrototype } from './create-prototype.js';
+import { createPrototype, renamePrototype } from './create-prototype.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from './resolve-contributor.js';
 import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
@@ -284,6 +285,19 @@ export default function filesPlugin() {
             const { slug, manifest } = createPrototype({ title, description, key: me() });
             publishManifest(server, manifest, req.headers['x-studio-tab']);
             return send(res, 200, { contributor: me(), prototype: slug, manifest });
+          } catch (e) {
+            return send(res, 400, { error: e.message });
+          }
+        }
+        if (req.method === 'POST' && url.pathname === '/prototype-rename') {
+          const { contributor, prototype, title, description } = await readJson(req);
+          const dir = prototypeDir(contributor, prototype);
+          if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
+          if (contributor !== me()) return send(res, 403, { error: ownerError(me()) });
+          try {
+            const { id, manifest } = renamePrototype({ key: contributor, id: prototype, title, description });
+            publishManifest(server, manifest, req.headers['x-studio-tab']);
+            return send(res, 200, { prototype: id, manifest });
           } catch (e) {
             return send(res, 400, { error: e.message });
           }

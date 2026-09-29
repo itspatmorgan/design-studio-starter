@@ -33,6 +33,29 @@ export function createPrototype({ title, description = '', key }) {
   return { slug, manifest: buildManifest().manifest };
 }
 
+// Changes a prototype's title (and description), and renames its folder to match when the title
+// changed ("Checkout Flow" → checkout-flow), so its link follows. Nothing changes if that folder
+// name is taken. Returns { id, manifest }, where id is the folder name now, or throws a message.
+export function renamePrototype({ key, id, title, description }) {
+  title = (title ?? '').trim();
+  if (!title) throw new Error('Add a title.');
+  const slug = slugify(title);
+  if (!slug) throw new Error('Use at least one letter or number in the title.');
+  const from = path.join(ROOT, 'src', 'prototypes', key, id);
+  const metaFile = path.join(from, 'meta.json');
+  const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
+  // Only a new title renames the folder: a description edit leaves it alone, and so does a folder
+  // that was named on purpose to be different from its title.
+  const rename = title !== meta.title && slug !== id;
+  const to = path.join(ROOT, 'src', 'prototypes', key, slug);
+  if (rename && fs.existsSync(to)) throw new Error(`You already have a prototype in a folder called “${slug}”. Choose a different title.`);
+  meta.title = title;
+  if (description !== undefined) meta.description = String(description).trim();
+  fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
+  if (rename) fs.renameSync(from, to);
+  return { id: rename ? slug : id, manifest: buildManifest().manifest };
+}
+
 // Run as a script.
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const title = process.argv.slice(2).filter((a) => a !== '--').join(' ');
