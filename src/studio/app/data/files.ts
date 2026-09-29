@@ -86,6 +86,32 @@ export async function fileOp(p: Prototype, op: FileOp): Promise<FileOpResult> {
   return body;
 }
 
+// An item file's text and its version (a hash), for the Source view. Any prototype's, so other
+// people's can be read. Throws the server's message.
+export async function readSource(p: Prototype, path: string) {
+  const query = new URLSearchParams({ contributor: p.contributorKey, prototype: p.id, path });
+  const res = await fetch(`/__studio/file?${query}`);
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');
+  return body as { content: string; version: string };
+}
+
+// The file changed on disk since it was read (its version isn't `base` any more).
+export class SourceChanged extends Error {}
+
+// Saves an item file in your prototype. `base` is the version you read or last saved.
+export async function writeSource(p: Prototype, path: string, content: string, base: string) {
+  const res = await fetch('/__studio/write', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contributor: p.contributorKey, prototype: p.id, path, content, base }),
+  });
+  const body = await res.json();
+  if (res.status === 409) throw new SourceChanged(body.error);
+  if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');
+  return body as { version: string };
+}
+
 // Creates a prototype in your folder, like pnpm new. Returns its URL parts and the new manifest.
 export async function createPrototype(title: string, description: string) {
   const res = await fetch('/__studio/prototype', {

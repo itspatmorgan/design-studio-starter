@@ -16,7 +16,7 @@ src/fileTypes/
 
 | File | Used by | Holds |
 |------|---------|-------|
-| `type.ts` | the build and the app | `label`, `extensions`, an optional `template` (what "New" writes into a new file), and an optional `check` (problems to report, like a missing default export). It imports only `../index.ts`, because Node loads it directly. |
+| `type.ts` | the build and the app | `label`, `extensions`, an optional `template` (what "New" writes into a new file), an optional `check` (problems to report, like a missing default export), and an optional `language` (`tsx` or `markdown`), which gives the type a Source tab in the navigation. It imports only `../index.ts`, because Node loads it directly. |
 | `module.tsx` | the app | `icon` (in the navigation), `load` (loads the file before its page renders), and `Page` (the page itself) |
 | `loader.ts` | the type's own `module.tsx` | a Vite glob of the type's files. It's a separate file because Vite needs the pattern written out, and the file must call `import.meta.hot.accept()` itself. |
 

@@ -9,6 +9,7 @@ const titleOf = (name: string) => name.replace(/\.mdx$/, '').split(/[-_]/).filte
 export default defineFileType({
   label: 'Document',
   extensions: ['.mdx'],
+  language: 'markdown',
 
   template: (name) =>
     `---\ntitle: ${titleOf(name) || 'Untitled'}\n---\n\nThis document is empty. Ask your agent to write it: describe what it's for and who will read it.\n`,

@@ -11,6 +11,7 @@ function componentName(name: string) {
 export default defineFileType({
   label: 'View',
   extensions: ['.tsx', '.jsx'],
+  language: 'tsx',
 
   // It starts as a placeholder (src/lib/placeholder.tsx) until something is built in it.
   template: (name) =>

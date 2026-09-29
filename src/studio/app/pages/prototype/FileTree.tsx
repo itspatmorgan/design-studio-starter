@@ -372,6 +372,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
           rowMenu(node.path, node, (
             <Link
               {...itemLink(proto, item)}
+              search={(prev: { mode?: 'source' }) => ({ mode: prev.mode })} // stay in Source view while moving between items
               {...dragProps(node)}
               {...keyProps(node)}
               aria-current={active ? 'page' : undefined}

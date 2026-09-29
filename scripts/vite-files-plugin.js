@@ -3,6 +3,8 @@
 //
 //   GET  /__studio/me                                       your contributors.json key
 //   GET  /__studio/files?contributor=<key>&prototype=<id>   the prototype's files and folders
+//   GET  /__studio/file?contributor=<key>&prototype=<id>&path=<file>   an item's text and its version
+//   POST /__studio/write   { contributor, prototype, path, content, base }  save an item you own (Source view)
 //   POST /__studio/reveal   { contributor, prototype, path }  show a file in Finder
 //   POST /__studio/op       { contributor, prototype, op, ... }  change files, in your folder only:
 //        create   { path: folder, name, dir? }   a new file (from its type's template, by extension) or folder
@@ -20,6 +22,7 @@
 //
 // Requests must come from the app's own page, and every path is checked to stay inside
 // the prototype's folder.
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
@@ -29,12 +32,14 @@ import { createPrototype } from './create-prototype.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from './resolve-contributor.js';
 import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
+import { HELPER_FOLDER } from '../src/fileTypes/index.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const NAME = /^[a-z0-9][a-z0-9._-]*$/i;
 const TRASH = path.join(ROOT, '.trash');
 const BATCH_MS = 50;
+const MAX_SOURCE_BYTES = 750 * 1024; // the same limit as any committed file (check-asset-size.js)
 
 // A prototype's folder, or null if the contributor or prototype name isn't valid.
 function prototypeDir(contributor, prototype) {
@@ -77,7 +82,10 @@ function send(res, status, body) {
 
 async function readJson(req) {
   let raw = '';
-  for await (const chunk of req) raw += chunk;
+  for await (const chunk of req) {
+    raw += chunk;
+    if (raw.length > 2 * MAX_SOURCE_BYTES) return {}; // far more than any file we save
+  }
   try { return JSON.parse(raw || '{}'); } catch { return {}; }
 }
 
@@ -86,6 +94,18 @@ const validName = (name) => typeof name === 'string' && /^[^/\\\0]+$/.test(name)
 
 // An item's name in meta.json "start" and URLs: its path without the extension ("lofi/main").
 const viewKey = (rel) => rel.replace(/\.[^./]+$/, '');
+
+// An existing item file (a view or document, not a helper in components/) in the prototype,
+// as its real path, or null. The Source view reads and saves only these: never meta.json,
+// hidden files, or anything outside the prototype.
+function itemFile(dir, rel) {
+  if (typeof rel !== 'string' || !fileTypeOf(rel) || rel.split('/').some((part) => part === HELPER_FOLDER || part.startsWith('.'))) return null;
+  const file = resolveInside(dir, rel);
+  return file && fs.statSync(file).isFile() ? file : null;
+}
+
+// A file's version is a hash of its text, so the Source view can tell when it changed on disk.
+const versionOf = (text) => crypto.createHash('sha1').update(text).digest('hex').slice(0, 16);
 
 // The contents of a new file: its file type's template, by extension (src/fileTypes/<type>/type.ts).
 // Files of no type start empty.
@@ -221,6 +241,27 @@ export default function filesPlugin() {
           return send(res, 200, { files: readTree(dir) });
         }
         if (req.method === 'GET' && url.pathname === '/me') return send(res, 200, { key: me() });
+        if (req.method === 'GET' && url.pathname === '/file') {
+          const dir = prototypeDir(url.searchParams.get('contributor'), url.searchParams.get('prototype'));
+          const file = dir && itemFile(dir, url.searchParams.get('path'));
+          if (!file) return send(res, 404, { error: 'This file no longer exists.' });
+          if (fs.statSync(file).size > MAX_SOURCE_BYTES) return send(res, 413, { error: 'This file is too large to show here. Open it in your editor.' });
+          const content = fs.readFileSync(file, 'utf8');
+          return send(res, 200, { content, version: versionOf(content) });
+        }
+        if (req.method === 'POST' && url.pathname === '/write') {
+          const { contributor, prototype, path: rel, content, base } = await readJson(req);
+          const dir = prototypeDir(contributor, prototype);
+          const file = dir && itemFile(dir, rel);
+          if (!file) return send(res, 404, { error: 'This file no longer exists.' });
+          // Contributor scope: you can change only your own folder.
+          if (contributor !== me()) return send(res, 403, { error: ownerError(me()) });
+          if (typeof content !== 'string' || Buffer.byteLength(content) > MAX_SOURCE_BYTES) return send(res, 413, { error: 'This file is too large to save here. Keep files under 750 KB.' });
+          // Never overwrite a version you haven't seen: if it changed on disk since you opened it, say so.
+          if (versionOf(fs.readFileSync(file, 'utf8')) !== base) return send(res, 409, { error: 'This file changed on disk since you opened it.', code: 'changed' });
+          fs.writeFileSync(file, content);
+          return send(res, 200, { version: versionOf(content) });
+        }
         if (req.method === 'POST' && url.pathname === '/op') {
           const body = await readJson(req);
           const dir = prototypeDir(body.contributor, body.prototype);
@@ -282,6 +323,15 @@ export default function filesPlugin() {
         }, BATCH_MS);
       };
       for (const kind of ['add', 'unlink', 'addDir', 'unlinkDir']) server.watcher.on(kind, onEvent);
+
+      // An item file's text changed on disk (an agent, an editor, or a save from the Source view):
+      // an open Source view for it reloads or asks. Not batched: it is one file at a time.
+      server.watcher.on('change', (file) => {
+        const [contributor, prototype, ...rest] = path.relative(PROTOS, file).split(path.sep);
+        const rel = rest.join('/');
+        if (!contributor || contributor.startsWith('..') || !prototype || !fileTypeOf(rel)) return;
+        server.ws.send({ type: 'custom', event: 'studio:file', data: { contributor, prototype, path: rel } });
+      });
     },
   };
 }
