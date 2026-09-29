@@ -1,10 +1,11 @@
 // App UI preferences, saved in localStorage so they survive a reload.
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useState, useSyncExternalStore, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { flushSync } from 'react-dom';
 
 const COLOR_MODE_KEY = 'design-studio:color-mode';   // "light" | "dark"; unset = follow the system
 const SECTION_NAV_KEY = 'design-studio:section-nav'; // "open" | "closed"
 const SECTION_NAV_WIDTH_KEY = 'design-studio:section-nav-width'; // pixels
+const SHOW_ALL_FILES_KEY = 'design-studio:show-all-files'; // "shown" | "hidden"
 
 const systemMode = () => (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
@@ -64,6 +65,21 @@ export function useSectionNav() {
   }, [toggle]);
 
   return { open, toggle };
+}
+
+// Whether the prototype navigation lists every file, not just what the app opens (dev only). Shared
+// by the tree that shows it and the menu that switches it, and the same for every prototype.
+const showAllListeners = new Set<() => void>();
+export function useShowAllFiles() {
+  const showAll = useSyncExternalStore(
+    (listener) => { showAllListeners.add(listener); return () => { showAllListeners.delete(listener); }; },
+    () => localStorage.getItem(SHOW_ALL_FILES_KEY) === 'shown',
+  );
+  const toggle = useCallback(() => {
+    localStorage.setItem(SHOW_ALL_FILES_KEY, localStorage.getItem(SHOW_ALL_FILES_KEY) === 'shown' ? 'hidden' : 'shown');
+    showAllListeners.forEach((listener) => listener());
+  }, []);
+  return [showAll, toggle] as const;
 }
 
 // Whether the prototype navigation is showing, for the prototype layout.

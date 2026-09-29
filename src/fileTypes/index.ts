@@ -1,7 +1,7 @@
 // File types: the kinds of file a prototype holds that the app can open. A file's type comes
 // from its extension, and folders are only for organizing, at any depth. The one exception:
 // anything inside a components/ folder is a helper, not an item. Every other file (images,
-// meta.json) is a plain file: the nav hides it unless you choose Show all files.
+// meta.json) is a plain file: the nav hides it unless you choose Show all files in the prototype's … menu.
 //
 // Each type is a self-contained folder, src/fileTypes/<type>/ (view/, document/), and the app
 // runs with any of them removed: delete the folder and its files become plain files. A type has

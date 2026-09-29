@@ -1,20 +1,21 @@
-// The prototype's files, in its navigation: a filterable tree with expand/collapse all.
+// The prototype's files, in its navigation: a filterable tree with expand/collapse all, and a
+// button that switches the open item between its page and its source (SourcePane.tsx).
 //
 // In `pnpm dev`, it's the prototype's real files and folders, live from the dev server
 // (data/files.ts). It shows what you open and organize: items (views, at any depth; see
-// src/fileTypes.ts) and their folders. Everything else in the folder (meta.json, which the header
+// src/fileTypes/) and their folders. Everything else in the folder (meta.json, which the header
 // edits; components/ helpers; images and other files) is hidden until you choose Show all
-// files, and then opens in your editor. In your own prototypes you can also create, rename (F2), move
+// files (in the header's … menu), and then opens in your editor. In your own prototypes you can also create, rename (F2), move
 // (drag and drop), and delete (to the Trash) files and folders, like a file browser, and
 // choose which item the prototype opens on (Set as start; it shows a star). Every change
 // is a plain file change, so agents see the same thing. On the deployed site, it lists the
 // prototype's items, from the manifest.
 import { useEffect, useImperativeHandle, useRef, useState, type DragEvent, type ReactNode, type Ref } from 'react';
-import { Link, useNavigate, useRouter } from '@tanstack/react-router';
+import { Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon,
-  Folder01Icon, FolderAddIcon, StarIcon, ViewIcon, ViewOffSlashIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
+  Folder01Icon, FolderAddIcon, StarIcon, SourceCodeIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import {
@@ -23,6 +24,7 @@ import {
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { HELPER_FOLDER } from '@/fileTypes';
 import { creatableTypes, FILE_TYPES, fileTypeModules } from '@/studio/app/data/fileTypes';
+import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
 import { Button } from '@/studio/components/button';
 import { Input } from '@/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
@@ -87,8 +89,6 @@ function hiddenInside(node: FileNode, items: Map<string, Item>): string[] {
 
 const findNode = (nodes: FileNode[], path: string): FileNode | undefined =>
   nodes.map((n) => (n.path === path ? n : n.dir ? findNode(n.children ?? [], path) : undefined)).find(Boolean);
-
-const SHOW_ALL_KEY = 'design-studio:show-all-files'; // "shown" | "hidden"
 
 const allDirs = (nodes: FileNode[]): string[] => nodes.flatMap((n) => (n.dir ? [n.path, ...allDirs(n.children ?? [])] : []));
 
@@ -163,9 +163,13 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
   const live = import.meta.env.DEV && files !== null;
   const editable = live && me === proto.contributorKey;
   const items = new Map(proto.items.map((i) => [i.path, i]));
-  // Remembered for every prototype, like Show details.
-  const [showAll, setShowAll] = useState(() => localStorage.getItem(SHOW_ALL_KEY) === 'shown');
-  const toggleShowAll = () => setShowAll((v) => { localStorage.setItem(SHOW_ALL_KEY, v ? 'hidden' : 'shown'); return !v; });
+  // Switched in the header's "…" menu, and remembered for every prototype.
+  const [showAll] = useShowAllFiles();
+  // The open item's Source view (?mode=source, SourcePane.tsx), for types that have source.
+  const { mode } = useSearch({ strict: false }) as { mode?: 'source' };
+  const hasSource = live && Boolean(current && FILE_TYPES[current.fileType]?.language);
+  const sourceOn = hasSource && mode === 'source';
+  const toggleSource = () => navigate({ to: '.', search: ((prev: object) => ({ ...prev, mode: sourceOn ? undefined : 'source' })) as never });
   const nodes = !files ? itemsAsNodes(proto) : showAll ? files : visibleNodes(files, items);
   // The item the prototype opens on: its start, or its first item. It gets a star.
   const opensOn = firstItem(proto);
@@ -218,7 +222,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
     } catch (e) {
       const message = (e as Error).message;
       // The name may belong to a file the nav is hiding.
-      const hint = !showAll && message.includes('already exists') ? " If you don't see it, choose Show all files." : '';
+      const hint = !showAll && message.includes('already exists') ? " If you don't see it, choose Show all files in the … menu." : '';
       setStatus({ text: message + hint, error: true });
     }
   }
@@ -361,7 +365,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
       const item = items.get(node.path);
       // Items and folders show readable names ("user-settings.tsx" → "User Settings"), like the
       // rest of the app; the file name is in the tooltip and the rename field. Other files, shown
-      // with Show all files, keep their real names, since they open in your editor.
+      // with Show all files (in the header's … menu), keep their real names, since they open in your editor.
       const label = item
         ? <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{itemLabel(node.name)}</span>
         : <FileName name={node.name} />;
@@ -411,15 +415,15 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
       <div className="flex h-7 shrink-0 items-center justify-between gap-1 px-2.5 pr-0.5">
         <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{live ? 'Files' : 'Pages'}</p>
         {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
-        <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
+        <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && !sourceOn && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
+          {hasSource && (
+            <IconButton label={sourceOn ? 'Show preview' : 'Show source'} pressed={sourceOn} onClick={toggleSource}>
+              <HugeiconsIcon icon={SourceCodeIcon} size={14} />
+            </IconButton>
+          )}
           <IconButton label={`Filter ${noun}`} pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
             <HugeiconsIcon icon={Search01Icon} size={14} />
           </IconButton>
-          {live && (
-            <IconButton label={showAll ? 'Hide other files' : 'Show all files'} pressed={showAll} onClick={toggleShowAll}>
-              <HugeiconsIcon icon={showAll ? ViewOffSlashIcon : ViewIcon} size={14} />
-            </IconButton>
-          )}
           {dirs.length > 0 && (
             <IconButton label={allOpen ? 'Collapse all' : 'Expand all'} onClick={() => setClosed(allOpen ? new Set(dirs) : new Set())}>
               <HugeiconsIcon icon={allOpen ? UnfoldLessIcon : UnfoldMoreIcon} size={14} />

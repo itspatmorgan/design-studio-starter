@@ -9,8 +9,9 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Add01Icon, Delete02Icon, Folder01Icon, FolderAddIcon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon } from '@hugeicons/core-free-icons';
+import { Add01Icon, Delete02Icon, Folder01Icon, FolderAddIcon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
 import { fileOp, revealInFinder, useMe } from '@/studio/app/data/files';
+import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
 import { creatableTypes } from '@/studio/app/data/fileTypes';
 import { formatDate, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
@@ -60,6 +61,7 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
   // Shown or hidden for every prototype, and remembered.
   const [showInfo, setShowInfo] = useState(() => localStorage.getItem(INFO_KEY) === 'shown');
   const toggleInfo = () => setShowInfo((v) => { localStorage.setItem(INFO_KEY, v ? 'hidden' : 'shown'); return !v; });
+  const [showAll, toggleShowAll] = useShowAllFiles();
   const [note, setNote] = useState<string | null>(null);
   useEffect(() => {
     if (!note) return;
@@ -87,6 +89,7 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
 
   const actions: Action[] = [
     { label: showInfo ? 'Hide details' : 'Show details', icon: InformationCircleIcon, onSelect: toggleInfo },
+    ...(local ? [{ label: showAll ? 'Hide other files' : 'Show all files', icon: showAll ? ViewOffSlashIcon : ViewIcon, onSelect: toggleShowAll }] : []),
     ...(editable ? [{ label: 'Edit info…', icon: PencilEdit02Icon, onSelect: () => setEditing(true) }] : []),
     { label: 'Copy link', icon: Link01Icon, onSelect: copyLink },
     ...(local ? [{ label: 'Reveal in Finder', icon: Folder01Icon, onSelect: () => revealInFinder(proto, '') }] : []),

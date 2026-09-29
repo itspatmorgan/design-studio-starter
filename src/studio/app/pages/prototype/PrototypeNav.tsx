@@ -1,15 +1,11 @@
 // Prototype navigation: everything about the prototype at the top (PrototypeHeader.tsx),
-// the Preview | Source toggle (ModeToggle.tsx), then its files (FileTree.tsx). Drag the right
-// edge to resize it.
-import { lazy, Suspense, useRef } from 'react';
+// then its files (FileTree.tsx). Drag the right edge to resize it.
+import { useRef } from 'react';
 import type { Item, Prototype } from '@/studio/app/data/types';
 import { NAV_WIDTH, useSectionNavWidth } from '@/studio/app/shell/appPrefs';
 import PrototypeHeader from '@/studio/app/pages/prototype/PrototypeHeader';
 import FileTree, { type FileTreeHandle } from '@/studio/app/pages/prototype/FileTree';
 import { cn } from '@/lib/utils';
-
-// Dev only: import.meta.env.DEV is false in the build, so the toggle isn't in the deployed site.
-const ModeToggle = import.meta.env.DEV ? lazy(() => import('@/studio/app/pages/prototype/ModeToggle')) : null;
 
 export default function PrototypeNav({ proto, current }: { proto: Prototype; current: Item | undefined }) {
   const { width, resizing, handleProps } = useSectionNavWidth();
@@ -18,7 +14,6 @@ export default function PrototypeNav({ proto, current }: { proto: Prototype; cur
   return (
     <aside aria-label="Prototype navigation" style={{ width }} className="relative flex shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
       <PrototypeHeader proto={proto} onNew={(target) => tree.current?.startCreate('', target)} />
-      {ModeToggle && <Suspense fallback={null}><ModeToggle current={current} /></Suspense>}
       <FileTree proto={proto} current={current} handle={tree} />
       {/* The resize handle: a thin strip over the right border that highlights on hover. */}
       <div
