@@ -31,7 +31,7 @@ registry (`src/studio/app/data/fileTypes.ts`) how to show an item.
 | `module.tsx` | Icon, and `load`: the file's text (from the file layer in dev, bundled in production). Loads `Canvas` lazily, so Excalidraw isn't in the main bundle |
 | `loader.ts` | The glob of canvas files for the deployed site |
 | `Canvas.tsx` | Wires the pieces into `<Excalidraw>` |
-| `canvas.css` | The app's theme for Excalidraw's UI, from the app's tokens |
+| `canvas.css` | The app's theme for Excalidraw's UI, from the app's tokens, and how its top row compacts when the canvas is narrow |
 | `format.ts` | The file format: slim and stable so canvases diff cleanly. No deleted elements, no images, defaults dropped, numbers rounded, keys sorted, links stored as app paths |
 | `useCanvasFile.ts` | Saving and taking in changes: debounce, one save at a time, base version and conflict merge, retry with backoff, flush on leaving |
 | `mergeRemote.ts` | Merging a changed file into unsaved edits |
@@ -40,7 +40,7 @@ registry (`src/studio/app/data/fileTypes.ts`) how to show an item.
 | `camera.ts` | Where a canvas opens: where you left it, or fitted to its content |
 | `menu.tsx`, `shortcuts.ts`, `stickyNotes.ts`, `ControlTooltip.tsx`, `helpDialog.ts` | The trimmed Excalidraw UI: menu, ⌘. and N, sticky notes, fast tooltips, Help dialog |
 
-Excalidraw is patched in one place (the link icon on embeds): `patches/README.md`. Its fonts load from
+Excalidraw is patched (the link icon on embeds, and always using its desktop layout, since the app is often narrow beside other panels): `patches/README.md`. Its fonts load from
 Excalidraw's CDN.
 
 ## Remove it

@@ -316,3 +316,66 @@
   color: var(--foreground);
   text-decoration: none;
 }
+
+/*
+ * Narrow canvases. The app often sits beside other panels (an agent's own sidebars), so a canvas can be
+ * narrow on a desktop. The patched Excalidraw always uses its desktop layout (patches/README.md); when
+ * there isn't room for it, the top row stays one row: the menu, the tools (which scroll sideways when
+ * they don't fit, and are a little smaller when it's tighter), and the library as an icon.
+ */
+.canvas {
+  container-type: inline-size;
+}
+
+@container (max-width: 700px) {
+  .canvas .App-menu_top {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    column-gap: 8px;
+  }
+
+  .canvas .shapes-section {
+    min-width: 0;
+    justify-content: center;
+  }
+
+  /* The tools island keeps its size and scrolls when the row is narrower than it. Every box
+     between the row and the island has to allow it to be narrower. */
+  .canvas .shapes-section > div,
+  .canvas .shapes-section > div > .Stack,
+  .canvas .shapes-section .App-toolbar-container,
+  .canvas .shapes-section .App-toolbar {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* These boxes are grids sized by their content, which would never let the island be narrower. */
+  .canvas .shapes-section > div > .Stack,
+  .canvas .shapes-section .App-toolbar-container {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .canvas .shapes-section .App-toolbar {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  /* The library button: icon only. */
+  .canvas .layer-ui__wrapper__top-right .sidebar-trigger {
+    min-width: 2.5rem;
+    width: 2.5rem;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .canvas .layer-ui__wrapper__top-right .sidebar-trigger__label {
+    display: none;
+  }
+}
+
+@container (max-width: 560px) {
+  /* A little tighter, so more of the tools show. */
+  .canvas .App-toolbar {
+    --default-button-size: 1.75rem;
+    --lg-button-size: 1.75rem;
+  }
+}
