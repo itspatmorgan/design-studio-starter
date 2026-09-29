@@ -11,7 +11,7 @@ const items: Record<string, { title: string; type: string; typeLabel: string; pr
 const ctx: Ctx = {
   base: '/pat/demo',
   item: (path) => (items[path] ? { path, ...items[path] } : null),
-  items: () => ['main', 'notes'],
+  items: () => Object.entries(items).map(([path, v]) => ({ path, ...v })),
 };
 
 // Runs tools in turn on one scene, as a caller would.
@@ -129,4 +129,49 @@ test('the stored form is small and stable', () => {
   assert.equal(file.elements[0].x, 0.12, 'numbers are rounded');
   assert.ok(!('isDeleted' in file.elements[0]) && !('angle' in file.elements[0]), 'defaults are left out');
   assert.equal(stringifyScene(s.scene), stringifyScene(JSON.parse(text).elements), 'saving twice writes the same file');
+});
+
+test('rightOf centers by default so arrows between different heights run straight; align sets it', () => {
+  const s = session();
+  const { refs } = s.call('create', { elements: [
+    { type: 'item', item: 'main', x: 0, y: 0, ref: 'view' },
+    { type: 'item', item: 'notes', rightOf: '@view', ref: 'card' },
+    { type: 'item', item: 'notes', rightOf: '@view', align: 'start', y: undefined, ref: 'top' },
+    { type: 'note', text: 'under', below: '@card', align: 'center', ref: 'under' },
+    { type: 'arrow', from: '@view', to: '@card' },
+  ] });
+  const at = (ref: string) => s.live().find((e) => e.id === refs[ref])!;
+  assert.equal(at('card').y, (338 - 88) / 2, 'centered on the view');
+  assert.equal(at('top').y, 0, 'align: start lines up the tops');
+  assert.equal(at('under').x, at('card').x + (480 - 200) / 2, 'a note centered under a card');
+  const arrow = s.live().find((e) => e.type === 'arrow')!;
+  assert.equal(arrow.points[1][1], 0, 'the arrow is straight');
+  assert.throws(() => s.call('create', { type: 'note', text: 'x', below: '@card', align: 'left' }), /align must be/);
+});
+
+test('create warns when something lands on something else', () => {
+  const s = session();
+  const first = s.call('create', { type: 'note', text: 'a', x: 0, y: 0 });
+  assert.equal(first.warnings, undefined);
+  const second = s.call('create', { elements: [{ type: 'note', text: 'b', x: 50, y: 50 }, { type: 'note', text: 'c', x: 900, y: 0 }] });
+  assert.equal(second.warnings.length, 1);
+  assert.match(second.warnings[0], /overlaps/);
+});
+
+test('items lists what can go on the canvas, and a wrong name points at it', () => {
+  const s = session();
+  const { items } = s.call('items', {});
+  assert.deepEqual(items.map((i: El) => i.item), ['main', 'notes']);
+  assert.equal(items[0].shownAs, 'live view');
+  assert.equal(items[1].shownAs, 'card');
+  assert.throws(() => s.call('create', { type: 'item', item: 'nope' }), /`items` tool/);
+});
+
+test('describe reports how a shape is drawn', () => {
+  const s = session();
+  s.call('create', { type: 'rectangle', text: 'Not built', strokeStyle: 'dashed', rounded: true, opacity: 60, color: 'gray' });
+  const [shape] = s.call('describe', {}).elements;
+  assert.equal(shape.strokeStyle, 'dashed');
+  assert.equal(shape.rounded, true);
+  assert.equal(shape.opacity, 60);
 });

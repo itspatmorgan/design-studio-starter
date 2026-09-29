@@ -11,7 +11,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { itemSlug } from '../index.ts';
 import { FORMAT_VERSION, stringifyScene } from './slim.ts';
-import { help, run, ToolError, type Ctx, type El } from './tools.ts';
+import { help, run, ToolError, type Ctx, type El, type ItemInfo } from './tools.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -60,7 +60,11 @@ const ctx: Ctx = {
     const type = FILE_TYPES[item.fileType];
     return { path: appPath, title: title(item.path), type: item.fileType, typeLabel: type?.label ?? 'File', preview: Boolean(type?.preview) };
   },
-  items: () => (manifest.prototypes.find((x) => x.contributorKey === contributor && x.id === prototype)?.items ?? []).map((i) => itemSlug(i.path)),
+  items: (all) => manifest.prototypes
+    .filter((x) => all || (x.contributorKey === contributor && x.id === prototype))
+    .flatMap((x) => x.items.map((i) => `/${x.contributorKey}/${x.id}/${itemSlug(i.path)}`))
+    .map((p) => ctx.item(p))
+    .filter((i): i is ItemInfo => i !== null),
   linkPath: (link) => (link.startsWith('/') && !link.startsWith('//') ? link : null),
 };
 

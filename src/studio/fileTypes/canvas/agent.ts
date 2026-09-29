@@ -17,7 +17,7 @@ import { itemLabel } from '@/studio/app/data/manifest';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { appPathOf, resolveItemPath } from '@/studio/app/items/itemLinks';
 import { boundsOf } from './elements';
-import { help, run, ToolError, type Ctx, type El } from './tools';
+import { help, run, ToolError, type Ctx, type El, type ItemInfo } from './tools';
 
 export type CanvasAgentOptions = {
   api: ExcalidrawImperativeAPI;
@@ -44,7 +44,18 @@ export function createCanvasAgent({ api, proto, item, manifest, editable, persis
       const type = found.item.fileType;
       return { path, title: itemLabel(found.item.path), type, typeLabel: FILE_TYPES[type]?.label ?? 'File', preview: Boolean(fileTypeModules[type]?.Embed) };
     },
-    items: () => manifest().prototypes.find((p) => p.contributorKey === proto.contributorKey && p.id === proto.id)?.items.map((i) => i.path.replace(/\.[^./]+$/, '')) ?? [],
+    items(all) {
+      const m = manifest();
+      return m.prototypes
+        .filter((p) => all || (p.contributorKey === proto.contributorKey && p.id === proto.id))
+        .flatMap((p) => p.items.map((i) => ({ p, i })))
+        .map(({ p, i }) => {
+          const path = `/${p.contributorKey}/${p.id}/${i.path.replace(/\.[^./]+$/, '')}`;
+          const info = ctx.item(path);
+          return info as ItemInfo;
+        })
+        .filter(Boolean);
+    },
     linkPath: (link) => appPathOf(link) ?? (link.startsWith('/') && !link.startsWith('//') ? link : null),
   };
 
@@ -67,7 +78,7 @@ export function createCanvasAgent({ api, proto, item, manifest, editable, persis
   const selected = () => Object.keys(api.getAppState().selectedElementIds);
 
   function call(tool: string, args: unknown) {
-    if (!['describe', 'help'].includes(tool) && !editable()) {
+    if (!['describe', 'help', 'items'].includes(tool) && !editable()) {
       throw new ToolError('This canvas is read-only here: it is in someone else\'s prototype, or the app is not running in dev. Ask the person to make a canvas of your own.');
     }
     let input = args as Record<string, unknown> | undefined;
@@ -113,6 +124,7 @@ export function createCanvasAgent({ api, proto, item, manifest, editable, persis
     },
 
     describe: (args?: unknown) => call('describe', args),
+    items: (args?: unknown) => call('items', args),
     create: (args: unknown) => call('create', args),
     update: (args: unknown) => call('update', args),
     move: (args: unknown) => call('move', args),

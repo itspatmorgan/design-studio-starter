@@ -23,8 +23,8 @@ export type Ctx = {
   base: string;
   // The item at an app path ("/patrick/hello-world/lofi/main"), or null if there isn't one.
   item(path: string): ItemInfo | null;
-  // The app paths of items in this prototype, to suggest when one isn't found.
-  items?(): string[];
+  // The items in this prototype (or, with `all`, in every prototype), for the `items` tool and hints.
+  items?(all?: boolean): ItemInfo[];
   // A link's app path: "https://host/patrick/x" is "/patrick/x". App paths pass through. Null if it isn't a link into the app.
   linkPath?(link: string): string | null;
 };
@@ -70,11 +70,18 @@ export const TOOLS: ToolDef[] = [
     example: { scope: 'selection' },
   },
   {
+    name: 'items',
+    summary: 'The views and documents you can put on the canvas with an `item`: their names, titles and types. Only this prototype\'s, unless `all` is true.',
+    args: { all: 'true for every prototype\'s items (use the whole app path shown to place one)' },
+    example: { all: false },
+  },
+  {
     name: 'create',
-    summary: 'Make things. Pass { elements: [...] } (or one element). Each has a `type`; see help("create") for the types. Placement: x and y, or `below`, `rightOf` (an id or @ref), or `section`. With none, it goes below everything. `ref` names it, so later elements in the same call can use @name.',
+    summary: 'Make things. Pass { elements: [...] } (or one element). Each has a `type`; see help("create") for the types. Placement: x and y, or `below`, `rightOf` (an id or @ref), or `section`. With none, it goes below everything. `align` sets how it lines up with what it is beside: "start" (left edge under something, top edge beside it) or "center" (centered on it). `rightOf` centers by default, so arrows between things of different heights run straight; `below` aligns left. The result lists `warnings` if something landed on top of something else. `ref` names it, so later elements in the same call can use @name.',
     args: {
       elements: 'a list of elements to make',
       type: 'note, text, rectangle, ellipse, diamond, arrow, line, item, or section',
+      align: '"start" or "center", with below / rightOf',
       ...STYLE_ARGS,
     },
     example: {
@@ -192,6 +199,7 @@ export function run(scene: El[], tool: string, args: any, ctx: Ctx): Run {
   const input = args ?? {};
   switch (tool) {
     case 'describe': return { elements: scene, result: describe(scene, input, ctx), touched: [] };
+    case 'items': return { elements: scene, result: listItems(input, ctx), touched: [] };
     case 'create': return create(scene, input, ctx);
     case 'update': return update(scene, input, ctx);
     case 'move': return move(scene, input);
@@ -278,6 +286,15 @@ function placeArrowLabel(arrow: El, label: El): El {
   return { ...label, x: b.x + b.width / 2 - label.width / 2, y: b.y + b.height / 2 - label.height / 2 };
 }
 
+// An item's app path as `item` takes it inside this prototype: "lofi/main".
+const relative = (path: string, ctx: Ctx) => (path.startsWith(`${ctx.base}/`) ? path.slice(ctx.base.length + 1) : path);
+
+function listItems(args: any, ctx: Ctx) {
+  const all = Boolean(args?.all);
+  const items = (ctx.items?.(all) ?? []).map((i) => ({ item: relative(i.path, ctx), title: i.title, type: i.typeLabel, ...(i.preview ? { shownAs: 'live view' } : { shownAs: 'card' }) }));
+  return { items, ...(all ? {} : { note: 'Only this prototype. Use `all: true` for every prototype; give a whole app path to place one from another.' }) };
+}
+
 // ---- create -----------------------------------------------------------------------------------
 
 function create(input: El[], args: any, ctx: Ctx): Run {
@@ -294,12 +311,14 @@ function create(input: El[], args: any, ctx: Ctx): Run {
   const add = (...els: El[]) => { scene = scene.concat(els); els.forEach((el) => touched.add(el.id)); };
 
   // Where a new element goes: given, beside or under another element, at the end of a section, or below everything.
-  const place = (spec: El, width: number) => {
+  const place = (spec: El, width: number, height = 0) => {
+    const align = spec.align ?? undefined;
+    if (align !== undefined && align !== 'start' && align !== 'center') throw new ToolError('align must be "start" or "center"');
     const x = num(spec.x, 'x');
     const y = num(spec.y, 'y');
     if (x !== undefined && y !== undefined) return { x, y };
-    if (spec.below !== undefined) { const b = boundsOf(find(spec.below, 'below')); return { x: x ?? b.x, y: y ?? b.y + b.height + NOTE_GAP }; }
-    if (spec.rightOf !== undefined) { const b = boundsOf(find(spec.rightOf, 'rightOf')); return { x: x ?? b.x + b.width + GAP, y: y ?? b.y }; }
+    if (spec.below !== undefined) { const b = boundsOf(find(spec.below, 'below')); return { x: x ?? (align === 'center' ? b.x + (b.width - width) / 2 : b.x), y: y ?? b.y + b.height + NOTE_GAP }; }
+    if (spec.rightOf !== undefined) { const b = boundsOf(find(spec.rightOf, 'rightOf')); return { x: x ?? b.x + b.width + GAP, y: y ?? (align === 'start' ? b.y : b.y + (b.height - height) / 2) }; }
     if (spec.section !== undefined) {
       const frame = find(spec.section, 'section');
       const kids = live(scene).filter((el) => el.frameId === frame.id && !(el.type === 'text' && el.containerId));
@@ -307,7 +326,6 @@ function create(input: El[], args: any, ctx: Ctx): Run {
       const b = unionBounds(kids.map(boundsOf))!;
       return { x: b.x + b.width + GAP, y: b.y };
     }
-    void width;
     const all = unionBounds(live(scene).filter((el) => !(el.type === 'text' && el.containerId)).map(boundsOf));
     return all ? { x: x ?? all.x, y: y ?? all.y + all.height + SECTION_GAP } : { x: x ?? 0, y: y ?? 0 };
   };
@@ -326,7 +344,7 @@ function create(input: El[], args: any, ctx: Ctx): Run {
           if (!c) throw new ToolError(`a note's color must be one of ${Object.keys(NOTE_COLORS).join(', ')}`);
           const w = num(spec.width, 'width') ?? NOTE_SIZE;
           const h = num(spec.height, 'height') ?? NOTE_SIZE;
-          const at = place(spec, w);
+          const at = place(spec, w, h);
           const rect = make('rectangle', { ...at, width: w, height: h, backgroundColor: c.fill, fillStyle: 'solid', strokeColor: c.edge, strokeWidth: 1, roughness: 0, roundness: null });
           const label: El = { ...textElement({ text: str(spec.text ?? '', 'text'), x: at.x + 10, y: at.y + 10, containerId: rect.id, boxWidth: w - 20, stroke: NOTE_TEXT_COLOR }), verticalAlign: 'top' };
           made = [{ ...rect, boundElements: [{ id: label.id, type: 'text' }] }, label];
@@ -336,14 +354,14 @@ function create(input: El[], args: any, ctx: Ctx): Run {
           const fontSize = num(spec.fontSize, 'fontSize') ?? 20;
           const text = str(spec.text, 'text');
           const size = measureText(text, fontSize);
-          const at = place(spec, size.width);
+          const at = place(spec, size.width, size.height);
           made = [textElement({ text, ...at, fontSize, stroke: spec.stroke !== undefined || spec.color !== undefined ? styleOf(spec, 'text').strokeColor : undefined })];
           break;
         }
         case 'rectangle': case 'ellipse': case 'diamond': {
           const w = num(spec.width, 'width') ?? 200;
           const h = num(spec.height, 'height') ?? 120;
-          const at = place(spec, w);
+          const at = place(spec, w, h);
           const shape = make(spec.type, { ...at, width: w, height: h, ...styleOf(spec) });
           if (spec.text) {
             const label = labelFor(shape, str(spec.text, 'text'), num(spec.fontSize, 'fontSize') ?? 20, spec.stroke !== undefined || spec.color !== undefined ? shape.strokeColor : undefined);
@@ -388,12 +406,12 @@ function create(input: El[], args: any, ctx: Ctx): Run {
           const path = itemPath(spec.item, ctx);
           const info = ctx.item(path);
           if (!info) {
-            const here = ctx.items?.().slice(0, 20);
-            throw new ToolError(`no view or document at ${path}${here?.length ? `. In this prototype: ${here.join(', ')}` : ''}`);
+            const here = ctx.items?.().slice(0, 20).map((i) => relative(i.path, ctx));
+            throw new ToolError(`no view or document at ${path}${here?.length ? `. In this prototype: ${here.join(', ')} (the \`items\` tool lists them)` : ''}`);
           }
           const w = num(spec.width, 'width') ?? ITEM_WIDTH;
           const h = num(spec.height, 'height') ?? (info.preview ? PREVIEW_HEIGHT : CARD_HEIGHT);
-          made = [make('embeddable', { ...place(spec, w), width: w, height: h, link: path, strokeColor: 'transparent', roundness: null, customData: { frame: true, hideLinkIcon: true } })];
+          made = [make('embeddable', { ...place(spec, w, h), width: w, height: h, link: path, strokeColor: 'transparent', roundness: null, customData: { frame: true, hideLinkIcon: true } })];
           break;
         }
         case 'section': case 'frame': {
@@ -435,6 +453,17 @@ function create(input: El[], args: any, ctx: Ctx): Run {
       throw error;
     }
   }
+  // Say so if something landed on top of something else, so the caller can move it.
+  const top = (el: El) => !['arrow', 'line', 'frame'].includes(el.type) && !(el.type === 'text' && el.containerId);
+  const newOnes = created.map((id) => scene.find((e) => e.id === id)!).filter(top);
+  const before = live(input).filter(top);
+  const warnings: string[] = [];
+  const name = (el: El) => `${el.id} (${kindOf(el)}${el.text ? ` "${String(el.text).slice(0, 24)}"` : ''})`;
+  const meet = (a: El, b: El) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+  newOnes.forEach((a, i) => {
+    for (const b of [...before, ...newOnes.slice(i + 1)]) if (a.id !== b.id && meet(boundsOf(a) as El, boundsOf(b) as El)) warnings.push(`${name(a)} overlaps ${name(b)}`);
+  });
+
   // A section clips what sticks out of it, so one that things were put into grows to hold them (never shrinks).
   for (const id of grow) {
     const frame = scene.find((e) => e.id === id)!;
@@ -445,7 +474,7 @@ function create(input: El[], args: any, ctx: Ctx): Run {
     const height = Math.max(frame.height, b.y + b.height + SECTION_PAD - frame.y);
     if (width > frame.width || height > frame.height) replace(id, { width, height });
   }
-  return { elements: scene, result: { ok: true, created, refs }, touched: [...touched] };
+  return { elements: scene, result: { ok: true, created, refs, ...(warnings.length ? { warnings } : {}) }, touched: [...touched] };
 }
 
 // ---- update, move, delete ---------------------------------------------------------------------
@@ -631,6 +660,12 @@ function describe(scene: El[], args: any, ctx: Ctx) {
       if (el.backgroundColor && el.backgroundColor !== 'transparent') out.background = el.backgroundColor;
     }
     if (el.type === 'text' && el.fontSize) out.fontSize = el.fontSize;
+    if (el.type !== 'text' && el.type !== 'embeddable' && el.type !== 'frame' && !isNote(el)) {
+      if (el.strokeStyle && el.strokeStyle !== 'solid') out.strokeStyle = el.strokeStyle;
+      if (el.strokeWidth && el.strokeWidth !== 2) out.strokeWidth = el.strokeWidth;
+      if (el.roundness) out.rounded = true;
+    }
+    if (el.opacity !== undefined && el.opacity < 100) out.opacity = el.opacity;
     if (el.type === 'frame') out.name = el.name ?? '';
     if (el.type === 'arrow') { out.from = el.startBinding?.elementId ?? null; out.to = el.endBinding?.elementId ?? null; }
     if (isItem(el)) {
