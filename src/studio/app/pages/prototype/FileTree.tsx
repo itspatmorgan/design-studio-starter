@@ -15,7 +15,7 @@ import { Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon,
-  Folder01Icon, FolderAddIcon, StarIcon, SourceCodeIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
+  Folder01Icon, FolderAddIcon, StarIcon, SourceCodeIcon, BrowserIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import {
@@ -417,8 +417,8 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
         {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
         <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && !sourceOn && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
           {hasSource && (
-            <IconButton label={sourceOn ? 'Show preview' : 'Show source'} pressed={sourceOn} onClick={toggleSource}>
-              <HugeiconsIcon icon={SourceCodeIcon} size={14} />
+            <IconButton label={sourceOn ? 'Show preview' : 'Show source'} onClick={toggleSource}>
+              <HugeiconsIcon icon={sourceOn ? BrowserIcon : SourceCodeIcon} size={14} />
             </IconButton>
           )}
           <IconButton label={`Filter ${noun}`} pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
