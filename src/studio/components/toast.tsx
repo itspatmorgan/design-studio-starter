@@ -12,6 +12,17 @@ import { Alert02Icon, Cancel01Icon, CheckmarkCircle02Icon, InformationCircleIcon
 
 const toast = ToastPrimitive.createToastManager()
 
+// Stock Base UI pauses a toast's timer while the pointer is over it, focus is in it, or the window
+// isn't focused, so a toast could sit there until you clear it. Ours are brief messages, so each
+// one closes itself a moment after its timeout no matter what: 4 seconds, or 7 for an error.
+const addToast = toast.add.bind(toast)
+toast.add = ((options) => {
+  const timeout = options.timeout ?? (options.type === "error" ? 7000 : 4000)
+  const id = addToast({ ...options, timeout })
+  setTimeout(() => toast.close(id), timeout + 500)
+  return id
+}) as typeof toast.add
+
 function ToastProvider({ ...props }: ToastPrimitive.Provider.Props) {
   return <ToastPrimitive.Provider {...props} />
 }
