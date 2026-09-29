@@ -4,7 +4,7 @@ A prototype can depend only on its own folder, its design system, and shared uti
 
 ## Shape
 
-A file's type comes from its extension (`src/fileTypes/`: `.tsx` and `.jsx` are views, `.mdx` are documents), and folders are only for organizing, at any depth. Organize by topic, however the person likes.
+A file's type comes from its extension (`src/studio/fileTypes/`: `.tsx` and `.jsx` are views, `.mdx` are documents), and folders are only for organizing, at any depth. Organize by topic, however the person likes.
 
 ```
 src/prototypes/<contributor>/<prototype>/

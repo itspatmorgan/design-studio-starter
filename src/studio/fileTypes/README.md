@@ -6,7 +6,7 @@ from its extension, so `.tsx` files are views and `.mdx` files are documents, at
 Each type is a self-contained folder here, and the platform runs with any of them removed.
 
 ```
-src/fileTypes/
+src/studio/fileTypes/
 ├── index.ts        what every type shares (FileTypeSpec, itemSlug)
 ├── view/           .tsx, .jsx: React components, opened as pages
 └── document/       .mdx: Markdown pages
@@ -26,9 +26,9 @@ manifest, and the file layer all read the types they find.
 
 ## Remove a type
 
-1. Delete its folder, for example `src/fileTypes/document/`. Its files become plain files, which the
+1. Delete its folder, for example `src/studio/fileTypes/document/`. Its files become plain files, which the
    navigation hides unless you choose Show all files in the prototype's … menu.
-2. Delete its Guide page (`src/guide/documents.mdx`, and the links to it in `src/guide/prototypes.mdx`) and its
+2. Delete its Guide page (`src/studio/guide/documents.mdx`, and the links to it in `src/studio/guide/prototypes.mdx`) and its
    agent rule (`agents/rules/documents.md`, and its line in `AGENTS.md`).
 
 `pnpm build` runs `scripts/check-file-types.js`, which fails if core code imports a type's folder or
@@ -36,7 +36,7 @@ one type imports another, so a folder that passes stays removable.
 
 ## Add a type
 
-1. Make `src/fileTypes/<name>/` with a `type.ts`, `module.tsx`, and `loader.ts`. Copy `document/`
+1. Make `src/studio/fileTypes/<name>/` with a `type.ts`, `module.tsx`, and `loader.ts`. Copy `document/`
    as a starting point: it's the smaller one.
 2. Two types can't share an extension; the build says so if they do.
 3. If the type needs something the app can't do yet, that belongs in the type's folder, not in core.

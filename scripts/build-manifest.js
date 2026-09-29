@@ -3,13 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems.ts';
-import { HELPER_FOLDER, itemSlug } from '../src/fileTypes/index.ts';
+import { HELPER_FOLDER, itemSlug } from '../src/studio/fileTypes/index.ts';
 import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
 import { frontmatter } from './lib/frontmatter.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
-const GUIDE = path.join(ROOT, 'src', 'guide');
+const GUIDE = path.join(ROOT, 'src', 'studio', 'guide');
 const OUT = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
 // App page URLs, so they can't be contributor folders. Keep in sync with setup-contributor.js.
 const RESERVED_KEYS = new Set(['systems', 'guide']);
@@ -18,7 +18,7 @@ const dirs = (p) => fs.existsSync(p)
   ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort()
   : [];
 
-// A prototype's items (see src/fileTypes/), in the order the file tree shows them: at each
+// A prototype's items (see src/studio/fileTypes/), in the order the file tree shows them: at each
 // level, files first, then folders, each alphabetical. Hidden files and components/ are skipped.
 function itemsIn(dir, base = '') {
   const entries = fs.readdirSync(dir, { withFileTypes: true }).filter((e) => !e.name.startsWith('.'));
@@ -30,7 +30,7 @@ function itemsIn(dir, base = '') {
   return [...files, ...folders];
 }
 
-// Scans src/prototypes/ and src/guide/, writes public/prototypes/manifest.json, and returns it.
+// Scans src/prototypes/ and src/studio/guide/, writes public/prototypes/manifest.json, and returns it.
 // Problems are printed; errors counts them. The dev server calls this on every change
 // (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
 export function buildManifest() {
@@ -59,7 +59,7 @@ export function buildManifest() {
       if (typeof meta?.title !== 'string' || !meta.title.trim()) { skip('needs a "title"'); continue; }
       const items = itemsIn(dir);
       // Two items can't share a URL (main.tsx next to main.jsx or main.mdx), and each file type
-      // checks its own files (src/fileTypes/<type>/type.ts): a view needs a default export, and so on.
+      // checks its own files (src/studio/fileTypes/<type>/type.ts): a view needs a default export, and so on.
       const seen = new Set();
       for (const item of items) {
         const file = path.relative(ROOT, path.join(dir, item.path));
@@ -103,13 +103,13 @@ export function buildManifest() {
     }
   }
 
-  // Guide pages: src/guide/*.mdx, ordered by `order` in each page's frontmatter. They share
+  // Guide pages: src/studio/guide/*.mdx, ordered by `order` in each page's frontmatter. They share
   // the title, description, and toc fields with prototype documents, and add order and section.
   const guide = [];
   const guideFiles = fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.mdx')).sort() : [];
   for (const file of guideFiles) {
     const fm = frontmatter(fs.readFileSync(path.join(GUIDE, file), 'utf8'));
-    const where = `src/guide/${file}`;
+    const where = `src/studio/guide/${file}`;
     if (!fm || typeof fm.title !== 'string' || !fm.title) { console.error(`[manifest] Skipped ${where}: needs frontmatter with a "title"`); errors++; continue; }
     if (typeof fm.order !== 'number') { console.error(`[manifest] Skipped ${where}: needs a numeric "order" in its frontmatter`); errors++; continue; }
     guide.push({ slug: file.replace(/\.mdx$/, ''), title: fm.title, description: fm.description ?? '', section: fm.section || null, order: fm.order });

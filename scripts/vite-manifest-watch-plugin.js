@@ -1,6 +1,6 @@
 // Keeps the manifest live during `pnpm dev`, without reloading the page.
 //
-// Vite already watches every file. When something under src/prototypes/ or src/guide/
+// Vite already watches every file. When something under src/prototypes/ or src/studio/guide/
 // changes (from the app, an agent, or your editor), this rebuilds the manifest in-process
 // and pushes it to the app over Vite's dev connection. The app swaps it in and refreshes
 // only the routes that use it (see router.tsx), so the open view and scroll position stay.
@@ -11,7 +11,7 @@ import { buildManifest } from './build-manifest.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
-const GUIDE = path.join(ROOT, 'src', 'guide');
+const GUIDE = path.join(ROOT, 'src', 'studio', 'guide');
 const CONTRIBUTORS = path.join(ROOT, 'contributors.json');
 const BATCH_MS = 50;
 

@@ -3,7 +3,7 @@
 //
 //   /                                        Index (search: ?q=)
 //   /systems/$system, /systems/$system/$page  Systems (/systems opens the product system)
-//   /guide, /guide/$page                     the Guide (pages in src/guide/)
+//   /guide, /guide/$page                     the Guide (pages in src/studio/guide/)
 //   /$contributor/$prototype                 a prototype, on its start item (or its first)
 //   /$contributor/$prototype/$               an item, by its path without the extension,
 //                                            at any depth: /patrick/hello-world/lofi/main
@@ -126,7 +126,7 @@ const prototypeRoute = createRoute({
 });
 
 // Loads an item before the route renders, so the current one stays on screen until the next
-// one is ready. Its file type (src/fileTypes/) loads the file. An unknown address, or a type
+// one is ready. Its file type (src/studio/fileTypes/) loads the file. An unknown address, or a type
 // that isn't installed, shows the not-found page.
 async function itemLoader({ contributor, prototype, _splat }: { contributor: string; prototype: string; _splat?: string }, mode?: ItemSearch['mode']): Promise<ItemData> {
   const proto = findPrototype(await loadManifest(), contributor, prototype);

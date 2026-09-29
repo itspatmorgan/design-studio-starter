@@ -3,7 +3,7 @@ import type { ComponentSpec, TypeSampleSpec } from '@/studio/app/pages/systems/f
 
 
 // public/prototypes/manifest.json, written by scripts/build-manifest.js.
-// One thing in a prototype the app can open (see src/fileTypes/).
+// One thing in a prototype the app can open (see src/studio/fileTypes/).
 export type Item = {
   path: string;   // file path in the prototype, e.g. "prototype.tsx" or "checkout/step-1.tsx"
   fileType: string; // the id of the file type that owns it, from its extension ("view", "document")
@@ -21,7 +21,7 @@ export type Prototype = {
   items: Item[];          // in file-tree order
 };
 
-// One Guide page (src/guide/<slug>.mdx), from its frontmatter.
+// One Guide page (src/studio/guide/<slug>.mdx), from its frontmatter.
 export type GuidePage = {
   slug: string;           // file name without .mdx, e.g. "getting-started"
   title: string;

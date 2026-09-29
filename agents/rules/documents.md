@@ -1,6 +1,6 @@
 # Documents
 
-A document is written context in a prototype: problem framing, open questions, feedback, or handoff notes. Read this when the person asks for one. Human docs: the Guide's Documents page (`src/guide/documents.mdx`).
+A document is written context in a prototype: problem framing, open questions, feedback, or handoff notes. Read this when the person asks for one. Human docs: the Guide's Documents page (`src/studio/guide/documents.mdx`).
 
 - A document is any `.mdx` file in the prototype, at any depth, outside `components/`. There's nothing to register. Its URL is its path without the extension.
 - Frontmatter is optional: `title`, `description`, and `toc: true` (an "On this page" list). Give it a `title`. Write plain Markdown; a small `<Callout title="…">` is built in.

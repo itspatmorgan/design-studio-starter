@@ -22,7 +22,7 @@ export default defineConfig({
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
   plugins: [
-    // Markdown pages (Guide pages in src/guide/, and prototype documents): frontmatter,
+    // Markdown pages (Guide pages in src/studio/guide/, and prototype documents): frontmatter,
     // GitHub-style Markdown, heading ids, and code highlighting with Shiki in both color modes.
     {
       enforce: 'pre',

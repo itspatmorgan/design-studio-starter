@@ -3,11 +3,11 @@
 // anything inside a components/ folder is a helper, not an item. Every other file (images,
 // meta.json) is a plain file: the nav hides it unless you choose Show all files in the prototype's … menu.
 //
-// Each type is a self-contained folder, src/fileTypes/<type>/ (view/, document/), and the app
+// Each type is a self-contained folder, src/studio/fileTypes/<type>/ (view/, document/), and the app
 // runs with any of them removed: delete the folder and its files become plain files. A type has
 //   type.ts     what the build and the app both need to know (this file's FileTypeSpec)
 //   module.tsx  how the app opens it: its icon, how it loads, and its page
-// To add a type, see src/fileTypes/README.md. This file has no imports, so Node scripts can
+// To add a type, see src/studio/fileTypes/README.md. This file has no imports, so Node scripts can
 // load it directly.
 
 export type FileTypeSpec = {

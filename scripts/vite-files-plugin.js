@@ -33,7 +33,7 @@ import { createPrototype, renamePrototype } from './create-prototype.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from './resolve-contributor.js';
 import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
-import { HELPER_FOLDER } from '../src/fileTypes/index.ts';
+import { HELPER_FOLDER } from '../src/studio/fileTypes/index.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -108,7 +108,7 @@ function itemFile(dir, rel) {
 // A file's version is a hash of its text, so the Source view can tell when it changed on disk.
 const versionOf = (text) => crypto.createHash('sha1').update(text).digest('hex').slice(0, 16);
 
-// The contents of a new file: its file type's template, by extension (src/fileTypes/<type>/type.ts).
+// The contents of a new file: its file type's template, by extension (src/studio/fileTypes/<type>/type.ts).
 // Files of no type start empty.
 const templateFor = (name) => FILE_TYPES[fileTypeOf(name)]?.template?.(name) ?? '';
 
@@ -219,7 +219,7 @@ export default function filesPlugin() {
     apply: 'serve',
     // When a prototype file is moved, created, or deleted, Vite would try to hot-reload it
     // (at its old path, or at a path the page loaded before), fail, and reload the page. The
-    // manifest and the item lists (src/fileTypes/<type>/loader.ts) already handle these, so drop Vite's copy of
+    // manifest and the item lists (src/studio/fileTypes/<type>/loader.ts) already handle these, so drop Vite's copy of
     // the file itself and let its importers, like those lists, update as usual. Edits to a
     // file are left to Vite's normal hot reload.
     hotUpdate({ type, file, modules }) {

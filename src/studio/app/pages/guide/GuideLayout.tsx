@@ -15,7 +15,7 @@ function groupBySection(pages: GuidePage[]) {
   return groups;
 }
 
-// The Guide: a sidebar of pages (from src/guide/, via the manifest) and the open page.
+// The Guide: a sidebar of pages (from src/studio/guide/, via the manifest) and the open page.
 export default function GuideLayout() {
   const { guide } = rootApi.useLoaderData();
   return (

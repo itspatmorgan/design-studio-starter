@@ -1,4 +1,4 @@
-// Checks that file types stay removable (src/fileTypes/README.md):
+// Checks that file types stay removable (src/studio/fileTypes/README.md):
 //   - nothing outside a type's folder imports from it, and types don't import each other, so
 //     deleting a folder leaves nothing broken. Core reads types through the registries
 //     (src/studio/app/data/fileTypes.ts, scripts/lib/file-types.js).
@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const TYPES = path.join(ROOT, 'src', 'fileTypes');
+const TYPES = path.join(ROOT, 'src', 'studio', 'fileTypes');
 const ids = fs.readdirSync(TYPES, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
 
 // Source files, not prototypes (those are checked by the import guard) or dependencies.

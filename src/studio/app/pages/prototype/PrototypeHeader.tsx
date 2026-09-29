@@ -130,7 +130,7 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-40">
                   {/* One menu for everything you can make in a prototype: each installed file type
-                      (src/fileTypes/) that has a template, and folders. */}
+                      (src/studio/fileTypes/) that has a template, and folders. */}
                   {creatableTypes.map((t) => (
                     <DropdownMenuItem key={t.id} onClick={() => setTimeout(() => onNew(t.id))}><HugeiconsIcon icon={t.icon} /> New {t.label.toLowerCase()}</DropdownMenuItem>
                   ))}
