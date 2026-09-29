@@ -72,14 +72,14 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
     try {
       await applyRename({ title });
     } catch (e) {
-      toast.add({ type: 'error', title: "Couldn't rename it", description: (e as Error).message });
+      toast.add({ type: 'error', title: (e as Error).message });
     }
   }
 
   const copyLink = () => {
     const href = router.buildLocation(prototypeLink(proto)).href;
     navigator.clipboard.writeText(new URL(href, location.origin).href);
-    toast.add({ type: 'success', title: 'Link copied' });
+    toast.add({ title: 'Link copied' });
   };
 
   const actions: Action[] = [

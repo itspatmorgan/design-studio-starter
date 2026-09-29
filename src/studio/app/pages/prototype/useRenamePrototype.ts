@@ -24,7 +24,7 @@ export function useRenamePrototype(proto: Prototype) {
     }
     await router.invalidate();
     if (result.prototype !== proto.id) {
-      toast.add({ type: 'info', title: 'Renamed', description: `Its link is now /${proto.contributorKey}/${result.prototype}` });
+      toast.add({ title: `Its link is now /${proto.contributorKey}/${result.prototype}` });
     }
   };
 }

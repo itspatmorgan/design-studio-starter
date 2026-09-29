@@ -123,11 +123,10 @@ export const studio: DesignSystem = {
           ))}
         </>
       ) },
-      { name: 'Toast', file: 'toast.tsx', description: 'A brief message in the corner, like "Saved" or "Link copied". Call toast.add() from anywhere.', demo: () => (
+      { name: 'Toast', file: 'toast.tsx', description: `A one-line message in the corner, like "Saved" or "Link copied". Call toast.add({ title }) from anywhere; add type: 'error' for a failure.`, demo: () => (
         <>
-          <Button variant="outline" onClick={() => toast.add({ type: 'success', title: 'Saved', description: 'lofi/main.tsx' })}>Success</Button>
-          <Button variant="outline" onClick={() => toast.add({ type: 'error', title: "Couldn't rename it", description: 'Something named “main.tsx” already exists here.' })}>Error</Button>
-          <Button variant="outline" onClick={() => toast.add({ type: 'info', title: 'Renamed', description: 'Its link is now /patrick/checkout-flow' })}>Info</Button>
+          <Button variant="outline" onClick={() => toast.add({ title: 'Link copied' })}>Message</Button>
+          <Button variant="outline" onClick={() => toast.add({ type: 'error', title: 'Something named “main.tsx” already exists here.' })}>Error</Button>
         </>
       ) },
       { name: 'Command', file: 'command.tsx', description: 'A searchable list of actions. The ⌘K palette is built on it.', demo: CommandDemo },

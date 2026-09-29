@@ -199,10 +199,6 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
 
   // Runs a change, then takes the new manifest. If it moved or removed the open view, go to
   // its new place (or the prototype's first view) first, so the old address is never reloaded.
-  const failure: Record<FileOp['op'], string> = {
-    create: "Couldn't create it", rename: "Couldn't rename it", move: "Couldn't move it",
-    delete: "Couldn't delete it", meta: "Couldn't update the prototype",
-  };
   async function run(op: FileOp) {
     // What a delete removed, named the way the tree shows it, for the message after.
     const base = 'path' in op ? op.path.split('/').pop() ?? '' : '';
@@ -219,11 +215,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
       await router.invalidate();
       reload();
       if (result.trashedTo) {
-        toast.add({
-          type: 'success',
-          title: result.trashedTo === 'the Trash' ? 'Moved to the Trash' : `Moved to ${result.trashedTo} in the repo`,
-          description: result.trashedTo === 'the Trash' ? deleted : `${deleted}. This computer has no Trash.`,
-        });
+        toast.add({ title: `Moved “${deleted}” to ${result.trashedTo === 'the Trash' ? 'the Trash' : `${result.trashedTo} (no Trash on this computer)`}` });
       }
       return result;
     } catch (e) {
@@ -232,7 +224,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
       const clash = message.match(/“(.+?)”/)?.[1];
       const named = (list: FileNode[], name: string): boolean => list.some((n) => n.name === name || named(n.children ?? [], name));
       const hint = clash && files && named(files, clash) && !named(nodes, clash) ? " It's hidden: choose Show all files in the … menu." : '';
-      toast.add({ type: 'error', title: failure[op.op], description: message + hint });
+      toast.add({ type: 'error', title: message + hint });
     }
   }
 
@@ -310,7 +302,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
           )}
           <ContextMenuSeparator />
           <ContextMenuItem onClick={() => setTimeout(() => revealInFinder(proto, node.path))}><HugeiconsIcon icon={Folder01Icon} /> Reveal in Finder</ContextMenuItem>
-          <ContextMenuItem onClick={() => setTimeout(() => { navigator.clipboard.writeText(repoPath(proto, node.path)); toast.add({ type: 'success', title: 'Path copied', description: repoPath(proto, node.path) }); })}><HugeiconsIcon icon={Copy01Icon} /> Copy path</ContextMenuItem>
+          <ContextMenuItem onClick={() => setTimeout(() => { navigator.clipboard.writeText(repoPath(proto, node.path)); toast.add({ title: 'Path copied' }); })}><HugeiconsIcon icon={Copy01Icon} /> Copy path</ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
     );

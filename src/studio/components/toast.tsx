@@ -1,6 +1,7 @@
 // App UI toast: shadcn's Toast, built on Base UI (https://base-ui.com/react/components/toast).
 // <Toaster /> is mounted once (shell/App.tsx); anywhere else, import { toast } and call
-// toast.add({ title, description, type: "success" | "error" | "info", timeout }).
+// toast.add({ title }) for a one-line message. This app adds type: "error" (a red icon) for
+// failures and no icon otherwise; it doesn't use description.
 import * as React from "react"
 import { Toast as ToastPrimitive } from "@base-ui/react/toast"
 import { cn } from "@/lib/utils"

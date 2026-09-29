@@ -126,10 +126,10 @@ export default function SourcePane({ proto, item }: { proto: Prototype; item: It
       disk.current = { content, version };
       dirty.current = v.state.doc.toString() !== content;
       setIsDirty(dirty.current);
-      toast.add({ type: 'success', title: 'Saved', description: item.path, timeout: 2000 });
+      toast.add({ title: 'Saved', timeout: 2000 });
     } catch (e) {
       if (e instanceof SourceChanged) setConflict(await readSource(proto, item.path).catch(() => null));
-      else toast.add({ type: 'error', title: "Couldn't save it", description: (e as Error).message });
+      else toast.add({ type: 'error', title: (e as Error).message });
     } finally {
       setSaving(false);
     }
