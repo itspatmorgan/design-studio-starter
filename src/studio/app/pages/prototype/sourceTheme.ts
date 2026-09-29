@@ -23,7 +23,8 @@ const flexoki = (mode: 'light' | 'dark') => Object.fromEntries(Object.entries({
 
 const layout = EditorView.theme({
   '&': { ...flexoki('light'), height: '100%', backgroundColor: 'var(--background)', color: 'var(--foreground)', fontSize: '13px' },
-  '.dark &': flexoki('dark'),
+  // colorScheme makes native controls (the search panel's checkboxes) follow dark mode.
+  '.dark &': { ...flexoki('dark'), colorScheme: 'dark' },
   '&.cm-focused': { outline: 'none' },
   '.cm-scroller': { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', lineHeight: '1.65' },
   '.cm-content': { caretColor: 'var(--foreground)', padding: '12px 0' },
@@ -34,9 +35,42 @@ const layout = EditorView.theme({
   '.cm-activeLineGutter': { backgroundColor: 'transparent', color: 'var(--foreground)' },
   '&.cm-focused .cm-selectionBackground, .cm-selectionBackground': { backgroundColor: 'color-mix(in oklab, var(--fx-blue) 22%, transparent)' },
   '.cm-matchingBracket': { backgroundColor: 'color-mix(in oklab, var(--fx-blue) 22%, transparent)', outline: 'none' },
-  '.cm-panels': { backgroundColor: 'var(--muted)', color: 'var(--foreground)', borderColor: 'var(--border)' },
-  '.cm-panels input, .cm-panels button': { fontSize: '12px' },
+  // The search panel (⌘F), restyled from CodeMirror's light-only defaults to match the app's
+  // inputs and buttons.
+  '.cm-panels': { backgroundColor: 'var(--background)', color: 'var(--foreground)' },
+  '.cm-panels-top': { borderBottom: '1px solid var(--border)' },
+  '.cm-panel.cm-search': { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', padding: '10px 44px 10px 16px', fontSize: '12px' },
+  '.cm-panel.cm-search br': { flexBasis: '100%', height: '0', margin: '-2px 0 0' },
+  '.cm-panel.cm-search .cm-textfield': {
+    boxSizing: 'border-box', width: '220px', height: '28px', margin: '0', padding: '0 10px',
+    backgroundColor: 'transparent', color: 'var(--foreground)', fontSize: '12px',
+    border: '1px solid var(--input)', borderRadius: 'var(--radius-md)', outline: 'none',
+  },
+  '.dark & .cm-panel.cm-search .cm-textfield': { backgroundColor: 'color-mix(in oklab, var(--input) 30%, transparent)' },
+  '.cm-panel.cm-search .cm-textfield::placeholder': { color: 'var(--muted-foreground)' },
+  '.cm-panel.cm-search .cm-textfield:focus': {
+    borderColor: 'var(--ring)', boxShadow: '0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent)',
+  },
+  '.cm-panel.cm-search .cm-button': {
+    boxSizing: 'border-box', height: '28px', margin: '0', padding: '0 10px',
+    backgroundImage: 'none', backgroundColor: 'var(--background)', color: 'var(--foreground)',
+    fontSize: '12px', fontWeight: '500', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)',
+    cursor: 'pointer', textTransform: 'none',
+  },
+  '.dark & .cm-panel.cm-search .cm-button': { backgroundColor: 'color-mix(in oklab, var(--input) 30%, transparent)' },
+  '.cm-panel.cm-search .cm-button:hover, .cm-panel.cm-search .cm-button:active': { backgroundImage: 'none', backgroundColor: 'var(--muted)' },
+  '.cm-panel.cm-search .cm-button:focus-visible': { outline: 'none', borderColor: 'var(--ring)', boxShadow: '0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent)' },
+  '.cm-panel.cm-search label': { display: 'inline-flex', alignItems: 'center', gap: '6px', margin: '0', color: 'var(--muted-foreground)', fontSize: '12px', cursor: 'pointer' },
+  '.cm-panel.cm-search label:hover': { color: 'var(--foreground)' },
+  '.cm-panel.cm-search input[type=checkbox]': { width: '14px', height: '14px', margin: '0', accentColor: 'var(--primary)' },
+  '.cm-panel.cm-search [name=close]': {
+    position: 'absolute', top: '10px', right: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    width: '28px', height: '28px', margin: '0', padding: '0', fontSize: '18px', lineHeight: '1',
+    backgroundColor: 'transparent', color: 'var(--muted-foreground)', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer',
+  },
+  '.cm-panel.cm-search [name=close]:hover': { backgroundColor: 'var(--muted)', color: 'var(--foreground)' },
   '.cm-searchMatch': { backgroundColor: 'color-mix(in oklab, var(--fx-yellow) 30%, transparent)' },
+  '.cm-searchMatch.cm-searchMatch-selected': { backgroundColor: 'color-mix(in oklab, var(--fx-orange) 45%, transparent)' },
 });
 
 const quiet = 'var(--muted-foreground)';
