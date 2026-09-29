@@ -10,54 +10,14 @@ import { useBlocker } from '@tanstack/react-router';
 import { EditorState, type Extension } from '@codemirror/state';
 import { EditorView, drawSelection, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
-import { bracketMatching, HighlightStyle, indentOnInput, syntaxHighlighting } from '@codemirror/language';
+import { bracketMatching, indentOnInput } from '@codemirror/language';
 import { search, searchKeymap } from '@codemirror/search';
-import { tags as t } from '@lezer/highlight';
 import { FILE_TYPES } from '@/studio/app/data/fileTypes';
 import { readSource, SourceChanged, useMe, writeSource } from '@/studio/app/data/files';
 import type { Item, Prototype } from '@/studio/app/data/types';
 import { Button } from '@/studio/components/button';
+import { sourceTheme } from '@/studio/app/pages/prototype/sourceTheme';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
-
-// The app's own theme colors, so it follows light and dark mode and the shadcn theme.
-const theme = EditorView.theme({
-  '&': { height: '100%', backgroundColor: 'var(--background)', color: 'var(--foreground)', fontSize: '13px' },
-  '&.cm-focused': { outline: 'none' },
-  '.cm-scroller': { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', lineHeight: '1.65' },
-  '.cm-content': { caretColor: 'var(--foreground)', padding: '12px 0' },
-  '.cm-line': { padding: '0 16px' },
-  '.cm-cursor': { borderLeftColor: 'var(--foreground)' },
-  '.cm-gutters': { backgroundColor: 'var(--background)', color: 'var(--muted-foreground)', border: 'none' },
-  '.cm-activeLine': { backgroundColor: 'color-mix(in oklab, var(--muted) 60%, transparent)' },
-  '.cm-activeLineGutter': { backgroundColor: 'transparent', color: 'var(--foreground)' },
-  '&.cm-focused .cm-selectionBackground, .cm-selectionBackground': { backgroundColor: 'color-mix(in oklab, var(--primary) 18%, transparent)' },
-  '.cm-matchingBracket': { backgroundColor: 'color-mix(in oklab, var(--primary) 18%, transparent)', outline: 'none' },
-  '.cm-panels': { backgroundColor: 'var(--muted)', color: 'var(--foreground)', borderColor: 'var(--border)' },
-  '.cm-panels input, .cm-panels button': { fontSize: '12px' },
-  '.cm-searchMatch': { backgroundColor: 'color-mix(in oklab, var(--chart-4) 30%, transparent)' },
-});
-
-// Syntax colors from the theme's chart colors, so there are no new tokens to keep in step.
-const highlight = HighlightStyle.define([
-  // First, so it is the weakest: a quote's text keeps its own styles (code, bold), which come later.
-  { tag: t.quote, color: 'var(--muted-foreground)', fontStyle: 'italic' },
-  { tag: [t.keyword, t.controlKeyword, t.moduleKeyword, t.operatorKeyword], color: 'var(--chart-1)' },
-  { tag: [t.string, t.special(t.string), t.regexp], color: 'var(--chart-2)' },
-  { tag: [t.number, t.bool, t.null, t.atom], color: 'var(--chart-4)' },
-  { tag: [t.typeName, t.className, t.tagName, t.angleBracket], color: 'var(--chart-3)' },
-  { tag: [t.definition(t.variableName), t.function(t.variableName), t.propertyName], color: 'var(--foreground)', fontWeight: '500' },
-  { tag: [t.comment, t.meta], color: 'var(--muted-foreground)', fontStyle: 'italic' },
-  { tag: [t.punctuation, t.separator, t.bracket, t.processingInstruction], color: 'var(--muted-foreground)' },
-  { tag: t.heading, fontWeight: '600', color: 'var(--chart-1)' },
-  { tag: t.strong, fontWeight: '600' },
-  { tag: t.emphasis, fontStyle: 'italic' },
-  { tag: [t.link, t.url], color: 'var(--chart-2)' },
-  { tag: t.monospace, color: 'var(--chart-2)' },
-  { tag: t.attributeName, color: 'var(--chart-4)' },
-  { tag: t.contentSeparator, color: 'var(--muted-foreground)' },
-  { tag: t.strikethrough, color: 'var(--muted-foreground)', textDecoration: 'line-through' },
-  { tag: t.labelName, color: 'var(--chart-4)' },
-]);
 
 // The file type's syntax, loaded when it's needed.
 async function languageExtension(language: 'tsx' | 'markdown'): Promise<Extension> {
@@ -117,7 +77,7 @@ export default function SourcePane({ proto, item }: { proto: Prototype; item: It
           extensions: [
             lineNumbers(), highlightActiveLine(), highlightActiveLineGutter(), drawSelection(),
             history(), bracketMatching(), indentOnInput(), search({ top: true }),
-            syntaxHighlighting(highlight), theme, language,
+            sourceTheme, language,
             ...(FILE_TYPES[item.fileType].language === 'markdown' ? [EditorView.lineWrapping] : []),
             EditorState.readOnly.of(!editable),
             EditorView.editable.of(editable),

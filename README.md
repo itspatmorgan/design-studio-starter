@@ -75,3 +75,5 @@ src/prototypes/        one folder per contributor
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+The Source view's syntax colors are [Flexoki](https://stephango.com/flexoki) by Steph Ango (MIT).
