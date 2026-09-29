@@ -5,7 +5,7 @@ import { assertUniqueExtensions, matchFileType, type FileTypeSpec } from '@/stud
 import type { FileTypeModule } from '@/studio/app/data/fileTypeModule';
 
 // The folder name is the type's id: /studio/fileTypes/view/type.ts → "view".
-const idOf = (path: string) => path.split('/')[2];
+const idOf = (path: string) => path.split('/').at(-2)!;
 
 const specs = import.meta.glob<FileTypeSpec>('/studio/fileTypes/*/type.ts', { eager: true, import: 'default' });
 const modules = import.meta.glob<FileTypeModule>('/studio/fileTypes/*/module.tsx', { eager: true, import: 'default' });
