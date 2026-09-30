@@ -2,6 +2,7 @@ import { PortalContext } from '@/lib/portal';
 import type { DesignSystem } from '@/studio/app/data/types';
 import { useEffect, useRef, useState, type ReactNode, type Ref } from 'react';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { KNOWN_COLORS, type ThemeToken } from '@/studio/themeTokens';
 
 // Shared building blocks for the Systems page. Everything here reads live values
@@ -60,21 +61,22 @@ export function Prose({ children }: Children) {
 
 // --- Colors -----------------------------------------------------------------
 
-// One row per color token. A token shadcn/ui defines shows what it's for and its Tailwind class;
-// any other just shows its name and value.
+// One line per color token: a swatch, its name, what it's for, and its value. A token shadcn/ui
+// defines shows its purpose and, on hover, the Tailwind class that uses it; any other just shows
+// its name and value.
 export function TokenRow({ name, utility, role }: { name: string; utility?: string; role?: string }) {
   const [ref, value] = useComputed((s) => s.getPropertyValue(`--${name}`).trim());
   return (
-    <div ref={ref} className="flex items-center gap-3 py-1.5">
-      <div className="h-7 w-10 shrink-0 rounded border border-border" style={{ background: `var(--${name})` }} data-swatch={name} />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-baseline gap-2">
-          <code className="text-[13px] text-foreground">--{name}</code>
-          {utility && <code className="truncate text-[12px] text-muted-foreground">{utility}</code>}
-        </div>
-        {role && <p className="truncate text-[12px] text-muted-foreground">{role}</p>}
-      </div>
-      <code className="shrink-0 text-right text-[12px] text-muted-foreground" data-token={name} data-value={value ?? ''}>{value || 'not set'}</code>
+    <div ref={ref} className="grid grid-cols-[2.5rem_minmax(0,15rem)_minmax(0,1fr)_minmax(0,12rem)] items-center gap-3 py-1.5">
+      <div className="h-7 w-10 rounded border border-border" style={{ background: `var(--${name})` }} data-swatch={name} />
+      {utility ? (
+        <Tooltip>
+          <TooltipTrigger render={<code tabIndex={0} className="cursor-help truncate text-[13px] text-foreground underline decoration-muted-foreground/50 decoration-dotted underline-offset-4 outline-none focus-visible:decoration-foreground" />}>--{name}</TooltipTrigger>
+          <TooltipContent side="top" className="font-mono text-xs">{utility}</TooltipContent>
+        </Tooltip>
+      ) : <code className="truncate text-[13px] text-foreground">--{name}</code>}
+      <span className="truncate text-[13px] text-muted-foreground">{role}</span>
+      <code className="truncate text-right text-[12px] text-muted-foreground" data-token={name} data-value={value ?? ''} title={value ?? ''}>{value || 'not set'}</code>
     </div>
   );
 }
