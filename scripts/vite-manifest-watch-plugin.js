@@ -14,6 +14,8 @@ const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 const GUIDE = path.join(ROOT, 'src', 'studio', 'guide');
 const CONTRIBUTORS = path.join(ROOT, 'contributors.json');
+// The Handbook's map reads it (src/studio/handbookMap.ts).
+const AGENTS = path.join(ROOT, 'AGENTS.md');
 const BATCH_MS = 50;
 
 // The last manifest sent to the app. The files plugin publishes right after its own changes
@@ -30,7 +32,7 @@ const inside = (dir, file) => file === dir || file.startsWith(dir + path.sep);
 // for meta.json, Guide frontmatter, and contributor names. Edits to a view's code are
 // left to Vite's hot reload.
 function relevant(file, kind) {
-  if (file === CONTRIBUTORS) return true;
+  if (file === CONTRIBUTORS || file === AGENTS) return true;
   if (inside(GUIDE, file)) return file.endsWith('.md');
   if (inside(HANDBOOK, file)) return kind !== 'change';
   if (!inside(PROTOS, file)) return false;
@@ -42,7 +44,7 @@ export default function manifestWatch() {
     name: 'prototype-manifest-watch',
     apply: 'serve',
     configureServer(server) {
-      server.watcher.add([PROTOS, HANDBOOK, GUIDE, CONTRIBUTORS]);
+      server.watcher.add([PROTOS, HANDBOOK, GUIDE, CONTRIBUTORS, AGENTS]);
       let timer = null;
       const flush = () => {
         timer = null;

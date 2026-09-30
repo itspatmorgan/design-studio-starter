@@ -5,7 +5,7 @@ The Handbook (`src/handbook/`) is the team's context and instructions: docs, rul
 - **It's platform.** Describe the change and ask the person before making it. Anyone can make it on a branch and open a pull request; the maintainer decides what merges.
 - **Its shape is fixed; what's inside is open.** Only `docs/`, `rules/`, and `skills/` sit at the top. `pnpm dev` warns, and `pnpm build` fails, on a file or folder out of place.
 - **`docs/`** is Markdown pages for people and agents: principles, personas, research notes. Folders are fine. Give each page a `title` in its frontmatter.
-- **`rules/`** is Markdown files of standing instructions, each short and about one thing. If a rule should be read every session, or when a certain task comes up, add one line to `AGENTS.md` saying so. `AGENTS.md` only routes: keep the detail in the rule.
+- **`rules/`** is Markdown files of standing instructions, each short and about one thing. If a rule should be read every session, or when a certain task comes up, add one line to `AGENTS.md` saying so. `AGENTS.md` only routes: keep the detail in the rule. The Handbook's map (`/handbook/map`) is drawn from those lines, and the build warns about a rule nothing links to, since no agent would read it.
 - **`skills/<name>/SKILL.md`** is one folder per skill, in the [Agent Skills format](https://agentskills.io/specification). The frontmatter has two required fields:
   - `name`: the same as the folder's name. Lowercase letters, numbers, and single hyphens, up to 64 characters.
   - `description`: what the skill does and when to use it, up to 1024 characters. Agents read only this to decide whether to use the skill, so include the words a person would use to ask for it.

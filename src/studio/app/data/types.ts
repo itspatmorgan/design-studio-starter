@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { ComponentSpec, TypeSampleSpec } from '@/studio/app/pages/systems/foundations';
+import type { HandbookMap } from '@/studio/handbookMap';
 
 
 // public/prototypes/manifest.json, written by scripts/build-manifest.js.
@@ -31,7 +32,8 @@ export type GuidePage = {
 
 // `handbook` holds the Handbook's sections (src/handbook/, see src/studio/roots.ts), shaped like
 // prototypes.
-export type Manifest = { prototypes: Prototype[]; guide: GuidePage[]; handbook: Prototype[] };
+// `handbookMap` is how an agent reads the Handbook, worked out from the files (handbookMap.ts).
+export type Manifest = { prototypes: Prototype[]; guide: GuidePage[]; handbook: Prototype[]; handbookMap: HandbookMap | null };
 
 // One tab on the Systems page.
 export type DesignSystem = {

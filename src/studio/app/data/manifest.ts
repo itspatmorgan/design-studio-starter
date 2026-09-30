@@ -8,7 +8,7 @@ export const setManifest = (m: Manifest) => { manifest = Promise.resolve(m); };
 export function loadManifest(): Promise<Manifest> {
   manifest ??= fetch(`${import.meta.env.BASE_URL}prototypes/manifest.json`)
     .then((r) => r.json() as Promise<Manifest>)
-    .catch(() => ({ prototypes: [], guide: [], handbook: [] }));
+    .catch(() => ({ prototypes: [], guide: [], handbook: [], handbookMap: null }));
   return manifest;
 }
 

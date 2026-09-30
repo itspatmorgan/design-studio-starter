@@ -8,6 +8,7 @@ import { HANDBOOK_KEY, HANDBOOK_SECTIONS } from '../src/studio/roots.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { frontmatter } from './lib/frontmatter.js';
 import { handbookProblems } from './lib/handbook-check.js';
+import { handbookMap } from '../src/studio/handbookMap.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -123,6 +124,35 @@ export function buildManifest() {
     }
   }
 
+  // The Handbook's map: what an agent reads, in order, from AGENTS.md, the rules, and the skills
+  // (src/studio/handbookMap.ts). A link to a file that isn't there is a problem; a rule nothing
+  // links to is a warning, since no agent will ever read it.
+  let map = null;
+  if (handbook.length) {
+    const rulesDir = path.join(HANDBOOK, 'rules');
+    const rules = {};
+    const collect = (dir, base = '') => {
+      for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (e.name.startsWith('.')) continue;
+        if (e.isDirectory()) collect(path.join(dir, e.name), `${base}${e.name}/`);
+        else if (e.isFile() && e.name.endsWith('.md')) rules[base + e.name] = fs.readFileSync(path.join(dir, e.name), 'utf8');
+      }
+    };
+    if (fs.existsSync(rulesDir)) collect(rulesDir);
+    const skillsDir = path.join(HANDBOOK, 'skills');
+    const skills = fs.existsSync(skillsDir)
+      ? fs.readdirSync(skillsDir, { withFileTypes: true }).filter((e) => e.isDirectory() && !e.name.startsWith('.') && fs.existsSync(path.join(skillsDir, e.name, 'SKILL.md')))
+        .map((e) => {
+          const fm = frontmatter(fs.readFileSync(path.join(skillsDir, e.name, 'SKILL.md'), 'utf8')) ?? {};
+          return { folder: e.name, name: String(fm.name ?? e.name), description: String(fm.description ?? '') };
+        })
+      : [];
+    const agentsFile = path.join(ROOT, 'AGENTS.md');
+    map = handbookMap({ agents: fs.existsSync(agentsFile) ? fs.readFileSync(agentsFile, 'utf8') : null, rules, skills });
+    for (const file of map.missing) { console.error(`[manifest] AGENTS.md links to ${file}, which isn't there. Fix the link, or add the file.`); errors++; }
+    for (const rule of map.unrouted) console.warn(`[manifest] src/handbook/rules/${rule}: nothing links to this rule, so no agent will read it. Add a line for it to AGENTS.md.`);
+  }
+
   // Each prototype system's theme.css may only set values under its own class, like
   // .product-theme, so it can't leak into the app UI or another system.
   for (const [id, sys] of Object.entries(PROTOTYPE_SYSTEMS)) {
@@ -152,7 +182,7 @@ export function buildManifest() {
   guide.sort((a, b) => a.order - b.order);
 
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
-  const manifest = { prototypes, guide: guide.map(({ order, ...page }) => page), handbook };
+  const manifest = { prototypes, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map };
   fs.writeFileSync(OUT, JSON.stringify(manifest, null, 2) + '\n');
   console.log(`[manifest] ${prototypes.length} prototype(s), ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
   return { manifest, errors };

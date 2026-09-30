@@ -7,6 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { descriptionProblem, nameProblem, skillProblems } from './skills.ts';
 import { creatableIn, opProblem } from './handbookRules.ts';
+import { handbookMap } from './handbookMap.ts';
 import { handbookProblems } from '../../scripts/lib/handbook-check.js';
 import { frontmatter } from '../../scripts/lib/frontmatter.js';
 
@@ -106,4 +107,33 @@ test('changes stay inside the Handbook\'s shape', () => {
   for (const op of ['rename', 'move', 'delete']) assert.notEqual(opProblem('skills', { op, path: 'review/SKILL.md', name: 'x', to: 'y' }, false), null, op);
   assert.equal(opProblem('skills', { op: 'rename', path: 'review/notes/SKILL.md', name: 'x' }, false), null);
   assert.notEqual(opProblem('docs', { op: 'meta' }, false), null);
+});
+
+test('the map: what an agent reads, in order, from the real files', () => {
+  const agents = [
+    '# Starter',
+    "If `node_modules/` doesn't exist, or the person is new, follow [setup](src/handbook/skills/setup/SKILL.md) first.",
+    '',
+    'At the start of every session, read:',
+    '- [systems](src/handbook/rules/systems.md)',
+    '- [workflow](src/handbook/rules/workflow.md)',
+    '',
+    'When the person asks for a canvas (a page of views), read [canvases](src/handbook/rules/canvases.md).',
+    'Also see [gone](src/handbook/rules/gone.md) and [nope](src/handbook/skills/nope/SKILL.md).',
+  ].join('\n');
+  const map = handbookMap({
+    agents,
+    rules: { 'systems.md': '# Systems', 'workflow.md': 'See [the canvas rule](canvases.md) and [scope](sub/scope.md).', 'canvases.md': '# C', 'sub/scope.md': 'Back to [systems](../systems.md).', 'orphan.md': '# Nobody links here' },
+    skills: [{ folder: 'setup', name: 'setup', description: 'Sets up.' }, { folder: 'review', name: 'review', description: 'Reviews.' }],
+  });
+  assert.deepEqual(map.always, ['systems.md', 'workflow.md']);
+  assert.deepEqual(map.onDemand, [{ path: 'canvases.md', when: 'the person asks for a canvas (a page of views)' }]);
+  assert.deepEqual(map.via, [{ path: 'sub/scope.md', from: 'workflow.md' }]);
+  assert.deepEqual(map.unrouted, ['orphan.md']);
+  assert.deepEqual(map.missing, ['src/handbook/rules/gone.md', 'src/handbook/skills/nope/SKILL.md']);
+  assert.equal(map.skills.find((s) => s.folder === 'setup')?.when, "`node_modules/` doesn't exist, or the person is new".replace(/`/g, ''));
+  assert.equal(map.skills.find((s) => s.folder === 'review')?.when, undefined);
+  assert.equal(map.entry, true);
+  assert.equal(handbookMap({ agents: null, rules: { 'a.md': '' }, skills: [] }).entry, false);
+  assert.deepEqual(handbookMap({ agents: null, rules: { 'a.md': '' }, skills: [] }).unrouted, ['a.md']);
 });

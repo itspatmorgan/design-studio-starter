@@ -5,6 +5,7 @@
 //   /systems/$system, /systems/$system/$page  Systems (/systems opens the product system)
 //   /handbook                                opens the Handbook's first section (src/handbook/); each section,
 //                                            /handbook/docs, /handbook/rules, /handbook/skills, opens as a prototype does
+//   /handbook/map                            how an agent reads the Handbook, drawn from its files
 //   /guide, /guide/$page                     the Guide (pages in src/studio/guide/)
 //   /$contributor/$prototype                 a prototype, on its start item (or its first)
 //   /$contributor/$prototype/$               an item, by its path without the extension,
@@ -74,6 +75,16 @@ const systemPageRoute = createRoute({
   path: '$system/$page',
   head: ({ params }) => ({ meta: [{ title: systemsTitle(params.page, params.system) }] }),
   component: SystemsPage,
+});
+
+// The Handbook's map: how an agent reads the Handbook, drawn from its files. A page of its own
+// (not a mode of the open page), so it has an address: /handbook/map. "map" isn't a section.
+const HandbookMapPage = lazyRouteComponent(() => import('@/studio/app/pages/handbook/HandbookMap'));
+const handbookMapRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: 'handbook/map',
+  head: () => ({ meta: [{ title: `Map — Handbook — ${APP_NAME}` }] }),
+  component: HandbookMapPage,
 });
 
 // The Guide's sidebar, around whichever page is open.
@@ -199,6 +210,7 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   systemsRoute.addChildren([systemsIndexRoute, systemRoute, systemPageRoute]),
   handbookRoute,
+  handbookMapRoute,
   guideRoute.addChildren([guideIndexRoute, guidePageRoute]),
   prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]),
 ]);
