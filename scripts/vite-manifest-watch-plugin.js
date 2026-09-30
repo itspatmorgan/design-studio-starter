@@ -1,6 +1,6 @@
 // Keeps the manifest live during `pnpm dev`, without reloading the page.
 //
-// Vite already watches every file. When something under src/prototypes/, src/handbook/, or src/studio/guide/
+// Vite already watches every file. When something under src/prototypes/, src/handbook/, src/systems/, or src/studio/guide/
 // changes (from the app, an agent, or your editor), this rebuilds the manifest in-process
 // and pushes it to the app over Vite's dev connection. The app swaps it in and refreshes
 // only the routes that use it (see router.tsx), so the open view and scroll position stay.
@@ -13,6 +13,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 const GUIDE = path.join(ROOT, 'src', 'studio', 'guide');
+const SYSTEMS = path.join(ROOT, 'src', 'systems');
 const CONTRIBUTORS = path.join(ROOT, 'contributors.json');
 // The Handbook's map reads it (src/studio/handbookMap.ts).
 const AGENTS = path.join(ROOT, 'AGENTS.md');
@@ -35,6 +36,8 @@ function relevant(file, kind) {
   if (file === CONTRIBUTORS || file === AGENTS) return true;
   if (inside(GUIDE, file)) return file.endsWith('.md');
   if (inside(HANDBOOK, file)) return kind !== 'change';
+  // A system's component docs: files coming and going, and edits to the ones that describe a component.
+  if (inside(SYSTEMS, file)) return kind !== 'change' || /\.(md|examples\.[jt]sx)$/.test(file);
   if (!inside(PROTOS, file)) return false;
   return kind !== 'change' || path.basename(file) === 'meta.json';
 }
@@ -44,7 +47,7 @@ export default function manifestWatch() {
     name: 'prototype-manifest-watch',
     apply: 'serve',
     configureServer(server) {
-      server.watcher.add([PROTOS, HANDBOOK, GUIDE, CONTRIBUTORS, AGENTS]);
+      server.watcher.add([PROTOS, HANDBOOK, GUIDE, SYSTEMS, CONTRIBUTORS, AGENTS]);
       let timer = null;
       const flush = () => {
         timer = null;

@@ -8,6 +8,7 @@ import { HANDBOOK_KEY, HANDBOOK_SECTIONS } from '../src/studio/roots.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { frontmatter } from './lib/frontmatter.js';
 import { handbookProblems } from './lib/handbook-check.js';
+import { systemDocs } from './lib/system-docs.js';
 import { handbookMap } from '../src/studio/handbookMap.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -16,6 +17,8 @@ const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 const GUIDE = path.join(ROOT, 'src', 'studio', 'guide');
 const OUT = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
 // App page URLs, so they can't be contributor folders. Keep in sync with setup-contributor.js.
+// How many component doc gaps the build lists before summarizing the rest.
+const DOC_WARNINGS = 5;
 const RESERVED_KEYS = new Set(['systems', 'guide', HANDBOOK_KEY]);
 
 const dirs = (p) => fs.existsSync(p)
@@ -168,6 +171,21 @@ export function buildManifest() {
     }
   }
 
+  // Each system's components, and what their pages lack (src/studio/systemDocs.ts). By default a gap
+  // is a warning, and the first few are listed; a system with docs: 'strict' fails the build.
+  const systems = {};
+  for (const [id, sys] of Object.entries(PROTOTYPE_SYSTEMS)) {
+    const dir = path.join(ROOT, sys.dir, 'components');
+    const { components, problems } = systemDocs(dir);
+    systems[id] = { docs: sys.docs ?? 'warn', components };
+    const lines = problems.map((p) => `${path.relative(ROOT, path.join(dir, p.file))}: ${p.message}`);
+    if (sys.docs === 'strict') { for (const line of lines) console.error(`[manifest] ${line}`); errors += lines.length; }
+    else {
+      for (const line of lines.slice(0, DOC_WARNINGS)) console.warn(`[manifest] ${line}`);
+      if (lines.length > DOC_WARNINGS) console.warn(`[manifest] ${id}: and ${lines.length - DOC_WARNINGS} more component doc gap(s). Set docs: 'strict' in src/systems/index.ts to fail the build on them.`);
+    }
+  }
+
   // Guide pages: src/studio/guide/*.md, ordered by `order` in each page's frontmatter. They share
   // the title, description, and toc fields with prototype documents, and add order and section.
   const guide = [];
@@ -182,7 +200,7 @@ export function buildManifest() {
   guide.sort((a, b) => a.order - b.order);
 
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
-  const manifest = { prototypes, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map };
+  const manifest = { prototypes, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map, systems };
   fs.writeFileSync(OUT, JSON.stringify(manifest, null, 2) + '\n');
   console.log(`[manifest] ${prototypes.length} prototype(s), ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
   return { manifest, errors };
