@@ -54,7 +54,7 @@ function PropsTable({ props }: { props: PropDoc[] }) {
                 {p.description ? (
                   <Tooltip>
                     <TooltipTrigger render={<span tabIndex={0} className="cursor-help underline decoration-muted-foreground/50 decoration-dotted underline-offset-4 outline-none focus-visible:decoration-foreground" />}>{p.name}</TooltipTrigger>
-                    <TooltipContent side="right" className="max-w-xs font-sans">{p.description}</TooltipContent>
+                    <TooltipContent side="right" sideOffset={12} className="max-w-xs font-sans">{p.description}</TooltipContent>
                   </Tooltip>
                 ) : p.name}
                 {p.required && <span className="text-destructive" title="Required"> *</span>}
