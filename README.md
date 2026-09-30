@@ -59,7 +59,7 @@ The app uses TanStack Router's browser history, so URLs are clean paths like `/p
 
 ```
 AGENTS.md              agent entry point; points to src/handbook/rules/
-src/handbook/          the rules and skills for agents
+src/handbook/          the team's context and instructions: docs/, rules/, skills/
 .agents/skills, .claude/skills   symlinks to src/handbook/skills, so each agent finds the skills
 contributors.json      who owns which folder
 scripts/               manifest, create, scope check, Vite plugins (plain Node .js)
