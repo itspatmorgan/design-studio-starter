@@ -6,7 +6,7 @@
 // In dev, on your own prototypes, the "…" menu can edit its
 // info or delete it, and double-clicking the title renames it in place. Everywhere else, the
 // "…" menu copies its link and shows details.
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Delete02Icon, Folder01Icon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
@@ -24,11 +24,12 @@ import { useRenamePrototype } from '@/studio/app/pages/prototype/useRenameProtot
 import EditPrototypeDialog from '@/studio/app/pages/prototype/EditPrototypeDialog';
 import DeletePrototypeDialog from '@/studio/app/pages/prototype/DeletePrototypeDialog';
 import { NavHeader } from '@/studio/app/shell/nav';
+import { menuGroups } from '@/studio/app/shell/menuGroups';
 import { cn } from '@/lib/utils';
 
 const INFO_KEY = 'design-studio:prototype-info'; // "shown" | "hidden"
 
-type Action = { label: string; icon: typeof Link01Icon; onSelect: () => void; destructive?: boolean } | 'separator';
+type Action = { label: string; icon: typeof Link01Icon; onSelect: () => void; destructive?: boolean };
 
 // The title, renamed in place: Enter or leaving the field saves, Escape cancels.
 function TitleInput({ initial, onDone }: { initial: string; onDone: (title: string | null) => void }) {
@@ -83,19 +84,28 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
     toast.add({ title: 'Link copied' });
   };
 
-  const actions: Action[] = [
-    { label: showInfo ? 'Hide details' : 'Show details', icon: InformationCircleIcon, onSelect: toggleInfo },
-    ...(local ? [{ label: showAll ? 'Hide other files' : 'Show all files', icon: showAll ? ViewOffSlashIcon : ViewIcon, onSelect: toggleShowAll }] : []),
-    ...(editable ? [{ label: 'Edit info', icon: PencilEdit02Icon, onSelect: () => setEditing(true) }] : []),
-    { label: 'Copy link', icon: Link01Icon, onSelect: copyLink },
-    ...(local ? [{ label: 'Reveal in Finder', icon: Folder01Icon, onSelect: () => revealInFinder(proto, '') }] : []),
-    ...(editable ? ['separator' as const, { label: 'Delete prototype', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }] : []),
-  ];
+  // Grouped by what they do, with a line between groups: how this panel looks, find the prototype
+  // elsewhere, and change or delete it (the same order as the file menu). A group of one joins the next.
+  const groups = menuGroups<Action>([
+    [
+      { label: showInfo ? 'Hide details' : 'Show details', icon: InformationCircleIcon, onSelect: toggleInfo },
+      local && { label: showAll ? 'Hide other files' : 'Show all files', icon: showAll ? ViewOffSlashIcon : ViewIcon, onSelect: toggleShowAll },
+    ],
+    [
+      local && { label: 'Reveal in Finder', icon: Folder01Icon, onSelect: () => revealInFinder(proto, '') },
+      { label: 'Copy link', icon: Link01Icon, onSelect: copyLink },
+    ],
+    [editable && { label: 'Edit info', icon: PencilEdit02Icon, onSelect: () => setEditing(true) }],
+    [editable && { label: 'Delete prototype', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }],
+  ]);
   // Actions run after the menu has closed, so a dialog they open isn't closed by the same click.
   const menuItems = (Item: typeof DropdownMenuItem | typeof ContextMenuItem, Separator: typeof DropdownMenuSeparator) =>
-    actions.map((a, i) => (a === 'separator'
-      ? <Separator key={i} />
-      : <Item key={a.label} variant={a.destructive ? 'destructive' : 'default'} onClick={() => setTimeout(a.onSelect)}><HugeiconsIcon icon={a.icon} /> {a.label}</Item>));
+    groups.map((group, g) => (
+      <Fragment key={g}>
+        {g > 0 && <Separator />}
+        {group.map((a) => <Item key={a.label} variant={a.destructive ? 'destructive' : 'default'} onClick={() => setTimeout(a.onSelect)}><HugeiconsIcon icon={a.icon} /> {a.label}</Item>)}
+      </Fragment>
+    ));
 
   // Right-click anywhere on the header opens the same menu, in dev.
   const withContextMenu = (children: ReactNode) => (!local ? children : (

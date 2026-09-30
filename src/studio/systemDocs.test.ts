@@ -254,3 +254,13 @@ test('the shipped product theme is all colors and one radius', async () => {
   // Every one is a known shadcn token with a dark value of its own.
   assert.ok(tokens.filter((t) => t.group === 'colors').every((t) => t.subgroup && t.dark));
 });
+
+test('a menu\'s items are grouped: empty groups dropped, a group of one joined to the next', async () => {
+  const { menuGroups } = await import('./app/shell/menuGroups.ts');
+  // A file's menu, and a folder's: the same groups, with what doesn't apply left out.
+  assert.deepEqual(menuGroups([['open', 'reveal'], ['link', 'path'], ['start', 'rename'], ['delete']]), [['open', 'reveal'], ['link', 'path'], ['start', 'rename'], ['delete']]);
+  assert.deepEqual(menuGroups([[false, 'reveal'], [undefined, 'path'], [false, 'rename'], ['delete']]), [['reveal', 'path'], ['rename', 'delete']]);
+  assert.deepEqual(menuGroups([['details'], [null, 'link'], [false], [false]]), [['details', 'link']]);
+  assert.deepEqual(menuGroups([[false], []]), []);
+  assert.deepEqual(menuGroups([['only']]), [['only']]);
+});

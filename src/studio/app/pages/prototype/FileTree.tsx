@@ -39,6 +39,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@/studio/components/context-menu';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
+import { menuGroups } from '@/studio/app/shell/menuGroups';
 import { cn } from '@/lib/utils';
 
 const row = navRow;
@@ -318,7 +319,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
           )}
           {/* Grouped by what they do, with a line between groups: open it somewhere else, copy where it is,
               change it, and (last, alone) delete it. A group with nothing in it leaves no line. */}
-          {[
+          {menuGroups<ReactNode>([
             [
               !node.dir && <ContextMenuItem key="editor" onClick={() => setTimeout(() => openInEditor(proto, node.path))}><HugeiconsIcon icon={FileEditIcon} /> Open in editor</ContextMenuItem>,
               <ContextMenuItem key="reveal" onClick={() => setTimeout(() => revealInFinder(proto, node.path))}><HugeiconsIcon icon={Folder01Icon} /> Reveal in Finder</ContextMenuItem>,
@@ -338,19 +339,12 @@ export default function FileTree({ proto, current }: FileTreeProps) {
             [
               changeable && <ContextMenuItem key="delete" variant="destructive" onClick={() => setTimeout(() => setConfirmDelete(node))}><HugeiconsIcon icon={Delete02Icon} /> Delete</ContextMenuItem>,
             ],
-          ].map((group) => group.filter(Boolean)).filter((group) => group.length > 0)
-            // A group of one joins the next, so a short menu isn't cut into lines.
-            .reduce<ReactNode[][]>((groups, group) => {
-              const last = groups.at(-1);
-              if (last?.length === 1) { last.push(...group); return groups; }
-              return [...groups, [...group]];
-            }, [])
-            .map((group, i) => (
-              <Fragment key={i}>
-                {i > 0 && <ContextMenuSeparator />}
-                {group}
-              </Fragment>
-            ))}
+          ]).map((group, i) => (
+            <Fragment key={i}>
+              {i > 0 && <ContextMenuSeparator />}
+              {group}
+            </Fragment>
+          ))}
         </ContextMenuContent>
       </ContextMenu>
     );
