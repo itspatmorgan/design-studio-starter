@@ -1,24 +1,21 @@
 // Prototype navigation: everything about the prototype at the top (PrototypeHeader.tsx, or the
 // Docs / Rules / Skills tabs for a Handbook section), then its files (FileTree.tsx). Drag the right edge to resize it.
-import { useRef } from 'react';
 import type { Item, Prototype } from '@/studio/app/data/types';
 import { NAV_WIDTH, useSectionNavWidth } from '@/studio/app/shell/appPrefs';
 import PrototypeHeader from '@/studio/app/pages/prototype/PrototypeHeader';
 import HandbookHeader from '@/studio/app/pages/handbook/HandbookHeader';
 import { HANDBOOK_KEY } from '@/studio/roots';
-import FileTree, { type FileTreeHandle } from '@/studio/app/pages/prototype/FileTree';
+import FileTree from '@/studio/app/pages/prototype/FileTree';
 import { cn } from '@/lib/utils';
 
 export default function PrototypeNav({ proto, current }: { proto: Prototype; current: Item | undefined }) {
   const { width, resizing, handleProps } = useSectionNavWidth();
-  // The header's "+" menu creates in the tree.
-  const tree = useRef<FileTreeHandle>(null);
   return (
     <aside aria-label="Prototype navigation" style={{ width }} className="relative flex shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
       {proto.contributorKey === HANDBOOK_KEY
         ? <HandbookHeader proto={proto} />
-        : <PrototypeHeader proto={proto} onNew={(target) => tree.current?.startCreate('', target)} />}
-      <FileTree proto={proto} current={current} handle={tree} />
+        : <PrototypeHeader proto={proto} />}
+      <FileTree proto={proto} current={current} />
       {/* The resize handle: a thin strip over the right border that highlights on hover. */}
       <div
         role="separator"

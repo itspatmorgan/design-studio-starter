@@ -10,7 +10,7 @@
 // choose which item the prototype opens on (Set as start; it shows a star). Every change
 // is a plain file change, so agents see the same thing. On the deployed site, it lists the
 // prototype's items, from the manifest.
-import { useEffect, useImperativeHandle, useRef, useState, type DragEvent, type ReactNode, type Ref } from 'react';
+import { useEffect, useRef, useState, type DragEvent, type ReactNode } from 'react';
 import { Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
@@ -158,12 +158,9 @@ function IconButton({ label, onClick, pressed, children }: { label: string; onCl
   );
 }
 
-// What the prototype's header can ask of the tree: its "+" menu creates at the top level.
-export type FileTreeHandle = { startCreate: (parent: string, target: NewTarget) => void };
+type FileTreeProps = { proto: Prototype; current: Item | undefined };
 
-type FileTreeProps = { proto: Prototype; current: Item | undefined; handle?: Ref<FileTreeHandle> };
-
-export default function FileTree({ proto, current, handle }: FileTreeProps) {
+export default function FileTree({ proto, current }: FileTreeProps) {
   const { files, reload } = useFileTree(proto);
   const me = useMe();
   const router = useRouter();
@@ -253,8 +250,6 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
     if (parent) setOpen(parent, true);
     setEditing({ kind: 'create', parent, target });
   };
-  useImperativeHandle(handle, () => ({ startCreate }));
-
   // A new skill: the dialog has checked the name and description; the file layer checks them again
   // and writes the folder. Errors go back to the dialog.
   async function createSkill(name: string, description: string) {
@@ -458,29 +453,29 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
           <IconButton label={`Filter ${noun}`} pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
             <HugeiconsIcon icon={Search01Icon} size={14} />
           </IconButton>
-          {hasSource && (
-            <IconButton label={sourceOn ? 'Show preview' : 'Show source'} onClick={toggleSource}>
-              <HugeiconsIcon icon={sourceOn ? BrowserIcon : SourceCodeIcon} size={14} />
-            </IconButton>
-          )}
           {dirs.length > 0 && (
             <IconButton label={allOpen ? 'Collapse all' : 'Expand all'} onClick={() => setClosed(allOpen ? new Set(dirs) : new Set())}>
               <HugeiconsIcon icon={allOpen ? UnfoldLessIcon : UnfoldMoreIcon} size={14} />
             </IconButton>
           )}
+          {hasSource && (
+            <IconButton label={sourceOn ? 'Show preview' : 'Show source'} onClick={toggleSource}>
+              <HugeiconsIcon icon={sourceOn ? BrowserIcon : SourceCodeIcon} size={14} />
+            </IconButton>
+          )}
         </div>
-        {/* In the Handbook the header has no "+" (the tabs above are its sections), so making things is
-            here, with the file actions, and offers what the open section holds. It's always shown, and last, so the
-            actions that fade in and out sit to its left without moving it. It's the main action, and a section can be
+        {/* Making things is here, with the file actions, and offers what the open folder holds: a prototype's
+            file types and folders, or what a Handbook section allows. It's always shown, and last, so the actions
+            that fade in and out sit to its left without moving it. It's the main action, and a folder can be
             empty. With one thing to make (a skill), it's made directly. */}
-        {isHandbook && editable && (() => {
+        {editable && (() => {
           const options = newOptions('');
           if (options.length === 1) {
             return <IconButton label={options[0].label} onClick={() => startCreate('', options[0].target)}><HugeiconsIcon icon={Add01Icon} size={14} /></IconButton>;
           }
           return (
             <DropdownMenu>
-              <DropdownMenuTrigger aria-label="New" title={`New ${options.map((o) => o.label.replace('New ', '')).join(' or ')}`} className={iconButton}>
+              <DropdownMenuTrigger aria-label="New" title={options.length > 2 ? 'New' : `New ${options.map((o) => o.label.replace('New ', '')).join(' or ')}`} className={iconButton}>
                 <HugeiconsIcon icon={Add01Icon} size={14} />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="min-w-40">

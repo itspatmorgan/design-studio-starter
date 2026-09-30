@@ -1,18 +1,17 @@
 // The top of the prototype navigation: everything about the prototype, in one place.
-// Its title, a "+" menu for making new things in it, and a "…" menu (also on right-click).
+// Its title and a "…" menu (also on right-click). Making new things is in the file tree below.
 // Who made it, when, and its description are occasional reference, so they stay hidden until
 // you choose Show details.
 //
-// In dev, on your own prototypes, "+" creates views and folders, the "…" menu can edit its
+// In dev, on your own prototypes, the "…" menu can edit its
 // info or delete it, and double-clicking the title renames it in place. Everywhere else, the
 // "…" menu copies its link and shows details.
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Add01Icon, Delete02Icon, Folder01Icon, FolderAddIcon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
+import { Delete02Icon, Folder01Icon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
 import { revealInFinder, useMe } from '@/studio/app/data/files';
 import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
-import { creatableTypes } from '@/studio/app/data/fileTypes';
 import { formatDate, prototypeLink } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
@@ -50,7 +49,7 @@ function TitleInput({ initial, onDone }: { initial: string; onDone: (title: stri
   );
 }
 
-export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; onNew: (target: 'folder' | string) => void }) {
+export default function PrototypeHeader({ proto }: { proto: Prototype }) {
   const router = useRouter();
   const applyRename = useRenamePrototype(proto);
   const me = useMe();
@@ -119,24 +118,6 @@ export default function PrototypeHeader({ proto, onNew }: { proto: Prototype; on
               >
                 {proto.title}
               </h2>
-            )}
-            {editable && (
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  aria-label="New"
-                  className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground"
-                >
-                  <HugeiconsIcon icon={Add01Icon} size={14} />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-40">
-                  {/* One menu for everything you can make in a prototype: each installed file type
-                      (src/studio/fileTypes/) that has a template, and folders. */}
-                  {creatableTypes.map((t) => (
-                    <DropdownMenuItem key={t.id} onClick={() => setTimeout(() => onNew(t.id))}><HugeiconsIcon icon={t.icon} /> New {t.label.toLowerCase()}</DropdownMenuItem>
-                  ))}
-                  <DropdownMenuItem onClick={() => setTimeout(() => onNew('folder'))}><HugeiconsIcon icon={FolderAddIcon} /> New folder</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             )}
             <DropdownMenu>
               <DropdownMenuTrigger
