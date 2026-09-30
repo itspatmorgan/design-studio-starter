@@ -6,6 +6,7 @@ import remarkFrontmatter from 'remark-frontmatter';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkHtmlAsText from './scripts/remark-html-as-text.js';
+import remarkTitleFromHeading from './scripts/remark-title-from-heading.js';
 import rehypeSlug from 'rehype-slug';
 import rehypePrettyCode from 'rehype-pretty-code';
 import tailwindcss from '@tailwindcss/vite';
@@ -25,13 +26,13 @@ export default defineConfig({
   },
   plugins: [
     // Markdown pages (Guide pages in src/studio/guide/, and prototype documents), as plain
-    // Markdown (no JSX or expressions, so any .md file compiles; raw HTML shows as text): frontmatter, GitHub-style Markdown, heading ids, and code highlighting with Shiki in both color modes.
+    // Markdown (no JSX or expressions, so any .md file compiles; raw HTML shows as text): frontmatter (a first heading is the title when there's no `title`), GitHub-style Markdown, heading ids, and code highlighting with Shiki in both color modes.
     {
       enforce: 'pre',
       ...mdx({
         format: 'md',
         providerImportSource: '@mdx-js/react',
-        remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter, remarkGfm, remarkHtmlAsText],
+        remarkPlugins: [remarkFrontmatter, remarkTitleFromHeading, remarkMdxFrontmatter, remarkGfm, remarkHtmlAsText],
         rehypePlugins: [rehypeSlug, [rehypePrettyCode, { theme: { light: 'github-light', dark: 'github-dark' }, keepBackground: false }]],
       }),
     },

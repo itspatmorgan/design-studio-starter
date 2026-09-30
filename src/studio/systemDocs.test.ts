@@ -144,3 +144,23 @@ test('starter docs files sit next to the component and never break the checks', 
   assert.deepEqual(problems, []);
   assert.match(componentProblems(c, { doc: { frontmatter: { title: 'Icon button', description: '' }, body: '' }, examples: '' }).join('\n'), /description/);
 });
+
+test('a first heading is the title when the frontmatter has none', async () => {
+  const { default: plugin } = await import('../../scripts/remark-title-from-heading.js');
+  const h1 = (text: string) => ({ type: 'heading', depth: 1, children: [{ type: 'text', value: text }] });
+  const para = { type: 'paragraph', children: [{ type: 'text', value: 'x' }] };
+  const run = (children: unknown[]) => { const tree = { type: 'root', children }; plugin()(tree); return tree.children as { type: string; value?: string }[]; };
+  // No frontmatter: one is made from the heading, and the heading leaves the body.
+  let out = run([h1('Document a "component"'), para]);
+  assert.deepEqual(out.map((n) => n.type), ['yaml', 'paragraph']);
+  assert.equal(out[0].value, 'title: "Document a \\"component\\""');
+  // Frontmatter without a title gets one; with a title is left alone.
+  out = run([{ type: 'yaml', value: 'name: a\ndescription: b' }, h1('A'), para]);
+  assert.equal(out[0].value, 'name: a\ndescription: b\ntitle: "A"');
+  assert.equal(out.length, 2);
+  out = run([{ type: 'yaml', value: 'title: Mine' }, h1('A'), para]);
+  assert.deepEqual(out.map((n) => n.type), ['yaml', 'heading', 'paragraph']);
+  // Only a heading the file opens with counts, and only level 1.
+  assert.deepEqual(run([para, h1('A')]).map((n) => n.type), ['paragraph', 'heading']);
+  assert.deepEqual(run([{ type: 'heading', depth: 2, children: [{ type: 'text', value: 'A' }] }, para]).map((n) => n.type), ['heading', 'paragraph']);
+});

@@ -41,7 +41,7 @@ toc: true
 
 | Field | What it does |
 | --- | --- |
-| `title` | The page's heading |
+| `title` | The page's heading. Without it, a first `# Heading` in the text is used |
 | `description` | A line under the title |
 | `toc` | `true` adds an "On this page" list of its headings |
 
