@@ -16,7 +16,7 @@ export default function PrototypeNav({ proto, current }: { proto: Prototype; cur
   return (
     <aside aria-label="Prototype navigation" style={{ width }} className="relative flex shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
       {proto.contributorKey === HANDBOOK_KEY
-        ? <HandbookHeader proto={proto} onNew={(kind) => tree.current?.startCreate('', kind)} />
+        ? <HandbookHeader proto={proto} />
         : <PrototypeHeader proto={proto} onNew={(target) => tree.current?.startCreate('', target)} />}
       <FileTree proto={proto} current={current} handle={tree} />
       {/* The resize handle: a thin strip over the right border that highlights on hover. */}

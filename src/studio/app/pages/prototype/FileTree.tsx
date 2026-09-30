@@ -14,7 +14,7 @@ import { useEffect, useImperativeHandle, useRef, useState, type DragEvent, type 
 import { Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
+  Add01Icon, ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
   Folder01Icon, StarIcon, SourceCodeIcon, BrowserIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
@@ -25,7 +25,7 @@ import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { HELPER_FOLDER } from '@/studio/fileTypes';
 import { HANDBOOK_KEY } from '@/studio/roots';
 import { creatableIn, isSkillFile, isSkillFolder, opProblem } from '@/studio/handbookRules';
-import { NEW_KINDS } from '@/studio/app/pages/handbook/HandbookHeader';
+import { NEW_KINDS } from '@/studio/app/pages/handbook/newKinds';
 import NewSkillDialog from '@/studio/app/pages/handbook/NewSkillDialog';
 import { itemUrl } from '@/studio/app/items/itemLinks';
 import { creatableTypes, FILE_TYPES, fileTypeModules } from '@/studio/app/data/fileTypes';
@@ -34,6 +34,7 @@ import { Button } from '@/studio/components/button';
 import { Input } from '@/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { toast } from '@/studio/components/toast';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/studio/components/dropdown-menu';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@/studio/components/context-menu';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
@@ -452,6 +453,27 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
     <nav className="group/tree flex min-h-0 flex-1 flex-col space-y-1.5 overflow-y-auto px-2 pt-3 pb-3">
       <div className="flex h-7 shrink-0 items-center justify-between gap-1 px-2.5 pr-0.5">
         <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{live ? 'Files' : 'Pages'}</p>
+        {/* In the Handbook the header has no "+" (the tabs above are its sections), so making things is
+            here, with the file actions, and offers what the open section holds. It's always shown: it's the
+            main action, and a section can be empty. One thing to make, and it's made directly. */}
+        {isHandbook && editable && (() => {
+          const options = newOptions('');
+          if (options.length === 1) {
+            return <IconButton label={options[0].label} onClick={() => startCreate('', options[0].target)}><HugeiconsIcon icon={Add01Icon} size={14} /></IconButton>;
+          }
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger aria-label="New" title={`New ${options.map((o) => o.label.replace('New ', '')).join(' or ')}`} className={iconButton}>
+                <HugeiconsIcon icon={Add01Icon} size={14} />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-40">
+                {options.map((o) => (
+                  <DropdownMenuItem key={o.target} onClick={() => setTimeout(() => startCreate('', o.target))}><HugeiconsIcon icon={o.icon} /> {o.label}</DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        })()}
         {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
         <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && !sourceOn && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
           <IconButton label={`Filter ${noun}`} pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
