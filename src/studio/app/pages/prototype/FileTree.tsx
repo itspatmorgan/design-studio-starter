@@ -15,7 +15,7 @@ import { Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
-  Folder01Icon, FolderAddIcon, StarIcon, SourceCodeIcon, BrowserIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
+  Folder01Icon, StarIcon, SourceCodeIcon, BrowserIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import {
@@ -24,6 +24,9 @@ import {
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { HELPER_FOLDER } from '@/studio/fileTypes';
 import { HANDBOOK_KEY } from '@/studio/roots';
+import { creatableIn, isSkillFile, isSkillFolder, opProblem } from '@/studio/handbookRules';
+import { NEW_KINDS } from '@/studio/app/pages/handbook/HandbookHeader';
+import NewSkillDialog from '@/studio/app/pages/handbook/NewSkillDialog';
 import { itemUrl } from '@/studio/app/items/itemLinks';
 import { creatableTypes, FILE_TYPES, fileTypeModules } from '@/studio/app/data/fileTypes';
 import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
@@ -62,7 +65,7 @@ function itemsAsNodes(proto: Prototype): FileNode[] {
 }
 
 // The items of a prototype in a manifest.
-const itemsOf = (m: Manifest, p: Prototype) => m.prototypes.find((x) => x.contributorKey === p.contributorKey && x.id === p.id)?.items ?? [];
+const itemsOf = (m: Manifest, p: Prototype) => [...m.prototypes, ...m.handbook].find((x) => x.contributorKey === p.contributorKey && x.id === p.id)?.items ?? [];
 
 // While filtering, keep files whose name matches, and folders with a match inside.
 function filterNodes(nodes: FileNode[], q: string): FileNode[] {
@@ -132,7 +135,8 @@ function NameInput({ initial, depth, onDone }: { initial: string; depth: number;
   );
 }
 
-// What "+" makes: a folder, or a file of a type (its id, like "view" or "document").
+// What "+" makes: a folder, or a file of a type (its id, like "view" or "document"). In the Handbook
+// it can also be a plain "file" (inside a skill), or a "skill", which asks for its name first.
 type NewTarget = 'folder' | string;
 
 type Editing = { kind: 'rename'; path: string } | { kind: 'create'; parent: string; target: NewTarget } | null;
@@ -164,7 +168,19 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
   const router = useRouter();
   const navigate = useNavigate();
   const live = import.meta.env.DEV && files !== null;
-  const editable = live && me === proto.contributorKey;
+  // Your own prototypes, and the Handbook (in dev): its files are platform files, changed here for
+  // review like any change, in the fixed shape src/studio/handbookRules.ts describes.
+  const isHandbook = proto.contributorKey === HANDBOOK_KEY;
+  const editable = live && (isHandbook || me === proto.contributorKey);
+  const [newSkillOpen, setNewSkillOpen] = useState(false);
+  // A skill's SKILL.md can't be renamed, moved, or deleted alone.
+  const fixed = (node: FileNode) => isHandbook && isSkillFile(proto.id, node.path);
+  // What the row being dragged is, so a folder that can't take it doesn't accept the drop.
+  const dragging = useRef<{ path: string; dir: boolean } | null>(null);
+  // What can be made in a folder: a prototype's file types and folders, or what the Handbook section holds there.
+  const newOptions = (folder: string) => (isHandbook
+    ? creatableIn(proto.id, folder).map((kind) => ({ target: kind === 'document' ? 'document' : kind, ...NEW_KINDS[kind] }))
+    : [...creatableTypes.map((t) => ({ target: t.id, label: `New ${t.label.toLowerCase()}`, icon: t.icon })), { target: 'folder', ...NEW_KINDS.folder }]);
   const items = new Map(proto.items.map((i) => [i.path, i]));
   // Switched in the header's "…" menu, and remembered for every prototype.
   const [showAll] = useShowAllFiles();
@@ -232,20 +248,35 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
   }
 
   const startCreate = (parent: string, target: NewTarget) => {
+    if (target === 'skill') { setNewSkillOpen(true); return; }
     if (parent) setOpen(parent, true);
     setEditing({ kind: 'create', parent, target });
   };
   useImperativeHandle(handle, () => ({ startCreate }));
 
+  // A new skill: the dialog has checked the name and description; the file layer checks them again
+  // and writes the folder. Errors go back to the dialog.
+  async function createSkill(name: string, description: string) {
+    const result = await fileOp(proto, { op: 'create-skill', name, description });
+    setManifest(result.manifest);
+    await router.invalidate();
+    reload();
+    setNewSkillOpen(false);
+    const item = result.path && itemsOf(result.manifest, proto).find((i) => i.path === result.path);
+    if (item) navigate(itemLink(proto, item));
+  }
+
   // Drag and drop: drag a row onto a folder (or the empty space below the tree, for the top level).
-  const dragProps = (node: FileNode) => (editable && node.path !== 'meta.json' ? {
+  const dragProps = (node: FileNode) => (editable && node.path !== 'meta.json' && !fixed(node) && !(isHandbook && isSkillFolder(proto.id, node.path, node.dir)) ? {
     draggable: true,
-    onDragStart: (e: DragEvent) => { e.dataTransfer.setData('application/x-studio-path', node.path); e.dataTransfer.effectAllowed = 'move'; },
-    onDragEnd: () => setDropTarget(null),
+    onDragStart: (e: DragEvent) => { dragging.current = { path: node.path, dir: node.dir }; e.dataTransfer.setData('application/x-studio-path', node.path); e.dataTransfer.effectAllowed = 'move'; },
+    onDragEnd: () => { dragging.current = null; setDropTarget(null); },
   } : {});
+  // Whether the row being dragged may go into a folder: in the Handbook, only where its shape allows.
+  const canDrop = (folder: string) => !isHandbook || !dragging.current || opProblem(proto.id, { op: 'move', path: dragging.current.path, to: folder }, dragging.current.dir) === null;
   const dropProps = (folder: string) => (editable ? {
     onDragOver: (e: DragEvent) => {
-      if (!e.dataTransfer.types.includes('application/x-studio-path')) return;
+      if (!e.dataTransfer.types.includes('application/x-studio-path') || !canDrop(folder)) return;
       e.preventDefault();
       e.stopPropagation();
       setDropTarget(folder);
@@ -256,12 +287,12 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
       e.stopPropagation();
       setDropTarget(null);
       const path = e.dataTransfer.getData('application/x-studio-path');
-      if (path && parentOf(path) !== folder && !within(folder, path)) run({ op: 'move', path, to: folder });
+      if (path && parentOf(path) !== folder && !within(folder, path) && canDrop(folder)) run({ op: 'move', path, to: folder });
     },
   } : {});
 
   // F2 renames, Delete (or ⌘⌫) moves to the Trash, on the focused row.
-  const keyProps = (node: FileNode) => (editable && node.path !== 'meta.json' ? {
+  const keyProps = (node: FileNode) => (editable && node.path !== 'meta.json' && !fixed(node) ? {
     onKeyDown: (e: React.KeyboardEvent) => {
       if (e.key === 'F2') { e.preventDefault(); setEditing({ kind: 'rename', path: node.path }); }
       if (e.key === 'Delete' || (e.key === 'Backspace' && e.metaKey)) { e.preventDefault(); setConfirmDelete(node); }
@@ -275,17 +306,16 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
   function rowMenu(key: string, node: FileNode, children: ReactNode) {
     // import.meta.env.DEV is false in the build, so the menu isn't in the deployed site.
     if (!import.meta.env.DEV || !live) return <div key={key}>{children}</div>;
-    const changeable = editable && node.path !== 'meta.json';
+    const changeable = editable && node.path !== 'meta.json' && !fixed(node);
     return (
       <ContextMenu key={key}>
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
         <ContextMenuContent className="min-w-44">
-          {node.dir && editable && (
+          {node.dir && editable && newOptions(node.path).length > 0 && (
             <>
-              {creatableTypes.map((t) => (
-                <ContextMenuItem key={t.id} onClick={() => setTimeout(() => startCreate(node.path, t.id))}><HugeiconsIcon icon={t.icon} /> New {t.label.toLowerCase()}</ContextMenuItem>
+              {newOptions(node.path).map((o) => (
+                <ContextMenuItem key={o.target} onClick={() => setTimeout(() => startCreate(node.path, o.target))}><HugeiconsIcon icon={o.icon} /> {o.label}</ContextMenuItem>
               ))}
-              <ContextMenuItem onClick={() => setTimeout(() => startCreate(node.path, 'folder'))}><HugeiconsIcon icon={FolderAddIcon} /> New folder</ContextMenuItem>
               <ContextMenuSeparator />
             </>
           )}
@@ -295,7 +325,7 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
           {items.has(node.path) && (
             <ContextMenuItem onClick={() => setTimeout(() => { navigator.clipboard.writeText(itemUrl(proto, proto.items.find((i) => i.path === node.path)!)); toast.add({ title: 'Link copied' }); })}><HugeiconsIcon icon={Link01Icon} /> Copy link</ContextMenuItem>
           )}
-          {editable && items.has(node.path) && (
+          {editable && !isHandbook && items.has(node.path) && (
             proto.start === node.path
               ? <ContextMenuItem onClick={() => setTimeout(() => run({ op: 'meta', start: '' }))}><HugeiconsIcon icon={StarIcon} /> Remove as start</ContextMenuItem>
               : opensOn?.path !== node.path && <ContextMenuItem onClick={() => setTimeout(() => run({ op: 'meta', start: itemSlug(node.path) }))}><HugeiconsIcon icon={StarIcon} /> Set as start</ContextMenuItem>
@@ -321,9 +351,10 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
     const { target } = editing;
     const dir = target === 'folder';
     const extension = FILE_TYPES[target]?.extensions[0] ?? '';
+    const initial = dir ? 'new-folder' : target === 'file' ? 'new-file' : `untitled${extension}`;
     return (
       <NameInput
-        initial={dir ? 'new-folder' : `untitled${extension}`}
+        initial={initial}
         depth={depth}
         onDone={(name) => {
           setEditing(null);
@@ -468,6 +499,8 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
         {createField('', 0)}
         {rows(shown, 0)}
       </div>
+
+      {isHandbook && <NewSkillDialog open={newSkillOpen} onOpenChange={setNewSkillOpen} onCreate={createSkill} />}
 
       <Dialog open={confirmDelete !== null} onOpenChange={(o) => { if (!o) setConfirmDelete(null); }}>
         <DialogContent showCloseButton={false}>

@@ -71,7 +71,9 @@ export type FileOp =
   | { op: 'rename'; path: string; name: string }
   | { op: 'move'; path: string; to: string }
   | { op: 'delete'; path: string }
-  | { op: 'meta'; title?: string; description?: string; start?: string };
+  | { op: 'meta'; title?: string; description?: string; start?: string }
+  // A Handbook skill: skills/<name>/SKILL.md, in the Agent Skills format.
+  | { op: 'create-skill'; name: string; description: string };
 
 export type FileOpResult = { path?: string; trashedTo?: string; manifest: Manifest };
 
@@ -110,7 +112,8 @@ export async function writeSource(p: Prototype, path: string, content: string, b
   const body = await res.json();
   if (res.status === 409) throw new SourceChanged(body.error);
   if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');
-  return body as { version: string };
+  // `warnings` are problems with the file's format that the save didn't block (a skill's SKILL.md).
+  return body as { version: string; warnings?: string[] };
 }
 
 // Creates a prototype in your folder, like pnpm new. Returns its URL parts and the new manifest.

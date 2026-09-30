@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { descriptionProblem, nameProblem, skillProblems } from './skills.ts';
+import { creatableIn, opProblem } from './handbookRules.ts';
 import { handbookProblems } from '../../scripts/lib/handbook-check.js';
 import { frontmatter } from '../../scripts/lib/frontmatter.js';
 
@@ -71,4 +72,38 @@ test('docs and rules hold Markdown only, and skills hold skill folders', () => {
   assert.match(text, /skills\/loose\.md is loose/);
   assert.match(text, /skills\/empty\/ has no SKILL\.md/);
   assert.match(text, /have to match/);
+});
+
+test('what can be made where', () => {
+  assert.deepEqual(creatableIn('docs', ''), ['document', 'folder']);
+  assert.deepEqual(creatableIn('docs', 'research'), ['document', 'folder']);
+  assert.deepEqual(creatableIn('rules', ''), ['document', 'folder']);
+  assert.deepEqual(creatableIn('skills', ''), ['skill']);
+  assert.deepEqual(creatableIn('skills', 'review'), ['file', 'folder']);
+  assert.deepEqual(creatableIn('skills', 'review/scripts'), ['file', 'folder']);
+});
+
+test('changes stay inside the Handbook\'s shape', () => {
+  // Docs and rules: Markdown, in folders.
+  assert.equal(opProblem('docs', { op: 'create', path: '', name: 'a.md' }, true), null);
+  assert.match(opProblem('docs', { op: 'create', path: '', name: 'a.png' }, true) ?? '', /Markdown/);
+  assert.equal(opProblem('rules', { op: 'create', path: 'x', name: 'y', dir: true }, true), null);
+  assert.match(opProblem('docs', { op: 'rename', path: 'a.md', name: 'a.txt' }, false) ?? '', /Markdown/);
+  assert.equal(opProblem('docs', { op: 'move', path: 'a.md', to: 'research' }, false), null);
+  assert.equal(opProblem('docs', { op: 'delete', path: 'a.md' }, false), null);
+  // Skills: only skill folders at the top, anything inside one.
+  assert.match(opProblem('skills', { op: 'create', path: '', name: 'x.md' }, true) ?? '', /New skill/);
+  assert.match(opProblem('skills', { op: 'create', path: '', name: 'x', dir: true }, true) ?? '', /New skill/);
+  assert.equal(opProblem('skills', { op: 'create', path: 'review', name: 'run.sh' }, true), null);
+  assert.equal(opProblem('skills', { op: 'create', path: 'review', name: 'scripts', dir: true }, true), null);
+  assert.equal(opProblem('skills', { op: 'rename', path: 'review', name: 'critique' }, true), null);
+  assert.match(opProblem('skills', { op: 'rename', path: 'review', name: 'Critique' }, true) ?? '', /skill's name/);
+  assert.equal(opProblem('skills', { op: 'delete', path: 'review' }, true), null);
+  assert.match(opProblem('skills', { op: 'move', path: 'review', to: 'other' }, true) ?? '', /stays in skills/);
+  assert.match(opProblem('skills', { op: 'move', path: 'review/run.sh', to: '' }, false) ?? '', /inside a skill/);
+  assert.equal(opProblem('skills', { op: 'move', path: 'review/run.sh', to: 'other' }, false), null);
+  // SKILL.md is what makes the skill a skill.
+  for (const op of ['rename', 'move', 'delete']) assert.notEqual(opProblem('skills', { op, path: 'review/SKILL.md', name: 'x', to: 'y' }, false), null, op);
+  assert.equal(opProblem('skills', { op: 'rename', path: 'review/notes/SKILL.md', name: 'x' }, false), null);
+  assert.notEqual(opProblem('docs', { op: 'meta' }, false), null);
 });

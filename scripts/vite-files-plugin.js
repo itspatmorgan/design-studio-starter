@@ -5,7 +5,7 @@
 //   GET  /__studio/files?contributor=<key>&prototype=<id>   the prototype's files and folders
 //        (contributor "handbook" reads a Handbook section, src/handbook/<id>/, which is read-only)
 //   GET  /__studio/file?contributor=<key>&prototype=<id>&path=<file>   an item's text and its version
-//   POST /__studio/write   { contributor, prototype, path, content, base }  save an item you own (Source view)
+//   POST /__studio/write   { contributor, prototype, path, content, base }  save an item you own, or a Handbook file (Source view)
 //   POST /__studio/reveal   { contributor, prototype, path }  show a file in Finder
 //   POST /__studio/op       { contributor, prototype, op, ... }  change files, in your folder only:
 //        create   { path: folder, name, dir? }   a new file (from its type's template, by extension) or folder
@@ -13,6 +13,8 @@
 //        move     { path, to: folder }           "" is the prototype's top level
 //        delete   { path }                        to the Trash (or .trash/ at the repo root)
 //        meta     { title?, description?, start? }  edit meta.json (start "" opens the first item)
+//        create-skill { name, description }       Handbook skills only: skills/<name>/SKILL.md, in the Agent Skills format
+//      (In the Handbook, anyone can change files, but only in its fixed shape: src/studio/handbookRules.ts.)
 //   POST /__studio/prototype { title, description }   a new prototype in your folder, like pnpm new
 //   POST /__studio/prototype-rename { contributor, prototype, title, description? }   retitle a prototype you own; a new title renames its folder too
 //   POST /__studio/prototype-delete { contributor, prototype }   move a prototype you own to the Trash
@@ -36,6 +38,9 @@ import { resolveContributor } from './resolve-contributor.js';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { HELPER_FOLDER } from '../src/studio/fileTypes/index.ts';
 import { HANDBOOK_KEY, isHandbookSection } from '../src/studio/roots.ts';
+import { opProblem } from '../src/studio/handbookRules.ts';
+import { SKILL_FILE, descriptionProblem, nameProblem, skillProblems } from '../src/studio/skills.ts';
+import { frontmatter } from './lib/frontmatter.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -122,8 +127,27 @@ const versionOf = (text) => crypto.createHash('sha1').update(text).digest('hex')
 // Files of no type start empty.
 const templateFor = (name) => FILE_TYPES[fileTypeOf(name)]?.template?.(name) ?? '';
 
-// The Handbook is read-only in the app: its files are platform files, changed in the repo and reviewed.
-const HANDBOOK_ERROR = 'The Handbook is read-only here. Its files are platform files: ask your agent to change them, and they go through review.';
+// The Handbook's files are platform files: anyone can change their copy here, and the changes go
+// through review before they reach everyone. So it's open to whoever runs the app; what it does
+// enforce is the Handbook's shape (src/studio/handbookRules.ts).
+const HANDBOOK_NOTE = 'The Handbook\'s sections (Docs, Rules, Skills) can\'t be renamed or deleted.';
+
+// Whether you can change a prototype's files: your own, or the Handbook's.
+const canChange = (contributor, me) => contributor === HANDBOOK_KEY || contributor === me;
+
+// "code-review" → "Code review"
+const titleOf = (name) => { const t = name.replace(/-/g, ' '); return t.charAt(0).toUpperCase() + t.slice(1); };
+
+// A skill's new SKILL.md: the frontmatter the Agent Skills format needs, and a start for the body.
+// A description that isn't plain text goes in a block, which any YAML reader takes literally.
+function skillTemplate(name, description) {
+  const plain = /^[A-Za-z0-9][^:#"'\\\n]*$/.test(description) && !/\s$/.test(description);
+  const line = plain ? `description: ${description}` : `description: >\n  ${description.replace(/\s+/g, ' ').trim()}`;
+  return `---\nname: ${name}\n${line}\n---\n\n# ${titleOf(name)}\n\nSay what to do, step by step, and when it applies.\n`;
+}
+
+// A new rule's start.
+const ruleTemplate = (name) => `# ${titleOf(name.replace(/\.md$/, ''))}\n\nWhat your agent should know or do, and when.\n`;
 
 // Why you can't change a prototype: it's someone else's, or you aren't set up yet.
 const ownerError = (key) => (key
@@ -157,10 +181,42 @@ function fixStart(dir, fromRel, toRel) {
   fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
 }
 
+// Sets `name:` in a SKILL.md's frontmatter (adding it if it's missing), leaving the rest as it is.
+function renameSkillInFile(file, name) {
+  if (!fs.existsSync(file)) return;
+  const text = fs.readFileSync(file, 'utf8');
+  const block = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!block) return;
+  const lines = block[1].split(/\r?\n/);
+  const at = lines.findIndex((l) => /^name:/.test(l));
+  if (at >= 0) lines[at] = `name: ${name}`; else lines.unshift(`name: ${name}`);
+  fs.writeFileSync(file, text.replace(block[1], lines.join('\n')));
+}
+
 // One file operation. Returns { path } (the new path, for create, rename, and move) or throws a message.
-function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, description, start }) {
+// `section` is the Handbook section the folder is (docs, rules, skills), or null for a prototype.
+function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, description, start }, section = null) {
   const inside = (r) => resolveInside(dir, r);
   const relOf = (abs) => path.relative(fs.realpathSync(dir), abs).split(path.sep).join('/');
+  // The Handbook has a fixed shape: check the change against it first (src/studio/handbookRules.ts).
+  if (section) {
+    if (op === 'create-skill') {
+      if (section !== 'skills') throw new Error('Skills are made in the Skills tab.');
+      const bad = nameProblem(name) ? `A skill's name ${nameProblem(name)}` : descriptionProblem(description) ? `The description ${descriptionProblem(description)}` : null;
+      if (bad) throw new Error(bad);
+      if (/[\r\n]/.test(name)) throw new Error('A skill\'s name is one word or several joined by hyphens.');
+      const folder = path.join(dir, name);
+      if (fs.existsSync(folder)) throw new Error(`A skill named “${name}” already exists.`);
+      fs.mkdirSync(folder);
+      fs.writeFileSync(path.join(folder, SKILL_FILE), skillTemplate(name, description));
+      return { path: `${name}/${SKILL_FILE}` };
+    }
+    const target = op === 'create' ? null : inside(rel);
+    // A Markdown file keeps its .md: rename to "notes" and it's "notes.md", like a new file.
+    if (op === 'rename' && (section === 'docs' || section === 'rules') && target && fs.statSync(target).isFile() && typeof name === 'string' && !name.endsWith('.md')) name += '.md';
+    const problem = opProblem(section, { op, path: rel, name, to, dir: isDir }, Boolean(target && fs.statSync(target).isDirectory()));
+    if (problem) throw new Error(problem);
+  }
   if (op === 'create') {
     const parent = inside(rel);
     if (!parent || !fs.statSync(parent).isDirectory()) throw new Error('That folder no longer exists. It may have been moved or deleted.');
@@ -168,7 +224,7 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, descripti
     const target = path.join(parent, name);
     if (fs.existsSync(target)) throw new Error(`Something named “${name}” already exists here.`);
     if (isDir) fs.mkdirSync(target);
-    else fs.writeFileSync(target, templateFor(name));
+    else fs.writeFileSync(target, section === 'rules' ? ruleTemplate(name) : templateFor(name));
     return { path: relOf(target) };
   }
   if (op === 'meta') {
@@ -208,6 +264,8 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, descripti
     if (fs.existsSync(target)) throw new Error(`Something named “${path.basename(target)}” already exists there.`);
     fs.renameSync(source, target);
     const next = relOf(target);
+    // A skill's name is its folder's name: keep the two together.
+    if (section === 'skills' && op === 'rename' && !rel.includes('/')) renameSkillInFile(path.join(target, SKILL_FILE), path.basename(target));
     fixStart(dir, rel, next);
     return { path: next };
   }
@@ -268,24 +326,25 @@ export default function filesPlugin() {
           const dir = prototypeDir(contributor, prototype);
           const file = dir && itemFile(dir, rel, contributor);
           if (!file) return send(res, 404, { error: 'This file no longer exists.' });
-          if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_ERROR });
-          // Contributor scope: you can change only your own folder.
-          if (contributor !== me()) return send(res, 403, { error: ownerError(me()) });
+          // Contributor scope: you can change only your own folder (and the Handbook's, for review).
+          if (!canChange(contributor, me())) return send(res, 403, { error: ownerError(me()) });
           if (typeof content !== 'string' || Buffer.byteLength(content) > MAX_SOURCE_BYTES) return send(res, 413, { error: 'This file is too large to save here. Keep files under 750 KB.' });
           // Never overwrite a version you haven't seen: if it changed on disk since you opened it, say so.
           if (versionOf(fs.readFileSync(file, 'utf8')) !== base) return send(res, 409, { error: 'This file changed on disk since you opened it.', code: 'changed' });
           fs.writeFileSync(file, content);
-          return send(res, 200, { version: versionOf(content) });
+          // Saving is never blocked, but a skill that's out of the format is said so now, not at the next build.
+          const skill = contributor === HANDBOOK_KEY && prototype === 'skills' && rel.split('/').length === 2 && rel.endsWith(`/${SKILL_FILE}`);
+          const warnings = skill ? skillProblems(rel.split('/')[0], frontmatter(content)) : [];
+          return send(res, 200, { version: versionOf(content), warnings });
         }
         if (req.method === 'POST' && url.pathname === '/op') {
           const body = await readJson(req);
           const dir = prototypeDir(body.contributor, body.prototype);
           if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
-          if (body.contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_ERROR });
-          // Contributor scope: you can change only your own folder.
-          if (body.contributor !== me()) return send(res, 403, { error: ownerError(me()) });
+          // Contributor scope: you can change only your own folder (and the Handbook's, for review).
+          if (!canChange(body.contributor, me())) return send(res, 403, { error: ownerError(me()) });
           try {
-            const result = runOp(dir, body);
+            const result = runOp(dir, body, body.contributor === HANDBOOK_KEY ? body.prototype : null);
             const { manifest } = buildManifest();
             // Other tabs update now; the tab that asked (X-Studio-Tab) handles it from the reply.
             publishManifest(server, manifest, req.headers['x-studio-tab']);
@@ -308,7 +367,7 @@ export default function filesPlugin() {
           const { contributor, prototype, title, description } = await readJson(req);
           const dir = prototypeDir(contributor, prototype);
           if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
-          if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_ERROR });
+          if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_NOTE });
           if (contributor !== me()) return send(res, 403, { error: ownerError(me()) });
           try {
             const { id, manifest } = renamePrototype({ key: contributor, id: prototype, title, description });
@@ -322,7 +381,7 @@ export default function filesPlugin() {
           const { contributor, prototype } = await readJson(req);
           const dir = prototypeDir(contributor, prototype);
           if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
-          if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_ERROR });
+          if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_NOTE });
           if (contributor !== me()) return send(res, 403, { error: ownerError(me()) });
           const trashedTo = trash(dir);
           const { manifest } = buildManifest();

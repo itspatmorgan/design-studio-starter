@@ -3,7 +3,8 @@
 // (scripts/vite-files-plugin.js), and isn't in the deployed site.
 //
 // In your own prototypes you can edit and save it (⌘S), like your agent editing the same file.
-// In other people's it is read-only. If the file changes on disk while it's open, an unedited
+// In other people's it is read-only. The Handbook's files are platform files: you can edit them, and
+// the change goes through review like any change to the platform. If the file changes on disk while it's open, an unedited
 // editor updates to match (you can watch an agent write), and an edited one asks first.
 import { useEffect, useRef, useState } from 'react';
 import { useBlocker } from '@tanstack/react-router';
@@ -15,6 +16,7 @@ import { bracketMatching, foldGutter, foldKeymap, indentOnInput } from '@codemir
 import { highlightSelectionMatches, search, searchKeymap } from '@codemirror/search';
 import { FILE_TYPES } from '@/studio/app/data/fileTypes';
 import { readSource, SourceChanged, useMe, writeSource } from '@/studio/app/data/files';
+import { HANDBOOK_KEY } from '@/studio/roots';
 import type { Item, Prototype } from '@/studio/app/data/types';
 import { Button } from '@/studio/components/button';
 import { toast } from '@/studio/components/toast';
@@ -39,7 +41,9 @@ type Disk = { content: string; version: string };
 
 export default function SourcePane({ proto, item }: { proto: Prototype; item: Item }) {
   const me = useMe();
-  const editable = me === proto.contributorKey;
+  // Your own prototypes, and the Handbook's platform files (in dev, for review like any change).
+  const isHandbook = proto.contributorKey === HANDBOOK_KEY;
+  const editable = import.meta.env.DEV && (isHandbook || me === proto.contributorKey);
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
   // What's on disk as far as this pane knows: the text and version it last read or saved.
@@ -130,11 +134,13 @@ export default function SourcePane({ proto, item }: { proto: Prototype; item: It
     setSaving(true);
     setError(null);
     try {
-      const { version } = await writeSource(proto, item.path, content, disk.current.version);
+      const { version, warnings } = await writeSource(proto, item.path, content, disk.current.version);
       disk.current = { content, version };
       dirty.current = v.state.doc.toString() !== content;
       setIsDirty(dirty.current);
       toast.add({ title: 'Saved', timeout: 2000 });
+      // Saved anyway, but a skill out of the format would fail the build: say so now.
+      for (const warning of warnings ?? []) toast.add({ type: 'error', title: warning });
     } catch (e) {
       if (e instanceof SourceChanged) setConflict(await readSource(proto, item.path).catch(() => null));
       else toast.add({ type: 'error', title: (e as Error).message });
@@ -149,7 +155,7 @@ export default function SourcePane({ proto, item }: { proto: Prototype; item: It
           navigation's title row and its buttons */}
       <div className="flex h-[57px] shrink-0 items-center gap-3 border-b border-border px-4 text-[12px]">
         <span className="min-w-0 truncate font-mono text-muted-foreground" title={`src/prototypes/${proto.contributorKey}/${proto.id}/${item.path}`}>{item.path}</span>
-        <span className="ml-auto shrink-0 text-muted-foreground">{!editable ? 'Read-only' : isDirty ? 'Unsaved changes' : ''}</span>
+        <span className="ml-auto shrink-0 text-muted-foreground">{!editable ? 'Read-only' : isDirty ? 'Unsaved changes' : isHandbook ? 'Platform file: changes are reviewed' : ''}</span>
         {editable && <Button size="sm" disabled={!isDirty || saving} onClick={() => save.current()} title="Save (⌘S)">{saving ? 'Saving…' : 'Save'}</Button>}
       </div>
       {conflict && (
