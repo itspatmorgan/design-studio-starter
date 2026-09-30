@@ -10,7 +10,7 @@
 // choose which item the prototype opens on (Set as start; it shows a star). Every change
 // is a plain file change, so agents see the same thing. On the deployed site, it lists the
 // prototype's items, from the manifest.
-import { useEffect, useRef, useState, type DragEvent, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, useState, type DragEvent, type ReactNode } from 'react';
 import { Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
@@ -316,26 +316,34 @@ export default function FileTree({ proto, current }: FileTreeProps) {
               <ContextMenuSeparator />
             </>
           )}
-          {!node.dir && (
-            <ContextMenuItem onClick={() => setTimeout(() => openInEditor(proto, node.path))}><HugeiconsIcon icon={FileEditIcon} /> Open in editor</ContextMenuItem>
-          )}
-          {items.has(node.path) && (
-            <ContextMenuItem onClick={() => setTimeout(() => { navigator.clipboard.writeText(itemUrl(proto, proto.items.find((i) => i.path === node.path)!)); toast.add({ title: 'Link copied' }); })}><HugeiconsIcon icon={Link01Icon} /> Copy link</ContextMenuItem>
-          )}
-          {editable && !isHandbook && items.has(node.path) && (
-            proto.start === node.path
-              ? <ContextMenuItem onClick={() => setTimeout(() => run({ op: 'meta', start: '' }))}><HugeiconsIcon icon={StarIcon} /> Remove as start</ContextMenuItem>
-              : opensOn?.path !== node.path && <ContextMenuItem onClick={() => setTimeout(() => run({ op: 'meta', start: itemSlug(node.path) }))}><HugeiconsIcon icon={StarIcon} /> Set as start</ContextMenuItem>
-          )}
-          {changeable && (
-            <>
-              <ContextMenuItem onClick={() => setTimeout(() => setEditing({ kind: 'rename', path: node.path }))}><HugeiconsIcon icon={PencilEdit02Icon} /> Rename</ContextMenuItem>
-              <ContextMenuItem variant="destructive" onClick={() => setTimeout(() => setConfirmDelete(node))}><HugeiconsIcon icon={Delete02Icon} /> Delete</ContextMenuItem>
-            </>
-          )}
-          <ContextMenuSeparator />
-          <ContextMenuItem onClick={() => setTimeout(() => revealInFinder(proto, node.path))}><HugeiconsIcon icon={Folder01Icon} /> Reveal in Finder</ContextMenuItem>
-          <ContextMenuItem onClick={() => setTimeout(() => { navigator.clipboard.writeText(repoPath(proto, node.path)); toast.add({ title: 'Path copied' }); })}><HugeiconsIcon icon={Copy01Icon} /> Copy path</ContextMenuItem>
+          {/* Grouped by what they do, with a line between groups: open it somewhere else, copy where it is,
+              change it, and (last, alone) delete it. A group with nothing in it leaves no line. */}
+          {[
+            [
+              !node.dir && <ContextMenuItem key="editor" onClick={() => setTimeout(() => openInEditor(proto, node.path))}><HugeiconsIcon icon={FileEditIcon} /> Open in editor</ContextMenuItem>,
+              <ContextMenuItem key="reveal" onClick={() => setTimeout(() => revealInFinder(proto, node.path))}><HugeiconsIcon icon={Folder01Icon} /> Reveal in Finder</ContextMenuItem>,
+            ],
+            [
+              items.has(node.path) && <ContextMenuItem key="link" onClick={() => setTimeout(() => { navigator.clipboard.writeText(itemUrl(proto, proto.items.find((i) => i.path === node.path)!)); toast.add({ title: 'Link copied' }); })}><HugeiconsIcon icon={Link01Icon} /> Copy link</ContextMenuItem>,
+              <ContextMenuItem key="path" onClick={() => setTimeout(() => { navigator.clipboard.writeText(repoPath(proto, node.path)); toast.add({ title: 'Path copied' }); })}><HugeiconsIcon icon={Copy01Icon} /> Copy path</ContextMenuItem>,
+            ],
+            [
+              editable && !isHandbook && items.has(node.path) && (
+                proto.start === node.path
+                  ? <ContextMenuItem key="start" onClick={() => setTimeout(() => run({ op: 'meta', start: '' }))}><HugeiconsIcon icon={StarIcon} /> Remove as start</ContextMenuItem>
+                  : opensOn?.path !== node.path && <ContextMenuItem key="start" onClick={() => setTimeout(() => run({ op: 'meta', start: itemSlug(node.path) }))}><HugeiconsIcon icon={StarIcon} /> Set as start</ContextMenuItem>
+              ),
+              changeable && <ContextMenuItem key="rename" onClick={() => setTimeout(() => setEditing({ kind: 'rename', path: node.path }))}><HugeiconsIcon icon={PencilEdit02Icon} /> Rename</ContextMenuItem>,
+            ],
+            [
+              changeable && <ContextMenuItem key="delete" variant="destructive" onClick={() => setTimeout(() => setConfirmDelete(node))}><HugeiconsIcon icon={Delete02Icon} /> Delete</ContextMenuItem>,
+            ],
+          ].map((group) => group.filter(Boolean)).filter((group) => group.length > 0).map((group, i) => (
+            <Fragment key={i}>
+              {i > 0 && <ContextMenuSeparator />}
+              {group}
+            </Fragment>
+          ))}
         </ContextMenuContent>
       </ContextMenu>
     );

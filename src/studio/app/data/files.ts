@@ -40,8 +40,10 @@ export const repoPath = (p: Prototype, file: string) => `src/${rootOf(p.contribu
 
 // Opens a file in your code editor, with Vite's built-in /__open-in-editor.
 // It uses $LAUNCH_EDITOR or the editor already running: https://github.com/yyx990803/launch-editor
+// Vite finds the file from the folder the dev server was started in (the repo root), so the path is
+// the full repo path, src/ included: without it the editor is never told to open anything.
 export function openInEditor(p: Prototype, file: string) {
-  fetch(`/__open-in-editor?file=${encodeURIComponent(`${rootOf(p.contributorKey, p.id)}/${file}`)}`);
+  fetch(`/__open-in-editor?file=${encodeURIComponent(repoPath(p, file))}`);
 }
 
 // Shows a file in Finder (or your system's file browser).
