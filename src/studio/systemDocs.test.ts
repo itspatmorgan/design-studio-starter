@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { componentProblems, discoverComponents, duplicateProblems, exampleNames } from './systemDocs.ts';
+import { componentProblems, discoverComponents, duplicateProblems, exampleNames, type ComponentPropsDoc } from './systemDocs.ts';
 import { systemDocs } from '../../scripts/lib/system-docs.js';
 
 const names = (files: string[]) => discoverComponents(files).map((c) => c.name);
@@ -27,6 +27,10 @@ test('files match by folder and name, ignoring case', () => {
 
 test('several components can share a folder', () => {
   assert.deepEqual(names(['Button/Button.tsx', 'Button/IconButton.tsx', 'Button/IconButton.md']), ['Button', 'IconButton']);
+});
+
+test('a component\'s page is its name in kebab-case', () => {
+  assert.deepEqual(discoverComponents(['IconButton.tsx', 'button.tsx']).map((c) => c.slug), ['button', 'icon-button']);
 });
 
 test('helpers, tests, stories, and READMEs are not components', () => {
@@ -97,4 +101,25 @@ test('scanning a folder returns manifest entries and problems', () => {
   assert.equal(components[1].title, 'input');
   assert.deepEqual(problems.map((p) => p.file), ['input.tsx']);
   assert.deepEqual(systemDocs(path.join(root, 'missing')), { components: [], problems: [] });
+});
+
+test('props are read from the code: types from other packages, defaults, native attributes', async () => {
+  const { extractProps } = await import('../../scripts/lib/extract-props.js');
+  const root = path.resolve(import.meta.dirname, '../..');
+  const dir = path.join(root, 'src/systems/product/components');
+  const files = ['button', 'input', 'dialog'].map((n) => path.join(dir, `${n}.tsx`));
+  const result: Record<string, ComponentPropsDoc[]> = extractProps(files, root) as Record<string, ComponentPropsDoc[]>;
+  const [button] = result[files[0]];
+  assert.equal(button.name, 'Button');
+  assert.equal(button.native, true);
+  const variant = button.props.find((p) => p.name === 'variant')!;
+  assert.equal(variant.default, '"default"');
+  assert.match(variant.type, /"outline"/);
+  assert.equal(variant.required, false);
+  // No hundreds of native attributes in the table.
+  assert.ok(button.props.length < 20);
+  assert.deepEqual(result[files[1]].map((c) => [c.name, c.props.length, c.native]), [['Input', 0, true]]);
+  const dialogs = result[files[2]].map((c) => c.name);
+  assert.ok(dialogs.includes('Dialog') && dialogs.includes('DialogContent'));
+  assert.ok(result[files[2]].find((c) => c.name === 'Dialog')!.props.some((p) => p.name === 'open'));
 });

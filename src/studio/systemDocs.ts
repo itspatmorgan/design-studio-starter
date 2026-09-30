@@ -12,7 +12,7 @@
 
 export type SystemComponent = {
   name: string;                 // as the component file spells it ("Button", "button")
-  slug: string;                 // its page in the Systems section ("button")
+  slug: string;                 // its page in the Systems section ("icon-button")
   files: {                      // paths inside the system's components folder; null if absent
     source: string | null;
     examples: string | null;
@@ -20,7 +20,18 @@ export type SystemComponent = {
   };
 };
 
+// A component as the manifest carries it: its files, and what its markdown says about it.
+export type SystemComponentDoc = SystemComponent & { title: string; description: string; category: string | null };
+
+// A component's props, read from its TypeScript (scripts/lib/extract-props.js). `native` is true
+// when it also accepts the native attributes of the element it renders, which are left out of the list.
+export type PropDoc = { name: string; type: string; required: boolean; default: string | null; description: string };
+export type ComponentPropsDoc = { name: string; props: PropDoc[]; native: boolean };
+
 type Kind = keyof SystemComponent['files'];
+
+// "IconButton" → "icon-button": the component's page in the Systems section.
+const kebab = (name: string) => name.replace(/([a-z\d])([A-Z])/g, '$1-$2').replace(/[^A-Za-z\d]+/g, '-').toLowerCase();
 
 // The part of a path after its last "/".
 const baseName = (file: string) => file.slice(file.lastIndexOf('/') + 1);
@@ -52,12 +63,12 @@ export function discoverComponents(files: string[]): SystemComponent[] {
     const key = `${file.slice(0, file.length - baseName(file).length)}${c.name}`.toLowerCase();
     let component = found.get(key);
     if (!component) {
-      component = { name: c.name, slug: c.name.toLowerCase(), files: { source: null, examples: null, doc: null } };
+      component = { name: c.name, slug: kebab(c.name), files: { source: null, examples: null, doc: null } };
       found.set(key, component);
     }
     if (!component.files[c.kind]) component.files[c.kind] = file;
     // The component file names it best (Button over button), whichever was seen first.
-    if (c.kind === 'source') component.name = c.name;
+    if (c.kind === 'source') { component.name = c.name; component.slug = kebab(c.name); }
   }
   return [...found.values()].sort((a, b) => a.name.localeCompare(b.name));
 }

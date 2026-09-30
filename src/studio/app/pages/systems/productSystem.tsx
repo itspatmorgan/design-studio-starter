@@ -1,10 +1,7 @@
-import { Mail } from 'lucide-react';
 // Product system: the placeholder prototype system (see src/systems/index.ts). Demos render inside .product-theme.
-// Kept short on purpose: it shows how the product look differs from the app UI.
+// Kept short on purpose: it shows how the product look differs from the app UI. Its component pages
+// come from the files in src/systems/product/components/ (button.tsx, button.examples.tsx, button.md).
 import { PROTOTYPE_SYSTEMS } from '@/systems';
-import { Button } from '@/systems/product/components/button';
-import { Input } from '@/systems/product/components/input';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/systems/product/components/dialog';
 import { Code, CodeBlock, Prose } from '@/studio/app/pages/systems/foundations';
 import type { DesignSystem } from '@/studio/app/data/types';
 
@@ -34,38 +31,4 @@ export const product: DesignSystem = {
       <p>Prototypes use <Code>lucide-react</Code> for icons until your system brings its own.</p>
     </Prose>
   ),
-  categories: [
-    { name: 'Components', components: [
-      { name: 'Button', file: 'button.tsx', description: "The placeholder product button. Replace it with your product's.", demo: () => (
-        <>
-          <Button>Primary</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="outline">Outline</Button>
-          <Button variant="destructive">Destructive</Button>
-          <Button><Mail data-icon="inline-start" />With icon</Button>
-        </>
-      ) },
-      { name: 'Input', file: 'input.tsx', description: 'The placeholder product text field.', demo: () => (
-        <>
-          <Input placeholder="Type something" className="w-56" />
-          <Input placeholder="Disabled" disabled className="w-56" />
-        </>
-      ) },
-      { name: 'Dialog', file: 'dialog.tsx', description: "A modal that renders inside the prototype's frame, not over the whole app.", demo: () => (
-        <Dialog>
-          <DialogTrigger render={<Button variant="outline" />}>Open dialog</DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Product dialog</DialogTitle>
-              <DialogDescription>Rendered in the portal container, so it keeps the product look.</DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
-              <Button>Save</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      ) },
-    ] },
-  ],
 };

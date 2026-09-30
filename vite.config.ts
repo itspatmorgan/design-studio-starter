@@ -14,6 +14,7 @@ import manifestWatch from './scripts/vite-manifest-watch-plugin.js';
 import spa404 from './scripts/vite-spa-404-plugin.js';
 import files from './scripts/vite-files-plugin.js';
 import markdownRefresh from './scripts/vite-markdown-refresh-plugin.js';
+import systemProps from './scripts/vite-system-props-plugin.js';
 
 export default defineConfig({
   root: 'src',
@@ -41,6 +42,7 @@ export default defineConfig({
     importGuard(),
     manifestWatch(),
     files(),
+    systemProps(),
     spa404(),
   ],
 });
