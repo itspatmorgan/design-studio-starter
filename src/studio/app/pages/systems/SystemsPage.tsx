@@ -17,8 +17,8 @@ import { studio } from '@/studio/app/pages/systems/studioSystem';
 // Systems: one tab per design system, and one page per foundation and component,
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
 // Every system is treated the same, the app's own (Studio) included. What only its people can write
-// comes from its spec (productSystem.tsx, studioSystem.tsx): the introduction, the theme text, and
-// icons. The rest comes from its files: a component page for each component in its components
+// comes from its spec (productSystem.tsx, studioSystem.tsx): the introduction (which covers its theme),
+// and icons. The rest comes from its files: a component page for each component in its components
 // folder (src/studio/systemDocs.ts), and a foundations page for each kind of token its theme
 // defines (src/studio/themeTokens.ts). One spec per prototype system in src/systems/index.ts (a
 // type error if one is missing), then Studio.
@@ -50,7 +50,7 @@ function navGroups(sys: DesignSystem, components: SystemComponentDoc[], tokens: 
   const categories = new Map<string, [string, string][]>();
   for (const c of components) categories.set(c.category ?? 'Components', [...(categories.get(c.category ?? 'Components') ?? []), [c.slug, c.title]]);
   return [
-    { items: [[null, 'Introduction'], ['theme', 'Theme']] },
+    { items: [[null, 'Introduction']] },
     { heading: 'Foundations', items: foundations },
     ...[...categories].map(([heading, items]) => ({ heading, items })),
   ];
@@ -99,8 +99,6 @@ function SystemPage({ system, sys, components, tokens, origin, page, onEdit }: {
   switch (page) {
     case undefined:
       return <><PageHeader title={`${sys.label} system`} />{sys.intro}</>;
-    case 'theme':
-      return <><PageHeader title="Theme" />{sys.theme}</>;
     case 'colors':
       return has('colors') ? <><PageHeader title="Colors" description="Every color token in the theme, read live. Values follow the current mode." /><ColorTokens scopeClass={scopeClass} tokens={tokens} /></> : null;
     case 'typography':

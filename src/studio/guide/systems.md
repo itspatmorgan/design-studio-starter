@@ -46,7 +46,7 @@ Every prototype system has the same parts:
 1. **A folder**, like `src/brand/`, with its components and a `theme.css`.
 2. **A scoped theme.** Its variables are set under one class, like `.brand-theme`, and nowhere else, so it can't leak into the app or another system.
 3. **Pop-ups that stay in scope.** Dialogs and menus render inside the prototype's frame, so they keep the system's look.
-4. **An entry in `src/systems/index.ts`**, plus a short spec for its introduction and theme page.
+4. **An entry in `src/systems/index.ts`**, plus a short spec for its introduction, which also says how its theme is set up.
 
 Adding one is a platform change, so it's a job for whoever maintains the kit. Ask your agent to add a system, and it follows the steps in `src/handbook/rules/systems.md`, starting from a copy of `src/systems/product/`.
 

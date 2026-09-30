@@ -6,7 +6,7 @@ import {
 } from '@hugeicons/core-free-icons';
 // Studio system: the app UI's own components, stock shadcn/ui vendored into src/studio/components/.
 // Like every system, its component and foundations pages come from its files; this is what only
-// its people can write: the introduction, the theme text, and the icons.
+// its people can write: the introduction (which covers the theme), and the icons.
 import { Code, CodeBlock, IconGrid, Prose } from '@/studio/app/pages/systems/foundations';
 import type { DesignSystem } from '@/studio/app/data/types';
 
@@ -21,18 +21,19 @@ export const studio: DesignSystem = {
   dir: 'src/studio/components/',
   scopeClass: '',
   intro: (
-    <Prose>
-      <p>The app's own system. It is the wrapper that makes the sandbox work: the nav rail, the index, prototype navigation, the command palette, and this page.</p>
-      <p>Its components are stock <a href="https://ui.shadcn.com/docs/components" target="_blank" rel="noreferrer" className="font-medium text-foreground underline underline-offset-4">shadcn/ui</a> components, vendored into <Code>src/studio/components</Code> so you can read and change them. Each page links to that component's shadcn/ui docs. Only app UI code imports them. Prototypes never do.</p>
-      <CodeBlock>{`import { Button } from '@/studio/components/button';`}</CodeBlock>
-    </Prose>
-  ),
-  theme: (
-    <Prose>
-      <p>shadcn/ui's default theme with the neutral base color, in <Code>src/studio/styles/index.css</Code>. Light values are on <Code>:root</Code>, dark values on <Code>.dark</Code>.</p>
-      <p>To restyle the app for your team, change the values in those two blocks, or paste a theme from the shadcn/ui theme builder. Keep the variable names.</p>
-      <p>The dark mode toggle in the rail puts <Code>.dark</Code> on the page. Both systems follow it.</p>
-    </Prose>
+    <>
+      <Prose>
+        <p>The app's own system. It is the wrapper that makes the sandbox work: the nav rail, the index, prototype navigation, the command palette, and this page.</p>
+        <p>Its components are stock <a href="https://ui.shadcn.com/docs/components" target="_blank" rel="noreferrer" className="font-medium text-foreground underline underline-offset-4">shadcn/ui</a> components, vendored into <Code>src/studio/components</Code> so you can read and change them. Each page links to that component's shadcn/ui docs. Only app UI code imports them. Prototypes never do.</p>
+        <CodeBlock>{`import { Button } from '@/studio/components/button';`}</CodeBlock>
+      </Prose>
+      <h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2>
+      <Prose>
+        <p>shadcn/ui's default theme with the neutral base color, in <Code>src/studio/styles/index.css</Code>. Light values are on <Code>:root</Code>, dark values on <Code>.dark</Code>.</p>
+        <p>To restyle the app for your team, change the values in those two blocks, or paste a theme from the shadcn/ui theme builder. Keep the variable names.</p>
+        <p>The dark mode toggle in the rail puts <Code>.dark</Code> on the page. Both systems follow it.</p>
+      </Prose>
+    </>
   ),
   icons: {
     library: 'HugeIcons (@hugeicons/react + @hugeicons/core-free-icons)',

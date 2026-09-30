@@ -43,13 +43,12 @@ export type Manifest = {
   systems: Record<string, { docs: DocsMode; origin: 'shadcn' | null; components: SystemComponentDoc[]; tokens: ThemeToken[] }>;
 };
 
-// One tab on the Systems page: what only its people can write. Its components and foundations
-// pages come from its files (systemDocs.ts, themeTokens.ts).
+// One tab on the Systems page: what only its people can write, its introduction (and icons, if it
+// has them). Its components and foundations pages come from its files (systemDocs.ts, themeTokens.ts).
 export type DesignSystem = {
   label: string;
   dir: string;            // where its components live, e.g. "src/studio/components/"
   scopeClass: string;     // the class its theme is set under, or "" when it's set on the page (studio)
-  intro: ReactNode;
-  theme: ReactNode;
+  intro: ReactNode;      // what the system is, and how its theme is set up
   icons?: { library: string; href: string; snippet: string; grid: ReactNode };
 };
