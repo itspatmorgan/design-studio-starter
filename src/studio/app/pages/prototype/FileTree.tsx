@@ -23,6 +23,7 @@ import {
 } from '@/studio/app/data/files';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { HELPER_FOLDER } from '@/studio/fileTypes';
+import { navIndent, navRow, navRowState } from '@/studio/app/shell/nav';
 import { HANDBOOK_KEY } from '@/studio/roots';
 import { creatableIn, isSkillFile, isSkillFolder, opProblem } from '@/studio/handbookRules';
 import { NEW_KINDS } from '@/studio/app/pages/handbook/newKinds';
@@ -40,8 +41,8 @@ import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator,
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
 import { cn } from '@/lib/utils';
 
-const row = 'mx-1 flex w-[calc(100%-8px)] min-w-0 items-center gap-1.5 rounded-md py-1 pr-1.5 text-[12px] leading-tight transition-colors';
-const indent = (depth: number) => ({ paddingLeft: 8 + depth * 16 });
+const row = navRow;
+const indent = navIndent;
 const parentOf = (p: string) => (p.includes('/') ? p.slice(0, p.lastIndexOf('/')) : '');
 const within = (p: string, dir: string) => p === dir || p.startsWith(`${dir}/`);
 
@@ -415,9 +416,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
               {...keyProps(node)}
               aria-current={active ? 'page' : undefined}
               style={indent(depth)}
-              className={cn(row, active
-                ? 'bg-sidebar-foreground/10 font-medium text-sidebar-accent-foreground'
-                : 'text-sidebar-foreground/80 hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground')}
+              className={cn(row, navRowState(active))}
             >
               <HugeiconsIcon icon={fileTypeModules[item.fileType]?.icon ?? CodeIcon} size={14} className="shrink-0 text-muted-foreground" />
               {label}

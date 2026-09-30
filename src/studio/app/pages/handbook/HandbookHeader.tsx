@@ -4,18 +4,16 @@
 import { Link, getRouteApi } from '@tanstack/react-router';
 import type { Prototype } from '@/studio/app/data/types';
 import { prototypeLink } from '@/studio/app/data/manifest';
-import { navTabClass } from '@/studio/app/shell/navTabs';
+import { NavHeader, NavTabs, NavTitle, navTabClass } from '@/studio/app/shell/nav';
 
 const rootApi = getRouteApi('__root__');
 
 export default function HandbookHeader({ proto }: { proto: Prototype }) {
   const { handbook } = rootApi.useLoaderData();
   return (
-    <div className="shrink-0 px-2 pt-3">
-      <div className="flex min-h-8 items-center px-2.5">
-        <h2 className="truncate text-sm font-semibold leading-tight">Handbook</h2>
-      </div>
-      <nav aria-label="Handbook sections" className="mt-1 flex gap-1 px-1">
+    <NavHeader>
+      <NavTitle>Handbook</NavTitle>
+      <NavTabs label="Handbook sections">
         {handbook.map((section) => (
           <Link
             key={section.id}
@@ -26,7 +24,7 @@ export default function HandbookHeader({ proto }: { proto: Prototype }) {
             {section.title}
           </Link>
         ))}
-      </nav>
-    </div>
+      </NavTabs>
+    </NavHeader>
   );
 }

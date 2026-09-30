@@ -22,6 +22,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { useRenamePrototype } from '@/studio/app/pages/prototype/useRenamePrototype';
 import EditPrototypeDialog from '@/studio/app/pages/prototype/EditPrototypeDialog';
 import DeletePrototypeDialog from '@/studio/app/pages/prototype/DeletePrototypeDialog';
+import { NavHeader } from '@/studio/app/shell/nav';
 import { cn } from '@/lib/utils';
 
 const INFO_KEY = 'design-studio:prototype-info'; // "shown" | "hidden"
@@ -104,7 +105,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
   ));
 
   return (
-    <div className={cn('shrink-0 px-2 pt-3', showInfo ? 'border-b border-sidebar-border pb-3' : 'pb-0')}>
+    <NavHeader className={showInfo ? 'border-b border-sidebar-border pb-3' : 'pb-0'}>
       {withContextMenu(
         <div className="px-2.5">
           <div className="-mr-2 flex min-h-8 items-center gap-0.5">
@@ -149,6 +150,6 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
       )}
       {editable && <EditPrototypeDialog proto={proto} open={editing} onOpenChange={setEditing} />}
       {editable && <DeletePrototypeDialog proto={proto} open={deleting} onOpenChange={setDeleting} />}
-    </div>
+    </NavHeader>
   );
 }

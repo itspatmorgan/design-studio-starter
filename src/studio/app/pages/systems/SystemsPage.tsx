@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link, useParams } from '@tanstack/react-router';
 import { cn } from '@/lib/utils';
-import { navTabClass } from '@/studio/app/shell/navTabs';
+import { navTabClass } from '@/studio/app/shell/nav';
 import { NotFound } from '@/studio/app/shell/App';
 import { ColorTokens, ComponentDemo, IconsPage, PageHeader, RadiusScale, TypeScale, slug } from '@/studio/app/pages/systems/foundations';
 import type { DesignSystem } from '@/studio/app/data/types';
