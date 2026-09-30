@@ -453,9 +453,26 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
     <nav className="group/tree flex min-h-0 flex-1 flex-col space-y-1.5 overflow-y-auto px-2 pt-3 pb-3">
       <div className="flex h-7 shrink-0 items-center justify-between gap-1 px-2.5 pr-0.5">
         <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{live ? 'Files' : 'Pages'}</p>
+        {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
+        <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && !sourceOn && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
+          <IconButton label={`Filter ${noun}`} pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
+            <HugeiconsIcon icon={Search01Icon} size={14} />
+          </IconButton>
+          {hasSource && (
+            <IconButton label={sourceOn ? 'Show preview' : 'Show source'} onClick={toggleSource}>
+              <HugeiconsIcon icon={sourceOn ? BrowserIcon : SourceCodeIcon} size={14} />
+            </IconButton>
+          )}
+          {dirs.length > 0 && (
+            <IconButton label={allOpen ? 'Collapse all' : 'Expand all'} onClick={() => setClosed(allOpen ? new Set(dirs) : new Set())}>
+              <HugeiconsIcon icon={allOpen ? UnfoldLessIcon : UnfoldMoreIcon} size={14} />
+            </IconButton>
+          )}
+        </div>
         {/* In the Handbook the header has no "+" (the tabs above are its sections), so making things is
-            here, with the file actions, and offers what the open section holds. It's always shown: it's the
-            main action, and a section can be empty. One thing to make, and it's made directly. */}
+            here, with the file actions, and offers what the open section holds. It's always shown, and last, so the
+            actions that fade in and out sit to its left without moving it. It's the main action, and a section can be
+            empty. With one thing to make (a skill), it's made directly. */}
         {isHandbook && editable && (() => {
           const options = newOptions('');
           if (options.length === 1) {
@@ -474,22 +491,6 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
             </DropdownMenu>
           );
         })()}
-        {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
-        <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && !sourceOn && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
-          <IconButton label={`Filter ${noun}`} pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
-            <HugeiconsIcon icon={Search01Icon} size={14} />
-          </IconButton>
-          {hasSource && (
-            <IconButton label={sourceOn ? 'Show preview' : 'Show source'} onClick={toggleSource}>
-              <HugeiconsIcon icon={sourceOn ? BrowserIcon : SourceCodeIcon} size={14} />
-            </IconButton>
-          )}
-          {dirs.length > 0 && (
-            <IconButton label={allOpen ? 'Collapse all' : 'Expand all'} onClick={() => setClosed(allOpen ? new Set(dirs) : new Set())}>
-              <HugeiconsIcon icon={allOpen ? UnfoldLessIcon : UnfoldMoreIcon} size={14} />
-            </IconButton>
-          )}
-        </div>
       </div>
       {filterOpen && (
         <div className="relative shrink-0 px-1">
