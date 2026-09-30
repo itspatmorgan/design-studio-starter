@@ -89,7 +89,7 @@ test('scanning a folder returns manifest entries and problems', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'system-'));
   const write = (file: string, text: string) => { fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true }); fs.writeFileSync(path.join(root, file), text); };
   write('button.tsx', 'export const Button = 1;');
-  write('button.md', '---\ntitle: Button\ndescription: Starts an action.\ncategory: Actions\n---\n\n## When to use\n');
+  write('button.md', '---\ntitle: Button\ndescription: Starts an action.\ncategory: Actions\ndocs: https://example.com/button\n---\n\n## When to use\n');
   write('button.examples.tsx', 'export const Primary = () => null;');
   write('input.tsx', 'export const Input = 1;');
   write('node_modules/x/y.tsx', 'x');
@@ -98,7 +98,10 @@ test('scanning a folder returns manifest entries and problems', () => {
   assert.deepEqual(components.map((c) => c.slug), ['button', 'input']);
   assert.equal(components[0].title, 'Button');
   assert.equal(components[0].category, 'Actions');
-  assert.equal(components[1].title, 'input');
+  // A component with no page is titled by its file name, made readable; a page can link to its docs elsewhere.
+  assert.equal(components[1].title, 'Input');
+  assert.equal(components[1].docsUrl, null);
+  assert.equal(components[0].docsUrl, 'https://example.com/button');
   assert.deepEqual(problems.map((p) => p.file), ['input.tsx']);
   assert.deepEqual(systemDocs(path.join(root, 'missing')), { components: [], problems: [] });
 });

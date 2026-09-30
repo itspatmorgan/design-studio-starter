@@ -5,10 +5,13 @@
 // its class, and a spec for its Systems page (src/studio/app/pages/systems/). A prototype
 // picks one with "system" in its meta.json; without it, it uses the first one listed.
 // "docs" is how the build treats a component without examples or a description (see
-// src/studio/systemDocs.ts): 'warn' says so, 'strict' fails the build.
+// src/studio/systemDocs.ts): 'warn' says so, 'strict' fails the build, 'off' says nothing.
+// "origin" says where its components come from. 'shadcn' gives each component page a link to that
+// component's shadcn/ui docs; a page can set its own link with `docs:` in its frontmatter. Leave it
+// out for a system that isn't shadcn/ui, like your product's own.
 // To add a system, see src/handbook/rules/systems.md.
 export const PROTOTYPE_SYSTEMS = {
-  product: { label: 'Product', dir: 'src/systems/product/', themeClass: 'product-theme', docs: 'warn' },
+  product: { label: 'Product', dir: 'src/systems/product/', themeClass: 'product-theme', docs: 'warn', origin: 'shadcn' },
 } as const;
 
 export type PrototypeSystemId = keyof typeof PROTOTYPE_SYSTEMS;

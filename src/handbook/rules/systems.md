@@ -2,8 +2,10 @@
 
 There are two kinds of design system, each in its own scope.
 
-- **Studio system**: `src/studio/components/` and `src/studio/styles/`. The app's own system, the wrapper that makes the sandbox work (nav rail, index, prototype navigation, command palette, Systems pages, Guide, the error message shown when a view fails). Maintained with the platform. Prototypes never import it.
+- **Studio system**: `src/studio/components/` and `src/studio/styles/`. The app's own system, the wrapper that makes the sandbox work (nav rail, index, prototype navigation, command palette, Systems pages, Guide, the error message shown when a view fails). Stock shadcn/ui components, vendored so they can be read and changed. Maintained with the platform. Prototypes never import it.
 - **Prototype systems**: what prototypes build with, listed in `src/systems/index.ts`. The kit ships one, `product` (`src/systems/product/`), a placeholder a team replaces with their real product design system. A team can add others, like a `brand` system for marketing work. Each prototype uses one: `"system"` in its `meta.json`, or the first one listed.
+
+The Systems pages treat both the same: each system's components and foundations pages come from its own files (below), so nothing about Studio is special-cased except that it is `docs: 'off'` (no warnings about pages and examples nobody needs to write for stock components).
 
 ## What makes a prototype system
 
@@ -42,7 +44,7 @@ A prototype system's component pages come from its files, not from a spec. Files
 
 After adding or bringing in a component, run `pnpm component-docs <system> <component>` (or without the component, for every one that lacks its files). It writes the missing files from a template and never touches one that exists. Then fill in the description, the "When to use" section, and the examples. To do all of it, follow the `document-component` skill. While the app runs, the person can edit a component's files from its page (an Edit button), and create the examples and page it is missing. Adding, renaming, moving, and deleting a component aren't offered there; do those in the files.
 
-The build warns about a component without its examples or page, and about a page missing its title, description, or "When to use". A system with `docs: 'strict'` in `src/systems/index.ts` fails the build instead. The studio system lists its components in its spec (`studioSystem.tsx`) instead.
+The build warns about a component without its examples or page, and about a page missing its title, description, or "When to use". A system with `docs: 'strict'` in `src/systems/index.ts` fails the build instead. Where a system's components come from is `origin` in its registry entry (`src/systems/index.ts`). `origin: 'shadcn'` gives every component page a "shadcn/ui docs" link to that component's page on ui.shadcn.com (from its file name), so people can see exactly where it came from. A page can set its own link with `docs: <https address>` in its frontmatter, for a component that is ported or bespoke. When a team replaces the placeholder with components that aren't shadcn/ui, remove `origin` (or set `docs:` per page) so pages stop linking to shadcn.
 
 ## Icons
 

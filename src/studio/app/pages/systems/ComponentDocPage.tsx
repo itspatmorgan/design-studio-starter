@@ -10,6 +10,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/co
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/studio/components/table';
 import { loadComponentDoc, loadExamples, loadExamplesSource, loadProps, useDocsVersion, type Example } from '@/studio/app/data/loadSystemDocs';
 import type { ComponentPropsDoc, PropDoc, SystemComponentDoc } from '@/studio/systemDocs';
+import { shadcnDocsUrl } from '@/studio/systemSources';
 import type { DesignSystem } from '@/studio/app/data/types';
 
 // One component's page in the Systems section, built from its files: the title and description
@@ -93,8 +94,15 @@ function PropsTable({ props }: { props: PropDoc[] }) {
   );
 }
 
-// `onEdit` shows an Edit button that opens the component's files in the editor (dev only).
-export function ComponentDocPage({ system, sys, component, onEdit }: { system: string; sys: DesignSystem; component: SystemComponentDoc; onEdit?: () => void }) {
+// A link from a page's frontmatter, if it's a web address (never javascript: or the like).
+function webLink(url: string | null) {
+  try { const u = new URL(url ?? ''); return u.protocol === 'https:' || u.protocol === 'http:' ? u : null; } catch { return null; }
+}
+
+// `onEdit` shows an Edit button that opens the component's files in the editor (dev only). `origin`
+// is where the system's components come from: 'shadcn' links the page to that component's shadcn/ui
+// docs, unless its frontmatter gives a link of its own.
+export function ComponentDocPage({ system, sys, component, origin, onEdit }: { system: string; sys: DesignSystem; component: SystemComponentDoc; origin: 'shadcn' | null; onEdit?: () => void }) {
   const { source, examples, doc } = component.files;
   const [loaded, setLoaded] = useState<Loaded>({});
   const version = useDocsVersion();
@@ -111,11 +119,24 @@ export function ComponentDocPage({ system, sys, component, onEdit }: { system: s
   }, [system, source, examples, doc, version]);
 
   const stem = (source ?? component.name).replace(/^.*\//, '').replace(/\.[jt]sx$/, '');
+  const docsLink = webLink(component.docsUrl) ?? webLink(origin === 'shadcn' && source ? shadcnDocsUrl(stem) : null);
   const Doc = loaded.doc;
   return (
     <>
       <div className="relative">
-        <PageHeader title={component.title} description={component.description || undefined} />
+        <PageHeader
+          title={component.title}
+          description={component.description || docsLink ? (
+            <>
+              {component.description}
+              {docsLink && (
+                <a href={docsLink.href} target="_blank" rel="noreferrer" className={`block font-medium text-foreground underline underline-offset-4 ${component.description ? 'mt-2' : ''}`}>
+                  {docsLink.hostname === 'ui.shadcn.com' ? 'shadcn/ui docs' : `Docs on ${docsLink.hostname}`} ↗
+                </a>
+              )}
+            </>
+          ) : undefined}
+        />
         {onEdit && <Button variant="outline" size="sm" onClick={onEdit} className="absolute top-1 right-0">Edit</Button>}
       </div>
       {Doc ? <Prose className={PAGE_PROSE}><Doc /></Prose> : !doc && <Note>No page yet. Add <code>{stem}.md</code> next to the component to describe it and say when to use it.</Note>}

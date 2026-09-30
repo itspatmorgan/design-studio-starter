@@ -1,6 +1,6 @@
 import { PortalContext } from '@/lib/portal';
 import type { DesignSystem } from '@/studio/app/data/types';
-import { useEffect, useRef, useState, type ComponentType, type ReactNode, type Ref } from 'react';
+import { useEffect, useRef, useState, type ReactNode, type Ref } from 'react';
 import { cn } from '@/lib/utils';
 import { KNOWN_COLORS, type ThemeToken } from '@/studio/themeTokens';
 
@@ -92,15 +92,12 @@ function colorGroups(tokens: Pick<ThemeToken, 'name' | 'subgroup'>[]) {
   return [...groups].sort(([a], [b]) => rank(a) - rank(b));
 }
 
-// scopeClass puts the rows inside the system's theme (e.g. .product-theme). `tokens` are the ones
-// its theme defines; without them (the studio system), shadcn/ui's are listed.
-export function ColorTokens({ scopeClass, tokens }: { scopeClass: string; tokens?: ThemeToken[] }) {
-  const colors = tokens
-    ? tokens.filter((t) => t.group === 'colors')
-    : Object.entries(KNOWN_COLORS).map(([name, { group }]) => ({ name: `--${name}`, subgroup: group }));
+// scopeClass puts the rows inside the system's theme (e.g. .product-theme); `tokens` are the ones
+// its theme defines.
+export function ColorTokens({ scopeClass, tokens }: { scopeClass: string; tokens: ThemeToken[] }) {
   return (
     <div className={cn(scopeClass, 'space-y-10 text-foreground')}>
-      {colorGroups(colors).map(([heading, names]) => (
+      {colorGroups(tokens.filter((t) => t.group === 'colors')).map(([heading, names]) => (
         <div key={heading}>
           <h3 className="mb-3 text-[16px] font-semibold leading-6 tracking-tight text-foreground">{heading}</h3>
           <div className="divide-y divide-border/60">
@@ -110,42 +107,6 @@ export function ColorTokens({ scopeClass, tokens }: { scopeClass: string; tokens
           </div>
         </div>
       ))}
-    </div>
-  );
-}
-
-// --- Typography -------------------------------------------------------------
-
-function FontFamily() {
-  const [ref, value] = useComputed((s) => s.fontFamily);
-  return (
-    <div ref={ref} className="mb-6 rounded-lg border border-border p-4">
-      <p className="text-2xl font-semibold text-foreground">Inter Variable</p>
-      <p className="mt-1 font-mono text-xs text-muted-foreground">font-family: {value}</p>
-    </div>
-  );
-}
-
-export type TypeSampleSpec = { label: string; className: string };
-
-function TypeSample({ label, className }: TypeSampleSpec) {
-  const [ref, value] = useComputed<HTMLSpanElement>((s) => `${s.fontSize} / ${s.lineHeight}, ${s.fontWeight}`);
-  return (
-    <div className="grid grid-cols-[180px_1fr_200px] items-baseline gap-4 border-b border-border py-3 last:border-0">
-      <span className="font-mono text-xs text-muted-foreground">{label}</span>
-      <span ref={ref} className={cn('text-foreground', className)}>The quick brown fox</span>
-      <span className="font-mono text-xs text-muted-foreground">{value}</span>
-    </div>
-  );
-}
-
-export function TypeScale({ scopeClass, samples }: { scopeClass: string; samples: TypeSampleSpec[] }) {
-  return (
-    <div className={cn(scopeClass, 'text-foreground')}>
-      <FontFamily />
-      <div className="rounded-lg border border-border px-4">
-        {samples.map((s) => <TypeSample key={s.label} {...s} />)}
-      </div>
     </div>
   );
 }
@@ -213,15 +174,6 @@ export function IconsPage({ icons, scopeClass }: { icons: NonNullable<DesignSyst
   );
 }
 
-export const slug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-
-// One component page: its name, what it's for, where it lives, a live demo, and its docs.
-// Prototype systems' demos render in SystemFrame, so they get the system's theme.
-export type ComponentSpec = { name: string; file: string; description?: string; demo: ComponentType };
-
-// shadcn/ui's page for a component, from its file name ("input-group.tsx" → .../base/input-group).
-export const shadcnDocs = (file: string) => `https://ui.shadcn.com/docs/components/base/${file.replace(/\.tsx$/, '')}`;
-
 // A prototype system's theme class and portal container, like ViewFrame gives each view,
 // so demos and their pop-ups keep the system's look. The studio system has no class.
 export function SystemFrame({ themeClass, children }: { themeClass: string; children: ReactNode }) {
@@ -232,33 +184,5 @@ export function SystemFrame({ themeClass, children }: { themeClass: string; chil
       <PortalContext.Provider value={portal}>{children}</PortalContext.Provider>
       <div ref={setPortal} />
     </div>
-  );
-}
-
-export function ComponentDemo({ component, themeClass, dir }: { component: ComponentSpec; themeClass: string; dir: string }) {
-  const { file, demo: Demo } = component;
-  return (
-    <>
-      <SystemFrame themeClass={themeClass}>
-        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-background p-6">
-          <Demo />
-        </div>
-      </SystemFrame>
-      <dl className="mt-8 space-y-3 text-sm">
-        <div>
-          <dt className="text-muted-foreground">File</dt>
-          <dd className="font-mono text-xs text-foreground">{dir}{file}</dd>
-        </div>
-        <div>
-          <dt className="text-muted-foreground">Docs</dt>
-          <dd>
-            <a href={shadcnDocs(file)} target="_blank" rel="noreferrer" className="font-medium text-foreground underline underline-offset-4">
-              shadcn/ui
-            </a>
-            <span className="text-muted-foreground">, which links to the Base UI API it's built on</span>
-          </dd>
-        </div>
-      </dl>
-    </>
   );
 }

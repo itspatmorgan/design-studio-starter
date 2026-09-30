@@ -5,7 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_SYSTEMS } from '../src/systems/index.ts';
+import { SYSTEM_SOURCES } from '../src/studio/systemSources.ts';
 import { docTemplates } from '../src/studio/systemScaffold.ts';
 import { systemDocs } from './lib/system-docs.js';
 import { extractProps } from './lib/extract-props.js';
@@ -22,12 +22,12 @@ function mainExport(source, stem) {
 
 // Returns the files it wrote, relative to the repo. Throws with a message for a bad system or component.
 export function scaffold(system, only) {
-  const sys = PROTOTYPE_SYSTEMS[system];
-  if (!sys) throw new Error(`"${system}" isn't a prototype system. The systems are: ${Object.keys(PROTOTYPE_SYSTEMS).join(', ')}.`);
-  const dir = path.join(ROOT, sys.dir, 'components');
+  const sys = Object.hasOwn(SYSTEM_SOURCES, system) ? SYSTEM_SOURCES[system] : null;
+  if (!sys) throw new Error(`"${system}" isn't a system. The systems are: ${Object.keys(SYSTEM_SOURCES).join(', ')}.`);
+  const dir = path.join(ROOT, sys.components);
   const all = systemDocs(dir).components;
   const targets = only ? all.filter((c) => c.slug === only.toLowerCase() || c.name.toLowerCase() === only.toLowerCase()) : all;
-  if (only && !targets.length) throw new Error(`No component named "${only}" in ${sys.dir}components/. It needs a component file first (for example, npx shadcn add ${only}).`);
+  if (only && !targets.length) throw new Error(`No component named "${only}" in ${sys.components}/. It needs a component file first (for example, npx shadcn add ${only}).`);
   const written = [];
   for (const c of targets) {
     if (!c.files.source) continue; // docs only (the components come from elsewhere): nothing to base them on

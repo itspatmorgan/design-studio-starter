@@ -20,8 +20,9 @@ export type SystemComponent = {
   };
 };
 
-// A component as the manifest carries it: its files, and what its markdown says about it.
-export type SystemComponentDoc = SystemComponent & { title: string; description: string; category: string | null };
+// A component as the manifest carries it: its files, and what its markdown says about it (`docs` in
+// its frontmatter is a link to its documentation elsewhere).
+export type SystemComponentDoc = SystemComponent & { title: string; description: string; category: string | null; docsUrl: string | null };
 
 // A description from a component's comments, made short enough to read at a glance: its first
 // sentence, without Markdown backticks, cut at a word if it's still longer than `max`.

@@ -2,14 +2,15 @@
 // whatever the theme defines without anyone writing a spec: colors, fonts, radii, shadows,
 // spacing, and the rest. It reads the custom properties set under the system's class
 // (`.product-theme`, and `.dark .product-theme` for dark mode) and in any `@theme` block, and
-// sorts each into a group by its name and value. Only names come out: the pages read the
-// values live, so they follow the color mode and can't go stale.
+// sorts each into a group by its name and value. The pages read the values live, so they follow the
+// color mode and can't go stale; the declared value is kept for a token the browser doesn't hold.
 // Nothing here reads a disk or imports anything, so Node scripts and the app can both load it.
 
 export type TokenGroup = 'colors' | 'typography' | 'radius' | 'shadows' | 'spacing' | 'other';
 
 export type ThemeToken = {
   name: string;             // "--primary"
+  value: string;            // as the theme writes it, for when the browser has no value of its own (an @theme inline one)
   group: TokenGroup;
   subgroup: string | null;  // colors only: "Surfaces", "Blue", ... (null: no name to give it)
   dark: boolean;            // it has its own dark value
@@ -118,8 +119,11 @@ function groupOf(name: string, value: string, values: Map<string, string>): Toke
   return 'other';
 }
 
-// The tokens a theme defines, in the order they first appear. `scope` is the system's class, like "product-theme".
-export function themeTokens(css: string, scope: string): ThemeToken[] {
+// The tokens a theme defines, in the order they first appear. `scope` is the system's class, like
+// "product-theme", or the selectors that hold its light and dark values (":root" and ".dark", for
+// a theme set on the page itself).
+export function themeTokens(css: string, scope: string | { light: string; dark: string }): ThemeToken[] {
+  const where = typeof scope === 'string' ? { light: `.${scope}`, dark: `.dark .${scope}` } : scope;
   const light = new Map<string, string>();
   const dark = new Set<string>();
   const darkValues = new Map<string, string>();
@@ -128,8 +132,8 @@ export function themeTokens(css: string, scope: string): ThemeToken[] {
       if (selector.startsWith('@theme')) { for (const [n, v] of declarationsOf(body)) light.set(n, v); continue; }
       if (selector.startsWith('@')) { visit(blocksOf(body)); continue; } // @media, @layer, ...
       const selectors = selector.split(',').map((s) => s.trim());
-      if (selectors.includes(`.${scope}`)) for (const [n, v] of declarationsOf(body)) light.set(n, v);
-      if (selectors.includes(`.dark .${scope}`)) for (const [n, v] of declarationsOf(body)) { dark.add(n); darkValues.set(n, v); }
+      if (selectors.includes(where.light)) for (const [n, v] of declarationsOf(body)) light.set(n, v);
+      if (selectors.includes(where.dark)) for (const [n, v] of declarationsOf(body)) { dark.add(n); darkValues.set(n, v); }
     }
   };
   visit(blocksOf(stripComments(css)));
@@ -141,7 +145,7 @@ export function themeTokens(css: string, scope: string): ThemeToken[] {
     const alias = value.match(/^var\(\s*(--[\w-]+)\s*\)$/)?.[1];
     if (alias && name === `--color-${alias.slice(2)}` && values.has(alias)) continue;
     const group = groupOf(name, value, values);
-    tokens.push({ name, group, subgroup: group === 'colors' ? colorSubgroup(name) : null, dark: dark.has(name) });
+    tokens.push({ name, value, group, subgroup: group === 'colors' ? colorSubgroup(name) : null, dark: dark.has(name) });
   }
   return tokens;
 }

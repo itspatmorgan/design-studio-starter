@@ -34,6 +34,14 @@ test('a skill needs frontmatter whose name matches its folder', () => {
   assert.equal(skillProblems('review', { name: 'review', description: 'd', compatibility: 'x'.repeat(501) }).length, 1);
 });
 
+test('frontmatter reads quoted strings the way YAML does', () => {
+  const fm = frontmatter('---\na: "say \\"hi\\": ok"\nb: \'it\'\'s fine\'\nc: "plain"\nd: "broken\\q"\n---') as Record<string, unknown> | null;
+  assert.equal(fm?.a, 'say "hi": ok');
+  assert.equal(fm?.b, "it's fine");
+  assert.equal(fm?.c, 'plain');
+  assert.equal(typeof fm?.d, 'string');
+});
+
 test('frontmatter reads block descriptions and ignores nested maps', () => {
   const fm = frontmatter('---\nname: a\ndescription: >\n  First line\n  second line.\nmetadata:\n  author: me\nallowed-tools: Read\n---\nBody') as Record<string, unknown> | null;
   assert.equal(fm?.description, 'First line second line.');

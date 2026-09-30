@@ -14,6 +14,9 @@ const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 const GUIDE = path.join(ROOT, 'src', 'studio', 'guide');
 const SYSTEMS = path.join(ROOT, 'src', 'systems');
+// The app's own system: its components, and its theme (the tokens the Systems pages list).
+const STUDIO_COMPONENTS = path.join(ROOT, 'src', 'studio', 'components');
+const STUDIO_THEME = path.join(ROOT, 'src', 'studio', 'styles', 'index.css');
 const CONTRIBUTORS = path.join(ROOT, 'contributors.json');
 // The Handbook's map reads it (src/studio/handbookMap.ts).
 const AGENTS = path.join(ROOT, 'AGENTS.md');
@@ -38,7 +41,8 @@ function relevant(file, kind) {
   if (inside(HANDBOOK, file)) return kind !== 'change';
   // A system's component docs: files coming and going, and edits to the ones that describe a component
   // and to its theme (the tokens it lists).
-  if (inside(SYSTEMS, file)) return kind !== 'change' || /\.(md|examples\.[jt]sx)$|styles[\\/]theme\.css$/.test(file);
+  if (file === STUDIO_THEME) return kind === 'change';
+  if (inside(SYSTEMS, file) || inside(STUDIO_COMPONENTS, file)) return kind !== 'change' || /\.(md|examples\.[jt]sx)$|styles[\\/]theme\.css$/.test(file);
   if (!inside(PROTOS, file)) return false;
   return kind !== 'change' || path.basename(file) === 'meta.json';
 }

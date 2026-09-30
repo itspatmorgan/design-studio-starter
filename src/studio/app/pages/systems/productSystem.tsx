@@ -21,6 +21,7 @@ export const product: DesignSystem = {
           <li>Its styles are scoped under <Code>.product-theme</Code>, with a <Code>.dark .product-theme</Code> block if your product has dark mode.</li>
           <li>Pop-ups render into the portal container from <Code>portal.tsx</Code>, so they keep the product look.</li>
         </ol>
+        <p>The component pages link to shadcn/ui's docs, because these components come from it. If yours don't, remove <Code>origin</Code> from this system's entry in <Code>src/systems/index.ts</Code>.</p>
       </Prose>
     </div>
   ),

@@ -1,23 +1,24 @@
-// `virtual:system-props`: the props of every component in every prototype system, read from their
+// `virtual:system-props`: the props of every component in every system (the app's own too), read from their
 // TypeScript (scripts/lib/extract-props.js), keyed "<system>/<file>" ("product/button.tsx").
 // The built site imports it; while the app runs, the same props are served at /__studio/system-props
 // instead (a module can't be re-imported after an edit). Either way they're worked out when a
 // component page first asks, and again after a component file is added, removed or edited.
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_SYSTEMS } from '../src/systems/index.ts';
+import { SYSTEM_SOURCES } from '../src/studio/systemSources.ts';
 import { systemDocs } from './lib/system-docs.js';
 import { extractProps } from './lib/extract-props.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SYSTEMS = path.join(ROOT, 'src', 'systems') + path.sep;
+// Any file under a system's components folder can change its props.
+const inComponents = (file) => Object.values(SYSTEM_SOURCES).some((s) => file.startsWith(path.join(ROOT, s.components) + path.sep));
 const ID = 'virtual:system-props';
 const RESOLVED = '\0' + ID;
 
 function compute() {
   const keyed = [];
-  for (const [id, sys] of Object.entries(PROTOTYPE_SYSTEMS)) {
-    const dir = path.join(ROOT, sys.dir, 'components');
+  for (const [id, sys] of Object.entries(SYSTEM_SOURCES)) {
+    const dir = path.join(ROOT, sys.components);
     for (const c of systemDocs(dir).components) if (c.files.source) keyed.push([`${id}/${c.files.source}`, path.join(dir, c.files.source)]);
   }
   const byFile = extractProps(keyed.map(([, file]) => file), ROOT);
@@ -42,7 +43,7 @@ export default function systemProps() {
         try { cache ??= compute(); res.end(JSON.stringify(cache)); } catch (e) { res.statusCode = 500; res.end(JSON.stringify({ error: e.message })); }
       });
       const stale = (file) => {
-        if (!file.startsWith(SYSTEMS) || !/\.[jt]sx$/.test(file)) return;
+        if (!inComponents(file) || !/\.[jt]sx$/.test(file)) return;
         cache = null;
         const mod = server.moduleGraph.getModuleById(RESOLVED);
         if (mod) server.moduleGraph.invalidateModule(mod);

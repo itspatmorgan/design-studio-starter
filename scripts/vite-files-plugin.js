@@ -41,7 +41,7 @@ import { resolveContributor } from './resolve-contributor.js';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { HELPER_FOLDER } from '../src/studio/fileTypes/index.ts';
 import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../src/studio/roots.ts';
-import { PROTOTYPE_SYSTEMS } from '../src/systems/index.ts';
+import { SYSTEM_SOURCES } from '../src/studio/systemSources.ts';
 import { scaffold } from './scaffold-component-docs.js';
 import { opProblem } from '../src/studio/handbookRules.ts';
 import { SKILL_FILE, descriptionProblem, nameProblem, skillProblems } from '../src/studio/skills.ts';
@@ -50,7 +50,9 @@ import { frontmatter } from './lib/frontmatter.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
-const SYSTEMS = path.join(ROOT, 'src', 'systems');
+// Each system's components folder, to tell which system a file belongs to.
+const COMPONENT_DIRS = Object.entries(SYSTEM_SOURCES).map(([id, s]) => [id, path.join(ROOT, s.components) + path.sep]);
+const systemOf = (file) => COMPONENT_DIRS.find(([, dir]) => file.startsWith(dir));
 const NAME = /^[a-z0-9][a-z0-9._-]*$/i;
 const TRASH = path.join(ROOT, '.trash');
 const BATCH_MS = 50;
@@ -59,9 +61,9 @@ const MAX_SOURCE_BYTES = 750 * 1024; // the same limit as any committed file (ch
 // A prototype's folder, or null if the contributor or prototype name isn't valid. The Handbook
 // sections (src/handbook/docs, rules, skills) are found here too, by their fixed names, to read.
 function prototypeDir(contributor, prototype) {
-  // A prototype system's components: only the systems the registry lists.
+  // A system's components (its own list, systemSources.ts): only the systems listed there.
   if (contributor === SYSTEMS_KEY) {
-    const dir = typeof prototype === 'string' && Object.hasOwn(PROTOTYPE_SYSTEMS, prototype) ? path.join(ROOT, PROTOTYPE_SYSTEMS[prototype].dir, 'components') : null;
+    const dir = typeof prototype === 'string' && Object.hasOwn(SYSTEM_SOURCES, prototype) ? path.join(ROOT, SYSTEM_SOURCES[prototype].components) : null;
     return dir && fs.existsSync(dir) ? dir : null;
   }
   if (contributor === HANDBOOK_KEY) return isHandbookSection(prototype) && fs.existsSync(path.join(HANDBOOK, prototype)) ? path.join(HANDBOOK, prototype) : null;
@@ -317,7 +319,7 @@ export default function filesPlugin() {
     // the file itself and let its importers, like those lists, update as usual. Edits to a
     // file are left to Vite's normal hot reload.
     hotUpdate({ type, file, modules }) {
-      if (type === 'update' || !(file.startsWith(PROTOS + path.sep) || file.startsWith(HANDBOOK + path.sep) || file.startsWith(SYSTEMS + path.sep))) return;
+      if (type === 'update' || !(file.startsWith(PROTOS + path.sep) || file.startsWith(HANDBOOK + path.sep) || systemOf(file))) return;
       for (const m of modules) if (m.file === file) this.environment.moduleGraph.invalidateModule(m);
       return modules.filter((m) => m.file !== file);
     },
@@ -431,10 +433,8 @@ export default function filesPlugin() {
           const [section, ...rest] = path.relative(HANDBOOK, file).split(path.sep);
           return rest.length ? { contributor: HANDBOOK_KEY, prototype: section, rel: rest.join('/') } : null;
         }
-        if (file.startsWith(SYSTEMS + path.sep)) {
-          const [id, folder, ...rest] = path.relative(SYSTEMS, file).split(path.sep);
-          return folder === 'components' && rest.length && Object.hasOwn(PROTOTYPE_SYSTEMS, id) ? { contributor: SYSTEMS_KEY, prototype: id, rel: rest.join('/') } : null;
-        }
+        const system = systemOf(file);
+        if (system) return { contributor: SYSTEMS_KEY, prototype: system[0], rel: path.relative(system[1], file).split(path.sep).join('/') };
         const [contributor, prototype, ...rest] = path.relative(PROTOS, file).split(path.sep);
         return contributor && !contributor.startsWith('..') && prototype ? { contributor, prototype, rel: rest.join('/') } : null;
       };

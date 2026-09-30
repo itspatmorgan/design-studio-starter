@@ -1,17 +1,19 @@
 import { useEffect, useState, type ComponentType } from 'react';
 import type { MDXContent } from 'mdx/types';
 import { SYSTEMS_KEY } from '@/studio/roots';
+import { STUDIO_ID } from '@/studio/systemSources';
 import { exampleNames, type ComponentPropsDoc } from '@/studio/systemDocs';
 
-// A component's docs files in a prototype system (src/systems/<system>/components/, see
+// A component's docs files in a system (src/systems/<system>/components/, or src/studio/components/; see
 // src/studio/systemDocs.ts): its examples, the examples file's text, and its Markdown page.
 export type Example = { name: string; Component: ComponentType };
 
 // Vite only loads a file when it is asked for.
+// The app's own system (Studio) keeps its components in /studio/components/.
 const globs = {
-  examples: import.meta.glob<Record<string, unknown>>('/systems/*/components/**/*.examples.{tsx,jsx}'),
-  sources: import.meta.glob<string>('/systems/*/components/**/*.examples.{tsx,jsx}', { query: '?raw', import: 'default' }),
-  docs: import.meta.glob<{ default: MDXContent }>('/systems/*/components/**/*.md'),
+  examples: import.meta.glob<Record<string, unknown>>(['/systems/*/components/**/*.examples.{tsx,jsx}', '/studio/components/**/*.examples.{tsx,jsx}']),
+  sources: import.meta.glob<string>(['/systems/*/components/**/*.examples.{tsx,jsx}', '/studio/components/**/*.examples.{tsx,jsx}'], { query: '?raw', import: 'default' }),
+  docs: import.meta.glob<{ default: MDXContent }>(['/systems/*/components/**/*.md', '/studio/components/**/*.md']),
 };
 
 // In dev, adding or removing a file makes Vite run this file again with new lists. The app keeps
@@ -19,7 +21,7 @@ const globs = {
 // (like loadGuide.ts).
 const state: { globs: typeof globs; listeners: Set<() => void> } = import.meta.hot?.data.state ?? { globs, listeners: new Set() };
 
-const at = (system: string, file: string) => `/systems/${system}/components/${file}`;
+const at = (system: string, file: string) => `${system === STUDIO_ID ? '/studio' : `/systems/${system}`}/components/${file}`;
 
 // The examples an examples file exports: each export named with a capital that is a component,
 // in the order the file lists them (a module's exports come alphabetically).

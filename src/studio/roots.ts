@@ -9,7 +9,8 @@ export const HANDBOOK_KEY = 'handbook';
 
 // A prototype system's components (src/systems/<id>/components/) are opened for editing the same
 // way: under the reserved key "systems" (already an app page URL, so nobody's folder), with the
-// system's id as the prototype. Platform files too: changed in the repo and reviewed.
+// system's id as the prototype ("studio" is the app's own, in src/studio/components/). Platform
+// files too: changed in the repo and reviewed.
 export const SYSTEMS_KEY = 'systems';
 
 // The Handbook's sections: the folders in src/handbook/, in the order they're shown. The shape of
@@ -26,5 +27,5 @@ export const isHandbookSection = (id: string): id is keyof typeof HANDBOOK_SECTI
 // The folder holding an item's files, relative to src/.
 export const rootOf = (contributor: string, id: string) =>
   contributor === HANDBOOK_KEY ? `${HANDBOOK_KEY}/${id}`
-    : contributor === SYSTEMS_KEY ? `${SYSTEMS_KEY}/${id}/components`
+    : contributor === SYSTEMS_KEY ? (id === 'studio' ? 'studio/components' : `${SYSTEMS_KEY}/${id}/components`)
     : `prototypes/${contributor}/${id}`;

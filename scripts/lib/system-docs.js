@@ -4,6 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { componentProblems, discoverComponents, duplicateProblems } from '../../src/studio/systemDocs.ts';
+import { titleOf } from '../../src/studio/systemScaffold.ts';
 import { frontmatter } from './frontmatter.js';
 
 // Every file under dir as a "/"-separated path, skipping hidden files and node_modules.
@@ -36,7 +37,7 @@ export function systemDocs(componentsDir) {
     for (const message of messages) problems.push({ file, message });
     return {
       name: component.name, slug: component.slug,
-      title: str(fm?.title) || component.name, description: str(fm?.description), category: str(fm?.category) || null,
+      title: str(fm?.title) || titleOf(component.name), description: str(fm?.description), category: str(fm?.category) || null, docsUrl: str(fm?.docs) || null,
       files: component.files,
     };
   });

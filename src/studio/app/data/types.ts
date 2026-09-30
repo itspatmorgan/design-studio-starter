@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
-import type { ComponentSpec, TypeSampleSpec } from '@/studio/app/pages/systems/foundations';
 import type { HandbookMap } from '@/studio/handbookMap';
 import type { SystemComponentDoc } from '@/studio/systemDocs';
 import type { ThemeToken } from '@/studio/themeTokens';
+import type { DocsMode } from '@/studio/systemSources';
 
 
 // public/prototypes/manifest.json, written by scripts/build-manifest.js.
@@ -35,22 +35,21 @@ export type GuidePage = {
 // `handbook` holds the Handbook's sections (src/handbook/, see src/studio/roots.ts), shaped like
 // prototypes.
 // `handbookMap` is how an agent reads the Handbook, worked out from the files (handbookMap.ts).
-// `systems` holds each prototype system's components and their docs (systemDocs.ts), and the
-// tokens its theme defines (themeTokens.ts).
+// `systems` holds each system's components and their docs (systemDocs.ts), the tokens its theme
+// defines (themeTokens.ts), and where its components come from (systemSources.ts). The app's own
+// system is one of them.
 export type Manifest = {
   prototypes: Prototype[]; guide: GuidePage[]; handbook: Prototype[]; handbookMap: HandbookMap | null;
-  systems: Record<string, { docs: 'warn' | 'strict'; components: SystemComponentDoc[]; tokens: ThemeToken[] }>;
+  systems: Record<string, { docs: DocsMode; origin: 'shadcn' | null; components: SystemComponentDoc[]; tokens: ThemeToken[] }>;
 };
 
-// One tab on the Systems page.
+// One tab on the Systems page: what only its people can write. Its components and foundations
+// pages come from its files (systemDocs.ts, themeTokens.ts).
 export type DesignSystem = {
   label: string;
   dir: string;            // where its components live, e.g. "src/studio/components/"
-  scopeClass: string;
+  scopeClass: string;     // the class its theme is set under, or "" when it's set on the page (studio)
   intro: ReactNode;
   theme: ReactNode;
-  showRadius?: boolean;
-  typeSamples?: TypeSampleSpec[];
   icons?: { library: string; href: string; snippet: string; grid: ReactNode };
-  categories?: { name: string; components: ComponentSpec[] }[]; // hand-listed component pages (the studio system); prototype systems' come from their files
 };
