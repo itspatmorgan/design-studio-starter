@@ -1,6 +1,6 @@
 import { linkOptions } from '@tanstack/react-router';
 import { itemSlug } from '@/studio/fileTypes';
-import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
+import type { Item, Manifest, Prototype, PrototypeInfo, PrototypeRef } from '@/studio/app/data/types';
 
 // Fetched once, then shared by every route loader. In dev, replaced whenever it changes.
 let manifest: Promise<Manifest> | undefined;
@@ -12,8 +12,38 @@ export function loadManifest(): Promise<Manifest> {
   return manifest;
 }
 
-export const findPrototype = (m: Manifest, contributor: string, prototype: string) =>
+export const findPrototype = (m: Manifest, contributor: string, prototype: string): PrototypeRef | undefined =>
   [...m.prototypes, ...m.handbook].find((p) => p.contributorKey === contributor && p.id === prototype);
+
+// A prototype's items, fetched the first time they're needed (the deployed manifest leaves them out:
+// scripts/build-manifest.js) and then kept on the manifest's entry for it. One fetch per prototype,
+// however many callers ask. The dev server sends items with the manifest, so this returns at once there.
+const fetching = new Map<string, Promise<Prototype>>();
+export function withItems(ref: PrototypeRef): Promise<Prototype> {
+  if (ref.items) return Promise.resolve(ref as Prototype);
+  const key = `${ref.contributorKey}/${ref.id}/${ref.itemsHash ?? ''}`;
+  let pending = fetching.get(key);
+  if (!pending) {
+    const url = `${import.meta.env.BASE_URL}prototypes/items/${encodeURIComponent(ref.contributorKey)}/${encodeURIComponent(ref.id)}.json${ref.itemsHash ? `?v=${ref.itemsHash}` : ''}`;
+    pending = fetch(url)
+      .then((r) => { if (!r.ok) throw new Error(`Couldn't load ${ref.title}'s files (${r.status}).`); return r.json() as Promise<Item[]>; })
+      .then((items) => { ref.items = items; return ref as Prototype; })
+      .finally(() => fetching.delete(key));
+    fetching.set(key, pending);
+  }
+  return pending;
+}
+
+// The prototype at an address, with its items loaded, or undefined.
+export async function loadPrototype(contributor: string, prototype: string): Promise<Prototype | undefined> {
+  const ref = findPrototype(await loadManifest(), contributor, prototype);
+  return ref && withItems(ref);
+}
+
+// Every prototype's items, for what looks across all of them (a canvas that links to any view).
+export async function loadAllItems(): Promise<void> {
+  await Promise.all((await loadManifest()).prototypes.map(withItems));
+}
 
 export { itemSlug };
 
@@ -40,12 +70,12 @@ export function formatDate(date: string | null) {
   return Number.isNaN(d.getTime()) ? date : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-export const newestFirst = (a: Prototype, b: Prototype) => (b.created ?? '').localeCompare(a.created ?? '');
+export const newestFirst = (a: PrototypeInfo, b: PrototypeInfo) => (b.created ?? '').localeCompare(a.created ?? '');
 
 // Where a prototype's links go. The prototype's own URL opens its default view.
-export const prototypeLink = (p: Prototype) =>
+export const prototypeLink = (p: PrototypeInfo) =>
   linkOptions({ to: '/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.id } });
 
 // An item's URL: the prototype's, plus the item's path without its extension.
-export const itemLink = (p: Prototype, item: Item) =>
+export const itemLink = (p: PrototypeInfo, item: Item) =>
   linkOptions({ to: '/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: itemSlug(item.path) } });

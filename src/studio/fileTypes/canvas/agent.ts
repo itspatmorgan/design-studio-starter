@@ -48,7 +48,7 @@ export function createCanvasAgent({ api, proto, item, manifest, editable, persis
       const m = manifest();
       return m.prototypes
         .filter((p) => all || (p.contributorKey === proto.contributorKey && p.id === proto.id))
-        .flatMap((p) => p.items.map((i) => ({ p, i })))
+        .flatMap((p) => (p.items ?? []).map((i) => ({ p, i })))
         .map(({ p, i }) => {
           const path = `/${p.contributorKey}/${p.id}/${i.path.replace(/\.[^./]+$/, '')}`;
           const info = ctx.item(path);

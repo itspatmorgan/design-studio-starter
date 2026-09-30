@@ -16,7 +16,7 @@ import App, { NotFound } from '@/studio/app/shell/App';
 import Index from '@/studio/app/pages/index/Index';
 import { loadGuidePage } from '@/studio/app/data/loadGuide';
 import PrototypeLayout from '@/studio/app/pages/prototype/PrototypeLayout';
-import { findItem, findPrototype, firstItem, itemLabel, loadManifest, setManifest } from '@/studio/app/data/manifest';
+import { findItem, firstItem, itemLabel, loadManifest, loadPrototype, setManifest } from '@/studio/app/data/manifest';
 import { FILE_TYPES, fileTypeModules } from '@/studio/app/data/fileTypes';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { TAB_ID } from '@/studio/app/data/files';
@@ -119,7 +119,7 @@ const prototypeRoute = createRoute({
   path: '$contributor/$prototype',
   validateSearch: (search: Record<string, unknown>): ItemSearch => ({ mode: search.mode === 'source' ? 'source' : undefined }),
   loader: async ({ params }) => {
-    const proto = findPrototype(await loadManifest(), params.contributor, params.prototype);
+    const proto = await loadPrototype(params.contributor, params.prototype).catch(() => undefined);
     if (!proto) throw notFound();
     return { proto };
   },
@@ -131,7 +131,7 @@ const prototypeRoute = createRoute({
 // one is ready. Its file type (src/studio/fileTypes/) loads the file. An unknown address, or a type
 // that isn't installed, shows the not-found page.
 async function itemLoader({ contributor, prototype, _splat }: { contributor: string; prototype: string; _splat?: string }, mode?: ItemSearch['mode']): Promise<ItemData> {
-  const proto = findPrototype(await loadManifest(), contributor, prototype);
+  const proto = await loadPrototype(contributor, prototype).catch(() => undefined);
   // No path in the URL: the prototype's start item, or its first.
   const item = proto && (_splat ? findItem(proto, _splat) : firstItem(proto));
   const type = item && fileTypeModules[item.fileType];

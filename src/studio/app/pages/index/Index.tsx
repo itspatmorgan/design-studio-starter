@@ -5,14 +5,14 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, Search01Icon } from '@hugeicons/core-free-icons';
 import { getRouteApi, Link, useNavigate } from '@tanstack/react-router';
 import { formatDate, newestFirst, prototypeLink } from '@/studio/app/data/manifest';
-import type { Prototype } from '@/studio/app/data/types';
+import type { PrototypeInfo } from '@/studio/app/data/types';
 import { cn } from '@/lib/utils';
 import NewPrototypeButton from '@/studio/app/pages/index/NewPrototypeDialog';
 
 const rootApi = getRouteApi('__root__');
 const indexApi = getRouteApi('/');
 
-function PrototypeCard({ prototype: p }: { prototype: Prototype }) {
+function PrototypeCard({ prototype: p }: { prototype: PrototypeInfo }) {
   const name = p.contributor || p.contributorKey;
   return (
     <Link {...prototypeLink(p)} className="block">
@@ -62,7 +62,7 @@ function SearchBox({ value }: { value: string }) {
   );
 }
 
-const matches = (p: Prototype, q: string) =>
+const matches = (p: PrototypeInfo, q: string) =>
   [p.title, p.description, p.contributor, p.contributorKey, p.id].some((f) => f?.toLowerCase().includes(q));
 
 export default function Index() {
@@ -77,7 +77,7 @@ export default function Index() {
       .filter((p) => !q || matches(p, q))
       .sort(newestFirst);
     // Archived prototypes show here, below the rest. The deployed site leaves them out.
-    const list = (ps: Prototype[]) => (
+    const list = (ps: PrototypeInfo[]) => (
       <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {ps.map((p) => (
           <li key={`${p.contributorKey}/${p.id}`}><PrototypeCard prototype={p} /></li>

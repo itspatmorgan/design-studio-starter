@@ -1,6 +1,7 @@
 // Usage: node scripts/build-manifest.js [--strict] [--deploy]
 //   --strict  exits 1 if any meta.json is invalid
 //   --deploy  leaves archived prototypes and views out (src/studio/archive.ts), for the deployed site
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,7 +21,12 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 const GUIDE = path.join(ROOT, 'src', 'studio', 'guide');
-const OUT = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
+const OUT_DIR = path.join(ROOT, 'public', 'prototypes');
+const OUT = path.join(OUT_DIR, 'manifest.json');
+// Each prototype's items, one file each: items/<contributor>/<prototype>.json. The app fetches a
+// prototype's when it opens it, so the manifest every visitor downloads stays small however many
+// files prototypes hold.
+const ITEMS_DIR = path.join(OUT_DIR, 'items');
 // App page URLs, so they can't be contributor folders. Keep in sync with setup-contributor.js.
 // How many component doc gaps the build lists before summarizing the rest.
 const DOC_WARNINGS = 5;
@@ -90,7 +96,36 @@ function archivedLinkWarnings(kept, archived) {
   return warnings;
 }
 
-// Scans src/prototypes/, src/handbook/, and src/studio/guide/, writes public/prototypes/manifest.json, and returns it.
+// Writes a file only when its text changes, so a dev server doesn't see files it already has as new.
+function writeIfChanged(file, text) {
+  if (fs.existsSync(file) && fs.readFileSync(file, 'utf8') === text) return;
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, text);
+}
+
+// Writes the manifest the app fetches: prototypes without their items (with how many, and a hash
+// of them so a changed list is fetched again), and each prototype's items in its own file. The
+// Handbook's sections are few, so theirs stay in the manifest. Files for prototypes that are gone are removed.
+function writeManifest(manifest) {
+  const wanted = new Set();
+  const prototypes = manifest.prototypes.map(({ items, ...info }) => {
+    const text = JSON.stringify(items);
+    const file = path.join(ITEMS_DIR, info.contributorKey, `${info.id}.json`);
+    wanted.add(file);
+    writeIfChanged(file, text);
+    return { ...info, itemCount: items.length, itemsHash: crypto.createHash('sha1').update(text).digest('hex').slice(0, 8) };
+  });
+  for (const dir of fs.existsSync(ITEMS_DIR) ? fs.readdirSync(ITEMS_DIR, { withFileTypes: true }) : []) {
+    if (!dir.isDirectory()) continue;
+    for (const f of fs.readdirSync(path.join(ITEMS_DIR, dir.name))) {
+      if (!wanted.has(path.join(ITEMS_DIR, dir.name, f))) fs.rmSync(path.join(ITEMS_DIR, dir.name, f), { force: true });
+    }
+    if (!fs.readdirSync(path.join(ITEMS_DIR, dir.name)).length) fs.rmdirSync(path.join(ITEMS_DIR, dir.name));
+  }
+  writeIfChanged(OUT, JSON.stringify({ ...manifest, prototypes }) + '\n');
+}
+
+// Scans src/prototypes/, src/handbook/, and src/studio/guide/, writes public/prototypes/ (manifest.json, and items/), and returns the whole manifest.
 // Problems are printed; errors counts them. The dev server calls this on every change
 // (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
 // Options: `deploy` leaves archived prototypes and views out (see src/studio/archive.ts), `write: false`
@@ -253,10 +288,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
   }
 
   const manifest = { prototypes: deploy ? kept : prototypes, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map, systems };
-  if (write) {
-    fs.mkdirSync(path.dirname(OUT), { recursive: true });
-    fs.writeFileSync(OUT, JSON.stringify(manifest, null, 2) + '\n');
-  }
+  if (write) writeManifest(manifest);
   out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
   if (deploy && archived.length) out.log(`[manifest] Left out of the deployed site: ${archived.length} archived prototype(s)`);
   return { manifest, errors, archived: deploy ? archived : [] };

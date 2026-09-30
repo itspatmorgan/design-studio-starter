@@ -37,6 +37,7 @@ export function resolveItemPath(manifest: Manifest, path: string): { proto: Prot
   try { parts = path.split('/').filter(Boolean).map(decodeURIComponent); } catch { return null; }
   const [contributor, prototype, ...slug] = parts;
   const proto = [...manifest.prototypes, ...manifest.handbook].find((p) => p.contributorKey === contributor && p.id === prototype);
-  const item = proto?.items.find((i) => itemSlug(i.path) === slug.join('/'));
-  return proto && item ? { proto, item } : null;
+  // A prototype whose items aren't loaded yet (manifest.ts) has no items to find.
+  const item = proto?.items?.find((i) => itemSlug(i.path) === slug.join('/'));
+  return proto && item ? { proto: proto as Prototype, item } : null;
 }

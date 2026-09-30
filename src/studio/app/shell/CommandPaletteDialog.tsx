@@ -5,7 +5,7 @@ import {
   Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
 } from '@/studio/components/command';
 import { findItem, findPrototype, firstItem, itemFolder, itemLabel, itemLink, newestFirst, prototypeLink } from '@/studio/app/data/manifest';
-import type { Item } from '@/studio/app/data/types';
+import type { Item, Prototype } from '@/studio/app/data/types';
 
 const rootApi = getRouteApi('__root__');
 
@@ -21,7 +21,9 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
   };
 
   const prototypes = [...manifest.prototypes].sort(newestFirst);
-  const current = params.contributor && params.prototype ? findPrototype(manifest, params.contributor, params.prototype) : undefined;
+  // The open prototype, once its items have loaded (the route loads them: manifest.ts).
+  const openRef = params.contributor && params.prototype ? findPrototype(manifest, params.contributor, params.prototype) : undefined;
+  const current = openRef?.items ? (openRef as Prototype) : undefined;
   const openItem = current && (params._splat ? findItem(current, params._splat) : firstItem(current));
   const isOpen = (item: Item) => item === openItem;
   const onIndex = Boolean(matchRoute({ to: '/' }));

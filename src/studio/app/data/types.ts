@@ -5,14 +5,15 @@ import type { ThemeToken } from '@/studio/themeTokens';
 import type { DocsMode } from '@/studio/systemSources';
 
 
-// public/prototypes/manifest.json, written by scripts/build-manifest.js.
+// public/prototypes/manifest.json, written by scripts/build-manifest.js, with each prototype's items
+// in public/prototypes/items/<contributor>/<prototype>.json.
 // One thing in a prototype the app can open (see src/studio/fileTypes/).
 export type Item = {
   path: string;   // file path in the prototype, e.g. "prototype.tsx" or "checkout/step-1.tsx"
   fileType: string; // the id of the file type that owns it, from its extension ("view", "document")
 };
 
-export type Prototype = {
+export type PrototypeInfo = {
   id: string;             // folder name, e.g. "hello-world"
   contributorKey: string; // contributors.json key, e.g. "patrick"
   title: string;
@@ -21,8 +22,21 @@ export type Prototype = {
   created: string | null;
   system: string;         // meta.json "system", or the first in src/systems/index.ts
   start: string | null;   // meta.json "start", as an item path: the item it opens on
-  items: Item[];          // in file-tree order
   status?: 'archived';    // meta.json "status", when archived; absent means active
+};
+
+// A prototype with its items loaded, which everything that shows a prototype's files needs.
+export type Prototype = PrototypeInfo & {
+  items: Item[];          // in file-tree order
+};
+
+// A prototype in the manifest. The deployed site's manifest leaves out items, so the file list that
+// every visitor downloads stays small; they're fetched when a prototype opens (loadPrototype in
+// manifest.ts). The dev server sends them all.
+export type PrototypeRef = PrototypeInfo & {
+  items?: Item[];
+  itemCount?: number;
+  itemsHash?: string;     // changes when the items do, so a changed list is fetched again
 };
 
 // One Guide page (src/studio/guide/<slug>.md), from its frontmatter.
@@ -40,7 +54,7 @@ export type GuidePage = {
 // defines (themeTokens.ts), and where its components come from (systemSources.ts). The app's own
 // system is one of them.
 export type Manifest = {
-  prototypes: Prototype[]; guide: GuidePage[]; handbook: Prototype[]; handbookMap: HandbookMap | null;
+  prototypes: PrototypeRef[]; guide: GuidePage[]; handbook: Prototype[]; handbookMap: HandbookMap | null;
   systems: Record<string, { docs: DocsMode; origin: 'shadcn' | null; components: SystemComponentDoc[]; tokens: ThemeToken[] }>;
 };
 

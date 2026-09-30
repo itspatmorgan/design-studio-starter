@@ -46,7 +46,12 @@ if ((scene!.studioVersion ?? 1) > FORMAT_VERSION) fail(`${first} was written by 
 // What the tools need to know about the app: the items in every prototype, from the manifest.
 const manifestFile = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
 if (!fs.existsSync(manifestFile)) fail('There is no manifest yet. Run: node scripts/build-manifest.js');
-const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8')) as { prototypes: { contributorKey: string; id: string; items: { path: string; fileType: string }[] }[] };
+const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8')) as { prototypes: { contributorKey: string; id: string }[] };
+// A prototype's items are in a file of their own (scripts/build-manifest.js).
+const itemsOf = (x: { contributorKey: string; id: string }): { path: string; fileType: string }[] => {
+  const file = path.join(ROOT, 'public', 'prototypes', 'items', x.contributorKey, `${x.id}.json`);
+  return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : [];
+};
 const { FILE_TYPES } = await import(pathToFileURL(path.join(ROOT, 'scripts', 'lib', 'file-types.js')).href) as { FILE_TYPES: Record<string, { label: string; preview?: boolean }> };
 
 const title = (p: string) => itemSlug(p).split('/').pop()!.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
@@ -55,14 +60,15 @@ const ctx: Ctx = {
   base,
   item(appPath) {
     const [c, p, ...slug] = appPath.split('/').filter(Boolean).map(decodeURIComponent);
-    const item = manifest.prototypes.find((x) => x.contributorKey === c && x.id === p)?.items.find((i) => itemSlug(i.path) === slug.join('/'));
+    const proto = manifest.prototypes.find((x) => x.contributorKey === c && x.id === p);
+    const item = proto && itemsOf(proto).find((i) => itemSlug(i.path) === slug.join('/'));
     if (!item) return null;
     const type = FILE_TYPES[item.fileType];
     return { path: appPath, title: title(item.path), type: item.fileType, typeLabel: type?.label ?? 'File', preview: Boolean(type?.preview) };
   },
   items: (all) => manifest.prototypes
     .filter((x) => all || (x.contributorKey === contributor && x.id === prototype))
-    .flatMap((x) => x.items.map((i) => `/${x.contributorKey}/${x.id}/${itemSlug(i.path)}`))
+    .flatMap((x) => itemsOf(x).map((i) => `/${x.contributorKey}/${x.id}/${itemSlug(i.path)}`))
     .map((p) => ctx.item(p))
     .filter((i): i is ItemInfo => i !== null),
   linkPath: (link) => (link.startsWith('/') && !link.startsWith('//') ? link : null),
