@@ -338,12 +338,19 @@ export default function FileTree({ proto, current }: FileTreeProps) {
             [
               changeable && <ContextMenuItem key="delete" variant="destructive" onClick={() => setTimeout(() => setConfirmDelete(node))}><HugeiconsIcon icon={Delete02Icon} /> Delete</ContextMenuItem>,
             ],
-          ].map((group) => group.filter(Boolean)).filter((group) => group.length > 0).map((group, i) => (
-            <Fragment key={i}>
-              {i > 0 && <ContextMenuSeparator />}
-              {group}
-            </Fragment>
-          ))}
+          ].map((group) => group.filter(Boolean)).filter((group) => group.length > 0)
+            // A group of one joins the next, so a short menu isn't cut into lines.
+            .reduce<ReactNode[][]>((groups, group) => {
+              const last = groups.at(-1);
+              if (last?.length === 1) { last.push(...group); return groups; }
+              return [...groups, [...group]];
+            }, [])
+            .map((group, i) => (
+              <Fragment key={i}>
+                {i > 0 && <ContextMenuSeparator />}
+                {group}
+              </Fragment>
+            ))}
         </ContextMenuContent>
       </ContextMenu>
     );
