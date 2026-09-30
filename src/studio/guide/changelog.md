@@ -16,4 +16,5 @@ The first release, described in [How I Set Up a Prototyping Sandbox](https://www
 - Contributor folders, `pnpm new`, and `pnpm join`
 - Scope checks before commit, before push, and on push to main
 - The import guard
-- `AGENTS.md`, three rules, and the `setup-contributor` skill
+- The Handbook: team docs, agent rules, and skills, shown in the app, with a fixed shape and a check for it
+- `AGENTS.md`, which points to the Handbook's rules, and the `setup-contributor` skill

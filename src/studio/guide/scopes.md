@@ -12,7 +12,9 @@ Two rules let a whole team work in one repo without stepping on each other.
 
 > You can change anything in your folder, but only your own folder. Everything else is the platform.
 
-Each person has an entry in `contributors.json` and a folder in `src/prototypes/`. Your folder is yours to break. The platform, meaning the app, the systems, the scripts, and this Guide, is shared, so changes there should go through whoever maintains it.
+Each person has an entry in `contributors.json` and a folder in `src/prototypes/`. Your folder is yours to break. The platform, meaning the app, the systems, the scripts, the [Handbook](/guide/handbook), and this Guide, is shared, so changes there should go through whoever maintains it.
+
+It works like an open source project. Anyone can propose a change to the platform: make it on a branch, and open a pull request. The maintainer decides what goes in.
 
 The scope check sorts every changed file into one of two buckets: your folder, or the platform.
 

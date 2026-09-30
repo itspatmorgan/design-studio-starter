@@ -10,7 +10,7 @@ The kit works with any coding agent. Everything the agent needs to know lives on
 
 ## AGENTS.md
 
-`AGENTS.md` is the file most coding agents read first. It's short on purpose: who you are, the two scopes, and which rules to read.
+`AGENTS.md` is the file most coding agents read first. It's short on purpose: it only routes, to the rules to read and the skill to follow. Everything it points to is in the [Handbook](/guide/handbook).
 
 ## Rules
 
@@ -19,6 +19,8 @@ Rules in `src/handbook/rules/` are standing knowledge the agent reads every sess
 - `systems.md`: the two systems, icons, and theme colors
 - `prototype-workflow.md`: what a prototype is, and how to build one
 - `contributor-scope.md`: working out who you are, and staying in your folder
+
+Others are read when the task comes up: `documents.md`, `canvases.md`, and `handbook.md`.
 
 Keep them short. A rule that says too much gets followed into situations it wasn't written for.
 
