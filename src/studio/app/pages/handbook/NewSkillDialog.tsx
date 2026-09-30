@@ -1,13 +1,14 @@
 // "New skill" in the Handbook's Skills tab. A skill has to follow the Agent Skills format
 // (https://agentskills.io/specification): a name in lowercase words joined by hyphens, which is
-// also its folder's name, and a description that says what it does and when to use it. Those are
-// checked here as you type (src/studio/skills.ts), and again by the file layer.
+// also its folder's name, and a description that says what it does and when to use it. The
+// dialog stays short and shows a rule only when it's broken. Those are checked as you type
+// (src/studio/skills.ts), and again by the file layer.
 import { useState } from 'react';
-import { DESCRIPTION_MAX, NAME_MAX, descriptionProblem, nameProblem } from '@/studio/skills';
+import { NAME_MAX, descriptionProblem, nameProblem } from '@/studio/skills';
 import { Button } from '@/studio/components/button';
 import { Input } from '@/studio/components/input';
 import { Textarea } from '@/studio/components/textarea';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
 
 type Props = { open: boolean; onOpenChange: (open: boolean) => void; onCreate: (name: string, description: string) => Promise<void> };
 
@@ -48,7 +49,6 @@ function Form({ onCreate, onCancel }: { onCreate: Props['onCreate']; onCancel: (
     <form onSubmit={(e) => { e.preventDefault(); submit(); }} className="grid gap-4">
       <DialogHeader>
         <DialogTitle>New skill</DialogTitle>
-        <DialogDescription>A procedure your agent follows when you ask. It's created as a folder in src/handbook/skills/, with a SKILL.md that your agent reads to decide when to use it.</DialogDescription>
       </DialogHeader>
       <label className="grid gap-1.5 text-sm font-medium">
         Name
@@ -61,21 +61,19 @@ function Form({ onCreate, onCancel }: { onCreate: Props['onCreate']; onCancel: (
           aria-invalid={Boolean(nameError)}
           className="font-mono"
         />
-        <span className={nameError ? 'text-xs font-normal text-destructive' : 'text-xs font-normal text-muted-foreground'}>
-          {nameError ? `A skill's name ${nameError}` : 'Lowercase letters, numbers, and hyphens. It\'s also the folder\'s name.'}
-        </span>
+        {nameError && <span className="text-xs font-normal text-destructive">A skill's name {nameError}</span>}
       </label>
       <label className="grid gap-1.5 text-sm font-medium">
         Description
         <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          rows={4}
-          placeholder="Reviews a design against the team's principles. Use when someone asks for a critique or a principles check."
+          rows={3}
+          placeholder="Reviews a design against the team's principles. Use when someone asks for a critique."
           aria-invalid={Boolean(descriptionError)}
         />
         <span className={descriptionError ? 'text-xs font-normal text-destructive' : 'text-xs font-normal text-muted-foreground'}>
-          {descriptionError ? `The description ${descriptionError}` : `What it does and when to use it, up to ${DESCRIPTION_MAX} characters. Agents read this to decide when to use the skill.`}
+          {descriptionError ? `The description ${descriptionError}` : 'What it does, and when to use it.'}
         </span>
       </label>
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
