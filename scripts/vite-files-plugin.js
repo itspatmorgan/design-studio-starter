@@ -3,6 +3,7 @@
 //
 //   GET  /__studio/me                                       your contributors.json key
 //   GET  /__studio/files?contributor=<key>&prototype=<id>   the prototype's files and folders
+//        (contributor "handbook" reads a Handbook section, src/handbook/<id>/, which is read-only)
 //   GET  /__studio/file?contributor=<key>&prototype=<id>&path=<file>   an item's text and its version
 //   POST /__studio/write   { contributor, prototype, path, content, base }  save an item you own (Source view)
 //   POST /__studio/reveal   { contributor, prototype, path }  show a file in Finder
@@ -32,18 +33,22 @@ import { buildManifest } from './build-manifest.js';
 import { createPrototype, renamePrototype } from './create-prototype.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from './resolve-contributor.js';
-import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
+import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { HELPER_FOLDER } from '../src/studio/fileTypes/index.ts';
+import { HANDBOOK_KEY, isHandbookSection } from '../src/studio/roots.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
+const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 const NAME = /^[a-z0-9][a-z0-9._-]*$/i;
 const TRASH = path.join(ROOT, '.trash');
 const BATCH_MS = 50;
 const MAX_SOURCE_BYTES = 750 * 1024; // the same limit as any committed file (check-asset-size.js)
 
-// A prototype's folder, or null if the contributor or prototype name isn't valid.
+// A prototype's folder, or null if the contributor or prototype name isn't valid. The Handbook's
+// sections (src/handbook/docs, rules, skills) are found here too, by their fixed names, to read.
 function prototypeDir(contributor, prototype) {
+  if (contributor === HANDBOOK_KEY) return isHandbookSection(prototype) && fs.existsSync(path.join(HANDBOOK, prototype)) ? path.join(HANDBOOK, prototype) : null;
   if (!NAME.test(contributor ?? '') || !NAME.test(prototype ?? '')) return null;
   const dir = path.join(PROTOS, contributor, prototype);
   return fs.existsSync(path.join(dir)) ? dir : null;
@@ -98,11 +103,16 @@ const viewKey = (rel) => rel.replace(/\.[^./]+$/, '');
 
 // An existing item file (a view or document, not a helper in components/) in the prototype,
 // as its real path, or null. The Source view reads and saves only these: never meta.json,
-// hidden files, or anything outside the prototype.
-function itemFile(dir, rel) {
-  if (typeof rel !== 'string' || !fileTypeOf(rel) || rel.split('/').some((part) => part === HELPER_FOLDER || part.startsWith('.'))) return null;
+// hidden files, or anything outside the prototype. In the Handbook, a file is an item if it opens
+// as a document or as text, and its folders can be named anything but hidden.
+function itemFile(dir, rel, contributor) {
+  const handbook = contributor === HANDBOOK_KEY;
+  const typeOf = handbook ? handbookTypeOf : fileTypeOf;
+  if (typeof rel !== 'string' || !typeOf(rel) || rel.split('/').some((part) => (!handbook && part === HELPER_FOLDER) || part.startsWith('.'))) return null;
   const file = resolveInside(dir, rel);
-  return file && fs.statSync(file).isFile() ? file : null;
+  if (!file || !fs.statSync(file).isFile()) return null;
+  // Text only: the Handbook's plain-text fallback mustn't hand out binary files.
+  return handbook && FILE_TYPES[typeOf(rel)].fallback && !isTextFile(file) ? null : file;
 }
 
 // A file's version is a hash of its text, so the Source view can tell when it changed on disk.
@@ -111,6 +121,9 @@ const versionOf = (text) => crypto.createHash('sha1').update(text).digest('hex')
 // The contents of a new file: its file type's template, by extension (src/studio/fileTypes/<type>/type.ts).
 // Files of no type start empty.
 const templateFor = (name) => FILE_TYPES[fileTypeOf(name)]?.template?.(name) ?? '';
+
+// The Handbook is read-only in the app: its files are platform files, changed in the repo and reviewed.
+const HANDBOOK_ERROR = 'The Handbook is read-only here. Its files are platform files: ask your agent to change them, and they go through review.';
 
 // Why you can't change a prototype: it's someone else's, or you aren't set up yet.
 const ownerError = (key) => (key
@@ -223,7 +236,7 @@ export default function filesPlugin() {
     // the file itself and let its importers, like those lists, update as usual. Edits to a
     // file are left to Vite's normal hot reload.
     hotUpdate({ type, file, modules }) {
-      if (type === 'update' || !file.startsWith(PROTOS + path.sep)) return;
+      if (type === 'update' || !(file.startsWith(PROTOS + path.sep) || file.startsWith(HANDBOOK + path.sep))) return;
       for (const m of modules) if (m.file === file) this.environment.moduleGraph.invalidateModule(m);
       return modules.filter((m) => m.file !== file);
     },
@@ -244,7 +257,7 @@ export default function filesPlugin() {
         if (req.method === 'GET' && url.pathname === '/me') return send(res, 200, { key: me() });
         if (req.method === 'GET' && url.pathname === '/file') {
           const dir = prototypeDir(url.searchParams.get('contributor'), url.searchParams.get('prototype'));
-          const file = dir && itemFile(dir, url.searchParams.get('path'));
+          const file = dir && itemFile(dir, url.searchParams.get('path'), url.searchParams.get('contributor'));
           if (!file) return send(res, 404, { error: 'This file no longer exists.' });
           if (fs.statSync(file).size > MAX_SOURCE_BYTES) return send(res, 413, { error: 'This file is too large to show here. Open it in your editor.' });
           const content = fs.readFileSync(file, 'utf8');
@@ -253,8 +266,9 @@ export default function filesPlugin() {
         if (req.method === 'POST' && url.pathname === '/write') {
           const { contributor, prototype, path: rel, content, base } = await readJson(req);
           const dir = prototypeDir(contributor, prototype);
-          const file = dir && itemFile(dir, rel);
+          const file = dir && itemFile(dir, rel, contributor);
           if (!file) return send(res, 404, { error: 'This file no longer exists.' });
+          if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_ERROR });
           // Contributor scope: you can change only your own folder.
           if (contributor !== me()) return send(res, 403, { error: ownerError(me()) });
           if (typeof content !== 'string' || Buffer.byteLength(content) > MAX_SOURCE_BYTES) return send(res, 413, { error: 'This file is too large to save here. Keep files under 750 KB.' });
@@ -267,6 +281,7 @@ export default function filesPlugin() {
           const body = await readJson(req);
           const dir = prototypeDir(body.contributor, body.prototype);
           if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
+          if (body.contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_ERROR });
           // Contributor scope: you can change only your own folder.
           if (body.contributor !== me()) return send(res, 403, { error: ownerError(me()) });
           try {
@@ -293,6 +308,7 @@ export default function filesPlugin() {
           const { contributor, prototype, title, description } = await readJson(req);
           const dir = prototypeDir(contributor, prototype);
           if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
+          if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_ERROR });
           if (contributor !== me()) return send(res, 403, { error: ownerError(me()) });
           try {
             const { id, manifest } = renamePrototype({ key: contributor, id: prototype, title, description });
@@ -306,6 +322,7 @@ export default function filesPlugin() {
           const { contributor, prototype } = await readJson(req);
           const dir = prototypeDir(contributor, prototype);
           if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
+          if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_ERROR });
           if (contributor !== me()) return send(res, 403, { error: ownerError(me()) });
           const trashedTo = trash(dir);
           const { manifest } = buildManifest();
@@ -323,12 +340,21 @@ export default function filesPlugin() {
         next();
       });
 
-      // Tell the app which prototypes' files changed, batched.
+      // Tell the app which prototypes' (or Handbook sections') files changed, batched.
       let timer = null;
       const changed = new Set();
+      // A file's contributor, prototype, and path in it: a prototype's, or a Handbook section's.
+      const locate = (file) => {
+        const inHandbook = file.startsWith(HANDBOOK + path.sep);
+        const [contributor, prototype, ...rest] = inHandbook
+          ? [HANDBOOK_KEY, ...path.relative(HANDBOOK, file).split(path.sep)]
+          : path.relative(PROTOS, file).split(path.sep);
+        return contributor && !contributor.startsWith('..') && prototype ? { contributor, prototype, rel: rest.join('/') } : null;
+      };
       const onEvent = (file) => {
-        const [contributor, prototype] = path.relative(PROTOS, file).split(path.sep);
-        if (!contributor || contributor.startsWith('..') || !prototype) return;
+        const at = locate(file);
+        if (!at) return;
+        const { contributor, prototype } = at;
         changed.add(`${contributor}/${prototype}`);
         clearTimeout(timer);
         timer = setTimeout(() => {
@@ -341,9 +367,9 @@ export default function filesPlugin() {
       // An item file's text changed on disk (an agent, an editor, or a save from the Source view):
       // an open Source view for it reloads or asks. Not batched: it is one file at a time.
       server.watcher.on('change', (file) => {
-        const [contributor, prototype, ...rest] = path.relative(PROTOS, file).split(path.sep);
-        const rel = rest.join('/');
-        if (!contributor || contributor.startsWith('..') || !prototype || !fileTypeOf(rel)) return;
+        const at = locate(file);
+        if (!at || !(at.contributor === HANDBOOK_KEY ? handbookTypeOf : fileTypeOf)(at.rel)) return;
+        const { contributor, prototype, rel } = at;
         server.ws.send({ type: 'custom', event: 'studio:file', data: { contributor, prototype, path: rel } });
       });
     },

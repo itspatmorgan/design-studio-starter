@@ -5,6 +5,8 @@
 // Each loader file must also call import.meta.hot.accept() itself, at the bottom: Vite finds
 // self-accepting files by reading their own source, so it can't be done in here. Without it, a
 // new file reloads the whole page.
+import { rootOf } from '@/studio/roots';
+
 type Glob<M> = Record<string, () => Promise<M>>;
 
 // A file in a prototype: its path in the prototype, like "checkout/step-1.tsx".
@@ -43,7 +45,7 @@ async function compileError(url: string, fallback: unknown) {
 
 export function createLoader<M>(glob: Glob<M>, hot: ImportMeta['hot']) {
   const state: State<M> = hot?.data.state ?? { glob, stamp: Date.now(), loaded: new Map(), waiting: [], incomplete: new Set() };
-  const keyOf = ({ contributor, prototype, path }: ItemFile) => `/prototypes/${contributor}/${prototype}/${path}`;
+  const keyOf = ({ contributor, prototype, path }: ItemFile) => `/${rootOf(contributor, prototype)}/${path}`;
 
   // The importer for a file, or undefined.
   function find(file: ItemFile) {

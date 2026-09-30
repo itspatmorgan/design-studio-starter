@@ -4,15 +4,17 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems/index.ts';
 import { HELPER_FOLDER, itemSlug } from '../src/studio/fileTypes/index.ts';
-import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
+import { HANDBOOK_KEY, HANDBOOK_SECTIONS } from '../src/studio/roots.ts';
+import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { frontmatter } from './lib/frontmatter.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
+const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 const GUIDE = path.join(ROOT, 'src', 'studio', 'guide');
 const OUT = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
 // App page URLs, so they can't be contributor folders. Keep in sync with setup-contributor.js.
-const RESERVED_KEYS = new Set(['systems', 'guide']);
+const RESERVED_KEYS = new Set(['systems', 'guide', HANDBOOK_KEY]);
 
 const dirs = (p) => fs.existsSync(p)
   ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort()
@@ -20,17 +22,45 @@ const dirs = (p) => fs.existsSync(p)
 
 // A prototype's items (see src/studio/fileTypes/), in the order the file tree shows them: at each
 // level, files first, then folders, each alphabetical. Hidden files and components/ are skipped.
-function itemsIn(dir, base = '') {
+// `typeOf` says which type opens a file (or null for a plain file), and `skip` which folders are
+// left out. Links are never followed: a symlink is neither a file nor a folder here.
+const inPrototype = { typeOf: (name) => fileTypeOf(name), skip: (name) => name === HELPER_FOLDER };
+function itemsIn(dir, base = '', { typeOf, skip } = inPrototype) {
   const entries = fs.readdirSync(dir, { withFileTypes: true }).filter((e) => !e.name.startsWith('.'));
   const byName = (a, b) => a.name.localeCompare(b.name);
   const files = entries.filter((e) => e.isFile()).sort(byName)
-    .flatMap((e) => { const fileType = fileTypeOf(e.name); return fileType ? [{ path: base + e.name, fileType }] : []; });
-  const folders = entries.filter((e) => e.isDirectory() && e.name !== HELPER_FOLDER).sort(byName)
-    .flatMap((e) => itemsIn(path.join(dir, e.name), `${base}${e.name}/`));
+    .flatMap((e) => { const fileType = typeOf(e.name, path.join(dir, e.name)); return fileType ? [{ path: base + e.name, fileType }] : []; });
+  const folders = entries.filter((e) => e.isDirectory() && !skip(e.name)).sort(byName)
+    .flatMap((e) => itemsIn(path.join(dir, e.name), `${base}${e.name}/`, { typeOf, skip }));
   return [...files, ...folders];
 }
 
-// Scans src/prototypes/ and src/studio/guide/, writes public/prototypes/manifest.json, and returns it.
+// In the Handbook, a document opens as a document and every other text file opens as text (a
+// script in a skill's folder). Binary and very large files are left out.
+const inHandbook = {
+  typeOf: (name, file) => { const id = handbookTypeOf(name); return id && (!FILE_TYPES[id].fallback || isTextFile(file)) ? id : null; },
+  skip: (name) => name === 'node_modules',
+};
+
+// Problems with a folder's items: two sharing a URL, or a file its type rejects (a view needs a
+// default export, and so on: src/studio/fileTypes/<type>/type.ts). Printed; returns how many.
+function checkItems(dir, items) {
+  let errors = 0;
+  const seen = new Set();
+  for (const item of items) {
+    const file = path.relative(ROOT, path.join(dir, item.path));
+    if (seen.has(itemSlug(item.path))) { console.error(`[manifest] ${file}: another file here has the same name. Rename one; they'd share a URL.`); errors++; }
+    seen.add(itemSlug(item.path));
+    const check = FILE_TYPES[item.fileType].check;
+    if (check) {
+      const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
+      for (const problem of check({ source, frontmatter: frontmatter(source) })) { console.error(`[manifest] ${file}: ${problem}`); errors++; }
+    }
+  }
+  return errors;
+}
+
+// Scans src/prototypes/, src/handbook/, and src/studio/guide/, writes public/prototypes/manifest.json, and returns it.
 // Problems are printed; errors counts them. The dev server calls this on every change
 // (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
 export function buildManifest() {
@@ -58,19 +88,8 @@ export function buildManifest() {
       }
       if (typeof meta?.title !== 'string' || !meta.title.trim()) { skip('needs a "title"'); continue; }
       const items = itemsIn(dir);
-      // Two items can't share a URL (main.tsx next to main.jsx or main.md), and each file type
-      // checks its own files (src/studio/fileTypes/<type>/type.ts): a view needs a default export, and so on.
-      const seen = new Set();
-      for (const item of items) {
-        const file = path.relative(ROOT, path.join(dir, item.path));
-        if (seen.has(itemSlug(item.path))) { console.error(`[manifest] ${file}: another file here has the same name. Rename one; they'd share a URL.`); errors++; }
-        seen.add(itemSlug(item.path));
-        const check = FILE_TYPES[item.fileType].check;
-        if (check) {
-          const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
-          for (const problem of check({ source, frontmatter: frontmatter(source) })) { console.error(`[manifest] ${file}: ${problem}`); errors++; }
-        }
-      }
+      // Two items can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
+      errors += checkItems(dir, items);
       // "start" (optional) is the item the prototype opens on, as in its URL: "checkout/step-1".
       // Without it, the prototype opens on its first item.
       let start = null;
@@ -86,6 +105,17 @@ export function buildManifest() {
         contributor: contributors[contributorKey]?.name ?? '', created: meta.created ?? null, system, start, items,
       });
     }
+  }
+
+  // The Handbook (src/handbook/): a prototype-shaped entry for each section that exists, so the same
+  // file tree and item pages open it. Nobody owns it: the app only reads it.
+  const handbook = [];
+  for (const [id, { title, description }] of Object.entries(HANDBOOK_SECTIONS)) {
+    const dir = path.join(HANDBOOK, id);
+    if (!fs.existsSync(dir)) continue;
+    const items = itemsIn(dir, '', inHandbook);
+    errors += checkItems(dir, items);
+    handbook.push({ id, contributorKey: HANDBOOK_KEY, title, description, contributor: '', created: null, system: DEFAULT_SYSTEM, start: null, items });
   }
 
   // Each prototype system's theme.css may only set values under its own class, like
@@ -117,9 +147,9 @@ export function buildManifest() {
   guide.sort((a, b) => a.order - b.order);
 
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
-  const manifest = { prototypes, guide: guide.map(({ order, ...page }) => page) };
-    fs.writeFileSync(OUT, JSON.stringify(manifest, null, 2) + '\n');
-  console.log(`[manifest] ${prototypes.length} prototype(s), ${guide.length} guide page(s)${errors ? `, ${errors} problem(s) above` : ''}`);
+  const manifest = { prototypes, guide: guide.map(({ order, ...page }) => page), handbook };
+  fs.writeFileSync(OUT, JSON.stringify(manifest, null, 2) + '\n');
+  console.log(`[manifest] ${prototypes.length} prototype(s), ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
   return { manifest, errors };
 }
 

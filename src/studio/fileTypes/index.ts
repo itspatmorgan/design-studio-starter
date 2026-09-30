@@ -15,11 +15,17 @@ export type FileTypeSpec = {
   extensions: readonly string[];        // ".tsx", ".md"
   // The syntax the Source view highlights (src/studio/app/pages/prototype/SourcePane.tsx). Leave it
   // out for a type with no source to show.
-  language?: 'tsx' | 'markdown' | 'json';
+  language?: 'tsx' | 'markdown' | 'json' | 'text';
   // True if the type shows itself live where another item includes it (on a canvas), and false or
   // absent for a card. Its module.tsx provides the Embed; this is for code that can't load that
   // (the command line), to size things.
   preview?: boolean;
+  // True if the type opens in the Handbook (src/handbook/), where every other file opens as plain
+  // text instead of as its own type. (A script in a skill's folder is text there, not a view.)
+  inHandbook?: boolean;
+  // True for the one type that opens any file no other type claims, where the Handbook allows it.
+  // It has no extensions of its own, and prototypes never use it: their other files stay plain.
+  fallback?: boolean;
   // The contents of a new file called `name` ("user-settings.tsx"). Without it, the "+" menu
   // doesn't offer to make this type.
   template?: (name: string) => string;
@@ -38,9 +44,23 @@ export function matchFileType(specs: Record<string, FileTypeSpec>, file: string)
   return null;
 }
 
+// The id of the type that opens files no other type claims, or null if none is installed.
+export function fallbackType(specs: Record<string, FileTypeSpec>): string | null {
+  return Object.entries(specs).find(([, spec]) => spec.fallback)?.[0] ?? null;
+}
+
+// The id of the type that opens a file in the Handbook: its own type if that type opens there,
+// otherwise the fallback (plain text), otherwise null.
+export function handbookType(specs: Record<string, FileTypeSpec>, file: string): string | null {
+  const id = matchFileType(specs, file);
+  return id && specs[id].inHandbook ? id : fallbackType(specs);
+}
+
 // Two types can't own the same extension.
 export function assertUniqueExtensions(specs: Record<string, FileTypeSpec>) {
   const owners = new Map<string, string>();
+  const fallbacks = Object.entries(specs).filter(([, spec]) => spec.fallback).map(([id]) => id);
+  if (fallbacks.length > 1) throw new Error(`File types ${fallbacks.map((id) => `"${id}"`).join(' and ')} are both the fallback. Only one type can open the files no other type claims.`);
   for (const [id, { extensions }] of Object.entries(specs)) {
     for (const ext of extensions) {
       const other = owners.get(ext);

@@ -1,6 +1,6 @@
 // Keeps the manifest live during `pnpm dev`, without reloading the page.
 //
-// Vite already watches every file. When something under src/prototypes/ or src/studio/guide/
+// Vite already watches every file. When something under src/prototypes/, src/handbook/, or src/studio/guide/
 // changes (from the app, an agent, or your editor), this rebuilds the manifest in-process
 // and pushes it to the app over Vite's dev connection. The app swaps it in and refreshes
 // only the routes that use it (see router.tsx), so the open view and scroll position stay.
@@ -11,6 +11,7 @@ import { buildManifest } from './build-manifest.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
+const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 const GUIDE = path.join(ROOT, 'src', 'studio', 'guide');
 const CONTRIBUTORS = path.join(ROOT, 'contributors.json');
 const BATCH_MS = 50;
@@ -31,6 +32,7 @@ const inside = (dir, file) => file === dir || file.startsWith(dir + path.sep);
 function relevant(file, kind) {
   if (file === CONTRIBUTORS) return true;
   if (inside(GUIDE, file)) return file.endsWith('.md');
+  if (inside(HANDBOOK, file)) return kind !== 'change';
   if (!inside(PROTOS, file)) return false;
   return kind !== 'change' || path.basename(file) === 'meta.json';
 }
@@ -40,7 +42,7 @@ export default function manifestWatch() {
     name: 'prototype-manifest-watch',
     apply: 'serve',
     configureServer(server) {
-      server.watcher.add([PROTOS, GUIDE, CONTRIBUTORS]);
+      server.watcher.add([PROTOS, HANDBOOK, GUIDE, CONTRIBUTORS]);
       let timer = null;
       const flush = () => {
         timer = null;

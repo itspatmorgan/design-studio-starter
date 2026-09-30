@@ -10,14 +10,15 @@ src/studio/fileTypes/
 ├── index.ts        what every type shares (FileTypeSpec, itemSlug)
 ├── view/           .tsx, .jsx: React components, opened as pages
 ├── document/       .md: Markdown pages
-└── canvas/         .excalidraw: pages to arrange views, documents, and notes on
+├── canvas/         .excalidraw: pages to arrange views, documents, and notes on
+└── text/           the Handbook's fallback: any other text file (a skill's script), opened read-only
 ```
 
 ## What's in a type's folder
 
 | File | Used by | Holds |
 |------|---------|-------|
-| `type.ts` | the build and the app | `label`, `extensions`, an optional `template` (what "New" writes into a new file), an optional `check` (problems to report, like a missing default export), and an optional `language` (`tsx`, `markdown`, or `json`), and `preview` (true if it shows itself live when another item, like a canvas, includes it), which gives the type a source button in the navigation. It imports only `../index.ts`, because Node loads it directly. |
+| `type.ts` | the build and the app | `label`, `extensions`, an optional `template` (what "New" writes into a new file), an optional `check` (problems to report, like a missing default export), and an optional `language` (`tsx`, `markdown`, or `json`), and `preview` (true if it shows itself live when another item, like a canvas, includes it), which gives the type a source button in the navigation. Two flags are for the Handbook (`src/handbook/`, which the app shows read-only): `inHandbook` (the type opens there, as documents do) and `fallback` (the one type that opens every other text file there, with no extensions of its own). It imports only `../index.ts`, because Node loads it directly. |
 | `module.tsx` | the app | `icon` (in the navigation), `load` (loads the file before its page renders), `Page` (the page itself), and optionally `Embed` (how the type looks when another item, like a canvas, includes it live; without one it shows as a card) |
 | `loader.ts` | the type's own `module.tsx` | a Vite glob of the type's files. It's a separate file because Vite needs the pattern written out, and the file must call `import.meta.hot.accept()` itself. |
 

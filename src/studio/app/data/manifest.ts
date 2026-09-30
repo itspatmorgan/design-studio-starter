@@ -8,12 +8,12 @@ export const setManifest = (m: Manifest) => { manifest = Promise.resolve(m); };
 export function loadManifest(): Promise<Manifest> {
   manifest ??= fetch(`${import.meta.env.BASE_URL}prototypes/manifest.json`)
     .then((r) => r.json() as Promise<Manifest>)
-    .catch(() => ({ prototypes: [], guide: [] }));
+    .catch(() => ({ prototypes: [], guide: [], handbook: [] }));
   return manifest;
 }
 
 export const findPrototype = (m: Manifest, contributor: string, prototype: string) =>
-  m.prototypes.find((p) => p.contributorKey === contributor && p.id === prototype);
+  [...m.prototypes, ...m.handbook].find((p) => p.contributorKey === contributor && p.id === prototype);
 
 export { itemSlug };
 

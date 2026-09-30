@@ -2,6 +2,7 @@
 // deployed site these return null, and the prototype navigation lists views from the manifest.
 import { useEffect, useState } from 'react';
 import type { Manifest, Prototype } from '@/studio/app/data/types';
+import { rootOf } from '@/studio/roots';
 
 export type FileNode = { name: string; path: string; dir: boolean; children?: FileNode[] };
 
@@ -35,12 +36,12 @@ export function useFileTree(proto: Prototype) {
 }
 
 // The file's path from the repo root, like src/prototypes/patrick/hello-world/meta.json.
-export const repoPath = (p: Prototype, file: string) => `src/prototypes/${p.contributorKey}/${p.id}/${file}`;
+export const repoPath = (p: Prototype, file: string) => `src/${rootOf(p.contributorKey, p.id)}/${file}`;
 
 // Opens a file in your code editor, with Vite's built-in /__open-in-editor.
 // It uses $LAUNCH_EDITOR or the editor already running: https://github.com/yyx990803/launch-editor
 export function openInEditor(p: Prototype, file: string) {
-  fetch(`/__open-in-editor?file=${encodeURIComponent(`prototypes/${p.contributorKey}/${p.id}/${file}`)}`);
+  fetch(`/__open-in-editor?file=${encodeURIComponent(`${rootOf(p.contributorKey, p.id)}/${file}`)}`);
 }
 
 // Shows a file in Finder (or your system's file browser).
