@@ -107,7 +107,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
   return (
     <NavHeader className={showInfo ? 'border-b border-sidebar-border pb-3' : 'pb-0'}>
       {withContextMenu(
-        <div className="px-2.5">
+        <div className="pl-3 pr-2.5">
           <div className="-mr-2 flex min-h-8 items-center gap-0.5">
             {renaming ? (
               <div className="min-w-0 flex-1"><TitleInput initial={proto.title} onDone={rename} /></div>

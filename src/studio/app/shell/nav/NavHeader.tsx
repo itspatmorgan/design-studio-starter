@@ -15,7 +15,7 @@ export function NavHeader({ className, children }: { className?: string; childre
 
 export function NavTitle({ children, actions }: { children: ReactNode; actions?: ReactNode }) {
   return (
-    <div className={cn('flex min-h-8 items-center px-2.5', actions && '-mr-2 gap-0.5')}>
+    <div className={cn('flex min-h-8 items-center px-3', actions && '-mr-2 gap-0.5')}>
       <h2 className="min-w-0 flex-1 truncate text-sm font-semibold leading-tight">{children}</h2>
       {actions}
     </div>

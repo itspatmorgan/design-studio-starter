@@ -17,7 +17,9 @@ export function NavList({ children }: { children: ReactNode }) {
 export function NavGroup({ heading, children }: { heading?: string; children: ReactNode }) {
   return (
     <div className="mt-4 space-y-0.5 first:mt-0">
-      {heading && <p className="px-2.5 py-1 text-[12px] font-semibold leading-none text-sidebar-foreground">{heading}</p>}
+      {/* The heading's text starts where a row's text does (same margin and indent), so with no icons in
+          the rows the two line up. */}
+      {heading && <p style={navIndent(0)} className="mx-1 pt-1 pb-1.5 pr-1.5 text-[12px] font-semibold leading-none text-sidebar-foreground">{heading}</p>}
       {children}
     </div>
   );
