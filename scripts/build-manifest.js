@@ -4,9 +4,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems/index.ts';
 import { HELPER_FOLDER, itemSlug } from '../src/studio/fileTypes/index.ts';
-import { HANDBOOK_DESCRIPTION, HANDBOOK_KEY, HANDBOOK_TITLE } from '../src/studio/roots.ts';
+import { HANDBOOK_KEY, HANDBOOK_SECTIONS } from '../src/studio/roots.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { frontmatter } from './lib/frontmatter.js';
+import { handbookProblems } from './lib/handbook-check.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -107,13 +108,19 @@ export function buildManifest() {
     }
   }
 
-  // The Handbook (src/handbook/): one prototype-shaped entry for the whole folder, so the same file
-  // tree and item pages open it. Nobody owns it: the app only reads it.
-  let handbook = null;
+  // The Handbook (src/handbook/): a prototype-shaped entry for each section, so the same file tree
+  // and item pages open it. Nobody owns it: the app only reads it. Its shape is fixed
+  // (scripts/lib/handbook-check.js), and a file or folder out of place is a problem.
+  const handbook = [];
   if (fs.existsSync(HANDBOOK)) {
-    const items = itemsIn(HANDBOOK, '', inHandbook);
-    errors += checkItems(HANDBOOK, items);
-    handbook = { id: HANDBOOK_KEY, contributorKey: HANDBOOK_KEY, title: HANDBOOK_TITLE, description: HANDBOOK_DESCRIPTION, contributor: '', created: null, system: DEFAULT_SYSTEM, start: null, items };
+    for (const problem of handbookProblems(HANDBOOK)) { console.error(`[manifest] ${problem}`); errors++; }
+    for (const [id, { title, description }] of Object.entries(HANDBOOK_SECTIONS)) {
+      const dir = path.join(HANDBOOK, id);
+      if (!fs.existsSync(dir)) continue;
+      const items = itemsIn(dir, '', inHandbook);
+      errors += checkItems(dir, items);
+      handbook.push({ id, contributorKey: HANDBOOK_KEY, title, description, contributor: '', created: null, system: DEFAULT_SYSTEM, start: null, items });
+    }
   }
 
   // Each prototype system's theme.css may only set values under its own class, like
@@ -147,7 +154,7 @@ export function buildManifest() {
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   const manifest = { prototypes, guide: guide.map(({ order, ...page }) => page), handbook };
   fs.writeFileSync(OUT, JSON.stringify(manifest, null, 2) + '\n');
-  console.log(`[manifest] ${prototypes.length} prototype(s), ${guide.length} guide page(s), ${handbook ? `${handbook.items.length} handbook file(s)` : 'no handbook'}${errors ? `, ${errors} problem(s) above` : ''}`);
+  console.log(`[manifest] ${prototypes.length} prototype(s), ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
   return { manifest, errors };
 }
 

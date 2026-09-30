@@ -1,6 +1,6 @@
 // The ⌘K palette's dialog. It loads shortly after the app starts (CommandPalette.tsx), so cmdk
 // isn't in the main bundle.
-import { getRouteApi, useMatchRoute, useNavigate, useParams, useRouterState, type NavigateOptions } from '@tanstack/react-router';
+import { getRouteApi, useMatchRoute, useNavigate, useParams, type NavigateOptions } from '@tanstack/react-router';
 import {
   Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
 } from '@/studio/components/command';
@@ -21,8 +21,7 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
   };
 
   const prototypes = [...manifest.prototypes].sort(newestFirst);
-  const onHandbook = useRouterState({ select: (s) => s.location.pathname === '/handbook' || s.location.pathname.startsWith('/handbook/') });
-  const current = onHandbook ? manifest.handbook ?? undefined : params.contributor && params.prototype ? findPrototype(manifest, params.contributor, params.prototype) : undefined;
+  const current = params.contributor && params.prototype ? findPrototype(manifest, params.contributor, params.prototype) : undefined;
   const openItem = current && (params._splat ? findItem(current, params._splat) : firstItem(current));
   const isOpen = (item: Item) => item === openItem;
   const onIndex = Boolean(matchRoute({ to: '/' }));
@@ -76,20 +75,21 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
               ))}
             </CommandGroup>
   
-            {manifest.handbook && current !== manifest.handbook && manifest.handbook.items.length > 0 && (
+            {manifest.handbook.some((section) => section.items.length > 0) && (
               <>
                 <CommandSeparator />
                 <CommandGroup heading="Handbook">
-                  {manifest.handbook.items.map((item) => (
+                  {manifest.handbook.flatMap((section) => section.items.map((item) => (
                     <CommandItem
-                      key={item.path}
-                      value={`handbook ${itemLabel(item.path)} ${item.path}`}
-                      onSelect={() => go(itemLink(manifest.handbook!, item))}
+                      key={`${section.id}/${item.path}`}
+                      value={`handbook ${section.title} ${itemLabel(item.path)} ${item.path}`}
+                      disabled={section === current && isOpen(item)}
+                      onSelect={() => go(itemLink(section, item))}
                     >
-                      {itemFolder(item.path) && <span className="shrink-0 text-xs text-muted-foreground">{itemFolder(item.path)}</span>}
+                      <span className="shrink-0 text-xs text-muted-foreground">{[section.title, itemFolder(item.path)].filter(Boolean).join(' · ')}</span>
                       <span className="truncate">{itemLabel(item.path)}</span>
                     </CommandItem>
-                  ))}
+                  )))}
                 </CommandGroup>
               </>
             )}

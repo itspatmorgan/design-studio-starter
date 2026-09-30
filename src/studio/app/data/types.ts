@@ -29,9 +29,9 @@ export type GuidePage = {
   section: string | null; // sidebar heading, e.g. "Core concepts"
 };
 
-// `handbook` is the Handbook (src/handbook/, see src/studio/roots.ts), shaped like a prototype, or
-// null if the folder isn't there.
-export type Manifest = { prototypes: Prototype[]; guide: GuidePage[]; handbook: Prototype | null };
+// `handbook` holds the Handbook's sections (src/handbook/, see src/studio/roots.ts), shaped like
+// prototypes.
+export type Manifest = { prototypes: Prototype[]; guide: GuidePage[]; handbook: Prototype[] };
 
 // One tab on the Systems page.
 export type DesignSystem = {

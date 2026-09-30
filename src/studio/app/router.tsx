@@ -3,8 +3,8 @@
 //
 //   /                                        Index (search: ?q=)
 //   /systems/$system, /systems/$system/$page  Systems (/systems opens the product system)
-//   /handbook, /handbook/$                   the Handbook (src/handbook/): a read-only tree, opened like a
-//                                            prototype, on its first item. /handbook/rules/systems
+//   /handbook                                opens the Handbook's first section (src/handbook/); each section,
+//                                            /handbook/docs, /handbook/rules, /handbook/skills, opens as a prototype does
 //   /guide, /guide/$page                     the Guide (pages in src/studio/guide/)
 //   /$contributor/$prototype                 a prototype, on its start item (or its first)
 //   /$contributor/$prototype/$               an item, by its path without the extension,
@@ -20,7 +20,6 @@ import { findItem, findPrototype, firstItem, itemLabel, loadManifest, setManifes
 import { FILE_TYPES, fileTypeModules } from '@/studio/app/data/fileTypes';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { TAB_ID } from '@/studio/app/data/files';
-import { HANDBOOK_KEY } from '@/studio/roots';
 
 const APP_NAME = 'Design Studio';
 
@@ -183,45 +182,23 @@ const itemRoute = createRoute({
   notFoundComponent: NotFound,
 });
 
-// The Handbook: the same layout and item pages as a prototype, at /handbook with no contributor
-// or prototype in the address. Its items load as a prototype's do (itemLoader), as "handbook".
+// The Handbook's sections open as /handbook/$section, through the prototype routes above: they're
+// listed in the manifest like prototypes. /handbook itself opens the first section.
 const handbookRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: 'handbook',
-  validateSearch: (search: Record<string, unknown>): ItemSearch => ({ mode: search.mode === 'source' ? 'source' : undefined }),
-  loader: async () => {
-    const proto = (await loadManifest()).handbook;
-    if (!proto) throw notFound();
-    return { proto };
+  beforeLoad: async () => {
+    const first = (await loadManifest()).handbook[0];
+    if (!first) throw notFound();
+    throw redirect({ to: '/$contributor/$prototype', params: { contributor: first.contributorKey, prototype: first.id }, replace: true });
   },
-  component: () => <PrototypeLayout proto={handbookRoute.useLoaderData().proto} />,
-  notFoundComponent: NotFound,
-});
-
-const handbookIndexRoute = createRoute({
-  getParentRoute: () => handbookRoute,
-  path: '/',
-  loaderDeps: ({ search }) => ({ mode: search.mode }),
-  loader: ({ deps }) => itemLoader({ contributor: HANDBOOK_KEY, prototype: HANDBOOK_KEY }, deps.mode),
-  head: ({ loaderData }) => ({ meta: [{ title: loaderData?.title ?? APP_NAME }] }),
-  component: () => <ItemPage data={handbookIndexRoute.useLoaderData()} />,
-  notFoundComponent: NotFound,
-});
-
-const handbookItemRoute = createRoute({
-  getParentRoute: () => handbookRoute,
-  path: '$',
-  loaderDeps: ({ search }) => ({ mode: search.mode }),
-  loader: ({ params, deps }) => itemLoader({ contributor: HANDBOOK_KEY, prototype: HANDBOOK_KEY, _splat: params._splat }, deps.mode),
-  head: ({ loaderData }) => ({ meta: [{ title: loaderData?.title ?? APP_NAME }] }),
-  component: () => <ItemPage data={handbookItemRoute.useLoaderData()} />,
   notFoundComponent: NotFound,
 });
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
   systemsRoute.addChildren([systemsIndexRoute, systemRoute, systemPageRoute]),
-  handbookRoute.addChildren([handbookIndexRoute, handbookItemRoute]),
+  handbookRoute,
   guideRoute.addChildren([guideIndexRoute, guidePageRoute]),
   prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]),
 ]);
