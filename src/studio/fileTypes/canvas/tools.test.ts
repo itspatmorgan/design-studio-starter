@@ -2,7 +2,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { stringifyScene } from './slim.ts';
-import { fileStatus, withStatus } from '../../archive.ts';
 import { run, ToolError, type Ctx, type El } from './tools.ts';
 
 const items: Record<string, { title: string; type: string; typeLabel: string; preview: boolean }> = {
@@ -175,12 +174,4 @@ test('describe reports how a shape is drawn', () => {
   assert.equal(shape.strokeStyle, 'dashed');
   assert.equal(shape.rounded, true);
   assert.equal(shape.opacity, 60);
-});
-
-test('an archived canvas stays archived when the editor saves it, and unarchiving matches the plain file', () => {
-  const plain = stringifyScene([], { viewBackgroundColor: '#ffffff' });
-  const archived = stringifyScene([], { viewBackgroundColor: '#ffffff' }, undefined, 'archived');
-  assert.equal(withStatus(plain, 'archived', 'json'), archived, 'the menu and the editor write the same file');
-  assert.equal(withStatus(archived, 'active', 'json'), plain);
-  assert.equal(fileStatus(archived, 'json').status, 'archived');
 });

@@ -13,7 +13,6 @@ export default defineFileType({
   extensions: ['.tsx', '.jsx'],
   language: 'tsx',
   preview: true,
-  archivable: 'comment',
 
   // It starts as a placeholder (src/lib/placeholder.tsx) until something is built in it.
   template: (name) =>

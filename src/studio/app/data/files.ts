@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { Manifest, Prototype } from '@/studio/app/data/types';
 import { SYSTEMS_KEY, rootOf } from '@/studio/roots';
-import { withStatus, type Status, type StatusFormat } from '@/studio/archive';
+import type { Status } from '@/studio/archive';
 
 export type FileNode = { name: string; path: string; dir: boolean; children?: FileNode[] };
 
@@ -109,14 +109,6 @@ export async function readSource(p: Prototype, path: string) {
   const body = await res.json();
   if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');
   return body as { content: string; version: string };
-}
-
-// Archives or unarchives an item in your prototype, by changing the tag in its file, in the form its
-// type uses (src/studio/archive.ts). The manifest follows from the file changing, like any edit.
-export async function setItemStatus(p: Prototype, path: string, status: Status, format: StatusFormat) {
-  const { content, version } = await readSource(p, path);
-  const next = withStatus(content, status, format);
-  if (next !== content) await writeSource(p, path, next, version);
 }
 
 // The file changed on disk since it was read (its version isn't `base` any more).

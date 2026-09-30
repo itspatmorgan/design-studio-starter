@@ -8,7 +8,7 @@ import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems/index.ts';
 import { SYSTEM_SOURCES, STUDIO_ID } from '../src/studio/systemSources.ts';
 import { HELPER_FOLDER, itemSlug } from '../src/studio/fileTypes/index.ts';
 import { HANDBOOK_KEY, HANDBOOK_SECTIONS } from '../src/studio/roots.ts';
-import { STATUSES, fileStatus, forDeploy, linksToArchived, parseStatus, relativeLinksToArchived } from '../src/studio/archive.ts';
+import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../src/studio/archive.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { frontmatter } from './lib/frontmatter.js';
 import { handbookProblems } from './lib/handbook-check.js';
@@ -54,54 +54,37 @@ const inHandbook = {
 
 // Problems with a folder's items: two sharing a URL, or a file its type rejects (a view needs a
 // default export, and so on: src/studio/fileTypes/<type>/type.ts). Printed; returns how many.
-// An item that's archived (its type allows it, and its file says so) gets status: 'archived'. The
-// Handbook is never archived (`archive: false`).
-function checkItems(dir, items, out = console, { archive = true } = {}) {
+function checkItems(dir, items, out = console) {
   let errors = 0;
   const seen = new Set();
   for (const item of items) {
     const file = path.relative(ROOT, path.join(dir, item.path));
     if (seen.has(itemSlug(item.path))) { out.error(`[manifest] ${file}: another file here has the same name. Rename one; they'd share a URL.`); errors++; }
     seen.add(itemSlug(item.path));
-    const { check, archivable } = FILE_TYPES[item.fileType];
-    const format = archive ? archivable : undefined;
-    if (!check && !format) continue;
-    const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
+    const check = FILE_TYPES[item.fileType].check;
     if (check) {
+      const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
       for (const problem of check({ source, frontmatter: frontmatter(source) })) { out.error(`[manifest] ${file}: ${problem}`); errors++; }
-    }
-    if (format) {
-      const { status, problem } = fileStatus(source, format);
-      if (problem) { out.error(`[manifest] ${file}: ${problem}`); errors++; }
-      if (status === 'archived') item.status = 'archived';
     }
   }
   return errors;
 }
 
-// Canvases and documents that stay on the deployed site but link to archived work, which isn't
-// there. `archived` is forDeploy's list of what it left out (paths in the app's file globs).
+// Canvases and documents that stay on the deployed site but link to an archived prototype, which
+// isn't there. `archived` is forDeploy's list of what it left out (paths in the app's file globs).
 // Returns a sentence for each such file.
 function archivedLinkWarnings(kept, archived) {
-  const appPath = (glob) => glob.replace(/^\/prototypes/, '').split('/').map(encodeURIComponent).join('/');
-  const prototypes = archived.filter((g) => g.endsWith('/**')).map((g) => appPath(g.slice(0, -3)));
-  const items = archived.filter((g) => !g.endsWith('/**')).map((g) => appPath(g.replace(/\.[^./]+$/, '')));
+  const prototypes = archived.map((g) => g.replace(/^\/prototypes/, '').slice(0, -3).split('/').map(encodeURIComponent).join('/'));
   const warnings = [];
   for (const proto of kept) {
-    const base = `/${encodeURIComponent(proto.contributorKey)}/${encodeURIComponent(proto.id)}/`;
-    // Archived items in this prototype, as the relative links in its documents name them.
-    const slugs = new Set(items.filter((p) => p.startsWith(base)).map((p) => decodeURIComponent(p.slice(base.length))));
     for (const item of proto.items) {
-      // Views are code: a link to archived work in one is the author's own business.
+      // Views are code: a link in one is the author's own business.
       if (FILE_TYPES[item.fileType].language === 'tsx') continue;
       const file = path.join(PROTOS, proto.contributorKey, proto.id, item.path);
       let text;
       try { text = fs.readFileSync(file, 'utf8'); } catch { continue; }
-      const linked = [
-        ...linksToArchived(text, { items, prototypes }).map((p) => decodeURIComponent(p).replace(/^\//, '')),
-        ...(item.path.endsWith('.md') ? relativeLinksToArchived(item.path, text, slugs) : []),
-      ];
-      if (linked.length) warnings.push(`[manifest] ${path.relative(ROOT, file)} links to archived work (${[...new Set(linked)].join(', ')}). The deployed site shows a placeholder there.`);
+      const linked = linksToArchived(text, prototypes);
+      if (linked.length) warnings.push(`[manifest] ${path.relative(ROOT, file)} links to an archived prototype (${linked.map((p) => decodeURIComponent(p).replace(/^\//, '')).join(', ')}). The deployed site shows a placeholder there.`);
     }
   }
   return warnings;
@@ -175,7 +158,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
       const dir = path.join(HANDBOOK, id);
       if (!fs.existsSync(dir)) continue;
       const items = itemsIn(dir, '', inHandbook);
-      errors += checkItems(dir, items, out, { archive: false });
+      errors += checkItems(dir, items, out);
       handbook.push({ id, contributorKey: HANDBOOK_KEY, title, description, contributor: '', created: null, system: DEFAULT_SYSTEM, start: null, items });
     }
   }
@@ -259,14 +242,14 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
   guide.sort((a, b) => a.order - b.order);
 
   // What the deployed site leaves out (src/studio/archive.ts).
-  const { kept, archived, leftOut } = forDeploy(prototypes);
+  const { kept, archived } = forDeploy(prototypes);
 
-  // A canvas or document that stays on the deployed site but links to archived work would show a
-  // placeholder there: say which, so the link can be fixed or the work unarchived. Never an error.
+  // A canvas or document that stays on the deployed site but links to an archived prototype would show
+  // a placeholder there: say which, so the link can be fixed or the prototype unarchived. Never an error.
   if (deploy && archived.length) {
     const links = archivedLinkWarnings(kept, archived);
     for (const line of links.slice(0, DOC_WARNINGS)) out.warn(line);
-    if (links.length > DOC_WARNINGS) out.warn(`[manifest] and ${links.length - DOC_WARNINGS} more file(s) that link to archived work.`);
+    if (links.length > DOC_WARNINGS) out.warn(`[manifest] and ${links.length - DOC_WARNINGS} more file(s) that link to an archived prototype.`);
   }
 
   const manifest = { prototypes: deploy ? kept : prototypes, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map, systems };
@@ -275,9 +258,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
     fs.writeFileSync(OUT, JSON.stringify(manifest, null, 2) + '\n');
   }
   out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
-  if (deploy && (leftOut.prototypes || leftOut.items)) {
-    out.log(`[manifest] Left out of the deployed site: ${[leftOut.prototypes && `${leftOut.prototypes} archived prototype(s)`, leftOut.items && `${leftOut.items} archived item(s)`].filter(Boolean).join(' and ')}`);
-  }
+  if (deploy && archived.length) out.log(`[manifest] Left out of the deployed site: ${archived.length} archived prototype(s)`);
   return { manifest, errors, archived: deploy ? archived : [] };
 }
 

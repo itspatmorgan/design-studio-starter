@@ -42,8 +42,7 @@ function withOrigin(elements: Stored[]): Stored[] {
   ));
 }
 
-// `status` is the file's current one (archive.ts: fileStatus), kept so saving an edit doesn't un-archive it.
-export function serializeCanvas(elements: readonly ExcalidrawElement[], appState: { viewBackgroundColor?: string; gridSize?: number | null } = {}, status?: string): string {
+export function serializeCanvas(elements: readonly ExcalidrawElement[], appState: { viewBackgroundColor?: string; gridSize?: number | null } = {}): string {
   // An item's link is its app path; any other link (there shouldn't be one) is kept as it is.
-  return stringifyScene(elements as unknown as Stored[], appState, (link) => appPathOf(link) ?? link, status);
+  return stringifyScene(elements as unknown as Stored[], appState, (link) => appPathOf(link) ?? link);
 }

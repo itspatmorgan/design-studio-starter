@@ -13,7 +13,6 @@ import { useCallback, useEffect, useRef } from 'react';
 import { CaptureUpdateAction, getSceneVersion, restoreElements } from '@excalidraw/excalidraw';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { AppState, ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
-import { fileStatus } from '@/studio/archive';
 import { readSource, SourceChanged, writeSource } from '@/studio/app/data/files';
 import type { Item, Prototype } from '@/studio/app/data/types';
 import { toast } from '@/studio/components/toast';
@@ -85,8 +84,7 @@ export function useCanvasFile({ proto, item, api, initial, editable }: {
     window.clearTimeout(timer.current);
     const snap = latest.current;
     if (saving.current || !dirty.current || !editableRef.current || !snap) return;
-    // The file's own status is kept: archiving it from the navigation changes the file, not this scene.
-    const content = serializeCanvas(snap.elements, snap.appState, fileStatus(disk.current.content, 'json').status);
+    const content = serializeCanvas(snap.elements, snap.appState);
     if (content === disk.current.content) { dirty.current = false; burst.current = 0; return; }
     saving.current = true;
     dirty.current = false; // an edit during the save sets it again
