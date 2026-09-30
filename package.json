@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "new": "node scripts/create-prototype.js",
     "join": "node scripts/setup-contributor.js",
+    "component-docs": "node scripts/scaffold-component-docs.js",
     "prepare": "husky",
     "check": "node scripts/check-file-types.js",
     "canvas": "node src/studio/fileTypes/canvas/cli.ts",

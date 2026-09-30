@@ -17,6 +17,16 @@ A design system here is a set of components plus a theme. The kit keeps each one
 
 The kit ships one prototype system, `product`, in `src/systems/product/`. It's a placeholder: a few shadcn/ui components on one of shadcn/ui's preset themes, so you can see it's separate from the app. Replace it with your real product's components and theme, so prototypes look like what ships.
 
+## Component pages
+
+Each component gets a page on the [Systems pages](/systems), built from files that sit next to the component, all named after it:
+
+- **The component itself**, like `button.tsx`. This alone gives it a page listing its props, read straight from the code, so the table can't drift.
+- **Examples**, like `button.examples.tsx`. Each example is shown live in the system's theme, with its code one click away.
+- **A page**, like `button.md`. It holds the title, a short description, and a "When to use" section. Add anything else your team wants to say: usage guidelines, accessibility notes, links to Figma. It's plain Markdown you can edit freely.
+
+Ask your agent to add or document a component and it creates the missing files from a template for you to fill in. A component with only some of them still gets a page, and the build only warns about what's missing. If you want the missing pieces to fail the build instead, ask your agent to turn on strict docs for the system.
+
 ## Adding another system
 
 A prototype system can be anything your team designs with. If you also design your marketing site, you might add a `brand` system beside `product`, so those prototypes use the brand's type and colors instead.

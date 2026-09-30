@@ -123,3 +123,24 @@ test('props are read from the code: types from other packages, defaults, native 
   assert.ok(dialogs.includes('Dialog') && dialogs.includes('DialogContent'));
   assert.ok(result[files[2]].find((c) => c.name === 'Dialog')!.props.some((p) => p.name === 'open'));
 });
+
+test('starter docs files sit next to the component and never break the checks', async () => {
+  const { docTemplates, titleOf } = await import('./systemScaffold.ts');
+  assert.equal(titleOf('icon-button'), 'Icon button');
+  assert.equal(titleOf('IconButton'), 'Icon button');
+  const flat = docTemplates({ system: 'product', source: 'icon-button.tsx' });
+  assert.equal(flat.examples.file, 'icon-button.examples.tsx');
+  assert.equal(flat.doc.file, 'icon-button.md');
+  assert.match(flat.examples.content, /import \{ IconButton \} from '@\/systems\/product\/components\/icon-button'/);
+  const folder = docTemplates({ system: 'product', source: 'dialog/dialog.tsx', exportName: 'Dialog', required: [{ name: 'label', type: 'string' }, { name: 'open', type: 'boolean' }, { name: 'onSelect', type: '() => void' }] });
+  assert.equal(folder.doc.file, 'dialog/dialog.md');
+  assert.match(folder.examples.content, /components\/dialog\/dialog'/);
+  assert.match(folder.examples.content, /<Dialog label="Label" open onSelect=\{undefined as never\} \/>/);
+  assert.match(folder.examples.content, /Replace each "undefined as never"/);
+  assert.doesNotMatch(flat.examples.content, /Replace each/);
+  // The starter page names its "When to use" section, so only the title and description are left to write.
+  const [c] = discoverComponents(['icon-button.tsx', flat.examples.file, flat.doc.file]);
+  const problems = componentProblems(c, { doc: { frontmatter: { title: 'Icon button', description: 'x' }, body: flat.doc.content.replace(/^---[\s\S]*?---\n/, '') }, examples: flat.examples.content });
+  assert.deepEqual(problems, []);
+  assert.match(componentProblems(c, { doc: { frontmatter: { title: 'Icon button', description: '' }, body: '' }, examples: '' }).join('\n'), /description/);
+});

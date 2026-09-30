@@ -26,7 +26,19 @@ All systems use shadcn/ui components on [Base UI](https://base-ui.com/react/over
 
 See [shadcn/ui](https://ui.shadcn.com/docs) (Base UI pages) and [Base UI composition](https://base-ui.com/react/handbook/composition).
 
-`npx shadcn add <name>` adds a shadcn/ui component to `src/systems/product/components/` (set in `components.json`). For another system, pass `--path src/systems/<system>/components`. If a new component renders a pop-up, wire it to `usePortalContainer()` as above.
+`npx shadcn add <name>` adds a shadcn/ui component to `src/systems/product/components/` (set in `components.json`). For another system, pass `--path src/systems/<system>/components`. If a new component renders a pop-up, wire it to `usePortalContainer()` as above. After adding or bringing in a component, give it its page (below).
+
+## Component pages
+
+A prototype system's component pages come from its files, not from a spec. Files that share a name make one component, flat or in a folder of their own:
+
+- `button.tsx` is the component. Alone, it is listed with its props table, read from the code.
+- `button.examples.tsx` adds live examples. Each export named with a capital is one example, shown with its code.
+- `button.md` adds the page's text. Its frontmatter has a `title` and a `description`, and it has a `## When to use` section. Everything else in it is the team's to write.
+
+After adding or bringing in a component, run `pnpm component-docs <system> <component>` (or without the component, for every one that lacks its files). It writes the missing files from a template and never touches one that exists. Then fill in the description, the "When to use" section, and the examples. To do all of it, follow the `document-component` skill.
+
+The build warns about a component without its examples or page, and about a page missing its title, description, or "When to use". A system with `docs: 'strict'` in `src/systems/index.ts` fails the build instead. The studio system lists its components in its spec (`studioSystem.tsx`) instead.
 
 ## Icons
 
