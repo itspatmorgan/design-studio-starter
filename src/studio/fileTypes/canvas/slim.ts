@@ -75,11 +75,14 @@ export function stringifyScene(
   elements: readonly Stored[],
   appState: { viewBackgroundColor?: string; gridSize?: number | null } = {},
   mapLink?: (link: string) => string,
+  // 'archived' when the canvas is set aside (src/studio/archive.ts); active is never written.
+  status?: string,
 ): string {
   const scene = {
     type: 'excalidraw',
     version: EXCALIDRAW_FILE_VERSION,
     studioVersion: FORMAT_VERSION,
+    ...(status === 'archived' ? { status } : {}),
     elements: elements.filter((el) => !el.isDeleted && el.type !== 'image').map((el) => slimElement(el, mapLink)),
     appState: {
       viewBackgroundColor: appState.viewBackgroundColor || DEFAULT_BACKGROUND,

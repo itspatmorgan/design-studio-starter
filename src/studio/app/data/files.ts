@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { Manifest, Prototype } from '@/studio/app/data/types';
 import { SYSTEMS_KEY, rootOf } from '@/studio/roots';
-import { withStatus, type Status } from '@/studio/archive';
+import { withStatus, type Status, type StatusFormat } from '@/studio/archive';
 
 export type FileNode = { name: string; path: string; dir: boolean; children?: FileNode[] };
 
@@ -111,11 +111,11 @@ export async function readSource(p: Prototype, path: string) {
   return body as { content: string; version: string };
 }
 
-// Archives or unarchives a view in your prototype, by changing the tag at the top of its file
-// (src/studio/archive.ts). The manifest follows from the file changing, like any edit.
-export async function setViewStatus(p: Prototype, path: string, status: Status) {
+// Archives or unarchives an item in your prototype, by changing the tag in its file, in the form its
+// type uses (src/studio/archive.ts). The manifest follows from the file changing, like any edit.
+export async function setItemStatus(p: Prototype, path: string, status: Status, format: StatusFormat) {
   const { content, version } = await readSource(p, path);
-  const next = withStatus(content, status);
+  const next = withStatus(content, status, format);
   if (next !== content) await writeSource(p, path, next, version);
 }
 

@@ -75,23 +75,23 @@ test('a deploy keeps active prototypes and views as they are', () => {
   const { kept, archived, leftOut } = forDeploy([p]);
   assert.deepEqual(kept, [p]);
   assert.deepEqual(archived, []);
-  assert.deepEqual(leftOut, { prototypes: 0, views: 0 });
+  assert.deepEqual(leftOut, { prototypes: 0, items: 0 });
 });
 
 test('a deploy leaves out an archived prototype whole', () => {
   const { kept, archived, leftOut } = forDeploy([proto('old', [{ path: 'one.tsx' }], { status: 'archived' }), proto('new', [{ path: 'one.tsx' }])]);
   assert.deepEqual(kept.map((p) => p.id), ['new']);
   assert.deepEqual(archived, ['/prototypes/patrick/old/**']);
-  assert.deepEqual(leftOut, { prototypes: 1, views: 0 });
+  assert.deepEqual(leftOut, { prototypes: 1, items: 0 });
 });
 
-test('a deploy leaves out archived views, and opens on the first view left if the start is archived', () => {
+test('a deploy leaves out archived items, and opens on the first item left if the start is archived', () => {
   const p = proto('a', [{ path: 'explore/v1.tsx', status: 'archived' }, { path: 'main.tsx' }], { start: 'explore/v1.tsx' });
   const { kept, archived, leftOut } = forDeploy([p]);
   assert.deepEqual(kept[0].items, [{ path: 'main.tsx' }]);
   assert.equal(kept[0].start, null);
   assert.deepEqual(archived, ['/prototypes/patrick/a/explore/v1.tsx']);
-  assert.deepEqual(leftOut, { prototypes: 0, views: 1 });
+  assert.deepEqual(leftOut, { prototypes: 0, items: 1 });
 });
 
 test('a deploy keeps a start that is still there', () => {
@@ -99,10 +99,10 @@ test('a deploy keeps a start that is still there', () => {
   assert.equal(forDeploy([p]).kept[0].start, 'main.tsx');
 });
 
-test('a prototype whose views are all archived is left out too', () => {
+test('a prototype whose items are all archived is left out too', () => {
   const { kept, leftOut } = forDeploy([proto('a', [{ path: 'one.tsx', status: 'archived' }])]);
   assert.deepEqual(kept, []);
-  assert.deepEqual(leftOut, { prototypes: 1, views: 0 });
+  assert.deepEqual(leftOut, { prototypes: 1, items: 0 });
 });
 
 test('a prototype with no items at all is kept', () => {
@@ -133,4 +133,54 @@ test('relative document links to archived views are found', () => {
 
 test('a link at the end of a sentence is still found', () => {
   assert.deepEqual(linksToArchived('Open /patrick/a/explore/v3.', { items: ['/patrick/a/explore/v3'], prototypes: [] }), ['/patrick/a/explore/v3']);
+});
+
+const DOC = `---\ntitle: Notes\ntoc: true\n---\n\nBody text.\n`;
+
+test('a document is archived in its frontmatter, and brought back again', () => {
+  assert.equal(fileStatus(DOC, 'frontmatter').status, 'active');
+  const archived = withStatus(DOC, 'archived', 'frontmatter');
+  assert.equal(archived, `---\ntitle: Notes\ntoc: true\nstatus: archived\n---\n\nBody text.\n`);
+  assert.equal(fileStatus(archived, 'frontmatter').status, 'archived');
+  assert.equal(withStatus(archived, 'active', 'frontmatter'), DOC);
+});
+
+test('archiving a document twice changes nothing more, and a quoted value is read', () => {
+  const once = withStatus(DOC, 'archived', 'frontmatter');
+  assert.equal(withStatus(once, 'archived', 'frontmatter'), once);
+  assert.equal(fileStatus(`---\nstatus: "archived"\n---\nx\n`, 'frontmatter').status, 'archived');
+});
+
+test('a document with no frontmatter gets one, and loses it again when only the status was in it', () => {
+  const plain = `# Notes\n\nBody text.\n`;
+  const archived = withStatus(plain, 'archived', 'frontmatter');
+  assert.equal(archived, `---\nstatus: archived\n---\n\n# Notes\n\nBody text.\n`);
+  assert.equal(withStatus(archived, 'active', 'frontmatter'), plain);
+  assert.equal(withStatus(plain, 'active', 'frontmatter'), plain);
+});
+
+test('a status word in a document body is not a status', () => {
+  assert.equal(fileStatus(`# Notes\n\nstatus: archived\n`, 'frontmatter').status, 'active');
+  assert.equal(fileStatus(`---\ntitle: A\n---\n\nstatus: archived\n`, 'frontmatter').status, 'active');
+});
+
+test('a document with a bad status reads as active, with a problem', () => {
+  const { status, problem } = fileStatus(`---\nstatus: done\n---\nx\n`, 'frontmatter');
+  assert.equal(status, 'active');
+  assert.match(problem!, /"done"/);
+});
+
+const CANVAS = `${JSON.stringify({ type: 'excalidraw', version: 2, studioVersion: 1, elements: [], appState: { viewBackgroundColor: '#ffffff' }, files: {} }, null, 2)}\n`;
+
+test('a canvas is archived with a top-level status beside studioVersion, and brought back again', () => {
+  const archived = withStatus(CANVAS, 'archived', 'json');
+  assert.deepEqual(Object.keys(JSON.parse(archived)), ['type', 'version', 'studioVersion', 'status', 'elements', 'appState', 'files']);
+  assert.equal(fileStatus(archived, 'json').status, 'archived');
+  assert.equal(withStatus(archived, 'active', 'json'), CANVAS);
+  assert.equal(withStatus(archived, 'archived', 'json'), archived);
+});
+
+test('a canvas that is not JSON is left alone', () => {
+  assert.equal(withStatus('not json', 'archived', 'json'), 'not json');
+  assert.equal(fileStatus('not json', 'json').status, 'active');
 });

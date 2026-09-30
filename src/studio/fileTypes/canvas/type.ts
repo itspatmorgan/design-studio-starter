@@ -11,6 +11,7 @@ export default defineFileType({
   label: 'Canvas',
   extensions: ['.excalidraw'],
   language: 'json',
+  archivable: 'json',
 
   template: () => `${JSON.stringify({
     type: 'excalidraw',

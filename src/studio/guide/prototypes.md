@@ -56,13 +56,13 @@ A common folder is `lofi/`: rough, grayscale sketches of an idea, before it's wo
 
 ## Archiving
 
-Explorations pile up. When a view or a whole prototype has done its job but you want to keep it, archive it instead of deleting it. Right-click a view and choose **Archive**, or choose **Archive prototype** in the prototype's **…** menu. **Unarchive** brings it back.
+Explorations pile up. When a view, document, or canvas (or a whole prototype) has done its job but you want to keep it, archive it instead of deleting it. Right-click the file and choose **Archive**, or choose **Archive prototype** in the prototype's **…** menu. **Unarchive** brings it back.
 
-While you work locally, nothing changes except a small mark: archived views are dimmed in the navigation, and archived prototypes move to an **Archived** section at the bottom of the Prototypes page. You can still open them. On the deployed site they're left out entirely: they aren't built, listed, or shipped, which keeps it fast. To keep something on the deployed site, leave it active and put it in a folder to get it out of the way.
+While you work locally, nothing changes except a small mark: archived files are dimmed in the navigation, and archived prototypes move to an **Archived** section at the bottom of the Prototypes page. You can still open them. On the deployed site they're left out entirely: they aren't built, listed, or shipped, which keeps it fast. To keep something on the deployed site, leave it active and put it in a folder to get it out of the way.
 
 If a canvas or document that stays on the site links to archived work, the build names the file, and the link shows a placeholder on the deployed site.
 
-An archived view carries a comment at the top of its file, `/** @status archived */`. An archived prototype has `"status": "archived"` in `meta.json`. Your agent can set either for you.
+The status lives in the file itself, so it follows the file when you rename or move it. A view carries a comment at the top, `/** @status archived */`. A document has `status: archived` in its frontmatter. A canvas has `"status": "archived"` in its JSON, which the canvas keeps when you edit it. An archived prototype has `"status": "archived"` in `meta.json`. Your agent can set any of these for you.
 
 ## meta.json
 

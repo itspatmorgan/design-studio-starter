@@ -7,8 +7,10 @@
 // runs with any of them removed: delete the folder and its files become plain files. A type has
 //   type.ts     what the build and the app both need to know (this file's FileTypeSpec)
 //   module.tsx  how the app opens it: its icon, how it loads, and its page
-// To add a type, see src/studio/fileTypes/README.md. This file has no imports, so Node scripts can
+// To add a type, see src/studio/fileTypes/README.md. It imports only a type, so Node scripts can
 // load it directly.
+
+import type { StatusFormat } from '../archive.ts';
 
 export type FileTypeSpec = {
   label: string;                        // "View", "Document"
@@ -26,10 +28,10 @@ export type FileTypeSpec = {
   // True for the one type that opens any file no other type claims, where the Handbook allows it.
   // It has no extensions of its own, and prototypes never use it: their other files stay plain.
   fallback?: boolean;
-  // True if a file of this type can be archived: a `@status archived` tag in a comment at the top of
-  // the file (src/studio/archive.ts) leaves it out of the deployed site. Only for types whose files
-  // can hold such a comment.
-  archivable?: boolean;
+  // Set if a file of this type can be archived: where it keeps its `archived` tag, which leaves the file
+  // out of the deployed site (src/studio/archive.ts has the forms): 'comment' (a comment at the top of
+  // the file), 'frontmatter' (a `status:` line), or 'json' (a top-level "status").
+  archivable?: StatusFormat;
   // The contents of a new file called `name` ("user-settings.tsx"). Without it, the "+" menu
   // doesn't offer to make this type.
   template?: (name: string) => string;

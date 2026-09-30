@@ -19,7 +19,7 @@ import {
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import {
-  fileOp, openInEditor, repoPath, revealInFinder, setViewStatus, useFileTree, useMe, type FileNode, type FileOp,
+  fileOp, openInEditor, repoPath, revealInFinder, setItemStatus, useFileTree, useMe, type FileNode, type FileOp,
 } from '@/studio/app/data/files';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { HELPER_FOLDER } from '@/studio/fileTypes';
@@ -247,10 +247,10 @@ export default function FileTree({ proto, current }: FileTreeProps) {
     }
   }
 
-  // Archives or unarchives a view. Archived views stay in the tree here; the deployed site leaves them out.
+  // Archives or unarchives an item. Archived items stay in the tree here; the deployed site leaves them out.
   async function setArchived(item: Item, archived: boolean) {
     try {
-      await setViewStatus(proto, item.path, archived ? 'archived' : 'active');
+      await setItemStatus(proto, item.path, archived ? 'archived' : 'active', FILE_TYPES[item.fileType].archivable!);
       toast.add({ title: archived ? `Archived “${itemLabel(item.path.split('/').pop() ?? '')}”. The deployed site leaves it out.` : 'Unarchived' });
     } catch (e) {
       toast.add({ type: 'error', title: (e as Error).message });

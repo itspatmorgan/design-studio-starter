@@ -38,7 +38,7 @@ let args: unknown = {};
 try { args = third && third !== '-' ? JSON.parse(third) : third === '-' ? JSON.parse(fs.readFileSync(0, 'utf8')) : {}; } catch (error) { fail(`the arguments aren't valid JSON: ${(error as Error).message}`); }
 
 const text = fs.readFileSync(real, 'utf8');
-let scene: { elements?: El[]; appState?: { viewBackgroundColor?: string; gridSize?: number | null }; studioVersion?: number };
+let scene: { elements?: El[]; appState?: { viewBackgroundColor?: string; gridSize?: number | null }; studioVersion?: number; status?: string };
 try { scene = JSON.parse(text); } catch (error) { fail(`${first} isn't valid JSON: ${(error as Error).message}`); }
 if (!Array.isArray(scene!.elements)) fail(`${first} isn't a canvas: it has no list of elements.`);
 if ((scene!.studioVersion ?? 1) > FORMAT_VERSION) fail(`${first} was written by a newer copy of the app. Update before changing it.`);
@@ -71,7 +71,7 @@ const ctx: Ctx = {
 try {
   const result = run(scene!.elements!, tool, args, ctx);
   if (!['describe', 'help'].includes(tool)) {
-    const next = stringifyScene(result.elements, scene!.appState);
+    const next = stringifyScene(result.elements, scene!.appState, undefined, scene!.status);
     const tmp = `${real}.${process.pid}.tmp`;
     fs.writeFileSync(tmp, next);
     fs.renameSync(tmp, real);
