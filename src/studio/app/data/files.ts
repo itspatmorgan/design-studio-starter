@@ -35,8 +35,9 @@ export function useFileTree(proto: Prototype) {
   return { files, reload };
 }
 
-// The file's path from the repo root, like src/prototypes/patrick/hello-world/meta.json.
-export const repoPath = (p: Prototype, file: string) => `src/${rootOf(p.contributorKey, p.id)}/${file}`;
+// The file's path from the repo root, like src/prototypes/patrick/hello-world/meta.json (the
+// prototype's folder for an empty `file`).
+export const repoPath = (p: Prototype, file: string) => `src/${rootOf(p.contributorKey, p.id)}${file ? `/${file}` : ''}`;
 
 // Opens a file in your code editor, with Vite's built-in /__open-in-editor.
 // It uses $LAUNCH_EDITOR or the editor already running: https://github.com/yyx990803/launch-editor

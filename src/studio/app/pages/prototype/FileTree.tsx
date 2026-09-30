@@ -309,22 +309,16 @@ export default function FileTree({ proto, current }: FileTreeProps) {
       <ContextMenu key={key}>
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
         <ContextMenuContent className="min-w-44">
-          {node.dir && editable && newOptions(node.path).length > 0 && (
-            <>
-              {newOptions(node.path).map((o) => (
-                <ContextMenuItem key={o.target} onClick={() => setTimeout(() => startCreate(node.path, o.target))}><HugeiconsIcon icon={o.icon} /> {o.label}</ContextMenuItem>
-              ))}
-              <ContextMenuSeparator />
-            </>
-          )}
-          {/* Grouped by what they do, with a line between groups: open it somewhere else, copy where it is,
-              change it, and (last, alone) delete it. A group with nothing in it leaves no line. */}
+          {/* Groups, in this order, with a line between them (the prototype's menu follows the same rule,
+              PrototypeHeader.tsx): make something here; reach it (open it elsewhere, then copy where it is);
+              change it; delete it, last and alone. A group with nothing in it leaves no line. */}
           {menuGroups<ReactNode>([
+            node.dir && editable ? newOptions(node.path).map((o) => (
+              <ContextMenuItem key={o.target} onClick={() => setTimeout(() => startCreate(node.path, o.target))}><HugeiconsIcon icon={o.icon} /> {o.label}</ContextMenuItem>
+            )) : [],
             [
               !node.dir && <ContextMenuItem key="editor" onClick={() => setTimeout(() => openInEditor(proto, node.path))}><HugeiconsIcon icon={FileEditIcon} /> Open in editor</ContextMenuItem>,
               <ContextMenuItem key="reveal" onClick={() => setTimeout(() => revealInFinder(proto, node.path))}><HugeiconsIcon icon={Folder01Icon} /> Reveal in Finder</ContextMenuItem>,
-            ],
-            [
               items.has(node.path) && <ContextMenuItem key="link" onClick={() => setTimeout(() => { navigator.clipboard.writeText(itemUrl(proto, proto.items.find((i) => i.path === node.path)!)); toast.add({ title: 'Link copied' }); })}><HugeiconsIcon icon={Link01Icon} /> Copy link</ContextMenuItem>,
               <ContextMenuItem key="path" onClick={() => setTimeout(() => { navigator.clipboard.writeText(repoPath(proto, node.path)); toast.add({ title: 'Path copied' }); })}><HugeiconsIcon icon={Copy01Icon} /> Copy path</ContextMenuItem>,
             ],
@@ -336,9 +330,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
               ),
               changeable && <ContextMenuItem key="rename" onClick={() => setTimeout(() => setEditing({ kind: 'rename', path: node.path }))}><HugeiconsIcon icon={PencilEdit02Icon} /> Rename</ContextMenuItem>,
             ],
-            [
-              changeable && <ContextMenuItem key="delete" variant="destructive" onClick={() => setTimeout(() => setConfirmDelete(node))}><HugeiconsIcon icon={Delete02Icon} /> Delete</ContextMenuItem>,
-            ],
+            [changeable && <ContextMenuItem key="delete" variant="destructive" onClick={() => setTimeout(() => setConfirmDelete(node))}><HugeiconsIcon icon={Delete02Icon} /> Delete</ContextMenuItem>],
           ]).map((group, i) => (
             <Fragment key={i}>
               {i > 0 && <ContextMenuSeparator />}

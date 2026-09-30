@@ -9,8 +9,8 @@
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Delete02Icon, Folder01Icon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
-import { revealInFinder, useMe } from '@/studio/app/data/files';
+import { Copy01Icon, Delete02Icon, FileEditIcon, Folder01Icon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
+import { openInEditor, repoPath, revealInFinder, useMe } from '@/studio/app/data/files';
 import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
 import { formatDate, prototypeLink } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
@@ -84,16 +84,19 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
     toast.add({ title: 'Link copied' });
   };
 
-  // Grouped by what they do, with a line between groups: how this panel looks, find the prototype
-  // elsewhere, and change or delete it (the same order as the file menu). A group of one joins the next.
+  // Groups, in this order, with a line between them (the file menu follows the same rule, FileTree.tsx):
+  // how this panel looks; reach the prototype (open it elsewhere, then copy where it is); change it;
+  // delete it, last and alone. A group with nothing in it leaves no line.
   const groups = menuGroups<Action>([
     [
       { label: showInfo ? 'Hide details' : 'Show details', icon: InformationCircleIcon, onSelect: toggleInfo },
       local && { label: showAll ? 'Hide other files' : 'Show all files', icon: showAll ? ViewOffSlashIcon : ViewIcon, onSelect: toggleShowAll },
     ],
     [
+      local && { label: 'Open in editor', icon: FileEditIcon, onSelect: () => openInEditor(proto, '') },
       local && { label: 'Reveal in Finder', icon: Folder01Icon, onSelect: () => revealInFinder(proto, '') },
       { label: 'Copy link', icon: Link01Icon, onSelect: copyLink },
+      local && { label: 'Copy path', icon: Copy01Icon, onSelect: () => { navigator.clipboard.writeText(repoPath(proto, '')); toast.add({ title: 'Path copied' }); } },
     ],
     [editable && { label: 'Edit info', icon: PencilEdit02Icon, onSelect: () => setEditing(true) }],
     [editable && { label: 'Delete prototype', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }],

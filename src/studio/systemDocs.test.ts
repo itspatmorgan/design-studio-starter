@@ -255,12 +255,13 @@ test('the shipped product theme is all colors and one radius', async () => {
   assert.ok(tokens.filter((t) => t.group === 'colors').every((t) => t.subgroup && t.dark));
 });
 
-test('a menu\'s items are grouped: empty groups dropped, a group of one joined to the next', async () => {
+test('a menu\'s items are grouped: what doesn\'t apply is dropped, and groups are never merged', async () => {
   const { menuGroups } = await import('./app/shell/menuGroups.ts');
-  // A file's menu, and a folder's: the same groups, with what doesn't apply left out.
-  assert.deepEqual(menuGroups([['open', 'reveal'], ['link', 'path'], ['start', 'rename'], ['delete']]), [['open', 'reveal'], ['link', 'path'], ['start', 'rename'], ['delete']]);
-  assert.deepEqual(menuGroups([[false, 'reveal'], [undefined, 'path'], [false, 'rename'], ['delete']]), [['reveal', 'path'], ['rename', 'delete']]);
-  assert.deepEqual(menuGroups([['details'], [null, 'link'], [false], [false]]), [['details', 'link']]);
+  // A file's menu, all of it.
+  assert.deepEqual(menuGroups([['open', 'reveal', 'link', 'path'], ['start', 'rename'], ['delete']]), [['open', 'reveal', 'link', 'path'], ['start', 'rename'], ['delete']]);
+  // A folder's: the groups that are left keep their order, and a group of one stays a group.
+  assert.deepEqual(menuGroups([['new'], [false, 'reveal', undefined, 'path'], [false, 'rename'], ['delete']]), [['new'], ['reveal', 'path'], ['rename'], ['delete']]);
+  // Empty groups leave no line.
+  assert.deepEqual(menuGroups([[false], [], [null, 'link'], [false]]), [['link']]);
   assert.deepEqual(menuGroups([[false], []]), []);
-  assert.deepEqual(menuGroups([['only']]), [['only']]);
 });
