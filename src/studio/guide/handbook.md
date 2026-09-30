@@ -20,12 +20,6 @@ In the Handbook navigation, the **+** at the end of the Files row makes what the
 
 Your agent can do the same. Ask it to add a doc, a rule, or a skill, and it follows `src/handbook/rules/handbook.md`. The build checks the shape, and says what to fix if a file or folder is out of place.
 
-## The map
-
-The map button at the top of the Handbook's navigation shows how your agent reads all of this, in order: `AGENTS.md` first, then the rules it says to read every session, then the rules it routes to by task (with the sentence that says when), and the skills, which agents find by their descriptions. A rule that another rule links to shows under it.
-
-The map is drawn from the files themselves, so it's always current. It also shows what needs attention: a rule that nothing links to, which no agent will read, or a link in `AGENTS.md` to a file that isn't there.
-
 ## Who can change it
 
 The Handbook is part of the platform, so it isn't yours alone. You can edit it on your own branch, and the change goes through a pull request. The maintainer decides what goes in. While you run the app locally you can edit it in the app. On the deployed site it's read-only.
