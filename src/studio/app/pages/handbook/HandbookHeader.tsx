@@ -4,7 +4,7 @@
 import { Link, getRouteApi } from '@tanstack/react-router';
 import type { Prototype } from '@/studio/app/data/types';
 import { prototypeLink } from '@/studio/app/data/manifest';
-import { cn } from '@/lib/utils';
+import { navTabClass } from '@/studio/app/shell/navTabs';
 
 const rootApi = getRouteApi('__root__');
 
@@ -21,11 +21,7 @@ export default function HandbookHeader({ proto }: { proto: Prototype }) {
             key={section.id}
             {...prototypeLink(section)}
             aria-current={section.id === proto.id ? 'page' : undefined}
-            className={cn(
-              'rounded-md px-2 py-1 text-xs text-sidebar-foreground/80 transition-colors',
-              'hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground',
-              section.id === proto.id && 'bg-sidebar-foreground/10 font-medium text-sidebar-accent-foreground',
-            )}
+            className={navTabClass(section.id === proto.id)}
           >
             {section.title}
           </Link>

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { Link, useNavigate, useParams } from '@tanstack/react-router';
+import { Link, useParams } from '@tanstack/react-router';
 import { cn } from '@/lib/utils';
-import { Tabs, TabsList, TabsTrigger } from '@/studio/components/tabs';
+import { navTabClass } from '@/studio/app/shell/navTabs';
 import { NotFound } from '@/studio/app/shell/App';
 import { ColorTokens, ComponentDemo, IconsPage, PageHeader, RadiusScale, TypeScale, slug } from '@/studio/app/pages/systems/foundations';
 import type { DesignSystem } from '@/studio/app/data/types';
@@ -33,28 +33,33 @@ function navGroups(sys: DesignSystem): NavGroup[] {
   ];
 }
 
+// The Systems navigation, in the Handbook's style: the section's name, the systems as tabs, then
+// the open system's pages.
 function SystemNav({ system }: { system: SystemId }) {
-  const navigate = useNavigate();
+  const row = 'mx-1 block rounded-md px-2.5 py-1 text-[12px] leading-tight text-sidebar-foreground/80 transition-colors';
   return (
-    <nav aria-label="Systems" className="flex min-h-0 w-52 shrink-0 flex-col border-r border-border bg-muted/40">
-      <Tabs value={system} onValueChange={(id) => navigate({ to: '/systems/$system', params: { system: id as string } })} className="border-b border-border p-3">
-        <TabsList className="w-full">
+    <nav aria-label="Systems" className="flex min-h-0 w-52 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
+      <div className="shrink-0 px-2 pt-3">
+        <div className="flex min-h-8 items-center px-2.5">
+          <h2 className="truncate text-sm font-semibold leading-tight">Systems</h2>
+        </div>
+        <div className="mt-1 flex gap-1 px-1" role="tablist" aria-label="Design systems">
           {Object.entries(SYSTEMS).map(([id, s]) => (
-            <TabsTrigger key={id} value={id}>{s.label}</TabsTrigger>
+            <Link key={id} to="/systems/$system" params={{ system: id }} role="tab" aria-selected={id === system} className={navTabClass(id === system)}>{s.label}</Link>
           ))}
-        </TabsList>
-      </Tabs>
-      <div className="flex-1 overflow-y-auto px-2.5 py-4">
+        </div>
+      </div>
+      <div className="flex-1 space-y-0.5 overflow-y-auto px-2 pt-3 pb-3">
         {navGroups(SYSTEMS[system]).map((g, i) => (
-          <div key={g.heading ?? i}>
-            {g.heading && <p className="mt-5 mb-2 px-2.5 text-sm font-semibold text-foreground">{g.heading}</p>}
+          <div key={g.heading ?? i} className="space-y-0.5">
+            {g.heading && <p className="mt-4 px-2.5 py-1 text-[12px] font-semibold leading-none text-sidebar-foreground">{g.heading}</p>}
             {g.items.map(([id, label]) => (
               <Link
                 key={id ?? 'intro'}
                 {...(id ? { to: '/systems/$system/$page', params: { system, page: id } } : { to: '/systems/$system', params: { system } })}
                 activeOptions={{ exact: true }}
                 className={cn(
-                  'block rounded-md px-2.5 py-1.5 text-sm text-foreground/80 transition-colors',
+                  row,
                   'hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground',
                   'data-[status=active]:bg-sidebar-foreground/10 data-[status=active]:font-medium data-[status=active]:text-sidebar-accent-foreground',
                 )}
