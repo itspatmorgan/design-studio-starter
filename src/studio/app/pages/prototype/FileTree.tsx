@@ -381,8 +381,8 @@ export default function FileTree({ proto, current }: FileTreeProps) {
       if (node.dir) {
         const open = isOpen(node.path);
         return (
-          <Collapsible key={node.path} open={open} onOpenChange={(o) => setOpen(node.path, o)}>
-            <div {...dropProps(node.path)} className={cn('rounded-md', dropTarget === node.path && 'bg-sidebar-foreground/10')}>
+          <Collapsible key={node.path} open={open} onOpenChange={(o) => setOpen(node.path, o)} className="mt-1.5 first:mt-0">
+            <div {...dropProps(node.path)} className={cn('flex flex-col gap-0.5 rounded-md', dropTarget === node.path && 'bg-sidebar-foreground/10')}>
               {rowMenu(node.path, node, (
                 <CollapsibleTrigger {...dragProps(node)} {...keyProps(node)} style={indent(depth)}
                   className={cn(row, 'text-left font-medium text-sidebar-foreground hover:bg-sidebar-foreground/5')}>
@@ -390,7 +390,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
                   <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{itemLabel(node.name)}</span>
                 </CollapsibleTrigger>
               ))}
-              <CollapsibleContent>
+              <CollapsibleContent className="flex flex-col gap-0.5">
                 {createField(node.path, depth + 1)}
                 {rows(node.children ?? [], depth + 1)}
               </CollapsibleContent>
@@ -515,7 +515,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
         </div>
       )}
       {/* The whole list is the drop target for the top level. */}
-      <div {...dropProps('')} className={cn('min-h-0 flex-1 space-y-1 rounded-md', dropTarget === '' && 'bg-sidebar-foreground/5')}>
+      <div {...dropProps('')} className={cn('flex min-h-0 flex-1 flex-col gap-0.5 rounded-md', dropTarget === '' && 'bg-sidebar-foreground/5')}>
         {q && shown.length === 0 && <p className="px-2.5 py-1 text-[12px] text-muted-foreground">No matching {noun}.</p>}
         {createField('', 0)}
         {rows(shown, 0)}
