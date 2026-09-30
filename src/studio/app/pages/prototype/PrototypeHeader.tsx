@@ -111,12 +111,12 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
       local && { label: 'Copy path', icon: Copy01Icon, onSelect: () => { navigator.clipboard.writeText(repoPath(proto, '')); toast.add({ title: 'Path copied' }); } },
     ],
     [
-      editable && { label: 'Edit info', icon: PencilEdit02Icon, onSelect: () => setEditing(true) },
+      editable && { label: 'Edit', icon: PencilEdit02Icon, onSelect: () => setEditing(true) },
       editable && (proto.status === 'archived'
-        ? { label: 'Unarchive prototype', icon: ArchiveRestoreIcon, onSelect: () => setArchived(false) }
-        : { label: 'Archive prototype', icon: Archive02Icon, onSelect: () => setArchived(true) }),
+        ? { label: 'Unarchive', icon: ArchiveRestoreIcon, onSelect: () => setArchived(false) }
+        : { label: 'Archive', icon: Archive02Icon, onSelect: () => setArchived(true) }),
     ],
-    [editable && { label: 'Delete prototype', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }],
+    [editable && { label: 'Delete', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }],
   ]);
   // Actions run after the menu has closed, so a dialog they open isn't closed by the same click.
   const menuItems = (Item: typeof DropdownMenuItem | typeof ContextMenuItem, Separator: typeof DropdownMenuSeparator) =>

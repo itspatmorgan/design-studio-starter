@@ -40,7 +40,7 @@ In your own prototypes, the navigation works like a file browser:
 
 
 Each of these is an ordinary change to the files, the same as your agent would make, so you can mix both ways of working. If you rename or move the file you're looking at, the app follows it, and `start` in `meta.json` is updated to match.
-Everything about the prototype sits at the top of its navigation. The **…** menu next to the title (or a right-click) has everything else: **Show details** shows who made it, when, and its description, and the app remembers whether you leave them open. In your own prototypes, double-click the title to rename it, or choose **Edit info** to change the title and description. It saves to `meta.json`. A new title also renames the prototype's folder to match ("Checkout Flow" becomes `checkout-flow`), so its link changes: the app takes you to the new address, but links you shared before stop working. If that folder name is already taken, nothing changes and the app says so. Editing only the description never renames the folder. **Delete prototype** moves the whole folder to the Trash, so you can put it back.
+Everything about the prototype sits at the top of its navigation. The **…** menu next to the title (or a right-click) has everything else: **Show details** shows who made it, when, and its description, and the app remembers whether you leave them open. In your own prototypes, double-click the title to rename it, or choose **Edit** to change the title and description. It saves to `meta.json`. A new title also renames the prototype's folder to match ("Checkout Flow" becomes `checkout-flow`), so its link changes: the app takes you to the new address, but links you shared before stop working. If that folder name is already taken, nothing changes and the app says so. Editing only the description never renames the folder. **Delete** moves the whole folder to the Trash, so you can put it back.
 
 ## Views
 
@@ -56,7 +56,7 @@ A common folder is `lofi/`: rough, grayscale sketches of an idea, before it's wo
 
 ## Archiving
 
-When a prototype is finished but you want to keep it, archive it instead of deleting it: choose **Archive prototype** in its **…** menu. **Unarchive prototype** brings it back.
+When a prototype is finished but you want to keep it, archive it instead of deleting it: choose **Archive** in its **…** menu. **Unarchive** brings it back.
 
 While you work locally, nothing changes except that archived prototypes move to an **Archived** section at the bottom of the Prototypes page, and show "Archived" under their title. You can still open them. On the deployed site they're left out entirely: they aren't built, listed, or shipped, which keeps it fast. To keep something on the deployed site, leave it active and put it in a folder to get it out of the way.
 
