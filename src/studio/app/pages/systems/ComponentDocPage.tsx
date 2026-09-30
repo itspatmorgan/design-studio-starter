@@ -11,6 +11,11 @@ import type { DesignSystem } from '@/studio/app/data/types';
 // component doesn't have yet is left out, with a note on the file to add.
 type Loaded = { doc?: MDXContent; examples?: Example[]; source?: string; props?: ComponentPropsDoc[] };
 
+// The page's Markdown, at the page's own scale: body text is 14px like the rest of the Systems
+// pages, and its headings match the page's sections (18px, under the 26px title), not the
+// larger headings documents and the Guide use.
+const PAGE_PROSE = 'prose-sm prose-h2:mt-12 prose-h2:mb-4 prose-h2:text-lg prose-h2:font-semibold prose-h2:tracking-tight prose-h3:text-base';
+
 // "WithIcon" → "With icon".
 const sentence = (name: string) => name.replace(/([a-z\d])([A-Z])/g, '$1 $2').replace(/^./, (c) => c.toUpperCase()).replace(/ ([A-Z])(?![A-Z])/g, (_, c: string) => ` ${c.toLowerCase()}`);
 
@@ -74,7 +79,7 @@ export function ComponentDocPage({ system, sys, component }: { system: string; s
   return (
     <>
       <PageHeader title={component.title} description={component.description || undefined} />
-      {Doc ? <Prose><Doc /></Prose> : !doc && <Note>No page yet. Add <code>{stem}.md</code> next to the component to describe it and say when to use it.</Note>}
+      {Doc ? <Prose className={PAGE_PROSE}><Doc /></Prose> : !doc && <Note>No page yet. Add <code>{stem}.md</code> next to the component to describe it and say when to use it.</Note>}
 
       <Section title="Examples">
         {!examples ? (
