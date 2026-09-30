@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import type { MDXContent } from 'mdx/types';
 import { CodeBlock, PageHeader, SystemFrame } from '@/studio/app/pages/systems/foundations';
 import { Prose } from '@/studio/app/docs/Prose';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/studio/components/table';
 import { loadComponentDoc, loadExamples, loadExamplesSource, loadProps, type Example } from '@/studio/app/data/loadSystemDocs';
 import type { ComponentPropsDoc, PropDoc, SystemComponentDoc } from '@/studio/systemDocs';
 import type { DesignSystem } from '@/studio/app/data/types';
@@ -31,28 +33,28 @@ const Note = ({ children }: { children: React.ReactNode }) => <p className="text
 
 function PropsTable({ props }: { props: PropDoc[] }) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-border">
-      <table className="w-full text-left text-[13px]">
-        <thead className="bg-muted/50 text-xs text-muted-foreground">
-          <tr className="border-b border-border">
-            <th className="px-3 py-2 font-medium">Prop</th>
-            <th className="px-3 py-2 font-medium">Type</th>
-            <th className="px-3 py-2 font-medium">Default</th>
-          </tr>
-        </thead>
-        <tbody>
-          {props.map((p, i) => (
-            <tr key={p.name} className={`align-top ${i < props.length - 1 ? 'border-b border-border' : ''}`}>
-              <td className="px-3 py-2 font-mono text-xs text-foreground">
+    <div className="rounded-lg border border-border">
+      <Table className="text-[13px]">
+        <TableHeader>
+          <TableRow className="bg-muted/50 hover:bg-muted/50">
+            <TableHead className="px-3 text-xs text-muted-foreground">Prop</TableHead>
+            <TableHead className="px-3 text-xs text-muted-foreground">Type</TableHead>
+            <TableHead className="px-3 text-xs text-muted-foreground">Default</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {props.map((p) => (
+            <TableRow key={p.name} className="align-top">
+              <TableCell className="px-3 py-2 align-top font-mono text-xs text-foreground">
                 {p.name}{p.required && <span className="text-destructive" title="Required"> *</span>}
-                {p.description && <div className="mt-1 max-w-xs font-sans text-xs font-normal text-muted-foreground">{p.description}</div>}
-              </td>
-              <td className="px-3 py-2 font-mono text-xs text-foreground/90" title={p.type}>{p.type.length > 70 ? `${p.type.slice(0, 70)}…` : p.type}</td>
-              <td className="px-3 py-2 font-mono text-xs text-muted-foreground">{p.default ?? '—'}</td>
-            </tr>
+                {p.description && <div className="mt-1 max-w-xs font-sans text-xs font-normal whitespace-normal text-muted-foreground">{p.description}</div>}
+              </TableCell>
+              <TableCell className="px-3 py-2 align-top font-mono text-xs whitespace-normal text-foreground/90" title={p.type}>{p.type.length > 70 ? `${p.type.slice(0, 70)}…` : p.type}</TableCell>
+              <TableCell className="px-3 py-2 align-top font-mono text-xs text-muted-foreground">{p.default ?? '—'}</TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }
@@ -96,10 +98,12 @@ export function ComponentDocPage({ system, sys, component }: { system: string; s
               </div>
             </SystemFrame>
             {loaded.source && (
-              <details className="mt-4">
-                <summary className="w-fit cursor-pointer text-sm text-muted-foreground hover:text-foreground">Show code</summary>
-                <div className="mt-2"><CodeBlock>{loaded.source}</CodeBlock></div>
-              </details>
+              <Collapsible className="mt-4">
+                <CollapsibleTrigger className="cursor-pointer text-sm text-muted-foreground outline-none hover:text-foreground focus-visible:text-foreground focus-visible:underline data-panel-open:text-foreground">
+                  Show code
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-2"><CodeBlock>{loaded.source}</CodeBlock></CollapsibleContent>
+              </Collapsible>
             )}
           </>
         )}
