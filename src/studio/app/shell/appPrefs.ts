@@ -44,7 +44,8 @@ export function useColorMode() {
 export const isTyping = (target: EventTarget | null) =>
   target instanceof HTMLElement && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
 
-// The prototype navigation's open/closed state. ⌘; (Ctrl+; on Windows) toggles it.
+// The section navigation's open/closed state, shared by every section (Prototypes, the Handbook,
+// Systems, the Guide). ⌘; (Ctrl+; on Windows) and the rail's toggle change it.
 export function useSectionNav() {
   const [open, setOpen] = useState(() => localStorage.getItem(SECTION_NAV_KEY) !== 'closed');
 
@@ -82,11 +83,15 @@ export function useShowAllFiles() {
   return [showAll, toggle] as const;
 }
 
-// Whether the prototype navigation is showing, for the prototype layout.
+// Whether the section navigation is showing. Each SectionNav (shell/nav/) reads it and hides itself.
 export const SectionNavContext = createContext(true);
 export const useSectionNavOpen = () => useContext(SectionNavContext);
 
-// The prototype navigation's width. Drag its right edge (or focus the edge and use the
+// A SectionNav tells the shell it is on the page, hidden or not, so the rail shows the toggle
+// exactly when there is a navigation to toggle.
+export const SectionNavPresenceContext = createContext<(present: boolean) => void>(() => {});
+
+// The section navigation's width, the same for every section. Drag its right edge (or focus the edge and use the
 // arrow keys) to resize; double-click or Enter resets it. Saved when you let go.
 export const NAV_WIDTH = { default: 220, min: 180, max: 420 };
 const clampWidth = (w: number) => Math.min(NAV_WIDTH.max, Math.max(NAV_WIDTH.min, Math.round(w)));

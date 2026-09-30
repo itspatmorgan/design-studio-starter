@@ -1,29 +1,34 @@
-import { HeadContent, Link, Outlet, useMatch } from '@tanstack/react-router';
+import { useCallback, useState } from 'react';
+import { HeadContent, Link, Outlet } from '@tanstack/react-router';
 import MainNav from '@/studio/app/shell/MainNav';
 import { TooltipProvider } from '@/studio/components/tooltip';
 import { Toaster } from '@/studio/components/toast';
 import { CommandPaletteProvider } from '@/studio/app/shell/CommandPalette';
-import { SectionNavContext, useColorMode, useSectionNav } from '@/studio/app/shell/appPrefs';
+import { SectionNavContext, SectionNavPresenceContext, useColorMode, useSectionNav } from '@/studio/app/shell/appPrefs';
 
 // The root route's layout: the rail, the current page, and the ⌘K palette.
 export default function App() {
   const { colorMode, toggleColorMode } = useColorMode();
   const sectionNav = useSectionNav();
-  // A prototype, or a Handbook section, is open (not a not-found page under a prototype-shaped URL).
-  const inPrototype = useMatch({ from: '/$contributor/$prototype', shouldThrow: false })?.status === 'success';
+  // How many section navigations are on the page (each SectionNav registers itself), so the rail
+  // offers its hide/show toggle exactly when there is one.
+  const [navs, setNavs] = useState(0);
+  const registerNav = useCallback((present: boolean) => setNavs((n) => n + (present ? 1 : -1)), []);
 
   return (
     <TooltipProvider>
       <HeadContent />
       <SectionNavContext.Provider value={sectionNav.open}>
-        <CommandPaletteProvider>
-          <div className="flex h-screen overflow-hidden">
-            <MainNav colorMode={colorMode} onToggleColorMode={toggleColorMode} sectionNav={inPrototype ? sectionNav : null} />
-            <div className="flex min-w-0 flex-1 flex-col overflow-auto">
-              <Outlet />
+        <SectionNavPresenceContext.Provider value={registerNav}>
+          <CommandPaletteProvider>
+            <div className="flex h-screen overflow-hidden">
+              <MainNav colorMode={colorMode} onToggleColorMode={toggleColorMode} sectionNav={navs > 0 ? sectionNav : null} />
+              <div className="flex min-w-0 flex-1 flex-col overflow-auto">
+                <Outlet />
+              </div>
             </div>
-          </div>
-        </CommandPaletteProvider>
+          </CommandPaletteProvider>
+        </SectionNavPresenceContext.Provider>
       </SectionNavContext.Provider>
       <Toaster />
     </TooltipProvider>

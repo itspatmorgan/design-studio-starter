@@ -52,8 +52,8 @@ function RailButton({ label, onClick, children }: { label: string; onClick: () =
 
 // Main navigation: a narrow icon rail, visible on every page.
 // Top: the parts of the environment (Prototypes, Systems, Handbook). Bottom: the Guide about the
-// tool itself, then the theme toggle. sectionNav is set only while a prototype (or a Handbook
-// section) is open, to show/hide its navigation.
+// tool itself, then the theme toggle. sectionNav is set only while a page has a section
+// navigation (shell/nav/), to show or hide it.
 type MainNavProps = {
   colorMode: string;
   onToggleColorMode: () => void;
@@ -95,7 +95,7 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
 
       <div className="mt-auto" />
       {sectionNav && (
-        <RailButton label={`${sectionNav.open ? 'Hide' : 'Show'} prototype navigation (⌘;)`} onClick={sectionNav.toggle}>
+        <RailButton label={`${sectionNav.open ? 'Hide' : 'Show'} navigation (⌘;)`} onClick={sectionNav.toggle}>
           <HugeiconsIcon icon={sectionNav.open ? PanelLeftCloseIcon : PanelLeftOpenIcon} size={16} />
         </RailButton>
       )}
