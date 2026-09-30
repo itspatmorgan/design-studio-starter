@@ -84,7 +84,7 @@ const guideRoute = createRoute({
 // Guide pages render in DocLayout, loaded with the first Guide page.
 const DocLayout = lazyRouteComponent(() => import('@/studio/app/docs/DocLayout'), 'DocLayout');
 
-// Loads a Guide page before it renders, like views. /guide opens index.mdx.
+// Loads a Guide page before it renders, like views. /guide opens index.md.
 async function guideLoader(slug: string) {
   const mod = await loadGuidePage(slug);
   if (!mod) throw notFound();

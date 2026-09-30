@@ -5,7 +5,7 @@ import type { FileTypeModule } from '@/studio/app/data/fileTypeModule';
 import { itemFolder, itemSlug } from '@/studio/app/data/manifest';
 import { documents } from './loader';
 
-// Loaded with the first document, so the reader (MDX provider, table of contents) isn't in
+// Loaded with the first document, so the reader (Markdown provider, table of contents) isn't in
 // the main bundle.
 const preload = () => import('./DocumentPage');
 const DocumentPage = lazy(preload);

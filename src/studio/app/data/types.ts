@@ -21,9 +21,9 @@ export type Prototype = {
   items: Item[];          // in file-tree order
 };
 
-// One Guide page (src/studio/guide/<slug>.mdx), from its frontmatter.
+// One Guide page (src/studio/guide/<slug>.md), from its frontmatter.
 export type GuidePage = {
-  slug: string;           // file name without .mdx, e.g. "getting-started"
+  slug: string;           // file name without .md, e.g. "getting-started"
   title: string;
   description: string;
   section: string | null; // sidebar heading, e.g. "Core concepts"

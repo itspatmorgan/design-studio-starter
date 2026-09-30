@@ -6,15 +6,15 @@ order: 14
 toc: true
 ---
 
-A document is a page of Markdown in a prototype, for the context that shouldn't live only in a chat: the problem, open questions, feedback, or notes for whoever builds it. It's an `.mdx` file, anywhere in your prototype.
+A document is a page of Markdown in a prototype, for the context that shouldn't live only in a chat: the problem, open questions, feedback, or notes for whoever builds it. It's a plain `.md` file, so it opens in Obsidian, GitHub, or any Markdown editor, and anywhere in your prototype.
 
 ```text
 src/prototypes/patrick/hello-world/
 ├── meta.json
 ├── prototype.tsx
-├── problem-framing.mdx   # a document
+├── problem-framing.md   # a document
 └── research/
-    └── interviews.mdx    # a document, in a folder
+    └── interviews.md     # a document, in a folder
 ```
 
 There's nothing to register. Add the file and it appears in the prototype's navigation, with a document icon, and opens at its path without the extension: `/patrick/hello-world/research/interviews`.
@@ -23,7 +23,7 @@ There's nothing to register. Add the file and it appears in the prototype's navi
 
 Choose **+ → New document** next to the prototype's title (or right-click a folder), or ask your agent to write one. A new document starts with a title and a line inviting you to fill it in.
 
-You can name a document however you like. A document and a view in the same folder can't share a name (`notes.mdx` and `notes.tsx` would both be `/notes`); the build says so.
+You can name a document however you like. A document and a view in the same folder can't share a name (`notes.md` and `notes.tsx` would both be `/notes`); the build says so.
 
 You can also write one yourself: use the source button in the Files row to edit its text, and press it again to see the document rendered.
 
@@ -31,7 +31,7 @@ You can also write one yourself: use the source button in the Files row to edit 
 
 Write Markdown: headings, lists, tables, links, and code blocks with syntax highlighting. Frontmatter at the top is optional:
 
-```mdx
+```md
 ---
 title: Problem framing
 description: Why this prototype exists.
@@ -45,19 +45,19 @@ toc: true
 | `description` | A line under the title |
 | `toc` | `true` adds an "On this page" list of its headings |
 
-It's MDX, so a small React component works too, and `<Callout title="Heads up">…</Callout>` is built in. MDX is strict: a stray `{` or `<` in plain text stops the page compiling. The page then shows what's wrong and where, and loads as soon as you fix the file.
+It's standard Markdown (CommonMark with GitHub's tables, task lists, and strikethrough) and nothing more, so what you write here reads the same everywhere. There are no components, and raw HTML isn't shown. A document that can't be read shows what's wrong and where, and loads as soon as you fix the file.
 
 ## Linking to a view or another document
 
 Link with a path relative to the document, the way you would in any folder of files:
 
-```mdx
+```md
 See the [main flow](./lofi/main) and the [interviews](./research/interviews).
 ```
 
 Extensions are optional, so `./lofi/main.tsx` works too. Relative links keep working if you rename the prototype's folder, but not if you move either file, so check links after moving things around. Links to other sites open in a new tab.
 
-A document shows in the app's own style, not your prototype's design system, so it can't embed a view or product components. Link to them instead.
+A document shows in the app's own style, not your prototype's design system, so it can't embed a view. Link to it instead.
 
 ## Where documents belong
 

@@ -58,7 +58,7 @@ export function buildManifest() {
       }
       if (typeof meta?.title !== 'string' || !meta.title.trim()) { skip('needs a "title"'); continue; }
       const items = itemsIn(dir);
-      // Two items can't share a URL (main.tsx next to main.jsx or main.mdx), and each file type
+      // Two items can't share a URL (main.tsx next to main.jsx or main.md), and each file type
       // checks its own files (src/studio/fileTypes/<type>/type.ts): a view needs a default export, and so on.
       const seen = new Set();
       for (const item of items) {
@@ -103,16 +103,16 @@ export function buildManifest() {
     }
   }
 
-  // Guide pages: src/studio/guide/*.mdx, ordered by `order` in each page's frontmatter. They share
+  // Guide pages: src/studio/guide/*.md, ordered by `order` in each page's frontmatter. They share
   // the title, description, and toc fields with prototype documents, and add order and section.
   const guide = [];
-  const guideFiles = fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.mdx')).sort() : [];
+  const guideFiles = fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.md')).sort() : [];
   for (const file of guideFiles) {
     const fm = frontmatter(fs.readFileSync(path.join(GUIDE, file), 'utf8'));
     const where = `src/studio/guide/${file}`;
     if (!fm || typeof fm.title !== 'string' || !fm.title) { console.error(`[manifest] Skipped ${where}: needs frontmatter with a "title"`); errors++; continue; }
     if (typeof fm.order !== 'number') { console.error(`[manifest] Skipped ${where}: needs a numeric "order" in its frontmatter`); errors++; continue; }
-    guide.push({ slug: file.replace(/\.mdx$/, ''), title: fm.title, description: fm.description ?? '', section: fm.section || null, order: fm.order });
+    guide.push({ slug: file.replace(/\.md$/, ''), title: fm.title, description: fm.description ?? '', section: fm.section || null, order: fm.order });
   }
   guide.sort((a, b) => a.order - b.order);
 

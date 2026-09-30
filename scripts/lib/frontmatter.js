@@ -1,4 +1,4 @@
-// The leading --- block of a Markdown or MDX file, as simple `key: value` lines. Strings may be
+// The leading --- block of a Markdown file, as simple `key: value` lines. Strings may be
 // quoted; true, false, and numbers are converted. Returns null when there's no closed block.
 export function frontmatter(text) {
   const block = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);

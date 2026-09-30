@@ -12,7 +12,7 @@
 
 export type FileTypeSpec = {
   label: string;                        // "View", "Document"
-  extensions: readonly string[];        // ".tsx", ".mdx"
+  extensions: readonly string[];        // ".tsx", ".md"
   // The syntax the Source view highlights (src/studio/app/pages/prototype/SourcePane.tsx). Leave it
   // out for a type with no source to show.
   language?: 'tsx' | 'markdown' | 'json';

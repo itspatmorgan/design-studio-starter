@@ -97,12 +97,12 @@ export function createLoader<M>(glob: Glob<M>, hot: ImportMeta['hot']) {
         window.dispatchEvent(new Event('studio:views'));
       }
     }
-    // A file that updates itself (a prototype document, scripts/vite-mdx-refresh-plugin.js)
+    // A file that updates itself (a prototype document, scripts/vite-markdown-refresh-plugin.js)
     // hands over its new version: use it, and have the router load the open item again. Added
     // once; it reads the shared state, so it stays current across runs.
     if (!hot.data.listening) {
       hot.data.listening = true;
-      window.addEventListener('studio:mdx', ((event: CustomEvent<{ key: string; mod: M }>) => {
+      window.addEventListener('studio:markdown', ((event: CustomEvent<{ key: string; mod: M }>) => {
         if (!(event.detail.key in state.glob)) return;
         state.loaded.set(event.detail.key, Promise.resolve(event.detail.mod));
         window.dispatchEvent(new Event('studio:views'));

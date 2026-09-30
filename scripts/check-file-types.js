@@ -19,7 +19,7 @@ function* files(dir) {
     const full = path.join(dir, e.name);
     if (full === path.join(ROOT, 'src', 'prototypes')) continue;
     if (e.isDirectory()) yield* files(full);
-    else if (/\.(ts|tsx|js|jsx|mdx)$/.test(e.name)) yield full;
+    else if (/\.(ts|tsx|js|jsx|md)$/.test(e.name)) yield full;
   }
 }
 

@@ -23,7 +23,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 
 // The file type's syntax, loaded when it's needed.
 async function languageExtension(language: 'tsx' | 'markdown' | 'json'): Promise<Extension> {
-  if (language === 'markdown') return (await import('@/studio/app/pages/prototype/mdxLanguage')).mdxLanguage();
+  if (language === 'markdown') return (await import('@/studio/app/pages/prototype/markdownSource')).markdownSource();
   const { javascript } = await import('@codemirror/lang-javascript');
   return language === 'json' ? javascript() : javascript({ jsx: true, typescript: true });
 }

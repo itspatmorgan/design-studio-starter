@@ -29,9 +29,7 @@ pnpm dev        # starts the app at localhost:5173
 
 `pnpm join` reads your name and email from Git and your username from GitHub, then proposes an entry for `contributors.json`. Your agent confirms it with you before writing it, and creates your folder in `src/prototypes/`.
 
-<Callout title="Use your work email">
-Every commit is tied to the email in your Git config, so use the same work email in both places.
-</Callout>
+> **Use your work email.** Every commit is tied to the email in your Git config, so use the same work email in both places.
 
 ## Make your first prototype
 

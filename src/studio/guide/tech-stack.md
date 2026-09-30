@@ -24,7 +24,7 @@ Every tool here is open source and popular. That matters for two reasons: you ca
 
 ## The Guide
 
-- [MDX](https://mdxjs.com) for these pages: Markdown that can include React components
+- [MDX](https://mdxjs.com)'s compiler, in plain Markdown mode, for these pages and prototype documents
 - [Shiki](https://shiki.style) for code highlighting
 - [Tailwind Typography](https://github.com/tailwindlabs/tailwindcss-typography) for page styling
 

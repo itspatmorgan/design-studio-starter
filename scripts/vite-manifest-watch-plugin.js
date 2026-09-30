@@ -30,7 +30,7 @@ const inside = (dir, file) => file === dir || file.startsWith(dir + path.sep);
 // left to Vite's hot reload.
 function relevant(file, kind) {
   if (file === CONTRIBUTORS) return true;
-  if (inside(GUIDE, file)) return file.endsWith('.mdx');
+  if (inside(GUIDE, file)) return file.endsWith('.md');
   if (!inside(PROTOS, file)) return false;
   return kind !== 'change' || path.basename(file) === 'meta.json';
 }

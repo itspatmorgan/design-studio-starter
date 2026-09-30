@@ -32,7 +32,7 @@ test('create places things, resolves @refs, and describe reads them back', () =>
   const s = session();
   const { created, refs } = s.call('create', { elements: [
     { type: 'item', item: 'main', ref: 'main' },
-    { type: 'item', item: 'notes.mdx', rightOf: '@main' },
+    { type: 'item', item: 'notes.md', rightOf: '@main' },
     { type: 'note', text: 'Check the empty state', below: '@main', color: 'pink' },
     { type: 'rectangle', text: 'Payment', color: 'blue', x: 0, y: 900, ref: 'pay' },
   ] });

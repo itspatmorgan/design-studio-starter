@@ -10,7 +10,7 @@ order: 90
 The first release, described in [How I Set Up a Prototyping Sandbox](https://www.unknownarts.com/p/TODO).
 
 - The app: Prototypes page, prototype navigation, Systems page, Guide, and command palette
-- File types, each a removable folder: views (`.tsx`), documents (`.mdx`), and canvases (`.excalidraw`)
+- File types, each a removable folder: views (`.tsx`), documents (`.md`), and canvases (`.excalidraw`)
 - A source button in the Files row: read or edit a file's text in the app, while it runs locally
 - Studio and product systems on shadcn/ui and Base UI
 - Contributor folders, `pnpm new`, and `pnpm join`

@@ -10,13 +10,13 @@ A prototype is a folder in your space, `src/prototypes/<you>/`. The app finds it
 
 ## The shape of a prototype
 
-A file's type comes from its extension (`.tsx` files are views, `.mdx` files are [documents](/guide/documents), `.excalidraw` files are [canvases](/guide/canvases)), and folders are just for organizing, as deep as you like. Keep a flow's screens together in one folder, or sort them however makes sense to you.
+A file's type comes from its extension (`.tsx` files are views, `.md` files are [documents](/guide/documents), `.excalidraw` files are [canvases](/guide/canvases)), and folders are just for organizing, as deep as you like. Keep a flow's screens together in one folder, or sort them however makes sense to you.
 
 ```text
 src/prototypes/patrick/hello-world/
 ├── meta.json        # title and description
 ├── prototype.tsx    # a view
-├── notes.mdx        # a document
+├── notes.md         # a document
 ├── lofi/
 │   └── main.tsx     # a view, in a folder
 └── checkout/

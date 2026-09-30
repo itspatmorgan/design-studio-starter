@@ -1,7 +1,7 @@
 # File types
 
 A file type is a kind of file a prototype can hold and the app can open. A file's type comes
-from its extension, so `.tsx` files are views and `.mdx` files are documents, at any depth.
+from its extension, so `.tsx` files are views and `.md` files are documents, at any depth.
 
 Each type is a self-contained folder here, and the platform runs with any of them removed.
 
@@ -9,7 +9,7 @@ Each type is a self-contained folder here, and the platform runs with any of the
 src/studio/fileTypes/
 ├── index.ts        what every type shares (FileTypeSpec, itemSlug)
 ├── view/           .tsx, .jsx: React components, opened as pages
-├── document/       .mdx: Markdown pages
+├── document/       .md: Markdown pages
 └── canvas/         .excalidraw: pages to arrange views, documents, and notes on
 ```
 
@@ -30,7 +30,7 @@ restart `pnpm dev` after adding or removing a folder.
 
 1. Delete its folder, for example `src/studio/fileTypes/document/`. Its files become plain files, which the
    navigation hides unless you choose Show all files in the prototype's … menu.
-2. Delete its Guide page (`src/studio/guide/documents.mdx`, and the links to it in `src/studio/guide/prototypes.mdx`) and its
+2. Delete its Guide page (`src/studio/guide/documents.md`, and the links to it in `src/studio/guide/prototypes.md`) and its
    agent rule (`agents/rules/documents.md`, and its line in `AGENTS.md`).
 
 `pnpm build` runs `scripts/check-file-types.js`, which fails if core code imports a type's folder or

@@ -4,7 +4,7 @@ A prototype can depend only on its own folder, its design system, and shared uti
 
 ## Shape
 
-A file's type comes from its extension (`src/studio/fileTypes/`: `.tsx` and `.jsx` are views, `.mdx` are documents), and folders are only for organizing, at any depth. Organize by topic, however the person likes.
+A file's type comes from its extension (`src/studio/fileTypes/`: `.tsx` and `.jsx` are views, `.md` are documents), and folders are only for organizing, at any depth. Organize by topic, however the person likes.
 
 ```
 src/prototypes/<contributor>/<prototype>/
@@ -16,12 +16,12 @@ src/prototypes/<contributor>/<prototype>/
 │   ├── steps/
 │   │   └── done.tsx       # a view, two folders deep
 │   └── components/        # helpers, not views (at any depth)
-├── problem-framing.mdx    # a document (see documents.md)
+├── problem-framing.md     # a document (see documents.md)
 └── hero.webp              # a plain file
 ```
 
 - **View**: any `.tsx` file (or plain `.jsx`) that default-exports a React component, at any depth, except inside a `components/` folder. Write new views as `.tsx`. The build fails on a view without a default export (put helpers in `components/`), or on two files that would share a URL, like `main.tsx` and `main.jsx` (or `main.mdx`) in one folder.
-- **Document**: any `.mdx` file, at any depth, except inside `components/`. See [documents.md](documents.md).
+- **Document**: any `.md` file, at any depth, except inside `components/`. See [documents.md](documents.md).
 - **Folders**: any folder, at any depth, just for organizing. A folder's name never changes what's in it. The one exception is `components/`, at any depth: its files are helpers, never listed.
 - **Opens on**: the prototype opens on its `start` item (see meta.json), or else the first item in its navigation (files before folders, alphabetical at each level). To choose a different one, set `start`; don't rename files to change the order.
 - **Lofi**: a rough, grayscale sketch of an idea, often in a `lofi/` folder. Use theme colors only (`bg-muted`, `border-border`, `text-muted-foreground`), dashed outlines for placeholders, and gray bars for text. Skip polish.

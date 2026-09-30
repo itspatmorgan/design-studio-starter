@@ -1,14 +1,13 @@
-// A document: written context in an .mdx file (Markdown that can hold React components),
-// opened as a page in the prototype. Its frontmatter is optional:
+// A document: written context in a Markdown file (.md), opened as a page in the prototype. Its frontmatter is optional:
 //   title, description, toc (true shows an "On this page" list)
 import { defineFileType } from '../index.ts';
 
-// "problem-framing.mdx" → "Problem Framing"
-const titleOf = (name: string) => name.replace(/\.mdx$/, '').split(/[-_]/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
+// "problem-framing.md" → "Problem Framing"
+const titleOf = (name: string) => name.replace(/\.md$/, '').split(/[-_]/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
 
 export default defineFileType({
   label: 'Document',
-  extensions: ['.mdx'],
+  extensions: ['.md'],
   language: 'markdown',
 
   template: (name) =>

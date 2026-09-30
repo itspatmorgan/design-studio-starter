@@ -1,4 +1,4 @@
-import { useContext, type ComponentProps, type ReactNode } from 'react';
+import { useContext, type ComponentProps } from 'react';
 import { Link } from '@tanstack/react-router';
 import type { MDXComponents } from 'mdx/types';
 import { DocBase } from '@/studio/app/docs/DocBase';
@@ -10,7 +10,7 @@ import { itemSlug } from '@/studio/fileTypes';
 // outside links open in a new tab. In a prototype document, a link like ./main or
 // ../lofi/main.tsx is relative to the document, so it keeps working if the prototype's
 // folder is renamed. (Moving the document or the file it points to still breaks it.)
-function MdxLink({ href = '', ...props }: ComponentProps<'a'>) {
+function MarkdownLink({ href = '', ...props }: ComponentProps<'a'>) {
   const base = useContext(DocBase);
   if (href.startsWith('/') && !href.startsWith('//')) return <Link to={href as never} {...props} />;
   if (href.startsWith('#')) return <a href={href} {...props} />;
@@ -22,14 +22,4 @@ function MdxLink({ href = '', ...props }: ComponentProps<'a'>) {
   return <a href={href} target="_blank" rel="noopener noreferrer" {...props} />;
 }
 
-// A highlighted note. In MDX: <Callout title="Heads up">Text</Callout>
-function Callout({ title, children }: { title?: string; children: ReactNode }) {
-  return (
-    <div className="not-prose my-6 rounded-lg border border-border bg-muted/50 px-4 py-3 text-sm leading-relaxed">
-      {title && <p className="mb-1 font-semibold text-foreground">{title}</p>}
-      <div className="text-muted-foreground">{children}</div>
-    </div>
-  );
-}
-
-export const mdxComponents: MDXComponents = { a: MdxLink, Callout };
+export const markdownComponents: MDXComponents = { a: MarkdownLink };
