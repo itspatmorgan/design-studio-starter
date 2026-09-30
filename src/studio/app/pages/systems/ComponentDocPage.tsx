@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { MDXContent } from 'mdx/types';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowDown01Icon } from '@hugeicons/core-free-icons';
@@ -35,21 +35,45 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 const Note = ({ children }: { children: React.ReactNode }) => <p className="text-sm text-muted-foreground">{children}</p>;
 
+// One line of a table cell. If the cell is too narrow for it, it ends in an ellipsis and the whole
+// text shows in a tooltip on hover or focus (only then: a text that fits needs none).
+function Truncated({ children }: { children: string }) {
+  // The trigger is a span (below), though the tooltip's types say button.
+  const ref = useRef<HTMLButtonElement>(null);
+  const [cut, setCut] = useState(false);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => setCut(el.scrollWidth > el.clientWidth);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [children]);
+  return (
+    <Tooltip disabled={!cut}>
+      <TooltipTrigger ref={ref} render={<span tabIndex={cut ? 0 : undefined} className={`block max-w-full truncate outline-none ${cut ? 'cursor-help focus-visible:text-foreground' : ''}`} />}>{children}</TooltipTrigger>
+      <TooltipContent side="top" className="max-w-md font-mono text-xs break-words whitespace-normal">{children}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+// The columns keep fixed shares of the width, so a long type can't crowd out the others.
 function PropsTable({ props }: { props: PropDoc[] }) {
   return (
     <div className="rounded-lg border border-border">
-      <Table className="text-[13px]">
+      <Table className="table-fixed text-[13px]">
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
-            <TableHead className="px-3 text-xs text-muted-foreground">Prop</TableHead>
-            <TableHead className="px-3 text-xs text-muted-foreground">Type</TableHead>
-            <TableHead className="px-3 text-xs text-muted-foreground">Default</TableHead>
+            <TableHead className="w-[28%] px-3 text-xs text-muted-foreground">Prop</TableHead>
+            <TableHead className="w-[52%] px-3 text-xs text-muted-foreground">Type</TableHead>
+            <TableHead className="w-[20%] px-3 text-xs text-muted-foreground">Default</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {props.map((p) => (
-            <TableRow key={p.name} className="align-top">
-              <TableCell className="px-3 py-2 align-top font-mono text-xs text-foreground">
+            <TableRow key={p.name}>
+              <TableCell className="px-3 py-2 align-top font-mono text-xs break-words whitespace-normal text-foreground">
                 {/* The description is a tooltip on the name (hover or focus), so the table stays short. */}
                 {p.description ? (
                   <Tooltip>
@@ -59,8 +83,8 @@ function PropsTable({ props }: { props: PropDoc[] }) {
                 ) : p.name}
                 {p.required && <span className="text-destructive" title="Required"> *</span>}
               </TableCell>
-              <TableCell className="px-3 py-2 align-top font-mono text-xs whitespace-normal text-foreground/90" title={p.type}>{p.type.length > 70 ? `${p.type.slice(0, 70)}…` : p.type}</TableCell>
-              <TableCell className="px-3 py-2 align-top font-mono text-xs text-muted-foreground">{p.default ?? '—'}</TableCell>
+              <TableCell className="px-3 py-2 align-top font-mono text-xs text-foreground/90"><Truncated>{p.type}</Truncated></TableCell>
+              <TableCell className="px-3 py-2 align-top font-mono text-xs text-muted-foreground">{p.default ? <Truncated>{p.default}</Truncated> : '—'}</TableCell>
             </TableRow>
           ))}
         </TableBody>
