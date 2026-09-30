@@ -172,20 +172,3 @@ test('a first heading is the title when the frontmatter has none', async () => {
   assert.deepEqual(run([para, h1('A')]).map((n) => n.type), ['paragraph', 'heading']);
   assert.deepEqual(run([{ type: 'heading', depth: 2, children: [{ type: 'text', value: 'A' }] }, para]).map((n) => n.type), ['heading', 'paragraph']);
 });
-
-test('a new component: its name, its file, and its page', async () => {
-  const { componentNameProblem, componentSkeleton, docTemplates } = await import('./systemScaffold.ts');
-  for (const ok of ['button', 'icon-button', 'h2', 'a1-b2']) assert.equal(componentNameProblem(ok, []), null, ok);
-  for (const bad of ['', 'Button', 'icon_button', 'icon--button', '-icon', 'icon-', '1button', 'icon button', 'x'.repeat(49)]) assert.notEqual(componentNameProblem(bad, []), null, bad);
-  assert.match(componentNameProblem('button', ['button']) ?? '', /already used/);
-  const skeleton = componentSkeleton('icon-button');
-  assert.match(skeleton, /function IconButton\(/);
-  assert.match(skeleton, /export \{ IconButton \}/);
-  assert.match(skeleton, /data-slot="icon-button"/);
-  // A description goes in the page's frontmatter, quoted when it needs to be.
-  const plain = docTemplates({ system: 'product', source: 'icon-button.tsx', description: 'A button with only an icon.' });
-  assert.match(plain.doc.content, /\ndescription: A button with only an icon\.\n/);
-  const odd = docTemplates({ system: 'product', source: 'icon-button.tsx', description: 'Use it: sparingly' });
-  assert.match(odd.doc.content, /\ndescription: "Use it: sparingly"\n/);
-  assert.match(docTemplates({ system: 'product', source: 'a.tsx' }).doc.content, /\ndescription:\n---/);
-});

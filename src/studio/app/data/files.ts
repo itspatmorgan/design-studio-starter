@@ -74,11 +74,10 @@ export type FileOp =
   | { op: 'meta'; title?: string; description?: string; start?: string }
   // A Handbook skill: skills/<name>/SKILL.md, in the Agent Skills format.
   | { op: 'create-skill'; name: string; description: string }
-  // A prototype system's components: a new component, or the examples and page one is missing.
-  | { op: 'create-component'; name: string; description: string }
+  // A prototype system's components: the examples and page one is missing.
   | { op: 'add-docs'; component: string };
 
-export type FileOpResult = { path?: string; slug?: string; trashedTo?: string; manifest: Manifest };
+export type FileOpResult = { path?: string; trashedTo?: string; manifest: Manifest };
 
 // A prototype system's components folder, in the shape the file layer takes for a prototype
 // (src/studio/roots.ts): what the Source view and the operations above are given.

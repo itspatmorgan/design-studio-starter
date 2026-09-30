@@ -16,8 +16,7 @@
 //        create-skill { name, description }       Handbook skills only: skills/<name>/SKILL.md, in the Agent Skills format
 //      (In the Handbook, anyone can change files, but only in its fixed shape: src/studio/handbookRules.ts.)
 //      (contributor "systems" opens a prototype system's components, src/systems/<id>/components/. Anyone can
-//      read and save its text files, and it has two operations of its own:
-//        create-component { name, description }   a new component: its file, examples, and page
+//      read and save its text files, and it has one operation of its own:
 //        add-docs { component }                    the examples and page a component is missing)
 //   POST /__studio/prototype { title, description }   a new prototype in your folder, like pnpm new
 //   POST /__studio/prototype-rename { contributor, prototype, title, description? }   retitle a prototype you own; a new title renames its folder too
@@ -43,7 +42,7 @@ import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-t
 import { HELPER_FOLDER } from '../src/studio/fileTypes/index.ts';
 import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../src/studio/roots.ts';
 import { PROTOTYPE_SYSTEMS } from '../src/systems/index.ts';
-import { createComponent, scaffold } from './scaffold-component-docs.js';
+import { scaffold } from './scaffold-component-docs.js';
 import { opProblem } from '../src/studio/handbookRules.ts';
 import { SKILL_FILE, descriptionProblem, nameProblem, skillProblems } from '../src/studio/skills.ts';
 import { frontmatter } from './lib/frontmatter.js';
@@ -290,16 +289,15 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, descripti
   throw new Error(`Unknown operation: ${op}`);
 }
 
-// The two operations a prototype system's components have (see the header). Anything else, like
-// renaming or deleting a component, is done in the files: it would break the prototypes using it.
-function runSystemOp(system, { op, name, description, component }) {
-  if (op === 'create-component') return createComponent(system, name, typeof description === 'string' ? description.trim() : '');
+// The one operation a prototype system's components have (see the header). Anything else, like
+// adding, renaming, or deleting a component, is done in the files: it would break the prototypes using it.
+function runSystemOp(system, { op, component }) {
   if (op === 'add-docs') {
     if (typeof component !== 'string') throw new Error('Say which component.');
     scaffold(system, component);
     return {};
   }
-  throw new Error('Components are changed in their files: edit them in the Source view, or ask your agent.');
+  throw new Error('Components are added and changed in their files: edit them in the Source view, or ask your agent.');
 }
 
 // Show a file in the system file browser.

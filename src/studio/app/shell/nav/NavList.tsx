@@ -14,18 +14,12 @@ export function NavList({ children }: { children: ReactNode }) {
   return <div className="min-h-0 flex-1 space-y-0.5 overflow-y-auto px-2 pt-3 pb-3">{children}</div>;
 }
 
-// `action` sits at the right end of the heading, like a "+" that adds to the group.
-export function NavGroup({ heading, action, children }: { heading?: string; action?: ReactNode; children: ReactNode }) {
+export function NavGroup({ heading, children }: { heading?: string; children: ReactNode }) {
   return (
     <div className="mt-4 space-y-0.5 first:mt-0">
       {/* The heading's text starts where a row's text does (same margin and indent), so with no icons in
           the rows the two line up. */}
-      {heading && (
-        <div className="flex items-center">
-          <p style={navIndent(0)} className="mx-1 min-w-0 flex-1 pt-1 pb-1.5 pr-1.5 text-[12px] font-semibold leading-none text-sidebar-foreground">{heading}</p>
-          {action}
-        </div>
-      )}
+      {heading && <p style={navIndent(0)} className="mx-1 pt-1 pb-1.5 pr-1.5 text-[12px] font-semibold leading-none text-sidebar-foreground">{heading}</p>}
       {children}
     </div>
   );

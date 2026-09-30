@@ -1,15 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useParams, useRouter } from '@tanstack/react-router';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Add01Icon } from '@hugeicons/core-free-icons';
+import { Link, useParams } from '@tanstack/react-router';
 import { NavGroup, NavHeader, NavList, NavTabs, NavTitle, SectionNav, navLinkClass, navLinkStyle, navTabClass } from '@/studio/app/shell/nav';
 import { NotFound } from '@/studio/app/shell/App';
 import { ColorTokens, ComponentDemo, IconsPage, PageHeader, RadiusScale, TypeScale, slug } from '@/studio/app/pages/systems/foundations';
 import { ComponentDocPage } from '@/studio/app/pages/systems/ComponentDocPage';
 import { ComponentEditor } from '@/studio/app/pages/systems/ComponentEditor';
-import NewComponentDialog from '@/studio/app/pages/systems/NewComponentDialog';
-import { fileOp, systemFiles } from '@/studio/app/data/files';
-import { setManifest } from '@/studio/app/data/manifest';
 import { PROTOTYPE_SYSTEMS } from '@/systems';
 import { useManifest } from '@/studio/app/data/useManifest';
 import type { DesignSystem } from '@/studio/app/data/types';
@@ -28,19 +23,17 @@ import { studio } from '@/studio/app/pages/systems/studioSystem';
 const PROTOTYPE_SPECS: Record<PrototypeSystemId, DesignSystem> = { product };
 const SYSTEMS: Record<string, DesignSystem> = { ...PROTOTYPE_SPECS, studio };
 type SystemId = string;
-type NavGroup = { heading?: string; add?: boolean; items: [id: string | null, label: string][] };
+type NavGroup = { heading?: string; items: [id: string | null, label: string][] };
 
-// Components can be added and edited in the app while it runs locally, in the prototype systems.
+// Components can be edited in the app while it runs locally, in the prototype systems.
 const canEdit = (system: string) => import.meta.env.DEV && Object.hasOwn(PROTOTYPE_SYSTEMS, system);
-const COMPONENTS = 'Components';
 
 // Sidebar groups, in order. A null id is the system's introduction. Components found in the
 // system's files go under their `category` (front matter), or "Components".
-function navGroups(sys: DesignSystem, components: SystemComponentDoc[], canAdd: boolean): NavGroup[] {
+function navGroups(sys: DesignSystem, components: SystemComponentDoc[]): NavGroup[] {
   const categories = new Map<string, [string, string][]>();
-  if (canAdd) categories.set(COMPONENTS, []); // there to add the first component to
   for (const cat of sys.categories ?? []) categories.set(cat.name, cat.components.map((c): [string, string] => [slug(c.name), c.name]));
-  for (const c of components) categories.set(c.category ?? COMPONENTS, [...(categories.get(c.category ?? COMPONENTS) ?? []), [c.slug, c.title]]);
+  for (const c of components) categories.set(c.category ?? 'Components', [...(categories.get(c.category ?? 'Components') ?? []), [c.slug, c.title]]);
   return [
     { items: [[null, 'Introduction'], ['theme', 'Theme']] },
     { heading: 'Foundations', items: [
@@ -49,27 +42,13 @@ function navGroups(sys: DesignSystem, components: SystemComponentDoc[], canAdd: 
       sys.showRadius && ['radius', 'Radius'],
       sys.icons && ['icons', 'Icons'],
     ].filter((item): item is [string, string] => Boolean(item)) },
-    ...[...categories].map(([heading, items]) => ({ heading, items, add: canAdd && heading === COMPONENTS })),
+    ...[...categories].map(([heading, items]) => ({ heading, items })),
   ];
 }
 
 // The Systems navigation, built from the shared pieces (shell/nav/): the section's name, the
 // systems as tabs, then the open system's pages under their headings.
 function SystemNav({ system, components }: { system: SystemId; components: SystemComponentDoc[] }) {
-  const router = useRouter();
-  const navigate = useNavigate();
-  const [adding, setAdding] = useState(false);
-  const canAdd = canEdit(system);
-
-  // The file layer checks the name again and writes the component, its examples, and its page.
-  async function create(name: string, description: string) {
-    const result = await fileOp(systemFiles(system), { op: 'create-component', name, description });
-    setManifest(result.manifest);
-    await router.invalidate();
-    setAdding(false);
-    navigate({ to: '/systems/$system/$page', params: { system, page: result.slug ?? name } });
-  }
-
   return (
     <SectionNav label="Systems">
       <NavHeader>
@@ -81,16 +60,8 @@ function SystemNav({ system, components }: { system: SystemId; components: Syste
         </NavTabs>
       </NavHeader>
       <NavList>
-        {navGroups(SYSTEMS[system], components, canAdd).map((g, i) => (
-          <NavGroup
-            key={g.heading ?? i}
-            heading={g.heading}
-            action={g.add && (
-              <button type="button" aria-label="New component" title="New component" onClick={() => setAdding(true)} className="mr-1 inline-flex size-5 shrink-0 items-center justify-center rounded text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/10 hover:text-sidebar-accent-foreground">
-                <HugeiconsIcon icon={Add01Icon} size={14} />
-              </button>
-            )}
-          >
+        {navGroups(SYSTEMS[system], components).map((g, i) => (
+          <NavGroup key={g.heading ?? i} heading={g.heading}>
             {g.items.map(([id, label]) => (
               <Link
                 key={id ?? 'intro'}
@@ -105,7 +76,6 @@ function SystemNav({ system, components }: { system: SystemId; components: Syste
           </NavGroup>
         ))}
       </NavList>
-      {canAdd && <NewComponentDialog open={adding} onOpenChange={setAdding} taken={components.map((c) => c.slug)} onCreate={create} />}
     </SectionNav>
   );
 }
