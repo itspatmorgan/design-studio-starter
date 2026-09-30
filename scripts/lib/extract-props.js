@@ -4,9 +4,11 @@
 //
 // A prop declared in @types/react or lib.dom is a native attribute of the element ("onClick",
 // "aria-label"): there are hundreds, so they're left out and the component is marked `native`.
-// Defaults come from the destructured parameter (`{ variant = "default" }`).
+// Defaults come from the destructured parameter (`{ variant = "default" }`). A description is the
+// first sentence of the prop's comment.
 import path from 'node:path';
 import ts from 'typescript';
+import { conciseDescription } from '../../src/studio/systemDocs.ts';
 
 const NATIVE = /[\\/]node_modules[\\/]@types[\\/]react[\\/]|[\\/]typescript[\\/]lib[\\/]lib\./;
 
@@ -62,7 +64,7 @@ export function extractProps(files, root) {
           type: checker.typeToString(checker.getNonNullableType(checker.getTypeOfSymbolAtLocation(p, source)), undefined, ts.TypeFormatFlags.NoTruncation),
           required: !(p.flags & ts.SymbolFlags.Optional),
           default: defaults[p.name] ?? null,
-          description: ts.displayPartsToString(p.getDocumentationComment(checker)),
+          description: conciseDescription(ts.displayPartsToString(p.getDocumentationComment(checker))),
         })),
       });
     }

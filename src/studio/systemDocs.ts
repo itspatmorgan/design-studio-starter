@@ -23,6 +23,16 @@ export type SystemComponent = {
 // A component as the manifest carries it: its files, and what its markdown says about it.
 export type SystemComponentDoc = SystemComponent & { title: string; description: string; category: string | null };
 
+// A description from a component's comments, made short enough to read at a glance: its first
+// sentence, without Markdown backticks, cut at a word if it's still longer than `max`.
+export function conciseDescription(text: string, max = 140): string {
+  const flat = text.replace(/`/g, '').replace(/\s+/g, ' ').trim();
+  const first = flat.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? flat;
+  if (first.length <= max) return first;
+  const cut = first.slice(0, max);
+  return `${cut.slice(0, Math.max(cut.lastIndexOf(' '), 1)).replace(/[\s,;:.\-]+$/, '')}…`;
+}
+
 // A component's props, read from its TypeScript (scripts/lib/extract-props.js). `native` is true
 // when it also accepts the native attributes of the element it renders, which are left out of the list.
 export type PropDoc = { name: string; type: string; required: boolean; default: string | null; description: string };

@@ -3,6 +3,7 @@ import type { MDXContent } from 'mdx/types';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowDown01Icon } from '@hugeicons/core-free-icons';
 import { Button } from '@/studio/components/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { CodeBlock, PageHeader, SystemFrame } from '@/studio/app/pages/systems/foundations';
 import { Prose } from '@/studio/app/docs/Prose';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
@@ -49,8 +50,14 @@ function PropsTable({ props }: { props: PropDoc[] }) {
           {props.map((p) => (
             <TableRow key={p.name} className="align-top">
               <TableCell className="px-3 py-2 align-top font-mono text-xs text-foreground">
-                {p.name}{p.required && <span className="text-destructive" title="Required"> *</span>}
-                {p.description && <div className="mt-1 max-w-xs font-sans text-xs font-normal whitespace-normal text-muted-foreground">{p.description}</div>}
+                {/* The description is a tooltip on the name (hover or focus), so the table stays short. */}
+                {p.description ? (
+                  <Tooltip>
+                    <TooltipTrigger render={<span tabIndex={0} className="cursor-help underline decoration-muted-foreground/50 decoration-dotted underline-offset-4 outline-none focus-visible:decoration-foreground" />}>{p.name}</TooltipTrigger>
+                    <TooltipContent side="right" className="max-w-xs font-sans">{p.description}</TooltipContent>
+                  </Tooltip>
+                ) : p.name}
+                {p.required && <span className="text-destructive" title="Required"> *</span>}
               </TableCell>
               <TableCell className="px-3 py-2 align-top font-mono text-xs whitespace-normal text-foreground/90" title={p.type}>{p.type.length > 70 ? `${p.type.slice(0, 70)}…` : p.type}</TableCell>
               <TableCell className="px-3 py-2 align-top font-mono text-xs text-muted-foreground">{p.default ?? '—'}</TableCell>

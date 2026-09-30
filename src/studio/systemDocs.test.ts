@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { componentProblems, discoverComponents, duplicateProblems, exampleNames, type ComponentPropsDoc } from './systemDocs.ts';
+import { componentProblems, conciseDescription, discoverComponents, duplicateProblems, exampleNames, type ComponentPropsDoc } from './systemDocs.ts';
 import { systemDocs } from '../../scripts/lib/system-docs.js';
 
 const names = (files: string[]) => discoverComponents(files).map((c) => c.name);
@@ -171,4 +171,14 @@ test('a first heading is the title when the frontmatter has none', async () => {
   // Only a heading the file opens with counts, and only level 1.
   assert.deepEqual(run([para, h1('A')]).map((n) => n.type), ['paragraph', 'heading']);
   assert.deepEqual(run([{ type: 'heading', depth: 2, children: [{ type: 'text', value: 'A' }] }, para]).map((n) => n.type), ['heading', 'paragraph']);
+});
+
+test('a prop description is its first sentence, short and plain', () => {
+  assert.equal(conciseDescription('Whether the button is `disabled`. Set it to stop clicks.'), 'Whether the button is disabled.');
+  assert.equal(conciseDescription('  Line one\n continues here.  Then more. '), 'Line one continues here.');
+  assert.equal(conciseDescription('No full stop'), 'No full stop');
+  assert.equal(conciseDescription('Version 1.5 of the thing is used. Extra.'), 'Version 1.5 of the thing is used.');
+  assert.equal(conciseDescription(''), '');
+  const long = conciseDescription('word '.repeat(60) + 'end.', 40);
+  assert.ok(long.length <= 41 && long.endsWith('…') && !long.includes('  '), long);
 });
