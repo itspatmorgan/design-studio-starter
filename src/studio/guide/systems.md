@@ -25,6 +25,8 @@ Each component gets a page on the [Systems pages](/systems), built from files th
 - **Examples**, like `button.examples.tsx`. Each example is shown live in the system's theme, with its code one click away.
 - **A page**, like `button.md`. It holds the title, a short description, and a "When to use" section. Add anything else your team wants to say: usage guidelines, accessibility notes, links to Figma. It's plain Markdown you can edit freely.
 
+While the app runs on your computer, each component's page has an **Edit** button that opens its files in the editor, one tab each for the page, the examples, and the component itself, and the page updates as you save. The **+** beside Components in the sidebar adds a new component: give it a name and a description, and the app creates its three files from templates. Like the Handbook, these are platform files, so a change goes through review before it reaches everyone. On the deployed site the pages are read-only.
+
 Ask your agent to add or document a component and it creates the missing files from a template for you to fill in. A component with only some of them still gets a page, and the build only warns about what's missing. If you want the missing pieces to fail the build instead, ask your agent to turn on strict docs for the system.
 
 ## Adding another system

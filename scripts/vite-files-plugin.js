@@ -15,6 +15,10 @@
 //        meta     { title?, description?, start? }  edit meta.json (start "" opens the first item)
 //        create-skill { name, description }       Handbook skills only: skills/<name>/SKILL.md, in the Agent Skills format
 //      (In the Handbook, anyone can change files, but only in its fixed shape: src/studio/handbookRules.ts.)
+//      (contributor "systems" opens a prototype system's components, src/systems/<id>/components/. Anyone can
+//      read and save its text files, and it has two operations of its own:
+//        create-component { name, description }   a new component: its file, examples, and page
+//        add-docs { component }                    the examples and page a component is missing)
 //   POST /__studio/prototype { title, description }   a new prototype in your folder, like pnpm new
 //   POST /__studio/prototype-rename { contributor, prototype, title, description? }   retitle a prototype you own; a new title renames its folder too
 //   POST /__studio/prototype-delete { contributor, prototype }   move a prototype you own to the Trash
@@ -37,7 +41,9 @@ import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from './resolve-contributor.js';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { HELPER_FOLDER } from '../src/studio/fileTypes/index.ts';
-import { HANDBOOK_KEY, isHandbookSection } from '../src/studio/roots.ts';
+import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../src/studio/roots.ts';
+import { PROTOTYPE_SYSTEMS } from '../src/systems/index.ts';
+import { createComponent, scaffold } from './scaffold-component-docs.js';
 import { opProblem } from '../src/studio/handbookRules.ts';
 import { SKILL_FILE, descriptionProblem, nameProblem, skillProblems } from '../src/studio/skills.ts';
 import { frontmatter } from './lib/frontmatter.js';
@@ -45,6 +51,7 @@ import { frontmatter } from './lib/frontmatter.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
+const SYSTEMS = path.join(ROOT, 'src', 'systems');
 const NAME = /^[a-z0-9][a-z0-9._-]*$/i;
 const TRASH = path.join(ROOT, '.trash');
 const BATCH_MS = 50;
@@ -53,6 +60,11 @@ const MAX_SOURCE_BYTES = 750 * 1024; // the same limit as any committed file (ch
 // A prototype's folder, or null if the contributor or prototype name isn't valid. The Handbook
 // sections (src/handbook/docs, rules, skills) are found here too, by their fixed names, to read.
 function prototypeDir(contributor, prototype) {
+  // A prototype system's components: only the systems the registry lists.
+  if (contributor === SYSTEMS_KEY) {
+    const dir = typeof prototype === 'string' && Object.hasOwn(PROTOTYPE_SYSTEMS, prototype) ? path.join(ROOT, PROTOTYPE_SYSTEMS[prototype].dir, 'components') : null;
+    return dir && fs.existsSync(dir) ? dir : null;
+  }
   if (contributor === HANDBOOK_KEY) return isHandbookSection(prototype) && fs.existsSync(path.join(HANDBOOK, prototype)) ? path.join(HANDBOOK, prototype) : null;
   if (!NAME.test(contributor ?? '') || !NAME.test(prototype ?? '')) return null;
   const dir = path.join(PROTOS, contributor, prototype);
@@ -111,7 +123,7 @@ const viewKey = (rel) => rel.replace(/\.[^./]+$/, '');
 // hidden files, or anything outside the prototype. In the Handbook, a file is an item if it opens
 // as a document or as text, and its folders can be named anything but hidden.
 function itemFile(dir, rel, contributor) {
-  const handbook = contributor === HANDBOOK_KEY;
+  const handbook = contributor === HANDBOOK_KEY || contributor === SYSTEMS_KEY; // both open documents and text files
   const typeOf = handbook ? handbookTypeOf : fileTypeOf;
   if (typeof rel !== 'string' || !typeOf(rel) || rel.split('/').some((part) => (!handbook && part === HELPER_FOLDER) || part.startsWith('.'))) return null;
   const file = resolveInside(dir, rel);
@@ -132,8 +144,9 @@ const templateFor = (name) => FILE_TYPES[fileTypeOf(name)]?.template?.(name) ?? 
 // enforce is the Handbook's shape (src/studio/handbookRules.ts).
 const HANDBOOK_NOTE = 'The Handbook\'s sections (Docs, Rules, Skills) can\'t be renamed or deleted.';
 
-// Whether you can change a prototype's files: your own, or the Handbook's.
-const canChange = (contributor, me) => contributor === HANDBOOK_KEY || contributor === me;
+// Whether you can change a prototype's files: your own, or the platform's (the Handbook's, and the
+// prototype systems' components), which go through review like any change to it.
+const canChange = (contributor, me) => contributor === HANDBOOK_KEY || contributor === SYSTEMS_KEY || contributor === me;
 
 // "code-review" → "Code review"
 const titleOf = (name) => { const t = name.replace(/-/g, ' '); return t.charAt(0).toUpperCase() + t.slice(1); };
@@ -277,6 +290,18 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, descripti
   throw new Error(`Unknown operation: ${op}`);
 }
 
+// The two operations a prototype system's components have (see the header). Anything else, like
+// renaming or deleting a component, is done in the files: it would break the prototypes using it.
+function runSystemOp(system, { op, name, description, component }) {
+  if (op === 'create-component') return createComponent(system, name, typeof description === 'string' ? description.trim() : '');
+  if (op === 'add-docs') {
+    if (typeof component !== 'string') throw new Error('Say which component.');
+    scaffold(system, component);
+    return {};
+  }
+  throw new Error('Components are changed in their files: edit them in the Source view, or ask your agent.');
+}
+
 // Show a file in the system file browser.
 function reveal(file) {
   if (process.platform === 'darwin') execFile('open', ['-R', file]);
@@ -294,7 +319,7 @@ export default function filesPlugin() {
     // the file itself and let its importers, like those lists, update as usual. Edits to a
     // file are left to Vite's normal hot reload.
     hotUpdate({ type, file, modules }) {
-      if (type === 'update' || !(file.startsWith(PROTOS + path.sep) || file.startsWith(HANDBOOK + path.sep))) return;
+      if (type === 'update' || !(file.startsWith(PROTOS + path.sep) || file.startsWith(HANDBOOK + path.sep) || file.startsWith(SYSTEMS + path.sep))) return;
       for (const m of modules) if (m.file === file) this.environment.moduleGraph.invalidateModule(m);
       return modules.filter((m) => m.file !== file);
     },
@@ -344,7 +369,7 @@ export default function filesPlugin() {
           // Contributor scope: you can change only your own folder (and the Handbook's, for review).
           if (!canChange(body.contributor, me())) return send(res, 403, { error: ownerError(me()) });
           try {
-            const result = runOp(dir, body, body.contributor === HANDBOOK_KEY ? body.prototype : null);
+            const result = body.contributor === SYSTEMS_KEY ? runSystemOp(body.prototype, body) : runOp(dir, body, body.contributor === HANDBOOK_KEY ? body.prototype : null);
             const { manifest } = buildManifest();
             // Other tabs update now; the tab that asked (X-Studio-Tab) handles it from the reply.
             publishManifest(server, manifest, req.headers['x-studio-tab']);
@@ -402,11 +427,15 @@ export default function filesPlugin() {
       // Tell the app which prototypes' (or the Handbook's) files changed, batched.
       let timer = null;
       const changed = new Set();
-      // A file's contributor, prototype, and path in it: a prototype's, or the Handbook's.
+      // A file's contributor, prototype, and path in it: a prototype's, the Handbook's, or a system's components.
       const locate = (file) => {
         if (file.startsWith(HANDBOOK + path.sep)) {
           const [section, ...rest] = path.relative(HANDBOOK, file).split(path.sep);
           return rest.length ? { contributor: HANDBOOK_KEY, prototype: section, rel: rest.join('/') } : null;
+        }
+        if (file.startsWith(SYSTEMS + path.sep)) {
+          const [id, folder, ...rest] = path.relative(SYSTEMS, file).split(path.sep);
+          return folder === 'components' && rest.length && Object.hasOwn(PROTOTYPE_SYSTEMS, id) ? { contributor: SYSTEMS_KEY, prototype: id, rel: rest.join('/') } : null;
         }
         const [contributor, prototype, ...rest] = path.relative(PROTOS, file).split(path.sep);
         return contributor && !contributor.startsWith('..') && prototype ? { contributor, prototype, rel: rest.join('/') } : null;
@@ -428,7 +457,7 @@ export default function filesPlugin() {
       // an open Source view for it reloads or asks. Not batched: it is one file at a time.
       server.watcher.on('change', (file) => {
         const at = locate(file);
-        if (!at || !(at.contributor === HANDBOOK_KEY ? handbookTypeOf : fileTypeOf)(at.rel)) return;
+        if (!at || !(at.contributor === HANDBOOK_KEY || at.contributor === SYSTEMS_KEY ? handbookTypeOf : fileTypeOf)(at.rel)) return;
         const { contributor, prototype, rel } = at;
         server.ws.send({ type: 'custom', event: 'studio:file', data: { contributor, prototype, path: rel } });
       });

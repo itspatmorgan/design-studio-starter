@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import type { MDXContent } from 'mdx/types';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowDown01Icon } from '@hugeicons/core-free-icons';
+import { Button } from '@/studio/components/button';
 import { CodeBlock, PageHeader, SystemFrame } from '@/studio/app/pages/systems/foundations';
 import { Prose } from '@/studio/app/docs/Prose';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/studio/components/table';
-import { loadComponentDoc, loadExamples, loadExamplesSource, loadProps, type Example } from '@/studio/app/data/loadSystemDocs';
+import { loadComponentDoc, loadExamples, loadExamplesSource, loadProps, useDocsVersion, type Example } from '@/studio/app/data/loadSystemDocs';
 import type { ComponentPropsDoc, PropDoc, SystemComponentDoc } from '@/studio/systemDocs';
 import type { DesignSystem } from '@/studio/app/data/types';
 
@@ -61,12 +62,13 @@ function PropsTable({ props }: { props: PropDoc[] }) {
   );
 }
 
-export function ComponentDocPage({ system, sys, component }: { system: string; sys: DesignSystem; component: SystemComponentDoc }) {
+// `onEdit` shows an Edit button that opens the component's files in the editor (dev only).
+export function ComponentDocPage({ system, sys, component, onEdit }: { system: string; sys: DesignSystem; component: SystemComponentDoc; onEdit?: () => void }) {
   const { source, examples, doc } = component.files;
   const [loaded, setLoaded] = useState<Loaded>({});
+  const version = useDocsVersion();
   useEffect(() => {
     let current = true;
-    setLoaded({});
     const settle = <T,>(load: (() => Promise<T> | undefined) | null, key: keyof Loaded) => {
       Promise.resolve(load?.()).then((value) => { if (current && value !== undefined) setLoaded((l) => ({ ...l, [key]: value })); }).catch(() => {});
     };
@@ -75,13 +77,16 @@ export function ComponentDocPage({ system, sys, component }: { system: string; s
     settle(examples ? () => loadExamplesSource(system, examples) : null, 'source');
     settle(source ? () => loadProps(system, source) : null, 'props');
     return () => { current = false; };
-  }, [system, source, examples, doc]);
+  }, [system, source, examples, doc, version]);
 
   const stem = (source ?? component.name).replace(/^.*\//, '').replace(/\.[jt]sx$/, '');
   const Doc = loaded.doc;
   return (
     <>
-      <PageHeader title={component.title} description={component.description || undefined} />
+      <div className="relative">
+        <PageHeader title={component.title} description={component.description || undefined} />
+        {onEdit && <Button variant="outline" size="sm" onClick={onEdit} className="absolute top-1 right-0">Edit</Button>}
+      </div>
       {Doc ? <Prose className={PAGE_PROSE}><Doc /></Prose> : !doc && <Note>No page yet. Add <code>{stem}.md</code> next to the component to describe it and say when to use it.</Note>}
 
       <Section title="Examples">

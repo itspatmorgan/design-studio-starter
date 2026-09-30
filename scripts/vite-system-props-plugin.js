@@ -1,8 +1,8 @@
 // `virtual:system-props`: the props of every component in every prototype system, read from their
 // TypeScript (scripts/lib/extract-props.js), keyed "<system>/<file>" ("product/button.tsx").
-// The Systems pages import it on demand, so it costs nothing until a component page opens. It is
-// worked out once and again after a component file is added, removed or edited (a page shows the
-// new props on its next load).
+// The built site imports it; while the app runs, the same props are served at /__studio/system-props
+// instead (a module can't be re-imported after an edit). Either way they're worked out when a
+// component page first asks, and again after a component file is added, removed or edited.
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS } from '../src/systems/index.ts';
@@ -35,6 +35,12 @@ export default function systemProps() {
       return `export default ${JSON.stringify(cache)}`;
     },
     configureServer(server) {
+      // While the app runs it asks here, so the props are always the code's current ones.
+      server.middlewares.use('/__studio/system-props', (req, res) => {
+        if (req.headers['sec-fetch-site'] !== 'same-origin') { res.statusCode = 403; return res.end(); }
+        res.setHeader('Content-Type', 'application/json');
+        try { cache ??= compute(); res.end(JSON.stringify(cache)); } catch (e) { res.statusCode = 500; res.end(JSON.stringify({ error: e.message })); }
+      });
       const stale = (file) => {
         if (!file.startsWith(SYSTEMS) || !/\.[jt]sx$/.test(file)) return;
         cache = null;

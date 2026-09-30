@@ -4,9 +4,9 @@
 //
 // In your own prototypes you can edit and save it (⌘S), like your agent editing the same file.
 // In other people's it is read-only. The Handbook's files are platform files: you can edit them, and
-// the change goes through review like any change to the platform. If the file changes on disk while it's open, an unedited
+// the change goes through review like any change to the platform; so do the components' files in a prototype system. If the file changes on disk while it's open, an unedited
 // editor updates to match (you can watch an agent write), and an edited one asks first.
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useBlocker } from '@tanstack/react-router';
 import { EditorState, type Extension } from '@codemirror/state';
 import { EditorView, drawSelection, highlightActiveLine, highlightActiveLineGutter, keymap, lineNumbers } from '@codemirror/view';
@@ -15,8 +15,8 @@ import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete';
 import { bracketMatching, foldGutter, foldKeymap, indentOnInput } from '@codemirror/language';
 import { highlightSelectionMatches, search, searchKeymap } from '@codemirror/search';
 import { FILE_TYPES } from '@/studio/app/data/fileTypes';
-import { readSource, SourceChanged, useMe, writeSource } from '@/studio/app/data/files';
-import { HANDBOOK_KEY } from '@/studio/roots';
+import { readSource, repoPath, SourceChanged, useMe, writeSource } from '@/studio/app/data/files';
+import { HANDBOOK_KEY, SYSTEMS_KEY } from '@/studio/roots';
 import type { Item, Prototype } from '@/studio/app/data/types';
 import { Button } from '@/studio/components/button';
 import { toast } from '@/studio/components/toast';
@@ -39,11 +39,15 @@ async function languageExtension(language: 'tsx' | 'markdown' | 'json' | 'text',
 
 type Disk = { content: string; version: string };
 
-export default function SourcePane({ proto, item }: { proto: Prototype; item: Item }) {
+// `label` replaces the file's path at the left of the header, and `actions` follow Save (the
+// component editor puts its file tabs and Done there). `onDirty` reports unsaved edits.
+type SourcePaneProps = { proto: Prototype; item: Item; label?: ReactNode; actions?: ReactNode; onDirty?: (dirty: boolean) => void };
+
+export default function SourcePane({ proto, item, label, actions, onDirty }: SourcePaneProps) {
   const me = useMe();
-  // Your own prototypes, and the Handbook's platform files (in dev, for review like any change).
-  const isHandbook = proto.contributorKey === HANDBOOK_KEY;
-  const editable = import.meta.env.DEV && (isHandbook || me === proto.contributorKey);
+  // Your own prototypes, and the platform's files (the Handbook's, and a prototype system's components; in dev, for review like any change).
+  const isPlatform = proto.contributorKey === HANDBOOK_KEY || proto.contributorKey === SYSTEMS_KEY;
+  const editable = import.meta.env.DEV && (isPlatform || me === proto.contributorKey);
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
   // What's on disk as far as this pane knows: the text and version it last read or saved.
@@ -55,6 +59,8 @@ export default function SourcePane({ proto, item }: { proto: Prototype; item: It
   // The file changed on disk while there were unsaved edits.
   const [conflict, setConflict] = useState<Disk | null>(null);
   const save = useRef<() => void>(() => {});
+
+  useEffect(() => { onDirty?.(isDirty); }, [isDirty]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Leaving with unsaved edits (another item, Preview, a reload) asks first.
   const blocker = useBlocker({
@@ -154,9 +160,10 @@ export default function SourcePane({ proto, item }: { proto: Prototype; item: It
       {/* 56px of content plus the 1px border puts the text and Save at the same height as the
           navigation's title row and its buttons */}
       <div className="flex h-[57px] shrink-0 items-center gap-3 border-b border-border px-4 text-[12px]">
-        <span className="min-w-0 truncate font-mono text-muted-foreground" title={`src/prototypes/${proto.contributorKey}/${proto.id}/${item.path}`}>{item.path}</span>
+        {label ?? <span className="min-w-0 truncate font-mono text-muted-foreground" title={repoPath(proto, item.path)}>{item.path}</span>}
         <span className="ml-auto shrink-0 text-muted-foreground">{!editable ? 'Read-only' : isDirty ? 'Unsaved changes' : ''}</span>
         {editable && <Button size="sm" disabled={!isDirty || saving} onClick={() => save.current()} title="Save (⌘S)">{saving ? 'Saving…' : 'Save'}</Button>}
+        {actions}
       </div>
       {conflict && (
         <div role="alert" className="flex shrink-0 items-center gap-3 border-b border-border bg-muted px-4 py-2 text-[12px]">

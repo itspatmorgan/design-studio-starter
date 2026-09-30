@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS } from '../src/systems/index.ts';
-import { docTemplates } from '../src/studio/systemScaffold.ts';
+import { componentNameProblem, componentSkeleton, docTemplates } from '../src/studio/systemScaffold.ts';
 import { systemDocs } from './lib/system-docs.js';
 import { extractProps } from './lib/extract-props.js';
 
@@ -21,7 +21,7 @@ function mainExport(source, stem) {
 }
 
 // Returns the files it wrote, relative to the repo. Throws with a message for a bad system or component.
-export function scaffold(system, only) {
+export function scaffold(system, only, { description = '' } = {}) {
   const sys = PROTOTYPE_SYSTEMS[system];
   if (!sys) throw new Error(`"${system}" isn't a prototype system. The systems are: ${Object.keys(PROTOTYPE_SYSTEMS).join(', ')}.`);
   const dir = path.join(ROOT, sys.dir, 'components');
@@ -33,7 +33,7 @@ export function scaffold(system, only) {
     if (!c.files.source) continue; // docs only (the components come from elsewhere): nothing to base them on
     const stem = path.basename(c.files.source).replace(/\.[jt]sx$/, '');
     const exported = mainExport(path.join(dir, c.files.source), stem);
-    const templates = docTemplates({ system, source: c.files.source, exportName: exported?.name, required: exported?.required });
+    const templates = docTemplates({ system, source: c.files.source, exportName: exported?.name, required: exported?.required, description });
     for (const [kind, file] of [['examples', templates.examples], ['doc', templates.doc]]) {
       if (c.files[kind]) continue;
       try {
@@ -45,6 +45,21 @@ export function scaffold(system, only) {
     }
   }
   return written;
+}
+
+// A new component: an empty component file, and its examples and page. Returns its page's name
+// (`slug`). Throws with a message if the name won't do.
+export function createComponent(system, name, description = '') {
+  const sys = PROTOTYPE_SYSTEMS[system];
+  if (!sys) throw new Error(`"${system}" isn't a prototype system.`);
+  if (typeof description !== 'string' || description.length > 1024 || /[\r\n]/.test(description)) throw new Error('The description is one line of at most 1024 characters.');
+  const dir = path.join(ROOT, sys.dir, 'components');
+  const problem = typeof name === 'string' ? componentNameProblem(name, systemDocs(dir).components.map((c) => c.slug)) : 'has to be text';
+  if (problem) throw new Error(`A component's name ${problem}.`);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, `${name}.tsx`), componentSkeleton(name), { flag: 'wx' });
+  scaffold(system, name, { description });
+  return { slug: name };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

@@ -36,7 +36,7 @@ A prototype system's component pages come from its files, not from a spec. Files
 - `button.examples.tsx` adds live examples. Each export named with a capital is one example, shown with its code.
 - `button.md` adds the page's text. Its frontmatter has a `title` and a `description`, and it has a `## When to use` section. Everything else in it is the team's to write.
 
-After adding or bringing in a component, run `pnpm component-docs <system> <component>` (or without the component, for every one that lacks its files). It writes the missing files from a template and never touches one that exists. Then fill in the description, the "When to use" section, and the examples. To do all of it, follow the `document-component` skill.
+After adding or bringing in a component, run `pnpm component-docs <system> <component>` (or without the component, for every one that lacks its files). It writes the missing files from a template and never touches one that exists. Then fill in the description, the "When to use" section, and the examples. To do all of it, follow the `document-component` skill. While the app runs, the person can do the same in it: each page has an Edit button for its files, and the sidebar's + adds a component. Nothing else about a component (rename, move, delete) is offered there; do those in the files.
 
 The build warns about a component without its examples or page, and about a page missing its title, description, or "When to use". A system with `docs: 'strict'` in `src/systems/index.ts` fails the build instead. The studio system lists its components in its spec (`studioSystem.tsx`) instead.
 

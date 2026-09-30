@@ -1,5 +1,6 @@
-import type { ComponentType } from 'react';
+import { useEffect, useState, type ComponentType } from 'react';
 import type { MDXContent } from 'mdx/types';
+import { SYSTEMS_KEY } from '@/studio/roots';
 import { exampleNames, type ComponentPropsDoc } from '@/studio/systemDocs';
 
 // A component's docs files in a prototype system (src/systems/<system>/components/, see
@@ -16,7 +17,7 @@ const globs = {
 // In dev, adding or removing a file makes Vite run this file again with new lists. The app keeps
 // calling the functions from the first run, so the lists live in state Vite keeps across runs
 // (like loadGuide.ts).
-const state: { globs: typeof globs } = import.meta.hot?.data.state ?? { globs };
+const state: { globs: typeof globs; listeners: Set<() => void> } = import.meta.hot?.data.state ?? { globs, listeners: new Set() };
 
 const at = (system: string, file: string) => `/systems/${system}/components/${file}`;
 
@@ -35,13 +36,34 @@ export async function loadExamples(system: string, file: string): Promise<Exampl
 export const loadExamplesSource = (system: string, file: string) => state.globs.sources[at(system, file)]?.();
 export const loadComponentDoc = async (system: string, file: string) => (await state.globs.docs[at(system, file)]?.())?.default;
 
-// The props of the components a file exports. Worked out on first use (scripts/vite-system-props-plugin.js).
+// A number that changes when a docs file is edited, added, or removed while the app runs, so a
+// page showing one loads it again.
+export function useDocsVersion() {
+  const [version, setVersion] = useState(0);
+  useEffect(() => {
+    const bump = () => setVersion((v) => v + 1);
+    // A component's own file changing doesn't re-run this module, but its props may have changed.
+    const onFile = (change: { contributor: string }) => { if (change.contributor === SYSTEMS_KEY) bump(); };
+    state.listeners.add(bump);
+    import.meta.hot?.on('studio:file', onFile);
+    return () => { state.listeners.delete(bump); import.meta.hot?.off('studio:file', onFile); };
+  }, []);
+  return version;
+}
+
+// The props of the components a file exports, read from the code (scripts/vite-system-props-plugin.js).
+// While the app runs, the dev server reads them fresh, so an edit to a component shows; the
+// built site has them in a module made at build time.
 export async function loadProps(system: string, file: string): Promise<ComponentPropsDoc[]> {
-  return (await import('virtual:system-props')).default[`${system}/${file}`] ?? [];
+  const all = import.meta.env.DEV
+    ? ((await (await fetch('/__studio/system-props')).json()) as Record<string, ComponentPropsDoc[]>)
+    : (await import('virtual:system-props')).default;
+  return all[`${system}/${file}`] ?? [];
 }
 
 if (import.meta.hot) {
   import.meta.hot.data.state = state;
   state.globs = globs;
+  state.listeners.forEach((notify) => notify());
   import.meta.hot.accept();
 }

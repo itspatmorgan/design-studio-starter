@@ -2,7 +2,7 @@
 // deployed site these return null, and the prototype navigation lists views from the manifest.
 import { useEffect, useState } from 'react';
 import type { Manifest, Prototype } from '@/studio/app/data/types';
-import { rootOf } from '@/studio/roots';
+import { SYSTEMS_KEY, rootOf } from '@/studio/roots';
 
 export type FileNode = { name: string; path: string; dir: boolean; children?: FileNode[] };
 
@@ -73,9 +73,18 @@ export type FileOp =
   | { op: 'delete'; path: string }
   | { op: 'meta'; title?: string; description?: string; start?: string }
   // A Handbook skill: skills/<name>/SKILL.md, in the Agent Skills format.
-  | { op: 'create-skill'; name: string; description: string };
+  | { op: 'create-skill'; name: string; description: string }
+  // A prototype system's components: a new component, or the examples and page one is missing.
+  | { op: 'create-component'; name: string; description: string }
+  | { op: 'add-docs'; component: string };
 
-export type FileOpResult = { path?: string; trashedTo?: string; manifest: Manifest };
+export type FileOpResult = { path?: string; slug?: string; trashedTo?: string; manifest: Manifest };
+
+// A prototype system's components folder, in the shape the file layer takes for a prototype
+// (src/studio/roots.ts): what the Source view and the operations above are given.
+export const systemFiles = (system: string): Prototype => ({
+  id: system, contributorKey: SYSTEMS_KEY, title: system, description: '', contributor: '', created: null, system, start: null, items: [],
+});
 
 // Changes a file in your prototype (scripts/vite-files-plugin.js). Throws the server's message.
 export async function fileOp(p: Prototype, op: FileOp): Promise<FileOpResult> {
