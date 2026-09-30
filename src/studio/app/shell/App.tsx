@@ -43,6 +43,10 @@ export function NotFound() {
       <p className="text-sm text-muted-foreground">
         There's nothing at this address. <Link to="/" className="text-primary hover:underline">View all prototypes</Link>
       </p>
+      {/* Archived work isn't on the deployed site (src/studio/archive.ts), and nothing there says which address it was. */}
+      {!import.meta.env.DEV && (
+        <p className="text-sm text-muted-foreground">If this was archived, the deployed site leaves it out. Run the sandbox locally to open it.</p>
+      )}
     </div>
   );
 }

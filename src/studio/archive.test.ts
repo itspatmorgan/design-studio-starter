@@ -1,7 +1,7 @@
 // How archive status is read from a view's tag and written back (archive.ts). Run with `pnpm test`.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { fileStatus, forDeploy, parseStatus, withStatus } from './archive.ts';
+import { fileStatus, forDeploy, linksToArchived, parseStatus, relativeLinksToArchived, withStatus } from './archive.ts';
 
 const VIEW = `export default function V() { return null; }\n`;
 
@@ -107,4 +107,30 @@ test('a prototype whose views are all archived is left out too', () => {
 
 test('a prototype with no items at all is kept', () => {
   assert.equal(forDeploy([proto('empty', [])]).kept.length, 1);
+});
+
+test('a canvas link to an archived view is found, and a longer name is not mistaken for it', () => {
+  const canvas = '{"link":"http://localhost:5173/patrick/a/explore/v3"}';
+  const archived = { items: ['/patrick/a/explore/v3'], prototypes: [] };
+  assert.deepEqual(linksToArchived(canvas, archived), ['/patrick/a/explore/v3']);
+  assert.deepEqual(linksToArchived('{"link":"http://localhost:5173/patrick/a/explore/v30"}', archived), []);
+  assert.deepEqual(linksToArchived('{"link":"http://localhost:5173/patrick/a/explore/v3/more"}', archived), []);
+});
+
+test('a link into an archived prototype is found, but not into one with a longer name', () => {
+  const archived = { items: [], prototypes: ['/patrick/old'] };
+  assert.deepEqual(linksToArchived('see https://x.test/patrick/old/lofi/main.', archived), ['/patrick/old']);
+  assert.deepEqual(linksToArchived('see https://x.test/patrick/older/lofi/main', archived), []);
+});
+
+test('relative document links to archived views are found', () => {
+  const slugs = new Set(['explore/v3', 'lofi/main']);
+  const text = 'See [the flow](./explore/v3) and [notes](../other), [site](https://example.com/explore/v3), [top](/explore/v3).';
+  assert.deepEqual(relativeLinksToArchived('plan.md', text, slugs), ['explore/v3']);
+  assert.deepEqual(relativeLinksToArchived('research/notes.md', 'Back to [main](../lofi/main.tsx#top)', slugs), ['lofi/main']);
+  assert.deepEqual(relativeLinksToArchived('research/notes.md', '[x](./lofi/main)', slugs), []);
+});
+
+test('a link at the end of a sentence is still found', () => {
+  assert.deepEqual(linksToArchived('Open /patrick/a/explore/v3.', { items: ['/patrick/a/explore/v3'], prototypes: [] }), ['/patrick/a/explore/v3']);
 });

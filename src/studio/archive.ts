@@ -70,3 +70,42 @@ export function forDeploy<P extends Proto>(prototypes: P[]) {
   }
   return { kept, archived, leftOut };
 }
+
+// Links to archived work, in the text of a canvas or document that stays on the deployed site. The
+// site has nothing to open there, so it shows a placeholder, and the build names the file so it can be
+// fixed. These read text and change nothing.
+const slugChar = (c: string | undefined) => c !== undefined && /[A-Za-z0-9_%\-/]/.test(c);
+
+// App paths in a text, the way a canvas stores a link ("http://host/patrick/checkout/lofi/main"):
+// `items` are archived items ("/patrick/checkout/lofi/main"), `prototypes` archived prototypes
+// ("/patrick/checkout"). Returns the ones it links to.
+export function linksToArchived(text: string, { items, prototypes }: { items: string[]; prototypes: string[] }): string[] {
+  const found: string[] = [];
+  const has = (needle: string, ends: (next: string | undefined) => boolean) => {
+    for (let i = text.indexOf(needle); i !== -1; i = text.indexOf(needle, i + 1)) {
+      if (ends(text[i + needle.length])) return true;
+    }
+    return false;
+  };
+  for (const path of items) if (has(path, (next) => !slugChar(next))) found.push(path);
+  for (const path of prototypes) if (has(path, (next) => next === '/' || !slugChar(next))) found.push(path);
+  return found;
+}
+
+// Relative Markdown links in a document ("[the flow](./lofi/main)" in "notes/plan.md") that point at
+// one of `slugs`, the archived items of the same prototype (paths without extensions). Returns the ones it links to.
+export function relativeLinksToArchived(docPath: string, text: string, slugs: Set<string>): string[] {
+  const found = new Set<string>();
+  for (const match of text.matchAll(/\]\(\s*<?([^)\s>]+)/g)) {
+    const target = match[1].split(/[#?]/)[0];
+    if (!target || target.startsWith('/') || /^[a-z][a-z0-9+.-]*:/i.test(target)) continue;
+    const parts = docPath.split('/').slice(0, -1);
+    for (const part of target.split('/')) {
+      if (part === '..') parts.pop();
+      else if (part && part !== '.') parts.push(part);
+    }
+    const slug = parts.join('/').replace(/\.[^./]+$/, '');
+    if (slugs.has(slug)) found.add(slug);
+  }
+  return [...found];
+}

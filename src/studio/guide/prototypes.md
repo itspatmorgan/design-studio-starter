@@ -54,6 +54,16 @@ Folders are only for organizing, at any depth. A folder's name never changes wha
 
 A common folder is `lofi/`: rough, grayscale sketches of an idea, before it's worth polishing.
 
+## Archiving
+
+Explorations pile up. When a view or a whole prototype has done its job but you want to keep it, archive it instead of deleting it. Right-click a view and choose **Archive**, or choose **Archive prototype** in the prototype's **…** menu. **Unarchive** brings it back.
+
+While you work locally, nothing changes except a small mark: archived views are dimmed in the navigation, and archived prototypes move to an **Archived** section at the bottom of the Prototypes page. You can still open them. On the deployed site they're left out entirely: they aren't built, listed, or shipped, which keeps it fast. To keep something on the deployed site, leave it active and put it in a folder to get it out of the way.
+
+If a canvas or document that stays on the site links to archived work, the build names the file, and the link shows a placeholder on the deployed site.
+
+An archived view carries a comment at the top of its file, `/** @status archived */`. An archived prototype has `"status": "archived"` in `meta.json`. Your agent can set either for you.
+
 ## meta.json
 
 ```json
@@ -62,7 +72,8 @@ A common folder is `lofi/`: rough, grayscale sketches of an idea, before it's wo
   "description": "A first prototype.",
   "created": "2026-09-28",
   "system": "product",
-  "start": "lofi/main"
+  "start": "lofi/main",
+  "status": "archived"
 }
 ```
 
@@ -71,6 +82,8 @@ Only `title` is required. `pnpm new` fills in `created`. Your name comes from `c
 `system` is the [design system](/guide/systems) it builds with. Leave it out to use the default, which is all you need until your team has more than one.
 
 `start` is the view the prototype opens on, written the way it appears in the URL. Leave it out to open on the first view. **Set as start** in the navigation sets it for you, and it follows the view if you rename or move it.
+
+`status` is `archived` to [set the prototype aside](#archiving). Leave it out for an active prototype, which is the default.
 
 If `meta.json` is missing or broken, the app skips the prototype with a warning, and the build fails until it's fixed.
 

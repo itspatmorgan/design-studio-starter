@@ -8,7 +8,7 @@ import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems/index.ts';
 import { SYSTEM_SOURCES, STUDIO_ID } from '../src/studio/systemSources.ts';
 import { HELPER_FOLDER, itemSlug } from '../src/studio/fileTypes/index.ts';
 import { HANDBOOK_KEY, HANDBOOK_SECTIONS } from '../src/studio/roots.ts';
-import { STATUSES, fileStatus, forDeploy, parseStatus } from '../src/studio/archive.ts';
+import { STATUSES, fileStatus, forDeploy, linksToArchived, parseStatus, relativeLinksToArchived } from '../src/studio/archive.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { frontmatter } from './lib/frontmatter.js';
 import { handbookProblems } from './lib/handbook-check.js';
@@ -75,6 +75,33 @@ function checkItems(dir, items, out = console) {
     }
   }
   return errors;
+}
+
+// Canvases and documents that stay on the deployed site but link to archived work, which isn't
+// there. `archived` is forDeploy's list of what it left out (paths in the app's file globs).
+// Returns a sentence for each such file.
+function archivedLinkWarnings(kept, archived) {
+  const appPath = (glob) => glob.replace(/^\/prototypes/, '').split('/').map(encodeURIComponent).join('/');
+  const prototypes = archived.filter((g) => g.endsWith('/**')).map((g) => appPath(g.slice(0, -3)));
+  const items = archived.filter((g) => !g.endsWith('/**')).map((g) => appPath(g.replace(/\.[^./]+$/, '')));
+  const warnings = [];
+  for (const proto of kept) {
+    const base = `/${encodeURIComponent(proto.contributorKey)}/${encodeURIComponent(proto.id)}/`;
+    // Archived items in this prototype, as the relative links in its documents name them.
+    const slugs = new Set(items.filter((p) => p.startsWith(base)).map((p) => decodeURIComponent(p.slice(base.length))));
+    for (const item of proto.items) {
+      if (FILE_TYPES[item.fileType].archivable) continue;
+      const file = path.join(PROTOS, proto.contributorKey, proto.id, item.path);
+      let text;
+      try { text = fs.readFileSync(file, 'utf8'); } catch { continue; }
+      const linked = [
+        ...linksToArchived(text, { items, prototypes }).map((p) => decodeURIComponent(p).replace(/^\//, '')),
+        ...(item.path.endsWith('.md') ? relativeLinksToArchived(item.path, text, slugs) : []),
+      ];
+      if (linked.length) warnings.push(`[manifest] ${path.relative(ROOT, file)} links to archived work (${[...new Set(linked)].join(', ')}). The deployed site shows a placeholder there.`);
+    }
+  }
+  return warnings;
 }
 
 // Scans src/prototypes/, src/handbook/, and src/studio/guide/, writes public/prototypes/manifest.json, and returns it.
@@ -230,6 +257,14 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
 
   // What the deployed site leaves out (src/studio/archive.ts).
   const { kept, archived, leftOut } = forDeploy(prototypes);
+
+  // A canvas or document that stays on the deployed site but links to archived work would show a
+  // placeholder there: say which, so the link can be fixed or the work unarchived. Never an error.
+  if (deploy && archived.length) {
+    const links = archivedLinkWarnings(kept, archived);
+    for (const line of links.slice(0, DOC_WARNINGS)) out.warn(line);
+    if (links.length > DOC_WARNINGS) out.warn(`[manifest] and ${links.length - DOC_WARNINGS} more file(s) that link to archived work.`);
+  }
 
   const manifest = { prototypes: deploy ? kept : prototypes, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map, systems };
   if (write) {

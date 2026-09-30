@@ -22,7 +22,10 @@ export default function ItemCard({ proto, item, className }: { proto?: Prototype
       <div className="min-w-0 flex-1">
         <div className="truncate text-sm font-semibold text-foreground">{found ? itemLabel(item.path) : 'Not found'}</div>
         <div className="truncate text-xs text-muted-foreground">
-          {found ? FILE_TYPES[item.fileType]?.label ?? 'File' : "This file was moved or deleted. Ask your agent to fix the link."}
+          {found
+            ? FILE_TYPES[item.fileType]?.label ?? 'File'
+            // On the deployed site a missing file may be archived work, which it leaves out (src/studio/archive.ts).
+            : import.meta.env.DEV ? 'This file was moved or deleted. Ask your agent to fix the link.' : 'Not on this site. It may be archived: run the sandbox locally to see it.'}
         </div>
       </div>
       {found && (
