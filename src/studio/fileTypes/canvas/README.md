@@ -2,7 +2,7 @@
 
 A page to arrange things on: live views and cards for documents from any prototype, beside sticky
 notes, text, and arrows. It's [Excalidraw](https://github.com/excalidraw/excalidraw) with the app's
-look, and its design comes from Design Studio's canvas. Agent contract: `agents/rules/canvases.md`.
+look, and its design comes from Design Studio's canvas. Agent contract: `src/handbook/rules/canvases.md`.
 Human docs: the Guide's Canvases page.
 
 **This folder is a self-contained file type.** Core never imports it (`scripts/check-file-types.js`),
@@ -20,7 +20,7 @@ registry (`src/studio/app/data/fileTypes.ts`) how to show an item.
   type shows a card (`src/studio/app/items/ItemCard.tsx`), and a link to nothing shows "Not found".
 - **Views are pictures.** A view is laid out at 1440 px wide and scaled down to the element's width,
   cropped at the bottom. Resizing the element changes the crop. Nothing in it takes clicks.
-- **Agents** use the tools in tools.ts, live in the open canvas or on the file (agents/rules/canvases.md).
+- **Agents** use the tools in tools.ts, live in the open canvas or on the file (src/handbook/rules/canvases.md).
 - **Dev:** edits save to the file through the same file layer as the Source view, and changes made to the
   file from outside (an agent) are taken in live. **Deployed:** the committed file, read-only.
 
@@ -53,4 +53,4 @@ Excalidraw's CDN.
 Delete this folder. Canvas files become plain files, and the navigation hides them unless you choose Show
 all files. Then remove what only canvas used: `@excalidraw/excalidraw` and the `canvas` script from `package.json`, `src/studio/fileTypes/canvas/cli.ts` from `tsconfig.node.json` and `tsconfig.app.json`,
 `patches/`, `pnpm-workspace.yaml`, its Guide page (`src/studio/guide/canvases.md` and the links to it),
-and its agent rule (`agents/rules/canvases.md` and its line in `AGENTS.md`).
+and its agent rule (`src/handbook/rules/canvases.md` and its line in `AGENTS.md`).

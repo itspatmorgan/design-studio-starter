@@ -5,7 +5,7 @@ order: 2
 toc: true
 ---
 
-You don't need to run commands yourself. Open this repo in your coding agent and ask it to get you set up. It follows the setup skill in `agents/skills/setup-contributor/`, and checks with you before it writes anything.
+You don't need to run commands yourself. Open this repo in your coding agent and ask it to get you set up. It follows the setup skill in `src/handbook/skills/setup-contributor/`, and checks with you before it writes anything.
 
 ## Before you start
 

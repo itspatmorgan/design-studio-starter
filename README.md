@@ -13,7 +13,7 @@ The full docs live in the app itself: run it and open the Guide (`/guide`), or r
 
 ## Getting started
 
-Ask your agent to get you set up. It follows `agents/skills/setup-contributor/SKILL.md`. Under the hood, once [mise](https://mise.jdx.dev) is activated in your shell, that's:
+Ask your agent to get you set up. It follows `src/handbook/skills/setup-contributor/SKILL.md`. Under the hood, once [mise](https://mise.jdx.dev) is activated in your shell, that's:
 
 ```sh
 mise install    # installs the pinned Node and pnpm
@@ -58,9 +58,9 @@ The app uses TanStack Router's browser history, so URLs are clean paths like `/p
 ## Repo map
 
 ```
-AGENTS.md              agent entry point; points to agents/rules/
-agents/                rules and skills for agents (the one source of truth)
-.agents/skills, .claude/skills   symlinks to agents/skills, so each agent finds the skills
+AGENTS.md              agent entry point; points to src/handbook/rules/
+src/handbook/          the rules and skills for agents
+.agents/skills, .claude/skills   symlinks to src/handbook/skills, so each agent finds the skills
 contributors.json      who owns which folder
 scripts/               manifest, create, scope check, Vite plugins (plain Node .js)
 .husky/                pre-commit and pre-push scope checks

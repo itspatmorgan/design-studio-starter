@@ -6,7 +6,7 @@ order: 13
 toc: true
 ---
 
-The kit works with any coding agent. Everything the agent needs to know lives once, in `agents/`, and `AGENTS.md` points to it.
+The kit works with any coding agent. Everything the agent needs to know lives once, in `src/handbook/`, and `AGENTS.md` points to it.
 
 ## AGENTS.md
 
@@ -14,7 +14,7 @@ The kit works with any coding agent. Everything the agent needs to know lives on
 
 ## Rules
 
-Rules in `agents/rules/` are standing knowledge the agent reads every session:
+Rules in `src/handbook/rules/` are standing knowledge the agent reads every session:
 
 - `systems.md`: the two systems, icons, and theme colors
 - `prototype-workflow.md`: what a prototype is, and how to build one
@@ -26,7 +26,7 @@ Keep them short. A rule that says too much gets followed into situations it wasn
 
 Skills are step-by-step instructions for a specific task, used only when the task comes up. The kit ships one, `setup-contributor`, which handles onboarding: confirming your details with you, then running `pnpm join`.
 
-Skills live in `agents/skills/`. Different agents look for skills in different places, so `.agents/skills` and `.claude/skills` are links to the same folder.
+Skills live in `src/handbook/skills/`. Different agents look for skills in different places, so `.agents/skills` and `.claude/skills` are links to the same folder.
 
 ## Rules for judgment, scripts for repetition
 

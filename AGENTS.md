@@ -1,14 +1,14 @@
 # Design Studio Starter
 
-If `node_modules/` doesn't exist, or the person is new, follow [agents/skills/setup-contributor/SKILL.md](agents/skills/setup-contributor/SKILL.md) first.
+If `node_modules/` doesn't exist, or the person is new, follow [src/handbook/skills/setup-contributor/SKILL.md](src/handbook/skills/setup-contributor/SKILL.md) first.
 
 At the start of every session, read:
-- [agents/rules/systems.md](agents/rules/systems.md)
-- [agents/rules/prototype-workflow.md](agents/rules/prototype-workflow.md)
-- [agents/rules/contributor-scope.md](agents/rules/contributor-scope.md)
+- [src/handbook/rules/systems.md](src/handbook/rules/systems.md)
+- [src/handbook/rules/prototype-workflow.md](src/handbook/rules/prototype-workflow.md)
+- [src/handbook/rules/contributor-scope.md](src/handbook/rules/contributor-scope.md)
 
-When the person asks for a document (written context in a prototype), read [agents/rules/documents.md](agents/rules/documents.md).
-When the person asks for a canvas (a page of views, documents, and notes arranged together), read [agents/rules/canvases.md](agents/rules/canvases.md).
+When the person asks for a document (written context in a prototype), read [src/handbook/rules/documents.md](src/handbook/rules/documents.md).
+When the person asks for a canvas (a page of views, documents, and notes arranged together), read [src/handbook/rules/canvases.md](src/handbook/rules/canvases.md).
 
 Find out who you're working with by running `node scripts/resolve-contributor.js`.
 Create prototypes with `pnpm new "Prototype Name"`.

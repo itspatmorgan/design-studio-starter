@@ -28,7 +28,7 @@ Every prototype system has the same parts:
 3. **Pop-ups that stay in scope.** Dialogs and menus render inside the prototype's frame, so they keep the system's look.
 4. **An entry in `src/systems/index.ts`**, plus a short spec for its Systems pages.
 
-Adding one is a platform change, so it's a job for whoever maintains the kit. Ask your agent to add a system, and it follows the steps in `agents/rules/systems.md`, starting from a copy of `src/systems/product/`.
+Adding one is a platform change, so it's a job for whoever maintains the kit. Ask your agent to add a system, and it follows the steps in `src/handbook/rules/systems.md`, starting from a copy of `src/systems/product/`.
 
 A prototype picks its system in `meta.json`, with `"system": "brand"`. Without it, a prototype uses the first system listed, so nothing changes for anyone until you add a second one.
 

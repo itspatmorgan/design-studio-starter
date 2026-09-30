@@ -27,7 +27,7 @@ if (!first || first === 'help' || first === '--help') {
 // The canvas file, inside a prototype's folder and nowhere else.
 const file = path.resolve(process.cwd(), first);
 if (!file.endsWith('.excalidraw')) fail(`${first} isn't a canvas. Canvases are .excalidraw files in a prototype.`);
-if (!fs.existsSync(file)) fail(`${first} doesn't exist. Make a canvas with + → New canvas in the app, or write an empty one (agents/rules/canvases.md).`);
+if (!fs.existsSync(file)) fail(`${first} doesn't exist. Make a canvas with + → New canvas in the app, or write an empty one (src/handbook/rules/canvases.md).`);
 const real = fs.realpathSync(file);
 const inProtos = path.relative(fs.realpathSync(PROTOS), real).split(path.sep);
 if (inProtos[0] === '..' || path.isAbsolute(path.relative(PROTOS, real)) || inProtos.length < 3) fail(`${first} isn't in a prototype. A canvas is at src/prototypes/<contributor>/<prototype>/….excalidraw.`);

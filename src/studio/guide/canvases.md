@@ -41,7 +41,7 @@ A canvas is a good place to work with your agent: to ask it to lay out a flow, p
 
 Ask for what you want in your own words. For example: "Put the checkout screens on a canvas in order, with arrows, and a note under any that has an open question."
 
-Your agent works on the canvas whether or not you have a browser open: with the canvas open it changes it live, and without, it edits the file. You'll see changes as they're made if you have it open. Its tools are listed in `agents/rules/canvases.md`.
+Your agent works on the canvas whether or not you have a browser open: with the canvas open it changes it live, and without, it edits the file. You'll see changes as they're made if you have it open. Its tools are listed in `src/handbook/rules/canvases.md`.
 
 ## Saving
 
