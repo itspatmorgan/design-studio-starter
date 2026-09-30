@@ -155,7 +155,7 @@ export default function SourcePane({ proto, item }: { proto: Prototype; item: It
           navigation's title row and its buttons */}
       <div className="flex h-[57px] shrink-0 items-center gap-3 border-b border-border px-4 text-[12px]">
         <span className="min-w-0 truncate font-mono text-muted-foreground" title={`src/prototypes/${proto.contributorKey}/${proto.id}/${item.path}`}>{item.path}</span>
-        <span className="ml-auto shrink-0 text-muted-foreground">{!editable ? 'Read-only' : isDirty ? 'Unsaved changes' : isHandbook ? 'Platform file: changes are reviewed' : ''}</span>
+        <span className="ml-auto shrink-0 text-muted-foreground">{!editable ? 'Read-only' : isDirty ? 'Unsaved changes' : ''}</span>
         {editable && <Button size="sm" disabled={!isDirty || saving} onClick={() => save.current()} title="Save (⌘S)">{saving ? 'Saving…' : 'Save'}</Button>}
       </div>
       {conflict && (
