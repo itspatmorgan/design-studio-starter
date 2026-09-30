@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/build-manifest.js && vite",
-    "build": "node scripts/build-manifest.js --strict && node scripts/check-file-types.js && pnpm test && pnpm typecheck && vite build",
+    "build": "node scripts/build-manifest.js --strict --deploy && node scripts/check-file-types.js && pnpm test && pnpm typecheck && vite build",
     "typecheck": "tsc -b",
     "preview": "vite preview",
     "new": "node scripts/create-prototype.js",
@@ -13,7 +13,7 @@
     "prepare": "husky",
     "check": "node scripts/check-file-types.js",
     "canvas": "node src/studio/fileTypes/canvas/cli.ts",
-    "test": "node --test src/studio/fileTypes/canvas/tools.test.ts src/studio/handbook.test.ts src/studio/systemDocs.test.ts"
+    "test": "node --test src/studio/fileTypes/canvas/tools.test.ts src/studio/handbook.test.ts src/studio/systemDocs.test.ts src/studio/archive.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

@@ -26,6 +26,10 @@ export type FileTypeSpec = {
   // True for the one type that opens any file no other type claims, where the Handbook allows it.
   // It has no extensions of its own, and prototypes never use it: their other files stay plain.
   fallback?: boolean;
+  // True if a file of this type can be archived: a `@status archived` tag in a comment at the top of
+  // the file (src/studio/archive.ts) leaves it out of the deployed site. Only for types whose files
+  // can hold such a comment.
+  archivable?: boolean;
   // The contents of a new file called `name` ("user-settings.tsx"). Without it, the "+" menu
   // doesn't offer to make this type.
   template?: (name: string) => string;

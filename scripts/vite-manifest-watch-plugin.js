@@ -8,6 +8,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildManifest } from './build-manifest.js';
+import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -33,8 +34,8 @@ export function publishManifest(server, manifest, origin) {
 const inside = (dir, file) => file === dir || file.startsWith(dir + path.sep);
 
 // Adding or removing anything can change the list of views; editing a file only matters
-// for meta.json, Guide frontmatter, and contributor names. Edits to a view's code are
-// left to Vite's hot reload.
+// for meta.json, Guide frontmatter, contributor names, and the status tag in a file that can
+// be archived (src/studio/archive.ts). Other edits to a view's code are left to Vite's hot reload.
 function relevant(file, kind) {
   if (file === CONTRIBUTORS || file === AGENTS) return true;
   if (inside(GUIDE, file)) return file.endsWith('.md');
@@ -44,8 +45,10 @@ function relevant(file, kind) {
   if (file === STUDIO_THEME) return kind === 'change';
   if (inside(SYSTEMS, file) || inside(STUDIO_COMPONENTS, file)) return kind !== 'change' || /\.(md|examples\.[jt]sx)$|styles[\\/]theme\.css$/.test(file);
   if (!inside(PROTOS, file)) return false;
-  return kind !== 'change' || path.basename(file) === 'meta.json';
+  return kind !== 'change' || path.basename(file) === 'meta.json' || archivable(file);
 }
+
+const archivable = (file) => { const id = fileTypeOf(file); return Boolean(id && FILE_TYPES[id].archivable); };
 
 export default function manifestWatch() {
   return {

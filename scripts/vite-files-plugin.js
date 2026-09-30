@@ -12,7 +12,7 @@
 //        rename   { path, name }
 //        move     { path, to: folder }           "" is the prototype's top level
 //        delete   { path }                        to the Trash (or .trash/ at the repo root)
-//        meta     { title?, description?, start? }  edit meta.json (start "" opens the first item)
+//        meta     { title?, description?, start?, status? }  edit meta.json (start "" opens the first item; status is "active" or "archived")
 //        create-skill { name, description }       Handbook skills only: skills/<name>/SKILL.md, in the Agent Skills format
 //      (In the Handbook, anyone can change files, but only in its fixed shape: src/studio/handbookRules.ts.)
 //      (contributor "systems" opens a prototype system's components, src/systems/<id>/components/. Anyone can
@@ -40,6 +40,7 @@ import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from './resolve-contributor.js';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { HELPER_FOLDER } from '../src/studio/fileTypes/index.ts';
+import { STATUSES, parseStatus } from '../src/studio/archive.ts';
 import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../src/studio/roots.ts';
 import { SYSTEM_SOURCES } from '../src/studio/systemSources.ts';
 import { scaffold } from './scaffold-component-docs.js';
@@ -209,7 +210,7 @@ function renameSkillInFile(file, name) {
 
 // One file operation. Returns { path } (the new path, for create, rename, and move) or throws a message.
 // `section` is the Handbook section the folder is (docs, rules, skills), or null for a prototype.
-function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, description, start }, section = null) {
+function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, description, start, status }, section = null) {
   const inside = (r) => resolveInside(dir, r);
   const relOf = (abs) => path.relative(fs.realpathSync(dir), abs).split(path.sep).join('/');
   // The Handbook has a fixed shape: check the change against it first (src/studio/handbookRules.ts).
@@ -250,6 +251,12 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, descripti
       meta.title = title.trim();
     }
     if (typeof description === 'string') meta.description = description.trim();
+    // status: active (the default, so it's not written) or archived.
+    if (status !== undefined) {
+      const next = parseStatus(status);
+      if (!next) throw new Error(`A status is one of: ${STATUSES.join(', ')}.`);
+      if (next === 'active') delete meta.status; else meta.status = next;
+    }
     // start: an item's path without its extension, or "" to open on the first item.
     if (start === '') delete meta.start;
     else if (start !== undefined) {

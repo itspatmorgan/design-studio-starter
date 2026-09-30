@@ -10,6 +10,7 @@ import type { DocsMode } from '@/studio/systemSources';
 export type Item = {
   path: string;   // file path in the prototype, e.g. "prototype.tsx" or "checkout/step-1.tsx"
   fileType: string; // the id of the file type that owns it, from its extension ("view", "document")
+  status?: 'archived'; // set when the file is archived (src/studio/archive.ts); absent means active
 };
 
 export type Prototype = {
@@ -22,6 +23,7 @@ export type Prototype = {
   system: string;         // meta.json "system", or the first in src/systems/index.ts
   start: string | null;   // meta.json "start", as an item path: the item it opens on
   items: Item[];          // in file-tree order
+  status?: 'archived';    // meta.json "status", when archived; absent means active
 };
 
 // One Guide page (src/studio/guide/<slug>.md), from its frontmatter.

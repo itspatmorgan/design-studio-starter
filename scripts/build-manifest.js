@@ -1,4 +1,6 @@
-// Usage: node scripts/build-manifest.js [--strict]   (--strict exits 1 if any meta.json is invalid)
+// Usage: node scripts/build-manifest.js [--strict] [--deploy]
+//   --strict  exits 1 if any meta.json is invalid
+//   --deploy  leaves archived prototypes and views out (src/studio/archive.ts), for the deployed site
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -6,6 +8,7 @@ import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems/index.ts';
 import { SYSTEM_SOURCES, STUDIO_ID } from '../src/studio/systemSources.ts';
 import { HELPER_FOLDER, itemSlug } from '../src/studio/fileTypes/index.ts';
 import { HANDBOOK_KEY, HANDBOOK_SECTIONS } from '../src/studio/roots.ts';
+import { STATUSES, fileStatus, forDeploy, parseStatus } from '../src/studio/archive.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { frontmatter } from './lib/frontmatter.js';
 import { handbookProblems } from './lib/handbook-check.js';
@@ -51,17 +54,24 @@ const inHandbook = {
 
 // Problems with a folder's items: two sharing a URL, or a file its type rejects (a view needs a
 // default export, and so on: src/studio/fileTypes/<type>/type.ts). Printed; returns how many.
-function checkItems(dir, items) {
+// An item that's archived (its type allows it, and its file says so) gets status: 'archived'.
+function checkItems(dir, items, out = console) {
   let errors = 0;
   const seen = new Set();
   for (const item of items) {
     const file = path.relative(ROOT, path.join(dir, item.path));
-    if (seen.has(itemSlug(item.path))) { console.error(`[manifest] ${file}: another file here has the same name. Rename one; they'd share a URL.`); errors++; }
+    if (seen.has(itemSlug(item.path))) { out.error(`[manifest] ${file}: another file here has the same name. Rename one; they'd share a URL.`); errors++; }
     seen.add(itemSlug(item.path));
-    const check = FILE_TYPES[item.fileType].check;
+    const { check, archivable } = FILE_TYPES[item.fileType];
+    if (!check && !archivable) continue;
+    const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
     if (check) {
-      const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
-      for (const problem of check({ source, frontmatter: frontmatter(source) })) { console.error(`[manifest] ${file}: ${problem}`); errors++; }
+      for (const problem of check({ source, frontmatter: frontmatter(source) })) { out.error(`[manifest] ${file}: ${problem}`); errors++; }
+    }
+    if (archivable) {
+      const { status, problem } = fileStatus(source);
+      if (problem) { out.error(`[manifest] ${file}: ${problem}`); errors++; }
+      if (status === 'archived') item.status = 'archived';
     }
   }
   return errors;
@@ -70,7 +80,11 @@ function checkItems(dir, items) {
 // Scans src/prototypes/, src/handbook/, and src/studio/guide/, writes public/prototypes/manifest.json, and returns it.
 // Problems are printed; errors counts them. The dev server calls this on every change
 // (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
-export function buildManifest() {
+// Options: `deploy` leaves archived prototypes and views out (see src/studio/archive.ts), `write: false`
+// skips writing the file, and `quiet` prints nothing. `archived` in the result lists what deploy
+// leaves out, as paths in the app's file globs (scripts/vite-archive-plugin.js).
+export function buildManifest({ deploy = false, write = true, quiet = false } = {}) {
+  const out = quiet ? { log() {}, warn() {}, error() {} } : console;
   // Display names come from contributors.json, so they live in one place.
   const contributorsFile = path.join(ROOT, 'contributors.json');
   const contributors = fs.existsSync(contributorsFile) ? JSON.parse(fs.readFileSync(contributorsFile, 'utf8')) : {};
@@ -79,13 +93,13 @@ export function buildManifest() {
   let errors = 0;
   for (const contributorKey of dirs(PROTOS)) {
     if (RESERVED_KEYS.has(contributorKey)) {
-      console.error(`[manifest] Skipped src/prototypes/${contributorKey}/: "${contributorKey}" is an app page URL, so it can't be a contributor folder`);
+      out.error(`[manifest] Skipped src/prototypes/${contributorKey}/: "${contributorKey}" is an app page URL, so it can't be a contributor folder`);
       errors++; continue;
     }
     for (const id of dirs(path.join(PROTOS, contributorKey))) {
       const dir = path.join(PROTOS, contributorKey, id);
       const metaFile = path.relative(ROOT, path.join(dir, 'meta.json'));
-      const skip = (why) => { console.error(`[manifest] Skipped ${contributorKey}/${id}: ${metaFile} ${why}`); errors++; };
+      const skip = (why) => { out.error(`[manifest] Skipped ${contributorKey}/${id}: ${metaFile} ${why}`); errors++; };
       if (!fs.existsSync(path.join(dir, 'meta.json'))) { skip('is missing'); continue; }
       let meta;
       try {
@@ -96,7 +110,7 @@ export function buildManifest() {
       if (typeof meta?.title !== 'string' || !meta.title.trim()) { skip('needs a "title"'); continue; }
       const items = itemsIn(dir);
       // Two items can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
-      errors += checkItems(dir, items);
+      errors += checkItems(dir, items, out);
       // "start" (optional) is the item the prototype opens on, as in its URL: "checkout/step-1".
       // Without it, the prototype opens on its first item.
       let start = null;
@@ -107,9 +121,16 @@ export function buildManifest() {
       // "system" (optional) is the design system it builds with, from src/systems/index.ts.
       const system = meta.system ?? DEFAULT_SYSTEM;
       if (!(system in PROTOTYPE_SYSTEMS)) { skip(`has "system": "${system}", which isn't in src/systems/index.ts (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`); continue; }
+      // "status" (optional) is 'active' (the default) or 'archived'.
+      let status = null;
+      if (meta.status !== undefined) {
+        status = parseStatus(meta.status);
+        if (!status) { skip(`has "status": ${JSON.stringify(meta.status)}, which isn't one of ${STATUSES.join(', ')}`); continue; }
+      }
       prototypes.push({
         id, contributorKey, title: meta.title, description: meta.description ?? '',
         contributor: contributors[contributorKey]?.name ?? '', created: meta.created ?? null, system, start, items,
+        ...(status === 'archived' && { status }),
       });
     }
   }
@@ -119,12 +140,12 @@ export function buildManifest() {
   // (scripts/lib/handbook-check.js), and a file or folder out of place is a problem.
   const handbook = [];
   if (fs.existsSync(HANDBOOK)) {
-    for (const problem of handbookProblems(HANDBOOK)) { console.error(`[manifest] ${problem}`); errors++; }
+    for (const problem of handbookProblems(HANDBOOK)) { out.error(`[manifest] ${problem}`); errors++; }
     for (const [id, { title, description }] of Object.entries(HANDBOOK_SECTIONS)) {
       const dir = path.join(HANDBOOK, id);
       if (!fs.existsSync(dir)) continue;
       const items = itemsIn(dir, '', inHandbook);
-      errors += checkItems(dir, items);
+      errors += checkItems(dir, items, out);
       handbook.push({ id, contributorKey: HANDBOOK_KEY, title, description, contributor: '', created: null, system: DEFAULT_SYSTEM, start: null, items });
     }
   }
@@ -154,22 +175,22 @@ export function buildManifest() {
       : [];
     const agentsFile = path.join(ROOT, 'AGENTS.md');
     map = handbookMap({ agents: fs.existsSync(agentsFile) ? fs.readFileSync(agentsFile, 'utf8') : null, rules, skills });
-    for (const file of map.missing) { console.error(`[manifest] AGENTS.md links to ${file}, which isn't there. Fix the link, or add the file.`); errors++; }
-    for (const rule of map.unrouted) console.warn(`[manifest] src/handbook/rules/${rule}: nothing links to this rule, so no agent will read it. Add a line for it to AGENTS.md.`);
+    for (const file of map.missing) { out.error(`[manifest] AGENTS.md links to ${file}, which isn't there. Fix the link, or add the file.`); errors++; }
+    for (const rule of map.unrouted) out.warn(`[manifest] src/handbook/rules/${rule}: nothing links to this rule, so no agent will read it. Add a line for it to AGENTS.md.`);
   }
 
   // Each prototype system's theme.css may only set values under its own class, like
   // .product-theme, so it can't leak into the app UI or another system.
   for (const [id, sys] of Object.entries(PROTOTYPE_SYSTEMS)) {
     const file = path.join(ROOT, sys.dir, 'styles', 'theme.css');
-    if (!fs.existsSync(file)) { console.error(`[manifest] ${path.relative(ROOT, file)} is missing (the ${id} system's theme)`); errors++; continue; }
+    if (!fs.existsSync(file)) { out.error(`[manifest] ${path.relative(ROOT, file)} is missing (the ${id} system's theme)`); errors++; continue; }
     const css = fs.readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
     // Every selector: the text before each "{", skipping at-rules (@media, @layer, ...) and keyframe steps.
     for (const m of css.matchAll(/([^{};]+)\{/g)) {
       const selector = m[1].trim();
       if (selector.startsWith('@') || /^(from|to|[\d.]+%)(\s*,\s*(from|to|[\d.]+%))*$/.test(selector)) continue;
       const leaks = selector.split(',').map((s) => s.trim()).filter((s) => !s.includes(`.${sys.themeClass}`));
-      if (leaks.length) { console.error(`[manifest] ${path.relative(ROOT, file)}: "${leaks.join(', ')}" isn't under .${sys.themeClass}, so it would style the whole app. Put it inside .${sys.themeClass} (or .dark .${sys.themeClass}).`); errors++; }
+      if (leaks.length) { out.error(`[manifest] ${path.relative(ROOT, file)}: "${leaks.join(', ')}" isn't under .${sys.themeClass}, so it would style the whole app. Put it inside .${sys.themeClass} (or .dark .${sys.themeClass}).`); errors++; }
     }
   }
 
@@ -177,7 +198,7 @@ export function buildManifest() {
   // (src/studio/systemDocs.ts, themeTokens.ts). The app's own system (Studio) is one of them. By
   // default a gap is a warning, and the first few are listed; docs: 'strict' fails the build and
   // 'off' says nothing.
-  if (STUDIO_ID in PROTOTYPE_SYSTEMS) { console.error(`[manifest] src/systems/index.ts: "${STUDIO_ID}" is the app's own system, so a prototype system can't use that name`); errors++; }
+  if (STUDIO_ID in PROTOTYPE_SYSTEMS) { out.error(`[manifest] src/systems/index.ts: "${STUDIO_ID}" is the app's own system, so a prototype system can't use that name`); errors++; }
   const systems = {};
   for (const [id, sys] of Object.entries(SYSTEM_SOURCES)) {
     const dir = path.join(ROOT, sys.components);
@@ -187,10 +208,10 @@ export function buildManifest() {
     systems[id] = { docs: sys.docs, origin: sys.origin, components, tokens };
     if (sys.docs === 'off') continue;
     const lines = problems.map((p) => `${path.relative(ROOT, path.join(dir, p.file))}: ${p.message}`);
-    if (sys.docs === 'strict') { for (const line of lines) console.error(`[manifest] ${line}`); errors += lines.length; }
+    if (sys.docs === 'strict') { for (const line of lines) out.error(`[manifest] ${line}`); errors += lines.length; }
     else {
-      for (const line of lines.slice(0, DOC_WARNINGS)) console.warn(`[manifest] ${line}`);
-      if (lines.length > DOC_WARNINGS) console.warn(`[manifest] ${id}: and ${lines.length - DOC_WARNINGS} more component doc gap(s). Set docs: 'strict' in src/systems/index.ts to fail the build on them.`);
+      for (const line of lines.slice(0, DOC_WARNINGS)) out.warn(`[manifest] ${line}`);
+      if (lines.length > DOC_WARNINGS) out.warn(`[manifest] ${id}: and ${lines.length - DOC_WARNINGS} more component doc gap(s). Set docs: 'strict' in src/systems/index.ts to fail the build on them.`);
     }
   }
 
@@ -201,22 +222,30 @@ export function buildManifest() {
   for (const file of guideFiles) {
     const fm = frontmatter(fs.readFileSync(path.join(GUIDE, file), 'utf8'));
     const where = `src/studio/guide/${file}`;
-    if (!fm || typeof fm.title !== 'string' || !fm.title) { console.error(`[manifest] Skipped ${where}: needs frontmatter with a "title"`); errors++; continue; }
-    if (typeof fm.order !== 'number') { console.error(`[manifest] Skipped ${where}: needs a numeric "order" in its frontmatter`); errors++; continue; }
+    if (!fm || typeof fm.title !== 'string' || !fm.title) { out.error(`[manifest] Skipped ${where}: needs frontmatter with a "title"`); errors++; continue; }
+    if (typeof fm.order !== 'number') { out.error(`[manifest] Skipped ${where}: needs a numeric "order" in its frontmatter`); errors++; continue; }
     guide.push({ slug: file.replace(/\.md$/, ''), title: fm.title, description: fm.description ?? '', section: fm.section || null, order: fm.order });
   }
   guide.sort((a, b) => a.order - b.order);
 
-  fs.mkdirSync(path.dirname(OUT), { recursive: true });
-  const manifest = { prototypes, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map, systems };
-  fs.writeFileSync(OUT, JSON.stringify(manifest, null, 2) + '\n');
-  console.log(`[manifest] ${prototypes.length} prototype(s), ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
-  return { manifest, errors };
+  // What the deployed site leaves out (src/studio/archive.ts).
+  const { kept, archived, leftOut } = forDeploy(prototypes);
+
+  const manifest = { prototypes: deploy ? kept : prototypes, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map, systems };
+  if (write) {
+    fs.mkdirSync(path.dirname(OUT), { recursive: true });
+    fs.writeFileSync(OUT, JSON.stringify(manifest, null, 2) + '\n');
+  }
+  out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
+  if (deploy && (leftOut.prototypes || leftOut.views)) {
+    out.log(`[manifest] Left out of the deployed site: ${[leftOut.prototypes && `${leftOut.prototypes} archived prototype(s)`, leftOut.views && `${leftOut.views} archived view(s)`].filter(Boolean).join(' and ')}`);
+  }
+  return { manifest, errors, archived: deploy ? archived : [] };
 }
 
 // Run as a script: node scripts/build-manifest.js [--strict]
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const { errors } = buildManifest();
+  const { errors } = buildManifest({ deploy: process.argv.includes('--deploy') });
   // pnpm build passes --strict, so a broken meta.json or Guide page fails the build. In dev it's only a warning.
   if (errors && process.argv.includes('--strict')) process.exit(1);
 }

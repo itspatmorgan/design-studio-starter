@@ -6,6 +6,7 @@ import { Cancel01Icon, Search01Icon } from '@hugeicons/core-free-icons';
 import { getRouteApi, Link, useNavigate } from '@tanstack/react-router';
 import { formatDate, newestFirst, prototypeLink } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
+import { cn } from '@/lib/utils';
 import NewPrototypeButton from '@/studio/app/pages/index/NewPrototypeDialog';
 
 const rootApi = getRouteApi('__root__');
@@ -15,7 +16,7 @@ function PrototypeCard({ prototype: p }: { prototype: Prototype }) {
   const name = p.contributor || p.contributorKey;
   return (
     <Link {...prototypeLink(p)} className="block">
-      <Card className="transition-colors hover:bg-muted/40">
+      <Card className={cn('transition-colors hover:bg-muted/40', p.status === 'archived' && 'opacity-60')}>
         <CardContent className="flex flex-col gap-2.5">
           <div className="flex h-7 items-center gap-2">
             <ContributorAvatar name={name} />
@@ -75,12 +76,27 @@ export default function Index() {
     const prototypes = manifest.prototypes
       .filter((p) => !q || matches(p, q))
       .sort(newestFirst);
-    body = prototypes.length ? (
+    // Archived prototypes show here, below the rest. The deployed site leaves them out.
+    const list = (ps: Prototype[]) => (
       <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        {prototypes.map((p) => (
+        {ps.map((p) => (
           <li key={`${p.contributorKey}/${p.id}`}><PrototypeCard prototype={p} /></li>
         ))}
       </ul>
+    );
+    const active = prototypes.filter((p) => p.status !== 'archived');
+    const archived = prototypes.filter((p) => p.status === 'archived');
+    body = prototypes.length ? (
+      <>
+        {active.length > 0 && list(active)}
+        {archived.length > 0 && (
+          <section className={active.length ? 'mt-10' : ''}>
+            <h2 className="mb-1 text-sm font-semibold text-foreground">Archived</h2>
+            <p className="mb-3 text-xs text-muted-foreground">Kept here for reference. The deployed site leaves these out.</p>
+            {list(archived)}
+          </section>
+        )}
+      </>
     ) : (
       <div className="py-16 text-center">
         <p className="mb-2 text-lg font-semibold text-foreground">Nothing here yet</p>

@@ -9,10 +9,10 @@
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Copy01Icon, Delete02Icon, FileEditIcon, Folder01Icon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
-import { openInEditor, repoPath, revealInFinder, useMe } from '@/studio/app/data/files';
+import { Archive02Icon, ArchiveRestoreIcon, Copy01Icon, Delete02Icon, FileEditIcon, Folder01Icon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
+import { fileOp, openInEditor, repoPath, revealInFinder, useMe } from '@/studio/app/data/files';
 import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
-import { formatDate, prototypeLink } from '@/studio/app/data/manifest';
+import { formatDate, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { Input } from '@/studio/components/input';
@@ -78,6 +78,18 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
     }
   }
 
+  // Archiving leaves the whole prototype out of the deployed site. Here it stays, marked, so it can be opened and brought back.
+  async function setArchived(archived: boolean) {
+    try {
+      const result = await fileOp(proto, { op: 'meta', status: archived ? 'archived' : 'active' });
+      setManifest(result.manifest);
+      await router.invalidate();
+      toast.add({ title: archived ? 'Archived. The deployed site leaves it out.' : 'Unarchived' });
+    } catch (e) {
+      toast.add({ type: 'error', title: (e as Error).message });
+    }
+  }
+
   const copyLink = () => {
     const href = router.buildLocation(prototypeLink(proto)).href;
     navigator.clipboard.writeText(new URL(href, location.origin).href);
@@ -98,7 +110,12 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
       { label: 'Copy link', icon: Link01Icon, onSelect: copyLink },
       local && { label: 'Copy path', icon: Copy01Icon, onSelect: () => { navigator.clipboard.writeText(repoPath(proto, '')); toast.add({ title: 'Path copied' }); } },
     ],
-    [editable && { label: 'Edit info', icon: PencilEdit02Icon, onSelect: () => setEditing(true) }],
+    [
+      editable && { label: 'Edit info', icon: PencilEdit02Icon, onSelect: () => setEditing(true) },
+      editable && (proto.status === 'archived'
+        ? { label: 'Unarchive prototype', icon: ArchiveRestoreIcon, onSelect: () => setArchived(false) }
+        : { label: 'Archive prototype', icon: Archive02Icon, onSelect: () => setArchived(true) }),
+    ],
     [editable && { label: 'Delete prototype', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }],
   ]);
   // Actions run after the menu has closed, so a dialog they open isn't closed by the same click.
@@ -149,6 +166,11 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
               <DropdownMenuContent align="end" className="min-w-44">{menuItems(DropdownMenuItem, DropdownMenuSeparator)}</DropdownMenuContent>
             </DropdownMenu>
           </div>
+          {proto.status === 'archived' && (
+            <p className="mt-1 flex items-center gap-1.5 text-[12px] text-muted-foreground" title="The deployed site leaves this prototype out">
+              <HugeiconsIcon icon={Archive02Icon} size={12} /> Archived
+            </p>
+          )}
           {showInfo && (proto.contributor || proto.created) && (
             <p className="mt-1 flex min-w-0 items-center gap-1.5 text-[12px] text-muted-foreground">
               {proto.contributor && <ContributorAvatar name={proto.contributor} />}

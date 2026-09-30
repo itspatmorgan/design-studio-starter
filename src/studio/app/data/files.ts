@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { Manifest, Prototype } from '@/studio/app/data/types';
 import { SYSTEMS_KEY, rootOf } from '@/studio/roots';
+import { withStatus, type Status } from '@/studio/archive';
 
 export type FileNode = { name: string; path: string; dir: boolean; children?: FileNode[] };
 
@@ -74,7 +75,7 @@ export type FileOp =
   | { op: 'rename'; path: string; name: string }
   | { op: 'move'; path: string; to: string }
   | { op: 'delete'; path: string }
-  | { op: 'meta'; title?: string; description?: string; start?: string }
+  | { op: 'meta'; title?: string; description?: string; start?: string; status?: Status }
   // A Handbook skill: skills/<name>/SKILL.md, in the Agent Skills format.
   | { op: 'create-skill'; name: string; description: string }
   // A prototype system's components: the examples and page one is missing.
@@ -108,6 +109,14 @@ export async function readSource(p: Prototype, path: string) {
   const body = await res.json();
   if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');
   return body as { content: string; version: string };
+}
+
+// Archives or unarchives a view in your prototype, by changing the tag at the top of its file
+// (src/studio/archive.ts). The manifest follows from the file changing, like any edit.
+export async function setViewStatus(p: Prototype, path: string, status: Status) {
+  const { content, version } = await readSource(p, path);
+  const next = withStatus(content, status);
+  if (next !== content) await writeSource(p, path, next, version);
 }
 
 // The file changed on disk since it was read (its version isn't `base` any more).

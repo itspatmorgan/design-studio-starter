@@ -14,12 +14,12 @@ import { Fragment, useEffect, useRef, useState, type DragEvent, type ReactNode }
 import { Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  Add01Icon, ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
+  Add01Icon, Archive02Icon, ArchiveRestoreIcon, ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
   Folder01Icon, StarIcon, SourceCodeIcon, BrowserIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import {
-  fileOp, openInEditor, repoPath, revealInFinder, useFileTree, useMe, type FileNode, type FileOp,
+  fileOp, openInEditor, repoPath, revealInFinder, setViewStatus, useFileTree, useMe, type FileNode, type FileOp,
 } from '@/studio/app/data/files';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { HELPER_FOLDER } from '@/studio/fileTypes';
@@ -247,6 +247,16 @@ export default function FileTree({ proto, current }: FileTreeProps) {
     }
   }
 
+  // Archives or unarchives a view. Archived views stay in the tree here; the deployed site leaves them out.
+  async function setArchived(item: Item, archived: boolean) {
+    try {
+      await setViewStatus(proto, item.path, archived ? 'archived' : 'active');
+      toast.add({ title: archived ? `Archived “${itemLabel(item.path.split('/').pop() ?? '')}”. The deployed site leaves it out.` : 'Unarchived' });
+    } catch (e) {
+      toast.add({ type: 'error', title: (e as Error).message });
+    }
+  }
+
   const startCreate = (parent: string, target: NewTarget) => {
     if (target === 'skill') { setNewSkillOpen(true); return; }
     if (parent) setOpen(parent, true);
@@ -327,6 +337,11 @@ export default function FileTree({ proto, current }: FileTreeProps) {
                 proto.start === node.path
                   ? <ContextMenuItem key="start" onClick={() => setTimeout(() => run({ op: 'meta', start: '' }))}><HugeiconsIcon icon={StarIcon} /> Remove as start</ContextMenuItem>
                   : opensOn?.path !== node.path && <ContextMenuItem key="start" onClick={() => setTimeout(() => run({ op: 'meta', start: itemSlug(node.path) }))}><HugeiconsIcon icon={StarIcon} /> Set as start</ContextMenuItem>
+              ),
+              editable && !isHandbook && FILE_TYPES[items.get(node.path)?.fileType ?? '']?.archivable && (
+                items.get(node.path)?.status === 'archived'
+                  ? <ContextMenuItem key="archive" onClick={() => setTimeout(() => setArchived(items.get(node.path)!, false))}><HugeiconsIcon icon={ArchiveRestoreIcon} /> Unarchive</ContextMenuItem>
+                  : <ContextMenuItem key="archive" onClick={() => setTimeout(() => setArchived(items.get(node.path)!, true))}><HugeiconsIcon icon={Archive02Icon} /> Archive</ContextMenuItem>
               ),
               changeable && <ContextMenuItem key="rename" onClick={() => setTimeout(() => setEditing({ kind: 'rename', path: node.path }))}><HugeiconsIcon icon={PencilEdit02Icon} /> Rename</ContextMenuItem>,
             ],
@@ -417,10 +432,15 @@ export default function FileTree({ proto, current }: FileTreeProps) {
               {...keyProps(node)}
               aria-current={active ? 'page' : undefined}
               style={indent(depth)}
-              className={cn(row, navRowState(active))}
+              className={cn(row, navRowState(active), item.status === 'archived' && 'opacity-60')}
             >
               <HugeiconsIcon icon={fileTypeModules[item.fileType]?.icon ?? CodeIcon} size={14} className="shrink-0 text-muted-foreground" />
               {label}
+              {item.status === 'archived' && (
+                <span title="Archived: the deployed site leaves it out" className="shrink-0 text-muted-foreground">
+                  <HugeiconsIcon icon={Archive02Icon} size={12} aria-label="Archived" />
+                </span>
+              )}
               {item === opensOn && (
                 <span title="The prototype opens on this" className="shrink-0 text-muted-foreground">
                   <HugeiconsIcon icon={StarIcon} size={12} aria-label="Opens first" />
