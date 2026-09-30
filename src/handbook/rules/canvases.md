@@ -1,9 +1,9 @@
 # Canvases
 
-A canvas is a surface to think and communicate on: live views and documents from any prototype, beside sticky notes, text, shapes, and arrows. Use it to lay out a flow, compare directions side by side, annotate a screen, ask a question where the person will see it, or hand someone the map. Read this when the person asks for a canvas, or asks you to put something on one. Human docs: the Guide's Canvases page (`src/studio/guide/canvases.md`).
+A canvas is a surface to think and communicate on: live views and documents from its own prototype, beside sticky notes, text, shapes, and arrows. Use it to lay out a flow, compare directions side by side, annotate a screen, ask a question where the person will see it, or hand someone the map. Read this when the person asks for a canvas, or asks you to put something on one. Human docs: the Guide's Canvases page (`src/studio/guide/canvases.md`).
 
 - A canvas is any `.excalidraw` file in a prototype, outside `components/`. It's an Excalidraw scene, so everything Excalidraw draws is fair game. Its URL is its path without the extension, and its name in the navigation comes from the file name.
-- It points at things instead of holding them: an **item** on a canvas shows a view live, or a document as a card, from any prototype. If the file moves, the spot says "Not found".
+- It points at things instead of holding them: an **item** on a canvas shows a view live, or a document as a card, from the canvas's own prototype. A canvas never links to another prototype's items: if the person wants one, copy the view into this prototype first, then link the copy. If the file moves, the spot says "Not found".
 - **No images.** Their bytes would be stored inside the file. Put the real view on the canvas instead of a screenshot of it.
 - You can change only canvases in the person's own prototypes.
 
@@ -15,7 +15,7 @@ The same tools work two ways, with the same arguments. Run `help` for the full l
 |------|--------------|
 | `context` | What the person has selected and is looking at. Start here: "this one" and "here" mean their selection and screen. (Live only.) |
 | `describe` | Read the canvas: every element, with kind, position, size, text, colors, how it's drawn (dashed, rounded, opacity), and items named by title. `scope: "selection"` or `"view"` narrows it. |
-| `items` | The views and documents you can put on the canvas, by name (`all: true` for every prototype's). |
+| `items` | The views and documents you can put on the canvas, by name. |
 | `create` | Make things: `note`, `text`, `rectangle`, `ellipse`, `diamond`, `arrow`, `line`, `item`, `section`. Style with `color`, `stroke`, `background`, `strokeStyle`, `rounded`. Place with `x`/`y`, or `below`, `rightOf`, `section`; `align` ("start" or "center") lines it up with what it is beside. `ref` names a result for later elements in the call. The result carries `warnings` if something landed on something else. |
 | `update` | Change any of that on something that's there: text, color, size, position, an arrow's ends. |
 | `move`, `delete` | Move (a section takes its contents; arrows follow) or remove (labels and attached arrows go too). |

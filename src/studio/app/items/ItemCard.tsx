@@ -1,6 +1,6 @@
 // How an item appears where it can't be shown itself (on a canvas, for a type with no embed):
 // its icon, name and type, and a link that opens it. `missing` is for a link that points at
-// nothing.
+// nothing, and `elsewhere` for one into another prototype.
 import { Link } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { FileNotFoundIcon } from '@hugeicons/core-free-icons';
@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 
 export const ITEM_CARD_HEIGHT = 88;
 
-export default function ItemCard({ proto, item, className }: { proto?: Prototype; item?: Item; className?: string }) {
+export default function ItemCard({ proto, item, elsewhere = false, className }: { proto?: Prototype; item?: Item; elsewhere?: boolean; className?: string }) {
   const icon = item && fileTypeModules[item.fileType]?.icon;
   const found = proto && item;
   return (
@@ -20,10 +20,11 @@ export default function ItemCard({ proto, item, className }: { proto?: Prototype
         <HugeiconsIcon icon={found && icon ? icon : FileNotFoundIcon} size={20} />
       </span>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-sm font-semibold text-foreground">{found ? itemLabel(item.path) : 'Not found'}</div>
-        <div className="truncate text-xs text-muted-foreground">
+        <div className="truncate text-sm font-semibold text-foreground">{found ? itemLabel(item.path) : elsewhere ? 'Another prototype' : 'Not found'}</div>
+        <div className="truncate text-xs text-muted-foreground" title={elsewhere ? 'A canvas shows only its own prototype. Copy the view into this prototype, then link that.' : undefined}>
           {found
             ? FILE_TYPES[item.fileType]?.label ?? 'File'
+            : elsewhere ? 'A canvas shows only its own prototype. Copy the view here.'
             // On the deployed site a missing file may be archived work, which it leaves out (src/studio/archive.ts).
             : import.meta.env.DEV ? 'This file was moved or deleted. Ask your agent to fix the link.' : 'Not on this site. It may be archived: run the sandbox locally to see it.'}
         </div>

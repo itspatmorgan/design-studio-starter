@@ -175,3 +175,17 @@ test('describe reports how a shape is drawn', () => {
   assert.equal(shape.rounded, true);
   assert.equal(shape.opacity, 60);
 });
+
+test('a canvas shows only items from its own prototype', () => {
+  const s = session();
+  assert.throws(() => s.call('create', { elements: [{ type: 'item', item: '/pat/other/main' }] }), /another prototype.*\/pat\/demo/);
+  s.call('create', { elements: [{ type: 'item', item: '/pat/demo/main', ref: 'inside' }] });
+  assert.equal(s.live().length, 1, 'the whole app path of its own prototype works');
+});
+
+test('moving an item to another prototype is refused, and items lists only this prototype', () => {
+  const s = session();
+  const { refs } = s.call('create', { elements: [{ type: 'item', item: 'main', ref: 'main' }] });
+  assert.throws(() => s.call('update', { id: refs.main, item: '/pat/other/main' }), /another prototype/);
+  assert.deepEqual(s.call('items', {}).items.map((i: { item: string }) => i.item), ['main', 'notes']);
+});

@@ -15,7 +15,7 @@ import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import { FILE_TYPES, fileTypeModules } from '@/studio/app/data/fileTypes';
 import { itemLabel } from '@/studio/app/data/manifest';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
-import { appPathOf, resolveItemPath } from '@/studio/app/items/itemLinks';
+import { appPathOf, isInPrototype, resolveItemPath } from '@/studio/app/items/itemLinks';
 import { boundsOf } from './elements';
 import { help, run, ToolError, type Ctx, type El, type ItemInfo } from './tools';
 
@@ -39,21 +39,17 @@ export function createCanvasAgent({ api, proto, item, manifest, editable, persis
   const ctx: Ctx = {
     base: `/${proto.contributorKey}/${proto.id}`,
     item(path) {
+      // A canvas shows only its own prototype's items.
+      if (!isInPrototype(path, proto)) return null;
       const found = resolveItemPath(manifest(), path);
       if (!found) return null;
       const type = found.item.fileType;
       return { path, title: itemLabel(found.item.path), type, typeLabel: FILE_TYPES[type]?.label ?? 'File', preview: Boolean(fileTypeModules[type]?.Embed) };
     },
-    items(all) {
-      const m = manifest();
-      return m.prototypes
-        .filter((p) => all || (p.contributorKey === proto.contributorKey && p.id === proto.id))
-        .flatMap((p) => (p.items ?? []).map((i) => ({ p, i })))
-        .map(({ p, i }) => {
-          const path = `/${p.contributorKey}/${p.id}/${i.path.replace(/\.[^./]+$/, '')}`;
-          const info = ctx.item(path);
-          return info as ItemInfo;
-        })
+    items() {
+      const own = manifest().prototypes.find((p) => p.contributorKey === proto.contributorKey && p.id === proto.id);
+      return (own?.items ?? proto.items)
+        .map((i) => ctx.item(`/${proto.contributorKey}/${proto.id}/${i.path.replace(/\.[^./]+$/, '')}`) as ItemInfo)
         .filter(Boolean);
     },
     linkPath: (link) => appPathOf(link) ?? (link.startsWith('/') && !link.startsWith('//') ? link : null),

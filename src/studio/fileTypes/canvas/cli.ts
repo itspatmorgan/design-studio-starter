@@ -43,7 +43,7 @@ try { scene = JSON.parse(text); } catch (error) { fail(`${first} isn't valid JSO
 if (!Array.isArray(scene!.elements)) fail(`${first} isn't a canvas: it has no list of elements.`);
 if ((scene!.studioVersion ?? 1) > FORMAT_VERSION) fail(`${first} was written by a newer copy of the app. Update before changing it.`);
 
-// What the tools need to know about the app: the items in every prototype, from the manifest.
+// What the tools need to know about the app: the items in this canvas's prototype, from the manifest.
 const manifestFile = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
 if (!fs.existsSync(manifestFile)) fail('There is no manifest yet. Run: node scripts/build-manifest.js');
 const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8')) as { prototypes: { contributorKey: string; id: string }[] };
@@ -59,6 +59,8 @@ const base = `/${contributor}/${prototype}`;
 const ctx: Ctx = {
   base,
   item(appPath) {
+    // A canvas shows only its own prototype's items.
+    if (!appPath.startsWith(`${base}/`)) return null;
     const [c, p, ...slug] = appPath.split('/').filter(Boolean).map(decodeURIComponent);
     const proto = manifest.prototypes.find((x) => x.contributorKey === c && x.id === p);
     const item = proto && itemsOf(proto).find((i) => itemSlug(i.path) === slug.join('/'));
@@ -66,8 +68,8 @@ const ctx: Ctx = {
     const type = FILE_TYPES[item.fileType];
     return { path: appPath, title: title(item.path), type: item.fileType, typeLabel: type?.label ?? 'File', preview: Boolean(type?.preview) };
   },
-  items: (all) => manifest.prototypes
-    .filter((x) => all || (x.contributorKey === contributor && x.id === prototype))
+  items: () => manifest.prototypes
+    .filter((x) => x.contributorKey === contributor && x.id === prototype)
     .flatMap((x) => itemsOf(x).map((i) => `/${x.contributorKey}/${x.id}/${itemSlug(i.path)}`))
     .map((p) => ctx.item(p))
     .filter((i): i is ItemInfo => i !== null),

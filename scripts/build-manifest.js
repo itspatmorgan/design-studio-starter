@@ -60,7 +60,7 @@ const inHandbook = {
 
 // Problems with a folder's items: two sharing a URL, or a file its type rejects (a view needs a
 // default export, and so on: src/studio/fileTypes/<type>/type.ts). Printed; returns how many.
-function checkItems(dir, items, out = console) {
+function checkItems(dir, items, out = console, prototype) {
   let errors = 0;
   const seen = new Set();
   for (const item of items) {
@@ -70,7 +70,7 @@ function checkItems(dir, items, out = console) {
     const check = FILE_TYPES[item.fileType].check;
     if (check) {
       const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
-      for (const problem of check({ source, frontmatter: frontmatter(source) })) { out.error(`[manifest] ${file}: ${problem}`); errors++; }
+      for (const problem of check({ source, frontmatter: frontmatter(source), prototype })) { out.error(`[manifest] ${file}: ${problem}`); errors++; }
     }
   }
   return errors;
@@ -158,7 +158,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
       if (typeof meta?.title !== 'string' || !meta.title.trim()) { skip('needs a "title"'); continue; }
       const items = itemsIn(dir);
       // Two items can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
-      errors += checkItems(dir, items, out);
+      errors += checkItems(dir, items, out, { contributor: contributorKey, id });
       // "start" (optional) is the item the prototype opens on, as in its URL: "checkout/step-1".
       // Without it, the prototype opens on its first item.
       let start = null;

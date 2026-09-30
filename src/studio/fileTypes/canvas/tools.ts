@@ -23,8 +23,8 @@ export type Ctx = {
   base: string;
   // The item at an app path ("/patrick/hello-world/lofi/main"), or null if there isn't one.
   item(path: string): ItemInfo | null;
-  // The items in this prototype (or, with `all`, in every prototype), for the `items` tool and hints.
-  items?(all?: boolean): ItemInfo[];
+  // The items in this prototype, for the `items` tool and hints. A canvas shows only its own prototype's items.
+  items?(): ItemInfo[];
   // A link's app path: "https://host/patrick/x" is "/patrick/x". App paths pass through. Null if it isn't a link into the app.
   linkPath?(link: string): string | null;
 };
@@ -71,9 +71,9 @@ export const TOOLS: ToolDef[] = [
   },
   {
     name: 'items',
-    summary: 'The views and documents you can put on the canvas with an `item`: their names, titles and types. Only this prototype\'s, unless `all` is true.',
-    args: { all: 'true for every prototype\'s items (use the whole app path shown to place one)' },
-    example: { all: false },
+    summary: 'The views and documents you can put on the canvas with an `item`: their names, titles and types. A canvas shows only its own prototype\'s.',
+    args: {},
+    example: {},
   },
   {
     name: 'create',
@@ -166,8 +166,8 @@ const ELEMENT_TYPES: Record<string, { summary: string; args: Record<string, stri
     example: { type: 'arrow', from: '@a', to: '@b', text: 'then' },
   },
   item: {
-    summary: 'A view or document from a prototype, on the canvas. A view is a live picture of the page; anything else is a card with an Open link. It can be from any prototype. Its title bar opens it.',
-    args: { item: 'its path in this prototype without the extension ("lofi/main"), or a whole app path ("/patrick/checkout/step-1")', width: 'default 480', height: 'default 338 for a view, 88 for a card' },
+    summary: 'A view or document from a prototype, on the canvas. A view is a live picture of the page; anything else is a card with an Open link. It must be from this prototype: a canvas shows only its own. Its title bar opens it.',
+    args: { item: 'its path in this prototype without the extension ("lofi/main")', width: 'default 480', height: 'default 338 for a view, 88 for a card' },
     example: { type: 'item', item: 'lofi/main', ref: 'main' },
   },
   section: {
@@ -199,7 +199,7 @@ export function run(scene: El[], tool: string, args: any, ctx: Ctx): Run {
   const input = args ?? {};
   switch (tool) {
     case 'describe': return { elements: scene, result: describe(scene, input, ctx), touched: [] };
-    case 'items': return { elements: scene, result: listItems(input, ctx), touched: [] };
+    case 'items': return { elements: scene, result: listItems(ctx), touched: [] };
     case 'create': return create(scene, input, ctx);
     case 'update': return update(scene, input, ctx);
     case 'move': return move(scene, input);
@@ -244,6 +244,8 @@ function itemPath(value: unknown, ctx: Ctx): string {
   const given = str(value, 'item').trim();
   const asPath = ctx.linkPath?.(given) ?? (given.startsWith('/') ? given : null);
   const path = asPath ?? `${ctx.base}/${given.replace(/^\.?\//, '')}`;
+  // A canvas shows only its own prototype's items, so a prototype stays self-contained.
+  if (!path.startsWith(`${ctx.base}/`)) throw new ToolError(`${given} is in another prototype. A canvas shows only items from its own (${ctx.base}). Copy the view into this prototype first, then put that copy on the canvas`);
   // Without the extension: "lofi/main.tsx" is "lofi/main".
   return path.split('/').map((part, i, all) => (i === all.length - 1 ? itemSlug(part) : part)).join('/').replace(/\/$/, '');
 }
@@ -289,10 +291,9 @@ function placeArrowLabel(arrow: El, label: El): El {
 // An item's app path as `item` takes it inside this prototype: "lofi/main".
 const relative = (path: string, ctx: Ctx) => (path.startsWith(`${ctx.base}/`) ? path.slice(ctx.base.length + 1) : path);
 
-function listItems(args: any, ctx: Ctx) {
-  const all = Boolean(args?.all);
-  const items = (ctx.items?.(all) ?? []).map((i) => ({ item: relative(i.path, ctx), title: i.title, type: i.typeLabel, ...(i.preview ? { shownAs: 'live view' } : { shownAs: 'card' }) }));
-  return { items, ...(all ? {} : { note: 'Only this prototype. Use `all: true` for every prototype; give a whole app path to place one from another.' }) };
+function listItems(ctx: Ctx) {
+  const items = (ctx.items?.() ?? []).map((i) => ({ item: relative(i.path, ctx), title: i.title, type: i.typeLabel, ...(i.preview ? { shownAs: 'live view' } : { shownAs: 'card' }) }));
+  return { items };
 }
 
 // ---- create -----------------------------------------------------------------------------------

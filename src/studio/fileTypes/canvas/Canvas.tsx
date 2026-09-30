@@ -1,4 +1,4 @@
-// A canvas: views and documents from any prototype, laid out with sticky notes, text and arrows,
+// A canvas: views and documents from its own prototype, laid out with sticky notes, text and arrows,
 // on Excalidraw. Each canvas is one .excalidraw file. In dev you edit it and it saves itself;
 // the deployed site shows the committed file, read-only.
 //
@@ -128,7 +128,7 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
   useEffect(() => {
     if (!api) return;
     api.updateLibrary({ libraryItems: STICKY_LIBRARY as unknown as LibraryItems, merge: true });
-    if (editable) normalizeEmbeds(api, api.getSceneElementsIncludingDeleted(), manifestRef.current);
+    if (editable) normalizeEmbeds(api, api.getSceneElementsIncludingDeleted(), manifestRef.current, proto);
   }, [api, editable]);
 
   // For an agent with a browser: the canvas tools (agent.ts), dev only. Loaded on demand, so the
@@ -162,7 +162,7 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
     const version = getSceneVersion(elements);
     if (editable && version !== lastVersion.current) {
       lastVersion.current = version;
-      normalizeEmbeds(api, elements, manifestRef.current);
+      normalizeEmbeds(api, elements, manifestRef.current, proto);
     }
   }, [api, editable, saveChanges]);
 
@@ -244,7 +244,7 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
             <p className="text-sm font-medium text-foreground">This canvas is empty</p>
             <p className="mt-1.5 text-sm text-muted-foreground">
               {editable
-                ? 'Paste the address of a view or document from any prototype to put it here, press N for a sticky note, or ask your agent to lay it out for you.'
+                ? 'Paste the address of a view or document from this prototype to put it here, press N for a sticky note, or ask your agent to lay it out for you.'
                 : 'Nothing has been put on it yet.'}
             </p>
           </div>

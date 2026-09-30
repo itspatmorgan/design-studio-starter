@@ -40,11 +40,6 @@ export async function loadPrototype(contributor: string, prototype: string): Pro
   return ref && withItems(ref);
 }
 
-// Every prototype's items, for what looks across all of them (a canvas that links to any view).
-export async function loadAllItems(): Promise<void> {
-  await Promise.all((await loadManifest()).prototypes.map(withItems));
-}
-
 export { itemSlug };
 
 // A prototype opens on its meta.json "start" item, or else its first item (the top of its

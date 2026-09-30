@@ -30,8 +30,9 @@ export type FileTypeSpec = {
   // doesn't offer to make this type.
   template?: (name: string) => string;
   // Problems in a file, each a sentence that says what to fix. `frontmatter` is the leading
-  // --- block as simple key: value pairs, or null when there isn't one.
-  check?: (file: { source: string; frontmatter: Record<string, unknown> | null }) => string[];
+  // --- block as simple key: value pairs, or null when there isn't one. `prototype` is where the file is,
+  // for a rule that depends on it (a canvas can't link to another prototype), and is left out in the Handbook.
+  check?: (file: { source: string; frontmatter: Record<string, unknown> | null; prototype?: { contributor: string; id: string } }) => string[];
 };
 
 export const defineFileType = (spec: FileTypeSpec) => spec;

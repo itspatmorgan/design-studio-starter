@@ -12,7 +12,7 @@ import { fileTypeModules } from '@/studio/app/data/fileTypes';
 import { itemLabel, itemLink } from '@/studio/app/data/manifest';
 import type { Manifest, Prototype } from '@/studio/app/data/types';
 import ItemCard, { ITEM_CARD_HEIGHT } from '@/studio/app/items/ItemCard';
-import { appPathOf, resolveItemPath } from '@/studio/app/items/itemLinks';
+import { appPathOf, isInPrototype, resolveItemPath } from '@/studio/app/items/itemLinks';
 
 const HEADER_HEIGHT = 36;
 const BORDER = 2; // 1px each side
@@ -23,18 +23,24 @@ const DEFAULT_BODY_HEIGHT = Math.round(DEFAULT_WIDTH * 900 / 1440); // a 1440 x 
 // video, a web page) isn't, so a canvas never loads another site.
 export const validateEmbed = (link: string) => appPathOf(link) !== null;
 
-const resolve = (manifest: Manifest, link: string | null) => {
+// A canvas shows only items from its own prototype, so a prototype is all of its own: an item from
+// another one doesn't resolve (and its spot says so: ItemCard).
+const resolve = (manifest: Manifest, link: string | null, current: Prototype) => {
   const path = link && appPathOf(link);
-  return path ? resolveItemPath(manifest, path) : null;
+  return path && isInPrototype(path, current) ? resolveItemPath(manifest, path) : null;
 };
-const embedOf = (manifest: Manifest, link: string | null) => {
-  const target = resolve(manifest, link);
+const elsewhere = (link: string | null, current: Prototype) => {
+  const path = link && appPathOf(link);
+  return Boolean(path && !isInPrototype(path, current));
+};
+const embedOf = (manifest: Manifest, link: string | null, current: Prototype) => {
+  const target = resolve(manifest, link, current);
   return target ? fileTypeModules[target.item.fileType]?.Embed : undefined;
 };
 
 // The size of a new embed: a preview is a screen, a card is a compact row.
-function defaultSize(manifest: Manifest, link: string | null) {
-  return { width: DEFAULT_WIDTH, height: embedOf(manifest, link) ? HEADER_HEIGHT + BORDER + DEFAULT_BODY_HEIGHT : ITEM_CARD_HEIGHT };
+function defaultSize(manifest: Manifest, link: string | null, current: Prototype) {
+  return { width: DEFAULT_WIDTH, height: embedOf(manifest, link, current) ? HEADER_HEIGHT + BORDER + DEFAULT_BODY_HEIGHT : ITEM_CARD_HEIGHT };
 }
 
 const isItem = (el: ExcalidrawElement) => el.type === 'embeddable' && !el.isDeleted && el.link != null && appPathOf(el.link) !== null;
@@ -44,14 +50,14 @@ const isItem = (el: ExcalidrawElement) => el.type === 'embeddable' && !el.isDele
 // square corners (rounding clipped the preview), no outline (the frame draws its own border), and
 // no link icon (the title bar is the link).
 // Kept out of undo history: undo must reverse only what the person did.
-export function normalizeEmbeds(api: ExcalidrawImperativeAPI, elements: readonly ExcalidrawElement[], manifest: Manifest) {
+export function normalizeEmbeds(api: ExcalidrawImperativeAPI, elements: readonly ExcalidrawElement[], manifest: Manifest, current: Prototype) {
   const pending = elements.filter((el) => isItem(el) && (!el.customData?.frame || el.roundness || el.strokeColor !== 'transparent' || !el.customData?.hideLinkIcon));
   if (!pending.length) return;
   const ids = new Set(pending.map((el) => el.id));
   api.updateScene({
     elements: api.getSceneElementsIncludingDeleted().map((el) => {
       if (!ids.has(el.id)) return el;
-      const size = defaultSize(manifest, el.type === 'embeddable' ? el.link : null);
+      const size = defaultSize(manifest, el.type === 'embeddable' ? el.link : null, current);
       const placed = el.customData?.frame ? {} : { ...size, x: el.x - size.width / 2, y: el.y - size.height / 2 };
       // hideLinkIcon is read by our Excalidraw patch (patches/README.md).
       return newElementWith(el, { ...placed, roundness: null, strokeColor: 'transparent', customData: { ...el.customData, frame: true, hideLinkIcon: true } });
@@ -96,10 +102,11 @@ type ItemProps = {
 };
 
 function CanvasItemInner({ element, manifest, current, offscreen, overview, mounted }: ItemProps) {
-  const target = resolve(manifest, element.type === 'embeddable' ? element.link : null);
+  const link = element.type === 'embeddable' ? element.link : null;
+  const target = resolve(manifest, link, current);
   const Embed = target && fileTypeModules[target.item.fileType]?.Embed;
-  // A card fills the element. A missing one is a card too.
-  if (!target || !Embed) return <div data-canvas-frame="" className="h-full w-full"><ItemCard proto={target?.proto} item={target?.item} /></div>;
+  // A card fills the element. A missing one is a card too, and so is one from another prototype.
+  if (!target || !Embed) return <div data-canvas-frame="" className="h-full w-full"><ItemCard proto={target?.proto} item={target?.item} elsewhere={elsewhere(link, current)} /></div>;
   const { proto, item } = target;
   const hidden = offscreen || overview;
   return (

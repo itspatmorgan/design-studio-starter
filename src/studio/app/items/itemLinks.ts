@@ -18,6 +18,11 @@ export const itemPath = (p: Prototype, item: Item) =>
 // An item's full URL on this origin.
 export const itemUrl = (p: Prototype, item: Item) => `${window.location.origin}${base()}${itemPath(p, item)}`;
 
+// Whether an app path ("/patrick/hello-world/lofi/main") is in a prototype. A canvas shows only items
+// from its own prototype, so prototypes stay self-contained.
+export const isInPrototype = (path: string, p: { contributorKey: string; id: string }) =>
+  path.startsWith(`/${encodeURIComponent(p.contributorKey)}/${encodeURIComponent(p.id)}/`);
+
 // The app path a link points at ("/patrick/hello-world/lofi/main"), or null if it isn't a link
 // into this app: another origin, another site, or a page that isn't a prototype item.
 export function appPathOf(link: string): string | null {

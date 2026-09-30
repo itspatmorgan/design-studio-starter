@@ -1,6 +1,6 @@
 # Canvas
 
-A page to arrange things on: live views and cards for documents from any prototype, beside sticky
+A page to arrange things on: live views and cards for documents from its own prototype, beside sticky
 notes, text, and arrows. It's [Excalidraw](https://github.com/excalidraw/excalidraw) with the app's
 look, and its design comes from Design Studio's canvas. Agent contract: `src/handbook/rules/canvases.md`.
 Human docs: the Guide's Canvases page.

@@ -6,7 +6,7 @@ order: 15
 toc: true
 ---
 
-A canvas is a page you arrange things on. Put views from your prototype (or anyone's) side by side, add a document card, a sticky note under a screen, some text, an arrow. It's for the moments a list of pages isn't enough: showing a whole flow at once, comparing two directions, or handing someone the map before the details.
+A canvas is a page you arrange things on. Put your prototype's views side by side, add a document card, a sticky note under a screen, some text, an arrow. It's for the moments a list of pages isn't enough: showing a whole flow at once, comparing two directions, or handing someone the map before the details.
 
 A canvas is an `.excalidraw` file, anywhere in your prototype, and it's drawn with [Excalidraw](https://excalidraw.com).
 
@@ -28,7 +28,7 @@ Choose **+ → New canvas** next to the prototype's title, or ask your agent to 
 
 - **Views.** Copy a view's link (right-click it in the navigation and choose **Copy link**, or copy the address from the browser), then paste it with the pointer over the canvas. It becomes a live preview of that page. Click its title bar to open it.
 - **Documents and other canvases.** Paste their links too. They appear as small cards with an **Open** link.
-- **Anything from other prototypes.** A link works from any contributor's prototype.
+- **Only this prototype's.** A canvas shows items from its own prototype, so a prototype stays self-contained. To show a view from another prototype, copy it into this one and link the copy. Linking to another prototype's view shows a card that says so, and the build fails until the link is fixed.
 - **Notes and text.** Press **N** for a sticky note, or open the library on the right for the other colors. Double-click a note to write on it. The **A** tool adds text; the arrow tool joins things.
 
 A canvas doesn't own what's on it, it points at it. If a file is moved or deleted, its spot shows a "Not found" card, and your agent can fix the link.
