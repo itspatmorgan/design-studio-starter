@@ -1,5 +1,4 @@
-// The top of a Handbook section's navigation: the Handbook's sections as tabs, and a line about the
-// open one. (A prototype's header, with its menus for editing, is PrototypeHeader.tsx.) The
+// The top of a Handbook section's navigation: the Handbook's sections as tabs. (A prototype's header, with its menus for editing, is PrototypeHeader.tsx.) The
 // tree below the tabs is the section's files, so what you add there is that section's kind of file.
 import { Link, getRouteApi } from '@tanstack/react-router';
 import type { Prototype } from '@/studio/app/data/types';
@@ -31,7 +30,6 @@ export default function HandbookHeader({ proto }: { proto: Prototype }) {
           </Link>
         ))}
       </nav>
-      <p className="mt-2.5 px-2.5 text-[12px] leading-relaxed text-muted-foreground">{proto.description}</p>
     </div>
   );
 }
