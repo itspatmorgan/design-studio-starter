@@ -162,8 +162,11 @@ export default function SourcePane({ proto, item, label, actions, onDirty }: Sou
       <div className="flex h-[57px] shrink-0 items-center gap-3 border-b border-border px-4 text-[12px]">
         {label ?? <span className="min-w-0 truncate font-mono text-muted-foreground" title={repoPath(proto, item.path)}>{item.path}</span>}
         <span className="ml-auto shrink-0 text-muted-foreground">{!editable ? 'Read-only' : isDirty ? 'Unsaved changes' : ''}</span>
-        {editable && <Button size="sm" disabled={!isDirty || saving} onClick={() => save.current()} title="Save (⌘S)">{saving ? 'Saving…' : 'Save'}</Button>}
-        {actions}
+        {/* Save and the buttons after it sit closer together than the header's other items. */}
+        <div className="flex shrink-0 items-center gap-1.5">
+          {editable && <Button size="sm" disabled={!isDirty || saving} onClick={() => save.current()} title="Save (⌘S)">{saving ? 'Saving…' : 'Save'}</Button>}
+          {actions}
+        </div>
       </div>
       {conflict && (
         <div role="alert" className="flex shrink-0 items-center gap-3 border-b border-border bg-muted px-4 py-2 text-[12px]">
