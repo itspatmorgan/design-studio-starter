@@ -3,8 +3,6 @@ name: setup-contributor
 description: Set up a new contributor in the prototype sandbox, from installing tools to adding them to contributors.json. Use when someone says "get me set up", "add me as a contributor", "onboard me", or is new to the repo.
 ---
 
-# Set up a contributor
-
 1. Install the tools: run `mise trust && mise install`, then `pnpm install`. Check `node -v` matches the version in `mise.toml`; if it doesn't, mise isn't activated in this shell. Run commands through it (`mise exec -- pnpm install`, `mise exec -- pnpm dev`), and offer to set up activation for them (https://mise.jdx.dev/getting-started.html).
 2. Check Git knows who they are: `git config user.name` and `git config user.email` should show their own name and work email. On a shared or new machine they may be someone else's or empty; if so, ask for the right values and set them in this repo (`git config user.name "…"`).
 3. Run `pnpm join`. If it says they're already a contributor, check the name is theirs. If it names someone else, like the example `patrick` entry, their GitHub account is already used by that entry: ask before removing it. Otherwise tell them their folder and skip to step 7.

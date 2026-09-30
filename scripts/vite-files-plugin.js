@@ -143,7 +143,7 @@ const titleOf = (name) => { const t = name.replace(/-/g, ' '); return t.charAt(0
 function skillTemplate(name, description) {
   const plain = /^[A-Za-z0-9][^:#"'\\\n]*$/.test(description) && !/\s$/.test(description);
   const line = plain ? `description: ${description}` : `description: >\n  ${description.replace(/\s+/g, ' ').trim()}`;
-  return `---\nname: ${name}\n${line}\n---\n\n# ${titleOf(name)}\n\nSay what to do, step by step, and when it applies.\n`;
+  return `---\nname: ${name}\n${line}\n---\n\nSay what to do, step by step, and when it applies.\n`;
 }
 
 // A new rule's start.

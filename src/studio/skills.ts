@@ -4,6 +4,12 @@
 // scripts can load it directly.
 
 export const SKILL_FILE = 'SKILL.md';
+
+// A skill's page title, from its name: "document-component" → "Document component".
+export function skillTitle(name: string): string {
+  const words = name.replace(/-+/g, ' ').trim();
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
 export const NAME_MAX = 64;
 export const DESCRIPTION_MAX = 1024;
 export const COMPATIBILITY_MAX = 500;

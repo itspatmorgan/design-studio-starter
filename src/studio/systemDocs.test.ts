@@ -160,6 +160,14 @@ test('a first heading is the title when the frontmatter has none', async () => {
   assert.equal(out.length, 2);
   out = run([{ type: 'yaml', value: 'title: Mine' }, h1('A'), para]);
   assert.deepEqual(out.map((n) => n.type), ['yaml', 'heading', 'paragraph']);
+  // A SKILL.md with no title and no heading is titled by its name; other files with a name are not.
+  const skill = (path: string) => { const tree = { type: 'root', children: [{ type: 'yaml', value: 'name: document-component\ndescription: d' }, para] }; plugin()(tree, { path }); return tree.children as { type: string; value?: string }[]; };
+  assert.equal(skill('/x/skills/document-component/SKILL.md')[0].value, 'name: document-component\ndescription: d\ntitle: "Document component"');
+  assert.equal(skill('/x/notes.md')[0].value, 'name: document-component\ndescription: d');
+  // A heading wins over the name.
+  const both = { type: 'root', children: [{ type: 'yaml', value: 'name: a-b' }, h1('Mine'), para] };
+  plugin()(both, { path: '/x/SKILL.md' });
+  assert.match((both.children[0] as { value: string }).value, /title: "Mine"/);
   // Only a heading the file opens with counts, and only level 1.
   assert.deepEqual(run([para, h1('A')]).map((n) => n.type), ['paragraph', 'heading']);
   assert.deepEqual(run([{ type: 'heading', depth: 2, children: [{ type: 'text', value: 'A' }] }, para]).map((n) => n.type), ['heading', 'paragraph']);

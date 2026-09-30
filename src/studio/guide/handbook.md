@@ -16,7 +16,7 @@ It has three parts, and the shape is fixed so that nothing gets lost:
 
 ## Adding to it
 
-In the Handbook navigation, the **+** at the end of the Files row makes what the open tab holds: a document or a folder in Docs and Rules, and a skill in Skills. **New skill** asks for a name (lowercase words joined by hyphens) and a description, and follows the [Agent Skills format](https://agentskills.io/specification), so any agent that reads skills can use it. Inside a skill you can add any files or folders.
+In the Handbook navigation, the **+** at the end of the Files row makes what the open tab holds: a document or a folder in Docs and Rules, and a skill in Skills. **New skill** asks for a name (lowercase words joined by hyphens) and a description, and follows the [Agent Skills format](https://agentskills.io/specification), so any agent that reads skills can use it. The skill's name is its page title and the description sits under it, so its text needs no heading of its own. Inside a skill you can add any files or folders.
 
 Your agent can do the same. Ask it to add a doc, a rule, or a skill, and it follows `src/handbook/rules/handbook.md`. The build checks the shape, and says what to fix if a file or folder is out of place.
 

@@ -3,8 +3,6 @@ name: document-component
 description: Add a component to a prototype system, or bring its page up to date, so it gets a Systems page with a props table, live examples, and a description. Use when someone adds, imports, or ports a component, asks to document one, or the build warns that a component has no examples or page.
 ---
 
-# Document a component
-
 A component's page comes from files that share its name, in `src/systems/<system>/components/` (see `src/handbook/rules/systems.md`, "Component pages").
 
 1. **Get the component in.** For a shadcn/ui component, run `npx shadcn add <name>`, adding `--path src/systems/<system>/components` for any system but `product`. If the new file imports `cn` from `"cn"`, change it to `@/lib/utils`. A component that renders a pop-up passes `usePortalContainer()` to its Portal. Ported components are already in the folder.

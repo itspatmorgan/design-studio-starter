@@ -9,6 +9,7 @@ The Handbook (`src/handbook/`) is the team's context and instructions: docs, rul
 - **`skills/<name>/SKILL.md`** is one folder per skill, in the [Agent Skills format](https://agentskills.io/specification). The frontmatter has two required fields:
   - `name`: the same as the folder's name. Lowercase letters, numbers, and single hyphens, up to 64 characters.
   - `description`: what the skill does and when to use it, up to 1024 characters. Agents read only this to decide whether to use the skill, so include the words a person would use to ask for it.
+- **A skill needs no title heading.** The app shows its `name` as the page title (`document-component` → "Document component") and the `description` under it, so start `SKILL.md` with the steps. A `# Heading` at the top still works, and is used as the title instead.
 - **Inside a skill** the structure is free. Put steps in `SKILL.md` (under about 500 lines) and the detail in files beside it, like `scripts/`, `references/`, and `assets/`, linked with relative paths from `SKILL.md`. Nothing sits loose in `skills/`.
 - **Renaming a skill** means renaming its folder and its `name` together. The app does both when you rename the folder there.
 - **Links** between Handbook pages are relative: `[the scope rule](contributor-scope.md)`.
