@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { MDXContent } from 'mdx/types';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowDown01Icon } from '@hugeicons/core-free-icons';
 import { CodeBlock, PageHeader, SystemFrame } from '@/studio/app/pages/systems/foundations';
 import { Prose } from '@/studio/app/docs/Prose';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
@@ -99,7 +101,8 @@ export function ComponentDocPage({ system, sys, component }: { system: string; s
             </SystemFrame>
             {loaded.source && (
               <Collapsible className="mt-4">
-                <CollapsibleTrigger className="cursor-pointer text-sm text-muted-foreground outline-none hover:text-foreground focus-visible:text-foreground focus-visible:underline data-panel-open:text-foreground">
+                <CollapsibleTrigger className="group flex cursor-pointer items-center gap-1.5 rounded-sm text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
+                  <HugeiconsIcon icon={ArrowDown01Icon} size={14} className="text-muted-foreground transition-transform group-not-data-panel-open:-rotate-90" />
                   Show code
                 </CollapsibleTrigger>
                 <CollapsibleContent className="mt-2"><CodeBlock>{loaded.source}</CodeBlock></CollapsibleContent>

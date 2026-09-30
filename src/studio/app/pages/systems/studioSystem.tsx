@@ -11,6 +11,7 @@ import { Input } from '@/studio/components/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/studio/components/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/studio/components/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/studio/components/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { toast } from '@/studio/components/toast';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
@@ -174,6 +175,31 @@ export const studio: DesignSystem = {
             <Button size="sm">Save</Button>
           </CardFooter>
         </Card>
+      ) },
+      { name: 'Table', file: 'table.tsx', description: 'Rows and columns of data, like the props on a component page in Systems.', demo: () => (
+        <div className="w-full max-w-md rounded-lg border border-border">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead>Prop</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Default</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell className="font-mono text-xs">variant</TableCell>
+                <TableCell className="font-mono text-xs">string</TableCell>
+                <TableCell className="font-mono text-xs">"default"</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-mono text-xs">disabled</TableCell>
+                <TableCell className="font-mono text-xs">boolean</TableCell>
+                <TableCell className="font-mono text-xs text-muted-foreground">—</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
       ) },
     ] },
   ],
