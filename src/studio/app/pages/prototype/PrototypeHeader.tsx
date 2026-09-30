@@ -17,6 +17,7 @@ import type { Prototype } from '@/studio/app/data/types';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { Input } from '@/studio/components/input';
 import { toast } from '@/studio/components/toast';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@/studio/components/context-menu';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/studio/components/dropdown-menu';
 import { useRenamePrototype } from '@/studio/app/pages/prototype/useRenamePrototype';
@@ -121,12 +122,17 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
               </h2>
             )}
             <DropdownMenu>
-              <DropdownMenuTrigger
-                aria-label="Prototype actions"
-                className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground"
-              >
-                <HugeiconsIcon icon={MoreHorizontalIcon} size={14} />
-              </DropdownMenuTrigger>
+              <Tooltip>
+                <TooltipTrigger
+                  render={<DropdownMenuTrigger
+                    aria-label="Prototype actions"
+                    className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground"
+                  />}
+                >
+                  <HugeiconsIcon icon={MoreHorizontalIcon} size={14} />
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Prototype actions</TooltipContent>
+              </Tooltip>
               <DropdownMenuContent align="end" className="min-w-44">{menuItems(DropdownMenuItem, DropdownMenuSeparator)}</DropdownMenuContent>
             </DropdownMenu>
           </div>

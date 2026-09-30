@@ -474,9 +474,12 @@ export default function FileTree({ proto, current }: FileTreeProps) {
           }
           return (
             <DropdownMenu>
-              <DropdownMenuTrigger aria-label="New" title={options.length > 2 ? 'New' : `New ${options.map((o) => o.label.replace('New ', '')).join(' or ')}`} className={iconButton}>
-                <HugeiconsIcon icon={Add01Icon} size={14} />
-              </DropdownMenuTrigger>
+              <Tooltip>
+                <TooltipTrigger render={<DropdownMenuTrigger aria-label="New" className={iconButton} />}>
+                  <HugeiconsIcon icon={Add01Icon} size={14} />
+                </TooltipTrigger>
+                <TooltipContent side="bottom">{options.length > 2 ? 'New' : `New ${options.map((o) => o.label.replace('New ', '')).join(' or ')}`}</TooltipContent>
+              </Tooltip>
               <DropdownMenuContent align="end" className="min-w-40">
                 {options.map((o) => (
                   <DropdownMenuItem key={o.target} onClick={() => setTimeout(() => startCreate('', o.target))}><HugeiconsIcon icon={o.icon} /> {o.label}</DropdownMenuItem>
