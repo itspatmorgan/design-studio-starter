@@ -10,7 +10,7 @@ const rootApi = getRouteApi('__root__');
 export default function HandbookHeader({ proto }: { proto: Prototype }) {
   const { handbook } = rootApi.useLoaderData();
   return (
-    <div className="shrink-0 border-b border-sidebar-border px-2 pt-3 pb-3">
+    <div className="shrink-0 px-2 pt-3">
       <div className="flex min-h-8 items-center px-2.5">
         <h2 className="truncate text-sm font-semibold leading-tight">Handbook</h2>
       </div>
