@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Link, useParams } from '@tanstack/react-router';
-import { cn } from '@/lib/utils';
-import { navTabClass } from '@/studio/app/shell/nav';
+import { NavGroup, NavHeader, NavList, NavTabs, NavTitle, SectionNav, navLinkClass, navLinkStyle, navTabClass } from '@/studio/app/shell/nav';
 import { NotFound } from '@/studio/app/shell/App';
 import { ColorTokens, ComponentDemo, IconsPage, PageHeader, RadiusScale, TypeScale, slug } from '@/studio/app/pages/systems/foundations';
 import type { DesignSystem } from '@/studio/app/data/types';
@@ -33,44 +32,37 @@ function navGroups(sys: DesignSystem): NavGroup[] {
   ];
 }
 
-// The Systems navigation, in the Handbook's style: the section's name, the systems as tabs, then
-// the open system's pages.
+// The Systems navigation, built from the shared pieces (shell/nav/): the section's name, the
+// systems as tabs, then the open system's pages under their headings.
 function SystemNav({ system }: { system: SystemId }) {
-  const row = 'mx-1 block rounded-md px-2.5 py-1 text-[12px] leading-tight text-sidebar-foreground/80 transition-colors';
   return (
-    <nav aria-label="Systems" className="flex min-h-0 w-52 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
-      <div className="shrink-0 px-2 pt-3">
-        <div className="flex min-h-8 items-center px-2.5">
-          <h2 className="truncate text-sm font-semibold leading-tight">Systems</h2>
-        </div>
-        <div className="mt-1 flex gap-1 px-1" role="tablist" aria-label="Design systems">
+    <SectionNav label="Systems">
+      <NavHeader>
+        <NavTitle>Systems</NavTitle>
+        <NavTabs label="Design systems">
           {Object.entries(SYSTEMS).map(([id, s]) => (
-            <Link key={id} to="/systems/$system" params={{ system: id }} role="tab" aria-selected={id === system} className={navTabClass(id === system)}>{s.label}</Link>
+            <Link key={id} to="/systems/$system" params={{ system: id }} aria-current={id === system ? 'page' : undefined} className={navTabClass(id === system)}>{s.label}</Link>
           ))}
-        </div>
-      </div>
-      <div className="flex-1 space-y-0.5 overflow-y-auto px-2 pt-3 pb-3">
+        </NavTabs>
+      </NavHeader>
+      <NavList>
         {navGroups(SYSTEMS[system]).map((g, i) => (
-          <div key={g.heading ?? i} className="space-y-0.5">
-            {g.heading && <p className="mt-4 px-2.5 py-1 text-[12px] font-semibold leading-none text-sidebar-foreground">{g.heading}</p>}
+          <NavGroup key={g.heading ?? i} heading={g.heading}>
             {g.items.map(([id, label]) => (
               <Link
                 key={id ?? 'intro'}
                 {...(id ? { to: '/systems/$system/$page', params: { system, page: id } } : { to: '/systems/$system', params: { system } })}
                 activeOptions={{ exact: true }}
-                className={cn(
-                  row,
-                  'hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground',
-                  'data-[status=active]:bg-sidebar-foreground/10 data-[status=active]:font-medium data-[status=active]:text-sidebar-accent-foreground',
-                )}
+                style={navLinkStyle}
+                className={navLinkClass}
               >
                 {label}
               </Link>
             ))}
-          </div>
+          </NavGroup>
         ))}
-      </div>
-    </nav>
+      </NavList>
+    </SectionNav>
   );
 }
 
