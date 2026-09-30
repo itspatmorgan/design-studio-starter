@@ -136,6 +136,19 @@
 html { color-scheme: light; }
 html.dark { color-scheme: dark; }
 
+/* Menu items. shadcn/ui shows the hovered item with :focus (focus:bg-accent), which a page without
+   focus never matches, and the page loses focus when "Open in editor" or "Reveal in Finder" brings
+   another app forward, so the next menu's hover looked dead. The menu also marks the hovered item
+   with data-highlighted: the same look, drawn from that. */
+@layer components {
+  :is([data-slot^="context-menu-"], [data-slot^="dropdown-menu-"])[data-highlighted] {
+    @apply bg-accent text-accent-foreground;
+  }
+  :is([data-slot^="context-menu-"], [data-slot^="dropdown-menu-"])[data-highlighted][data-variant="destructive"] {
+    @apply bg-destructive/10 text-destructive dark:bg-destructive/20;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
     ::view-transition-old(root),
     ::view-transition-new(root) {
