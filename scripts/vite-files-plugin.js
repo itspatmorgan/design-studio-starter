@@ -3,7 +3,7 @@
 //
 //   GET  /__studio/me                                       your contributors.json key
 //   GET  /__studio/files?contributor=<key>&prototype=<id>   the prototype's files and folders
-//        (contributor "handbook" reads a Handbook section, src/handbook/<id>/, which is read-only)
+//        (contributor and prototype "handbook" read src/handbook/, which is read-only)
 //   GET  /__studio/file?contributor=<key>&prototype=<id>&path=<file>   an item's text and its version
 //   POST /__studio/write   { contributor, prototype, path, content, base }  save an item you own (Source view)
 //   POST /__studio/reveal   { contributor, prototype, path }  show a file in Finder
@@ -35,7 +35,7 @@ import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from './resolve-contributor.js';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { HELPER_FOLDER } from '../src/studio/fileTypes/index.ts';
-import { HANDBOOK_KEY, isHandbookSection } from '../src/studio/roots.ts';
+import { HANDBOOK_KEY } from '../src/studio/roots.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -45,10 +45,10 @@ const TRASH = path.join(ROOT, '.trash');
 const BATCH_MS = 50;
 const MAX_SOURCE_BYTES = 750 * 1024; // the same limit as any committed file (check-asset-size.js)
 
-// A prototype's folder, or null if the contributor or prototype name isn't valid. The Handbook's
-// sections (src/handbook/docs, rules, skills) are found here too, by their fixed names, to read.
+// A prototype's folder, or null if the contributor or prototype name isn't valid. The Handbook
+// (src/handbook/) is found here too, as contributor and prototype "handbook", to read.
 function prototypeDir(contributor, prototype) {
-  if (contributor === HANDBOOK_KEY) return isHandbookSection(prototype) && fs.existsSync(path.join(HANDBOOK, prototype)) ? path.join(HANDBOOK, prototype) : null;
+  if (contributor === HANDBOOK_KEY) return prototype === HANDBOOK_KEY && fs.existsSync(HANDBOOK) ? HANDBOOK : null;
   if (!NAME.test(contributor ?? '') || !NAME.test(prototype ?? '')) return null;
   const dir = path.join(PROTOS, contributor, prototype);
   return fs.existsSync(path.join(dir)) ? dir : null;
@@ -340,15 +340,13 @@ export default function filesPlugin() {
         next();
       });
 
-      // Tell the app which prototypes' (or Handbook sections') files changed, batched.
+      // Tell the app which prototypes' (or the Handbook's) files changed, batched.
       let timer = null;
       const changed = new Set();
-      // A file's contributor, prototype, and path in it: a prototype's, or a Handbook section's.
+      // A file's contributor, prototype, and path in it: a prototype's, or the Handbook's.
       const locate = (file) => {
-        const inHandbook = file.startsWith(HANDBOOK + path.sep);
-        const [contributor, prototype, ...rest] = inHandbook
-          ? [HANDBOOK_KEY, ...path.relative(HANDBOOK, file).split(path.sep)]
-          : path.relative(PROTOS, file).split(path.sep);
+        if (file.startsWith(HANDBOOK + path.sep)) return { contributor: HANDBOOK_KEY, prototype: HANDBOOK_KEY, rel: path.relative(HANDBOOK, file).split(path.sep).join('/') };
+        const [contributor, prototype, ...rest] = path.relative(PROTOS, file).split(path.sep);
         return contributor && !contributor.startsWith('..') && prototype ? { contributor, prototype, rel: rest.join('/') } : null;
       };
       const onEvent = (file) => {

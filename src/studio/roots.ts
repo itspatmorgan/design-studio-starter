@@ -1,20 +1,19 @@
-// Where an item's files live on disk, relative to src/. A prototype is src/prototypes/<contributor>/<id>/.
-// The Handbook (src/handbook/) is shown like prototypes, one per section, under the reserved key
-// "handbook": /handbook/docs is src/handbook/docs/. Nobody is the "handbook" contributor, so the app
-// never offers to change anything there: those are platform files, maintained in the repo.
+// Where an item's files live, and where its page is in the app. A prototype is
+// src/prototypes/<contributor>/<id>/, at /<contributor>/<id>. The Handbook (src/handbook/) is shown
+// the same way, as one tree at /handbook, under the reserved key "handbook". Nobody is the
+// "handbook" contributor, so the app never offers to change anything there: those are platform
+// files, maintained in the repo.
 // This file has no imports, so Node scripts can load it directly.
 
 export const HANDBOOK_KEY = 'handbook';
 
-// The Handbook's sections: the folders in src/handbook/.
-export const HANDBOOK_SECTIONS = {
-  docs: { title: 'Docs', description: "Your team's context: what good design means here, and who it's for." },
-  rules: { title: 'Rules', description: 'What your agent knows and follows every session.' },
-  skills: { title: 'Skills', description: 'Procedures your agent follows when you ask.' },
-} as const;
+export const HANDBOOK_TITLE = 'Handbook';
+export const HANDBOOK_DESCRIPTION = "Your team's context and instructions, for the people and the agents who work here.";
 
-export const isHandbookSection = (id: string): id is keyof typeof HANDBOOK_SECTIONS =>
-  Object.prototype.hasOwnProperty.call(HANDBOOK_SECTIONS, id);
-
+// The folder holding an item's files, relative to src/.
 export const rootOf = (contributor: string, id: string) =>
-  contributor === HANDBOOK_KEY ? `${HANDBOOK_KEY}/${id}` : `prototypes/${contributor}/${id}`;
+  contributor === HANDBOOK_KEY ? HANDBOOK_KEY : `prototypes/${contributor}/${id}`;
+
+// The app path of a prototype's page, without the base: its items are under it.
+export const prototypePath = (contributor: string, id: string) =>
+  contributor === HANDBOOK_KEY ? `/${HANDBOOK_KEY}` : `/${contributor}/${id}`;

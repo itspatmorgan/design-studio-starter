@@ -1,6 +1,7 @@
 import { linkOptions } from '@tanstack/react-router';
 import { itemSlug } from '@/studio/fileTypes';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
+import { HANDBOOK_KEY } from '@/studio/roots';
 
 // Fetched once, then shared by every route loader. In dev, replaced whenever it changes.
 let manifest: Promise<Manifest> | undefined;
@@ -8,12 +9,12 @@ export const setManifest = (m: Manifest) => { manifest = Promise.resolve(m); };
 export function loadManifest(): Promise<Manifest> {
   manifest ??= fetch(`${import.meta.env.BASE_URL}prototypes/manifest.json`)
     .then((r) => r.json() as Promise<Manifest>)
-    .catch(() => ({ prototypes: [], guide: [], handbook: [] }));
+    .catch(() => ({ prototypes: [], guide: [], handbook: null }));
   return manifest;
 }
 
 export const findPrototype = (m: Manifest, contributor: string, prototype: string) =>
-  [...m.prototypes, ...m.handbook].find((p) => p.contributorKey === contributor && p.id === prototype);
+  [...m.prototypes, ...(m.handbook ? [m.handbook] : [])].find((p) => p.contributorKey === contributor && p.id === prototype);
 
 export { itemSlug };
 
@@ -43,9 +44,11 @@ export function formatDate(date: string | null) {
 export const newestFirst = (a: Prototype, b: Prototype) => (b.created ?? '').localeCompare(a.created ?? '');
 
 // Where a prototype's links go. The prototype's own URL opens its default view.
-export const prototypeLink = (p: Prototype) =>
-  linkOptions({ to: '/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.id } });
+export const prototypeLink = (p: Prototype) => (p.contributorKey === HANDBOOK_KEY
+  ? linkOptions({ to: '/handbook' })
+  : linkOptions({ to: '/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.id } }));
 
 // An item's URL: the prototype's, plus the item's path without its extension.
-export const itemLink = (p: Prototype, item: Item) =>
-  linkOptions({ to: '/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: itemSlug(item.path) } });
+export const itemLink = (p: Prototype, item: Item) => (p.contributorKey === HANDBOOK_KEY
+  ? linkOptions({ to: '/handbook/$', params: { _splat: itemSlug(item.path) } })
+  : linkOptions({ to: '/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: itemSlug(item.path) } }));

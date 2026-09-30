@@ -9,8 +9,10 @@ import { SectionNavContext, useColorMode, useSectionNav } from '@/studio/app/she
 export default function App() {
   const { colorMode, toggleColorMode } = useColorMode();
   const sectionNav = useSectionNav();
-  // A prototype is open (not a not-found page under a prototype-shaped URL).
-  const inPrototype = useMatch({ from: '/$contributor/$prototype', shouldThrow: false })?.status === 'success';
+  // A prototype, or the Handbook, is open (not a not-found page under a prototype-shaped URL).
+  const inProto = useMatch({ from: '/$contributor/$prototype', shouldThrow: false })?.status === 'success';
+  const inHandbook = useMatch({ from: '/handbook', shouldThrow: false })?.status === 'success';
+  const inPrototype = inProto || inHandbook;
 
   return (
     <TooltipProvider>
