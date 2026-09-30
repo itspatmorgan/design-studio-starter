@@ -12,7 +12,7 @@ Every prototype system has the same parts. Keep them true when replacing one, an
 1. **A folder**: `src/systems/<system>/`, with `components/` and `styles/theme.css`. Prototypes import from `@/systems/<system>/...`.
 2. **A scoped theme**: every variable in `theme.css` is set under `.<system>-theme`, with a `.dark .<system>-theme` block for dark mode. Nothing is global, so systems can't leak into each other or into the app UI. The build fails on any rule in a system's `theme.css` that isn't under its class, like `:root` or `body`, which themes pasted from a theme builder often include.
 3. **Portals**: components that render a pop-up pass `usePortalContainer()` from `@/lib/portal` as the Base UI Portal's `container` (`<DialogPrimitive.Portal container={usePortalContainer()} />`), so pop-ups stay inside the system's theme and the prototype frame.
-4. **An entry in `src/systems/index.ts`** (label, folder, theme class), and **a spec** for its Systems pages, like `src/studio/app/pages/systems/productSystem.tsx`, added to `PROTOTYPE_SPECS` in `SystemsPage.tsx`. Import its `theme.css` in `src/studio/styles/index.css`, next to the product one.
+4. **An entry in `src/systems/index.ts`** (label, folder, theme class), and **a spec** for its introduction and theme pages, like `src/studio/app/pages/systems/productSystem.tsx`, added to `PROTOTYPE_SPECS` in `SystemsPage.tsx`. Its components and foundations pages come from its files. Import its `theme.css` in `src/studio/styles/index.css`, next to the product one.
 
 Adding or replacing a system is a platform change: describe it and confirm with the person first. To add one, copy `src/systems/product/` as the starting point.
 
@@ -27,6 +27,10 @@ All systems use shadcn/ui components on [Base UI](https://base-ui.com/react/over
 See [shadcn/ui](https://ui.shadcn.com/docs) (Base UI pages) and [Base UI composition](https://base-ui.com/react/handbook/composition).
 
 `npx shadcn add <name>` adds a shadcn/ui component to `src/systems/product/components/` (set in `components.json`). For another system, pass `--path src/systems/<system>/components`. If a new component renders a pop-up, wire it to `usePortalContainer()` as above. After adding or bringing in a component, give it its page (below).
+
+## Foundations
+
+A prototype system's foundations pages (Colors, Typography, Radius, Shadows, Spacing, Other tokens) are built from the custom properties in its `theme.css` (`src/studio/themeTokens.ts`), so there is nothing to write for them: a page shows when the theme defines that kind of value. Sorting is by name and value: `--radius*` is radius, `--shadow*` shadows, `--spacing*`/`--space*` spacing, `--font*`/`--text*`/`--leading*`/`--tracking*` typography, a color value (`oklch()`, hex, `var()` of one) a color, and the rest other. A ramp like `--blue-500` is grouped as Blue. Give tokens names in these families and they get the right page. Set them under `.<system>-theme` (and `.dark .<system>-theme` for dark values) like the rest of the theme.
 
 ## Component pages
 

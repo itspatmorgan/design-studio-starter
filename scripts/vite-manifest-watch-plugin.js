@@ -36,8 +36,9 @@ function relevant(file, kind) {
   if (file === CONTRIBUTORS || file === AGENTS) return true;
   if (inside(GUIDE, file)) return file.endsWith('.md');
   if (inside(HANDBOOK, file)) return kind !== 'change';
-  // A system's component docs: files coming and going, and edits to the ones that describe a component.
-  if (inside(SYSTEMS, file)) return kind !== 'change' || /\.(md|examples\.[jt]sx)$/.test(file);
+  // A system's component docs: files coming and going, and edits to the ones that describe a component
+  // and to its theme (the tokens it lists).
+  if (inside(SYSTEMS, file)) return kind !== 'change' || /\.(md|examples\.[jt]sx)$|styles[\\/]theme\.css$/.test(file);
   if (!inside(PROTOS, file)) return false;
   return kind !== 'change' || path.basename(file) === 'meta.json';
 }

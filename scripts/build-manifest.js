@@ -9,6 +9,7 @@ import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-t
 import { frontmatter } from './lib/frontmatter.js';
 import { handbookProblems } from './lib/handbook-check.js';
 import { systemDocs } from './lib/system-docs.js';
+import { themeTokens } from '../src/studio/themeTokens.ts';
 import { handbookMap } from '../src/studio/handbookMap.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -177,7 +178,10 @@ export function buildManifest() {
   for (const [id, sys] of Object.entries(PROTOTYPE_SYSTEMS)) {
     const dir = path.join(ROOT, sys.dir, 'components');
     const { components, problems } = systemDocs(dir);
-    systems[id] = { docs: sys.docs ?? 'warn', components };
+    // The tokens its theme.css defines, for the foundations pages (src/studio/themeTokens.ts).
+    const themeFile = path.join(ROOT, sys.dir, 'styles', 'theme.css');
+    const tokens = fs.existsSync(themeFile) ? themeTokens(fs.readFileSync(themeFile, 'utf8'), sys.themeClass) : [];
+    systems[id] = { docs: sys.docs ?? 'warn', components, tokens };
     const lines = problems.map((p) => `${path.relative(ROOT, path.join(dir, p.file))}: ${p.message}`);
     if (sys.docs === 'strict') { for (const line of lines) console.error(`[manifest] ${line}`); errors += lines.length; }
     else {

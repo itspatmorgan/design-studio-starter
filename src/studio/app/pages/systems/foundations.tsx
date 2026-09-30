@@ -2,6 +2,7 @@ import { PortalContext } from '@/lib/portal';
 import type { DesignSystem } from '@/studio/app/data/types';
 import { useEffect, useRef, useState, type ComponentType, type ReactNode, type Ref } from 'react';
 import { cn } from '@/lib/utils';
+import { KNOWN_COLORS, type ThemeToken } from '@/studio/themeTokens';
 
 // Shared building blocks for the Systems page. Everything here reads live values
 // from the CSS at runtime, so it stays true when someone edits a theme file.
@@ -19,7 +20,7 @@ export function useColorMode() {
 }
 
 // Read a computed style from an element after each render that changes the mode.
-function useComputed<T extends HTMLElement = HTMLDivElement>(read: (s: CSSStyleDeclaration) => string): [Ref<T>, string | null] {
+export function useComputed<T extends HTMLElement = HTMLDivElement>(read: (s: CSSStyleDeclaration) => string): [Ref<T>, string | null] {
   const ref = useRef<T>(null);
   const mode = useColorMode();
   const [value, setValue] = useState<string | null>(null);
@@ -59,45 +60,9 @@ export function Prose({ children }: Children) {
 
 // --- Colors -----------------------------------------------------------------
 
-// Semantic tokens, grouped, one compact row each: [name, utility, role].
-type Token = [name: string, utility: string, role: string];
-const COLOR_GROUPS: { name: string; tokens: Token[] }[] = [
-  { name: 'Surfaces', tokens: [
-    ['background', 'bg-background', 'Page background'],
-    ['foreground', 'text-foreground', 'Primary text'],
-    ['card', 'bg-card', 'Card surfaces'],
-    ['card-foreground', 'text-card-foreground', 'Text on cards'],
-    ['popover', 'bg-popover', 'Menus and dialogs'],
-    ['popover-foreground', 'text-popover-foreground', 'Text on popovers'],
-    ['muted', 'bg-muted', 'Muted backgrounds'],
-    ['muted-foreground', 'text-muted-foreground', 'Secondary text'],
-    ['accent', 'bg-accent', 'Hover and focus highlights'],
-    ['accent-foreground', 'text-accent-foreground', 'Text on accent'],
-    ['secondary', 'bg-secondary', 'Secondary surfaces'],
-    ['secondary-foreground', 'text-secondary-foreground', 'Text on secondary'],
-    ['border', 'border-border', 'Borders and dividers'],
-    ['input', 'border-input', 'Input borders'],
-    ['ring', 'ring-ring', 'Focus rings'],
-  ] },
-  { name: 'Actions', tokens: [
-    ['primary', 'bg-primary', 'Primary actions'],
-    ['primary-foreground', 'text-primary-foreground', 'Text on primary'],
-    ['destructive', 'bg-destructive', 'Destructive actions'],
-  ] },
-  { name: 'Charts', tokens: [1, 2, 3, 4, 5].map((n) => [`chart-${n}`, `bg-chart-${n}`, `Chart series ${n}`]) },
-  { name: 'Sidebar', tokens: [
-    ['sidebar', 'bg-sidebar', 'Sidebar background'],
-    ['sidebar-foreground', 'text-sidebar-foreground', 'Sidebar text'],
-    ['sidebar-primary', 'bg-sidebar-primary', 'Sidebar primary'],
-    ['sidebar-primary-foreground', 'text-sidebar-primary-foreground', 'Text on sidebar primary'],
-    ['sidebar-accent', 'bg-sidebar-accent', 'Sidebar hover'],
-    ['sidebar-accent-foreground', 'text-sidebar-accent-foreground', 'Sidebar accent text'],
-    ['sidebar-border', 'border-sidebar-border', 'Sidebar border'],
-    ['sidebar-ring', 'ring-sidebar-ring', 'Sidebar focus ring'],
-  ] },
-];
-
-function TokenRow({ name, utility, role }: { name: string; utility: string; role: string }) {
+// One row per color token. A token shadcn/ui defines shows what it's for and its Tailwind class;
+// any other just shows its name and value.
+export function TokenRow({ name, utility, role }: { name: string; utility?: string; role?: string }) {
   const [ref, value] = useComputed((s) => s.getPropertyValue(`--${name}`).trim());
   return (
     <div ref={ref} className="flex items-center gap-3 py-1.5">
@@ -105,25 +70,42 @@ function TokenRow({ name, utility, role }: { name: string; utility: string; role
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2">
           <code className="text-[13px] text-foreground">--{name}</code>
-          <code className="truncate text-[12px] text-muted-foreground">{utility}</code>
+          {utility && <code className="truncate text-[12px] text-muted-foreground">{utility}</code>}
         </div>
-        <p className="truncate text-[12px] text-muted-foreground">{role}</p>
+        {role && <p className="truncate text-[12px] text-muted-foreground">{role}</p>}
       </div>
       <code className="shrink-0 text-right text-[12px] text-muted-foreground" data-token={name} data-value={value ?? ''}>{value || 'not set'}</code>
     </div>
   );
 }
 
-// scopeClass puts the rows inside the system's theme (e.g. .product-theme).
-export function ColorTokens({ scopeClass }: { scopeClass: string }) {
+// The color tokens in groups: shadcn/ui's first, in their usual order, then any others by the
+// group their name gives them (a ramp like blue-500 is "Blue"), then the rest.
+const KNOWN_ORDER = ['Surfaces', 'Actions', 'Charts', 'Sidebar'];
+function colorGroups(tokens: Pick<ThemeToken, 'name' | 'subgroup'>[]) {
+  const groups = new Map<string, string[]>();
+  for (const t of tokens) {
+    const heading = t.subgroup ?? 'Other colors';
+    groups.set(heading, [...(groups.get(heading) ?? []), t.name.slice(2)]);
+  }
+  const rank = (heading: string) => (KNOWN_ORDER.includes(heading) ? KNOWN_ORDER.indexOf(heading) : heading === 'Other colors' ? 99 : 50);
+  return [...groups].sort(([a], [b]) => rank(a) - rank(b));
+}
+
+// scopeClass puts the rows inside the system's theme (e.g. .product-theme). `tokens` are the ones
+// its theme defines; without them (the studio system), shadcn/ui's are listed.
+export function ColorTokens({ scopeClass, tokens }: { scopeClass: string; tokens?: ThemeToken[] }) {
+  const colors = tokens
+    ? tokens.filter((t) => t.group === 'colors')
+    : Object.entries(KNOWN_COLORS).map(([name, { group }]) => ({ name: `--${name}`, subgroup: group }));
   return (
     <div className={cn(scopeClass, 'space-y-10 text-foreground')}>
-      {COLOR_GROUPS.map((g) => (
-        <div key={g.name}>
-          <h3 className="mb-3 text-[16px] font-semibold leading-6 tracking-tight text-foreground">{g.name}</h3>
+      {colorGroups(colors).map(([heading, names]) => (
+        <div key={heading}>
+          <h3 className="mb-3 text-[16px] font-semibold leading-6 tracking-tight text-foreground">{heading}</h3>
           <div className="divide-y divide-border/60">
-            {g.tokens.map(([name, utility, role]) => (
-              <TokenRow key={name} name={name} utility={utility} role={role} />
+            {names.map((name) => (
+              <TokenRow key={name} name={name} utility={KNOWN_COLORS[name.replace(/^color-/, '')]?.utility} role={KNOWN_COLORS[name.replace(/^color-/, '')]?.role} />
             ))}
           </div>
         </div>

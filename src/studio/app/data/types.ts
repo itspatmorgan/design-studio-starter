@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { ComponentSpec, TypeSampleSpec } from '@/studio/app/pages/systems/foundations';
 import type { HandbookMap } from '@/studio/handbookMap';
 import type { SystemComponentDoc } from '@/studio/systemDocs';
+import type { ThemeToken } from '@/studio/themeTokens';
 
 
 // public/prototypes/manifest.json, written by scripts/build-manifest.js.
@@ -34,10 +35,11 @@ export type GuidePage = {
 // `handbook` holds the Handbook's sections (src/handbook/, see src/studio/roots.ts), shaped like
 // prototypes.
 // `handbookMap` is how an agent reads the Handbook, worked out from the files (handbookMap.ts).
-// `systems` holds each prototype system's components and their docs (systemDocs.ts).
+// `systems` holds each prototype system's components and their docs (systemDocs.ts), and the
+// tokens its theme defines (themeTokens.ts).
 export type Manifest = {
   prototypes: Prototype[]; guide: GuidePage[]; handbook: Prototype[]; handbookMap: HandbookMap | null;
-  systems: Record<string, { docs: 'warn' | 'strict'; components: SystemComponentDoc[] }>;
+  systems: Record<string, { docs: 'warn' | 'strict'; components: SystemComponentDoc[]; tokens: ThemeToken[] }>;
 };
 
 // One tab on the Systems page.

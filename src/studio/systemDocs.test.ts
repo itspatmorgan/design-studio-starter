@@ -182,3 +182,72 @@ test('a prop description is its first sentence, short and plain', () => {
   const long = conciseDescription('word '.repeat(60) + 'end.', 40);
   assert.ok(long.length <= 41 && long.endsWith('…') && !long.includes('  '), long);
 });
+
+test('a theme\'s tokens: scoped light and dark values, sorted into groups', async () => {
+  const { themeTokens, KNOWN_COLORS } = await import('./themeTokens.ts');
+  const css = `
+    /* a comment with { braces } and --fake: red; */
+    @import "x.css";
+    .brand-theme {
+      --background: oklch(1 0 0);
+      --primary: #123456;
+      --blue-500: rgb(0 0 255);
+      --gray-50: hsl(0 0% 98%);
+      --text-primary: oklch(0.2 0 0);
+      --brand: var(--blue-500);
+      --radius: 0.5rem;
+      --radius-pill: 999px;
+      --shadow-md: 0 1px 2px rgb(0 0 0 / 10%);
+      --spacing: 0.25rem;
+      --space-4: 1rem;
+      --font-sans: 'Inter', sans-serif;
+      --text-sm: 0.875rem;
+      --font-weight-bold: 700;
+      --ease-out: cubic-bezier(0, 0, 0.2, 1);
+      --outside: var(--defined-elsewhere);
+    }
+    .dark .brand-theme { --background: oklch(0.1 0 0); --primary: #abcdef; }
+    .other-theme { --nope: red; }
+    @media (min-width: 40rem) { .brand-theme { --wide-gap: 2rem; } }
+    @theme { --color-accent: var(--primary); --color-primary: var(--primary); --color-teal-600: #008080; }
+  `;
+  const tokens = themeTokens(css, 'brand-theme');
+  const by = Object.fromEntries(tokens.map((t) => [t.name, t]));
+  const groupOf = (n: string) => by[n]?.group;
+  for (const n of ['--background', '--primary', '--blue-500', '--gray-50', '--text-primary', '--brand', '--color-accent', '--color-teal-600']) assert.equal(groupOf(n), 'colors', n);
+  assert.equal(groupOf('--radius'), 'radius');
+  assert.equal(groupOf('--radius-pill'), 'radius');
+  assert.equal(groupOf('--shadow-md'), 'shadows');
+  assert.equal(groupOf('--spacing'), 'spacing');
+  assert.equal(groupOf('--space-4'), 'spacing');
+  for (const n of ['--font-sans', '--text-sm', '--font-weight-bold']) assert.equal(groupOf(n), 'typography', n);
+  assert.equal(groupOf('--ease-out'), 'other');
+  assert.equal(groupOf('--wide-gap'), 'other');
+  assert.equal(groupOf('--outside'), 'other');
+  // What isn't the system's, or isn't a token, isn't listed; an alias of the same color is listed once.
+  assert.equal(by['--nope'], undefined);
+  assert.equal(by['--fake'], undefined);
+  assert.equal(by['--color-primary'], undefined);
+  // Light and dark: which have a dark value of their own.
+  assert.deepEqual([by['--background'].dark, by['--primary'].dark, by['--blue-500'].dark], [true, true, false]);
+  // Colors are grouped: shadcn's by role, ramps by name.
+  assert.equal(by['--background'].subgroup, 'Surfaces');
+  assert.equal(by['--primary'].subgroup, 'Actions');
+  assert.equal(by['--blue-500'].subgroup, 'Blue');
+  assert.equal(by['--color-teal-600'].subgroup, 'Teal');
+  assert.equal(by['--brand'].subgroup, null);
+  assert.equal(by['--radius'].subgroup, null);
+  assert.equal(KNOWN_COLORS['primary'].role, 'Primary actions');
+  // A theme with nothing under its class has no tokens.
+  assert.deepEqual(themeTokens('.x { --a: red }', 'brand-theme'), []);
+});
+
+test('the shipped product theme is all colors and one radius', async () => {
+  const { themeTokens } = await import('./themeTokens.ts');
+  const css = fs.readFileSync(path.resolve(import.meta.dirname, '../systems/product/styles/theme.css'), 'utf8');
+  const tokens = themeTokens(css, 'product-theme');
+  assert.equal(tokens.filter((t) => t.group === 'colors').length, 31);
+  assert.deepEqual(tokens.filter((t) => t.group !== 'colors').map((t) => t.name), ['--radius']);
+  // Every one is a known shadcn token with a dark value of its own.
+  assert.ok(tokens.filter((t) => t.group === 'colors').every((t) => t.subgroup && t.dark));
+});
