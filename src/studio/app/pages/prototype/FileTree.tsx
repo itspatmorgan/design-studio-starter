@@ -450,7 +450,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
         <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{live ? 'Files' : 'Pages'}</p>
         {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
         <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && !sourceOn && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
-          <IconButton label={`Filter ${noun}`} pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
+          <IconButton label="Filter" pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
             <HugeiconsIcon icon={Search01Icon} size={14} />
           </IconButton>
           {dirs.length > 0 && (
