@@ -20,7 +20,7 @@ src/prototypes/<contributor>/<prototype>/
 └── hero.webp              # a plain file
 ```
 
-- **View**: any `.tsx` file (or plain `.jsx`) that default-exports a React component, at any depth, except inside a `components/` folder. Write new views as `.tsx`. The build fails on a view without a default export (put helpers in `components/`), or on two files that would share a URL, like `main.tsx` and `main.jsx` (or `main.mdx`) in one folder.
+- **View**: any `.tsx` file (or plain `.jsx`) that default-exports a React component, at any depth, except inside a `components/` folder. Write new views as `.tsx`. The build fails on a view without a default export (put helpers in `components/`), or on two files that would share a URL, like `main.tsx` and `main.jsx` (or `main.md`) in one folder.
 - **Document**: any `.md` file, at any depth, except inside `components/`. See [documents.md](documents.md).
 - **Folders**: any folder, at any depth, just for organizing. A folder's name never changes what's in it. The one exception is `components/`, at any depth: its files are helpers, never listed.
 - **Opens on**: the prototype opens on its `start` item (see meta.json), or else the first item in its navigation (files before folders, alphabetical at each level). To choose a different one, set `start`; don't rename files to change the order.

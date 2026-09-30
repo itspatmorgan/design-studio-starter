@@ -4,7 +4,7 @@ import { getRouteApi, useMatchRoute, useNavigate, useParams, type NavigateOption
 import {
   Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
 } from '@/studio/components/command';
-import { findItem, firstItem, itemFolder, itemLabel, itemLink, newestFirst, prototypeLink } from '@/studio/app/data/manifest';
+import { findItem, findPrototype, firstItem, itemFolder, itemLabel, itemLink, newestFirst, prototypeLink } from '@/studio/app/data/manifest';
 import type { Item } from '@/studio/app/data/types';
 
 const rootApi = getRouteApi('__root__');
@@ -21,7 +21,7 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
   };
 
   const prototypes = [...manifest.prototypes].sort(newestFirst);
-  const current = prototypes.find((p) => p.contributorKey === params.contributor && p.id === params.prototype);
+  const current = params.contributor && params.prototype ? findPrototype(manifest, params.contributor, params.prototype) : undefined;
   const openItem = current && (params._splat ? findItem(current, params._splat) : firstItem(current));
   const isOpen = (item: Item) => item === openItem;
   const onIndex = Boolean(matchRoute({ to: '/' }));
@@ -58,6 +58,7 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
               <CommandItem value="prototypes index home" disabled={onIndex} onSelect={() => go({ to: '/' })}>Prototypes</CommandItem>
               <CommandItem value="product system components" disabled={onSystem('product')} onSelect={() => go({ to: '/systems/$system', params: { system: 'product' } })}>Product system</CommandItem>
               <CommandItem value="studio system components" disabled={onSystem('studio')} onSelect={() => go({ to: '/systems/$system', params: { system: 'studio' } })}>Studio system</CommandItem>
+              <CommandItem value="handbook docs rules skills" disabled={matchRoute({ to: '/handbook' }) !== false} onSelect={() => go({ to: '/handbook' })}>Handbook</CommandItem>
             </CommandGroup>
 
             <CommandSeparator />
@@ -74,6 +75,25 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
               ))}
             </CommandGroup>
   
+            {manifest.handbook.some((section) => section.items.length > 0) && (
+              <>
+                <CommandSeparator />
+                <CommandGroup heading="Handbook">
+                  {manifest.handbook.flatMap((section) => section.items.map((item) => (
+                    <CommandItem
+                      key={`${section.id}/${item.path}`}
+                      value={`handbook ${section.title} ${itemLabel(item.path)} ${item.path}`}
+                      disabled={section === current && isOpen(item)}
+                      onSelect={() => go(itemLink(section, item))}
+                    >
+                      <span className="shrink-0 text-xs text-muted-foreground">{[section.title, itemFolder(item.path)].filter(Boolean).join(' · ')}</span>
+                      <span className="truncate">{itemLabel(item.path)}</span>
+                    </CommandItem>
+                  )))}
+                </CommandGroup>
+              </>
+            )}
+
             {prototypes.length > 0 && (
               <>
                 <CommandSeparator />

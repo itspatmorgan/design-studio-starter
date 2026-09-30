@@ -1,11 +1,11 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  BookOpen01Icon, Layers01Icon, Moon02Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Shapes01Icon, Sun01Icon,
+  BookOpen01Icon, Layers01Icon, Moon02Icon, Notebook01Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Shapes01Icon, Sun01Icon,
 } from '@hugeicons/core-free-icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
-import { Link, useMatchRoute, type LinkProps } from '@tanstack/react-router';
+import { Link, useMatchRoute, useRouterState, type LinkProps } from '@tanstack/react-router';
 import { useOpenPalette } from '@/studio/app/shell/CommandPalette';
 
 const railButton = cn(
@@ -51,7 +51,9 @@ function RailButton({ label, onClick, children }: { label: string; onClick: () =
 }
 
 // Main navigation: a narrow icon rail, visible on every page.
-// sectionNav is set only while a prototype is open, to show/hide its navigation.
+// Top: the parts of the environment (Prototypes, Systems, Handbook). Bottom: the Guide about the
+// tool itself, then the theme toggle. sectionNav is set only while a prototype (or a Handbook
+// section) is open, to show/hide its navigation.
 type MainNavProps = {
   colorMode: string;
   onToggleColorMode: () => void;
@@ -63,6 +65,8 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
   const matchRoute = useMatchRoute();
   const onSystems = Boolean(matchRoute({ to: '/systems', fuzzy: true }));
   const onGuide = Boolean(matchRoute({ to: '/guide', fuzzy: true }));
+  // /handbook and its sections (/handbook/docs/...), which open through the prototype routes.
+  const onHandbook = useRouterState({ select: (s) => s.location.pathname === '/handbook' || s.location.pathname.startsWith('/handbook/') });
   return (
     <nav
       aria-label="Main"
@@ -79,14 +83,14 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
         <HugeiconsIcon icon={Search01Icon} size={16} />
       </RailButton>
       <div className="h-2" />
-      <RailLink to="/" label="Prototypes" active={!onSystems && !onGuide}>
+      <RailLink to="/" label="Prototypes" active={!onSystems && !onGuide && !onHandbook}>
         <HugeiconsIcon icon={Layers01Icon} size={16} />
       </RailLink>
       <RailLink to="/systems" label="Systems" active={onSystems}>
         <HugeiconsIcon icon={Shapes01Icon} size={16} />
       </RailLink>
-      <RailLink to="/guide" label="Guide" active={onGuide}>
-        <HugeiconsIcon icon={BookOpen01Icon} size={16} />
+      <RailLink to="/handbook" label="Handbook" active={onHandbook}>
+        <HugeiconsIcon icon={Notebook01Icon} size={16} />
       </RailLink>
 
       <div className="mt-auto" />
@@ -95,6 +99,9 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
           <HugeiconsIcon icon={sectionNav.open ? PanelLeftCloseIcon : PanelLeftOpenIcon} size={16} />
         </RailButton>
       )}
+      <RailLink to="/guide" label="Guide" active={onGuide}>
+        <HugeiconsIcon icon={BookOpen01Icon} size={16} />
+      </RailLink>
       <RailButton label={colorMode === 'dark' ? 'Light mode' : 'Dark mode'} onClick={onToggleColorMode}>
         <HugeiconsIcon icon={colorMode === 'dark' ? Sun01Icon : Moon02Icon} size={16} />
       </RailButton>

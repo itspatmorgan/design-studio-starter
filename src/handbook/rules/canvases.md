@@ -1,6 +1,6 @@
 # Canvases
 
-A canvas is a surface to think and communicate on: live views and documents from any prototype, beside sticky notes, text, shapes, and arrows. Use it to lay out a flow, compare directions side by side, annotate a screen, ask a question where the person will see it, or hand someone the map. Read this when the person asks for a canvas, or asks you to put something on one. Human docs: the Guide's Canvases page (`src/studio/guide/canvases.mdx`).
+A canvas is a surface to think and communicate on: live views and documents from any prototype, beside sticky notes, text, shapes, and arrows. Use it to lay out a flow, compare directions side by side, annotate a screen, ask a question where the person will see it, or hand someone the map. Read this when the person asks for a canvas, or asks you to put something on one. Human docs: the Guide's Canvases page (`src/studio/guide/canvases.md`).
 
 - A canvas is any `.excalidraw` file in a prototype, outside `components/`. It's an Excalidraw scene, so everything Excalidraw draws is fair game. Its URL is its path without the extension, and its name in the navigation comes from the file name.
 - It points at things instead of holding them: an **item** on a canvas shows a view live, or a document as a card, from any prototype. If the file moves, the spot says "Not found".

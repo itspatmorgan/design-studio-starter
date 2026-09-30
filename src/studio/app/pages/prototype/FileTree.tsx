@@ -23,6 +23,7 @@ import {
 } from '@/studio/app/data/files';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { HELPER_FOLDER } from '@/studio/fileTypes';
+import { HANDBOOK_KEY } from '@/studio/roots';
 import { itemUrl } from '@/studio/app/items/itemLinks';
 import { creatableTypes, FILE_TYPES, fileTypeModules } from '@/studio/app/data/fileTypes';
 import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
@@ -173,8 +174,9 @@ export default function FileTree({ proto, current, handle }: FileTreeProps) {
   const sourceOn = hasSource && mode === 'source';
   const toggleSource = () => navigate({ to: '.', search: ((prev: object) => ({ ...prev, mode: sourceOn ? undefined : 'source' })) as never });
   const nodes = !files ? itemsAsNodes(proto) : showAll ? files : visibleNodes(files, items);
-  // The item the prototype opens on: its start, or its first item. It gets a star.
-  const opensOn = firstItem(proto);
+  // The item the prototype opens on: its start, or its first item. It gets a star. (A Handbook
+  // section has no start to mark.)
+  const opensOn = proto.contributorKey === HANDBOOK_KEY ? undefined : firstItem(proto);
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [filter, setFilter] = useState('');

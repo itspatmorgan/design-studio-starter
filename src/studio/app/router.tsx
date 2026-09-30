@@ -3,6 +3,8 @@
 //
 //   /                                        Index (search: ?q=)
 //   /systems/$system, /systems/$system/$page  Systems (/systems opens the product system)
+//   /handbook                                the Handbook (src/handbook/); its sections, /handbook/docs, /handbook/rules,
+//                                            /handbook/skills, open as prototypes do (they're read-only)
 //   /guide, /guide/$page                     the Guide (pages in src/studio/guide/)
 //   /$contributor/$prototype                 a prototype, on its start item (or its first)
 //   /$contributor/$prototype/$               an item, by its path without the extension,
@@ -12,6 +14,7 @@ import { lazy, Suspense } from 'react';
 import { createRootRoute, createRoute, createRouter, lazyRouteComponent, notFound, redirect } from '@tanstack/react-router';
 import App, { NotFound } from '@/studio/app/shell/App';
 import Index from '@/studio/app/pages/index/Index';
+import HandbookIndex from '@/studio/app/pages/handbook/HandbookIndex';
 import { loadGuidePage } from '@/studio/app/data/loadGuide';
 import PrototypeLayout from '@/studio/app/pages/prototype/PrototypeLayout';
 import { findItem, findPrototype, firstItem, itemLabel, loadManifest, setManifest } from '@/studio/app/data/manifest';
@@ -72,6 +75,15 @@ const systemPageRoute = createRoute({
   path: '$system/$page',
   head: ({ params }) => ({ meta: [{ title: systemsTitle(params.page, params.system) }] }),
   component: SystemsPage,
+});
+
+// The Handbook's landing page. Its sections open as /handbook/$section, through the prototype
+// routes below: they're listed in the manifest like prototypes.
+const handbookRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: 'handbook',
+  head: () => ({ meta: [{ title: `Handbook — ${APP_NAME}` }] }),
+  component: HandbookIndex,
 });
 
 // The Guide's sidebar, around whichever page is open.
@@ -183,6 +195,7 @@ const itemRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   systemsRoute.addChildren([systemsIndexRoute, systemRoute, systemPageRoute]),
+  handbookRoute,
   guideRoute.addChildren([guideIndexRoute, guidePageRoute]),
   prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]),
 ]);
