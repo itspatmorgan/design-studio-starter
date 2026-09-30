@@ -44,7 +44,8 @@ const TOKEN_PAGES: { id: string; label: string; group: TokenGroup }[] = [
 // the theme defines that kind of token, and Icons when the spec has them. Components found in the
 // system's files go under their `category` (front matter), or "Components".
 function navGroups(sys: DesignSystem, components: SystemComponentDoc[], tokens: ThemeToken[]): NavGroup[] {
-  const foundations = TOKEN_PAGES.filter((p) => tokens.some((t) => t.group === p.group)).map((p): [string, string] => [p.id, p.label]);
+  // Typography always shows: even a theme with no fonts of its own has Tailwind's type scale.
+  const foundations = TOKEN_PAGES.filter((p) => p.id === 'typography' || tokens.some((t) => t.group === p.group)).map((p): [string, string] => [p.id, p.label]);
   if (sys.icons) foundations.push(['icons', 'Icons']);
   const categories = new Map<string, [string, string][]>();
   for (const c of components) categories.set(c.category ?? 'Components', [...(categories.get(c.category ?? 'Components') ?? []), [c.slug, c.title]]);
@@ -103,7 +104,7 @@ function SystemPage({ system, sys, components, tokens, origin, page, onEdit }: {
     case 'colors':
       return has('colors') ? <><PageHeader title="Colors" description="Every color token in the theme, read live. Values follow the current mode." /><ColorTokens scopeClass={scopeClass} tokens={tokens} /></> : null;
     case 'typography':
-      return has('typography') ? <><PageHeader title="Typography" description="The fonts, sizes, and weights the theme defines, read live." /><TypographyTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
+      return <><PageHeader title="Typography" description="The fonts, sizes, and weights, read live." /><TypographyTokens tokens={tokens} scopeClass={scopeClass} /></>;
     case 'radius':
       return has('radius') ? <><PageHeader title="Radius" description="How rounded the corners are, read live from the theme." /><RadiusTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
     case 'shadows':

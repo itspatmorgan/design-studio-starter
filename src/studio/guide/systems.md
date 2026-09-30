@@ -19,7 +19,7 @@ The kit ships one prototype system, `product`, in `src/systems/product/`. It's a
 
 ## Foundations
 
-The Systems pages also show what the theme is made of, read straight from the system's `theme.css`: **Colors**, **Typography**, **Radius**, **Shadows**, **Spacing**, and **Other tokens**. You don't write anything for these. A page appears when the theme defines that kind of value, so a theme with only colors and a radius gets two pages, and one with its own fonts, shadows, and spacing scale gets them all. Each token is drawn with its real value and follows light and dark mode, and edit `theme.css` and the pages update.
+The Systems pages also show what the theme is made of, read straight from the system's `theme.css`: **Colors**, **Typography**, **Radius**, **Shadows**, **Spacing**, and **Other tokens**. You don't write anything for these. A page appears when the theme defines that kind of value, so a theme with only colors and a radius gets those two, and one with its own shadows and spacing scale gets them too. **Typography** is always there: it shows the theme's fonts, and the sizes and weights, which are Tailwind's own scale unless the theme sets its own. Each token is drawn with its real value and follows light and dark mode, and edit `theme.css` and the pages update.
 
 Colors are grouped by what they are: shadcn/ui's names (surfaces, actions, charts, sidebar) keep their usual groups, and a ramp like `--blue-100` to `--blue-900` becomes a "Blue" group.
 

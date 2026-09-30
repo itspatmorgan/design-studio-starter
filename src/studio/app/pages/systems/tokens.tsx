@@ -51,6 +51,25 @@ function FontFamily({ token }: { token: ThemeToken }) {
   );
 }
 
+// Tailwind's built-in type scale and weights, for a theme that doesn't define its own sizes or
+// weights (most don't: shadcn/ui's themes leave them to Tailwind). Each is a real class, so a
+// system that overrides --text-* or --font-weight-* in its theme shows its own values here too.
+// The class names are written out so Tailwind generates them.
+const SCALE = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
+const WEIGHTS = ['font-normal', 'font-medium', 'font-semibold', 'font-bold'];
+
+// A class's name, a sample set in it, and what it measures to right now.
+function ScaleLine({ className, read }: { className: string; read: (s: CSSStyleDeclaration) => string }) {
+  const [sampleRef, value] = useComputed<HTMLSpanElement>(read);
+  return (
+    <div className="grid grid-cols-[minmax(0,200px)_minmax(0,1fr)_minmax(0,220px)] items-center gap-4 border-b border-border py-2.5 last:border-0">
+      <code className="truncate font-mono text-xs text-foreground">{className}</code>
+      <span ref={sampleRef} className={cn('block truncate text-foreground', className)}>Quick fox</span>
+      <code className="truncate text-right font-mono text-xs text-muted-foreground">{value}</code>
+    </div>
+  );
+}
+
 export function TypographyTokens({ tokens, scopeClass }: Props) {
   const all = inGroup(tokens, 'typography');
   const weights = all.filter((t) => t.name.startsWith('--font-weight-'));
@@ -61,17 +80,23 @@ export function TypographyTokens({ tokens, scopeClass }: Props) {
   return (
     <div className={cn(scopeClass, 'space-y-10 text-foreground')}>
       {families.length > 0 && <Section title="Font families"><div className="space-y-3">{families.map((t) => <FontFamily key={t.name} token={t} />)}</div></Section>}
-      {sizes.length > 0 && (
-        <Section title="Sizes">
-          <Lines>{sizes.map((t) => <TokenLine key={t.name} token={t} sample={<span className="block truncate text-foreground" style={{ fontSize: ref(t) }}>Quick brown fox</span>} />)}</Lines>
-        </Section>
-      )}
-      {weights.length > 0 && (
-        <Section title="Weights">
-          <Lines>{weights.map((t) => <TokenLine key={t.name} token={t} sample={<span className="text-lg text-foreground" style={{ fontWeight: ref(t) }}>The quick brown fox</span>} />)}</Lines>
-        </Section>
-      )}
-      {rest.length > 0 && <Section title={families.length + sizes.length + weights.length ? 'Other' : 'Tokens'}><Lines>{rest.map((t) => <TokenLine key={t.name} token={t} />)}</Lines></Section>}
+      <Section title="Sizes">
+        <Lines>
+          {sizes.length > 0
+            ? sizes.map((t) => <TokenLine key={t.name} token={t} sample={<span className="block truncate text-foreground" style={{ fontSize: ref(t) }}>Quick brown fox</span>} />)
+            : SCALE.map((c) => <ScaleLine key={c} className={c} read={(st) => `${st.fontSize} / ${st.lineHeight}`} />)}
+        </Lines>
+        {sizes.length === 0 && <p className="mt-2 text-xs text-muted-foreground">Tailwind's type scale. This theme doesn't set its own sizes.</p>}
+      </Section>
+      <Section title="Weights">
+        <Lines>
+          {weights.length > 0
+            ? weights.map((t) => <TokenLine key={t.name} token={t} sample={<span className="text-lg text-foreground" style={{ fontWeight: ref(t) }}>The quick brown fox</span>} />)
+            : WEIGHTS.map((c) => <ScaleLine key={c} className={c} read={(st) => st.fontWeight} />)}
+        </Lines>
+        {weights.length === 0 && <p className="mt-2 text-xs text-muted-foreground">Tailwind's font weights. This theme doesn't set its own.</p>}
+      </Section>
+      {rest.length > 0 && <Section title="Other"><Lines>{rest.map((t) => <TokenLine key={t.name} token={t} />)}</Lines></Section>}
     </div>
   );
 }
