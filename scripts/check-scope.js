@@ -38,7 +38,7 @@ function onlyOwnEntryChanged() {
 // listed in its meta.json. The list that counts is the one before the change, so a change can't make its
 // author a maintainer of someone else's. An item that is new in the change (a prototype just published)
 // has no earlier list, so its own is used.
-const MAINTAINED = Object.values(MODULES).filter((m) => m?.section?.policy === 'maintainers' && m.section.items === 'prototypes').map((m) => m.section.folder);
+const MAINTAINED = Object.values(MODULES).filter((m) => m?.section?.policy === 'maintainers' && m.section.items === 'prototypes' && m.section.folder).map((m) => m.section.folder);
 function toolMeta(ref, folder, id) {
   const file = `${folder}/${id}/meta.json`;
   try {

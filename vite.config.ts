@@ -19,19 +19,24 @@ import markdownRefresh from './scripts/vite-markdown-refresh-plugin.js';
 import systemProps from './scripts/vite-system-props-plugin.js';
 import globs from './scripts/vite-globs-plugin.js';
 import css from './scripts/vite-css-plugin.js';
-import { PROTOTYPE_DIRS } from './scripts/lib/modules.js';
+import { ENABLED_MODULES, PROTOTYPE_DIRS } from './scripts/lib/modules.js';
 
 // Prototype documents (src/prototypes/ and the modules' prototype-shaped folders, like src/tools/) refresh in
 // place through scripts/vite-markdown-refresh-plugin.js, so React Fast Refresh leaves them alone.
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const prototypeFolders = ['prototypes', ...PROTOTYPE_DIRS.map((dir: string) => path.basename(dir))].map(escapeRegExp).join('|');
 
+// A module with `lib: true` gives prototypes one door in: `import ... from '@module/<id>'` is its lib/index.
+const moduleLibs = ENABLED_MODULES.filter((m: { lib?: boolean }) => m.lib).map((m: { id: string }) => ({
+  find: `@module/${m.id}`, replacement: fileURLToPath(new URL(`./src/studio/modules/${m.id}/lib/index`, import.meta.url)),
+}));
+
 export default defineConfig({
   root: 'src',
   publicDir: '../public',
   build: { outDir: '../dist', emptyOutDir: true },
   resolve: {
-    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+    alias: [{ find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) }, ...moduleLibs],
   },
   plugins: [
     // Markdown pages (Guide pages in src/studio/guide/, and prototype documents), as plain

@@ -11,10 +11,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { pathToFileURL } from 'node:url';
 import { PLATFORM_VERSION, compatible, listProblems } from '../src/studio/modules/index.ts';
 import { configProblems } from '../src/studio/config.ts';
 import { CONFIG, MODULES, SECTION_KEYS, declarationProblems } from './lib/modules.js';
 import { PROTOTYPE_SYSTEMS, SYSTEM_IDS, systemDeclarationProblems } from './lib/systems.js';
+import { changesFromLock } from './lib/lock.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const problems = declarationProblems();
@@ -28,7 +30,7 @@ for (const id of SYSTEM_IDS) {
 }
 
 for (const m of specs) {
-  if (m.section && !fs.existsSync(path.join(ROOT, m.section.folder))) {
+  if (m.section?.folder && !fs.existsSync(path.join(ROOT, m.section.folder))) {
     problems.push(`The ${m.id} module keeps its files in ${m.section.folder}, which doesn't exist. Create the folder, or remove the module.`);
   }
 }
@@ -72,6 +74,24 @@ for (const file of [...sources(path.join(ROOT, 'src')), ...sources(path.join(ROO
     if (inside) problems.push(`${rel} imports the ${target[0]} module. Modules can't depend on each other: ${target[0]}/ has to be removable.`);
     else if (!isDeclaration) problems.push(`${rel} imports into the ${target[0]} module ("${specifier}"). Code outside a module can read only its module.ts, or the app wouldn't run without it.`);
   }
+}
+
+// Each module's own check (check.ts), for the modules that are on.
+for (const m of specs) {
+  const file = path.join(ROOT, 'src', 'studio', 'modules', m.id, 'check.ts');
+  if (!fs.existsSync(file) || !compatible(m) || CONFIG.modules?.[m.id] === false) continue;
+  try {
+    const run = (await import(pathToFileURL(file).href)).default;
+    for (const problem of await run({ root: ROOT })) problems.push(`${m.id}: ${problem}`);
+  } catch (e) {
+    problems.push(`${m.id}: its check.ts failed to run (${e.message}).`);
+  }
+}
+
+// What you changed in a module or design system you added from a source (studio.lock.json). Yours to change: this says where.
+for (const c of changesFromLock()) {
+  const parts = [c.changed.length && `${c.changed.length} file(s) changed from the original (${c.changed[0]}${c.changed.length > 1 ? ', ...' : ''})`, c.missing.length && `${c.missing.length} file(s) deleted`].filter(Boolean);
+  console.log(`[modules] The ${c.kind} ${c.id} has ${parts.join(' and ')}.`);
 }
 
 // A module that needs a newer platform is turned off, not broken: say so, and carry on.

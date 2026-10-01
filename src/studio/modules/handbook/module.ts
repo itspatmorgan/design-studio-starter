@@ -5,5 +5,6 @@ export default {
   id: 'handbook',
   label: 'Handbook',
   version: '0.1.0',
+  description: 'Docs, rules and skills for people and agents.',
   section: { key: 'handbook', folder: 'src/handbook', items: 'handbook', policy: 'open' },
 } satisfies ModuleSpec;

@@ -16,7 +16,7 @@ const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 // The Guide's pages, or null when its module is off or not installed.
 const guideModule = ENABLED_MODULES.find((m) => m.id === 'guide');
-const GUIDE = guideModule?.section ? path.join(ROOT, guideModule.section.folder) : null;
+const GUIDE = guideModule?.section?.folder ? path.join(ROOT, guideModule.section.folder) : null;
 const SYSTEMS = path.join(ROOT, 'src', 'systems');
 // The app's own system: its components, and its theme (the tokens the Systems pages list).
 const STUDIO_COMPONENTS = path.join(ROOT, 'src', 'studio', 'components');

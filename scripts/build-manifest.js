@@ -13,7 +13,7 @@ import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../src/studio
 import { byOrder, parseOrder } from '../src/studio/order.ts';
 import { parseMaintainers } from '../src/studio/permissions.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
-import { ENABLED_MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from './lib/modules.js';
+import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from './lib/modules.js';
 import { frontmatter } from './lib/frontmatter.js';
 import { handbookProblems } from './lib/handbook-check.js';
 import { systemDocs } from './lib/system-docs.js';
@@ -25,7 +25,7 @@ const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 // The Guide's pages, or null when its module is off or not installed.
 const guideModule = ENABLED_MODULES.find((m) => m.id === 'guide');
-const GUIDE = guideModule?.section ? path.join(ROOT, guideModule.section.folder) : null;
+const GUIDE = guideModule?.section?.folder ? path.join(ROOT, guideModule.section.folder) : null;
 const OUT_DIR = path.join(ROOT, 'public', 'prototypes');
 const OUT = path.join(OUT_DIR, 'manifest.json');
 // Each prototype's items, one file each: items/<contributor>/<prototype>.json. The app fetches a
@@ -276,7 +276,9 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
     const agentsFile = path.join(ROOT, 'AGENTS.md');
     map = handbookMap({ agents: fs.existsSync(agentsFile) ? fs.readFileSync(agentsFile, 'utf8') : null, rules, skills });
     for (const file of map.missing) { out.error(`[manifest] AGENTS.md links to ${file}, which isn't there. Fix the link, or add the file.`); errors++; }
-    for (const rule of map.unrouted) out.warn(`[manifest] src/handbook/rules/${rule}: nothing links to this rule, so no agent will read it. Add a line for it to AGENTS.md.`);
+    // A rule that belongs to a module that is off is meant to be unrouted: AGENTS.md leaves it out (pnpm studio sync).
+    const offRules = new Set(Object.values(MODULES).filter((m) => m && !ENABLED_MODULES.includes(m)).flatMap((m) => (m.handbook ?? []).map((h) => h.path)));
+    for (const rule of map.unrouted.filter((r) => !offRules.has(`rules/${r}`))) out.warn(`[manifest] src/handbook/rules/${rule}: nothing links to this rule, so no agent will read it. Add a line for it to AGENTS.md.`);
   }
 
   // Each prototype system's theme.css may only set values under its own class, like

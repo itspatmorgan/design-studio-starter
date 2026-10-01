@@ -9,9 +9,11 @@ At the start of every session, read:
 
 When the person asks for a document (written context in a prototype), read [src/handbook/rules/documents.md](src/handbook/rules/documents.md).
 When the person asks for a canvas (a page of views, documents, and notes arranged together), read [src/handbook/rules/canvases.md](src/handbook/rules/canvases.md).
-When the person wants to build a tool (a prototype the team uses as an app), or publish a prototype as one, read [src/handbook/rules/tools.md](src/handbook/rules/tools.md).
 When the person wants to set a prototype or view aside, or keep it out of the deployed site, read [src/handbook/rules/archiving.md](src/handbook/rules/archiving.md).
 When the person asks to add or change a team doc, rule, or skill (the Handbook), read [src/handbook/rules/handbook.md](src/handbook/rules/handbook.md).
+<!-- studio:modules -->
+When the person wants to build a tool (a prototype the team uses as an app), or publish a prototype as one, read [src/handbook/rules/tools.md](src/handbook/rules/tools.md).
+<!-- /studio:modules -->
 
 Find out who you're working with by running `node scripts/resolve-contributor.js`.
 Create prototypes with `pnpm new "Prototype Name"`.

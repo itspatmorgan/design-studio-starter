@@ -5,6 +5,7 @@ export default {
   id: 'guide',
   label: 'Guide',
   version: '0.1.0',
+  description: 'The Guide: how to use Design Studio, for the people who use it.',
   optional: true,
   section: { key: 'guide', folder: 'src/studio/guide' },
 } satisfies ModuleSpec;
