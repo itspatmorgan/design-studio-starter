@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 import { Link, useMatchRoute, useRouterState, type LinkProps } from '@tanstack/react-router';
 import { useOpenPalette } from '@/studio/app/shell/CommandPalette';
+import { Logo } from '@/studio/app/shell/Logo';
 
 const railButton = cn(
   'flex size-8 items-center justify-center rounded-md text-sidebar-foreground transition-colors',
@@ -76,10 +77,7 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
       className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-sidebar-border bg-sidebar py-3"
     >
       <RailLink to="/" label="Design Studio" className="active:scale-95">
-        {/* Placeholder mark. Swap in your own logo. */}
-        <span className="grid size-4 place-items-center rounded-[5px] bg-foreground">
-          <span className="size-1.5 rounded-full bg-background" />
-        </span>
+        <Logo className="h-[18px] w-auto" />
       </RailLink>
       <RailButton label="Search (⌘K)" onClick={openPalette}>
         <HugeiconsIcon icon={Search01Icon} size={16} />
