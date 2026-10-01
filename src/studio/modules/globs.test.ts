@@ -2,17 +2,21 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { FILE_TYPES } from '../../../scripts/lib/file-types.js';
-import guide from './guide/module.ts';
-import handbook from './handbook/module.ts';
-import systems from './systems/module.ts';
-import tools from './tools/module.ts';
 import { globsFor } from './globs.ts';
 import type { ModuleSpec } from './index.ts';
 
 const types = FILE_TYPES;
 // A file type is removable, so a test about one is skipped when it isn't installed.
 const needs = (...ids: string[]) => ({ skip: ids.some((id) => !types[id]) && 'needs a file type that is not installed' });
-const modules = [guide, handbook, systems, tools];
+// Modules as fixtures, so the test still runs when one is removed.
+const module = (id: string, section?: ModuleSpec['section']): ModuleSpec => ({ id, label: id, version: '0.1.0', section });
+const tools = module('tools', { key: 'tools', folder: 'src/tools', items: 'prototypes' });
+const modules = [
+  module('guide', { key: 'guide', folder: 'src/studio/guide' }),
+  module('handbook', { key: 'handbook', folder: 'src/handbook', items: 'handbook' }),
+  module('systems', { key: 'systems', folder: 'src/systems' }),
+  tools,
+];
 
 // These are the lists the loaders were written with by hand, before they were worked out from the modules.
 const sorted = (list: string[]) => [...list].sort();
@@ -44,7 +48,7 @@ test('the fallback type lists the Handbook files no other type opens', needs('te
 });
 
 test('without the tools module, nothing looks in /tools', () => {
-  const without = modules.filter((m) => m.id !== 'tools');
+  const without = modules.filter((m) => m !== tools);
   for (const id of Object.keys(types)) assert.ok(!globsFor(id, types, without).some((g) => g.includes('/tools/')));
 });
 
