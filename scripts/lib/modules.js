@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import CONFIG from '../../studio.config.ts';
 import { isEnabled } from '../../src/studio/config.ts';
-import { itemFolders, moduleProblems, sectionKeys } from '../../src/studio/modules/index.ts';
+import { compatible, itemFolders, moduleProblems, sectionKeys } from '../../src/studio/modules/index.ts';
 import { setSections } from '../../src/studio/roots.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -24,8 +24,8 @@ export const MODULES = Object.fromEntries(await Promise.all(
 
 export const declarationProblems = () => ids.flatMap((id) => moduleProblems(MODULES[id], id));
 
-// The modules studio.config.ts leaves on. A module that is off keeps its files but is skipped everywhere.
-export const ENABLED_MODULES = Object.values(MODULES).filter((m) => m && isEnabled(CONFIG, m.id));
+// The modules studio.config.ts leaves on and that work with this platform (`requires`). A module that is off keeps its files but is skipped everywhere.
+export const ENABLED_MODULES = Object.values(MODULES).filter((m) => m && isEnabled(CONFIG, m.id) && compatible(m));
 export { CONFIG, isEnabled };
 
 // App page addresses (/tools, /guide, ...), so they can't be a contributor's folder.

@@ -5,7 +5,7 @@
 import type { ComponentType } from 'react';
 import type { IconSvgElement } from '@hugeicons/react';
 import type { AnyRoute, NavigateOptions } from '@tanstack/react-router';
-import type { ModuleSpec } from '@/studio/modules';
+import { compatible, type ModuleSpec } from '@/studio/modules';
 import type { Item, Manifest, Prototype, PrototypeInfo } from '@/studio/app/data/types';
 import { MODULES } from '@/studio/app/data/modules';
 import { isEnabled } from '@/studio/app/data/config';
@@ -45,11 +45,11 @@ const idOf = (path: string) => path.split('/').at(-2)!;
 
 export type InstalledModule = { spec: ModuleSpec; app: ModuleApp };
 
-// The modules that are installed, on, and have an app, in order.
+// The modules that are installed, on, work with this platform, and have an app, in order.
 export const moduleApps: InstalledModule[] = Object.entries(apps)
   .flatMap(([path, app]) => {
     const spec = MODULES.find((m) => m.id === idOf(path));
-    return spec && isEnabled(spec.id) ? [{ spec, app }] : [];
+    return spec && isEnabled(spec.id) && compatible(spec) ? [{ spec, app }] : [];
   })
   .sort((a, b) => a.app.order - b.app.order);
 

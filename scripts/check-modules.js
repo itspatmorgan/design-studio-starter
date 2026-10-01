@@ -10,7 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { listProblems } from '../src/studio/modules/index.ts';
+import { PLATFORM_VERSION, compatible, listProblems } from '../src/studio/modules/index.ts';
 import { configProblems } from '../src/studio/config.ts';
 import { CONFIG, MODULES, SECTION_KEYS, declarationProblems } from './lib/modules.js';
 
@@ -64,6 +64,11 @@ for (const file of [...sources(path.join(ROOT, 'src')), ...sources(path.join(ROO
     if (inside) problems.push(`${rel} imports the ${target[0]} module. Modules can't depend on each other: ${target[0]}/ has to be removable.`);
     else if (!isDeclaration) problems.push(`${rel} imports into the ${target[0]} module ("${specifier}"). Code outside a module can read only its module.ts, or the app wouldn't run without it.`);
   }
+}
+
+// A module that needs a newer platform is turned off, not broken: say so, and carry on.
+for (const m of specs) {
+  if (!compatible(m)) console.log(`[modules] The ${m.id} module needs platform ${m.requires} or newer, and this is ${PLATFORM_VERSION}, so it is off. Update the platform to use it.`);
 }
 
 if (problems.length) {

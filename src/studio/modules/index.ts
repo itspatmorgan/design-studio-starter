@@ -4,10 +4,18 @@
 // File types (src/studio/fileTypes/) are modules of their own kind and keep their own folders for now.
 // This file has no imports, so Node scripts can load it directly.
 
+// The version of the module contract this copy of the platform offers: what a module's module.ts, app.tsx and
+// server.ts may rely on. It is 0.x while the contract can still change; a module says the oldest one it works
+// with in `requires`.
+export const PLATFORM_VERSION = '0.1.0';
+
 export type ModuleSpec = {
   id: string;        // the folder's name
   label: string;     // "Tools"
   version: string;   // this module's own version, like "0.1.0"
+  // The oldest platform version the module works with, like "0.1.0". A module that needs a newer one than
+  // this copy has is turned off, and `pnpm check` says why, so an old copy never breaks on a new module.
+  requires?: string;
   // True if studio.config.ts may turn the module off. Leave it out while other parts of the app still
   // depend on the module, so turning it off can't leave a page broken.
   optional?: boolean;
@@ -46,6 +54,7 @@ export function moduleProblems(spec: unknown, folder: string): string[] {
   else if (!ID.test(folder)) problems.push(`${where}: the id should be lowercase letters, numbers, and dashes, starting with a letter.`);
   if (typeof m.label !== 'string' || !m.label.trim()) problems.push(`${where}: add a label, the name people see.`);
   if (typeof m.version !== 'string' || !VERSION.test(m.version)) problems.push(`${where}: version should look like 0.1.0.`);
+  if (m.requires !== undefined && (typeof m.requires !== 'string' || !VERSION.test(m.requires))) problems.push(`${where}: requires should look like 0.1.0, the oldest platform version it works with.`);
   if (m.section !== undefined) {
     const { key, folder: dir } = m.section as Partial<NonNullable<ModuleSpec['section']>>;
     if (typeof key !== 'string' || !KEY.test(key)) problems.push(`${where}: section.key should be lowercase letters, numbers, and dashes.`);
@@ -86,3 +95,12 @@ export const sectionKeys = (specs: readonly ModuleSpec[]): string[] =>
 // The folders (relative to the repo) of the modules whose sections hold items of this kind.
 export const itemFolders = (specs: readonly ModuleSpec[], items: 'prototypes' | 'handbook'): string[] =>
   specs.flatMap((m) => (m.section?.items === items ? [m.section.folder] : []));
+
+const parts = (v: string) => v.split('.').map(Number);
+// Whether a module works with this platform: it asks for no newer a version than the platform's.
+export function compatible(spec: { requires?: string }, platform: string = PLATFORM_VERSION): boolean {
+  if (!spec.requires || !VERSION.test(spec.requires)) return true;
+  const [need, have] = [parts(spec.requires), parts(platform)];
+  for (let i = 0; i < 3; i++) if (need[i] !== have[i]) return need[i] < have[i];
+  return true;
+}

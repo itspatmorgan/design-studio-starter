@@ -6,7 +6,7 @@ import { toast } from '@/studio/components/toast';
 import { callModule } from '@/studio/app/data/files';
 import { setManifest } from '@/studio/app/data/manifest';
 import type { Manifest, PrototypeInfo } from '@/studio/app/data/types';
-import type { PrototypeAction } from '@/studio/app/modules';
+import type { PrototypeAction } from '@/studio/api';
 import { staleLinksMessage } from './staleLinks';
 
 export const TOOLS_KEY = 'tools';

@@ -1,7 +1,7 @@
 // The checks on a module's declaration (index.ts). Run with `pnpm test`.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { listProblems, moduleProblems, sectionKeys, type ModuleSpec } from './index.ts';
+import { compatible, listProblems, moduleProblems, sectionKeys, type ModuleSpec } from './index.ts';
 
 const tools: ModuleSpec = { id: 'tools', label: 'Tools', version: '0.1.0', section: { key: 'tools', folder: 'src/tools' } };
 
@@ -51,4 +51,18 @@ test('items must be a known kind, in a folder directly under src', () => {
   assert.deepEqual(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/tools', items: 'prototypes' } }, 'tools'), []);
   assert.match(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/tools', items: 'files' as 'prototypes' } }, 'tools')[0], /section\.items/);
   assert.match(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/studio/tools', items: 'prototypes' } }, 'tools')[0], /directly under src/);
+});
+
+test('a module may say the oldest platform it works with', () => {
+  assert.deepEqual(moduleProblems({ ...tools, requires: '0.1.0' }, 'tools'), []);
+  assert.match(moduleProblems({ ...tools, requires: '^0.1' }, 'tools')[0], /requires should look like 0\.1\.0/);
+});
+
+test('a module needing a newer platform than this one is not compatible', () => {
+  assert.equal(compatible({}, '0.1.0'), true);
+  assert.equal(compatible({ requires: '0.1.0' }, '0.1.0'), true);
+  assert.equal(compatible({ requires: '0.1.0' }, '0.2.3'), true);
+  assert.equal(compatible({ requires: '0.2.0' }, '0.1.9'), false);
+  assert.equal(compatible({ requires: '1.0.0' }, '0.9.9'), false);
+  assert.equal(compatible({ requires: '0.10.0' }, '0.9.0'), false);
 });

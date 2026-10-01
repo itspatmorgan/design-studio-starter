@@ -5,7 +5,7 @@ import { Shapes01Icon } from '@hugeicons/core-free-icons';
 import { CommandItem } from '@/studio/components/command';
 import { APP_NAME } from '@/studio/app/data/config';
 import { itemLabel } from '@/studio/app/data/manifest';
-import type { ModuleApp, PaletteContext } from '@/studio/app/modules';
+import type { ModuleApp, PaletteContext } from '@/studio/api';
 
 // Loaded on first visit, so it isn't in the main bundle:
 // https://tanstack.com/router/latest/docs/framework/react/guide/code-splitting

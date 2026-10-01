@@ -25,6 +25,26 @@ the Guide off and keeps its files. Only a module marked `optional: true` can be 
 can go without breaking another part of the app. Restart the dev server after changing the config or adding or
 removing a module; the build scripts read them once when it starts.
 
+## What a module can provide
+
+The contract is 0.x, so it can still change (`PLATFORM_VERSION`, `index.ts`). A module says the oldest version
+it works with in `requires`; one that needs a newer platform is turned off, and `pnpm check` says why. The types
+a module is written against are listed in `src/studio/api.ts`.
+
+| File in the module's folder | What it gives the platform |
+|---|---|
+| `module.ts` | Who it is, and its **section**: an address (`/tools`), a folder, and optionally `items` (`"prototypes"`: a folder of prototype-shaped folders, one per id, like `src/tools/<id>/`), a `policy` (who may change its files: `"maintainers"` or `"open"`), and `standalone` (its items fill the window on the deployed site, like an app). `optional: true` lets `studio.config.ts` turn it off. |
+| `app.tsx` | Its **rail button**, its **routes**, entries in the ⌘K palette (`places`, `palette`), and entries in every prototype's "…" menu (`useActions`). |
+| `server.ts` | **Routes it adds to the dev server**, at `POST /__studio/<module>/<route>`: a handler gets who is asking and the request's JSON, and returns the reply and, if files changed, the new manifest. Dev only. |
+
+A section of prototype-shaped folders is found by the build, the file tree, the canvas tools and every file
+type without any change to them: its items are in `manifest.sections.<key>`, and `rootOf` knows their folder.
+
+Not part of the contract yet: a module's own checks in `pnpm check`, a library prototypes may import,
+design systems, and Handbook content. The Handbook and Systems stay required, because prototypes are built on
+them. Tools and the Guide are optional: turn either off in `studio.config.ts`, or delete its folder (and the
+content folder it names in `section.folder`).
+
 `pnpm check` confirms every declaration is well formed, no two modules claim the same address, and no
 contributor uses a module's address. Modules can't import each other, and code outside a module can
 read only its `module.ts`.

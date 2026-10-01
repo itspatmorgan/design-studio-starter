@@ -4,7 +4,7 @@ import { createRoute, lazyRouteComponent, notFound, useRouterState } from '@tans
 import { BookOpen01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/studio/components/command';
 import { APP_NAME } from '@/studio/app/data/config';
-import type { ModuleApp, PaletteContext } from '@/studio/app/modules';
+import type { ModuleApp, PaletteContext } from '@/studio/api';
 import { loadGuidePage } from './loadGuide';
 
 // Guide pages render in DocLayout, loaded with the first Guide page.
