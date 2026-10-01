@@ -60,12 +60,17 @@ export default function manifestWatch() {
     configureServer(server) {
       server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, HANDBOOK, ...(GUIDE ? [GUIDE] : []), SYSTEMS, CONTRIBUTORS_FILE, CONTRIBUTORS_DIR, AGENTS]);
       let timer = null;
+      // Every file that changed since the last build, even ones that don't ask for a rebuild: the next one tells the
+      // build which prototypes to look at again, so an edit that waited for it is never missed.
+      const touched = new Set();
       const flush = () => {
         timer = null;
-        const { manifest } = buildManifest();
+        const { manifest } = buildManifest({ touched: [...touched] });
+        touched.clear();
         if (JSON.stringify(manifest) !== last) publishManifest(server, manifest);
       };
       const onEvent = (kind) => (file) => {
+        touched.add(file);
         if (!relevant(file, kind)) return;
         clearTimeout(timer);
         timer = setTimeout(flush, BATCH_MS);

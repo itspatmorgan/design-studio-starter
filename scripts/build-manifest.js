@@ -224,9 +224,11 @@ function writeManifest(manifest) {
 // Problems are printed; errors counts them. The dev server calls this on every change
 // (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
 // Options: `deploy` leaves archived prototypes and views out (see src/studio/archive.ts), `write: false`
-// skips writing the file, and `quiet` prints nothing. `archived` in the result lists what deploy
+// skips writing the file, and `quiet` prints nothing. `touched` is the files the dev server saw change since the last
+// build: a prototype with none of them is reused without a look at its files, so a rebuild costs what changed, not
+// how many prototypes there are. `archived` in the result lists what deploy
 // leaves out, as paths in the app's file globs (scripts/vite-globs-plugin.js).
-export function buildManifest({ deploy = false, write = true, quiet = false } = {}) {
+export function buildManifest({ deploy = false, write = true, quiet = false, touched } = {}) {
   const out = quiet ? { log() {}, warn() {}, error() {} } : console;
   // Display names come from the contributors (contributors.json, and contributors/<key>.json), so they live in one place.
   const contributors = loadContributors();
@@ -240,9 +242,10 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
   const seen = new Set();
   const read = (dir, contributorKey, id, policy) => {
     const key = `${contributorKey}/${id}`;
-    const signature = signatureOf(dir);
     seen.add(key);
     let hit = cache.get(key);
+    const unchanged = hit && hit.policy === policy && touched && !touched.some((f) => f === dir || f.startsWith(dir + path.sep));
+    const signature = unchanged ? hit.signature : signatureOf(dir);
     if (!hit || hit.signature !== signature || hit.policy !== policy) {
       const messages = [];
       const sink = Object.fromEntries(['log', 'warn', 'error'].map((level) => [level, (text) => messages.push([level, text])]));
