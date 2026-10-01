@@ -12,7 +12,7 @@ Welcome. This is a working prototype, small enough to read in one sitting. It ex
 
 The navigation shows the prototype's folder as it is on disk. Choose **Reveal in Finder** in the **…** menu to see for yourself: what you see here is what's in the folder.
 
-- A **view** is a screen: a `.tsx` file, like [Inbox](app/inbox). This prototype has three of them in the `app` folder.
+- A **view** is a screen: a `.tsx` file, like [Inbox](app/inbox). This prototype has three screens in the `app` folder, and a view for each state in the `states` folder.
 - A **document** is a page of writing: a `.md` file, like this one and [Project context](context).
 - A **canvas** is a page to arrange things on: an `.excalidraw` file, like [Breadboard](breadboard) and [Eng handoff](eng-handoff).
 - A **folder** only organizes. Move files between folders, and nothing about them changes.
@@ -21,7 +21,7 @@ The star beside this page means the prototype opens here. Right-click another fi
 
 ## 2. The screens
 
-Open the [Inbox](app/inbox). Try it: add feedback with **New feedback**, click a row, change its status, add a note, delete something. The three screens share one set of data, so a change in one shows up in the others. Reloading the page resets it, and so does **Reset sample data** in the corner.
+Open the [Inbox](app/inbox). It's the landing page. Click the **Open issues** card and the list narrows to everything not resolved. Then add feedback with **New feedback**, click a row, change its status, add a note, delete something. The three screens share one set of data, so a change in one shows up in the others. Reloading the page resets it, and so does **Reset sample data** in the corner.
 
 The screens use the **Product** design system, the same components your team's product would use. Open the **Systems** page from the rail to see them and their themes. The Product system looks different from the app around it on purpose.
 
@@ -42,19 +42,23 @@ The [lofi sketch](lofi/inbox-sketch) is a rough, gray version of the inbox from 
 This prototype has two canvases, for two moments.
 
 - [Breadboard](breadboard) is for early ideas. It uses only Excalidraw's own shapes, so it looks rough on purpose: boxes for places, text for what you can do there, arrows for where it leads, pink notes for questions. Nobody mistakes it for a spec.
-- [Eng handoff](eng-handoff) is for when the design is settled. It shows the real screens live, one section for each, with a yellow note under each saying what engineering needs to know.
+- [Eng handoff](eng-handoff) is for when the design is settled. It shows the real screens live: the main flow first, then each create, read, update, and delete state, with a yellow note under each saying what engineering needs to know.
 
 Drag any view from the navigation onto a canvas, or ask your agent to lay something out. A canvas shows only this prototype's own screens, so a prototype stays self-contained. To show a screen from another prototype, copy it in.
 
-## 7. Write down the why
+## 7. A view for every state
+
+A screen has more states than the one you land on: filtered, empty, a panel open, a dialog asking first. Each of those is a small file in the `states` folder that shows the same screen already in that state. [Inbox, filtered](states/inbox-open) is the page after clicking the Open card. [Inbox, empty](states/inbox-empty) runs on data of its own. They're ordinary views, so you can open them, and a canvas can embed them. That's how the handoff canvas shows a closed panel and an open one side by side.
+
+## 8. Write down the why
 
 [Project context](context) is the document this prototype's agent should read first: the problem, who it's for, and what you've decided. A few honest paragraphs beat a long spec.
 
-## 8. Work with your agent
+## 9. Work with your agent
 
 Your agent can build and change all of this: "add a due date to feedback," "make the overview show a chart," "write up the open questions as a document," "put the new screen on the handoff canvas." It reads the same files you see.
 
-## 9. When something's finished
+## 10. When something's finished
 
 Archive a prototype from its **…** menu to keep it but leave it out of the deployed site. To tidy files inside a prototype, put them in a folder.
 

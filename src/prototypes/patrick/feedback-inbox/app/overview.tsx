@@ -1,20 +1,11 @@
-// Screen 3 of 3: an overview. Counts, two small breakdowns, and the newest items. Everything here is
-// computed from the same data as the inbox, so it changes when you add, edit, or delete.
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/systems/product/components/card';
+// Screen 3 of 3: an overview. Two small breakdowns and the newest items. Everything here is computed from
+// the same data as the inbox, so it changes when you add, edit, or delete.
+import { Card, CardContent, CardHeader, CardTitle } from '@/systems/product/components/card';
 import AppShell from './components/AppShell';
 import { PriorityBadge, StatusBadge } from './components/badges';
 import { ScreenLink, useScreenPath } from './components/nav';
 import { useNavigate } from '@tanstack/react-router';
 import { SOURCES, STATUSES, formatDate, select, useStore } from './components/store';
-
-function Stat({ label, value, hint }: { label: string; value: number; hint: string }) {
-  return (
-    <Card size="sm">
-      <CardHeader><CardDescription>{label}</CardDescription><div className="text-3xl font-semibold tabular-nums">{value}</div></CardHeader>
-      <CardContent className="text-xs text-muted-foreground">{hint}</CardContent>
-    </Card>
-  );
-}
 
 function Bars({ rows }: { rows: { label: string; count: number }[] }) {
   const max = Math.max(1, ...rows.map((r) => r.count));
@@ -35,7 +26,6 @@ export default function Overview() {
   const { items } = useStore();
   const navigate = useNavigate();
   const screen = useScreenPath();
-  const open = items.filter((f) => f.status !== 'resolved');
   const newest = [...items].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 5);
 
   return (
@@ -43,15 +33,8 @@ export default function Overview() {
       <div className="mx-auto max-w-5xl px-8 py-8">
         <header className="mb-6">
           <h1 className="text-xl font-semibold tracking-tight">Overview</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Where the feedback stands today.</p>
+          <p className="mt-1 text-sm text-muted-foreground">How the feedback breaks down, and what came in last.</p>
         </header>
-
-        <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <Stat label="Open" value={open.length} hint="Not resolved yet" />
-          <Stat label="New" value={items.filter((f) => f.status === 'new').length} hint="Waiting to be triaged" />
-          <Stat label="High priority" value={open.filter((f) => f.priority === 'high').length} hint="Open and high priority" />
-          <Stat label="Resolved" value={items.filter((f) => f.status === 'resolved').length} hint="Closed out" />
-        </div>
 
         <div className="mb-6 grid gap-4 lg:grid-cols-2">
           <Card><CardHeader><CardTitle>By status</CardTitle></CardHeader><CardContent><Bars rows={STATUSES.map((s) => ({ label: s.label, count: items.filter((f) => f.status === s.value).length }))} /></CardContent></Card>

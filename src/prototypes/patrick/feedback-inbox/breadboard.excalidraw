@@ -5,21 +5,18 @@
   "elements": [
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
       "fontFamily": 6,
       "fontSize": 48,
       "height": 60,
-      "id": "muoss3ax7r1axx",
-      "index": "a0",
+      "id": "muotpea6fs697f",
       "lineHeight": 1.25,
       "originalText": "Feedback Inbox: breadboard",
-      "seed": 1774469787,
+      "seed": 1934383336,
       "text": "Feedback Inbox: breadboard",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 327893034,
+      "version": 1,
+      "versionNonce": 1735038287,
       "verticalAlign": "top",
       "width": 698.88,
       "x": 0,
@@ -27,21 +24,18 @@
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
       "fontFamily": 6,
       "fontSize": 20,
       "height": 25,
-      "id": "muoss3ax7g3k7w",
-      "index": "a1",
+      "id": "muotpea6tdelvv",
       "lineHeight": 1.25,
       "originalText": "Early flow sketch. Boxes are places, the text inside is what you can do there, and arrows say what takes you somewhere. Rough on purpose.",
-      "seed": 1868906206,
+      "seed": 1392883334,
       "text": "Early flow sketch. Boxes are places, the text inside is what you can do there, and arrows say what takes you somewhere. Rough on purpose.",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 770158454,
+      "version": 1,
+      "versionNonce": 607759,
       "verticalAlign": "top",
       "width": 1534.4,
       "x": 0,
@@ -50,178 +44,164 @@
     {
       "boundElements": [
         {
-          "id": "muoss3ay98ag6h",
+          "id": "muotpea6os4saj",
+          "type": "arrow"
+        },
+        {
+          "id": "muotpea67u21tz",
+          "type": "arrow"
+        },
+        {
+          "id": "muotpea6j2111k",
           "type": "arrow"
         }
       ],
-      "height": 171,
-      "id": "muoss3axuyai2t",
-      "index": "a2",
-      "seed": 1017703986,
+      "height": 234,
+      "id": "muotpea6o9w8wb",
+      "seed": 12800809,
       "type": "rectangle",
-      "version": 3,
-      "versionNonce": 1229302506,
+      "version": 4,
+      "versionNonce": 497797759,
       "width": 380,
       "x": 0,
       "y": 0
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
       "fontFamily": 6,
       "fontSize": 22,
       "height": 27.5,
-      "id": "muoss3ay8kga4w",
-      "index": "a3",
+      "id": "muotpea66oi6p4",
       "lineHeight": 1.25,
-      "originalText": "Overview",
-      "seed": 38507192,
-      "text": "Overview",
+      "originalText": "Inbox (the landing page)",
+      "seed": 2125199194,
+      "text": "Inbox (the landing page)",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 393105590,
+      "version": 1,
+      "versionNonce": 1138636102,
       "verticalAlign": "top",
-      "width": 98.56,
+      "width": 295.68,
       "x": 18,
       "y": 14
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
       "fontFamily": 6,
       "fontSize": 16,
-      "height": 100,
-      "id": "muoss3ayv6pfyx",
-      "index": "a4",
+      "height": 160,
+      "id": "muotpea69algsx",
       "lineHeight": 1.25,
-      "originalText": "Counts: open · new · high priority · resolved\nBars: by status, by source\nNewest five\n   click one → Detail\nTop bar: Overview · Inbox",
-      "seed": 2038347562,
-      "text": "Counts: open · new · high priority · resolved\nBars: by status, by source\nNewest five\n   click one → Detail\nTop bar: Overview · Inbox",
+      "originalText": "Top bar: Inbox · Overview\nCards: Open issues · New · High priority\n[ Search feedback ]\nTabs: All · New · Triaged\n      · Planned · Resolved\nList of feedback, newest first\nRow menu: Open · Mark resolved · Delete\n[ + New feedback ]",
+      "seed": 953839516,
+      "text": "Top bar: Inbox · Overview\nCards: Open issues · New · High priority\n[ Search feedback ]\nTabs: All · New · Triaged\n      · Planned · Resolved\nList of feedback, newest first\nRow menu: Open · Mark resolved · Delete\n[ + New feedback ]",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 434421162,
+      "version": 1,
+      "versionNonce": 1255056944,
       "verticalAlign": "top",
-      "width": 403.2,
+      "width": 358.4,
       "x": 18,
       "y": 54
     },
     {
       "boundElements": [
         {
-          "id": "muoss3aylw670o",
+          "id": "muotpea6os4saj",
           "type": "arrow"
         },
         {
-          "id": "muoss3ay98ag6h",
-          "type": "arrow"
-        },
-        {
-          "id": "muoss3aythq6yh",
+          "id": "muotpea6tf5jt2",
           "type": "arrow"
         }
       ],
-      "height": 213,
-      "id": "muoss3aynm2q1t",
-      "index": "a5",
-      "seed": 1385993978,
+      "height": 150,
+      "id": "muotpea6vqrzs6",
+      "seed": 1109716347,
       "type": "rectangle",
-      "version": 5,
-      "versionNonce": 1913571830,
+      "version": 3,
+      "versionNonce": 951237521,
       "width": 380,
       "x": 620,
       "y": 0
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
       "fontFamily": 6,
       "fontSize": 22,
       "height": 27.5,
-      "id": "muoss3ayh56vtn",
-      "index": "a6",
+      "id": "muotpea67yir1b",
       "lineHeight": 1.25,
-      "originalText": "Inbox",
-      "seed": 178763387,
-      "text": "Inbox",
+      "originalText": "Inbox, filtered",
+      "seed": 603258323,
+      "text": "Inbox, filtered",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 311654506,
+      "version": 1,
+      "versionNonce": 1722071832,
       "verticalAlign": "top",
-      "width": 61.6,
+      "width": 184.8,
       "x": 638,
       "y": 14
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
       "fontFamily": 6,
       "fontSize": 16,
-      "height": 140,
-      "id": "muoss3aydxsg9s",
-      "index": "a7",
+      "height": 80,
+      "id": "muotpea6l7bzvl",
       "lineHeight": 1.25,
-      "originalText": "Top bar: Overview · Inbox (3 new)\n[ Search feedback ]\nTabs: All · New · Triaged\n      · Planned · Resolved\nList of feedback, newest first\nRow menu: Open · Mark resolved · Delete\n[ + New feedback ]",
-      "seed": 1986744929,
-      "text": "Top bar: Overview · Inbox (3 new)\n[ Search feedback ]\nTabs: All · New · Triaged\n      · Planned · Resolved\nList of feedback, newest first\nRow menu: Open · Mark resolved · Delete\n[ + New feedback ]",
+      "originalText": "Same page, narrowed\nBar: Showing Open issues  [ Clear ]\nList: everything not resolved\nEmpty? \"Nothing matches\"",
+      "seed": 199933207,
+      "text": "Same page, narrowed\nBar: Showing Open issues  [ Clear ]\nList: everything not resolved\nEmpty? \"Nothing matches\"",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 751704886,
+      "version": 1,
+      "versionNonce": 1408352567,
       "verticalAlign": "top",
-      "width": 349.44,
+      "width": 313.6,
       "x": 638,
       "y": 54
     },
     {
       "boundElements": [
         {
-          "id": "muoss3aylw670o",
+          "id": "muotpea6tf5jt2",
           "type": "arrow"
         },
         {
-          "id": "muoss3ayfp7pq3",
+          "id": "muotpea6qv6lkn",
           "type": "arrow"
         },
         {
-          "id": "muoss3ayz4s6ky",
+          "id": "muotpea6axsvya",
           "type": "arrow"
         }
       ],
       "height": 171,
-      "id": "muoss3ayvv9vbn",
-      "index": "a8",
-      "seed": 108979456,
+      "id": "muotpea6940d7i",
+      "seed": 791629483,
       "type": "rectangle",
-      "version": 5,
-      "versionNonce": 1662835498,
+      "version": 4,
+      "versionNonce": 1571688311,
       "width": 380,
       "x": 1240,
       "y": 0
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
       "fontFamily": 6,
       "fontSize": 22,
       "height": 27.5,
-      "id": "muoss3ayhtfh44",
-      "index": "a9",
+      "id": "muotpea6o4oo6e",
       "lineHeight": 1.25,
       "originalText": "Feedback detail",
-      "seed": 841656931,
+      "seed": 1242987064,
       "text": "Feedback detail",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 236012662,
+      "version": 1,
+      "versionNonce": 1055402037,
       "verticalAlign": "top",
       "width": 184.8,
       "x": 1258,
@@ -229,21 +209,18 @@
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
       "fontFamily": 6,
       "fontSize": 16,
       "height": 100,
-      "id": "muoss3ayvg5zuo",
-      "index": "aA",
+      "id": "muotpea6fxsspn",
       "lineHeight": 1.25,
       "originalText": "What they said, tags\nNotes, and [ Add note ]\nStatus ▾    Priority ▾\n[ Edit ]    [ Delete ]\n← Inbox",
-      "seed": 15833046,
+      "seed": 1416398048,
       "text": "What they said, tags\nNotes, and [ Add note ]\nStatus ▾    Priority ▾\n[ Edit ]    [ Delete ]\n← Inbox",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 166454762,
+      "version": 1,
+      "versionNonce": 2138471903,
       "verticalAlign": "top",
       "width": 206.08,
       "x": 1258,
@@ -252,39 +229,35 @@
     {
       "boundElements": [
         {
-          "id": "muoss3ayz4s6ky",
+          "id": "muotpea6qv6lkn",
           "type": "arrow"
         }
       ],
       "height": 129,
-      "id": "muoss3ayxj1pqd",
-      "index": "aB",
-      "seed": 2077923998,
+      "id": "muotpea6eq7k8v",
+      "seed": 1129078596,
       "strokeStyle": "dashed",
       "type": "rectangle",
-      "version": 3,
-      "versionNonce": 1201489334,
+      "version": 2,
+      "versionNonce": 2068607003,
       "width": 380,
       "x": 1860,
       "y": 0
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
       "fontFamily": 6,
       "fontSize": 22,
       "height": 27.5,
-      "id": "muoss3ayerovlh",
-      "index": "aC",
+      "id": "muotpea692emfp",
       "lineHeight": 1.25,
       "originalText": "Delete this feedback?",
-      "seed": 1445425830,
+      "seed": 725746987,
       "text": "Delete this feedback?",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 759978,
+      "version": 1,
+      "versionNonce": 1574931709,
       "verticalAlign": "top",
       "width": 258.72,
       "x": 1878,
@@ -292,21 +265,18 @@
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
       "fontFamily": 6,
       "fontSize": 16,
       "height": 60,
-      "id": "muoss3ayw7gz6a",
-      "index": "aD",
+      "id": "muotpea62syd95",
       "lineHeight": 1.25,
       "originalText": "Says which item goes\n[ Cancel ]    [ Delete ]\nDelete → back to the Inbox",
-      "seed": 314190614,
+      "seed": 1423129699,
       "text": "Says which item goes\n[ Cancel ]    [ Delete ]\nDelete → back to the Inbox",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 177676022,
+      "version": 1,
+      "versionNonce": 817470131,
       "verticalAlign": "top",
       "width": 232.96,
       "x": 1878,
@@ -315,147 +285,186 @@
     {
       "boundElements": [
         {
-          "id": "muoss3aythq6yh",
+          "id": "muotpea67u21tz",
           "type": "arrow"
         }
       ],
       "height": 192,
-      "id": "muoss3aypq1fns",
-      "index": "aE",
-      "seed": 1341319060,
+      "id": "muotpea6kgs2mf",
+      "seed": 332147673,
       "strokeStyle": "dashed",
       "type": "rectangle",
-      "version": 3,
-      "versionNonce": 1697051498,
+      "version": 2,
+      "versionNonce": 1913587852,
       "width": 380,
-      "x": 620,
-      "y": 430
+      "x": 0,
+      "y": 470
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
       "fontFamily": 6,
       "fontSize": 22,
       "height": 27.5,
-      "id": "muoss3ayftvcl5",
-      "index": "aF",
+      "id": "muotpea6y3q306",
       "lineHeight": 1.25,
       "originalText": "New feedback (side panel)",
-      "seed": 920719649,
+      "seed": 176949017,
       "text": "New feedback (side panel)",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 461623350,
+      "version": 1,
+      "versionNonce": 1979838237,
       "verticalAlign": "top",
       "width": 308,
-      "x": 638,
-      "y": 444
+      "x": 18,
+      "y": 484
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
       "fontFamily": 6,
       "fontSize": 16,
       "height": 120,
-      "id": "muoss3ayeuot18",
-      "index": "aG",
+      "id": "muotpea6hhi380",
       "lineHeight": 1.25,
       "originalText": "Title (required)\nCustomer\nSource ▾    Priority ▾\nDetails\n[ Add feedback ]    [ Cancel ]\nAdd or Cancel → back to the Inbox",
-      "seed": 2063814559,
+      "seed": 907477672,
       "text": "Title (required)\nCustomer\nSource ▾    Priority ▾\nDetails\n[ Add feedback ]    [ Cancel ]\nAdd or Cancel → back to the Inbox",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 730396202,
+      "version": 1,
+      "versionNonce": 1219258344,
       "verticalAlign": "top",
       "width": 295.68,
-      "x": 638,
-      "y": 484
+      "x": 18,
+      "y": 524
     },
     {
       "boundElements": [
         {
-          "id": "muoss3ayfp7pq3",
+          "id": "muotpea6axsvya",
           "type": "arrow"
         }
       ],
       "height": 129,
-      "id": "muoss3ayhmscqx",
-      "index": "aH",
-      "seed": 272963206,
+      "id": "muotpea6g4lokm",
+      "seed": 471876232,
       "strokeStyle": "dashed",
       "type": "rectangle",
-      "version": 3,
-      "versionNonce": 1716017526,
+      "version": 2,
+      "versionNonce": 1445053081,
       "width": 380,
       "x": 1240,
-      "y": 430
+      "y": 470
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
       "fontFamily": 6,
       "fontSize": 22,
       "height": 27.5,
-      "id": "muoss3ayqxyvno",
-      "index": "aI",
+      "id": "muotpea6gp1rbg",
       "lineHeight": 1.25,
       "originalText": "Edit feedback (dialog)",
-      "seed": 1783175402,
+      "seed": 9746013,
       "text": "Edit feedback (dialog)",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 1142726890,
+      "version": 1,
+      "versionNonce": 354325782,
       "verticalAlign": "top",
       "width": 271.04,
-      "x": 1258,
-      "y": 444
-    },
-    {
-      "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
-      "fontFamily": 6,
-      "fontSize": 16,
-      "height": 60,
-      "id": "muoss3ayal2uzh",
-      "index": "aJ",
-      "lineHeight": 1.25,
-      "originalText": "Same fields, filled in\n[ Save changes ]    [ Cancel ]\nSave or Cancel → back to the Detail",
-      "seed": 747887653,
-      "text": "Same fields, filled in\n[ Save changes ]    [ Cancel ]\nSave or Cancel → back to the Detail",
-      "textAlign": "left",
-      "type": "text",
-      "version": 2,
-      "versionNonce": 304724662,
-      "verticalAlign": "top",
-      "width": 313.6,
       "x": 1258,
       "y": 484
     },
     {
+      "autoResize": true,
+      "fontFamily": 6,
+      "fontSize": 16,
+      "height": 60,
+      "id": "muotpea6oj010k",
+      "lineHeight": 1.25,
+      "originalText": "Same fields, filled in\n[ Save changes ]    [ Cancel ]\nSave or Cancel → back to the Detail",
+      "seed": 1189978881,
+      "text": "Same fields, filled in\n[ Save changes ]    [ Cancel ]\nSave or Cancel → back to the Detail",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 493504277,
+      "verticalAlign": "top",
+      "width": 313.6,
+      "x": 1258,
+      "y": 524
+    },
+    {
       "boundElements": [
         {
-          "id": "muoss3ayplnjra",
+          "id": "muotpea6j2111k",
+          "type": "arrow"
+        }
+      ],
+      "height": 129,
+      "id": "muotpea6zckiaz",
+      "seed": 268393953,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 173799277,
+      "width": 380,
+      "x": 620,
+      "y": 470
+    },
+    {
+      "autoResize": true,
+      "fontFamily": 6,
+      "fontSize": 22,
+      "height": 27.5,
+      "id": "muotpea672z224",
+      "lineHeight": 1.25,
+      "originalText": "Overview",
+      "seed": 43296163,
+      "text": "Overview",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 597128032,
+      "verticalAlign": "top",
+      "width": 98.56,
+      "x": 638,
+      "y": 484
+    },
+    {
+      "autoResize": true,
+      "fontFamily": 6,
+      "fontSize": 16,
+      "height": 60,
+      "id": "muotpea6j11osr",
+      "lineHeight": 1.25,
+      "originalText": "By status, by source\nNewest five\n   click one → Detail",
+      "seed": 7604616,
+      "text": "By status, by source\nNewest five\n   click one → Detail",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 141209748,
+      "verticalAlign": "top",
+      "width": 188.16,
+      "x": 638,
+      "y": 524
+    },
+    {
+      "boundElements": [
+        {
+          "id": "muotpea6dqt4jc",
           "type": "text"
         }
       ],
       "elbowed": false,
       "endArrowhead": "arrow",
       "endBinding": {
-        "elementId": "muoss3ayvv9vbn",
+        "elementId": "muotpea6vqrzs6",
         "focus": 0,
         "gap": 8
       },
-      "height": 21,
-      "id": "muoss3aylw670o",
-      "index": "aK",
-      "lastCommittedPoint": null,
+      "height": 42,
+      "id": "muotpea6os4saj",
       "points": [
         [
           0,
@@ -463,255 +472,119 @@
         ],
         [
           240,
-          -21
+          -42
         ]
       ],
-      "seed": 253610665,
+      "seed": 1744774214,
       "startArrowhead": null,
       "startBinding": {
-        "elementId": "muoss3aynm2q1t",
+        "elementId": "muotpea6o9w8wb",
         "focus": 0,
         "gap": 8
       },
       "type": "arrow",
-      "version": 2,
-      "versionNonce": 1248654250,
+      "version": 1,
+      "versionNonce": 1515183602,
       "width": 240,
-      "x": 1000,
-      "y": 106.5
+      "x": 380,
+      "y": 117
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": "muoss3aylw670o",
+      "containerId": "muotpea6os4saj",
       "fontFamily": 6,
       "fontSize": 20,
       "height": 25,
-      "id": "muoss3ayplnjra",
-      "index": "aL",
+      "id": "muotpea6dqt4jc",
+      "lineHeight": 1.25,
+      "originalText": "click the Open card",
+      "seed": 1466654444,
+      "text": "click the Open card",
+      "textAlign": "center",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 49107659,
+      "verticalAlign": "middle",
+      "width": 212.8,
+      "x": 393.6,
+      "y": 83.5
+    },
+    {
+      "boundElements": [
+        {
+          "id": "muotpea6bj5bve",
+          "type": "text"
+        }
+      ],
+      "elbowed": false,
+      "endArrowhead": "arrow",
+      "endBinding": {
+        "elementId": "muotpea6940d7i",
+        "focus": 0,
+        "gap": 8
+      },
+      "height": 10.5,
+      "id": "muotpea6tf5jt2",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          240,
+          10.5
+        ]
+      ],
+      "seed": 1850172655,
+      "startArrowhead": null,
+      "startBinding": {
+        "elementId": "muotpea6vqrzs6",
+        "focus": 0,
+        "gap": 8
+      },
+      "type": "arrow",
+      "version": 1,
+      "versionNonce": 1348872217,
+      "width": 240,
+      "x": 1000,
+      "y": 75
+    },
+    {
+      "autoResize": true,
+      "containerId": "muotpea6tf5jt2",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 25,
+      "id": "muotpea6bj5bve",
       "lineHeight": 1.25,
       "originalText": "click a row",
-      "seed": 2090658014,
+      "seed": 863726697,
       "text": "click a row",
       "textAlign": "center",
       "type": "text",
-      "version": 2,
-      "versionNonce": 365753334,
+      "version": 1,
+      "versionNonce": 300980445,
       "verticalAlign": "middle",
       "width": 123.2,
       "x": 1058.4,
-      "y": 83.5
+      "y": 67.75
     },
     {
       "boundElements": [
         {
-          "id": "muoss3aysr5jut",
+          "id": "muotpea61mhhbv",
           "type": "text"
         }
       ],
       "elbowed": false,
       "endArrowhead": "arrow",
       "endBinding": {
-        "elementId": "muoss3aynm2q1t",
+        "elementId": "muotpea6eq7k8v",
         "focus": 0,
         "gap": 8
       },
       "height": 21,
-      "id": "muoss3ay98ag6h",
-      "index": "aM",
-      "lastCommittedPoint": null,
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          240,
-          21
-        ]
-      ],
-      "seed": 819827680,
-      "startArrowhead": "arrow",
-      "startBinding": {
-        "elementId": "muoss3axuyai2t",
-        "focus": 0,
-        "gap": 8
-      },
-      "type": "arrow",
-      "version": 2,
-      "versionNonce": 816115306,
-      "width": 240,
-      "x": 380,
-      "y": 85.5
-    },
-    {
-      "autoResize": true,
-      "boundElements": [],
-      "containerId": "muoss3ay98ag6h",
-      "fontFamily": 6,
-      "fontSize": 20,
-      "height": 25,
-      "id": "muoss3aysr5jut",
-      "index": "aN",
-      "lineHeight": 1.25,
-      "originalText": "top bar: Inbox",
-      "seed": 1354337728,
-      "text": "top bar: Inbox",
-      "textAlign": "center",
-      "type": "text",
-      "version": 2,
-      "versionNonce": 1261897014,
-      "verticalAlign": "middle",
-      "width": 156.8,
-      "x": 421.6,
-      "y": 83.5
-    },
-    {
-      "boundElements": [
-        {
-          "id": "muoss3aywvozy1",
-          "type": "text"
-        }
-      ],
-      "elbowed": false,
-      "endArrowhead": "arrow",
-      "endBinding": {
-        "elementId": "muoss3aypq1fns",
-        "focus": 0,
-        "gap": 8
-      },
-      "height": 217,
-      "id": "muoss3aythq6yh",
-      "index": "aO",
-      "lastCommittedPoint": null,
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          0,
-          217
-        ]
-      ],
-      "seed": 913610561,
-      "startArrowhead": null,
-      "startBinding": {
-        "elementId": "muoss3aynm2q1t",
-        "focus": 0,
-        "gap": 8
-      },
-      "type": "arrow",
-      "version": 2,
-      "versionNonce": 1804570922,
-      "width": 0,
-      "x": 810,
-      "y": 213
-    },
-    {
-      "autoResize": true,
-      "boundElements": [],
-      "containerId": "muoss3aythq6yh",
-      "fontFamily": 6,
-      "fontSize": 20,
-      "height": 25,
-      "id": "muoss3aywvozy1",
-      "index": "aP",
-      "lineHeight": 1.25,
-      "originalText": "+ New feedback",
-      "seed": 1836644201,
-      "text": "+ New feedback",
-      "textAlign": "center",
-      "type": "text",
-      "version": 2,
-      "versionNonce": 63762038,
-      "verticalAlign": "middle",
-      "width": 156.8,
-      "x": 731.6,
-      "y": 309
-    },
-    {
-      "boundElements": [
-        {
-          "id": "muoss3aysxuyt6",
-          "type": "text"
-        }
-      ],
-      "elbowed": false,
-      "endArrowhead": "arrow",
-      "endBinding": {
-        "elementId": "muoss3ayhmscqx",
-        "focus": 0,
-        "gap": 8
-      },
-      "height": 259,
-      "id": "muoss3ayfp7pq3",
-      "index": "aQ",
-      "lastCommittedPoint": null,
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          0,
-          259
-        ]
-      ],
-      "seed": 1252214230,
-      "startArrowhead": null,
-      "startBinding": {
-        "elementId": "muoss3ayvv9vbn",
-        "focus": 0,
-        "gap": 8
-      },
-      "type": "arrow",
-      "version": 2,
-      "versionNonce": 513268714,
-      "width": 0,
-      "x": 1430,
-      "y": 171
-    },
-    {
-      "autoResize": true,
-      "boundElements": [],
-      "containerId": "muoss3ayfp7pq3",
-      "fontFamily": 6,
-      "fontSize": 20,
-      "height": 25,
-      "id": "muoss3aysxuyt6",
-      "index": "aR",
-      "lineHeight": 1.25,
-      "originalText": "Edit",
-      "seed": 903872179,
-      "text": "Edit",
-      "textAlign": "center",
-      "type": "text",
-      "version": 2,
-      "versionNonce": 475246518,
-      "verticalAlign": "middle",
-      "width": 44.8,
-      "x": 1407.6,
-      "y": 288
-    },
-    {
-      "boundElements": [
-        {
-          "id": "muoss3aycxgajn",
-          "type": "text"
-        }
-      ],
-      "elbowed": false,
-      "endArrowhead": "arrow",
-      "endBinding": {
-        "elementId": "muoss3ayxj1pqd",
-        "focus": 0,
-        "gap": 8
-      },
-      "height": 21,
-      "id": "muoss3ayz4s6ky",
-      "index": "aS",
-      "lastCommittedPoint": null,
+      "id": "muotpea6qv6lkn",
       "points": [
         [
           0,
@@ -722,51 +595,56 @@
           -21
         ]
       ],
-      "seed": 1000589251,
+      "seed": 836972485,
       "startArrowhead": null,
       "startBinding": {
-        "elementId": "muoss3ayvv9vbn",
+        "elementId": "muotpea6940d7i",
         "focus": 0,
         "gap": 8
       },
       "type": "arrow",
-      "version": 2,
-      "versionNonce": 1204342442,
+      "version": 1,
+      "versionNonce": 837500528,
       "width": 240,
       "x": 1620,
       "y": 85.5
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": "muoss3ayz4s6ky",
+      "containerId": "muotpea6qv6lkn",
       "fontFamily": 6,
       "fontSize": 20,
       "height": 25,
-      "id": "muoss3aycxgajn",
-      "index": "aT",
+      "id": "muotpea61mhhbv",
       "lineHeight": 1.25,
       "originalText": "Delete",
-      "seed": 1857143128,
+      "seed": 75508706,
       "text": "Delete",
       "textAlign": "center",
       "type": "text",
-      "version": 2,
-      "versionNonce": 284182774,
+      "version": 1,
+      "versionNonce": 468976239,
       "verticalAlign": "middle",
       "width": 67.2,
       "x": 1706.4,
       "y": 62.5
     },
     {
-      "boundElements": [],
+      "boundElements": [
+        {
+          "id": "muotpea6e7jw03",
+          "type": "text"
+        }
+      ],
       "elbowed": false,
       "endArrowhead": "arrow",
-      "endBinding": null,
-      "height": 70,
-      "id": "muoss3aymst8ml",
-      "index": "aU",
-      "lastCommittedPoint": null,
+      "endBinding": {
+        "elementId": "muotpea6kgs2mf",
+        "focus": 0,
+        "gap": 8
+      },
+      "height": 236,
+      "id": "muotpea67u21tz",
       "points": [
         [
           0,
@@ -774,278 +652,371 @@
         ],
         [
           0,
+          236
+        ]
+      ],
+      "seed": 2104224857,
+      "startArrowhead": null,
+      "startBinding": {
+        "elementId": "muotpea6o9w8wb",
+        "focus": 0,
+        "gap": 8
+      },
+      "type": "arrow",
+      "version": 1,
+      "versionNonce": 1818813529,
+      "width": 0,
+      "x": 190,
+      "y": 234
+    },
+    {
+      "autoResize": true,
+      "containerId": "muotpea67u21tz",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 25,
+      "id": "muotpea6e7jw03",
+      "lineHeight": 1.25,
+      "originalText": "+ New feedback",
+      "seed": 1784260446,
+      "text": "+ New feedback",
+      "textAlign": "center",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 1816471438,
+      "verticalAlign": "middle",
+      "width": 156.8,
+      "x": 111.6,
+      "y": 339.5
+    },
+    {
+      "boundElements": [
+        {
+          "id": "muotpea6in6268",
+          "type": "text"
+        }
+      ],
+      "elbowed": false,
+      "endArrowhead": "arrow",
+      "endBinding": {
+        "elementId": "muotpea6g4lokm",
+        "focus": 0,
+        "gap": 8
+      },
+      "height": 299,
+      "id": "muotpea6axsvya",
+      "points": [
+        [
+          0,
           0
         ],
         [
           0,
-          -70
-        ],
-        [
-          1240,
-          -70
-        ],
-        [
-          1240,
-          -8
+          299
         ]
       ],
-      "seed": 2103788819,
+      "seed": 1535560724,
       "startArrowhead": null,
-      "startBinding": null,
-      "strokeStyle": "dashed",
+      "startBinding": {
+        "elementId": "muotpea6940d7i",
+        "focus": 0,
+        "gap": 8
+      },
       "type": "arrow",
-      "version": 2,
-      "versionNonce": 1808623978,
-      "width": 1240,
-      "x": 190,
-      "y": -8
+      "version": 1,
+      "versionNonce": 1493840951,
+      "width": 0,
+      "x": 1430,
+      "y": 171
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": null,
+      "containerId": "muotpea6axsvya",
       "fontFamily": 6,
-      "fontSize": 16,
-      "height": 20,
-      "id": "muoss3ay645on1",
-      "index": "aV",
+      "fontSize": 20,
+      "height": 25,
+      "id": "muotpea6in6268",
       "lineHeight": 1.25,
-      "originalText": "click one of the newest",
-      "seed": 698038102,
-      "text": "click one of the newest",
-      "textAlign": "left",
+      "originalText": "Edit",
+      "seed": 1009998519,
+      "text": "Edit",
+      "textAlign": "center",
       "type": "text",
-      "version": 2,
-      "versionNonce": 287816246,
-      "verticalAlign": "top",
-      "width": 206.08,
-      "x": 560,
-      "y": -110
+      "version": 1,
+      "versionNonce": 452516760,
+      "verticalAlign": "middle",
+      "width": 44.8,
+      "x": 1407.6,
+      "y": 308
+    },
+    {
+      "boundElements": [
+        {
+          "id": "muotpea6pfua4m",
+          "type": "text"
+        }
+      ],
+      "elbowed": false,
+      "endArrowhead": "arrow",
+      "endBinding": {
+        "elementId": "muotpea6zckiaz",
+        "focus": 0,
+        "gap": 8
+      },
+      "height": 417.5,
+      "id": "muotpea6j2111k",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          240,
+          417.5
+        ]
+      ],
+      "seed": 410081177,
+      "startArrowhead": "arrow",
+      "startBinding": {
+        "elementId": "muotpea6o9w8wb",
+        "focus": 0,
+        "gap": 8
+      },
+      "type": "arrow",
+      "version": 1,
+      "versionNonce": 676146300,
+      "width": 240,
+      "x": 380,
+      "y": 117
+    },
+    {
+      "autoResize": true,
+      "containerId": "muotpea6j2111k",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 25,
+      "id": "muotpea6pfua4m",
+      "lineHeight": 1.25,
+      "originalText": "top bar: Overview",
+      "seed": 1514076283,
+      "text": "top bar: Overview",
+      "textAlign": "center",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 2034837107,
+      "verticalAlign": "middle",
+      "width": 190.4,
+      "x": 404.8,
+      "y": 313.25
     },
     {
       "backgroundColor": "#a5d8ff",
       "boundElements": [
         {
-          "id": "muoss3ay738adn",
+          "id": "muotpea6w29ws9",
           "type": "text"
         }
       ],
       "height": 200,
-      "id": "muoss3ay9pdkrc",
-      "index": "aW",
+      "id": "muotpea6d2wpdv",
       "roughness": 0,
-      "seed": 1198271988,
+      "seed": 911609476,
       "strokeColor": "#87c0ec",
       "strokeWidth": 1,
       "type": "rectangle",
-      "version": 2,
-      "versionNonce": 1106291754,
+      "version": 1,
+      "versionNonce": 658561846,
       "width": 200,
       "x": -330,
       "y": 0
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": "muoss3ay9pdkrc",
+      "containerId": "muotpea6d2wpdv",
       "fontFamily": 6,
       "fontSize": 20,
       "height": 175,
-      "id": "muoss3ay738adn",
-      "index": "aX",
+      "id": "muotpea6w29ws9",
       "lineHeight": 1.25,
       "originalText": "Boxes are places. Solid is a page, dashed is a panel or dialog on top of one. Arrows are what you click.",
-      "seed": 1837177703,
+      "seed": 886975407,
       "text": "Boxes are\nplaces. Solid is\na page, dashed\nis a panel or\ndialog on top of\none. Arrows are\nwhat you click.",
       "textAlign": "left",
       "type": "text",
-      "version": 2,
-      "versionNonce": 333382518,
+      "version": 1,
+      "versionNonce": 9617574,
       "verticalAlign": "top",
       "width": 179.2,
       "x": -320,
       "y": 10
     },
     {
-      "backgroundColor": "#ffc9c9",
-      "boundElements": [
-        {
-          "id": "muoss3ayynk3th",
-          "type": "text"
-        }
-      ],
-      "height": 200,
-      "id": "muoss3ayny0o07",
-      "index": "aY",
-      "roughness": 0,
-      "seed": 898018702,
-      "strokeColor": "#eeaeae",
-      "strokeWidth": 1,
-      "type": "rectangle",
-      "version": 2,
-      "versionNonce": 1612551914,
-      "width": 200,
-      "x": 250,
-      "y": 260
-    },
-    {
-      "autoResize": true,
-      "boundElements": [],
-      "containerId": "muoss3ayny0o07",
-      "fontFamily": 6,
-      "fontSize": 20,
-      "height": 100,
-      "id": "muoss3ayynk3th",
-      "index": "aZ",
-      "lineHeight": 1.25,
-      "originalText": "Does the status filter sit above the list or in a sidebar?",
-      "seed": 381068140,
-      "text": "Does the status\nfilter sit above\nthe list or in a\nsidebar?",
-      "textAlign": "left",
-      "type": "text",
-      "version": 2,
-      "versionNonce": 1801135286,
-      "verticalAlign": "top",
-      "width": 179.2,
-      "x": 260,
-      "y": 270
-    },
-    {
-      "backgroundColor": "#ffc9c9",
-      "boundElements": [
-        {
-          "id": "muoss3ay9phnqe",
-          "type": "text"
-        }
-      ],
-      "height": 200,
-      "id": "muoss3ayz24bey",
-      "index": "aa",
-      "roughness": 0,
-      "seed": 733857943,
-      "strokeColor": "#eeaeae",
-      "strokeWidth": 1,
-      "type": "rectangle",
-      "version": 2,
-      "versionNonce": 1725901226,
-      "width": 200,
-      "x": 1860,
-      "y": 430
-    },
-    {
-      "autoResize": true,
-      "boundElements": [],
-      "containerId": "muoss3ayz24bey",
-      "fontFamily": 6,
-      "fontSize": 20,
-      "height": 125,
-      "id": "muoss3ay9phnqe",
-      "index": "ab",
-      "lineHeight": 1.25,
-      "originalText": "Should a customer hear back when their feedback is resolved?",
-      "seed": 863752031,
-      "text": "Should a\ncustomer hear\nback when their\nfeedback is\nresolved?",
-      "textAlign": "left",
-      "type": "text",
-      "version": 2,
-      "versionNonce": 1497439734,
-      "verticalAlign": "top",
-      "width": 168,
-      "x": 1870,
-      "y": 440
-    },
-    {
-      "backgroundColor": "#ffec99",
-      "boundElements": [
-        {
-          "id": "muoss3ayo2wqd8",
-          "type": "text"
-        }
-      ],
-      "height": 200,
-      "id": "muoss3ayyjapi6",
-      "index": "ac",
-      "roughness": 0,
-      "seed": 729322961,
-      "strokeColor": "#ecd67a",
-      "strokeWidth": 1,
-      "type": "rectangle",
-      "version": 2,
-      "versionNonce": 761291882,
-      "width": 200,
-      "x": 0,
-      "y": 260
-    },
-    {
-      "autoResize": true,
-      "boundElements": [],
-      "containerId": "muoss3ayyjapi6",
-      "fontFamily": 6,
-      "fontSize": 20,
-      "height": 125,
-      "id": "muoss3ayo2wqd8",
-      "index": "ad",
-      "lineHeight": 1.25,
-      "originalText": "Idea: a small chart of feedback over time on the Overview.",
-      "seed": 595647898,
-      "text": "Idea: a small\nchart of\nfeedback over\ntime on the\nOverview.",
-      "textAlign": "left",
-      "type": "text",
-      "version": 2,
-      "versionNonce": 580251446,
-      "verticalAlign": "top",
-      "width": 145.6,
-      "x": 10,
-      "y": 270
-    },
-    {
       "backgroundColor": "#a5d8ff",
       "boundElements": [
         {
-          "id": "muosv0toeljz7l",
+          "id": "muotpea6zfu8vb",
           "type": "text"
         }
       ],
-      "height": 210,
-      "id": "muosv0toufw1hj",
-      "index": "ae",
+      "height": 200,
+      "id": "muotpea6cq0c30",
       "roughness": 0,
-      "seed": 80045890,
+      "seed": 620854794,
       "strokeColor": "#87c0ec",
       "strokeWidth": 1,
       "type": "rectangle",
-      "version": 4,
-      "versionNonce": 493940982,
+      "version": 1,
+      "versionNonce": 1738653018,
       "width": 200,
       "x": -330,
       "y": 260
     },
     {
       "autoResize": true,
-      "boundElements": [],
-      "containerId": "muosv0toufw1hj",
+      "containerId": "muotpea6cq0c30",
       "fontFamily": 6,
       "fontSize": 20,
-      "height": 200,
-      "id": "muosv0toeljz7l",
-      "index": "af",
+      "height": 275,
+      "id": "muotpea6zfu8vb",
       "lineHeight": 1.25,
       "originalText": "This is a canvas. Press N for a sticky note, or ask your agent to sketch the next idea. Only Excalidraw shapes here, so it stays obviously rough.",
-      "seed": 730102024,
-      "text": "This is a canvas.\nPress N for a sticky\nnote, or ask your\nagent to sketch the\nnext idea. Only\nExcalidraw shapes\nhere, so it stays\nobviously rough.",
+      "seed": 2090067637,
+      "text": "This is a\ncanvas. Press N\nfor a sticky\nnote, or ask\nyour agent to\nsketch the next\nidea. Only\nExcalidraw\nshapes here, so\nit stays\nobviously rough.",
       "textAlign": "left",
       "type": "text",
-      "version": 7,
-      "versionNonce": 183647338,
+      "version": 1,
+      "versionNonce": 962345795,
       "verticalAlign": "top",
-      "width": 173.14,
-      "x": -325,
-      "y": 265
+      "width": 179.2,
+      "x": -320,
+      "y": 270
+    },
+    {
+      "backgroundColor": "#ffc9c9",
+      "boundElements": [
+        {
+          "id": "muotpea6xb20h8",
+          "type": "text"
+        }
+      ],
+      "height": 200,
+      "id": "muotpea6la0t06",
+      "roughness": 0,
+      "seed": 203776151,
+      "strokeColor": "#eeaeae",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 1,
+      "versionNonce": 225821306,
+      "width": 200,
+      "x": 420,
+      "y": 690
+    },
+    {
+      "autoResize": true,
+      "containerId": "muotpea6la0t06",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 100,
+      "id": "muotpea6xb20h8",
+      "lineHeight": 1.25,
+      "originalText": "Does the status filter sit above the list or in a sidebar?",
+      "seed": 759232273,
+      "text": "Does the status\nfilter sit above\nthe list or in a\nsidebar?",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 769080700,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 430,
+      "y": 700
+    },
+    {
+      "backgroundColor": "#ffc9c9",
+      "boundElements": [
+        {
+          "id": "muotpea7t1vx4d",
+          "type": "text"
+        }
+      ],
+      "height": 200,
+      "id": "muotpea6o90vrk",
+      "roughness": 0,
+      "seed": 942968079,
+      "strokeColor": "#eeaeae",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 1,
+      "versionNonce": 151559873,
+      "width": 200,
+      "x": 1860,
+      "y": 470
+    },
+    {
+      "autoResize": true,
+      "containerId": "muotpea6o90vrk",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 125,
+      "id": "muotpea7t1vx4d",
+      "lineHeight": 1.25,
+      "originalText": "Should a customer hear back when their feedback is resolved?",
+      "seed": 1859748921,
+      "text": "Should a\ncustomer hear\nback when their\nfeedback is\nresolved?",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 1276328007,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": 1870,
+      "y": 480
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muotpea7sq31zw",
+          "type": "text"
+        }
+      ],
+      "height": 200,
+      "id": "muotpea7yl3glo",
+      "roughness": 0,
+      "seed": 2029841325,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 1,
+      "versionNonce": 794296257,
+      "width": 200,
+      "x": 620,
+      "y": 720
+    },
+    {
+      "autoResize": true,
+      "containerId": "muotpea7yl3glo",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 125,
+      "id": "muotpea7sq31zw",
+      "lineHeight": 1.25,
+      "originalText": "Idea: a small chart of feedback over time on the Overview.",
+      "seed": 365975907,
+      "text": "Idea: a small\nchart of\nfeedback over\ntime on the\nOverview.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 285001565,
+      "verticalAlign": "top",
+      "width": 145.6,
+      "x": 630,
+      "y": 730
     }
   ],
   "appState": {
-    "viewBackgroundColor": "#ffffff",
-    "gridSize": 20
+    "viewBackgroundColor": "#ffffff"
   },
   "files": {}
 }

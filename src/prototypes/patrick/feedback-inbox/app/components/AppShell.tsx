@@ -32,8 +32,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <span className="text-sm font-semibold">Echo</span>
           </div>
           <nav className="flex gap-6">
-            <NavItem to="app/overview">Overview</NavItem>
             <NavItem to="app/inbox" count={items.filter((f) => f.status === 'new').length}>Inbox</NavItem>
+            <NavItem to="app/overview">Overview</NavItem>
           </nav>
           <div className="ml-auto flex items-center gap-3">
             <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={resetData}>Reset sample data</Button>

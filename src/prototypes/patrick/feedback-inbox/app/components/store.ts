@@ -1,7 +1,7 @@
 // The sample data, kept in memory so the three screens share it. Creating, editing, and deleting
 // feedback in one screen shows up in the others, and reloading the page resets everything. This is
 // plain React (useSyncExternalStore), no libraries: a prototype only needs enough "backend" to feel real.
-import { useSyncExternalStore } from 'react';
+import { createContext, useContext, useSyncExternalStore } from 'react';
 
 export type Status = 'new' | 'triaged' | 'planned' | 'resolved';
 export type Priority = 'low' | 'medium' | 'high';
@@ -57,7 +57,15 @@ const listeners = new Set<() => void>();
 const set = (next: State) => { state = next; listeners.forEach((l) => l()); };
 const subscribe = (l: () => void) => { listeners.add(l); return () => { listeners.delete(l); }; };
 
-export const useStore = () => useSyncExternalStore(subscribe, () => state);
+// A screen can be shown with data of its own (an empty inbox, say) by wrapping it in StaticItems. The
+// screens in states/ do this, so each state can sit on a canvas without touching the live data.
+const Override = createContext<Feedback[] | null>(null);
+export const StaticItems = Override.Provider;
+export const useStore = () => {
+  const live = useSyncExternalStore(subscribe, () => state);
+  const override = useContext(Override);
+  return override ? { ...live, items: override } : live;
+};
 export const useFeedback = (id: string | null) => useStore().items.find((f) => f.id === id);
 
 let counter = 100;
@@ -84,3 +92,10 @@ export const select = (id: string | null) => set({ ...state, selectedId: id });
 export const resetData = () => set({ items: seed(), selectedId: null });
 
 export const formatDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+// What the inbox is showing: a status ("open" is everything not resolved) and, optionally, a priority.
+export type Filter = { status: Status | 'open' | 'all'; priority: Priority | null };
+export const NO_FILTER: Filter = { status: 'all', priority: null };
+export const matchesFilter = (f: Feedback, filter: Filter) =>
+  (filter.status === 'all' || (filter.status === 'open' ? f.status !== 'resolved' : f.status === filter.status)) &&
+  (!filter.priority || f.priority === filter.priority);

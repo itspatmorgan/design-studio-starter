@@ -24,6 +24,7 @@ A small inbox for feedback. Anyone can add an item in a few seconds. Someone tri
 
 - **One list, not a board.** We looked at a board in the early [breadboard](breadboard) and the [lofi sketch](lofi/inbox-sketch); the list scales better once there are more than a dozen items.
 - **Four statuses**: New, Triaged, Planned, Resolved. Anything finer can wait until the team asks for it.
+- **Land on the inbox, with cards on top.** Open issues, New, and High priority are counts and shortcuts: click one and the list narrows. A separate dashboard would put a click between the person and the work.
 - **Notes live on the item.** A separate thread would split the story across two places.
 - **No assignees yet.** The team is small enough to talk. Revisit if triage becomes a bottleneck.
 
@@ -35,4 +36,4 @@ A small inbox for feedback. Anyone can add an item in a few seconds. Someone tri
 
 ## Where to look
 
-The three screens are the [inbox](app/inbox), an item's [detail](app/detail), and the [overview](app/overview). The [breadboard](breadboard) is the early flow sketch, the [handoff canvas](eng-handoff) is what engineering gets, and the [tour](start-here) explains how this prototype is put together.
+The three screens are the [inbox](app/inbox), which is where you land, an item's [detail](app/detail), and the [overview](app/overview). Every state of them has its own view in `states`. The [breadboard](breadboard) is the early flow sketch, the [handoff canvas](eng-handoff) is what engineering gets, and the [tour](start-here) explains how this prototype is put together.

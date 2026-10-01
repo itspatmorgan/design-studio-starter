@@ -1,6 +1,7 @@
 // Screen 2 of 3: one piece of feedback. Change its status and priority, add notes, edit it, or delete it.
 // The inbox opens this screen with the item it was on. Opened directly (or shown on a canvas), it
-// shows the newest item instead of an empty page.
+// shows the newest item instead of an empty page. DetailScreen takes optional starting state, so the
+// files in states/ can show it with the edit dialog or the delete confirmation open.
 import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowLeft, Pencil, Trash2 } from 'lucide-react';
@@ -18,11 +19,11 @@ import { PriorityBadge, StatusBadge } from './components/badges';
 import { ScreenLink, useScreenPath } from './components/nav';
 import { PRIORITIES, STATUSES, addNote, formatDate, removeFeedback, updateFeedback, useFeedback, useStore, type Priority, type Status } from './components/store';
 
-export default function Detail() {
+export function DetailScreen({ editing: startEditing = false, deleting: startDeleting = false }: { editing?: boolean; deleting?: boolean }) {
   const { selectedId, items } = useStore();
   const item = useFeedback(selectedId) ?? items[0];
-  const [editing, setEditing] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  const [editing, setEditing] = useState(startEditing);
+  const [deleting, setDeleting] = useState(startDeleting);
   const [note, setNote] = useState('');
   const navigate = useNavigate();
   const screen = useScreenPath();
@@ -133,4 +134,8 @@ export default function Detail() {
       </Dialog>
     </AppShell>
   );
+}
+
+export default function Detail() {
+  return <DetailScreen />;
 }

@@ -10,14 +10,16 @@ import { PRIORITIES, SOURCES, type FeedbackInput, type Priority, type Source } f
 
 const EMPTY: FeedbackInput = { title: '', body: '', customer: '', source: 'Email', priority: 'medium' };
 
-export default function FeedbackForm({ initial = EMPTY, submitLabel, onSubmit, onCancel }: {
+export default function FeedbackForm({ initial = EMPTY, showErrors = false, submitLabel, onSubmit, onCancel }: {
   initial?: FeedbackInput;
+  // Starts with the errors showing, as if Add had already been pressed (for the validation state).
+  showErrors?: boolean;
   submitLabel: string;
   onSubmit: (input: FeedbackInput) => void;
   onCancel: () => void;
 }) {
   const [values, setValues] = useState(initial);
-  const [tried, setTried] = useState(false);
+  const [tried, setTried] = useState(showErrors);
   const set = <K extends keyof FeedbackInput>(key: K, value: FeedbackInput[K]) => setValues((v) => ({ ...v, [key]: value }));
   const titleMissing = tried && !values.title.trim();
 
