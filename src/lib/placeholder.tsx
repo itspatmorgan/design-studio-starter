@@ -1,6 +1,6 @@
 // What a new view shows until something is built in it: a quiet frame that says the view is
 // empty, and a prompt to hand your agent. New views and prototypes start with it
-// (scripts/vite-files-plugin.js, scripts/templates/prototype/ and tool/).
+// (scripts/vite-files-plugin.js, scripts/templates/prototype/).
 //
 // Agents: replace the <Placeholder /> with the view you build, and remove the import.
 //
@@ -17,7 +17,7 @@ function repoPath(fileUrl: string) {
   return at < 0 ? null : `src${decodeURIComponent(pathname.slice(at))}`;
 }
 
-// `tool` is for a tool prototype (scripts/templates/tool/): it asks for something people will use, not look at.
+// `tool` asks for something people will use, not look at (nothing in the platform sets it any more).
 export function Placeholder({ file, tool = false }: { file: string; tool?: boolean }) {
   const path = import.meta.env.DEV ? repoPath(file) : null;
   const prompt = path ? `In ${path}, build ${tool ? 'a tool that ' : ''}` : '';

@@ -1,4 +1,4 @@
-// Usage: pnpm new "Prototype Name" [--tool]   (--tool starts a tool prototype: see src/handbook/rules/tools.md)
+// Usage: pnpm new "Prototype Name"
 // Also used by the app's "New prototype" button in dev (scripts/vite-files-plugin.js).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -13,9 +13,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // "Agent Config" → "agent-config"
 export const slugify = (title) => title.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
-// Copies scripts/templates/prototype/ (or tool/, for a tool prototype) into src/prototypes/<key>/<slug>/,
+// Copies scripts/templates/prototype/ into src/prototypes/<key>/<slug>/,
 // fills in meta.json, and rebuilds the manifest. Returns { slug, manifest }, or throws a message.
-export function createPrototype({ title, description = '', key, tool = false }) {
+export function createPrototype({ title, description = '', key }) {
   title = (title ?? '').trim();
   if (!title) throw new Error('Add a title.');
   const slug = slugify(title);
@@ -25,7 +25,7 @@ export function createPrototype({ title, description = '', key, tool = false }) 
   if (fs.existsSync(dest)) throw new Error(`You already have a prototype named “${title}”. Choose a different title.`);
 
   fs.mkdirSync(path.dirname(dest), { recursive: true });
-  fs.cpSync(path.join(ROOT, 'scripts', 'templates', tool ? 'tool' : 'prototype'), dest, { recursive: true });
+  fs.cpSync(path.join(ROOT, 'scripts', 'templates', 'prototype'), dest, { recursive: true });
   const metaPath = path.join(dest, 'meta.json');
   const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
   const d = new Date();
@@ -131,13 +131,11 @@ export function unpublishTool({ key, id }) {
 
 // Run as a script.
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const args = process.argv.slice(2).filter((a) => a !== '--');
-  const tool = args.includes('--tool');
-  const title = args.filter((a) => a !== '--tool').join(' ');
-  if (!title.trim()) { console.error('Usage: pnpm new "Prototype Name" [--tool]'); process.exit(1); }
+  const title = process.argv.slice(2).filter((a) => a !== '--').join(' ');
+  if (!title.trim()) { console.error('Usage: pnpm new "Prototype Name"'); process.exit(1); }
   const key = resolveContributor();
   try {
-    const { slug } = createPrototype({ title, key, tool });
+    const { slug } = createPrototype({ title, key });
     console.log(`Created src/prototypes/${key}/${slug}/`);
     console.log(`Open it with pnpm dev, at /${key}/${slug}`);
   } catch (e) {

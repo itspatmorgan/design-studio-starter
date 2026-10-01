@@ -439,9 +439,9 @@ export default function filesPlugin() {
           }
         }
         if (req.method === 'POST' && url.pathname === '/prototype') {
-          const { title, description, tool } = await readJson(req);
+          const { title, description } = await readJson(req);
           try {
-            const { slug, manifest } = createPrototype({ title, description, key: me(), tool: tool === true });
+            const { slug, manifest } = createPrototype({ title, description, key: me() });
             publishManifest(server, manifest, req.headers['x-studio-tab']);
             return send(res, 200, { contributor: me(), prototype: slug, manifest });
           } catch (e) {

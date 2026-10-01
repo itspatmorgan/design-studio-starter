@@ -10,7 +10,7 @@ A tool is a small app that makes something: a thumbnail, a gradient, a graphic w
 
 ## From prototype to tool
 
-A tool starts as an ordinary prototype in your folder, so it looks and works like one while you build it. Start one from **New tool prototype**, in the menu beside **New prototype**. It's the same as any prototype, with a starter that asks your agent to build something people will use. Any prototype can become a tool later, whether or not it started as one.
+A tool starts as an ordinary prototype in your folder, so it looks and works like one while you build it. Any prototype can become a tool when it's ready.
 
 When it's ready, open the prototype's **…** menu and choose **Publish as tool**. Or open the **Tools** page and choose **Publish a prototype** to pick from your list.
 

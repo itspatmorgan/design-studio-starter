@@ -87,7 +87,7 @@ function PublishDialog({ me, prototypes, open, onOpenChange }: { me: string; pro
             </Select>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">You have no prototypes to publish yet. Start one with New tool prototype on the Prototypes page.</p>
+          <p className="text-sm text-muted-foreground">You have no prototypes to publish yet. Start one with New prototype on the Prototypes page.</p>
         )}
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
@@ -106,7 +106,7 @@ function ToolsEmpty({ local }: { local: boolean }) {
       icon={Wrench01Icon}
       title="No tools yet"
       steps={[
-        ['Start a tool prototype', 'Use the menu beside New prototype.'],
+        ['Start a prototype', 'Use New prototype on the Prototypes page.'],
         ['Build it', 'Tell your agent what it makes and who uses it.'],
         ['Publish it', 'Choose Publish as tool from its menu.'],
       ]}
