@@ -8,11 +8,31 @@ function componentName(name: string) {
   return /^[A-Z]/.test(component) ? component : `View${component}`;
 }
 
+// Lofi is a comment at the top of the view, above any code: /** @lofi */
+const HEADER = /^\uFEFF?(?:\s|\/\*[\s\S]*?\*\/|\/\/[^\n]*)*/;
+const TAG = /@lofi\b/;
+// A comment that holds only the tag, which goes whole when lofi is switched off.
+const ONLY_TAG = /^(\uFEFF?)[ \t]*\/\*\*?[ \t]*@lofi[ \t]*\*\/[ \t]*\r?\n?/;
+const isLofi = (source: string) => TAG.test(HEADER.exec(source)?.[0] ?? '');
+function setLofi(source: string, on: boolean) {
+  const has = isLofi(source);
+  if (on) {
+    if (has) return source;
+    const bom = source.startsWith('\uFEFF') ? '\uFEFF' : '';
+    return `${bom}/** @lofi */\n${source.slice(bom.length)}`;
+  }
+  if (!has) return source;
+  if (ONLY_TAG.test(source)) return source.replace(ONLY_TAG, '$1');
+  const header = HEADER.exec(source)![0];
+  return header.replace(/[ \t]*@lofi\b/, '') + source.slice(header.length);
+}
+
 export default defineFileType({
   label: 'View',
   extensions: ['.tsx', '.jsx'],
   language: 'tsx',
   preview: true,
+  fidelity: { isLofi, setLofi },
 
   // It starts as a placeholder (src/lib/placeholder.tsx) until something is built in it.
   template: (name) =>

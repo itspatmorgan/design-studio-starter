@@ -22,7 +22,7 @@ A small tool for collecting feedback. You land on an overview with the key numbe
 
 ## Decisions so far
 
-- **One list, not a board.** We looked at a board in the early [breadboard](breadboard) and the [lofi sketch](lofi/feedback-inbox-sketch); the list scales better once there are more than a dozen items.
+- **One list, not a board.** We looked at a board in the early [breadboard](breadboard) and the [lofi feedback inbox](lofi/feedback-inbox); the list scales better once there are more than a dozen items.
 - **Four statuses**: New, Triaged, Planned, Resolved. Anything finer can wait until the team asks for it.
 - **Land on the overview, and drill down from it.** The key numbers (open issues, new, high priority, resolved) are at the top, and each is a link to the feedback behind it. The table itself has no numbers, so it stays about the work.
 - **Notes live on the item.** A separate thread would split the story across two places.

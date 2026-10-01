@@ -15,11 +15,11 @@ import { Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router'
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Add01Icon, ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
-  Folder01Icon, StarIcon, SourceCodeIcon, BrowserIcon, PencilEdit02Icon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
+  Folder01Icon, StarIcon, SourceCodeIcon, BrowserIcon, PencilEdit02Icon, Pen01Icon, PaintBoardIcon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import {
-  fileOp, openInEditor, repoPath, revealInFinder, useFileTree, useMe, type FileNode, type FileOp,
+  fileOp, openInEditor, repoPath, revealInFinder, setItemLofi, useFileTree, useMe, type FileNode, type FileOp,
 } from '@/studio/app/data/files';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { HELPER_FOLDER } from '@/studio/fileTypes';
@@ -247,6 +247,15 @@ export default function FileTree({ proto, current }: FileTreeProps) {
     }
   }
 
+  // Switches a view to lofi or back (for a type with `fidelity`): its file carries the marker.
+  async function setLofi(item: Item, on: boolean) {
+    try {
+      await setItemLofi(proto, item.path, on, FILE_TYPES[item.fileType].fidelity!);
+    } catch (e) {
+      toast.add({ type: 'error', title: (e as Error).message });
+    }
+  }
+
   const startCreate = (parent: string, target: NewTarget) => {
     if (target === 'skill') { setNewSkillOpen(true); return; }
     if (parent) setOpen(parent, true);
@@ -327,6 +336,11 @@ export default function FileTree({ proto, current }: FileTreeProps) {
                 proto.start === node.path
                   ? <ContextMenuItem key="start" onClick={() => setTimeout(() => run({ op: 'meta', start: '' }))}><HugeiconsIcon icon={StarIcon} /> Remove as start</ContextMenuItem>
                   : opensOn?.path !== node.path && <ContextMenuItem key="start" onClick={() => setTimeout(() => run({ op: 'meta', start: itemSlug(node.path) }))}><HugeiconsIcon icon={StarIcon} /> Set as start</ContextMenuItem>
+              ),
+              editable && !isHandbook && FILE_TYPES[items.get(node.path)?.fileType ?? '']?.fidelity && (
+                items.get(node.path)?.lofi
+                  ? <ContextMenuItem key="lofi" onClick={() => setTimeout(() => setLofi(items.get(node.path)!, false))}><HugeiconsIcon icon={PaintBoardIcon} /> Make hi-fi</ContextMenuItem>
+                  : <ContextMenuItem key="lofi" onClick={() => setTimeout(() => setLofi(items.get(node.path)!, true))}><HugeiconsIcon icon={Pen01Icon} /> Make lofi</ContextMenuItem>
               ),
               changeable && <ContextMenuItem key="rename" onClick={() => setTimeout(() => setEditing({ kind: 'rename', path: node.path }))}><HugeiconsIcon icon={PencilEdit02Icon} /> Rename</ContextMenuItem>,
             ],

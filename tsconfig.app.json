@@ -31,5 +31,5 @@
     "paths": { "@/*": ["./src/*"] }
   },
   "include": ["src", "scripts/templates"],
-  "exclude": ["src/studio/fileTypes/canvas/cli.ts", "src/studio/fileTypes/canvas/tools.test.ts", "src/studio/handbook.test.ts", "src/studio/systemDocs.test.ts", "src/studio/archive.test.ts"]
+  "exclude": ["src/studio/fileTypes/canvas/cli.ts", "src/studio/fileTypes/canvas/tools.test.ts", "src/studio/fileTypes/view/lofi.test.ts", "src/studio/handbook.test.ts", "src/studio/systemDocs.test.ts", "src/studio/archive.test.ts"]
 }

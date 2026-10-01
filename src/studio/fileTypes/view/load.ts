@@ -18,6 +18,7 @@ export async function loadView({ proto, item }: ItemContext) {
       ? mod.default
       : () => { throw new Error(`${repoFile} has no default export. A view needs one: export default function MyView() { ... }`); },
     viewKey: `${file.contributor}/${file.prototype}/${itemSlug(item.path)}`,
+    lofi: item.lofi === true,
     themeClass: PROTOTYPE_SYSTEMS[proto.system as PrototypeSystemId]?.themeClass ?? PROTOTYPE_SYSTEMS[DEFAULT_SYSTEM].themeClass,
   };
 }

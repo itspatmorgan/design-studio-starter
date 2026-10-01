@@ -67,11 +67,13 @@ function checkItems(dir, items, out = console, prototype) {
     const file = path.relative(ROOT, path.join(dir, item.path));
     if (seen.has(itemSlug(item.path))) { out.error(`[manifest] ${file}: another file here has the same name. Rename one; they'd share a URL.`); errors++; }
     seen.add(itemSlug(item.path));
-    const check = FILE_TYPES[item.fileType].check;
+    const { check, fidelity } = FILE_TYPES[item.fileType];
+    if (!check && !fidelity) continue;
+    const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
     if (check) {
-      const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
       for (const problem of check({ source, frontmatter: frontmatter(source), prototype })) { out.error(`[manifest] ${file}: ${problem}`); errors++; }
     }
+    if (fidelity?.isLofi(source)) item.lofi = true;
   }
   return errors;
 }

@@ -38,7 +38,6 @@ In your own prototypes, the navigation works like a file browser:
 - **Read or edit the file:** the source button (`</>`) in the Files row shows the open file's text. Its icon then becomes a browser window, and pressing it goes back to the page. In your own prototypes you can edit it and save with ⌘S; in other people's it's read-only. Find (⌘F), go to line (⌘⌥G), and folding (the chevrons beside the line numbers) are built in. If your agent changes the file while it's open, the editor updates (or asks, if you have unsaved edits). Source is available while the app runs locally, not on the deployed site.
 - **Choose what opens first:** right-click a view or document and choose **Set as start**. A small star marks what the prototype opens on.
 
-
 Each of these is an ordinary change to the files, the same as your agent would make, so you can mix both ways of working. If you rename or move the file you're looking at, the app follows it, and `start` in `meta.json` is updated to match.
 Everything about the prototype sits at the top of its navigation. The **…** menu next to the title (or a right-click) has everything else: **Show details** shows who made it, when, and its description, and the app remembers whether you leave them open. In your own prototypes, double-click the title to rename it, or choose **Edit** to change the title and description. It saves to `meta.json`. A new title also renames the prototype's folder to match ("Checkout Flow" becomes `checkout-flow`), so its link changes: the app takes you to the new address, but links you shared before stop working. If that folder name is already taken, nothing changes and the app says so. Editing only the description never renames the folder. **Delete** moves the whole folder to the Trash, so you can put it back.
 
@@ -48,11 +47,15 @@ A view is one screen of your prototype: any `.tsx` file that exports a React com
 
 The prototype opens on its first view, the one at the top of its navigation, unless you choose another with **Set as start**. That saves to `start` in `meta.json`.
 
+## Lofi
+
+When you're deciding a layout and polish would only distract, switch a view to lofi: right-click it in the navigation and choose **Make lofi**. The view keeps its design system's components exactly as they are, drawn in grayscale with handwritten type. **Make hi-fi** puts it back.
+
+The switch is one line at the top of the view's file, `/** @lofi */`, so it follows the file when you rename or move it, and your agent can add or remove it. It applies to a single view, never a whole prototype. A folder called `lofi` is just a name.
+
 ## Folders
 
 Folders are only for organizing, at any depth. A folder's name never changes what's inside it, with one exception: files in a `components/` folder are helpers, not views.
-
-A common folder is `lofi/`: rough, grayscale sketches of an idea, before it's worth polishing.
 
 ## Archiving
 

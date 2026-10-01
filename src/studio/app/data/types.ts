@@ -11,6 +11,7 @@ import type { DocsMode } from '@/studio/systemSources';
 export type Item = {
   path: string;   // file path in the prototype, e.g. "prototype.tsx" or "checkout/step-1.tsx"
   fileType: string; // the id of the file type that owns it, from its extension ("view", "document")
+  lofi?: true;      // set when the file says it's lofi (a view starting with /** @lofi */)
 };
 
 export type PrototypeInfo = {

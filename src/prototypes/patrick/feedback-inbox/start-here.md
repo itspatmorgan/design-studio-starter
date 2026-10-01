@@ -33,9 +33,11 @@ Hover over **Files** and click the code icon to see any file's text. In the dev 
 
 Look inside the `app` folder with **Show all files** in the **…** menu. There's a `components` folder: the data, the top bar, and the form the screens share. Files in a folder called `components` are helpers, not screens, so they never appear in the navigation. They're how three screens share one set of pieces without repeating them.
 
-## 5. Sketch first
+## 5. Lofi is a switch on a view
 
-The [lofi sketch](lofi/feedback-inbox-sketch) is a rough, gray version of the feedback inbox from before it was designed. A `lofi` folder is just a habit. Rough work comes first, and it's quick to throw away.
+The [lofi feedback inbox](lofi/feedback-inbox) is the real [Feedback inbox](app/feedback-inbox) with `/** @lofi */` at the top of its file. That one line is the whole feature: the screen keeps its design system's components and is drawn in grayscale with handwritten type, for the stage when you are deciding the layout and polish would only distract. Right-click any view in the navigation and choose **Make lofi** to try it, and **Make hi-fi** to undo it. The folder it sits in is only a name.
+
+Sketching with plain shapes and no design system is fine too, when an idea isn't ready for real components.
 
 ## 6. Think on a canvas
 

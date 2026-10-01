@@ -111,6 +111,14 @@ export async function readSource(p: Prototype, path: string) {
   return body as { content: string; version: string };
 }
 
+// Switches an item in your prototype to lofi or back, by changing the marker in its file the way its
+// type says (fidelity in its type.ts). The manifest follows from the file changing, like any edit.
+export async function setItemLofi(p: Prototype, path: string, on: boolean, fidelity: { setLofi(source: string, on: boolean): string }) {
+  const { content, version } = await readSource(p, path);
+  const next = fidelity.setLofi(content, on);
+  if (next !== content) await writeSource(p, path, next, version);
+}
+
 // The file changed on disk since it was read (its version isn't `base` any more).
 export class SourceChanged extends Error {}
 

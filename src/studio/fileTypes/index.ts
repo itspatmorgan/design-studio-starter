@@ -26,6 +26,14 @@ export type FileTypeSpec = {
   // True for the one type that opens any file no other type claims, where the Handbook allows it.
   // It has no extensions of its own, and prototypes never use it: their other files stay plain.
   fallback?: boolean;
+  // Set if a file of this type can be shown in lofi: rough, grayscale, with handwritten type, over the
+  // same components. A file says so itself (a view starts with /** @lofi */), so it stays with the file
+  // when it is renamed or moved. `isLofi` reads that from the file's text, and `setLofi` returns the text
+  // with it switched on or off. Both are plain string functions: Node loads them for the manifest.
+  fidelity?: {
+    isLofi(source: string): boolean;
+    setLofi(source: string, on: boolean): string;
+  };
   // The contents of a new file called `name` ("user-settings.tsx"). Without it, the "+" menu
   // doesn't offer to make this type.
   template?: (name: string) => string;

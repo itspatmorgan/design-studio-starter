@@ -6,6 +6,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { PortalContext } from '@/lib/portal';
 import type { EmbedProps } from '@/studio/app/data/fileTypeModule';
 import { loadView } from './load';
+import './lofi.css';
 
 // The width the view is laid out at, before it's scaled down.
 export const EMBED_VIEWPORT_WIDTH = 1440;
@@ -27,12 +28,12 @@ export default function ViewEmbed({ proto, item, width, height }: EmbedProps) {
 
   if (loaded === 'failed') return <Unavailable>This view couldn't load.</Unavailable>;
   if (!loaded) return <Unavailable>Loading…</Unavailable>;
-  const { Component, themeClass, viewKey } = loaded;
+  const { Component, themeClass, viewKey, lofi } = loaded;
   const scale = width / EMBED_VIEWPORT_WIDTH;
   return (
     <div aria-hidden className="relative overflow-hidden bg-background" style={{ width, height }}>
       <div
-        className={`${themeClass} bg-background text-foreground absolute top-0 left-0 origin-top-left overflow-hidden [contain:layout]`}
+        className={`${themeClass}${lofi ? ' lofi-view' : ''} bg-background text-foreground absolute top-0 left-0 origin-top-left overflow-hidden [contain:layout]`}
         style={{ width: EMBED_VIEWPORT_WIDTH, height: height / scale, transform: `scale(${scale})` }}
       >
         <ErrorBoundary resetKeys={[viewKey, Component]} fallbackRender={() => <Unavailable>This view has an error. Open it to see what's wrong.</Unavailable>}>

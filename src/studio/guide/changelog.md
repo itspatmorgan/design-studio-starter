@@ -19,6 +19,7 @@ The first release, described in [How I Set Up a Prototyping Sandbox](https://www
 - A sample prototype, Feedback Inbox, that doubles as a tour: three screens on a working data store, a breadboard and an eng-handoff canvas, and two documents
 - A Product system with its own look (warm stone, orange, square corners, Space Grotesk) and 16 components, each with a page
 - A small manifest: the file list of each prototype loads when you open it, so the deployed site stays fast as prototypes pile up
+- Lofi: switch any view to grayscale with handwritten type, over its own design system, from the file menu
 - Archiving: set a prototype aside; the deployed site leaves archived prototypes out
 - The Handbook: team docs, agent rules, and skills, shown in the app, with a fixed shape and a check for it
 - `AGENTS.md`, which points to the Handbook's rules, and the `setup-contributor` skill
