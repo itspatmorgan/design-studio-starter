@@ -245,12 +245,12 @@ test('a theme\'s tokens: scoped light and dark values, sorted into groups', asyn
   assert.deepEqual(themeTokens('.x { --a: red }', 'brand-theme'), []);
 });
 
-test('the shipped product theme is all colors and one radius', async () => {
+test('the shipped product theme is colors, a font, and one radius', async () => {
   const { themeTokens } = await import('./themeTokens.ts');
   const css = fs.readFileSync(path.resolve(import.meta.dirname, '../systems/product/styles/theme.css'), 'utf8');
   const tokens = themeTokens(css, 'product-theme');
   assert.equal(tokens.filter((t) => t.group === 'colors').length, 31);
-  assert.deepEqual(tokens.filter((t) => t.group !== 'colors').map((t) => t.name), ['--radius']);
+  assert.deepEqual(tokens.filter((t) => t.group !== 'colors').map((t) => t.name).sort(), ['--font-sans', '--radius']);
   // Every one is a known shadcn token with a dark value of its own.
   assert.ok(tokens.filter((t) => t.group === 'colors').every((t) => t.subgroup && t.dark));
 });

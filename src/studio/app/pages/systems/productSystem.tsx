@@ -3,7 +3,7 @@
 // it shows how the product look differs from the app UI. Its component pages come from the files in
 // src/systems/product/components/ (button.tsx, button.examples.tsx, button.md).
 import { PROTOTYPE_SYSTEMS } from '@/systems';
-import { Code, CodeBlock, Prose } from '@/studio/app/pages/systems/foundations';
+import { Code, Prose } from '@/studio/app/pages/systems/foundations';
 import type { DesignSystem } from '@/studio/app/data/types';
 
 export const product: DesignSystem = {
@@ -28,8 +28,7 @@ export const product: DesignSystem = {
       </div>
       <h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2>
       <Prose>
-        <p>The placeholder is a few shadcn/ui components (button, input, dialog) on shadcn/ui's indigo preset, in <Code>src/systems/product/styles/theme.css</Code>. Indigo is there only so you can see it's a separate system from the app UI.</p>
-        <CodeBlock>{`npx shadcn apply a2r6bw --only theme`}</CodeBlock>
+        <p>The placeholder is shadcn/ui components on a theme of its own, in <Code>src/systems/product/styles/theme.css</Code>: a teal accent on cool slate neutrals, tighter corners, and the system font. It is different from the app UI's neutral gray and Inter on purpose, so you can tell at a glance which system a screen is in.</p>
         <p>Prototypes use <Code>lucide-react</Code> for icons until your system brings its own.</p>
       </Prose>
     </>
