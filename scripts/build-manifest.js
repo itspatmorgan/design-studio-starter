@@ -198,7 +198,7 @@ function writeManifest(manifest) {
 // (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
 // Options: `deploy` leaves archived prototypes and views out (see src/studio/archive.ts), `write: false`
 // skips writing the file, and `quiet` prints nothing. `archived` in the result lists what deploy
-// leaves out, as paths in the app's file globs (scripts/vite-archive-plugin.js).
+// leaves out, as paths in the app's file globs (scripts/vite-globs-plugin.js).
 export function buildManifest({ deploy = false, write = true, quiet = false } = {}) {
   const out = quiet ? { log() {}, warn() {}, error() {} } : console;
   // Display names come from contributors.json, so they live in one place.

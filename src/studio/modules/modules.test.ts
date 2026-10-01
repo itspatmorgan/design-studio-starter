@@ -41,3 +41,9 @@ test('two modules can not share a section key or folder', () => {
 test('section keys skip modules with no section', () => {
   assert.deepEqual(sectionKeys([tools, { id: 'x', label: 'X', version: '0.1.0' }]), ['tools']);
 });
+
+test('items must be a known kind, in a folder directly under src', () => {
+  assert.deepEqual(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/tools', items: 'prototypes' } }, 'tools'), []);
+  assert.match(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/tools', items: 'files' as 'prototypes' } }, 'tools')[0], /section\.items/);
+  assert.match(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/studio/tools', items: 'prototypes' } }, 'tools')[0], /directly under src/);
+});

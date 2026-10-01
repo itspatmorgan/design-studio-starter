@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import mdx from '@mdx-js/rollup';
@@ -16,7 +17,13 @@ import spa404 from './scripts/vite-spa-404-plugin.js';
 import files from './scripts/vite-files-plugin.js';
 import markdownRefresh from './scripts/vite-markdown-refresh-plugin.js';
 import systemProps from './scripts/vite-system-props-plugin.js';
-import archive from './scripts/vite-archive-plugin.js';
+import globs from './scripts/vite-globs-plugin.js';
+import { PROTOTYPE_DIRS } from './scripts/lib/modules.js';
+
+// Prototype documents (src/prototypes/ and the modules' prototype-shaped folders, like src/tools/) refresh in
+// place through scripts/vite-markdown-refresh-plugin.js, so React Fast Refresh leaves them alone.
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const prototypeFolders = ['prototypes', ...PROTOTYPE_DIRS.map((dir: string) => path.basename(dir))].map(escapeRegExp).join('|');
 
 export default defineConfig({
   root: 'src',
@@ -38,11 +45,11 @@ export default defineConfig({
       }),
     },
     // Prototype documents refresh through scripts/vite-markdown-refresh-plugin.js instead.
-    react({ include: /\.(md|[jt]sx)$/, exclude: /[\\/](prototypes|tools)[\\/].*\.md$/ }),
+    react({ include: /\.(md|[jt]sx)$/, exclude: new RegExp(`[\\\\/](${prototypeFolders})[\\\\/].*\\.md$`) }),
     markdownRefresh(),
     tailwindcss(),
     importGuard(),
-    archive(),
+    globs(),
     manifestWatch(),
     files(),
     systemProps(),

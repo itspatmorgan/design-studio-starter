@@ -10,7 +10,10 @@ export type ModuleSpec = {
   version: string;   // this module's own version, like "0.1.0"
   // The top-level area the module adds: its address in the app (/tools) and the folder its files live
   // in, relative to the repo root. The key can't also be a contributor's folder, since both are addresses.
-  section?: { key: string; folder: string };
+  // `items` says the folder holds files the app opens as items, so each file type lists them (globs.ts):
+  // "prototypes" for a folder of prototype-shaped folders, one per id (src/tools/<id>/), and "handbook"
+  // for the Handbook's fixed shape. Leave it out when the module reads its own files.
+  section?: { key: string; folder: string; items?: 'prototypes' | 'handbook' };
 };
 
 const ID = /^[a-z][a-z0-9-]*$/;
@@ -32,6 +35,9 @@ export function moduleProblems(spec: unknown, folder: string): string[] {
     const { key, folder: dir } = m.section as Partial<NonNullable<ModuleSpec['section']>>;
     if (typeof key !== 'string' || !KEY.test(key)) problems.push(`${where}: section.key should be lowercase letters, numbers, and dashes.`);
     if (typeof dir !== 'string' || !dir || dir.startsWith('/') || dir.split('/').includes('..')) problems.push(`${where}: section.folder should be a folder inside the repo, like src/tools.`);
+    const items = (m.section as { items?: unknown }).items;
+    if (items !== undefined && items !== 'prototypes' && items !== 'handbook') problems.push(`${where}: section.items should be "prototypes" or "handbook".`);
+    else if (items !== undefined && !(typeof dir === 'string' && /^src\/[a-z0-9][a-z0-9-]*$/.test(dir))) problems.push(`${where}: a section with items keeps them in a folder directly under src/, like src/tools.`);
   }
   return problems;
 }
@@ -56,3 +62,7 @@ export function listProblems(specs: readonly ModuleSpec[]): string[] {
 // The section keys of a list of modules: addresses that no contributor's folder can use.
 export const sectionKeys = (specs: readonly ModuleSpec[]): string[] =>
   specs.flatMap((m) => (m.section ? [m.section.key] : []));
+
+// The folders (relative to the repo) of the modules whose sections hold items of this kind.
+export const itemFolders = (specs: readonly ModuleSpec[], items: 'prototypes' | 'handbook'): string[] =>
+  specs.flatMap((m) => (m.section?.items === items ? [m.section.folder] : []));

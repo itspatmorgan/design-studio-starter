@@ -5,5 +5,5 @@ export default {
   id: 'handbook',
   label: 'Handbook',
   version: '0.1.0',
-  section: { key: 'handbook', folder: 'src/handbook' },
+  section: { key: 'handbook', folder: 'src/handbook', items: 'handbook' },
 } satisfies ModuleSpec;

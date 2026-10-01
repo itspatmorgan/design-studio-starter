@@ -20,7 +20,7 @@ src/studio/fileTypes/
 |------|---------|-------|
 | `type.ts` | the build and the app | `label`, `extensions`, an optional `template` (what "New" writes into a new file), an optional `check` (problems to report, like a missing default export), and an optional `language` (`tsx`, `markdown`, or `json`), and `preview` (true if it shows itself live when another item, like a canvas, includes it), which gives the type a source button in the navigation. Two flags are for the Handbook (`src/handbook/`, which the app shows read-only): `inHandbook` (the type opens there, as documents do) and `fallback` (the one type that opens every other text file there, with no extensions of its own). It imports only `../index.ts`, because Node loads it directly. |
 | `module.tsx` | the app | `icon` (in the navigation), `load` (loads the file before its page renders), `Page` (the page itself), and optionally `Embed` (how the type looks when another item, like a canvas, includes it live; without one it shows as a card) |
-| `loader.ts` | the type's own `module.tsx` | a Vite glob of the type's files. It's a separate file because Vite needs the pattern written out, and the file must call `import.meta.hot.accept()` itself. |
+| `loader.ts` | the type's own `module.tsx` | a Vite glob of the type's files, written `import.meta.glob(studioGlobs())`: the build fills in the patterns from the type's extensions and the modules' folders (`src/studio/modules/globs.ts`). It's a separate file because Vite needs the pattern written out, and the file must call `import.meta.hot.accept()` itself. |
 
 The build (`scripts/lib/file-types.js`) and the app (`src/studio/app/data/fileTypes.ts`) find the
 folders on their own. Nothing else lists them: the navigation, the **+** menu, routes, the

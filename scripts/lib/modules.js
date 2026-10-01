@@ -4,9 +4,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { moduleProblems, sectionKeys } from '../../src/studio/modules/index.ts';
+import { itemFolders, moduleProblems, sectionKeys } from '../../src/studio/modules/index.ts';
 
-const DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src/studio/modules');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const DIR = path.join(ROOT, 'src', 'studio', 'modules');
 
 const ids = fs.readdirSync(DIR, { withFileTypes: true })
   .filter((d) => d.isDirectory() && fs.existsSync(path.join(DIR, d.name, 'module.ts')))
@@ -22,3 +23,9 @@ export const declarationProblems = () => ids.flatMap((id) => moduleProblems(MODU
 
 // App page addresses (/tools, /guide, ...), so they can't be a contributor's folder.
 export const SECTION_KEYS = new Set(sectionKeys(Object.values(MODULES).filter(Boolean)));
+
+// Absolute folders of the modules that hold prototype-shaped folders, one per id (src/tools/), and the
+// Handbook's. src/prototypes/ is the platform's own and isn't listed.
+const specs = Object.values(MODULES).filter(Boolean);
+export const PROTOTYPE_DIRS = itemFolders(specs, 'prototypes').map((folder) => path.join(ROOT, folder));
+export const HANDBOOK_DIRS = itemFolders(specs, 'handbook').map((folder) => path.join(ROOT, folder));
