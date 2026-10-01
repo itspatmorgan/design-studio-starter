@@ -100,17 +100,17 @@ function SystemPage({ system, sys, components, tokens, origin, page, onEdit }: {
     case undefined:
       return <><PageHeader title={`${sys.label} system`} />{sys.intro}</>;
     case 'colors':
-      return has('colors') ? <><PageHeader title="Colors" description="Every color token in the theme, read live. Values follow the current mode." /><ColorTokens scopeClass={scopeClass} tokens={tokens} /></> : null;
+      return has('colors') ? <><PageHeader title="Colors" description="Every color token in the theme. Values follow the current mode." /><ColorTokens scopeClass={scopeClass} tokens={tokens} /></> : null;
     case 'typography':
-      return <><PageHeader title="Typography" description="The fonts, sizes, and weights, read live." /><TypographyTokens tokens={tokens} scopeClass={scopeClass} /></>;
+      return <><PageHeader title="Typography" description="The fonts, sizes, and weights." /><TypographyTokens tokens={tokens} scopeClass={scopeClass} /></>;
     case 'radius':
-      return has('radius') ? <><PageHeader title="Radius" description="How rounded the corners are, read live from the theme." /><RadiusTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
+      return has('radius') ? <><PageHeader title="Radius" description="How rounded the corners are." /><RadiusTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
     case 'shadows':
-      return has('shadows') ? <><PageHeader title="Shadows" description="The shadows the theme defines, read live." /><ShadowTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
+      return has('shadows') ? <><PageHeader title="Shadows" description="The shadows the theme defines." /><ShadowTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
     case 'spacing':
-      return has('spacing') ? <><PageHeader title="Spacing" description="The spacing values the theme defines, read live." /><SpacingTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
+      return has('spacing') ? <><PageHeader title="Spacing" description="The spacing values the theme defines." /><SpacingTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
     case 'tokens':
-      return has('other') ? <><PageHeader title="Other tokens" description="Everything else the theme defines, read live." /><OtherTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
+      return has('other') ? <><PageHeader title="Other tokens" description="Everything else the theme defines." /><OtherTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
     case 'icons':
       return sys.icons ? <><PageHeader title="Icons" description={`This system uses ${sys.icons.library}.`} /><IconsPage icons={sys.icons} scopeClass={scopeClass} /></> : null;
   }

@@ -23,7 +23,7 @@ export const studio: DesignSystem = {
   intro: (
     <>
       <Prose>
-        <p>The app's own system. It is the wrapper that makes the sandbox work: the nav rail, the index, prototype navigation, the command palette, and this page.</p>
+        <p>The app's own system: the rail, the Prototypes page, prototype navigation, the command palette, and this page.</p>
         <p>Its components are stock <a href="https://ui.shadcn.com/docs/components" target="_blank" rel="noreferrer" className="font-medium text-foreground underline underline-offset-4">shadcn/ui</a> components, vendored into <Code>src/studio/components</Code> so you can read and change them. Each page links to that component's shadcn/ui docs. Only app UI code imports them. Prototypes never do.</p>
         <CodeBlock>{`import { Button } from '@/studio/components/button';`}</CodeBlock>
       </Prose>

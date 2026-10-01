@@ -12,6 +12,7 @@ import { fileOp, openInEditor, ownsPrototype, publishTool, repoPath, revealInFin
 import { prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import type { PrototypeInfo } from '@/studio/app/data/types';
 import { TOOLS_KEY } from '@/studio/roots';
+import { staleLinksMessage } from '@/studio/tools';
 import { toast } from '@/studio/components/toast';
 import EditPrototypeDialog from '@/studio/app/pages/prototype/EditPrototypeDialog';
 import DeletePrototypeDialog from '@/studio/app/pages/prototype/DeletePrototypeDialog';
@@ -52,7 +53,7 @@ export function usePrototypeActions(proto: PrototypeInfo) {
       toast.add({ title: isTool ? 'Moved back to your prototypes' : 'Published as a tool' });
       // Links in other prototypes still point at the old address.
       if (result.linkedFrom.length) {
-        toast.add({ type: 'error', title: `${result.linkedFrom.length === 1 ? 'A file links' : `${result.linkedFrom.length} files link`} to the old address and need updating: ${result.linkedFrom.slice(0, 2).join(', ')}${result.linkedFrom.length > 2 ? ', …' : ''}` });
+        toast.add({ type: 'error', title: staleLinksMessage(result.linkedFrom) });
       }
     } catch (e) {
       toast.add({ type: 'error', title: (e as Error).message });

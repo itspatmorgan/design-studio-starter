@@ -90,12 +90,12 @@ export default function Index() {
       icon={Layers01Icon}
       title="No prototypes yet"
       steps={[
-        ['Start one', 'Choose New prototype above, or ask your agent.'],
-        ['Describe it', 'Tell your agent what it is for and who it is for.'],
-        ['Share it', 'Every prototype has a link of its own.'],
+        ['Start one', 'Use New prototype above, or ask your agent.'],
+        ['Describe it', 'Tell your agent what it is and who it is for.'],
+        ['Share it', 'Each one has a link of its own.'],
       ]}
     >
-      A prototype is a working sketch of an idea: real screens you can click through, kept in your own folder.
+      A working sketch of an idea: real screens you can click through.
     </EmptyState>
   ) : (
     <EmptyState icon={Layers01Icon} title="No prototypes yet">Prototypes your team makes will show up here.</EmptyState>
@@ -121,15 +121,15 @@ export default function Index() {
         {archived.length > 0 && (
           <section className={active.length ? 'mt-10' : ''}>
             <h2 className="mb-1 text-sm font-semibold text-foreground">Archived</h2>
-            <p className="mb-3 text-xs text-muted-foreground">Kept here for reference. The deployed site leaves these out.</p>
+            <p className="mb-3 text-xs text-muted-foreground">Left out of the deployed site.</p>
             {list(archived)}
           </section>
         )}
       </>
     ) : (
       <div className="py-16 text-center">
-        <p className="mb-2 text-lg font-semibold text-foreground">Nothing here yet</p>
-        <p className="mb-4 text-sm text-muted-foreground">Try a different search term.</p>
+        <p className="mb-2 text-lg font-semibold text-foreground">No matches</p>
+        <p className="mb-4 text-sm text-muted-foreground">Try a different search.</p>
         <Link to="/" className="text-sm text-primary hover:underline">View all prototypes</Link>
       </div>
     );
@@ -141,7 +141,7 @@ export default function Index() {
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Prototypes</h1>
         {/* The subtitle's line is as tall as the controls (32px), so all of them centre on the same line. */}
         <div className="mt-0.5 flex items-center justify-between gap-4">
-          <p className="min-w-0 truncate text-sm leading-8 text-muted-foreground">Every prototype in the sandbox, newest first.</p>
+          <p className="min-w-0 truncate text-sm leading-8 text-muted-foreground">All prototypes, newest first.</p>
           <div className="flex shrink-0 items-center gap-2">
             {!empty && <SearchBox value={search} />}
             <NewPrototypeButton />

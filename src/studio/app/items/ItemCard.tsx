@@ -26,7 +26,7 @@ export default function ItemCard({ proto, item, elsewhere = false, className }: 
             ? FILE_TYPES[item.fileType]?.label ?? 'File'
             : elsewhere ? 'A canvas shows only its own prototype. Copy the view here.'
             // On the deployed site a missing file may be archived work, which it leaves out (src/studio/archive.ts).
-            : import.meta.env.DEV ? 'This file was moved or deleted. Ask your agent to fix the link.' : 'Not on this site. It may be archived: run the sandbox locally to see it.'}
+            : import.meta.env.DEV ? 'This file was moved or deleted. Ask your agent to fix the link.' : 'Not on this site. It may be archived. Run the sandbox locally to see it.'}
         </div>
       </div>
       {found && (

@@ -86,7 +86,7 @@ export function ComponentEditor({ system, component, onDone }: { system: string;
         <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>Discard your changes?</DialogTitle>
-            <DialogDescription>You have unsaved changes to {path}. They'll be lost if you go on.</DialogDescription>
+            <DialogDescription>You have unsaved changes to {path}. They'll be lost if you leave.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPending(null)}>Keep editing</Button>

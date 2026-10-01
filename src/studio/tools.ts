@@ -13,3 +13,10 @@ export const parseMaintainers = (value: unknown): string[] | null => {
 // Whether `key` (your contributors.json key, or null) may change a tool with these maintainers.
 export const canMaintain = (maintainers: readonly string[] | undefined, key: string | null) =>
   Boolean(key && maintainers?.includes(key));
+
+// The sentence for files that still link to an address a prototype has left (after Publish or Unpublish):
+// one file by name, or the count and the first two.
+export function staleLinksMessage(files: readonly string[]): string {
+  if (files.length === 1) return `Update the link to the old address in ${files[0]}.`;
+  return `${files.length} files still link to the old address: ${files.slice(0, 2).join(', ')}${files.length > 2 ? ', and more' : ''}.`;
+}

@@ -33,7 +33,7 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
     <>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <Command>
-          <CommandInput placeholder="Search prototypes, views, pages..." />
+          <CommandInput placeholder="Search prototypes, views, pages" />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
   

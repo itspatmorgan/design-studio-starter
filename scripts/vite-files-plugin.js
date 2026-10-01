@@ -265,7 +265,7 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, title, d
   }
   if (op === 'create') {
     const parent = inside(rel);
-    if (!parent || !fs.statSync(parent).isDirectory()) throw new Error('That folder no longer exists. It may have been moved or deleted.');
+    if (!parent || !fs.statSync(parent).isDirectory()) throw new Error('That folder was moved or deleted.');
     if (!validName(name)) throw new Error('Names can\'t contain slashes or start with a dot.');
     const target = path.join(parent, name);
     if (fs.existsSync(target)) throw new Error(`Something named “${name}” already exists here.`);
@@ -303,15 +303,15 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, title, d
     // Arranging is for prototypes: the Handbook has a fixed shape (src/studio/handbookRules.ts).
     if (section) throw new Error('The Handbook keeps its own order.');
     const from = inside(rel);
-    if (!from || from === fs.realpathSync(dir) || rel === 'meta.json') throw new Error('That file no longer exists. It may have been moved or deleted.');
+    if (!from || from === fs.realpathSync(dir) || rel === 'meta.json') throw new Error('That file was moved or deleted.');
     let current = rel;
     if (typeof to === 'string' && to !== parentOf(rel)) current = runOp(dir, { op: 'move', path: rel, to }).path;
     const folder = parentOf(current);
     const where = inside(folder);
-    if (!where || !fs.statSync(where).isDirectory()) throw new Error('That folder no longer exists. It may have been moved or deleted.');
+    if (!where || !fs.statSync(where).isDirectory()) throw new Error('That folder was moved or deleted.');
     const siblings = readTree(where, folder ? `${folder}/` : '', readOrder(dir)).map((n) => n.path);
-    if (!siblings.includes(current)) throw new Error('That file no longer exists. It may have been moved or deleted.');
-    if (before && !siblings.includes(before)) throw new Error('That place no longer exists. It may have been moved or deleted.');
+    if (!siblings.includes(current)) throw new Error('That file was moved or deleted.');
+    if (before && !siblings.includes(before)) throw new Error('That place was moved or deleted.');
     const metaFile = path.join(dir, 'meta.json');
     const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
     meta.order = withFolderOrder(parseOrder(meta.order) ?? [], folder, place(siblings, current, before ?? ''));
@@ -319,8 +319,8 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, title, d
     return { path: current };
   }
   const source = inside(rel);
-  if (!source || source === fs.realpathSync(dir)) throw new Error('That file no longer exists. It may have been moved or deleted.');
-  if (rel === 'meta.json') throw new Error('meta.json holds the prototype\'s info, so it stays put. To change the title or description, choose Edit info.');
+  if (!source || source === fs.realpathSync(dir)) throw new Error('That file was moved or deleted.');
+  if (rel === 'meta.json') throw new Error('meta.json holds the prototype\'s info, so it stays put. To change the title or description, choose Edit.');
   if (op === 'rename' || op === 'move') {
     let target;
     if (op === 'rename') {
@@ -328,7 +328,7 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, title, d
       target = path.join(path.dirname(source), name);
     } else {
       const folder = inside(to ?? '');
-      if (!folder || !fs.statSync(folder).isDirectory()) throw new Error('That folder no longer exists. It may have been moved or deleted.');
+      if (!folder || !fs.statSync(folder).isDirectory()) throw new Error('That folder was moved or deleted.');
       if (folder === source || folder.startsWith(source + path.sep)) throw new Error('A folder can\'t move inside itself.');
       target = path.join(folder, path.basename(source));
     }

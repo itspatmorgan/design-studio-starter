@@ -41,7 +41,7 @@ export default function DeletePrototypeDialog({ proto, open, onOpenChange }: Pro
         <DialogHeader>
           <DialogTitle>Delete “{proto.title}”?</DialogTitle>
           <DialogDescription>
-            The prototype and everything in it move to the Trash, where you can restore it. Its link stops working until you do.
+            Everything in it moves to the Trash, where you can restore it. Its link stops working until you do.
           </DialogDescription>
         </DialogHeader>
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}

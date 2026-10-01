@@ -15,8 +15,8 @@ export const product: DesignSystem = {
       <div className="rounded-xl border-2 border-dashed border-foreground/25 bg-muted/40 p-6">
         <p className="mb-2 text-base font-semibold text-foreground">Replace this with your product's design system.</p>
         <Prose>
-          <p>This is a stand-in so the sandbox works out of the box. Swap in the components and theme your production app uses, so prototypes look like what ships.</p>
-          <p>Whatever you bring in, keep these four things true:</p>
+          <p>A stand-in so the sandbox works out of the box. Swap in your production app's components and theme, so prototypes look like what ships.</p>
+          <p>Whatever you bring in, keep these true:</p>
           <ol className="list-decimal space-y-1 pl-5">
             <li>It lives in <Code>src/systems/product/</Code>.</li>
             <li>Prototypes import from <Code>@/systems/product/...</Code>.</li>

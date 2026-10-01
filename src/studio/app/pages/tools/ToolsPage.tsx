@@ -15,6 +15,7 @@ import { EmptyState } from '@/studio/app/shell/EmptyState';
 import PrototypeCardMenu from '@/studio/app/pages/index/PrototypeCardMenu';
 import { publishTool, useMe } from '@/studio/app/data/files';
 import { prototypeLink, setManifest } from '@/studio/app/data/manifest';
+import { staleLinksMessage } from '@/studio/tools';
 import type { PrototypeInfo } from '@/studio/app/data/types';
 import { cn } from '@/lib/utils';
 
@@ -59,7 +60,7 @@ function PublishDialog({ me, prototypes, open, onOpenChange }: { me: string; pro
       onOpenChange(false);
       navigate({ to: '/$contributor/$prototype', params: { contributor: result.contributor, prototype: result.id } });
       toast.add({ title: 'Published as a tool' });
-      if (result.linkedFrom.length) toast.add({ type: 'error', title: `${result.linkedFrom.length === 1 ? 'A file links' : `${result.linkedFrom.length} files link`} to the old address and need updating: ${result.linkedFrom.slice(0, 2).join(', ')}${result.linkedFrom.length > 2 ? ', …' : ''}` });
+      if (result.linkedFrom.length) toast.add({ type: 'error', title: staleLinksMessage(result.linkedFrom) });
     } catch (e) {
       toast.add({ type: 'error', title: (e as Error).message });
     } finally {
@@ -111,7 +112,7 @@ function ToolsEmpty({ local }: { local: boolean }) {
         ['Publish it', 'Choose Publish as tool from its menu.'],
       ]}
     >
-      A small app your team uses to make something, like a thumbnail or a graphic. Build it as a prototype, then publish it here.
+      A small app your team uses to make something, like a thumbnail or graphic. Build it as a prototype, then publish it here.
     </EmptyState>
   ) : (
     <EmptyState icon={Wrench01Icon} title="No tools yet">Tools your team publishes will show up here.</EmptyState>
@@ -131,7 +132,7 @@ export default function ToolsPage() {
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Tools</h1>
         {/* The subtitle's line is as tall as the button (32px), so both centre their text on the same line. */}
         <div className="mt-0.5 flex items-center justify-between gap-4">
-          <p className="text-sm leading-8 text-muted-foreground">Small apps the team maintains. Open one to use it.</p>
+          <p className="text-sm leading-8 text-muted-foreground">Small apps your team maintains. Open one to use it.</p>
           {local && (
             <>
               <Button variant="outline" onClick={() => setPublishing(true)}>

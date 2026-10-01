@@ -568,7 +568,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
               if (filter) setFilter('');
               else setFilterOpen(false);
             }}
-            placeholder={`Filter ${noun}…`}
+            placeholder={`Filter ${noun}`}
             aria-label={`Filter ${noun}`}
             className={cn('h-8 border-sidebar-border bg-sidebar-accent text-[13px] shadow-none', filter && 'pr-8')}
           />

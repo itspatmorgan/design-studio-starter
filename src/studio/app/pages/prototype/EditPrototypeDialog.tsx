@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useRenamePrototype } from '@/studio/app/pages/prototype/useRenamePrototype';
 import type { PrototypeInfo } from '@/studio/app/data/types';
+import { TOOLS_KEY } from '@/studio/roots';
 import { Button } from '@/studio/components/button';
 import { Input } from '@/studio/components/input';
 import { Textarea } from '@/studio/components/textarea';
@@ -36,7 +37,7 @@ export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props
         <form key={String(open)} action={save} className="grid gap-4">
           <DialogHeader>
             <DialogTitle>Edit prototype</DialogTitle>
-            <DialogDescription>A new title also renames the prototype's folder, so its link changes.</DialogDescription>
+            <DialogDescription>{proto.contributorKey === TOOLS_KEY ? "A tool's link stays the same when its title changes." : 'A new title renames the folder, so the link changes.'}</DialogDescription>
           </DialogHeader>
           <label className="grid gap-1.5 text-sm font-medium">
             Title
