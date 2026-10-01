@@ -88,7 +88,7 @@ export default function Detail() {
             </section>
           </div>
 
-          <Card size="sm">
+          <Card size="sm" className="self-start">
             <CardHeader><CardTitle>Triage</CardTitle></CardHeader>
             <CardContent className="grid gap-4">
               <div className="grid gap-1.5">

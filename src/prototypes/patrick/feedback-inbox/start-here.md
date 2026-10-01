@@ -31,7 +31,7 @@ Hover over **Files** and click the code icon to see any file's text. In the dev 
 
 ## 4. The helpers folder
 
-Look inside the `app` folder with **Show all files** in the **…** menu. There's a `components` folder: the data, the sidebar, and the form the screens share. Files in a folder called `components` are helpers, not screens, so they never appear in the navigation. They're how three screens share one set of pieces without repeating them.
+Look inside the `app` folder with **Show all files** in the **…** menu. There's a `components` folder: the data, the top bar, and the form the screens share. Files in a folder called `components` are helpers, not screens, so they never appear in the navigation. They're how three screens share one set of pieces without repeating them.
 
 ## 5. Sketch first
 
