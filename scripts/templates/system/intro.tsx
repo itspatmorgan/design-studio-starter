@@ -1,7 +1,7 @@
 // __LABEL__ on the Systems page: what it is, and how its theme is set up. Its components and foundations pages come from
 // its files (components/, styles/theme.css).
-import { Code, Prose } from '@/studio/modules/systems/pages/foundations';
-import type { SystemIntro } from '@/studio/app/data/types';
+import { Code, Prose } from '@/platform/modules/systems/pages/foundations';
+import type { SystemIntro } from '@/platform/app/data/types';
 
 export default {
   intro: (

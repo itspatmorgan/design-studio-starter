@@ -5,11 +5,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from '../../lib/file-types.js';
-import { isHelper } from '../../../src/studio/fileTypes/index.ts';
-import { byOrder, parseOrder } from '../../../src/studio/core/order.ts';
-import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../../../src/studio/core/roots.ts';
+import { isHelper } from '../../../src/platform/fileTypes/index.ts';
+import { byOrder, parseOrder } from '../../../src/platform/core/order.ts';
+import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../../../src/platform/core/roots.ts';
 import { PROTOTYPE_SECTIONS } from '../../lib/modules.js';
-import { SYSTEM_SOURCES } from '../../../src/studio/modules/systems/node/systems.js';
+import { SYSTEM_SOURCES } from '../../../src/platform/modules/systems/node/systems.js';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 export const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -55,7 +55,7 @@ export function resolveInside(dir, rel) {
   } catch { return null; }
 }
 
-// A prototype's meta.json "order" (src/studio/core/order.ts), or none. The Handbook and system folders have no meta.json.
+// A prototype's meta.json "order" (src/platform/core/order.ts), or none. The Handbook and system folders have no meta.json.
 export function readOrder(dir) {
   try { return parseOrder(JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')).order) ?? []; } catch { return []; }
 }

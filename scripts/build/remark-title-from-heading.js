@@ -4,7 +4,7 @@
 // a heading its `name` is the title ("document-component" → "Document component"). The page then
 // shows its title, its description, and its content, in that order.
 // Runs before remark-mdx-frontmatter, which reads the frontmatter this edits.
-import { skillTitle, SKILL_FILE } from '../../src/studio/modules/handbook/skills.ts';
+import { skillTitle, SKILL_FILE } from '../../src/platform/modules/handbook/skills.ts';
 
 const textOf = (node) => (typeof node.value === 'string' ? node.value : (node.children ?? []).map(textOf).join(''));
 

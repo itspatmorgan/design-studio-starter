@@ -1,16 +1,16 @@
-// The modules installed in src/studio/modules/ (one folder each, with a module.ts), for the build and
+// The modules installed in src/platform/modules/ (one folder each, with a module.ts), for the build and
 // the dev server. Delete a folder and its module is gone from here too. The app finds the same
-// folders with a glob (src/studio/app/data/modules.ts).
+// folders with a glob (src/platform/app/data/modules.ts).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import CONFIG from '../../studio.config.ts';
-import { isEnabled } from '../../src/studio/core/config.ts';
-import { compatible, itemFolders, moduleProblems, sectionKeys } from '../../src/studio/core/modules/index.ts';
-import { setSections } from '../../src/studio/core/roots.ts';
+import { isEnabled } from '../../src/platform/core/config.ts';
+import { compatible, itemFolders, moduleProblems, sectionKeys } from '../../src/platform/core/modules/index.ts';
+import { setSections } from '../../src/platform/core/roots.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const DIR = path.join(ROOT, 'src', 'studio', 'modules');
+const DIR = path.join(ROOT, 'src', 'platform', 'modules');
 
 const ids = fs.readdirSync(DIR, { withFileTypes: true })
   .filter((d) => d.isDirectory() && fs.existsSync(path.join(DIR, d.name, 'module.ts')))

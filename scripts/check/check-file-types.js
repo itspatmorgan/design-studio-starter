@@ -1,7 +1,7 @@
-// Checks that file types stay removable (src/studio/fileTypes/README.md):
+// Checks that file types stay removable (src/platform/fileTypes/README.md):
 //   - nothing outside a type's folder imports from it, and types don't import each other, so
 //     deleting a folder leaves nothing broken. Core reads types through the registries
-//     (src/studio/app/data/fileTypes.ts, scripts/lib/file-types.js).
+//     (src/platform/app/data/fileTypes.ts, scripts/lib/file-types.js).
 //   - a type's type.ts imports only ../index.ts, because the build loads it in Node.
 //   - a type's loader.ts lists its files with studioGlobs(), so a new section and archived files reach it
 //     (scripts/build/vite-globs-plugin.js).
@@ -11,7 +11,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const TYPES = path.join(ROOT, 'src', 'studio', 'fileTypes');
+const TYPES = path.join(ROOT, 'src', 'platform', 'fileTypes');
 const ids = fs.readdirSync(TYPES, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
 
 // Source files, not prototypes (those are checked by the import guard) or dependencies.
@@ -47,7 +47,7 @@ for (const file of [...files(path.join(ROOT, 'src')), ...files(path.join(ROOT, '
     if (target && target !== own) {
       problems.push(own && ids.includes(own)
         ? `${rel} imports the ${target} file type. File types can't depend on each other: ${target}/ has to be removable.`
-        : `${rel} imports the ${target} file type ("${specifier}"). Core code can't depend on a file type, or the app wouldn't run without it. Read types through src/studio/app/data/fileTypes.ts instead.`);
+        : `${rel} imports the ${target} file type ("${specifier}"). Core code can't depend on a file type, or the app wouldn't run without it. Read types through src/platform/app/data/fileTypes.ts instead.`);
     }
   }
   // Real import lines only: a type.ts can hold import text inside a template, like a new view's.

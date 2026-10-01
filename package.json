@@ -9,13 +9,13 @@
     "preview": "vite preview",
     "new": "node scripts/cli/create-prototype.js",
     "join": "node scripts/cli/setup-contributor.js",
-    "component-docs": "node src/studio/modules/systems/node/scaffold-docs.js",
+    "component-docs": "node src/platform/modules/systems/node/scaffold-docs.js",
     "prepare": "husky",
     "check": "node scripts/check/check-file-types.js && node scripts/check/check-modules.js",
     "baseline": "node scripts/cli/baseline.js",
     "studio": "node scripts/cli/studio.js",
-    "canvas": "node src/studio/fileTypes/canvas/cli.ts",
-    "test": "node --test src/studio/fileTypes/canvas/tools.test.ts src/studio/fileTypes/view/lofi.test.ts src/studio/modules/handbook/handbook.test.ts src/studio/modules/systems/docs.test.ts src/studio/core/archive.test.ts src/studio/core/order.test.ts src/studio/modules/tools/staleLinks.test.ts src/studio/core/modules/modules.test.ts src/studio/core/modules/globs.test.ts src/studio/core/permissions.test.ts src/studio/core/config.test.ts src/studio/modules/systems/spec.test.ts src/studio/core/modules/pack.test.ts src/tools/quote-card/_components/text.test.ts src/studio/modules/tools/toolArt.test.ts"
+    "canvas": "node src/platform/fileTypes/canvas/cli.ts",
+    "test": "node --test src/platform/fileTypes/canvas/tools.test.ts src/platform/fileTypes/view/lofi.test.ts src/platform/modules/handbook/handbook.test.ts src/platform/modules/systems/docs.test.ts src/platform/core/archive.test.ts src/platform/core/order.test.ts src/platform/modules/tools/staleLinks.test.ts src/platform/core/modules/modules.test.ts src/platform/core/modules/globs.test.ts src/platform/core/permissions.test.ts src/platform/core/config.test.ts src/platform/modules/systems/spec.test.ts src/platform/core/modules/pack.test.ts src/tools/quote-card/_components/text.test.ts src/platform/modules/tools/toolArt.test.ts"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^4.0.0",

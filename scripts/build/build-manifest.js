@@ -1,25 +1,25 @@
 // Usage: node scripts/build/build-manifest.js [--strict] [--deploy]
 //   --strict  exits 1 if any meta.json is invalid
-//   --deploy  leaves archived prototypes and views out (src/studio/core/archive.ts), for the deployed site
+//   --deploy  leaves archived prototypes and views out (src/platform/core/archive.ts), for the deployed site
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from '../../src/studio/modules/systems/node/systems.js';
-import { STUDIO_ID } from '../../src/studio/modules/systems/sources.ts';
-import { isHelper, itemSlug } from '../../src/studio/fileTypes/index.ts';
-import { HANDBOOK_KEY, HANDBOOK_SECTIONS, rootOf } from '../../src/studio/core/roots.ts';
-import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../../src/studio/core/archive.ts';
-import { byOrder, parseOrder } from '../../src/studio/core/order.ts';
-import { parseMaintainers } from '../../src/studio/core/permissions.ts';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from '../../src/platform/modules/systems/node/systems.js';
+import { STUDIO_ID } from '../../src/platform/modules/systems/sources.ts';
+import { isHelper, itemSlug } from '../../src/platform/fileTypes/index.ts';
+import { HANDBOOK_KEY, HANDBOOK_SECTIONS, rootOf } from '../../src/platform/core/roots.ts';
+import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../../src/platform/core/archive.ts';
+import { byOrder, parseOrder } from '../../src/platform/core/order.ts';
+import { parseMaintainers } from '../../src/platform/core/permissions.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from '../lib/file-types.js';
 import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from '../lib/modules.js';
 import { frontmatter } from '../lib/frontmatter.js';
 import { contributorsSignature, loadContributors } from '../lib/contributors.js';
-import { handbookProblems } from '../../src/studio/modules/handbook/node/handbook-check.js';
-import { systemDocs } from '../../src/studio/modules/systems/node/docs.js';
-import { themeTokens } from '../../src/studio/modules/systems/themeTokens.ts';
-import { handbookMap } from '../../src/studio/modules/handbook/map.ts';
+import { handbookProblems } from '../../src/platform/modules/handbook/node/handbook-check.js';
+import { systemDocs } from '../../src/platform/modules/systems/node/docs.js';
+import { themeTokens } from '../../src/platform/modules/systems/themeTokens.ts';
+import { handbookMap } from '../../src/platform/modules/handbook/map.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -40,9 +40,9 @@ const dirs = (p) => fs.existsSync(p)
   ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort()
   : [];
 
-// A prototype's items (see src/studio/fileTypes/), in the order the file tree shows them: at each
+// A prototype's items (see src/platform/fileTypes/), in the order the file tree shows them: at each
 // level, files first, then folders, each alphabetical, unless meta.json "order" says otherwise
-// (src/studio/core/order.ts). Hidden files and helpers (names starting with an underscore) are skipped.
+// (src/platform/core/order.ts). Hidden files and helpers (names starting with an underscore) are skipped.
 // `typeOf` says which type opens a file (or null for a plain file), and `skip` which folders are
 // left out. Links are never followed: a symlink is neither a file nor a folder here.
 const inPrototype = { typeOf: (name) => (isHelper(name) ? null : fileTypeOf(name)), skip: isHelper };
@@ -66,7 +66,7 @@ const inHandbook = {
 };
 
 // Problems with a folder's items: two sharing a URL, or a file its type rejects (a view needs a
-// default export, and so on: src/studio/fileTypes/<type>/type.ts). Printed; returns how many.
+// default export, and so on: src/platform/fileTypes/<type>/type.ts). Printed; returns how many.
 function checkItems(dir, items, out = console, prototype) {
   let errors = 0;
   const seen = new Set();
@@ -128,7 +128,7 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
     if (!maintainers) return skip('needs "maintainers": a list with at least one contributor key, like ["patrick"]');
     for (const key of maintainers) if (!(key in contributors)) out.warn(`[manifest] ${metaFile}: maintainer "${key}" isn't in contributors.json`);
   }
-  // "order" (optional) lists paths to put first, in sequence (src/studio/core/order.ts).
+  // "order" (optional) lists paths to put first, in sequence (src/platform/core/order.ts).
   let order;
   if (meta.order !== undefined) {
     order = parseOrder(meta.order);
@@ -220,10 +220,10 @@ function writeManifest(manifest) {
   writeIfChanged(OUT, JSON.stringify({ ...manifest, prototypes, sections }) + '\n');
 }
 
-// Scans src/prototypes/, src/handbook/, and src/studio/modules/guide/pages/, writes public/prototypes/ (manifest.json, and items/), and returns the whole manifest.
+// Scans src/prototypes/, src/handbook/, and src/platform/modules/guide/pages/, writes public/prototypes/ (manifest.json, and items/), and returns the whole manifest.
 // Problems are printed; errors counts them. The dev server calls this on every change
 // (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
-// Options: `deploy` leaves archived prototypes and views out (see src/studio/core/archive.ts), `write: false`
+// Options: `deploy` leaves archived prototypes and views out (see src/platform/core/archive.ts), `write: false`
 // skips writing the file, and `quiet` prints nothing. `touched` is the files the dev server saw change since the last
 // build: a prototype with none of them is reused without a look at its files, so a rebuild costs what changed, not
 // how many prototypes there are. `archived` in the result lists what deploy
@@ -282,7 +282,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
 
   // The Handbook (src/handbook/): a prototype-shaped entry for each section, so the same file tree
   // and item pages open it. Nobody owns it: the app only reads it. Its shape is fixed
-  // (src/studio/modules/handbook/node/handbook-check.js), and a file or folder out of place is a problem.
+  // (src/platform/modules/handbook/node/handbook-check.js), and a file or folder out of place is a problem.
   const handbook = [];
   if (fs.existsSync(HANDBOOK)) {
     for (const problem of handbookProblems(HANDBOOK)) { out.error(`[manifest] ${problem}`); errors++; }
@@ -296,7 +296,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   }
 
   // The Handbook's map: what an agent reads, in order, from AGENTS.md, the rules, and the skills
-  // (src/studio/modules/handbook/map.ts). A link to a file that isn't there is a problem; a rule nothing
+  // (src/platform/modules/handbook/map.ts). A link to a file that isn't there is a problem; a rule nothing
   // links to is a warning, since no agent will ever read it.
   let map = null;
   if (handbook.length) {
@@ -342,7 +342,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   }
 
   // Each system's components and tokens, for the Systems pages, and what its component pages lack
-  // (src/studio/modules/systems/docs.ts, themeTokens.ts). The app's own system (Studio) is one of them. By
+  // (src/platform/modules/systems/docs.ts, themeTokens.ts). The app's own system (Studio) is one of them. By
   // default a gap is a warning, and the first few are listed; docs: 'strict' fails the build and
   // 'off' says nothing.
   if (STUDIO_ID in PROTOTYPE_SYSTEMS) { out.error(`[manifest] src/systems/${STUDIO_ID}/: "${STUDIO_ID}" is the app's own system, so a prototype system can't use that name`); errors++; }
@@ -362,20 +362,20 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     }
   }
 
-  // Guide pages: src/studio/modules/guide/pages/*.md, ordered by `order` in each page's frontmatter. They share
+  // Guide pages: src/platform/modules/guide/pages/*.md, ordered by `order` in each page's frontmatter. They share
   // the title, description, and toc fields with prototype documents, and add order and section.
   const guide = [];
   const guideFiles = GUIDE && fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.md')).sort() : [];
   for (const file of guideFiles) {
     const fm = frontmatter(fs.readFileSync(path.join(GUIDE, file), 'utf8'));
-    const where = `src/studio/modules/guide/pages/${file}`;
+    const where = `src/platform/modules/guide/pages/${file}`;
     if (!fm || typeof fm.title !== 'string' || !fm.title) { out.error(`[manifest] Skipped ${where}: needs frontmatter with a "title"`); errors++; continue; }
     if (typeof fm.order !== 'number') { out.error(`[manifest] Skipped ${where}: needs a numeric "order" in its frontmatter`); errors++; continue; }
     guide.push({ slug: file.replace(/\.md$/, ''), title: fm.title, description: fm.description ?? '', section: fm.section || null, order: fm.order });
   }
   guide.sort((a, b) => a.order - b.order);
 
-  // What the deployed site leaves out (src/studio/core/archive.ts).
+  // What the deployed site leaves out (src/platform/core/archive.ts).
   const { kept, archived } = forDeploy([...prototypes, ...Object.values(sections).flat()]);
   const keptPrototypes = kept.filter((p) => !(p.contributorKey in sections));
   const keptSections = Object.fromEntries(Object.keys(sections).map((key) => [key, kept.filter((p) => p.contributorKey === key)]));

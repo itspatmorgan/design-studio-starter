@@ -1,4 +1,4 @@
-// Checks the modules in src/studio/modules/ (src/studio/core/modules/index.ts):
+// Checks the modules in src/platform/modules/ (src/platform/core/modules/index.ts):
 //   - each module.ts is well formed, and its id is its folder's name
 //   - no two modules claim the same section key or folder
 //   - a module's section folder exists
@@ -13,10 +13,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pathToFileURL } from 'node:url';
-import { PLATFORM_VERSION, compatible, listProblems } from '../../src/studio/core/modules/index.ts';
-import { configProblems } from '../../src/studio/core/config.ts';
+import { PLATFORM_VERSION, compatible, listProblems } from '../../src/platform/core/modules/index.ts';
+import { configProblems } from '../../src/platform/core/config.ts';
 import { CONFIG, MODULES, SECTION_KEYS, declarationProblems } from '../lib/modules.js';
-import { PROTOTYPE_SYSTEMS, SYSTEM_IDS, systemDeclarationProblems } from '../../src/studio/modules/systems/node/systems.js';
+import { PROTOTYPE_SYSTEMS, SYSTEM_IDS, systemDeclarationProblems } from '../../src/platform/modules/systems/node/systems.js';
 import { changesFromLock } from '../lib/lock.js';
 import { readContributors } from '../lib/contributors.js';
 
@@ -50,7 +50,7 @@ for (const key of SECTION_KEYS) {
 
 // Imports, as written: from '...', import('...'), import '...'.
 const SPECIFIER = /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)['"]([^'"]+)['"]/g;
-const MODULES_DIR = path.join(ROOT, 'src', 'studio', 'modules');
+const MODULES_DIR = path.join(ROOT, 'src', 'platform', 'modules');
 const ids = Object.keys(MODULES);
 
 function* sources(dir) {
@@ -82,7 +82,7 @@ for (const file of [...sources(path.join(ROOT, 'src')), ...sources(path.join(ROO
 
 // Each module's own check (check.ts), for the modules that are on.
 for (const m of specs) {
-  const file = path.join(ROOT, 'src', 'studio', 'modules', m.id, 'check.ts');
+  const file = path.join(ROOT, 'src', 'platform', 'modules', m.id, 'check.ts');
   if (!fs.existsSync(file) || !compatible(m) || CONFIG.modules?.[m.id] === false) continue;
   try {
     const run = (await import(pathToFileURL(file).href)).default;

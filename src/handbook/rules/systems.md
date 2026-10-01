@@ -2,7 +2,7 @@
 
 There are two kinds of design system, each in its own scope.
 
-- **Studio system**: `src/studio/components/` and `src/studio/styles/`. The app's own system, the wrapper that makes the sandbox work (nav rail, index, prototype navigation, command palette, Systems pages, Guide, the error message shown when a view fails). Stock shadcn/ui components, vendored so they can be read and changed. Maintained with the platform. Prototypes never import it.
+- **Studio system**: `src/platform/components/` and `src/platform/styles/`. The app's own system, the wrapper that makes the sandbox work (nav rail, index, prototype navigation, command palette, Systems pages, Guide, the error message shown when a view fails). Stock shadcn/ui components, vendored so they can be read and changed. Maintained with the platform. Prototypes never import it.
 - **Prototype systems**: what prototypes build with, one folder each in `src/systems/`. The kit ships one, `product` (`src/systems/product/`), a placeholder a team replaces with their real product design system. A team can add others, like a `brand` system for marketing work. Each prototype uses one: `"system"` in its `meta.json`, or the default (`defaultSystem` in `studio.config.ts`, else the first by name).
 
 The Systems pages treat both the same: each system's components and foundations pages come from its own files (below), so nothing about Studio is special-cased except that it is `docs: 'off'` (no warnings about pages and examples nobody needs to write for stock components).
@@ -32,7 +32,7 @@ See [shadcn/ui](https://ui.shadcn.com/docs) (Base UI pages) and [Base UI composi
 
 ## Foundations
 
-A prototype system's foundations pages (Colors, Typography, Radius, Shadows, Spacing, Other tokens) are built from the custom properties in its `theme.css` (`src/studio/modules/systems/themeTokens.ts`), so there is nothing to write for them: a page shows when the theme defines that kind of value. Typography always shows, since every system has Tailwind's type scale; it uses the theme's `--font-*`, `--text-*`, and `--font-weight-*` tokens where it sets them, and Tailwind's scale where it doesn't. Sorting is by name and value: `--radius*` is radius, `--shadow*` shadows, `--spacing*`/`--space*` spacing, `--font*`/`--text*`/`--leading*`/`--tracking*` typography, a color value (`oklch()`, hex, `var()` of one) a color, and the rest other. A ramp like `--blue-500` is grouped as Blue. Give tokens names in these families and they get the right page. Set them under `.<system>-theme` (and `.dark .<system>-theme` for dark values) like the rest of the theme.
+A prototype system's foundations pages (Colors, Typography, Radius, Shadows, Spacing, Other tokens) are built from the custom properties in its `theme.css` (`src/platform/modules/systems/themeTokens.ts`), so there is nothing to write for them: a page shows when the theme defines that kind of value. Typography always shows, since every system has Tailwind's type scale; it uses the theme's `--font-*`, `--text-*`, and `--font-weight-*` tokens where it sets them, and Tailwind's scale where it doesn't. Sorting is by name and value: `--radius*` is radius, `--shadow*` shadows, `--spacing*`/`--space*` spacing, `--font*`/`--text*`/`--leading*`/`--tracking*` typography, a color value (`oklch()`, hex, `var()` of one) a color, and the rest other. A ramp like `--blue-500` is grouped as Blue. Give tokens names in these families and they get the right page. Set them under `.<system>-theme` (and `.dark .<system>-theme` for dark values) like the rest of the theme.
 
 ## Component pages
 
@@ -48,7 +48,7 @@ The build warns about a component without its examples or page, and about a page
 
 ## Icons
 
-- App UI (`src/studio/`) uses HugeIcons (`@hugeicons/react` with `@hugeicons/core-free-icons`).
+- App UI (`src/platform/`) uses HugeIcons (`@hugeicons/react` with `@hugeicons/core-free-icons`).
 - Prototype systems and prototypes use `lucide-react`, the icon set shadcn/ui brings in, unless the system brings its own.
 
 ## Dark mode

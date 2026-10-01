@@ -1,16 +1,16 @@
 // __LABEL__ in the app: a button on the rail, and the page it opens at /__ID__. The shell finds this file by its
 // name, so nothing else needs to know about it. An app.tsx can also add routes, entries in the ⌘K palette, and entries in
-// every prototype's "…" menu: see src/studio/modules/README.md.
+// every prototype's "…" menu: see src/platform/modules/README.md.
 import { createRoute } from '@tanstack/react-router';
 import { Home01Icon } from '@hugeicons/core-free-icons';
-import { APP_NAME } from '@/studio/app/data/config';
-import type { ModuleApp } from '@/studio/core/api';
+import { APP_NAME } from '@/platform/app/data/config';
+import type { ModuleApp } from '@/platform/core/api';
 
 function Page() {
   return (
     <div className="space-y-2 p-8">
       <h1 className="text-lg font-semibold text-foreground">__LABEL__</h1>
-      <p className="text-sm text-muted-foreground">This page is in src/studio/modules/__ID__/app.tsx. Change it, or replace it.</p>
+      <p className="text-sm text-muted-foreground">This page is in src/platform/modules/__ID__/app.tsx. Change it, or replace it.</p>
     </div>
   );
 }

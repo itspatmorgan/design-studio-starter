@@ -16,7 +16,7 @@ import manifestWatch from './scripts/build/vite-manifest-watch-plugin.js';
 import spa404 from './scripts/build/vite-spa-404-plugin.js';
 import files from './scripts/build/vite-files-plugin.js';
 import markdownRefresh from './scripts/build/vite-markdown-refresh-plugin.js';
-import systemProps from './src/studio/modules/systems/node/props-plugin.js';
+import systemProps from './src/platform/modules/systems/node/props-plugin.js';
 import globs from './scripts/build/vite-globs-plugin.js';
 import css from './scripts/build/vite-css-plugin.js';
 import { ENABLED_MODULES, PROTOTYPE_DIRS } from './scripts/lib/modules.js';
@@ -28,7 +28,7 @@ const prototypeFolders = ['prototypes', ...PROTOTYPE_DIRS.map((dir: string) => p
 
 // A module with `lib: true` gives prototypes one door in: `import ... from '@module/<id>'` is its lib/index.
 const moduleLibs = ENABLED_MODULES.filter((m: { lib?: boolean }) => m.lib).map((m: { id: string }) => ({
-  find: `@module/${m.id}`, replacement: fileURLToPath(new URL(`./src/studio/modules/${m.id}/lib/index`, import.meta.url)),
+  find: `@module/${m.id}`, replacement: fileURLToPath(new URL(`./src/platform/modules/${m.id}/lib/index`, import.meta.url)),
 }));
 
 export default defineConfig({
@@ -39,7 +39,7 @@ export default defineConfig({
     alias: [{ find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) }, ...moduleLibs],
   },
   plugins: [
-    // Markdown pages (Guide pages in src/studio/modules/guide/pages/, and prototype documents), as plain
+    // Markdown pages (Guide pages in src/platform/modules/guide/pages/, and prototype documents), as plain
     // Markdown (no JSX or expressions, so any .md file compiles; raw HTML shows as text): frontmatter (a first heading is the title when there's no `title`), GitHub-style Markdown, heading ids, and code highlighting with Shiki in both color modes.
     {
       enforce: 'pre',

@@ -1,6 +1,6 @@
 # Handbook
 
-The Handbook (`src/handbook/`) is the team's context and instructions: docs, rules, and skills. The app shows it under Handbook. Read this before adding or changing anything in it. Human docs: the Guide's Handbook page (`src/studio/modules/guide/pages/handbook.md`).
+The Handbook (`src/handbook/`) is the team's context and instructions: docs, rules, and skills. The app shows it under Handbook. Read this before adding or changing anything in it. Human docs: the Guide's Handbook page (`src/platform/modules/guide/pages/handbook.md`).
 
 - **It's platform.** Describe the change and ask the person before making it. Anyone can make it on a branch and open a pull request; the maintainer decides what merges.
 - **Its shape is fixed; what's inside is open.** Only `docs/`, `rules/`, and `skills/` sit at the top. `pnpm dev` warns, and `pnpm build` fails, on a file or folder out of place.

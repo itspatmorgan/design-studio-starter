@@ -1,14 +1,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../../src/studio/modules/systems/node/systems.js';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../../src/platform/modules/systems/node/systems.js';
 import { ENABLED_MODULES, PROTOTYPE_DIRS } from '../lib/modules.js';
 
 const SRC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src');
 const PROTOS = path.join(SRC, 'prototypes');
 const ROOT = path.dirname(SRC);
 // The one door into a module a prototype may use: its lib/ folder, for a module that says `lib: true`.
-const LIB_DIRS = ENABLED_MODULES.filter((m) => m.lib).map((m) => path.join(SRC, 'studio', 'modules', m.id, 'lib') + path.sep);
+const LIB_DIRS = ENABLED_MODULES.filter((m) => m.lib).map((m) => path.join(SRC, 'platform', 'modules', m.id, 'lib') + path.sep);
 const systemDir = (id) => path.join(ROOT, PROTOTYPE_SYSTEMS[id].dir);
 
 // The design system a prototype uses: "system" in its meta.json, or the default.
@@ -58,7 +58,7 @@ export default function importGuard() {
       const target = resolved.id.split('?')[0];
       if (!path.isAbsolute(target) || target.includes('node_modules')) return resolved;
       const inOwn = target === root || target.startsWith(root + path.sep);
-      const inStudio = target.startsWith(path.join(SRC, 'studio') + path.sep) && !LIB_DIRS.some((dir) => target.startsWith(dir));
+      const inStudio = target.startsWith(path.join(SRC, 'platform') + path.sep) && !LIB_DIRS.some((dir) => target.startsWith(dir));
       const inOtherProto = [PROTOS, ...PROTOTYPE_DIRS].some((dir) => target.startsWith(dir + path.sep)) && !inOwn;
       // Another prototype system than the one in the prototype's meta.json.
       const system = systemOf(root);

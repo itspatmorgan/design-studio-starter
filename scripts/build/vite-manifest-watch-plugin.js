@@ -1,6 +1,6 @@
 // Keeps the manifest live during `pnpm dev`, without reloading the page.
 //
-// Vite already watches every file. When something under src/prototypes/, src/tools/, src/handbook/, src/systems/, or src/studio/modules/guide/pages/
+// Vite already watches every file. When something under src/prototypes/, src/tools/, src/handbook/, src/systems/, or src/platform/modules/guide/pages/
 // changes (from the app, an agent, or your editor), this rebuilds the manifest in-process
 // and pushes it to the app over Vite's dev connection. The app swaps it in and refreshes
 // only the routes that use it (see router.tsx), so the open view and scroll position stay.
@@ -20,9 +20,9 @@ const guideModule = ENABLED_MODULES.find((m) => m.id === 'guide');
 const GUIDE = guideModule?.section?.folder ? path.join(ROOT, guideModule.section.folder) : null;
 const SYSTEMS = path.join(ROOT, 'src', 'systems');
 // The app's own system: its components, and its theme (the tokens the Systems pages list).
-const STUDIO_COMPONENTS = path.join(ROOT, 'src', 'studio', 'components');
-const STUDIO_THEME = path.join(ROOT, 'src', 'studio', 'styles', 'index.css');
-// The Handbook's map reads it (src/studio/modules/handbook/map.ts).
+const STUDIO_COMPONENTS = path.join(ROOT, 'src', 'platform', 'components');
+const STUDIO_THEME = path.join(ROOT, 'src', 'platform', 'styles', 'index.css');
+// The Handbook's map reads it (src/platform/modules/handbook/map.ts).
 const AGENTS = path.join(ROOT, 'AGENTS.md');
 const BATCH_MS = 50;
 

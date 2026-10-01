@@ -3,7 +3,7 @@
 // Vite refreshes a component file in place, but a Markdown file also exports its frontmatter, which
 // React Fast Refresh treats as incompatible, so a save reloaded the whole page. Instead, each
 // document accepts its own updates and announces the new version with a "studio:markdown" event;
-// the document loader (src/studio/app/data/createLoader.ts) takes it from there.
+// the document loader (src/platform/app/data/createLoader.ts) takes it from there.
 // (vite.config.ts leaves prototype documents out of Fast Refresh, so the two don't collide.)
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

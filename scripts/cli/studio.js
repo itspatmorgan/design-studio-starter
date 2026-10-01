@@ -19,13 +19,13 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { compatible, listProblems, moduleProblems, PLATFORM_VERSION } from '../../src/studio/core/modules/index.ts';
+import { compatible, listProblems, moduleProblems, PLATFORM_VERSION } from '../../src/platform/core/modules/index.ts';
 import {
   agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, readDeclaration, setDefaultSystem,
-} from '../../src/studio/core/modules/pack.ts';
-import { systemProblems } from '../../src/studio/modules/systems/spec.ts';
+} from '../../src/platform/core/modules/pack.ts';
+import { systemProblems } from '../../src/platform/modules/systems/spec.ts';
 import { MODULES, ENABLED_MODULES, CONFIG } from '../lib/modules.js';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from '../../src/studio/modules/systems/node/systems.js';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from '../../src/platform/modules/systems/node/systems.js';
 import { fetchSource, walk } from '../lib/fetch-source.js';
 import { loadContributors } from '../lib/contributors.js';
 import { changesFromLock, hashFile, readLock, writeLock } from '../lib/lock.js';
@@ -52,7 +52,7 @@ const titleOf = (id) => id.split('-').map((w) => w.charAt(0).toUpperCase() + w.s
 const slug = (text) => text.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/^[^a-z]+/, '');
 
 // ---- places that must never be deleted, whatever a pack or a flag says
-const PROTECTED = new Set(['src', 'src/studio', 'src/studio/modules', 'src/prototypes', 'src/lib', 'src/handbook', 'src/handbook/rules', 'src/handbook/docs', 'src/handbook/skills', 'src/systems', 'src/types']);
+const PROTECTED = new Set(['src', 'src/platform', 'src/platform/modules', 'src/prototypes', 'src/lib', 'src/handbook', 'src/handbook/rules', 'src/handbook/docs', 'src/handbook/skills', 'src/systems', 'src/types']);
 function removable(relative) {
   const clean = path.posix.normalize(relative.replace(/\/$/, ''));
   if (!relative || clean.startsWith('..') || clean.startsWith('/') || !clean.startsWith('src/') || PROTECTED.has(clean)) throw new Error(`Refusing to delete ${relative}.`);
@@ -147,7 +147,7 @@ async function add() {
     if (typeof id !== 'string' || !ID.test(id)) fail(kind === 'module' ? 'module.ts needs an id: lowercase letters, numbers, and dashes.' : 'Give the system an id with --id <name>: lowercase letters, numbers, and dashes.');
     const problems = kind === 'module' ? moduleProblems(spec, id) : systemProblems(spec, id);
     if (kind === 'module' && !compatible(spec)) problems.push(`It needs platform ${spec.requires} or newer, and this is ${PLATFORM_VERSION}. Update the platform first.`);
-    const installed = kind === 'module' ? fs.existsSync(rel('src', 'studio', 'modules', id)) : fs.existsSync(rel('src', 'systems', id));
+    const installed = kind === 'module' ? fs.existsSync(rel('src', 'platform', 'modules', id)) : fs.existsSync(rel('src', 'systems', id));
     if (installed) problems.push(`There's already a ${kind === 'module' ? 'module' : 'design system'} called "${id}". Remove it first (pnpm studio remove ${id}), or add this one with another id.`);
     if (kind === 'module') problems.push(...listProblems([...Object.values(MODULES).filter((m) => m && typeof m === 'object'), spec]).filter((p) => p.includes(`"${spec.section?.key}"`) || p.includes(` ${id} `)));
     const plan = packPlan(kind, id, spec, names);
@@ -253,9 +253,9 @@ function remove() {
   if (isModule) {
     const spec = MODULES[id];
     if (!spec.optional) fail(`The ${id} module can't be removed yet; other parts of the app still use it.`);
-    paths.push(`src/studio/modules/${id}`);
+    paths.push(`src/platform/modules/${id}`);
     for (const h of spec.handbook ?? []) paths.push(`src/handbook/${h.path}`);
-    if (spec.section?.folder && !spec.section.folder.startsWith(`src/studio/modules/${id}`)) {
+    if (spec.section?.folder && !spec.section.folder.startsWith(`src/platform/modules/${id}`)) {
       if (flags.content) paths.push(spec.section.folder);
       else if (fs.existsSync(rel(spec.section.folder))) notes.push(`Its content in ${spec.section.folder} stays. Add --content to delete that too.`);
     }
@@ -316,7 +316,7 @@ function create(kind) {
     return;
   }
   const spec = readDeclaration(fill(fs.readFileSync(path.join(template, kind === 'module' ? 'module.ts' : 'system.ts'), 'utf8'))).value;
-  if (kind === 'module' ? fs.existsSync(rel('src', 'studio', 'modules', id)) : fs.existsSync(rel('src', 'systems', id))) fail(`There's already a ${kind} called "${id}".`);
+  if (kind === 'module' ? fs.existsSync(rel('src', 'platform', 'modules', id)) : fs.existsSync(rel('src', 'systems', id))) fail(`There's already a ${kind} called "${id}".`);
   if (kind === 'module' && SECTION_TAKEN(id)) fail(`"${id}" is already the address of another module, or a contributor's folder. Choose another id.`);
   const plan = packPlan(kind, id, spec, files);
   if (plan.problems.length) fail(plan.problems.join('\n'));
@@ -339,7 +339,7 @@ function create(kind) {
     fail(`Nothing was made. ${e.message}`);
   }
   syncInFreshProcess();
-  say(`Made the ${kind} "${id}" in ${kind === 'module' ? `src/studio/modules/${id}/` : `src/systems/${id}/`}. Restart the dev server to see it.`);
+  say(`Made the ${kind} "${id}" in ${kind === 'module' ? `src/platform/modules/${id}/` : `src/systems/${id}/`}. Restart the dev server to see it.`);
 }
 
 function SECTION_TAKEN(id) {

@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildManifest } from '../build/build-manifest.js';
-import { rootOf } from '../../src/studio/core/roots.ts';
+import { rootOf } from '../../src/platform/core/roots.ts';
 import { PROTOTYPE_SECTIONS } from '../lib/modules.js';
 import { resolveContributor } from './resolve-contributor.js';
 
