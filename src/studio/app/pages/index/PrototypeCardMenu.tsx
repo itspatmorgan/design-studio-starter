@@ -8,16 +8,18 @@ import { MoreHorizontalIcon } from '@hugeicons/core-free-icons';
 import type { PrototypeInfo } from '@/studio/app/data/types';
 import { usePrototypeActions } from '@/studio/app/pages/prototype/usePrototypeActions';
 import { menuGroups } from '@/studio/app/shell/menuGroups';
+import { cn } from '@/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/studio/components/dropdown-menu';
 
-export default function PrototypeCardMenu({ proto }: { proto: PrototypeInfo }) {
+// `triggerClassName` adds to the button's look, for a card whose top isn't a plain surface.
+export default function PrototypeCardMenu({ proto, triggerClassName }: { proto: PrototypeInfo; triggerClassName?: string }) {
   const { groups, dialogs } = usePrototypeActions(proto);
   return (
     <div className="absolute top-2 right-2">
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label={`Actions for ${proto.title}`}
-          className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-opacity outline-none hover:bg-muted hover:text-foreground focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring group-hover/card-wrap:opacity-100 group-focus-within/card-wrap:opacity-100 data-[popup-open]:opacity-100 [@media(hover:none)]:opacity-100"
+          className={cn('inline-flex size-7 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-opacity outline-none hover:bg-muted hover:text-foreground focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring group-hover/card-wrap:opacity-100 group-focus-within/card-wrap:opacity-100 data-[popup-open]:opacity-100 [@media(hover:none)]:opacity-100', triggerClassName)}
         >
           <HugeiconsIcon icon={MoreHorizontalIcon} size={16} />
         </DropdownMenuTrigger>
