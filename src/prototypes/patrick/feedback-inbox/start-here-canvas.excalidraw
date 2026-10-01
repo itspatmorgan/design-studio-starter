@@ -1,0 +1,653 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "studioVersion": 1,
+  "elements": [
+    {
+      "autoResize": true,
+      "fontFamily": 6,
+      "fontSize": 44,
+      "height": 55,
+      "id": "mup2at584gcags",
+      "lineHeight": 1.25,
+      "originalText": "Start here",
+      "seed": 225982382,
+      "text": "Start here",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 183482936,
+      "verticalAlign": "top",
+      "width": 205.92,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 50,
+      "id": "mup2at59tkeypc",
+      "lineHeight": 1.25,
+      "originalText": "A working sample, small enough to take in at once. Every screen on this page is live: click its title bar to open it.",
+      "seed": 1995411778,
+      "strokeColor": "#868e96",
+      "text": "A working sample, small enough to take in at once. Every screen on this page is live: click its\ntitle bar to open it.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 62542892,
+      "verticalAlign": "top",
+      "width": 900,
+      "x": 0,
+      "y": 79
+    },
+    {
+      "boundElements": [
+        {
+          "id": "mup2ate4mw10d5",
+          "type": "arrow"
+        }
+      ],
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "mup2ate46m11ej",
+      "height": 338,
+      "id": "mup2ate3nukcdc",
+      "link": "/patrick/feedback-inbox/app/overview",
+      "seed": 1568660552,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 3,
+      "versionNonce": 311194904,
+      "width": 480,
+      "x": 0,
+      "y": 240
+    },
+    {
+      "boundElements": [
+        {
+          "id": "mup2ate4mw10d5",
+          "type": "arrow"
+        },
+        {
+          "id": "mup2ate4yyziwx",
+          "type": "arrow"
+        }
+      ],
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "mup2ate46m11ej",
+      "height": 338,
+      "id": "mup2ate4vbhy5v",
+      "link": "/patrick/feedback-inbox/app/feedback-inbox",
+      "seed": 894972555,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 4,
+      "versionNonce": 853766652,
+      "width": 480,
+      "x": 640,
+      "y": 240
+    },
+    {
+      "boundElements": [
+        {
+          "id": "mup2ate4yyziwx",
+          "type": "arrow"
+        }
+      ],
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "mup2ate46m11ej",
+      "height": 338,
+      "id": "mup2ate4s65s6w",
+      "link": "/patrick/feedback-inbox/app/detail",
+      "seed": 888240182,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 3,
+      "versionNonce": 1545028717,
+      "width": 480,
+      "x": 1280,
+      "y": 240
+    },
+    {
+      "boundElements": [
+        {
+          "id": "mup2ate4hk54dh",
+          "type": "text"
+        }
+      ],
+      "elbowed": false,
+      "endArrowhead": "arrow",
+      "endBinding": {
+        "elementId": "mup2ate4vbhy5v",
+        "focus": 0,
+        "gap": 8
+      },
+      "height": 0,
+      "id": "mup2ate4mw10d5",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          160,
+          0
+        ]
+      ],
+      "seed": 337618846,
+      "startArrowhead": null,
+      "startBinding": {
+        "elementId": "mup2ate3nukcdc",
+        "focus": 0,
+        "gap": 8
+      },
+      "type": "arrow",
+      "version": 1,
+      "versionNonce": 435486327,
+      "width": 160,
+      "x": 480,
+      "y": 409
+    },
+    {
+      "autoResize": true,
+      "containerId": "mup2ate4mw10d5",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 25,
+      "id": "mup2ate4hk54dh",
+      "lineHeight": 1.25,
+      "originalText": "click a metric",
+      "seed": 961069378,
+      "text": "click a metric",
+      "textAlign": "center",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 1529993375,
+      "verticalAlign": "middle",
+      "width": 122.1,
+      "x": 498.95,
+      "y": 396.5
+    },
+    {
+      "boundElements": [
+        {
+          "id": "mup2ate4kyg365",
+          "type": "text"
+        }
+      ],
+      "elbowed": false,
+      "endArrowhead": "arrow",
+      "endBinding": {
+        "elementId": "mup2ate4s65s6w",
+        "focus": 0,
+        "gap": 8
+      },
+      "height": 0,
+      "id": "mup2ate4yyziwx",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          160,
+          0
+        ]
+      ],
+      "seed": 1354876254,
+      "startArrowhead": null,
+      "startBinding": {
+        "elementId": "mup2ate4vbhy5v",
+        "focus": 0,
+        "gap": 8
+      },
+      "type": "arrow",
+      "version": 1,
+      "versionNonce": 2117879480,
+      "width": 160,
+      "x": 1120,
+      "y": 409
+    },
+    {
+      "autoResize": true,
+      "containerId": "mup2ate4yyziwx",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 25,
+      "id": "mup2ate4kyg365",
+      "lineHeight": 1.25,
+      "originalText": "click a row",
+      "seed": 1892227314,
+      "text": "click a row",
+      "textAlign": "center",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 1151554226,
+      "verticalAlign": "middle",
+      "width": 100.05,
+      "x": 1149.98,
+      "y": 396.5
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 16,
+      "frameId": "mup2ate46m11ej",
+      "height": 20,
+      "id": "mup2ate4t6se6a",
+      "lineHeight": 1.25,
+      "originalText": "Overview. Land here: the key numbers drill into the inbox.",
+      "seed": 807495176,
+      "strokeColor": "#868e96",
+      "text": "Overview. Land here: the key numbers drill into the inbox.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1811988586,
+      "verticalAlign": "top",
+      "width": 480,
+      "x": 0,
+      "y": 602
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 16,
+      "frameId": "mup2ate46m11ej",
+      "height": 20,
+      "id": "mup2ate43e6mam",
+      "lineHeight": 1.25,
+      "originalText": "Feedback inbox. Filter, search, and add feedback.",
+      "seed": 1916470934,
+      "strokeColor": "#868e96",
+      "text": "Feedback inbox. Filter, search, and add feedback.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 199789816,
+      "verticalAlign": "top",
+      "width": 480,
+      "x": 640,
+      "y": 602
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 16,
+      "frameId": "mup2ate46m11ej",
+      "height": 20,
+      "id": "mup2ate4fjy42l",
+      "lineHeight": 1.25,
+      "originalText": "Detail. Change a status, add a note, delete.",
+      "seed": 1750620441,
+      "strokeColor": "#868e96",
+      "text": "Detail. Change a status, add a note, delete.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1504755852,
+      "verticalAlign": "top",
+      "width": 480,
+      "x": 1280,
+      "y": 602
+    },
+    {
+      "height": 502,
+      "id": "mup2ate46m11ej",
+      "name": "1. Use the app",
+      "seed": 1549666540,
+      "type": "frame",
+      "version": 1,
+      "versionNonce": 1977169620,
+      "width": 1880,
+      "x": -60,
+      "y": 180
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "mup2atn3w67tro",
+      "height": 338,
+      "id": "mup2atn29in039",
+      "link": "/patrick/feedback-inbox/states/feedback-open-issues",
+      "seed": 2128949642,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 911155577,
+      "width": 480,
+      "x": 0,
+      "y": 880
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "mup2atn3w67tro",
+      "height": 338,
+      "id": "mup2atn235ix3u",
+      "link": "/patrick/feedback-inbox/states/feedback-new-panel",
+      "seed": 104680716,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 533964435,
+      "width": 480,
+      "x": 640,
+      "y": 880
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "mup2atn3w67tro",
+      "height": 338,
+      "id": "mup2atn3tsc65a",
+      "link": "/patrick/feedback-inbox/states/detail-delete",
+      "seed": 1066722821,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 1567357975,
+      "width": 480,
+      "x": 1280,
+      "y": 880
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 16,
+      "frameId": "mup2atn3w67tro",
+      "height": 20,
+      "id": "mup2atn3t504ey",
+      "lineHeight": 1.25,
+      "originalText": "Filtered: the page after clicking Open issues.",
+      "seed": 926633982,
+      "strokeColor": "#868e96",
+      "text": "Filtered: the page after clicking Open issues.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1678864445,
+      "verticalAlign": "top",
+      "width": 480,
+      "x": 0,
+      "y": 1242
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 16,
+      "frameId": "mup2atn3w67tro",
+      "height": 20,
+      "id": "mup2atn3b0zrbv",
+      "lineHeight": 1.25,
+      "originalText": "A panel open: New feedback.",
+      "seed": 1482999781,
+      "strokeColor": "#868e96",
+      "text": "A panel open: New feedback.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1307974769,
+      "verticalAlign": "top",
+      "width": 480,
+      "x": 640,
+      "y": 1242
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 16,
+      "frameId": "mup2atn3w67tro",
+      "height": 20,
+      "id": "mup2atn3uyd5jq",
+      "lineHeight": 1.25,
+      "originalText": "A dialog asking first: Delete.",
+      "seed": 661487520,
+      "strokeColor": "#868e96",
+      "text": "A dialog asking first: Delete.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 822234257,
+      "verticalAlign": "top",
+      "width": 480,
+      "x": 1280,
+      "y": 1242
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 16,
+      "frameId": "mup2atn3w67tro",
+      "height": 20,
+      "id": "mup2atn3kvqdeu",
+      "lineHeight": 1.25,
+      "originalText": "Each state is a small file in the states folder. They are ordinary views, so a canvas can show them side by side.",
+      "seed": 180816623,
+      "strokeColor": "#868e96",
+      "text": "Each state is a small file in the states folder. They are ordinary views, so a canvas can show them side by side.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 869269410,
+      "verticalAlign": "top",
+      "width": 900,
+      "x": 0,
+      "y": 1290
+    },
+    {
+      "height": 550,
+      "id": "mup2atn3w67tro",
+      "name": "2. Every state is a view",
+      "seed": 1616830396,
+      "type": "frame",
+      "version": 1,
+      "versionNonce": 1860003059,
+      "width": 1880,
+      "x": -60,
+      "y": 820
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "mup2atw2iz8eoz",
+      "height": 88,
+      "id": "mup2atw24ilyrf",
+      "link": "/patrick/feedback-inbox/project-context",
+      "seed": 576838391,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 2096868073,
+      "width": 480,
+      "x": 0,
+      "y": 1560
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "mup2atw2iz8eoz",
+      "height": 88,
+      "id": "mup2atw2r1i464",
+      "link": "/patrick/feedback-inbox/breadboard",
+      "seed": 388257128,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 1144046253,
+      "width": 480,
+      "x": 640,
+      "y": 1560
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "mup2atw2iz8eoz",
+      "height": 88,
+      "id": "mup2atw2m3vqki",
+      "link": "/patrick/feedback-inbox/eng-handoff",
+      "seed": 2059008491,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 1558364645,
+      "width": 480,
+      "x": 1280,
+      "y": 1560
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 16,
+      "frameId": "mup2atw2iz8eoz",
+      "height": 20,
+      "id": "mup2atw2gaj7cx",
+      "lineHeight": 1.25,
+      "originalText": "The problem, who it is for, what is decided.",
+      "seed": 1407722504,
+      "strokeColor": "#868e96",
+      "text": "The problem, who it is for, what is decided.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 234236898,
+      "verticalAlign": "top",
+      "width": 480,
+      "x": 0,
+      "y": 1672
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 16,
+      "frameId": "mup2atw2iz8eoz",
+      "height": 20,
+      "id": "mup2atw2tj210t",
+      "lineHeight": 1.25,
+      "originalText": "Early flow ideas, in plain shapes.",
+      "seed": 1229563997,
+      "strokeColor": "#868e96",
+      "text": "Early flow ideas, in plain shapes.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 2134873,
+      "verticalAlign": "top",
+      "width": 480,
+      "x": 640,
+      "y": 1672
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 16,
+      "frameId": "mup2atw2iz8eoz",
+      "height": 20,
+      "id": "mup2atw2jiur43",
+      "lineHeight": 1.25,
+      "originalText": "Every state and the logic behind it, for engineering.",
+      "seed": 1814586471,
+      "strokeColor": "#868e96",
+      "text": "Every state and the logic behind it, for engineering.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 933781877,
+      "verticalAlign": "top",
+      "width": 480,
+      "x": 1280,
+      "y": 1672
+    },
+    {
+      "height": 252,
+      "id": "mup2atw2iz8eoz",
+      "name": "3. Read the thinking",
+      "seed": 1875158875,
+      "type": "frame",
+      "version": 1,
+      "versionNonce": 499841394,
+      "width": 1880,
+      "x": -60,
+      "y": 1500
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 18,
+      "frameId": "mup2au4pk7z8nt",
+      "height": 90,
+      "id": "mup2au4o7cu3l9",
+      "lineHeight": 1.25,
+      "originalText": "• Right-click a file on the left and choose Edit source. Change a title and the screen updates.\n• Right-click Lofi / Feedback Inbox and try Make hi-fi, then Make lofi.\n• Drag files in the list to reorder them, or onto a folder to move them.\n• Ask your agent for a change: \"add a due date to feedback\".",
+      "seed": 1965376001,
+      "text": "• Right-click a file on the left and choose Edit source. Change a title and the screen updates.\n• Right-click Lofi / Feedback Inbox and try Make hi-fi, then Make lofi.\n• Drag files in the list to reorder them, or onto a folder to move them.\n• Ask your agent for a change: \"add a due date to feedback\".",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1600865305,
+      "verticalAlign": "top",
+      "width": 1000,
+      "x": 0,
+      "y": 1900
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 16,
+      "frameId": "mup2au4pk7z8nt",
+      "height": 20,
+      "id": "mup2au4p9ia0zl",
+      "lineHeight": 1.25,
+      "originalText": "When you are done, delete this prototype from its … menu and start your own with New prototype.",
+      "seed": 989284199,
+      "strokeColor": "#868e96",
+      "text": "When you are done, delete this prototype from its … menu and start your own with New prototype.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1268777690,
+      "verticalAlign": "top",
+      "width": 1000,
+      "x": 0,
+      "y": 2060
+    },
+    {
+      "height": 300,
+      "id": "mup2au4pk7z8nt",
+      "name": "4. Make it yours",
+      "seed": 1701616364,
+      "type": "frame",
+      "version": 3,
+      "versionNonce": 2026888871,
+      "width": 1880,
+      "x": -60,
+      "y": 1840
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {}
+}
