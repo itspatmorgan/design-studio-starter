@@ -77,7 +77,7 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
       className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-sidebar-border bg-sidebar py-3"
     >
       <RailLink to="/" label="Design Studio" className="active:scale-95">
-        <Logo className="h-[18px] w-auto" />
+        <Logo className="h-3.5 w-auto" />
       </RailLink>
       <RailButton label="Search (⌘K)" onClick={openPalette}>
         <HugeiconsIcon icon={Search01Icon} size={16} />
