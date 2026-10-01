@@ -11,7 +11,7 @@ import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../../src/studio/r
 import { PROTOTYPE_SECTIONS } from '.././lib/modules.js';
 import { SYSTEM_SOURCES } from '.././lib/systems.js';
 
-export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 export const PROTOS = path.join(ROOT, 'src', 'prototypes');
 export const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 // Each system's components folder, to tell which system a file belongs to.
