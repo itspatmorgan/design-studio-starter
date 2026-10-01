@@ -3,7 +3,8 @@
 // temp folder; the repo is only read.
 //   node scripts/baseline.js coupling            which source files name each module
 //   node scripts/baseline.js build [dir]         build time, manifest size, bundle size (default: a scratch copy of this repo)
-//   node scripts/baseline.js removal <module>    delete a module in a scratch copy, then check the app still builds ("none" is the control)
+//   node scripts/baseline.js removal <module>    delete a module in a scratch copy, then check the app still builds ("none" is the control);
+//                                                with --off, turn it off in studio.config.ts instead and keep its files
 //   node scripts/baseline.js fixture <count>     a scratch copy with <count> synthetic prototypes, then build it
 // Copies the committed files; add --working to include uncommitted changes, --keep to keep the copy. Modules: the names below. A removal that fails at a step shows which module the platform still depends on.
 import { execFileSync } from 'node:child_process';
@@ -115,6 +116,7 @@ function build(dir) {
 const STEPS = [
   ['manifest', 'node', ['scripts/build-manifest.js', '--strict', '--deploy']],
   ['file types', 'node', ['scripts/check-file-types.js']],
+  ['modules', 'node', ['scripts/check-modules.js']],
   ['typecheck', 'node', ['node_modules/typescript/bin/tsc', '-b']],
   ['tests', 'node', TESTS],
   ['bundle', 'node', VITE],
@@ -125,7 +127,13 @@ function removal(id) {
   if (!m) { console.error(`Unknown module "${id}". Modules: ${Object.keys(MODULES).join(', ')}.`); process.exit(2); }
   const dir = scratchCopy(`remove-${id}`);
   try {
-    for (const p of m.paths) fs.rmSync(path.join(dir, p), { recursive: true, force: true });
+    if (process.argv.includes('--off')) {
+      // Turn it off in the config and leave its files, which is what a team that only hides it does.
+      const config = path.join(dir, 'studio.config.ts');
+      fs.writeFileSync(config, fs.readFileSync(config, 'utf8').replace('modules: {}', `modules: { ${id}: false }`));
+    } else {
+      for (const p of m.paths) fs.rmSync(path.join(dir, p), { recursive: true, force: true });
+    }
     for (const [name, cmd, args] of STEPS) {
       const r = run(dir, cmd, args);
       if (!r.ok) { console.log(`${id}: FAILS at ${name}\n${r.tail}`); return false; }
