@@ -13,7 +13,10 @@ export type ModuleSpec = {
   // `items` says the folder holds files the app opens as items, so each file type lists them (globs.ts):
   // "prototypes" for a folder of prototype-shaped folders, one per id (src/tools/<id>/), and "handbook"
   // for the Handbook's fixed shape. Leave it out when the module reads its own files.
-  section?: { key: string; folder: string; items?: 'prototypes' | 'handbook' };
+  // `policy` says who may change the section's files from the app (src/studio/permissions.ts): "maintainers"
+  // (the people listed in an item's meta.json) or "open" (anyone running the app; a pull request reviews
+  // it). Without one, nobody can: the module's files are changed in the repo.
+  section?: { key: string; folder: string; items?: 'prototypes' | 'handbook'; policy?: 'maintainers' | 'open' };
 };
 
 const ID = /^[a-z][a-z0-9-]*$/;
@@ -35,6 +38,8 @@ export function moduleProblems(spec: unknown, folder: string): string[] {
     const { key, folder: dir } = m.section as Partial<NonNullable<ModuleSpec['section']>>;
     if (typeof key !== 'string' || !KEY.test(key)) problems.push(`${where}: section.key should be lowercase letters, numbers, and dashes.`);
     if (typeof dir !== 'string' || !dir || dir.startsWith('/') || dir.split('/').includes('..')) problems.push(`${where}: section.folder should be a folder inside the repo, like src/tools.`);
+    const policy = (m.section as { policy?: unknown }).policy;
+    if (policy !== undefined && policy !== 'maintainers' && policy !== 'open') problems.push(`${where}: section.policy should be "maintainers" or "open", or left out.`);
     const items = (m.section as { items?: unknown }).items;
     if (items !== undefined && items !== 'prototypes' && items !== 'handbook') problems.push(`${where}: section.items should be "prototypes" or "handbook".`);
     else if (items !== undefined && !(typeof dir === 'string' && /^src\/[a-z0-9][a-z0-9-]*$/.test(dir))) problems.push(`${where}: a section with items keeps them in a folder directly under src/, like src/tools.`);

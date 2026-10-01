@@ -2,8 +2,9 @@
 // deployed site these return null, and the prototype navigation lists views from the manifest.
 import { useEffect, useState } from 'react';
 import type { Manifest, Prototype, PrototypeInfo } from '@/studio/app/data/types';
-import { SYSTEMS_KEY, TOOLS_KEY, rootOf } from '@/studio/roots';
-import { canMaintain } from '@/studio/tools';
+import { SYSTEMS_KEY, rootOf } from '@/studio/roots';
+import { MODULES } from '@/studio/app/data/modules';
+import { canChange, canOwn, policyFor } from '@/studio/permissions';
 import type { Status } from '@/studio/archive';
 
 export type FileNode = { name: string; path: string; dir: boolean; children?: FileNode[] };
@@ -71,9 +72,13 @@ export function useMe() {
   return me;
 }
 
-// Whether you may change a prototype: your own, or a tool you maintain (src/studio/tools.ts).
-export const ownsPrototype = (p: PrototypeInfo, me: string | null) =>
-  p.contributorKey === TOOLS_KEY ? canMaintain(p.maintainers, me) : me !== null && p.contributorKey === me;
+// Whether you own a prototype (so you may archive or delete it): your own, or a tool you maintain. The
+// policy of its section decides (src/studio/permissions.ts); the dev server checks again on every change.
+const subject = (p: PrototypeInfo, me: string | null) => ({ me, key: p.contributorKey, maintainers: p.maintainers });
+const policyOf = (p: PrototypeInfo) => policyFor(p.contributorKey, MODULES);
+export const ownsPrototype = (p: PrototypeInfo, me: string | null) => canOwn(policyOf(p), subject(p, me));
+// Whether you may change its files: that, or files open to everyone (the Handbook's, the systems').
+export const canChangePrototype = (p: PrototypeInfo, me: string | null) => canChange(policyOf(p), subject(p, me));
 
 export type FileOp =
   | { op: 'create'; path: string; name: string; dir?: boolean }

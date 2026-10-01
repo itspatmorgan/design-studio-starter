@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildManifest } from './build-manifest.js';
 import { TOOLS_KEY } from '../src/studio/roots.ts';
-import { parseMaintainers } from '../src/studio/tools.ts';
+import { parseMaintainers } from '../src/studio/permissions.ts';
 import { resolveContributor } from './resolve-contributor.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');

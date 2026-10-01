@@ -42,6 +42,11 @@ test('section keys skip modules with no section', () => {
   assert.deepEqual(sectionKeys([tools, { id: 'x', label: 'X', version: '0.1.0' }]), ['tools']);
 });
 
+test('a policy must be one a section can have', () => {
+  assert.deepEqual(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/tools', policy: 'maintainers' } }, 'tools'), []);
+  assert.match(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/tools', policy: 'owner' as 'open' } }, 'tools')[0], /section\.policy/);
+});
+
 test('items must be a known kind, in a folder directly under src', () => {
   assert.deepEqual(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/tools', items: 'prototypes' } }, 'tools'), []);
   assert.match(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/tools', items: 'files' as 'prototypes' } }, 'tools')[0], /section\.items/);

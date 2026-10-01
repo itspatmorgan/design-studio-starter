@@ -11,7 +11,7 @@ import { isHelper, itemSlug } from '../src/studio/fileTypes/index.ts';
 import { HANDBOOK_KEY, HANDBOOK_SECTIONS, TOOLS_KEY, rootOf } from '../src/studio/roots.ts';
 import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../src/studio/archive.ts';
 import { byOrder, parseOrder } from '../src/studio/order.ts';
-import { parseMaintainers } from '../src/studio/tools.ts';
+import { parseMaintainers } from '../src/studio/permissions.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { SECTION_KEYS } from './lib/modules.js';
 import { frontmatter } from './lib/frontmatter.js';

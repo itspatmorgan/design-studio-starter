@@ -5,5 +5,5 @@ export default {
   id: 'systems',
   label: 'Systems',
   version: '0.1.0',
-  section: { key: 'systems', folder: 'src/systems' },
+  section: { key: 'systems', folder: 'src/systems', policy: 'open' },
 } satisfies ModuleSpec;

@@ -44,7 +44,8 @@ import { isHelper } from '../src/studio/fileTypes/index.ts';
 import { STATUSES, parseStatus } from '../src/studio/archive.ts';
 import { afterChange, byOrder, parentOf, parseOrder, place, withFolderOrder } from '../src/studio/order.ts';
 import { HANDBOOK_KEY, SYSTEMS_KEY, TOOLS_KEY, isHandbookSection, rootOf } from '../src/studio/roots.ts';
-import { canMaintain, parseMaintainers } from '../src/studio/tools.ts';
+import { canChange as mayChange, canOwn, parseMaintainers, policyFor, whyNot } from '../src/studio/permissions.ts';
+import { MODULES } from './lib/modules.js';
 import { SYSTEM_SOURCES } from '../src/studio/systemSources.ts';
 import { scaffold } from './scaffold-component-docs.js';
 import { opProblem } from '../src/studio/handbookRules.ts';
@@ -158,14 +159,16 @@ const templateFor = (name) => FILE_TYPES[fileTypeOf(name)]?.template?.(name) ?? 
 // enforce is the Handbook's shape (src/studio/handbookRules.ts).
 const HANDBOOK_NOTE = 'The Handbook\'s sections (Docs, Rules, Skills) can\'t be renamed or deleted.';
 
-// Whether you can change a prototype's files: your own, or the platform's (the Handbook's, and the
+// Who can change a prototype's files is the policy of its section (src/studio/permissions.ts): your own
+// prototypes; a tool, if you maintain it (its meta.json); the platform's (the Handbook's, and the
 // prototype systems' components), which go through review like any change to it.
-// A tool is changed only by its maintainers (meta.json), whoever's folder it came from.
 const maintainersOf = (dir) => {
   try { return parseMaintainers(JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')).maintainers) ?? []; } catch { return []; }
 };
-const owns = (contributor, me, dir) => (contributor === TOOLS_KEY ? canMaintain(maintainersOf(dir), me) : contributor === me);
-const canChange = (contributor, me, dir) => contributor === HANDBOOK_KEY || contributor === SYSTEMS_KEY || owns(contributor, me, dir);
+const policyOf = (contributor) => policyFor(contributor, Object.values(MODULES));
+const subjectOf = (contributor, me, dir) => ({ me, key: contributor, maintainers: policyOf(contributor) === 'maintainers' ? maintainersOf(dir) : undefined });
+const owns = (contributor, me, dir) => canOwn(policyOf(contributor), subjectOf(contributor, me, dir));
+const canChange = (contributor, me, dir) => mayChange(policyOf(contributor), subjectOf(contributor, me, dir));
 
 // "code-review" → "Code review"
 const titleOf = (name) => { const t = name.replace(/-/g, ' '); return t.charAt(0).toUpperCase() + t.slice(1); };
@@ -181,10 +184,8 @@ function skillTemplate(name, description) {
 // A new rule's start.
 const ruleTemplate = (name) => `# ${titleOf(name.replace(/\.md$/, ''))}\n\nWhat your agent should know or do, and when.\n`;
 
-// Why you can't change a prototype: it's someone else's, or you aren't set up yet.
-const ownerError = (key, tool = false) => (key
-  ? (tool ? 'Only a tool\'s maintainers can change it.' : 'This prototype belongs to someone else. You can change only your own.')
-  : "You're not set up as a contributor yet. Ask your agent to add you.");
+// Why you can't change a prototype: it's someone else's, you aren't a maintainer, or you aren't set up yet.
+const ownerError = (contributor, me) => whyNot(policyOf(contributor), me);
 
 // Moves a file or folder to the Trash with macOS's built-in trash command, or, where
 // there isn't one, into .trash/ at the repo root (ignored by Git).
@@ -412,7 +413,7 @@ export default function filesPlugin() {
           const file = dir && itemFile(dir, rel, contributor);
           if (!file) return send(res, 404, { error: 'This file no longer exists.' });
           // Contributor scope: you can change only your own folder (and the Handbook's, for review).
-          if (!canChange(contributor, me(), dir)) return send(res, 403, { error: ownerError(me(), contributor === TOOLS_KEY) });
+          if (!canChange(contributor, me(), dir)) return send(res, 403, { error: ownerError(contributor, me()) });
           if (typeof content !== 'string' || Buffer.byteLength(content) > MAX_SOURCE_BYTES) return send(res, 413, { error: 'This file is too large to save here. Keep files under 750 KB.' });
           // Never overwrite a version you haven't seen: if it changed on disk since you opened it, say so.
           if (versionOf(fs.readFileSync(file, 'utf8')) !== base) return send(res, 409, { error: 'This file changed on disk since you opened it.', code: 'changed' });
@@ -427,7 +428,7 @@ export default function filesPlugin() {
           const dir = prototypeDir(body.contributor, body.prototype);
           if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
           // Contributor scope: you can change only your own folder (and the Handbook's, for review).
-          if (!canChange(body.contributor, me(), dir)) return send(res, 403, { error: ownerError(me(), body.contributor === TOOLS_KEY) });
+          if (!canChange(body.contributor, me(), dir)) return send(res, 403, { error: ownerError(body.contributor, me()) });
           try {
             const result = body.contributor === SYSTEMS_KEY ? runSystemOp(body.prototype, body) : runOp(dir, body, body.contributor === HANDBOOK_KEY ? body.prototype : null);
             const { manifest } = buildManifest();
@@ -466,7 +467,7 @@ export default function filesPlugin() {
           const dir = prototypeDir(contributor, prototype);
           if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
           if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_NOTE });
-          if (!owns(contributor, me(), dir)) return send(res, 403, { error: ownerError(me(), contributor === TOOLS_KEY) });
+          if (!owns(contributor, me(), dir)) return send(res, 403, { error: ownerError(contributor, me()) });
           try {
             const { id, manifest } = renamePrototype({ key: contributor, id: prototype, title, description });
             publishManifest(server, manifest, req.headers['x-studio-tab']);
@@ -480,7 +481,7 @@ export default function filesPlugin() {
           const dir = prototypeDir(contributor, prototype);
           if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
           if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_NOTE });
-          if (!owns(contributor, me(), dir)) return send(res, 403, { error: ownerError(me(), contributor === TOOLS_KEY) });
+          if (!owns(contributor, me(), dir)) return send(res, 403, { error: ownerError(contributor, me()) });
           const trashedTo = trash(dir);
           const { manifest } = buildManifest();
           publishManifest(server, manifest, req.headers['x-studio-tab']);
