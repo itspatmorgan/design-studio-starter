@@ -228,7 +228,10 @@ function writeManifest(manifest) {
 // build: a prototype with none of them is reused without a look at its files, so a rebuild costs what changed, not
 // how many prototypes there are. `archived` in the result lists what deploy
 // leaves out, as paths in the app's file globs (scripts/vite-globs-plugin.js).
-export function buildManifest({ deploy = false, write = true, quiet = false, touched } = {}) {
+export function buildManifest({ deploy = false, write = true, quiet = false, touched: touchedPaths } = {}) {
+  // Only trusted if every path is inside this repo as this script sees it. A path spelled another way (a linked folder)
+  // could look unrelated to a prototype that did change, so then nothing is assumed unchanged.
+  const touched = touchedPaths?.every((f) => path.resolve(f).startsWith(ROOT + path.sep)) ? touchedPaths.map((f) => path.resolve(f)) : undefined;
   const out = quiet ? { log() {}, warn() {}, error() {} } : console;
   // Display names come from the contributors (contributors.json, and contributors/<key>.json), so they live in one place.
   const contributors = loadContributors();
