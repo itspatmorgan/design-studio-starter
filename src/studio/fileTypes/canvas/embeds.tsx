@@ -114,7 +114,7 @@ function CanvasItemInner({ element, manifest, current, offscreen, overview, moun
   return (
     <div data-canvas-frame="" className="relative flex h-full w-full flex-col overflow-hidden border border-border bg-background">
       {/* The whole title bar is the link that opens the item: gray so it reads as a control, an icon that
-          turns teal on hover, and the word "Open" that appears with it. */}
+          turns to the primary color on hover, and the word "Open" that appears with it. */}
       <Link
         {...itemLink(proto, item)}
         data-open
