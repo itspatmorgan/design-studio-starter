@@ -9,6 +9,7 @@ The full docs live in the app itself: run it and open the Guide (`/guide`), or r
 - **Three contracts.** A prototype is a folder. A script turns folders into a manifest. The app reads the manifest and the URL.
 - **Contributor scope.** You can change anything in your folder, but only your own folder. Everything else is the platform.
 - **Scoped design systems.** The studio system (`src/studio/`) is the app's own UI: nav, index, prototype navigation, palette, Systems pages, and Guide. Prototypes build with a prototype system instead, each in its own folder with its theme scoped under a class, found by their folders in `src/systems/`. The kit ships one, `product` (`src/systems/product/`), a placeholder for your product's design system. Replace it, or add others, like a `brand` system for marketing work.
+- **Modules.** The Guide, Tools, the Handbook and Systems are modules: folders that say what they add in a `module.ts`, found by the build and the app with no list to edit. Turn an optional one off in `studio.config.ts`, delete it, or add one someone else built with `pnpm studio add <address>` (it shows what it would add and changes nothing until you say yes). See [src/studio/modules/README.md](src/studio/modules/README.md).
 - **Handbook.** The team's context and instructions in `src/handbook/`: docs, agent rules, and skills (in the Agent Skills format). It's platform: shown in the app, changed through review.
 - **Prototype scope.** A prototype can depend only on its own folder, its design system (`src/systems/product/` by default), and shared utilities (`src/lib/`).
 
@@ -30,7 +31,7 @@ pnpm dev        # starts the app at localhost:5173
 ## Notes
 
 - **TypeScript.** The kit is TypeScript (strict), and new views are `.tsx`. Plain `.jsx` views work too; they just aren't type-checked. `pnpm build` runs `pnpm typecheck` (`tsc -b`) first, so a type error fails the build and CI.
-- **Routing.** [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview), with code-based routes in `src/studio/app/router.tsx`. URLs are paths: `/` (search with `?q=`), `/systems/<system>/<page>`, `/guide`, `/<contributor>/<prototype>`, and `/<contributor>/<prototype>/<path>` for any item at any depth, like `/patrick/hello-world/lofi/main`. A file's type comes from its extension (views are `.tsx`, documents are `.md`); folders are only for organizing. Each type is a self-contained folder in `src/studio/fileTypes/` that the platform runs without: see its README. For anything about routes, links, or search params, TanStack's docs are the reference. `systems` and `guide` are reserved, so they can't be contributor keys.
+- **Routing.** [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview), with code-based routes in `src/studio/app/router.tsx`. URLs are paths: `/` (search with `?q=`), `/systems/<system>/<page>`, `/guide`, `/<contributor>/<prototype>`, and `/<contributor>/<prototype>/<path>` for any item at any depth, like `/patrick/hello-world/lofi/main`. A file's type comes from its extension (views are `.tsx`, documents are `.md`); folders are only for organizing. Each type is a self-contained folder in `src/studio/fileTypes/` that the platform runs without: see its README. For anything about routes, links, or search params, TanStack's docs are the reference. A module's address (`/systems`, `/guide`, `/handbook`, `/tools`, and any module you add) can't be a contributor key; `pnpm check` and `pnpm join` say so.
 - **Components.** shadcn/ui on [Base UI](https://base-ui.com/react/overview/quick-start) (`@base-ui/react`). Compose with the `render` prop, e.g. `<DialogTrigger render={<Button />}>Open</DialogTrigger>`.
 - **Icons.** The app UI (`src/studio/`) uses HugeIcons. Product components and prototypes use `lucide-react`, which shadcn/ui brings in.
 - **Guide.** Pages are `.md` files in `src/studio/guide/`. Frontmatter sets the `title`, `description`, sidebar `section`, and `order`, plus `toc: true` for an "On this page" list. Adding a file adds the page.
@@ -49,6 +50,8 @@ pnpm canvas <file> <tool> '<json>'   # run a canvas tool on a canvas file (for a
 pnpm preview                 # serve dist/ locally
 pnpm new "Prototype Name"    # create a prototype in your folder
 pnpm join                    # add yourself to contributors.json
+pnpm studio list             # the modules and design systems, and which are on (add, remove, create-module: see pnpm studio)
+pnpm check                   # confirm the file types and modules are well formed
 node scripts/resolve-contributor.js   # print your contributors.json key
 ```
 
@@ -68,7 +71,10 @@ scripts/               manifest, create, scope check, Vite plugins (plain Node .
 .github/workflows/     scope check and build on push to main, build for deploy
 src/studio/            the app: routes (app/router.tsx), components, the Guide's pages (guide/, Markdown),
                        and the kinds of file a prototype holds (fileTypes/: views, documents, canvases), one removable folder each
-src/systems/           the design systems prototypes build with (index.ts lists them)
+studio.config.ts       the few things nearly every team changes: the app's name, which modules are off, the default system
+studio.lock.json       what pnpm studio added from a source, and its checksums (only when something was)
+src/studio/modules/    the modules: one folder each, with a module.ts (the Guide, Tools, the Handbook, Systems)
+src/systems/           the design systems prototypes build with, one folder each (system.ts, components/, styles/theme.css)
   product/            placeholder product system; replace it, or add others beside it
 src/lib/               shared utilities
 src/prototypes/        one folder per contributor

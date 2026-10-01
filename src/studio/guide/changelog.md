@@ -25,4 +25,6 @@ The first release, described in [How I Set Up a Prototyping Sandbox](https://www
 - Lofi: switch any view to grayscale with handwritten type, over its own design system, from the file menu
 - Archiving: set a prototype aside; the deployed site leaves archived prototypes out
 - The Handbook: team docs, agent rules, and skills, shown in the app, with a fixed shape and a check for it
+- Modules: the Guide, Tools, the Handbook and Systems are folders that declare what they add. Turn an optional one off in `studio.config.ts`, remove it, or add one from a folder, a git address or a download with `pnpm studio add`, after a review. A module can add a page and rail button, routes, palette and menu entries, dev-server routes, a library for prototypes, checks, and rules for agents
+- Design systems are folders too (`system.ts`, `components/`, `styles/theme.css`), and `pnpm studio create-system` starts one
 - `AGENTS.md`, which points to the Handbook's rules, and the `setup-contributor` skill
