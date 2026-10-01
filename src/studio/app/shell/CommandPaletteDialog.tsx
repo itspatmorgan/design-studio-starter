@@ -1,10 +1,12 @@
 // The ⌘K palette's dialog. It loads shortly after the app starts (CommandPalette.tsx), so cmdk
 // isn't in the main bundle.
+import { Fragment } from 'react';
 import { getRouteApi, useMatchRoute, useNavigate, useParams, type NavigateOptions } from '@tanstack/react-router';
 import {
   Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
 } from '@/studio/components/command';
 import { findItem, findPrototype, firstItem, itemFolder, itemLabel, itemLink, newestFirst, prototypeLink } from '@/studio/app/data/manifest';
+import { moduleApps, type PaletteContext } from '@/studio/app/modules';
 import type { Item, Prototype } from '@/studio/app/data/types';
 
 const rootApi = getRouteApi('__root__');
@@ -27,7 +29,7 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
   const openItem = current && (params._splat ? findItem(current, params._splat) : firstItem(current));
   const isOpen = (item: Item) => item === openItem;
   const onIndex = Boolean(matchRoute({ to: '/' }));
-  const onSystem = (system: 'product' | 'studio') => matchRoute({ to: '/systems/$system', params: { system }, fuzzy: true }) !== false;
+  const context: PaletteContext = { manifest, current, isOpen, go };
 
   return (
     <>
@@ -58,57 +60,10 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
   
             <CommandGroup heading="Places">
               <CommandItem value="prototypes index home" disabled={onIndex} onSelect={() => go({ to: '/' })}>Prototypes</CommandItem>
-              <CommandItem value="tools apps" disabled={matchRoute({ to: '/tools' }) !== false} onSelect={() => go({ to: '/tools' })}>Tools</CommandItem>
-              <CommandItem value="product system components" disabled={onSystem('product')} onSelect={() => go({ to: '/systems/$system', params: { system: 'product' } })}>Product system</CommandItem>
-              <CommandItem value="studio system components" disabled={onSystem('studio')} onSelect={() => go({ to: '/systems/$system', params: { system: 'studio' } })}>Studio system</CommandItem>
-              <CommandItem value="handbook docs rules skills" disabled={matchRoute({ to: '/handbook' }) !== false} onSelect={() => go({ to: '/handbook' })}>Handbook</CommandItem>
+              {moduleApps.map(({ spec, app }) => app.places && <app.places key={spec.id} {...context} />)}
             </CommandGroup>
 
-            <CommandSeparator />
-            <CommandGroup heading="Guide">
-              {manifest.guide.map((page) => (
-                <CommandItem
-                  key={page.slug}
-                  value={`guide ${page.title} ${page.description}`}
-                  disabled={matchRoute({ to: '/guide/$page', params: { page: page.slug } }) !== false || (page.slug === 'index' && matchRoute({ to: '/guide' }) !== false)}
-                  onSelect={() => go(page.slug === 'index' ? { to: '/guide' } : { to: '/guide/$page', params: { page: page.slug } })}
-                >
-                  {page.title}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-  
-            {manifest.handbook.some((section) => section.items.length > 0) && (
-              <>
-                <CommandSeparator />
-                <CommandGroup heading="Handbook">
-                  {manifest.handbook.flatMap((section) => section.items.map((item) => (
-                    <CommandItem
-                      key={`${section.id}/${item.path}`}
-                      value={`handbook ${section.title} ${itemLabel(item.path)} ${item.path}`}
-                      disabled={section === current && isOpen(item)}
-                      onSelect={() => go(itemLink(section, item))}
-                    >
-                      <span className="shrink-0 text-xs text-muted-foreground">{[section.title, itemFolder(item.path)].filter(Boolean).join(' · ')}</span>
-                      <span className="truncate">{itemLabel(item.path)}</span>
-                    </CommandItem>
-                  )))}
-                </CommandGroup>
-              </>
-            )}
-
-            {manifest.tools.length > 0 && (
-              <>
-                <CommandSeparator />
-                <CommandGroup heading="Tools">
-                  {manifest.tools.map((t) => (
-                    <CommandItem key={t.id} value={`tool ${t.title} ${t.description ?? ''} ${t.id}`} disabled={t === current} onSelect={() => go(prototypeLink(t))}>
-                      <span className="truncate">{t.title}</span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </>
-            )}
+            {moduleApps.map(({ spec, app }) => app.palette && <Fragment key={spec.id}><app.palette {...context} /></Fragment>)}
 
             {prototypes.length > 0 && (
               <>

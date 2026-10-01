@@ -65,7 +65,7 @@ function SystemNav({ system, components, tokens }: { system: SystemId; component
         <NavTitle>Systems</NavTitle>
         <NavTabs label="Design systems">
           {Object.entries(SYSTEMS).map(([id, s]) => (
-            <Link key={id} to="/systems/$system" params={{ system: id }} aria-current={id === system ? 'page' : undefined} className={navTabClass(id === system)}>{s.label}</Link>
+            <Link key={id} to={"/systems/$system" as never} params={{ system: id } as never} aria-current={id === system ? 'page' : undefined} className={navTabClass(id === system)}>{s.label}</Link>
           ))}
         </NavTabs>
       </NavHeader>
@@ -75,7 +75,8 @@ function SystemNav({ system, components, tokens }: { system: SystemId; component
             {g.items.map(([id, label]) => (
               <Link
                 key={id ?? 'intro'}
-                {...(id ? { to: '/systems/$system/$page', params: { system, page: id } } : { to: '/systems/$system', params: { system } })}
+                to={(id ? '/systems/$system/$page' : '/systems/$system') as never}
+                params={(id ? { system, page: id } : { system }) as never}
                 activeOptions={{ exact: true }}
                 style={navLinkStyle}
                 className={navLinkClass}
@@ -119,7 +120,8 @@ function SystemPage({ system, sys, components, tokens, origin, page, onEdit }: {
 }
 
 export default function SystemsPage() {
-  const params = useParams({ strict: false });
+  // The router's types leave out the modules' routes, so say what this module's routes carry.
+  const params = useParams({ strict: false }) as { system?: string; page?: string };
   const system = params.system as SystemId;
   const sys = SYSTEMS[system];
   const mainRef = useRef<HTMLElement>(null);

@@ -5,5 +5,6 @@ export default {
   id: 'guide',
   label: 'Guide',
   version: '0.1.0',
+  optional: true,
   section: { key: 'guide', folder: 'src/studio/guide' },
 } satisfies ModuleSpec;

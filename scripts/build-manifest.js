@@ -13,7 +13,7 @@ import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../src/studio
 import { byOrder, parseOrder } from '../src/studio/order.ts';
 import { parseMaintainers } from '../src/studio/permissions.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
-import { SECTION_KEYS } from './lib/modules.js';
+import { ENABLED_MODULES, SECTION_KEYS } from './lib/modules.js';
 import { frontmatter } from './lib/frontmatter.js';
 import { handbookProblems } from './lib/handbook-check.js';
 import { systemDocs } from './lib/system-docs.js';
@@ -24,7 +24,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 const TOOLS = path.join(ROOT, 'src', 'tools');
-const GUIDE = path.join(ROOT, 'src', 'studio', 'guide');
+// The Guide's pages, or null when its module is off or not installed.
+const guideModule = ENABLED_MODULES.find((m) => m.id === 'guide');
+const GUIDE = guideModule?.section ? path.join(ROOT, guideModule.section.folder) : null;
 const OUT_DIR = path.join(ROOT, 'public', 'prototypes');
 const OUT = path.join(OUT_DIR, 'manifest.json');
 // Each prototype's items, one file each: items/<contributor>/<prototype>.json. The app fetches a
@@ -312,7 +314,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
   // Guide pages: src/studio/guide/*.md, ordered by `order` in each page's frontmatter. They share
   // the title, description, and toc fields with prototype documents, and add order and section.
   const guide = [];
-  const guideFiles = fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.md')).sort() : [];
+  const guideFiles = GUIDE && fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.md')).sort() : [];
   for (const file of guideFiles) {
     const fm = frontmatter(fs.readFileSync(path.join(GUIDE, file), 'utf8'));
     const where = `src/studio/guide/${file}`;

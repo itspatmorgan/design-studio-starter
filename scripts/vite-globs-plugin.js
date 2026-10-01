@@ -8,7 +8,7 @@
 // everything shows. The deployed manifest leaves the same things out (scripts/build-manifest.js --deploy).
 import { buildManifest } from './build-manifest.js';
 import { FILE_TYPES } from './lib/file-types.js';
-import { MODULES } from './lib/modules.js';
+import { ENABLED_MODULES } from './lib/modules.js';
 import { globsFor } from '../src/studio/modules/globs.ts';
 
 // A path as a literal glob: characters that mean something to a glob are escaped. A trailing /**
@@ -38,7 +38,7 @@ export default function globs() {
     transform(code, id) {
       const match = LOADER.exec(id.split('?')[0]);
       if (!match || !code.includes('studioGlobs()')) return null;
-      const list = JSON.stringify([...globsFor(match[1], FILE_TYPES, Object.values(MODULES)), ...negations]);
+      const list = JSON.stringify([...globsFor(match[1], FILE_TYPES, ENABLED_MODULES), ...negations]);
       replaced++;
       return { code: code.replace(MACRO, list), map: null };
     },

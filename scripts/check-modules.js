@@ -2,6 +2,7 @@
 //   - each module.ts is well formed, and its id is its folder's name
 //   - no two modules claim the same section key or folder
 //   - a module's section folder exists
+//   - studio.config.ts is well formed, and only turns off modules that can be turned off
 //   - no contributor, and no folder in src/prototypes/, uses a section key, since both are addresses
 //   - modules don't import each other, and nothing outside a module imports its files other than its
 //     module.ts, so deleting a module's folder leaves nothing broken
@@ -10,12 +11,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { listProblems } from '../src/studio/modules/index.ts';
-import { MODULES, SECTION_KEYS, declarationProblems } from './lib/modules.js';
+import { configProblems } from '../src/studio/config.ts';
+import { CONFIG, MODULES, SECTION_KEYS, declarationProblems } from './lib/modules.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const problems = declarationProblems();
 const specs = Object.values(MODULES).filter((m) => m && typeof m === 'object');
-problems.push(...listProblems(specs));
+problems.push(...listProblems(specs), ...configProblems(CONFIG, specs));
 
 for (const m of specs) {
   if (m.section && !fs.existsSync(path.join(ROOT, m.section.folder))) {

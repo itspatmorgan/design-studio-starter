@@ -9,12 +9,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildManifest } from './build-manifest.js';
 import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
-import { PROTOTYPE_DIRS } from './lib/modules.js';
+import { ENABLED_MODULES, PROTOTYPE_DIRS } from './lib/modules.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
-const GUIDE = path.join(ROOT, 'src', 'studio', 'guide');
+// The Guide's pages, or null when its module is off or not installed.
+const guideModule = ENABLED_MODULES.find((m) => m.id === 'guide');
+const GUIDE = guideModule?.section ? path.join(ROOT, guideModule.section.folder) : null;
 const SYSTEMS = path.join(ROOT, 'src', 'systems');
 // The app's own system: its components, and its theme (the tokens the Systems pages list).
 const STUDIO_COMPONENTS = path.join(ROOT, 'src', 'studio', 'components');
@@ -39,7 +41,7 @@ const inside = (dir, file) => file === dir || file.startsWith(dir + path.sep);
 // in its own text). Other edits to a view's code are left to Vite's hot reload.
 function relevant(file, kind) {
   if (file === CONTRIBUTORS || file === AGENTS) return true;
-  if (inside(GUIDE, file)) return file.endsWith('.md');
+  if (GUIDE && inside(GUIDE, file)) return file.endsWith('.md');
   if (inside(HANDBOOK, file)) return kind !== 'change';
   // A system's component docs: files coming and going, and edits to the ones that describe a component
   // and to its theme (the tokens it lists).
@@ -56,7 +58,7 @@ export default function manifestWatch() {
     name: 'prototype-manifest-watch',
     apply: 'serve',
     configureServer(server) {
-      server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, HANDBOOK, GUIDE, SYSTEMS, CONTRIBUTORS, AGENTS]);
+      server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, HANDBOOK, ...(GUIDE ? [GUIDE] : []), SYSTEMS, CONTRIBUTORS, AGENTS]);
       let timer = null;
       const flush = () => {
         timer = null;

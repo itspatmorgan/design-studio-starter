@@ -2,28 +2,26 @@
 // https://tanstack.com/router/latest/docs/framework/react/routing/code-based-routing
 //
 //   /                                        Index (search: ?q=)
-//   /systems/$system, /systems/$system/$page  Systems (/systems opens the product system)
-//   /handbook                                opens the Handbook's first section (src/handbook/); each section,
-//                                            /handbook/docs, /handbook/rules, /handbook/skills, opens as a prototype does
-//   /guide, /guide/$page                     the Guide (pages in src/studio/guide/)
 //   /$contributor/$prototype                 a prototype, on its start item (or its first)
 //   /$contributor/$prototype/$               an item, by its path without the extension,
 //                                            at any depth: /patrick/hello-world/lofi/main
 //                                            (?mode=source shows its text, in dev: SourcePane)
+//
+// The modules add their own: /tools, /systems/$system, /handbook, /guide/$page (src/studio/modules/<id>/app.tsx).
+// The Handbook's sections and the tools open through the prototype routes, as /handbook/docs and /tools/<id>.
 import { lazy, Suspense } from 'react';
-import { createRootRoute, createRoute, createRouter, lazyRouteComponent, notFound, redirect, useNavigate } from '@tanstack/react-router';
+import { createRootRoute, createRoute, createRouter, notFound, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/studio/components/button';
 import App, { NotFound } from '@/studio/app/shell/App';
 import Index from '@/studio/app/pages/index/Index';
-import ToolsPage from '@/studio/app/pages/tools/ToolsPage';
-import { loadGuidePage } from '@/studio/app/data/loadGuide';
 import PrototypeLayout from '@/studio/app/pages/prototype/PrototypeLayout';
 import { findItem, firstItem, itemLabel, loadManifest, loadPrototype, setManifest } from '@/studio/app/data/manifest';
 import { FILE_TYPES, fileTypeModules } from '@/studio/app/data/fileTypes';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { TAB_ID } from '@/studio/app/data/files';
+import { moduleApps } from '@/studio/app/modules';
+import { APP_NAME } from '@/studio/app/data/config';
 
-const APP_NAME = 'Design Studio';
 
 const rootRoute = createRootRoute({
   loader: () => loadManifest(),
@@ -44,81 +42,6 @@ const indexRoute = createRoute({
   }),
   head: () => ({ meta: [{ title: `Prototypes — ${APP_NAME}` }] }),
   component: Index,
-});
-
-// Tools: the published ones (src/tools/). A tool itself opens through the prototype routes below, at
-// /tools/<id>, like any prototype; this is the page that lists them.
-const toolsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: 'tools',
-  head: () => ({ meta: [{ title: `Tools — ${APP_NAME}` }] }),
-  component: ToolsPage,
-});
-
-// Systems: /systems opens the product system; each system has one page per foundation
-// and component. The page is loaded on first visit, so it isn't in the main bundle:
-// https://tanstack.com/router/latest/docs/framework/react/guide/code-splitting
-const systemsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: 'systems',
-});
-
-const systemsIndexRoute = createRoute({
-  getParentRoute: () => systemsRoute,
-  path: '/',
-  beforeLoad: () => { throw redirect({ to: '/systems/$system', params: { system: 'product' }, replace: true }); },
-});
-
-const SystemsPage = lazyRouteComponent(() => import('@/studio/app/pages/systems/SystemsPage'));
-const systemsTitle = (...parts: (string | undefined)[]) =>
-  [...parts.filter(Boolean).map((p) => itemLabel(p!)), 'Systems', APP_NAME].join(' — ');
-
-const systemRoute = createRoute({
-  getParentRoute: () => systemsRoute,
-  path: '$system',
-  head: ({ params }) => ({ meta: [{ title: systemsTitle(params.system) }] }),
-  component: SystemsPage,
-});
-
-const systemPageRoute = createRoute({
-  getParentRoute: () => systemsRoute,
-  path: '$system/$page',
-  head: ({ params }) => ({ meta: [{ title: systemsTitle(params.page, params.system) }] }),
-  component: SystemsPage,
-});
-
-// The Guide's sidebar, around whichever page is open.
-const guideRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: 'guide',
-  component: lazyRouteComponent(() => import('@/studio/app/pages/guide/GuideLayout')),
-});
-
-// Guide pages render in DocLayout, loaded with the first Guide page.
-const DocLayout = lazyRouteComponent(() => import('@/studio/app/docs/DocLayout'), 'DocLayout');
-
-// Loads a Guide page before it renders, like views. /guide opens index.md.
-async function guideLoader(slug: string) {
-  const mod = await loadGuidePage(slug);
-  if (!mod) throw notFound();
-  const { title, description, toc } = mod.frontmatter ?? {};
-  return { Component: mod.default, title, description, toc, pageTitle: [title, 'Guide', APP_NAME].filter(Boolean).join(' — ') };
-}
-
-const guideIndexRoute = createRoute({
-  getParentRoute: () => guideRoute,
-  path: '/',
-  loader: () => guideLoader('index'),
-  head: ({ loaderData }) => ({ meta: [{ title: loaderData?.pageTitle ?? APP_NAME }] }),
-  component: () => <DocLayout {...guideIndexRoute.useLoaderData()} />,
-});
-
-const guidePageRoute = createRoute({
-  getParentRoute: () => guideRoute,
-  path: '$page',
-  loader: ({ params }) => guideLoader(params.page),
-  head: ({ loaderData }) => ({ meta: [{ title: loaderData?.pageTitle ?? APP_NAME }] }),
-  component: () => <DocLayout {...guidePageRoute.useLoaderData()} />,
 });
 
 // ?mode=source shows an item's text instead of the item (dev only): "Edit source" in its file menu.
@@ -196,27 +119,11 @@ const itemRoute = createRoute({
   notFoundComponent: NotFound,
 });
 
-// The Handbook's sections open as /handbook/$section, through the prototype routes above: they're
-// listed in the manifest like prototypes. /handbook itself opens the first section.
-const handbookRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: 'handbook',
-  beforeLoad: async () => {
-    const first = (await loadManifest()).handbook[0];
-    if (!first) throw notFound();
-    throw redirect({ to: '/$contributor/$prototype', params: { contributor: first.contributorKey, prototype: first.id }, replace: true });
-  },
-  notFoundComponent: NotFound,
-});
-
-const routeTree = rootRoute.addChildren([
-  indexRoute,
-  toolsRoute,
-  systemsRoute.addChildren([systemsIndexRoute, systemRoute, systemPageRoute]),
-  handbookRoute,
-  guideRoute.addChildren([guideIndexRoute, guidePageRoute]),
-  prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]),
-]);
+// The app's own routes are typed, so links to them are checked. The modules' routes (Tools, Systems, the
+// Handbook, the Guide, in src/studio/modules/<id>/app.tsx) are added at run time, and the types leave
+// them out: a link to one is written loosely.
+const coreRoutes = [indexRoute, prototypeRoute.addChildren([prototypeIndexRoute, itemRoute])] as const;
+const routeTree = rootRoute.addChildren([...coreRoutes, ...moduleApps.flatMap(({ app }) => app.routes?.(rootRoute) ?? [])] as unknown as typeof coreRoutes);
 
 export const router = createRouter({
   routeTree,

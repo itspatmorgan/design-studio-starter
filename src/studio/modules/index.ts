@@ -8,6 +8,9 @@ export type ModuleSpec = {
   id: string;        // the folder's name
   label: string;     // "Tools"
   version: string;   // this module's own version, like "0.1.0"
+  // True if studio.config.ts may turn the module off. Leave it out while other parts of the app still
+  // depend on the module, so turning it off can't leave a page broken.
+  optional?: boolean;
   // The top-level area the module adds: its address in the app (/tools) and the folder its files live
   // in, relative to the repo root. The key can't also be a contributor's folder, since both are addresses.
   // `items` says the folder holds files the app opens as items, so each file type lists them (globs.ts):

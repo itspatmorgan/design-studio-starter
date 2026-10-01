@@ -15,7 +15,7 @@ import PrototypeCardMenu from '@/studio/app/pages/index/PrototypeCardMenu';
 import { publishTool, useMe } from '@/studio/app/data/files';
 import { prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import { staleLinksMessage } from '@/studio/tools';
-import { toolArt } from '@/studio/app/pages/tools/toolArt';
+import { toolArt } from './toolArt';
 import type { PrototypeInfo } from '@/studio/app/data/types';
 import { cn } from '@/lib/utils';
 

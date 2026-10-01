@@ -1,13 +1,15 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  BookOpen01Icon, Layers01Icon, Moon02Icon, Notebook01Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Shapes01Icon, Sun01Icon, Wrench01Icon,
+  Layers01Icon, Moon02Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Sun01Icon,
 } from '@hugeicons/core-free-icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
-import { Link, useMatchRoute, useRouterState, type LinkProps } from '@tanstack/react-router';
+import { Link, useRouterState, type LinkProps } from '@tanstack/react-router';
 import { useOpenPalette } from '@/studio/app/shell/CommandPalette';
 import { Logo } from '@/studio/app/shell/Logo';
+import { inSection, moduleApps, sectionPath } from '@/studio/app/modules';
+import { APP_NAME } from '@/studio/app/data/config';
 
 const railButton = cn(
   'flex size-8 items-center justify-center rounded-md text-sidebar-foreground transition-colors',
@@ -52,9 +54,10 @@ function RailButton({ label, onClick, children }: { label: string; onClick: () =
 }
 
 // Main navigation: a narrow icon rail, visible on every page.
-// Top: the parts of the environment (Prototypes, Tools, Systems, Handbook). Bottom: the Guide about the
-// tool itself, then the theme toggle. sectionNav is set only while a page has a section
-// navigation (shell/nav/), to show or hide it.
+// Top: Prototypes, then the modules that sit at the top (Tools, Systems, Handbook). Bottom: the modules that
+// sit at the bottom (the Guide about the tool itself), then the theme toggle. The modules come from
+// src/studio/modules/<id>/app.tsx, so the rail has exactly the ones installed and on. sectionNav is set only
+// while a page has a section navigation (shell/nav/), to show or hide it.
 type MainNavProps = {
   colorMode: string;
   onToggleColorMode: () => void;
@@ -63,38 +66,30 @@ type MainNavProps = {
 
 export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: MainNavProps) {
   const openPalette = useOpenPalette();
-  const matchRoute = useMatchRoute();
-  const onSystems = Boolean(matchRoute({ to: '/systems', fuzzy: true }));
-  const onGuide = Boolean(matchRoute({ to: '/guide', fuzzy: true }));
-  // /handbook and its sections (/handbook/docs/...), which open through the prototype routes.
-  const onHandbook = useRouterState({ select: (s) => s.location.pathname === '/handbook' || s.location.pathname.startsWith('/handbook/') });
-  // /tools and the tools themselves (/tools/<id>), which open through the prototype routes.
-  const onTools = useRouterState({ select: (s) => s.location.pathname === '/tools' || s.location.pathname.startsWith('/tools/') });
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const onModule = moduleApps.some(({ spec }) => inSection(spec, pathname));
+  const moduleLinks = (place: 'top' | 'bottom') => moduleApps.filter(({ app }) => app.rail === place).map(({ spec, app }) => (
+    <RailLink key={spec.id} to={sectionPath(spec) as never} label={spec.label} active={inSection(spec, pathname)}>
+      <HugeiconsIcon icon={app.icon} size={16} />
+    </RailLink>
+  ));
   return (
     <nav
       aria-label="Main"
       data-testid="main-nav"
       className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-sidebar-border bg-sidebar py-3"
     >
-      <RailLink to="/" label="Design Studio" className="active:scale-95">
+      <RailLink to="/" label={APP_NAME} className="active:scale-95">
         <Logo className="h-3.5 w-auto" />
       </RailLink>
       <RailButton label="Search (⌘K)" onClick={openPalette}>
         <HugeiconsIcon icon={Search01Icon} size={16} />
       </RailButton>
       <div className="h-2" />
-      <RailLink to="/" label="Prototypes" active={!onSystems && !onGuide && !onHandbook && !onTools}>
+      <RailLink to="/" label="Prototypes" active={!onModule}>
         <HugeiconsIcon icon={Layers01Icon} size={16} />
       </RailLink>
-      <RailLink to="/tools" label="Tools" active={onTools}>
-        <HugeiconsIcon icon={Wrench01Icon} size={16} />
-      </RailLink>
-      <RailLink to="/systems" label="Systems" active={onSystems}>
-        <HugeiconsIcon icon={Shapes01Icon} size={16} />
-      </RailLink>
-      <RailLink to="/handbook" label="Handbook" active={onHandbook}>
-        <HugeiconsIcon icon={Notebook01Icon} size={16} />
-      </RailLink>
+      {moduleLinks('top')}
 
       <div className="mt-auto" />
       {sectionNav && (
@@ -102,9 +97,7 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
           <HugeiconsIcon icon={sectionNav.open ? PanelLeftCloseIcon : PanelLeftOpenIcon} size={16} />
         </RailButton>
       )}
-      <RailLink to="/guide" label="Guide" active={onGuide}>
-        <HugeiconsIcon icon={BookOpen01Icon} size={16} />
-      </RailLink>
+      {moduleLinks('bottom')}
       <RailButton label={colorMode === 'dark' ? 'Light mode' : 'Dark mode'} onClick={onToggleColorMode}>
         <HugeiconsIcon icon={colorMode === 'dark' ? Sun01Icon : Moon02Icon} size={16} />
       </RailButton>

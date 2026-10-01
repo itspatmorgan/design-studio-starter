@@ -31,8 +31,8 @@ export default function GuideLayout() {
               {g.pages.map((page) => (
                 <Link
                   key={page.slug}
-                  to={page.slug === 'index' ? '/guide' : '/guide/$page'}
-                  params={{ page: page.slug }}
+                  to={(page.slug === 'index' ? '/guide' : '/guide/$page') as never}
+                  params={{ page: page.slug } as never}
                   activeOptions={{ exact: true }}
                   style={navLinkStyle}
                   className={navLinkClass}

@@ -1,0 +1,37 @@
+// studio.config.ts: the few things nearly every team changes, and nothing else. Everything else is code,
+// because a team owns the whole repo. A module's own defaults apply to anything left out, so a fresh
+// config is nearly empty. Has no imports, so Node scripts and the app can both load it.
+
+export type StudioConfig = {
+  // What the app calls itself: the rail's tooltip and every page's title.
+  name: string;
+  // Modules to turn off, by id: { guide: false }. A module left out is on. Turning one off keeps its
+  // files, so turning it on again is one line; to remove it for good, delete its folder.
+  modules?: Record<string, boolean>;
+};
+
+// What is wrong with a config, each as a sentence that says what to fix. `modules` is the installed
+// modules and whether each can be turned off.
+export function configProblems(config: unknown, modules: readonly { id: string; optional?: boolean }[]): string[] {
+  const where = 'studio.config.ts';
+  if (!config || typeof config !== 'object') return [`${where} must export a config as its default.`];
+  const c = config as Partial<StudioConfig>;
+  const problems: string[] = [];
+  if (typeof c.name !== 'string' || !c.name.trim()) problems.push(`${where}: add a name, what the app calls itself.`);
+  if (c.modules !== undefined) {
+    if (!c.modules || typeof c.modules !== 'object' || Array.isArray(c.modules)) {
+      problems.push(`${where}: modules should list module ids with true or false, like { guide: false }.`);
+    } else {
+      for (const [id, on] of Object.entries(c.modules)) {
+        const installed = modules.find((m) => m.id === id);
+        if (!installed) problems.push(`${where}: modules lists "${id}", but no module has that id. Installed: ${modules.map((m) => m.id).join(', ') || 'none'}.`);
+        else if (typeof on !== 'boolean') problems.push(`${where}: modules.${id} should be true or false.`);
+        else if (!on && !installed.optional) problems.push(`${where}: the ${id} module can't be turned off yet; other parts of the app still use it.`);
+      }
+    }
+  }
+  return problems;
+}
+
+// Whether a module is on: every module is, unless the config turns it off.
+export const isEnabled = (config: StudioConfig, id: string) => config.modules?.[id] !== false;
