@@ -48,7 +48,7 @@ function Overview({ manifest }: { manifest: Manifest }) {
   const items = docs?.items.slice(0, 3) ?? [];
   if (!docs || !items.length) return null;
   return (
-    <HomeSection title="Docs" to="/handbook/docs" linkLabel="All docs">
+    <HomeSection title="Docs" to="/handbook/docs">
       <ItemGrid>
         {items.map((item) => (
           <li key={item.path}>

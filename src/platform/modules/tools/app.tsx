@@ -40,7 +40,7 @@ function Overview({ manifest }: { manifest: Manifest }) {
   const tools = (manifest.sections.tools ?? []).filter((t) => t.status !== 'archived').slice(0, 3);
   if (!tools.length) return null;
   return (
-    <HomeSection title="Tools" to="/tools" linkLabel="All tools">
+    <HomeSection title="Tools" to="/tools">
       <ItemGrid>{tools.map((t) => <li key={t.id}><ToolCard tool={t} /></li>)}</ItemGrid>
     </HomeSection>
   );

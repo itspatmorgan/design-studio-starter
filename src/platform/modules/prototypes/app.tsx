@@ -51,9 +51,9 @@ function Overview({ manifest }: { manifest: Manifest }) {
   const live = manifest.prototypes.filter((p) => p.status !== 'archived').sort(newestFirst);
   const mine = me ? live.filter((p) => p.contributorKey === me) : [];
   const shown = (mine.length ? mine : live).slice(0, 9);
-  if (!shown.length) return import.meta.env.DEV && me ? <HomeSection title="Prototypes" to="/prototypes" linkLabel="All prototypes"><NewPrototypeButton /></HomeSection> : null;
+  if (!shown.length) return import.meta.env.DEV && me ? <HomeSection title="Prototypes" to="/prototypes"><NewPrototypeButton /></HomeSection> : null;
   return (
-    <HomeSection title={mine.length ? 'Your prototypes' : 'Latest prototypes'} to="/prototypes" linkLabel="All prototypes">
+    <HomeSection title={mine.length ? 'Your prototypes' : 'Latest prototypes'} to="/prototypes">
       <ItemGrid>{shown.map((p) => <li key={`${p.contributorKey}/${p.id}`}><PrototypeCard prototype={p} /></li>)}</ItemGrid>
     </HomeSection>
   );
