@@ -22,7 +22,7 @@ A small inbox for feedback. Anyone can add an item in a few seconds. Someone tri
 
 ## Decisions so far
 
-- **One list, not a board.** We tried a board in the [lofi sketch](lofi/inbox-sketch); the list scales better once there are more than a dozen items.
+- **One list, not a board.** We looked at a board in the early [breadboard](breadboard) and the [lofi sketch](lofi/inbox-sketch); the list scales better once there are more than a dozen items.
 - **Four statuses**: New, Triaged, Planned, Resolved. Anything finer can wait until the team asks for it.
 - **Notes live on the item.** A separate thread would split the story across two places.
 - **No assignees yet.** The team is small enough to talk. Revisit if triage becomes a bottleneck.
@@ -35,4 +35,4 @@ A small inbox for feedback. Anyone can add an item in a few seconds. Someone tri
 
 ## Where to look
 
-The three screens are the [inbox](app/inbox), an item's [detail](app/detail), and the [overview](app/overview). The [workflows canvas](workflows) shows how they connect, and the [tour](start-here) explains how this prototype is put together.
+The three screens are the [inbox](app/inbox), an item's [detail](app/detail), and the [overview](app/overview). The [breadboard](breadboard) is the early flow sketch, the [handoff canvas](eng-handoff) is what engineering gets, and the [tour](start-here) explains how this prototype is put together.

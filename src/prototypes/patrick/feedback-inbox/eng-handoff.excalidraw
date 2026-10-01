@@ -1,0 +1,1595 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "studioVersion": 1,
+  "elements": [
+    {
+      "autoResize": true,
+      "fontFamily": 6,
+      "fontSize": 48,
+      "height": 60,
+      "id": "muosuq62gvm18p",
+      "lineHeight": 1.25,
+      "originalText": "Feedback Inbox: Handoff",
+      "seed": 238400276,
+      "text": "Feedback Inbox: Handoff",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 642798723,
+      "verticalAlign": "top",
+      "width": 618.24,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "autoResize": true,
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 25,
+      "id": "muosuq62vpw9lu",
+      "lineHeight": 1.25,
+      "originalText": "Canonical screens and rules for eng. The triage flow first, then each screen, then the data and the design system.",
+      "seed": 1423270248,
+      "text": "Canonical screens and rules for eng. The triage flow first, then each screen, then the data and the design system.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 341737118,
+      "verticalAlign": "top",
+      "width": 1276.8,
+      "x": 0,
+      "y": 70
+    },
+    {
+      "boundElements": [
+        {
+          "id": "muosuq628ok0jl",
+          "type": "arrow"
+        }
+      ],
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "muosuq63awt6rm",
+      "height": 318,
+      "id": "muosuq62bautcf",
+      "link": "/patrick/feedback-inbox/app/inbox",
+      "seed": 1516047002,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 3,
+      "versionNonce": 2045034999,
+      "width": 458,
+      "x": 110,
+      "y": 240
+    },
+    {
+      "boundElements": [
+        {
+          "id": "muosuq628ok0jl",
+          "type": "arrow"
+        },
+        {
+          "id": "muosuq63xflx68",
+          "type": "arrow"
+        }
+      ],
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "muosuq63awt6rm",
+      "height": 318,
+      "id": "muosuq62cglw74",
+      "link": "/patrick/feedback-inbox/app/detail",
+      "seed": 333309993,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 4,
+      "versionNonce": 826386336,
+      "width": 458,
+      "x": 648,
+      "y": 240
+    },
+    {
+      "boundElements": [
+        {
+          "id": "muosuq63xflx68",
+          "type": "arrow"
+        }
+      ],
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "muosuq63awt6rm",
+      "height": 318,
+      "id": "muosuq62ys8jk8",
+      "link": "/patrick/feedback-inbox/app/overview",
+      "seed": 18357245,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 3,
+      "versionNonce": 1675916138,
+      "width": 458,
+      "x": 1186,
+      "y": 240
+    },
+    {
+      "elbowed": false,
+      "endArrowhead": "arrow",
+      "endBinding": {
+        "elementId": "muosuq62cglw74",
+        "focus": 0,
+        "gap": 8
+      },
+      "height": 0,
+      "id": "muosuq628ok0jl",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          80,
+          0
+        ]
+      ],
+      "seed": 770865754,
+      "startArrowhead": null,
+      "startBinding": {
+        "elementId": "muosuq62bautcf",
+        "focus": 0,
+        "gap": 8
+      },
+      "type": "arrow",
+      "version": 1,
+      "versionNonce": 1753021161,
+      "width": 80,
+      "x": 568,
+      "y": 399
+    },
+    {
+      "elbowed": false,
+      "endArrowhead": "arrow",
+      "endBinding": {
+        "elementId": "muosuq62ys8jk8",
+        "focus": 0,
+        "gap": 8
+      },
+      "height": 0,
+      "id": "muosuq63xflx68",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          80,
+          0
+        ]
+      ],
+      "seed": 861054292,
+      "startArrowhead": null,
+      "startBinding": {
+        "elementId": "muosuq62cglw74",
+        "focus": 0,
+        "gap": 8
+      },
+      "type": "arrow",
+      "version": 1,
+      "versionNonce": 2100219539,
+      "width": 80,
+      "x": 1106,
+      "y": 399
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq635y3rbm",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63awt6rm",
+      "height": 200,
+      "id": "muosuq63eltxlp",
+      "roughness": 0,
+      "seed": 1900227682,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 269464758,
+      "width": 200,
+      "x": 110,
+      "y": 582
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63eltxlp",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63awt6rm",
+      "height": 125,
+      "id": "muosuq635y3rbm",
+      "lineHeight": 1.25,
+      "originalText": "1 Capture. A new item starts as New, on the Team plan, at the top of the Inbox.",
+      "seed": 595968375,
+      "text": "1 Capture. A new\nitem starts as\nNew, on the Team\nplan, at the top\nof the Inbox.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1623839574,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 120,
+      "y": 592
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq63sezpe7",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63awt6rm",
+      "height": 200,
+      "id": "muosuq63ld2n77",
+      "roughness": 0,
+      "seed": 145034168,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1095638307,
+      "width": 200,
+      "x": 648,
+      "y": 582
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63ld2n77",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63awt6rm",
+      "height": 150,
+      "id": "muosuq63sezpe7",
+      "lineHeight": 1.25,
+      "originalText": "2 Triage. Set status and priority on the Detail. Add notes as you learn.",
+      "seed": 1129968077,
+      "text": "2 Triage. Set\nstatus and\npriority on the\nDetail. Add\nnotes as you\nlearn.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1087099712,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": 658,
+      "y": 592
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq63deb3a9",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63awt6rm",
+      "height": 200,
+      "id": "muosuq6354dth1",
+      "roughness": 0,
+      "seed": 1754741284,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 531177407,
+      "width": 200,
+      "x": 1186,
+      "y": 582
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq6354dth1",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63awt6rm",
+      "height": 150,
+      "id": "muosuq63deb3a9",
+      "lineHeight": 1.25,
+      "originalText": "3 Review. The Overview counts follow every change in the Inbox and Detail.",
+      "seed": 198058320,
+      "text": "3 Review. The\nOverview counts\nfollow every\nchange in the\nInbox and\nDetail.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 595315834,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": 1196,
+      "y": 592
+    },
+    {
+      "height": 662,
+      "id": "muosuq63awt6rm",
+      "name": "Triage flow",
+      "seed": 2022673308,
+      "type": "frame",
+      "version": 1,
+      "versionNonce": 1923338034,
+      "width": 1654,
+      "x": 50,
+      "y": 180
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "muosuq63a2xn5h",
+      "height": 318,
+      "id": "muosuq636dm1ut",
+      "link": "/patrick/feedback-inbox/app/inbox",
+      "seed": 1643681488,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 794495277,
+      "width": 458,
+      "x": 110,
+      "y": 1032
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq63xu69rv",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63a2xn5h",
+      "height": 200,
+      "id": "muosuq63ct10kl",
+      "roughness": 0,
+      "seed": 365841485,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1781733415,
+      "width": 200,
+      "x": 110,
+      "y": 1374
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63ct10kl",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63a2xn5h",
+      "height": 150,
+      "id": "muosuq63xu69rv",
+      "lineHeight": 1.25,
+      "originalText": "List is newest first. Columns: feedback, from, priority, status, received.",
+      "seed": 785020816,
+      "text": "List is newest\nfirst. Columns:\nfeedback, from,\npriority,\nstatus,\nreceived.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 505553305,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": 120,
+      "y": 1384
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq63cmzmfo",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63a2xn5h",
+      "height": 200,
+      "id": "muosuq636ux6f4",
+      "roughness": 0,
+      "seed": 1235248311,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 885725958,
+      "width": 200,
+      "x": 334,
+      "y": 1374
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq636ux6f4",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63a2xn5h",
+      "height": 150,
+      "id": "muosuq63cmzmfo",
+      "lineHeight": 1.25,
+      "originalText": "Tabs filter by status and show counts. Search matches title, customer, and tags.",
+      "seed": 12962519,
+      "text": "Tabs filter by\nstatus and show\ncounts. Search\nmatches title,\ncustomer, and\ntags.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 924678336,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": 344,
+      "y": 1384
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq63uug851",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63a2xn5h",
+      "height": 200,
+      "id": "muosuq636zdgxn",
+      "roughness": 0,
+      "seed": 584351686,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 281253086,
+      "width": 200,
+      "x": 558,
+      "y": 1374
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq636zdgxn",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63a2xn5h",
+      "height": 200,
+      "id": "muosuq63uug851",
+      "lineHeight": 1.25,
+      "originalText": "Row menu: Open, Mark resolved (off once resolved), Delete. Delete has no confirmation here.",
+      "seed": 323013153,
+      "text": "Row menu: Open,\nMark resolved\n(off once\nresolved),\nDelete. Delete\nhas no\nconfirmation\nhere.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1535114755,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": 568,
+      "y": 1384
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq63h5ndlb",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63a2xn5h",
+      "height": 200,
+      "id": "muosuq63vszn1i",
+      "roughness": 0,
+      "seed": 1577967889,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1690814139,
+      "width": 200,
+      "x": 782,
+      "y": 1374
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63vszn1i",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63a2xn5h",
+      "height": 125,
+      "id": "muosuq63h5ndlb",
+      "lineHeight": 1.25,
+      "originalText": "Empty states: No feedback yet, or Nothing matches when a filter finds none.",
+      "seed": 1672148904,
+      "text": "Empty states: No\nfeedback yet, or\nNothing matches\nwhen a filter\nfinds none.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 572930266,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 792,
+      "y": 1384
+    },
+    {
+      "height": 662,
+      "id": "muosuq63a2xn5h",
+      "name": "Inbox",
+      "seed": 1365032006,
+      "type": "frame",
+      "version": 1,
+      "versionNonce": 1463480403,
+      "width": 992,
+      "x": 50,
+      "y": 972
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq639729o6",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63tagj7r",
+      "height": 200,
+      "id": "muosuq63tdd1yt",
+      "roughness": 0,
+      "seed": 1365437297,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 902520333,
+      "width": 200,
+      "x": 110,
+      "y": 1824
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63tdd1yt",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63tagj7r",
+      "height": 150,
+      "id": "muosuq639729o6",
+      "lineHeight": 1.25,
+      "originalText": "New feedback is a side panel on the Inbox. Edit is a dialog on the Detail. Same form.",
+      "seed": 1373124982,
+      "text": "New feedback is\na side panel on\nthe Inbox. Edit\nis a dialog on\nthe Detail. Same\nform.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 896182257,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 120,
+      "y": 1834
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq633idaa5",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63tagj7r",
+      "height": 200,
+      "id": "muosuq63yafvg6",
+      "roughness": 0,
+      "seed": 174560285,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1801846329,
+      "width": 200,
+      "x": 334,
+      "y": 1824
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63yafvg6",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63tagj7r",
+      "height": 175,
+      "id": "muosuq633idaa5",
+      "lineHeight": 1.25,
+      "originalText": "Title is required, and trimmed. Customer falls back to Unknown. Details are free text.",
+      "seed": 1305608163,
+      "text": "Title is\nrequired, and\ntrimmed.\nCustomer falls\nback to Unknown.\nDetails are free\ntext.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1608202901,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 344,
+      "y": 1834
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq63qr5zhq",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63tagj7r",
+      "height": 200,
+      "id": "muosuq63j3cqo",
+      "roughness": 0,
+      "seed": 1242037117,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 506024751,
+      "width": 200,
+      "x": 558,
+      "y": 1824
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63j3cqo",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63tagj7r",
+      "height": 150,
+      "id": "muosuq63qr5zhq",
+      "lineHeight": 1.25,
+      "originalText": "Source: Email, Chat, Interview, Survey. Priority: Low, Medium (default), High.",
+      "seed": 154952261,
+      "text": "Source: Email,\nChat, Interview,\nSurvey.\nPriority: Low,\nMedium\n(default), High.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 2107279994,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 568,
+      "y": 1834
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq63rd7bhl",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63tagj7r",
+      "height": 200,
+      "id": "muosuq63j9lk6j",
+      "roughness": 0,
+      "seed": 1551224215,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1427321603,
+      "width": 200,
+      "x": 782,
+      "y": 1824
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63j9lk6j",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63tagj7r",
+      "height": 125,
+      "id": "muosuq63rd7bhl",
+      "lineHeight": 1.25,
+      "originalText": "Add and Save close the panel. Cancel and Escape close it without changes.",
+      "seed": 484508757,
+      "text": "Add and Save\nclose the panel.\nCancel and\nEscape close it\nwithout changes.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 819828400,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 792,
+      "y": 1834
+    },
+    {
+      "height": 320,
+      "id": "muosuq63tagj7r",
+      "name": "Create and edit",
+      "seed": 152618661,
+      "type": "frame",
+      "version": 1,
+      "versionNonce": 1094110840,
+      "width": 992,
+      "x": 50,
+      "y": 1764
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "muosuq63oupxv6",
+      "height": 318,
+      "id": "muosuq63p4hckb",
+      "link": "/patrick/feedback-inbox/app/detail",
+      "seed": 541728852,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 1582377212,
+      "width": 458,
+      "x": 110,
+      "y": 2274
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq63msfsq0",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63oupxv6",
+      "height": 200,
+      "id": "muosuq63uwzgm",
+      "roughness": 0,
+      "seed": 1008742275,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 654500257,
+      "width": 200,
+      "x": 110,
+      "y": 2616
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63uwzgm",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63oupxv6",
+      "height": 150,
+      "id": "muosuq63msfsq0",
+      "lineHeight": 1.25,
+      "originalText": "Header: status and priority badges, title, then customer, plan, source, and date.",
+      "seed": 494094391,
+      "text": "Header: status\nand priority\nbadges, title,\nthen customer,\nplan, source,\nand date.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 18406927,
+      "verticalAlign": "top",
+      "width": 156.8,
+      "x": 120,
+      "y": 2626
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq63xtw3ar",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63oupxv6",
+      "height": 200,
+      "id": "muosuq63x4b9oa",
+      "roughness": 0,
+      "seed": 42852851,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1404342028,
+      "width": 200,
+      "x": 334,
+      "y": 2616
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63x4b9oa",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63oupxv6",
+      "height": 150,
+      "id": "muosuq63xtw3ar",
+      "lineHeight": 1.25,
+      "originalText": "Status and Priority save the moment they change. The badges update with them.",
+      "seed": 199251798,
+      "text": "Status and\nPriority save\nthe moment they\nchange. The\nbadges update\nwith them.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 131695206,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": 344,
+      "y": 2626
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq639a6tdp",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63oupxv6",
+      "height": 200,
+      "id": "muosuq63pjvoyh",
+      "roughness": 0,
+      "seed": 1882473669,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 190225010,
+      "width": 200,
+      "x": 558,
+      "y": 2616
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63pjvoyh",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63oupxv6",
+      "height": 125,
+      "id": "muosuq639a6tdp",
+      "lineHeight": 1.25,
+      "originalText": "Notes run oldest to newest. Add note stays off until there is text.",
+      "seed": 1073884586,
+      "text": "Notes run oldest\nto newest. Add\nnote stays off\nuntil there is\ntext.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1126409599,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 568,
+      "y": 2626
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq635lhbnd",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63oupxv6",
+      "height": 200,
+      "id": "muosuq63mrroi6",
+      "roughness": 0,
+      "seed": 1068031997,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 250616397,
+      "width": 200,
+      "x": 782,
+      "y": 2616
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63mrroi6",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63oupxv6",
+      "height": 175,
+      "id": "muosuq635lhbnd",
+      "lineHeight": 1.25,
+      "originalText": "Delete asks first, then returns to the Inbox. Opened with nothing chosen, it shows the newest item.",
+      "seed": 2058687795,
+      "text": "Delete asks\nfirst, then\nreturns to the\nInbox. Opened\nwith nothing\nchosen, it shows\nthe newest item.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1846220851,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 792,
+      "y": 2626
+    },
+    {
+      "height": 662,
+      "id": "muosuq63oupxv6",
+      "name": "Feedback detail",
+      "seed": 1246526180,
+      "type": "frame",
+      "version": 1,
+      "versionNonce": 1913383781,
+      "width": 992,
+      "x": 50,
+      "y": 2214
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "muosuq638y5pa7",
+      "height": 318,
+      "id": "muosuq63qsl2b7",
+      "link": "/patrick/feedback-inbox/app/overview",
+      "seed": 789111807,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 2116336680,
+      "width": 458,
+      "x": 110,
+      "y": 3066
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq635bu84",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq638y5pa7",
+      "height": 200,
+      "id": "muosuq63qhg2uy",
+      "roughness": 0,
+      "seed": 1426447366,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1986301896,
+      "width": 200,
+      "x": 110,
+      "y": 3408
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63qhg2uy",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq638y5pa7",
+      "height": 125,
+      "id": "muosuq635bu84",
+      "lineHeight": 1.25,
+      "originalText": "Open is everything not Resolved. High priority counts open items only.",
+      "seed": 75617973,
+      "text": "Open is\neverything not\nResolved. High\npriority counts\nopen items only.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1252710818,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 120,
+      "y": 3418
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq63pxcmp2",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq638y5pa7",
+      "height": 200,
+      "id": "muosuq63fcurz0",
+      "roughness": 0,
+      "seed": 1852618009,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 348461952,
+      "width": 200,
+      "x": 334,
+      "y": 3408
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63fcurz0",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq638y5pa7",
+      "height": 150,
+      "id": "muosuq63pxcmp2",
+      "lineHeight": 1.25,
+      "originalText": "Bars scale to the largest count in their own group, by status and by source.",
+      "seed": 648534474,
+      "text": "Bars scale to\nthe largest\ncount in their\nown group, by\nstatus and by\nsource.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1417213388,
+      "verticalAlign": "top",
+      "width": 156.8,
+      "x": 344,
+      "y": 3418
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq6316vwrj",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq638y5pa7",
+      "height": 200,
+      "id": "muosuq63k6j7o1",
+      "roughness": 0,
+      "seed": 800128266,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 208258390,
+      "width": 200,
+      "x": 558,
+      "y": 3408
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63k6j7o1",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq638y5pa7",
+      "height": 150,
+      "id": "muosuq6316vwrj",
+      "lineHeight": 1.25,
+      "originalText": "Newest is the five most recent by received date. A row opens the Detail.",
+      "seed": 458671338,
+      "text": "Newest is the\nfive most recent\nby received\ndate. A row\nopens the\nDetail.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1600744306,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 568,
+      "y": 3418
+    },
+    {
+      "height": 662,
+      "id": "muosuq638y5pa7",
+      "name": "Overview",
+      "seed": 474176689,
+      "type": "frame",
+      "version": 1,
+      "versionNonce": 1776844338,
+      "width": 768,
+      "x": 50,
+      "y": 3006
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq63c15lyn",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63foyw7x",
+      "height": 200,
+      "id": "muosuq63v1q1qh",
+      "roughness": 0,
+      "seed": 976472375,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1380913666,
+      "width": 200,
+      "x": 110,
+      "y": 3858
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63v1q1qh",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63foyw7x",
+      "height": 200,
+      "id": "muosuq63c15lyn",
+      "lineHeight": 1.25,
+      "originalText": "Feedback: id, title, body, customer, plan, source, priority, status, tags, createdAt, notes.",
+      "seed": 1188870064,
+      "text": "Feedback: id,\ntitle, body,\ncustomer, plan,\nsource,\npriority,\nstatus, tags,\ncreatedAt,\nnotes.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 2123207381,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": 120,
+      "y": 3868
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq636rfh4u",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63foyw7x",
+      "height": 200,
+      "id": "muosuq63qjnbti",
+      "roughness": 0,
+      "seed": 880164399,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1410179502,
+      "width": 200,
+      "x": 334,
+      "y": 3858
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63qjnbti",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63foyw7x",
+      "height": 150,
+      "id": "muosuq636rfh4u",
+      "lineHeight": 1.25,
+      "originalText": "Status: New, Triaged, Planned, Resolved. A new item is always New.",
+      "seed": 1791328649,
+      "text": "Status: New,\nTriaged,\nPlanned,\nResolved. A new\nitem is always\nNew.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1390814965,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": 344,
+      "y": 3868
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosuq63a5yeqb",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63foyw7x",
+      "height": 200,
+      "id": "muosuq631tdyzq",
+      "roughness": 0,
+      "seed": 811673427,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1369680529,
+      "width": 200,
+      "x": 558,
+      "y": 3858
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq631tdyzq",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63foyw7x",
+      "height": 150,
+      "id": "muosuq63a5yeqb",
+      "lineHeight": 1.25,
+      "originalText": "A note is text and a time. Notes belong to one item and go with it when it is deleted.",
+      "seed": 1904744173,
+      "text": "A note is text\nand a time.\nNotes belong to\none item and go\nwith it when it\nis deleted.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1807164514,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": 568,
+      "y": 3868
+    },
+    {
+      "backgroundColor": "#ffc9c9",
+      "boundElements": [
+        {
+          "id": "muosuq636jav5x",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63foyw7x",
+      "height": 200,
+      "id": "muosuq63l3q8ym",
+      "roughness": 0,
+      "seed": 957498929,
+      "strokeColor": "#eeaeae",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1509470577,
+      "width": 200,
+      "x": 782,
+      "y": 3858
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63l3q8ym",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63foyw7x",
+      "height": 175,
+      "id": "muosuq636jav5x",
+      "lineHeight": 1.25,
+      "originalText": "Prototype only: the data lives in memory and resets on reload. Eng defines the real store.",
+      "seed": 143278527,
+      "text": "Prototype only:\nthe data lives\nin memory and\nresets on\nreload. Eng\ndefines the real\nstore.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 748057467,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 792,
+      "y": 3868
+    },
+    {
+      "height": 320,
+      "id": "muosuq63foyw7x",
+      "name": "Data",
+      "seed": 1027890909,
+      "type": "frame",
+      "version": 1,
+      "versionNonce": 1814730344,
+      "width": 992,
+      "x": 50,
+      "y": 3798
+    },
+    {
+      "backgroundColor": "#a5d8ff",
+      "boundElements": [
+        {
+          "id": "muosuq6323zcwj",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63czedpz",
+      "height": 200,
+      "id": "muosuq63glkz8r",
+      "roughness": 0,
+      "seed": 1489338552,
+      "strokeColor": "#87c0ec",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1120659830,
+      "width": 200,
+      "x": 110,
+      "y": 4308
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63glkz8r",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63czedpz",
+      "height": 250,
+      "id": "muosuq6323zcwj",
+      "lineHeight": 1.25,
+      "originalText": "Product system. Table, Tabs, Badge, Select, Sheet, Dialog, Dropdown menu, Card, Avatar, Input, Textarea, Label, Separator, Button.",
+      "seed": 1141246234,
+      "text": "Product system.\nTable, Tabs,\nBadge, Select,\nSheet, Dialog,\nDropdown menu,\nCard, Avatar,\nInput, Textarea,\nLabel,\nSeparator,\nButton.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 2143134579,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 120,
+      "y": 4318
+    },
+    {
+      "backgroundColor": "#a5d8ff",
+      "boundElements": [
+        {
+          "id": "muosuq633914w6",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63czedpz",
+      "height": 200,
+      "id": "muosuq63m8k7mv",
+      "roughness": 0,
+      "seed": 982980243,
+      "strokeColor": "#87c0ec",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1181021895,
+      "width": 200,
+      "x": 334,
+      "y": 4308
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63m8k7mv",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63czedpz",
+      "height": 175,
+      "id": "muosuq633914w6",
+      "lineHeight": 1.25,
+      "originalText": "Teal accent on cool slate, 6px corners, the system font. See Systems, then Product, for every component.",
+      "seed": 1061602640,
+      "text": "Teal accent on\ncool slate, 6px\ncorners, the\nsystem font. See\nSystems, then\nProduct, for\nevery component.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 870091294,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 344,
+      "y": 4318
+    },
+    {
+      "backgroundColor": "#a5d8ff",
+      "boundElements": [
+        {
+          "id": "muosuq63fb44w1",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63czedpz",
+      "height": 200,
+      "id": "muosuq63lq618j",
+      "roughness": 0,
+      "seed": 369612786,
+      "strokeColor": "#87c0ec",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 398958444,
+      "width": 200,
+      "x": 558,
+      "y": 4308
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63lq618j",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63czedpz",
+      "height": 175,
+      "id": "muosuq63fb44w1",
+      "lineHeight": 1.25,
+      "originalText": "Status colors come from theme variables, so both color modes work. No hard-coded colors.",
+      "seed": 935985188,
+      "text": "Status colors\ncome from theme\nvariables, so\nboth color modes\nwork. No\nhard-coded\ncolors.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 2081681903,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 568,
+      "y": 4318
+    },
+    {
+      "height": 320,
+      "id": "muosuq63czedpz",
+      "name": "Design system",
+      "seed": 707777641,
+      "type": "frame",
+      "version": 1,
+      "versionNonce": 600245865,
+      "width": 768,
+      "x": 50,
+      "y": 4248
+    },
+    {
+      "backgroundColor": "#ffc9c9",
+      "boundElements": [
+        {
+          "id": "muosuq63je02fo",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63dd0je5",
+      "height": 200,
+      "id": "muosuq63zdfrvd",
+      "roughness": 0,
+      "seed": 40107981,
+      "strokeColor": "#eeaeae",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 865276385,
+      "width": 200,
+      "x": 110,
+      "y": 4758
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63zdfrvd",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63dd0je5",
+      "height": 125,
+      "id": "muosuq63je02fo",
+      "lineHeight": 1.25,
+      "originalText": "Does the status filter sit above the list or in a sidebar? See the breadboard.",
+      "seed": 1121600732,
+      "text": "Does the status\nfilter sit above\nthe list or in a\nsidebar? See the\nbreadboard.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 2067637837,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 120,
+      "y": 4768
+    },
+    {
+      "backgroundColor": "#ffc9c9",
+      "boundElements": [
+        {
+          "id": "muosuq63b4esv5",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63dd0je5",
+      "height": 200,
+      "id": "muosuq63dtyw48",
+      "roughness": 0,
+      "seed": 909508773,
+      "strokeColor": "#eeaeae",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 732364328,
+      "width": 200,
+      "x": 334,
+      "y": 4758
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63dtyw48",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63dd0je5",
+      "height": 125,
+      "id": "muosuq63b4esv5",
+      "lineHeight": 1.25,
+      "originalText": "Should a customer hear back when their feedback is resolved?",
+      "seed": 807991020,
+      "text": "Should a\ncustomer hear\nback when their\nfeedback is\nresolved?",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 938962672,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": 344,
+      "y": 4768
+    },
+    {
+      "backgroundColor": "#ffc9c9",
+      "boundElements": [
+        {
+          "id": "muosuq63ornx1x",
+          "type": "text"
+        }
+      ],
+      "frameId": "muosuq63dd0je5",
+      "height": 200,
+      "id": "muosuq63c4w89x",
+      "roughness": 0,
+      "seed": 1127281265,
+      "strokeColor": "#eeaeae",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 1715757644,
+      "width": 200,
+      "x": 558,
+      "y": 4758
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosuq63c4w89x",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "muosuq63dd0je5",
+      "height": 100,
+      "id": "muosuq63ornx1x",
+      "lineHeight": 1.25,
+      "originalText": "How long should Resolved items stay in the Inbox?",
+      "seed": 1609761215,
+      "text": "How long should\nResolved items\nstay in the\nInbox?",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 639625519,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": 568,
+      "y": 4768
+    },
+    {
+      "height": 320,
+      "id": "muosuq63dd0je5",
+      "name": "Open questions",
+      "seed": 1510463610,
+      "type": "frame",
+      "version": 1,
+      "versionNonce": 899566070,
+      "width": 768,
+      "x": 50,
+      "y": 4698
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "muosuq64wq3jt3",
+      "height": 318,
+      "id": "muosuq64qo9kjj",
+      "link": "/patrick/feedback-inbox/context",
+      "seed": 2028533964,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 643630986,
+      "width": 458,
+      "x": 110,
+      "y": 5208
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "muosuq64wq3jt3",
+      "height": 318,
+      "id": "muosuq64ehw746",
+      "link": "/patrick/feedback-inbox/breadboard",
+      "seed": 1986780069,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 2055663004,
+      "width": 458,
+      "x": 648,
+      "y": 5208
+    },
+    {
+      "height": 438,
+      "id": "muosuq64wq3jt3",
+      "name": "Related",
+      "seed": 297974473,
+      "type": "frame",
+      "version": 1,
+      "versionNonce": 614114197,
+      "width": 1116,
+      "x": 50,
+      "y": 5148
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {}
+}

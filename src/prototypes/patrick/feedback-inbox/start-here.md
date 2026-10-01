@@ -14,7 +14,7 @@ The navigation shows the prototype's folder as it is on disk. Choose **Reveal in
 
 - A **view** is a screen: a `.tsx` file, like [Inbox](app/inbox). This prototype has three of them in the `app` folder.
 - A **document** is a page of writing: a `.md` file, like this one and [Project context](context).
-- A **canvas** is a page to arrange things on: an `.excalidraw` file, like [Workflows](workflows).
+- A **canvas** is a page to arrange things on: an `.excalidraw` file, like [Breadboard](breadboard) and [Eng handoff](eng-handoff).
 - A **folder** only organizes. Move files between folders, and nothing about them changes.
 
 The star beside this page means the prototype opens here. Right-click another file and choose **Set as start** to change it.
@@ -37,9 +37,14 @@ Look inside the `app` folder with **Show all files** in the **…** menu. There'
 
 The [lofi sketch](lofi/inbox-sketch) is a rough, gray version of the inbox from before it was designed. A `lofi` folder is just a habit. Rough work comes first, and it's quick to throw away.
 
-## 6. Put it all on one page
+## 6. Think on a canvas
 
-Open [Workflows](workflows). It's a canvas: the real screens, shown live, with arrows and sticky notes between them. Drag any view from the navigation onto it, or ask your agent to lay something out. A canvas shows only this prototype's own screens, so a prototype stays self-contained. To show a screen from another prototype, copy it in.
+This prototype has two canvases, for two moments.
+
+- [Breadboard](breadboard) is for early ideas. It uses only Excalidraw's own shapes, so it looks rough on purpose: boxes for places, text for what you can do there, arrows for where it leads, pink notes for questions. Nobody mistakes it for a spec.
+- [Eng handoff](eng-handoff) is for when the design is settled. It shows the real screens live, one section for each, with a yellow note under each saying what engineering needs to know.
+
+Drag any view from the navigation onto a canvas, or ask your agent to lay something out. A canvas shows only this prototype's own screens, so a prototype stays self-contained. To show a screen from another prototype, copy it in.
 
 ## 7. Write down the why
 
@@ -47,7 +52,7 @@ Open [Workflows](workflows). It's a canvas: the real screens, shown live, with a
 
 ## 8. Work with your agent
 
-Your agent can build and change all of this: "add a due date to feedback," "make the overview show a chart," "write up the open questions as a document," "put the new screen on the workflows canvas." It reads the same files you see.
+Your agent can build and change all of this: "add a due date to feedback," "make the overview show a chart," "write up the open questions as a document," "put the new screen on the handoff canvas." It reads the same files you see.
 
 ## 9. When something's finished
 
