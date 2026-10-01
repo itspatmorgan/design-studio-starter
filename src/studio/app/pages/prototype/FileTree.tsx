@@ -166,13 +166,11 @@ function IconButton({ label, onClick, pressed, children }: { label: string; onCl
 type FileTreeProps = { proto: Prototype; current: Item | undefined };
 
 export default function FileTree({ proto, current }: FileTreeProps) {
-  const { files, reload, loaded } = useFileTree(proto);
+  const { files, reload } = useFileTree(proto);
   const me = useMe();
   const router = useRouter();
   const navigate = useNavigate();
   const live = import.meta.env.DEV && files !== null;
-  // While the dev server is still answering, the nav is already the Files one, so its heading doesn't flip from "Pages".
-  const filesNav = live || (import.meta.env.DEV && !loaded);
   // Your own prototypes, and the Handbook (in dev): its files are platform files, changed here for
   // review like any change, in the fixed shape src/studio/handbookRules.ts describes.
   const isHandbook = proto.contributorKey === HANDBOOK_KEY;
@@ -213,7 +211,8 @@ export default function FileTree({ proto, current }: FileTreeProps) {
     if (open) next.delete(d); else next.add(d);
     return next;
   });
-  const noun = filesNav ? 'files' : 'pages';
+  // It says "Files" on the deployed site too, so the name is the same everywhere.
+  const noun = 'files';
 
   // Runs a change, then takes the new manifest. If it moved or removed the open view, go to
   // its new place (or the prototype's first view) first, so the old address is never reloaded.
@@ -519,7 +518,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   return (
     <nav className="group/tree flex min-h-0 flex-1 flex-col space-y-1.5 overflow-y-auto px-2 pt-3 pb-3">
       <div className="flex h-7 shrink-0 items-center justify-between gap-1 px-2.5 pr-0.5">
-        <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{filesNav ? 'Files' : 'Pages'}</p>
+        <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">Files</p>
         {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
         <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
           <IconButton label="Filter" pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
