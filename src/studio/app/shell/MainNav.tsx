@@ -86,10 +86,13 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
         <HugeiconsIcon icon={Search01Icon} size={16} />
       </RailButton>
       <div className="h-2" />
-      <RailLink to="/" label="Prototypes" active={!onModule}>
-        <HugeiconsIcon icon={Layers01Icon} size={16} />
-      </RailLink>
-      {moduleLinks('top')}
+      {/* With many modules the top group scrolls, so none is ever out of reach. */}
+      <div className="flex min-h-0 flex-col items-center gap-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <RailLink to="/" label="Prototypes" active={!onModule}>
+          <HugeiconsIcon icon={Layers01Icon} size={16} />
+        </RailLink>
+        {moduleLinks('top')}
+      </div>
 
       <div className="mt-auto" />
       {sectionNav && (
