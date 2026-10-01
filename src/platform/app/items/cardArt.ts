@@ -1,5 +1,6 @@
-// The picture at the top of a tool's card: a soft two-colour gradient, worked out from the tool's folder name,
-// so every tool looks its own without anyone choosing colours. The same name always gives the same card.
+// The picture at the top of a card (CollectionCard.tsx): a soft two-colour gradient, worked out from the item's folder
+// name, so every prototype, tool and doc looks its own without anyone choosing colours or storing an image. The
+// same name always gives the same card.
 // The colours are mixed with the card's own color, so they follow light and dark mode. No browser APIs, so Node can test it.
 const hash = (text: string) => {
   let h = 2166136261;
@@ -7,14 +8,14 @@ const hash = (text: string) => {
   return h >>> 0;
 };
 
-export function toolHues(id: string): [number, number] {
+export function cardHues(id: string): [number, number] {
   const h = hash(id);
   const first = h % 360;
   return [first, (first + 50 + ((h >>> 9) % 70)) % 360];
 }
 
-export function toolArt(id: string): { backgroundColor: string; backgroundImage: string } {
-  const [a, b] = toolHues(id);
+export function cardArt(id: string): { backgroundColor: string; backgroundImage: string } {
+  const [a, b] = cardHues(id);
   const tint = (hue: number, amount: number, chroma = 0.16) => `color-mix(in oklch, oklch(0.74 ${chroma} ${hue}) ${amount}%, var(--card))`;
   return {
     backgroundColor: tint(a, 22, 0.08),

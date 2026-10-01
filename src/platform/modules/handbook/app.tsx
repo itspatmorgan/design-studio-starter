@@ -3,8 +3,8 @@
 // manifest like prototypes; /handbook itself opens the first section.
 import { createRoute, notFound, redirect, useRouterState } from '@tanstack/react-router';
 import { Notebook01Icon } from '@hugeicons/core-free-icons';
-import { Link } from '@tanstack/react-router';
-import { Card, CardContent } from '@/platform/components/card';
+import { File01Icon } from '@hugeicons/core-free-icons';
+import { CollectionCard } from '@/platform/app/items/CollectionCard';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
 import { ItemGrid } from '@/platform/app/items/ItemGrid';
@@ -52,11 +52,7 @@ function Overview({ manifest }: { manifest: Manifest }) {
       <ItemGrid>
         {items.map((item) => (
           <li key={item.path}>
-            <Link {...itemLink(docs, item)} className="block h-full">
-              <Card className="h-full transition-colors hover:bg-muted/40">
-                <CardContent className="text-sm font-semibold leading-snug text-foreground">{itemLabel(item.path)}</CardContent>
-              </Card>
-            </Link>
+            <CollectionCard link={itemLink(docs, item)} id={item.path} icon={File01Icon} title={itemLabel(item.path)} meta="Doc" />
           </li>
         ))}
       </ItemGrid>

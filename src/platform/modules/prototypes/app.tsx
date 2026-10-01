@@ -44,18 +44,23 @@ function PrototypesPalette({ manifest, current, go }: PaletteContext) {
   );
 }
 
-// On the front page: your own prototypes while you run the app locally, otherwise the newest ones, nine at most
-// (three rows of the grid), with a link to all of them.
+// On the front page, the newest prototypes, nine at most (three rows of the grid). While you run the app locally, a
+// row of your own comes first and the newest ones are the other people's, so none is shown twice.
 function Overview({ manifest }: { manifest: Manifest }) {
   const me = useMe();
   const live = manifest.prototypes.filter((p) => p.status !== 'archived').sort(newestFirst);
   const mine = me ? live.filter((p) => p.contributorKey === me) : [];
-  const shown = (mine.length ? mine : live).slice(0, 9);
-  if (!shown.length) return import.meta.env.DEV && me ? <HomeSection title="Prototypes" to="/prototypes"><NewPrototypeButton /></HomeSection> : null;
+  const latest = (me ? live.filter((p) => p.contributorKey !== me) : live).slice(0, 9);
+  const cards = (list: typeof live) => <ItemGrid>{list.map((p) => <li key={`${p.contributorKey}/${p.id}`}><PrototypeCard prototype={p} /></li>)}</ItemGrid>;
   return (
-    <HomeSection title={mine.length ? 'Your prototypes' : 'Latest prototypes'} to="/prototypes">
-      <ItemGrid>{shown.map((p) => <li key={`${p.contributorKey}/${p.id}`}><PrototypeCard prototype={p} /></li>)}</ItemGrid>
-    </HomeSection>
+    <>
+      {me && (
+        <HomeSection title="Your prototypes" to="/prototypes">
+          {mine.length ? cards(mine.slice(0, 9)) : <NewPrototypeButton />}
+        </HomeSection>
+      )}
+      {latest.length > 0 && <HomeSection title={me ? 'Latest from the team' : 'Latest prototypes'} to="/prototypes">{cards(latest)}</HomeSection>}
+    </>
   );
 }
 
