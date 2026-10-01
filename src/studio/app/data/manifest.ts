@@ -8,12 +8,12 @@ export const setManifest = (m: Manifest) => { manifest = Promise.resolve(m); };
 export function loadManifest(): Promise<Manifest> {
   manifest ??= fetch(`${import.meta.env.BASE_URL}prototypes/manifest.json`)
     .then((r) => r.json() as Promise<Manifest>)
-    .catch(() => ({ prototypes: [], guide: [], handbook: [], handbookMap: null, systems: {} }));
+    .catch(() => ({ prototypes: [], tools: [], guide: [], handbook: [], handbookMap: null, systems: {} }));
   return manifest;
 }
 
 export const findPrototype = (m: Manifest, contributor: string, prototype: string): PrototypeRef | undefined =>
-  [...m.prototypes, ...m.handbook].find((p) => p.contributorKey === contributor && p.id === prototype);
+  [...m.prototypes, ...m.tools, ...m.handbook].find((p) => p.contributorKey === contributor && p.id === prototype);
 
 // A prototype's items, fetched the first time they're needed (the deployed manifest leaves them out:
 // scripts/build-manifest.js) and then kept on the manifest's entry for it. One fetch per prototype,

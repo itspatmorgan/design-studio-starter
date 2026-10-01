@@ -3,7 +3,9 @@
 // scripts/vite-archive-plugin.js), so it isn't built, listed, or shipped.
 //
 // A prototype's status is meta.json "status": "archived". Active is the default and is never
-// written. Has no imports, so Node scripts and the app can both load it.
+// written. Imports only roots.ts, which has none, so Node scripts and the app can both load it.
+import { rootOf } from './roots.ts';
+
 export const STATUSES = ['active', 'archived'] as const;
 export type Status = (typeof STATUSES)[number];
 
@@ -16,7 +18,7 @@ export const parseStatus = (value: unknown): Status | null =>
 type Proto = { id: string; contributorKey: string; status?: Status };
 export function forDeploy<P extends Proto>(prototypes: P[]) {
   const kept = prototypes.filter((p) => p.status !== 'archived');
-  const archived = prototypes.filter((p) => p.status === 'archived').map((p) => `/prototypes/${p.contributorKey}/${p.id}/**`);
+  const archived = prototypes.filter((p) => p.status === 'archived').map((p) => `/${rootOf(p.contributorKey, p.id)}/**`);
   return { kept, archived };
 }
 

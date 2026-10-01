@@ -36,14 +36,15 @@ import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { buildManifest } from './build-manifest.js';
-import { createPrototype, renamePrototype } from './create-prototype.js';
+import { createPrototype, publishTool, renamePrototype, unpublishTool } from './create-prototype.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from './resolve-contributor.js';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { isHelper } from '../src/studio/fileTypes/index.ts';
 import { STATUSES, parseStatus } from '../src/studio/archive.ts';
 import { afterChange, byOrder, parentOf, parseOrder, place, withFolderOrder } from '../src/studio/order.ts';
-import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../src/studio/roots.ts';
+import { HANDBOOK_KEY, SYSTEMS_KEY, TOOLS_KEY, isHandbookSection, rootOf } from '../src/studio/roots.ts';
+import { canMaintain, parseMaintainers } from '../src/studio/tools.ts';
 import { SYSTEM_SOURCES } from '../src/studio/systemSources.ts';
 import { scaffold } from './scaffold-component-docs.js';
 import { opProblem } from '../src/studio/handbookRules.ts';
@@ -53,6 +54,7 @@ import { frontmatter } from './lib/frontmatter.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
+const TOOLS = path.join(ROOT, 'src', 'tools');
 // Each system's components folder, to tell which system a file belongs to.
 const COMPONENT_DIRS = Object.entries(SYSTEM_SOURCES).map(([id, s]) => [id, path.join(ROOT, s.components) + path.sep]);
 const systemOf = (file) => COMPONENT_DIRS.find(([, dir]) => file.startsWith(dir));
@@ -68,6 +70,12 @@ function prototypeDir(contributor, prototype) {
   if (contributor === SYSTEMS_KEY) {
     const dir = typeof prototype === 'string' && Object.hasOwn(SYSTEM_SOURCES, prototype) ? path.join(ROOT, SYSTEM_SOURCES[prototype].components) : null;
     return dir && fs.existsSync(dir) ? dir : null;
+  }
+  // A tool (src/tools/<id>/): found by its folder name.
+  if (contributor === TOOLS_KEY) {
+    if (!NAME.test(prototype ?? '')) return null;
+    const dir = path.join(TOOLS, prototype);
+    return fs.existsSync(dir) ? dir : null;
   }
   if (contributor === HANDBOOK_KEY) return isHandbookSection(prototype) && fs.existsSync(path.join(HANDBOOK, prototype)) ? path.join(HANDBOOK, prototype) : null;
   if (!NAME.test(contributor ?? '') || !NAME.test(prototype ?? '')) return null;
@@ -152,7 +160,12 @@ const HANDBOOK_NOTE = 'The Handbook\'s sections (Docs, Rules, Skills) can\'t be 
 
 // Whether you can change a prototype's files: your own, or the platform's (the Handbook's, and the
 // prototype systems' components), which go through review like any change to it.
-const canChange = (contributor, me) => contributor === HANDBOOK_KEY || contributor === SYSTEMS_KEY || contributor === me;
+// A tool is changed only by its maintainers (meta.json), whoever's folder it came from.
+const maintainersOf = (dir) => {
+  try { return parseMaintainers(JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')).maintainers) ?? []; } catch { return []; }
+};
+const owns = (contributor, me, dir) => (contributor === TOOLS_KEY ? canMaintain(maintainersOf(dir), me) : contributor === me);
+const canChange = (contributor, me, dir) => contributor === HANDBOOK_KEY || contributor === SYSTEMS_KEY || owns(contributor, me, dir);
 
 // "code-review" → "Code review"
 const titleOf = (name) => { const t = name.replace(/-/g, ' '); return t.charAt(0).toUpperCase() + t.slice(1); };
@@ -169,8 +182,8 @@ function skillTemplate(name, description) {
 const ruleTemplate = (name) => `# ${titleOf(name.replace(/\.md$/, ''))}\n\nWhat your agent should know or do, and when.\n`;
 
 // Why you can't change a prototype: it's someone else's, or you aren't set up yet.
-const ownerError = (key) => (key
-  ? 'This prototype belongs to someone else. You can change only your own.'
+const ownerError = (key, tool = false) => (key
+  ? (tool ? 'Only a tool\'s maintainers can change it.' : 'This prototype belongs to someone else. You can change only your own.')
   : "You're not set up as a contributor yet. Ask your agent to add you.");
 
 // Moves a file or folder to the Trash with macOS's built-in trash command, or, where
@@ -278,7 +291,8 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, title, d
     // start: an item's path without its extension, or "" to open on the first item.
     if (start === '') delete meta.start;
     else if (start !== undefined) {
-      const items = buildManifest().manifest.prototypes.find((p) => path.join(PROTOS, p.contributorKey, p.id) === dir)?.items ?? [];
+      const made = buildManifest().manifest;
+      const items = [...made.prototypes, ...made.tools].find((p) => path.join(ROOT, 'src', rootOf(p.contributorKey, p.id)) === dir)?.items ?? [];
       if (!items.some((i) => viewKey(i.path) === start)) throw new Error(`“${start}” isn't a view in this prototype.`);
       meta.start = start;
     }
@@ -365,7 +379,7 @@ export default function filesPlugin() {
     // the file itself and let its importers, like those lists, update as usual. Edits to a
     // file are left to Vite's normal hot reload.
     hotUpdate({ type, file, modules }) {
-      if (type === 'update' || !(file.startsWith(PROTOS + path.sep) || file.startsWith(HANDBOOK + path.sep) || systemOf(file))) return;
+      if (type === 'update' || !(file.startsWith(PROTOS + path.sep) || file.startsWith(TOOLS + path.sep) || file.startsWith(HANDBOOK + path.sep) || systemOf(file))) return;
       for (const m of modules) if (m.file === file) this.environment.moduleGraph.invalidateModule(m);
       return modules.filter((m) => m.file !== file);
     },
@@ -398,7 +412,7 @@ export default function filesPlugin() {
           const file = dir && itemFile(dir, rel, contributor);
           if (!file) return send(res, 404, { error: 'This file no longer exists.' });
           // Contributor scope: you can change only your own folder (and the Handbook's, for review).
-          if (!canChange(contributor, me())) return send(res, 403, { error: ownerError(me()) });
+          if (!canChange(contributor, me(), dir)) return send(res, 403, { error: ownerError(me(), contributor === TOOLS_KEY) });
           if (typeof content !== 'string' || Buffer.byteLength(content) > MAX_SOURCE_BYTES) return send(res, 413, { error: 'This file is too large to save here. Keep files under 750 KB.' });
           // Never overwrite a version you haven't seen: if it changed on disk since you opened it, say so.
           if (versionOf(fs.readFileSync(file, 'utf8')) !== base) return send(res, 409, { error: 'This file changed on disk since you opened it.', code: 'changed' });
@@ -413,7 +427,7 @@ export default function filesPlugin() {
           const dir = prototypeDir(body.contributor, body.prototype);
           if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
           // Contributor scope: you can change only your own folder (and the Handbook's, for review).
-          if (!canChange(body.contributor, me())) return send(res, 403, { error: ownerError(me()) });
+          if (!canChange(body.contributor, me(), dir)) return send(res, 403, { error: ownerError(me(), body.contributor === TOOLS_KEY) });
           try {
             const result = body.contributor === SYSTEMS_KEY ? runSystemOp(body.prototype, body) : runOp(dir, body, body.contributor === HANDBOOK_KEY ? body.prototype : null);
             const { manifest } = buildManifest();
@@ -425,11 +439,24 @@ export default function filesPlugin() {
           }
         }
         if (req.method === 'POST' && url.pathname === '/prototype') {
-          const { title, description } = await readJson(req);
+          const { title, description, tool } = await readJson(req);
           try {
-            const { slug, manifest } = createPrototype({ title, description, key: me() });
+            const { slug, manifest } = createPrototype({ title, description, key: me(), tool: tool === true });
             publishManifest(server, manifest, req.headers['x-studio-tab']);
             return send(res, 200, { contributor: me(), prototype: slug, manifest });
+          } catch (e) {
+            return send(res, 400, { error: e.message });
+          }
+        }
+        // Publish one of your prototypes as a tool, or move a tool you maintain back into your prototypes.
+        if (req.method === 'POST' && (url.pathname === '/tool-publish' || url.pathname === '/tool-unpublish')) {
+          const { prototype } = await readJson(req);
+          if (!NAME.test(prototype ?? '')) return send(res, 400, { error: 'Say which prototype.' });
+          try {
+            const publish = url.pathname === '/tool-publish';
+            const result = (publish ? publishTool : unpublishTool)({ key: me(), id: prototype });
+            publishManifest(server, result.manifest, req.headers['x-studio-tab']);
+            return send(res, 200, { contributor: publish ? TOOLS_KEY : me(), ...result });
           } catch (e) {
             return send(res, 400, { error: e.message });
           }
@@ -439,7 +466,7 @@ export default function filesPlugin() {
           const dir = prototypeDir(contributor, prototype);
           if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
           if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_NOTE });
-          if (contributor !== me()) return send(res, 403, { error: ownerError(me()) });
+          if (!owns(contributor, me(), dir)) return send(res, 403, { error: ownerError(me(), contributor === TOOLS_KEY) });
           try {
             const { id, manifest } = renamePrototype({ key: contributor, id: prototype, title, description });
             publishManifest(server, manifest, req.headers['x-studio-tab']);
@@ -453,7 +480,7 @@ export default function filesPlugin() {
           const dir = prototypeDir(contributor, prototype);
           if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
           if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_NOTE });
-          if (contributor !== me()) return send(res, 403, { error: ownerError(me()) });
+          if (!owns(contributor, me(), dir)) return send(res, 403, { error: ownerError(me(), contributor === TOOLS_KEY) });
           const trashedTo = trash(dir);
           const { manifest } = buildManifest();
           publishManifest(server, manifest, req.headers['x-studio-tab']);
@@ -481,6 +508,10 @@ export default function filesPlugin() {
         }
         const system = systemOf(file);
         if (system) return { contributor: SYSTEMS_KEY, prototype: system[0], rel: path.relative(system[1], file).split(path.sep).join('/') };
+        if (file.startsWith(TOOLS + path.sep)) {
+          const [id, ...rest] = path.relative(TOOLS, file).split(path.sep);
+          return rest.length ? { contributor: TOOLS_KEY, prototype: id, rel: rest.join('/') } : null;
+        }
         const [contributor, prototype, ...rest] = path.relative(PROTOS, file).split(path.sep);
         return contributor && !contributor.startsWith('..') && prototype ? { contributor, prototype, rel: rest.join('/') } : null;
       };

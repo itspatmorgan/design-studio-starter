@@ -58,6 +58,7 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
   
             <CommandGroup heading="Places">
               <CommandItem value="prototypes index home" disabled={onIndex} onSelect={() => go({ to: '/' })}>Prototypes</CommandItem>
+              <CommandItem value="tools apps" disabled={matchRoute({ to: '/tools' }) !== false} onSelect={() => go({ to: '/tools' })}>Tools</CommandItem>
               <CommandItem value="product system components" disabled={onSystem('product')} onSelect={() => go({ to: '/systems/$system', params: { system: 'product' } })}>Product system</CommandItem>
               <CommandItem value="studio system components" disabled={onSystem('studio')} onSelect={() => go({ to: '/systems/$system', params: { system: 'studio' } })}>Studio system</CommandItem>
               <CommandItem value="handbook docs rules skills" disabled={matchRoute({ to: '/handbook' }) !== false} onSelect={() => go({ to: '/handbook' })}>Handbook</CommandItem>
@@ -92,6 +93,19 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
                       <span className="truncate">{itemLabel(item.path)}</span>
                     </CommandItem>
                   )))}
+                </CommandGroup>
+              </>
+            )}
+
+            {manifest.tools.length > 0 && (
+              <>
+                <CommandSeparator />
+                <CommandGroup heading="Tools">
+                  {manifest.tools.map((t) => (
+                    <CommandItem key={t.id} value={`tool ${t.title} ${t.description ?? ''} ${t.id}`} disabled={t === current} onSelect={() => go(prototypeLink(t))}>
+                      <span className="truncate">{t.title}</span>
+                    </CommandItem>
+                  ))}
                 </CommandGroup>
               </>
             )}

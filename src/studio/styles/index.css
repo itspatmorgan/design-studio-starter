@@ -9,6 +9,7 @@
    that isn't code changes. These are data, never classes, so skip them: editing a
    prototype's meta.json then updates the app live instead of reloading it. */
 @source not "../../prototypes/**/meta.json";
+@source not "../../tools/**/meta.json";
 @source not "../../../contributors.json";
 
 /* dark: utilities follow the app's color mode (the .dark class on <html>). */

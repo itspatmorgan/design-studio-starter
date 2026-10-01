@@ -17,7 +17,7 @@ function* files(dir) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     if (e.name === 'node_modules' || e.name.startsWith('.')) continue;
     const full = path.join(dir, e.name);
-    if (full === path.join(ROOT, 'src', 'prototypes')) continue;
+    if (full === path.join(ROOT, 'src', 'prototypes') || full === path.join(ROOT, 'src', 'tools')) continue;
     if (e.isDirectory()) yield* files(full);
     else if (/\.(ts|tsx|js|jsx|md)$/.test(e.name)) yield full;
   }

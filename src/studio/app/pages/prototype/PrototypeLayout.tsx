@@ -4,11 +4,14 @@ import { Outlet, useParams } from '@tanstack/react-router';
 import { findItem, firstItem } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
 import PrototypeNav from '@/studio/app/pages/prototype/PrototypeNav';
+import { TOOLS_KEY } from '@/studio/roots';
 
 export default function PrototypeLayout({ proto }: { proto: Prototype }) {
   const params = useParams({ strict: false });
   // With no path in the URL, the start item (or the first) is open.
   const current = params._splat ? findItem(proto, params._splat) : firstItem(proto);
+  // A published tool on the deployed site is just the open item, filling the window (App.tsx hides the rail too).
+  if (!import.meta.env.DEV && proto.contributorKey === TOOLS_KEY) return <div className="flex min-h-0 flex-1"><Outlet /></div>;
   return (
     <div className="flex min-h-0 flex-1">
       <PrototypeNav proto={proto} current={current} />

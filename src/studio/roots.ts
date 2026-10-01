@@ -13,6 +13,11 @@ export const HANDBOOK_KEY = 'handbook';
 // files too: changed in the repo and reviewed.
 export const SYSTEMS_KEY = 'systems';
 
+// A tool (src/tools/<id>/) is a prototype the team has published: a team asset with maintainers, not a
+// person's work. It's opened the same way, under the reserved key "tools" (also an app page URL, so
+// nobody's folder): /tools/<id>. Who may change it is its meta.json "maintainers".
+export const TOOLS_KEY = 'tools';
+
 // The Handbook's sections: the folders in src/handbook/, in the order they're shown. The shape of
 // each is checked by scripts/lib/handbook-check.js.
 export const HANDBOOK_SECTIONS = {
@@ -27,5 +32,6 @@ export const isHandbookSection = (id: string): id is keyof typeof HANDBOOK_SECTI
 // The folder holding an item's files, relative to src/.
 export const rootOf = (contributor: string, id: string) =>
   contributor === HANDBOOK_KEY ? `${HANDBOOK_KEY}/${id}`
+    : contributor === TOOLS_KEY ? `${TOOLS_KEY}/${id}`
     : contributor === SYSTEMS_KEY ? (id === 'studio' ? 'studio/components' : `${SYSTEMS_KEY}/${id}/components`)
     : `prototypes/${contributor}/${id}`;

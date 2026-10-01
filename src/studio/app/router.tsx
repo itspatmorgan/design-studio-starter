@@ -15,6 +15,7 @@ import { createRootRoute, createRoute, createRouter, lazyRouteComponent, notFoun
 import { Button } from '@/studio/components/button';
 import App, { NotFound } from '@/studio/app/shell/App';
 import Index from '@/studio/app/pages/index/Index';
+import ToolsPage from '@/studio/app/pages/tools/ToolsPage';
 import { loadGuidePage } from '@/studio/app/data/loadGuide';
 import PrototypeLayout from '@/studio/app/pages/prototype/PrototypeLayout';
 import { findItem, firstItem, itemLabel, loadManifest, loadPrototype, setManifest } from '@/studio/app/data/manifest';
@@ -43,6 +44,15 @@ const indexRoute = createRoute({
   }),
   head: () => ({ meta: [{ title: `Prototypes — ${APP_NAME}` }] }),
   component: Index,
+});
+
+// Tools: the published ones (src/tools/). A tool itself opens through the prototype routes below, at
+// /tools/<id>, like any prototype; this is the page that lists them.
+const toolsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: 'tools',
+  head: () => ({ meta: [{ title: `Tools — ${APP_NAME}` }] }),
+  component: ToolsPage,
 });
 
 // Systems: /systems opens the product system; each system has one page per foundation
@@ -201,6 +211,7 @@ const handbookRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  toolsRoute,
   systemsRoute.addChildren([systemsIndexRoute, systemRoute, systemPageRoute]),
   handbookRoute,
   guideRoute.addChildren([guideIndexRoute, guidePageRoute]),

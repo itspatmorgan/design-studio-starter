@@ -1,6 +1,6 @@
 // Keeps the manifest live during `pnpm dev`, without reloading the page.
 //
-// Vite already watches every file. When something under src/prototypes/, src/handbook/, src/systems/, or src/studio/guide/
+// Vite already watches every file. When something under src/prototypes/, src/tools/, src/handbook/, src/systems/, or src/studio/guide/
 // changes (from the app, an agent, or your editor), this rebuilds the manifest in-process
 // and pushes it to the app over Vite's dev connection. The app swaps it in and refreshes
 // only the routes that use it (see router.tsx), so the open view and scroll position stay.
@@ -12,6 +12,7 @@ import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
+const TOOLS = path.join(ROOT, 'src', 'tools');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 const GUIDE = path.join(ROOT, 'src', 'studio', 'guide');
 const SYSTEMS = path.join(ROOT, 'src', 'systems');
@@ -44,7 +45,7 @@ function relevant(file, kind) {
   // and to its theme (the tokens it lists).
   if (file === STUDIO_THEME) return kind === 'change';
   if (inside(SYSTEMS, file) || inside(STUDIO_COMPONENTS, file)) return kind !== 'change' || /\.(md|examples\.[jt]sx)$|styles[\\/]theme\.css$/.test(file);
-  if (!inside(PROTOS, file)) return false;
+  if (!inside(PROTOS, file) && !inside(TOOLS, file)) return false;
   return kind !== 'change' || path.basename(file) === 'meta.json' || hasFidelity(file);
 }
 
@@ -55,7 +56,7 @@ export default function manifestWatch() {
     name: 'prototype-manifest-watch',
     apply: 'serve',
     configureServer(server) {
-      server.watcher.add([PROTOS, HANDBOOK, GUIDE, SYSTEMS, CONTRIBUTORS, AGENTS]);
+      server.watcher.add([PROTOS, TOOLS, HANDBOOK, GUIDE, SYSTEMS, CONTRIBUTORS, AGENTS]);
       let timer = null;
       const flush = () => {
         timer = null;

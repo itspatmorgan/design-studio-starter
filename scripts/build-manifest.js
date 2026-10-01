@@ -8,9 +8,10 @@ import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems/index.ts';
 import { SYSTEM_SOURCES, STUDIO_ID } from '../src/studio/systemSources.ts';
 import { isHelper, itemSlug } from '../src/studio/fileTypes/index.ts';
-import { HANDBOOK_KEY, HANDBOOK_SECTIONS } from '../src/studio/roots.ts';
+import { HANDBOOK_KEY, HANDBOOK_SECTIONS, TOOLS_KEY, rootOf } from '../src/studio/roots.ts';
 import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../src/studio/archive.ts';
 import { byOrder, parseOrder } from '../src/studio/order.ts';
+import { parseMaintainers } from '../src/studio/tools.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { frontmatter } from './lib/frontmatter.js';
 import { handbookProblems } from './lib/handbook-check.js';
@@ -21,6 +22,7 @@ import { handbookMap } from '../src/studio/handbookMap.ts';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
+const TOOLS = path.join(ROOT, 'src', 'tools');
 const GUIDE = path.join(ROOT, 'src', 'studio', 'guide');
 const OUT_DIR = path.join(ROOT, 'public', 'prototypes');
 const OUT = path.join(OUT_DIR, 'manifest.json');
@@ -31,7 +33,7 @@ const ITEMS_DIR = path.join(OUT_DIR, 'items');
 // App page URLs, so they can't be contributor folders. Keep in sync with setup-contributor.js.
 // How many component doc gaps the build lists before summarizing the rest.
 const DOC_WARNINGS = 5;
-const RESERVED_KEYS = new Set(['systems', 'guide', HANDBOOK_KEY]);
+const RESERVED_KEYS = new Set(['systems', 'guide', HANDBOOK_KEY, TOOLS_KEY]);
 
 const dirs = (p) => fs.existsSync(p)
   ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort()
@@ -86,13 +88,13 @@ function checkItems(dir, items, out = console, prototype) {
 // isn't there. `archived` is forDeploy's list of what it left out (paths in the app's file globs).
 // Returns a sentence for each such file.
 function archivedLinkWarnings(kept, archived) {
-  const prototypes = archived.map((g) => g.replace(/^\/prototypes/, '').slice(0, -3).split('/').map(encodeURIComponent).join('/'));
+  const prototypes = archived.map((g) => g.replace(/^\/prototypes/, '').replace(/^\/tools/, '/tools').slice(0, -3).split('/').map(encodeURIComponent).join('/'));
   const warnings = [];
   for (const proto of kept) {
     for (const item of proto.items) {
       // Views are code: a link in one is the author's own business.
       if (FILE_TYPES[item.fileType].language === 'tsx') continue;
-      const file = path.join(PROTOS, proto.contributorKey, proto.id, item.path);
+      const file = path.join(ROOT, 'src', rootOf(proto.contributorKey, proto.id), item.path);
       let text;
       try { text = fs.readFileSync(file, 'utf8'); } catch { continue; }
       const linked = linksToArchived(text, prototypes);
@@ -100,6 +102,65 @@ function archivedLinkWarnings(kept, archived) {
     }
   }
   return warnings;
+}
+
+// Reads one prototype's folder (a person's in src/prototypes/, or a tool in src/tools/) into its
+// manifest entry, or null when it can't be used. Problems are printed; `errors` counts them.
+function readPrototype(dir, contributorKey, id, out, contributors) {
+  const tool = contributorKey === TOOLS_KEY;
+  let errors = 0;
+  const metaFile = path.relative(ROOT, path.join(dir, 'meta.json'));
+  const skip = (why) => { out.error(`[manifest] Skipped ${contributorKey}/${id}: ${metaFile} ${why}`); errors++; return { entry: null, errors }; };
+  if (!fs.existsSync(path.join(dir, 'meta.json'))) return skip('is missing');
+  let meta;
+  try {
+    meta = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8'));
+  } catch (e) {
+    return skip(`is not valid JSON (${e.message})`);
+  }
+  if (typeof meta?.title !== 'string' || !meta.title.trim()) return skip('needs a "title"');
+  // "maintainers" (a tool's, required): the contributors.json keys of the people who may change it.
+  let maintainers;
+  if (tool) {
+    maintainers = parseMaintainers(meta.maintainers);
+    if (!maintainers) return skip('needs "maintainers": a list with at least one contributor key, like ["patrick"]');
+    for (const key of maintainers) if (!(key in contributors)) out.warn(`[manifest] ${metaFile}: maintainer "${key}" isn't in contributors.json`);
+  }
+  // "order" (optional) lists paths to put first, in sequence (src/studio/order.ts).
+  let order;
+  if (meta.order !== undefined) {
+    order = parseOrder(meta.order);
+    if (!order) return skip('has an "order" that isn\'t a list of paths');
+  }
+  const items = itemsIn(dir, '', { ...inPrototype, order });
+  // Two items can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
+  errors += checkItems(dir, items, out, { contributor: contributorKey, id });
+  // "start" (optional) is the item the prototype opens on, as in its URL: "checkout/step-1".
+  // Without it, the prototype opens on its first item.
+  let start = null;
+  if (meta.start !== undefined) {
+    start = items.find((i) => itemSlug(i.path) === meta.start)?.path ?? null;
+    if (!start) return skip(`has "start": "${meta.start}", which isn't an item in this prototype`);
+  }
+  // "system" (optional) is the design system it builds with, from src/systems/index.ts.
+  const system = meta.system ?? DEFAULT_SYSTEM;
+  if (!(system in PROTOTYPE_SYSTEMS)) return skip(`has "system": "${system}", which isn't in src/systems/index.ts (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`);
+  // "status" (optional) is 'active' (the default) or 'archived'.
+  let status = null;
+  if (meta.status !== undefined) {
+    status = parseStatus(meta.status);
+    if (!status) return skip(`has "status": ${JSON.stringify(meta.status)}, which isn't one of ${STATUSES.join(', ')}`);
+  }
+  return {
+    errors,
+    entry: {
+      id, contributorKey, title: meta.title, description: meta.description ?? '',
+      contributor: tool ? maintainers.map((k) => contributors[k]?.name ?? k).join(', ') : contributors[contributorKey]?.name ?? '',
+      created: meta.created ?? null, system, start, items,
+      ...(tool && { maintainers }),
+      ...(status === 'archived' && { status }),
+    },
+  };
 }
 
 // Writes a file only when its text changes, so a dev server doesn't see files it already has as new.
@@ -114,13 +175,15 @@ function writeIfChanged(file, text) {
 // Handbook's sections are few, so theirs stay in the manifest. Files for prototypes that are gone are removed.
 function writeManifest(manifest) {
   const wanted = new Set();
-  const prototypes = manifest.prototypes.map(({ items, ...info }) => {
+  const split = ({ items, ...info }) => {
     const text = JSON.stringify(items);
     const file = path.join(ITEMS_DIR, info.contributorKey, `${info.id}.json`);
     wanted.add(file);
     writeIfChanged(file, text);
     return { ...info, itemCount: items.length, itemsHash: crypto.createHash('sha1').update(text).digest('hex').slice(0, 8) };
-  });
+  };
+  const prototypes = manifest.prototypes.map(split);
+  const tools = manifest.tools.map(split);
   for (const dir of fs.existsSync(ITEMS_DIR) ? fs.readdirSync(ITEMS_DIR, { withFileTypes: true }) : []) {
     if (!dir.isDirectory()) continue;
     for (const f of fs.readdirSync(path.join(ITEMS_DIR, dir.name))) {
@@ -128,7 +191,7 @@ function writeManifest(manifest) {
     }
     if (!fs.readdirSync(path.join(ITEMS_DIR, dir.name)).length) fs.rmdirSync(path.join(ITEMS_DIR, dir.name));
   }
-  writeIfChanged(OUT, JSON.stringify({ ...manifest, prototypes }) + '\n');
+  writeIfChanged(OUT, JSON.stringify({ ...manifest, prototypes, tools }) + '\n');
 }
 
 // Scans src/prototypes/, src/handbook/, and src/studio/guide/, writes public/prototypes/ (manifest.json, and items/), and returns the whole manifest.
@@ -144,55 +207,27 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
   const contributors = fs.existsSync(contributorsFile) ? JSON.parse(fs.readFileSync(contributorsFile, 'utf8')) : {};
 
   const prototypes = [];
+  const tools = [];
   let errors = 0;
+  const read = (dir, contributorKey, id) => {
+    const { entry, errors: found } = readPrototype(dir, contributorKey, id, out, contributors);
+    errors += found;
+    return entry;
+  };
   for (const contributorKey of dirs(PROTOS)) {
     if (RESERVED_KEYS.has(contributorKey)) {
       out.error(`[manifest] Skipped src/prototypes/${contributorKey}/: "${contributorKey}" is an app page URL, so it can't be a contributor folder`);
       errors++; continue;
     }
     for (const id of dirs(path.join(PROTOS, contributorKey))) {
-      const dir = path.join(PROTOS, contributorKey, id);
-      const metaFile = path.relative(ROOT, path.join(dir, 'meta.json'));
-      const skip = (why) => { out.error(`[manifest] Skipped ${contributorKey}/${id}: ${metaFile} ${why}`); errors++; };
-      if (!fs.existsSync(path.join(dir, 'meta.json'))) { skip('is missing'); continue; }
-      let meta;
-      try {
-        meta = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8'));
-      } catch (e) {
-        skip(`is not valid JSON (${e.message})`); continue;
-      }
-      if (typeof meta?.title !== 'string' || !meta.title.trim()) { skip('needs a "title"'); continue; }
-      // "order" (optional) lists paths to put first, in sequence (src/studio/order.ts).
-      let order;
-      if (meta.order !== undefined) {
-        order = parseOrder(meta.order);
-        if (!order) { skip('has an "order" that isn\'t a list of paths'); continue; }
-      }
-      const items = itemsIn(dir, '', { ...inPrototype, order });
-      // Two items can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
-      errors += checkItems(dir, items, out, { contributor: contributorKey, id });
-      // "start" (optional) is the item the prototype opens on, as in its URL: "checkout/step-1".
-      // Without it, the prototype opens on its first item.
-      let start = null;
-      if (meta.start !== undefined) {
-        start = items.find((i) => itemSlug(i.path) === meta.start)?.path ?? null;
-        if (!start) { skip(`has "start": "${meta.start}", which isn't an item in this prototype`); continue; }
-      }
-      // "system" (optional) is the design system it builds with, from src/systems/index.ts.
-      const system = meta.system ?? DEFAULT_SYSTEM;
-      if (!(system in PROTOTYPE_SYSTEMS)) { skip(`has "system": "${system}", which isn't in src/systems/index.ts (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`); continue; }
-      // "status" (optional) is 'active' (the default) or 'archived'.
-      let status = null;
-      if (meta.status !== undefined) {
-        status = parseStatus(meta.status);
-        if (!status) { skip(`has "status": ${JSON.stringify(meta.status)}, which isn't one of ${STATUSES.join(', ')}`); continue; }
-      }
-      prototypes.push({
-        id, contributorKey, title: meta.title, description: meta.description ?? '',
-        contributor: contributors[contributorKey]?.name ?? '', created: meta.created ?? null, system, start, items,
-        ...(status === 'archived' && { status }),
-      });
+      const entry = read(path.join(PROTOS, contributorKey, id), contributorKey, id);
+      if (entry) prototypes.push(entry);
     }
+  }
+  // Tools (src/tools/<id>/): prototypes the team has published. Shaped the same, with maintainers.
+  for (const id of dirs(TOOLS)) {
+    const entry = read(path.join(TOOLS, id), TOOLS_KEY, id);
+    if (entry) tools.push(entry);
   }
 
   // The Handbook (src/handbook/): a prototype-shaped entry for each section, so the same file tree
@@ -289,7 +324,9 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
   guide.sort((a, b) => a.order - b.order);
 
   // What the deployed site leaves out (src/studio/archive.ts).
-  const { kept, archived } = forDeploy(prototypes);
+  const { kept, archived } = forDeploy([...prototypes, ...tools]);
+  const keptPrototypes = kept.filter((p) => p.contributorKey !== TOOLS_KEY);
+  const keptTools = kept.filter((p) => p.contributorKey === TOOLS_KEY);
 
   // A canvas or document that stays on the deployed site but links to an archived prototype would show
   // a placeholder there: say which, so the link can be fixed or the prototype unarchived. Never an error.
@@ -299,9 +336,9 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
     if (links.length > DOC_WARNINGS) out.warn(`[manifest] and ${links.length - DOC_WARNINGS} more file(s) that link to an archived prototype.`);
   }
 
-  const manifest = { prototypes: deploy ? kept : prototypes, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map, systems };
+  const manifest = { prototypes: deploy ? keptPrototypes : prototypes, tools: deploy ? keptTools : tools, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map, systems };
   if (write) writeManifest(manifest);
-  out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
+  out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${manifest.tools.length} tool(s), ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
   if (deploy && archived.length) out.log(`[manifest] Left out of the deployed site: ${archived.length} archived prototype(s)`);
   return { manifest, errors, archived: deploy ? archived : [] };
 }

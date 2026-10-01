@@ -5,9 +5,9 @@ import type { DocFrontmatter } from '@/studio/app/docs/types';
 // A document's compiled Markdown: its content, and its frontmatter block.
 export type DocumentModule = { default: MDXContent; frontmatter?: DocFrontmatter };
 
-// Every .md file in a prototype, at any depth, and in the Handbook. Helpers (names starting with an underscore) aren't documents.
+// Every .md file in a prototype or tool, at any depth, and in the Handbook. Helpers (names starting with an underscore) aren't documents.
 export const documents = createLoader<DocumentModule>(
-  import.meta.glob<DocumentModule>(['/prototypes/**/*.md', '!/prototypes/**/_*/**', '!/prototypes/**/_*', '/handbook/**/*.md']),
+  import.meta.glob<DocumentModule>(['/prototypes/**/*.md', '!/prototypes/**/_*/**', '!/prototypes/**/_*', '/tools/**/*.md', '!/tools/**/_*/**', '!/tools/**/_*', '/handbook/**/*.md']),
   import.meta.hot,
 );
 

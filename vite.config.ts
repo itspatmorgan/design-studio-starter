@@ -38,7 +38,7 @@ export default defineConfig({
       }),
     },
     // Prototype documents refresh through scripts/vite-markdown-refresh-plugin.js instead.
-    react({ include: /\.(md|[jt]sx)$/, exclude: /[\\/]prototypes[\\/].*\.md$/ }),
+    react({ include: /\.(md|[jt]sx)$/, exclude: /[\\/](prototypes|tools)[\\/].*\.md$/ }),
     markdownRefresh(),
     tailwindcss(),
     importGuard(),

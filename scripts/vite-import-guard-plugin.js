@@ -5,6 +5,7 @@ import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems/index.ts';
 
 const SRC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../src');
 const PROTOS = path.join(SRC, 'prototypes');
+const TOOLS = path.join(SRC, 'tools');
 const ROOT = path.dirname(SRC);
 const systemDir = (id) => path.join(ROOT, PROTOTYPE_SYSTEMS[id].dir);
 
@@ -17,7 +18,13 @@ function systemOf(root) {
   } catch { return DEFAULT_SYSTEM; }
 }
 
+// A prototype's folder (src/prototypes/<contributor>/<id>) or a tool's (src/tools/<id>) that holds `file`, or null.
 function prototypeRoot(file) {
+  const tool = path.relative(TOOLS, file);
+  if (!tool.startsWith('..') && !path.isAbsolute(tool)) {
+    const [id] = tool.split(path.sep);
+    return id && !id.includes('.') && tool !== id ? path.join(TOOLS, id) : null;
+  }
   const rel = path.relative(PROTOS, file);
   if (rel.startsWith('..') || path.isAbsolute(rel)) return null;
   const [contributor, prototype] = rel.split(path.sep);
@@ -48,7 +55,7 @@ export default function importGuard() {
       if (!path.isAbsolute(target) || target.includes('node_modules')) return resolved;
       const inOwn = target === root || target.startsWith(root + path.sep);
       const inStudio = target.startsWith(path.join(SRC, 'studio') + path.sep);
-      const inOtherProto = target.startsWith(PROTOS + path.sep) && !inOwn;
+      const inOtherProto = (target.startsWith(PROTOS + path.sep) || target.startsWith(TOOLS + path.sep)) && !inOwn;
       // Another prototype system than the one in the prototype's meta.json.
       const system = systemOf(root);
       const otherSystem = Object.keys(PROTOTYPE_SYSTEMS).find((id) => id !== system && target.startsWith(systemDir(id)));

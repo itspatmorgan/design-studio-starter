@@ -1,8 +1,9 @@
 // A prototype's files, from the dev server (scripts/vite-files-plugin.js). Dev only: on the
 // deployed site these return null, and the prototype navigation lists views from the manifest.
 import { useEffect, useState } from 'react';
-import type { Manifest, Prototype } from '@/studio/app/data/types';
-import { SYSTEMS_KEY, rootOf } from '@/studio/roots';
+import type { Manifest, Prototype, PrototypeInfo } from '@/studio/app/data/types';
+import { SYSTEMS_KEY, TOOLS_KEY, rootOf } from '@/studio/roots';
+import { canMaintain } from '@/studio/tools';
 import type { Status } from '@/studio/archive';
 
 export type FileNode = { name: string; path: string; dir: boolean; children?: FileNode[] };
@@ -69,6 +70,10 @@ export function useMe() {
   }, []);
   return me;
 }
+
+// Whether you may change a prototype: your own, or a tool you maintain (src/studio/tools.ts).
+export const ownsPrototype = (p: PrototypeInfo, me: string | null) =>
+  p.contributorKey === TOOLS_KEY ? canMaintain(p.maintainers, me) : me !== null && p.contributorKey === me;
 
 export type FileOp =
   | { op: 'create'; path: string; name: string; dir?: boolean }
@@ -139,11 +144,11 @@ export async function writeSource(p: Prototype, path: string, content: string, b
 }
 
 // Creates a prototype in your folder, like pnpm new. Returns its URL parts and the new manifest.
-export async function createPrototype(title: string, description: string) {
+export async function createPrototype(title: string, description: string, tool = false) {
   const res = await fetch('/__studio/prototype', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },
-    body: JSON.stringify({ title, description }),
+    body: JSON.stringify({ title, description, tool }),
   });
   const body = await res.json();
   if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');
@@ -175,3 +180,17 @@ export async function deletePrototype(p: Prototype) {
   return body as { trashedTo: string; manifest: Manifest };
 }
 
+// Publishes one of your prototypes as a tool (its folder moves to src/tools/, so its address changes), or
+// moves a tool you maintain back into your prototypes. `linkedFrom` lists other files that link to the old address.
+async function moveTool(action: 'publish' | 'unpublish', p: PrototypeInfo) {
+  const res = await fetch(`/__studio/tool-${action}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },
+    body: JSON.stringify({ prototype: p.id }),
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');
+  return body as { contributor: string; id: string; linkedFrom: string[]; manifest: Manifest };
+}
+export const publishTool = (p: PrototypeInfo) => moveTool('publish', p);
+export const unpublishTool = (p: PrototypeInfo) => moveTool('unpublish', p);

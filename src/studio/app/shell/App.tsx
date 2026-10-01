@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { HeadContent, Link, Outlet } from '@tanstack/react-router';
+import { HeadContent, Link, Outlet, useRouterState } from '@tanstack/react-router';
 import MainNav from '@/studio/app/shell/MainNav';
 import { TooltipProvider } from '@/studio/components/tooltip';
 import { Toaster } from '@/studio/components/toast';
@@ -14,6 +14,9 @@ export default function App() {
   // offers its hide/show toggle exactly when there is one.
   const [navs, setNavs] = useState(0);
   const registerNav = useCallback((present: boolean) => setNavs((n) => n + (present ? 1 : -1)), []);
+  // A published tool on the deployed site fills the window like an app: no rail, no navigation.
+  // (Locally it keeps them, so you can still edit it.)
+  const toolApp = useRouterState({ select: (s) => !import.meta.env.DEV && s.location.pathname.startsWith('/tools/') });
 
   return (
     <TooltipProvider>
@@ -22,7 +25,7 @@ export default function App() {
         <SectionNavPresenceContext.Provider value={registerNav}>
           <CommandPaletteProvider>
             <div className="flex h-screen overflow-hidden">
-              <MainNav colorMode={colorMode} onToggleColorMode={toggleColorMode} sectionNav={navs > 0 ? sectionNav : null} />
+              {!toolApp && <MainNav colorMode={colorMode} onToggleColorMode={toggleColorMode} sectionNav={navs > 0 ? sectionNav : null} />}
               <div className="flex min-w-0 flex-1 flex-col overflow-auto">
                 <Outlet />
               </div>

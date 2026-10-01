@@ -24,6 +24,7 @@ export type PrototypeInfo = {
   system: string;         // meta.json "system", or the first in src/systems/index.ts
   start: string | null;   // meta.json "start", as an item path: the item it opens on
   status?: 'archived';    // meta.json "status", when archived; absent means active
+  maintainers?: string[]; // a tool's meta.json "maintainers" (contributors.json keys); prototypes don't have them
 };
 
 // A prototype with its items loaded, which everything that shows a prototype's files needs.
@@ -48,6 +49,7 @@ export type GuidePage = {
   section: string | null; // sidebar heading, e.g. "Core concepts"
 };
 
+// `tools` holds the published tools (src/tools/, see roots.ts), shaped like prototypes.
 // `handbook` holds the Handbook's sections (src/handbook/, see src/studio/roots.ts), shaped like
 // prototypes.
 // `handbookMap` is how an agent reads the Handbook, worked out from the files (handbookMap.ts).
@@ -55,7 +57,7 @@ export type GuidePage = {
 // defines (themeTokens.ts), and where its components come from (systemSources.ts). The app's own
 // system is one of them.
 export type Manifest = {
-  prototypes: PrototypeRef[]; guide: GuidePage[]; handbook: Prototype[]; handbookMap: HandbookMap | null;
+  prototypes: PrototypeRef[]; tools: PrototypeRef[]; guide: GuidePage[]; handbook: Prototype[]; handbookMap: HandbookMap | null;
   systems: Record<string, { docs: DocsMode; origin: 'shadcn' | null; components: SystemComponentDoc[]; tokens: ThemeToken[] }>;
 };
 

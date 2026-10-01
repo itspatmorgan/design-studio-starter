@@ -7,12 +7,13 @@
 // info or delete it, and double-clicking the title renames it in place. Everywhere else, the
 // "…" menu copies its link and shows details.
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
-import { useRouter } from '@tanstack/react-router';
+import { useNavigate, useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Archive02Icon, ArchiveRestoreIcon, Copy01Icon, Delete02Icon, FileEditIcon, Folder01Icon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
-import { fileOp, openInEditor, repoPath, revealInFinder, useMe } from '@/studio/app/data/files';
+import { Archive02Icon, ArchiveRestoreIcon, ArrowTurnBackwardIcon, Copy01Icon, Delete02Icon, FileEditIcon, Folder01Icon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon, ViewIcon, ViewOffSlashIcon, Wrench01Icon } from '@hugeicons/core-free-icons';
+import { fileOp, openInEditor, ownsPrototype, publishTool, repoPath, revealInFinder, unpublishTool, useMe } from '@/studio/app/data/files';
 import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
 import { formatDate, prototypeLink, setManifest } from '@/studio/app/data/manifest';
+import { TOOLS_KEY } from '@/studio/roots';
 import type { Prototype } from '@/studio/app/data/types';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { Input } from '@/studio/components/input';
@@ -54,11 +55,13 @@ function TitleInput({ initial, onDone }: { initial: string; onDone: (title: stri
 
 export default function PrototypeHeader({ proto }: { proto: Prototype }) {
   const router = useRouter();
+  const navigate = useNavigate();
   const applyRename = useRenamePrototype(proto);
   const me = useMe();
   // import.meta.env.DEV is false in the build, so editing isn't in the deployed site.
   const local = import.meta.env.DEV && me !== null;
-  const editable = local && me === proto.contributorKey;
+  const isTool = proto.contributorKey === TOOLS_KEY;
+  const editable = local && ownsPrototype(proto, me);
   const [renaming, setRenaming] = useState(false);
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -90,6 +93,23 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
     }
   }
 
+  // Publishing moves the prototype's folder into src/tools/, so its address changes (and back, for Unpublish).
+  async function moveTool() {
+    try {
+      const result = await (isTool ? unpublishTool : publishTool)(proto);
+      setManifest(result.manifest);
+      await router.invalidate();
+      navigate({ to: '/$contributor/$prototype', params: { contributor: result.contributor, prototype: result.id } });
+      toast.add({ title: isTool ? 'Moved back to your prototypes' : 'Published as a tool' });
+      // Links in other prototypes still point at the old address.
+      if (result.linkedFrom.length) {
+        toast.add({ type: 'error', title: `${result.linkedFrom.length === 1 ? 'A file links' : `${result.linkedFrom.length} files link`} to the old address and need updating: ${result.linkedFrom.slice(0, 2).join(', ')}${result.linkedFrom.length > 2 ? ', …' : ''}` });
+      }
+    } catch (e) {
+      toast.add({ type: 'error', title: (e as Error).message });
+    }
+  }
+
   const copyLink = () => {
     const href = router.buildLocation(prototypeLink(proto)).href;
     navigator.clipboard.writeText(new URL(href, location.origin).href);
@@ -115,6 +135,9 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
       editable && (proto.status === 'archived'
         ? { label: 'Unarchive', icon: ArchiveRestoreIcon, onSelect: () => setArchived(false) }
         : { label: 'Archive', icon: Archive02Icon, onSelect: () => setArchived(true) }),
+      editable && (isTool
+        ? { label: 'Unpublish', icon: ArrowTurnBackwardIcon, onSelect: moveTool }
+        : { label: 'Publish as tool', icon: Wrench01Icon, onSelect: moveTool }),
     ],
     [editable && { label: 'Delete', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }],
   ]);

@@ -4,9 +4,9 @@ import { createLoader } from '@/studio/app/data/createLoader';
 // A view file's default export.
 export type ViewModule = { default: ComponentType };
 
-// Every view file, .tsx or .jsx, at any depth. Helpers (names starting with an underscore) aren't views.
+// Every view file, .tsx or .jsx, at any depth, in prototypes and tools. Helpers (names starting with an underscore) aren't views.
 export const views = createLoader<ViewModule>(
-  import.meta.glob<ViewModule>(['/prototypes/**/*.{tsx,jsx}', '!/prototypes/**/_*/**', '!/prototypes/**/_*']),
+  import.meta.glob<ViewModule>(['/prototypes/**/*.{tsx,jsx}', '!/prototypes/**/_*/**', '!/prototypes/**/_*', '/tools/**/*.{tsx,jsx}', '!/tools/**/_*/**', '!/tools/**/_*']),
   import.meta.hot,
 );
 

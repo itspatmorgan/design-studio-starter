@@ -4,6 +4,7 @@
 //   node scripts/check-scope.js --ci <before> <after>   (CI, fails if out of scope)
 import { changedFiles, git } from './changed-files.js';
 import { resolveContributor, keyForGithub } from './resolve-contributor.js';
+import { parseMaintainers } from '../src/studio/tools.ts';
 
 const [mode, before, after] = process.argv.slice(2);
 let changed;
@@ -32,7 +33,26 @@ function onlyOwnEntryChanged() {
   return others(before) === others(now);
 }
 
-const isInScope = (f) => (prefix && f.startsWith(prefix)) || (f === 'contributors.json' && onlyOwnEntryChanged());
+// A tool (src/tools/<id>/) is changed by its maintainers, listed in its meta.json. The list that
+// counts is the one before the change, so a change can't make its author a maintainer of someone
+// else's tool. A tool that is new in the change (a prototype just published) has no earlier list,
+// so its own is used.
+function toolMeta(ref, id) {
+  const file = `src/tools/${id}/meta.json`;
+  try {
+    const text = ref === null && mode === '--staged' ? git('show', `:${file}`) : git('show', `${ref ?? (mode === '--ci' ? after : 'HEAD')}:${file}`);
+    return parseMaintainers(JSON.parse(text).maintainers);
+  } catch { return null; }
+}
+const maintained = new Map();
+function maintains(id) {
+  if (!key) return false;
+  if (!maintained.has(id)) maintained.set(id, (((baseRef && toolMeta(baseRef, id)) || toolMeta(null, id)) ?? []).includes(key));
+  return maintained.get(id);
+}
+const toolOf = (f) => f.match(/^src\/tools\/([^/]+)\//)?.[1];
+
+const isInScope = (f) => (prefix && f.startsWith(prefix)) || (toolOf(f) && maintains(toolOf(f))) || (f === 'contributors.json' && onlyOwnEntryChanged());
 const inScope = files.filter(isInScope);
 const platform = files.filter((f) => !isInScope(f));
 

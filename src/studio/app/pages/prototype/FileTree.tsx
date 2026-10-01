@@ -21,7 +21,7 @@ import {
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import {
-  fileOp, openInEditor, repoPath, revealInFinder, setItemLofi, useFileTree, useMe, type FileNode, type FileOp,
+  fileOp, openInEditor, ownsPrototype, repoPath, revealInFinder, setItemLofi, useFileTree, useMe, type FileNode, type FileOp,
 } from '@/studio/app/data/files';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { isHelper } from '@/studio/fileTypes';
@@ -71,7 +71,7 @@ function itemsAsNodes(proto: Prototype): FileNode[] {
 }
 
 // The items of a prototype in a manifest.
-const itemsOf = (m: Manifest, p: Prototype) => [...m.prototypes, ...m.handbook].find((x) => x.contributorKey === p.contributorKey && x.id === p.id)?.items ?? [];
+const itemsOf = (m: Manifest, p: Prototype) => [...m.prototypes, ...m.tools, ...m.handbook].find((x) => x.contributorKey === p.contributorKey && x.id === p.id)?.items ?? [];
 
 // While filtering, keep files whose name matches, and folders with a match inside.
 function filterNodes(nodes: FileNode[], q: string): FileNode[] {
@@ -174,7 +174,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   // Your own prototypes, and the Handbook (in dev): its files are platform files, changed here for
   // review like any change, in the fixed shape src/studio/handbookRules.ts describes.
   const isHandbook = proto.contributorKey === HANDBOOK_KEY;
-  const editable = live && (isHandbook || me === proto.contributorKey);
+  const editable = live && (isHandbook || ownsPrototype(proto, me));
   const [newSkillOpen, setNewSkillOpen] = useState(false);
   // A skill's SKILL.md can't be renamed, moved, or deleted alone.
   const fixed = (node: FileNode) => isHandbook && isSkillFile(proto.id, node.path);

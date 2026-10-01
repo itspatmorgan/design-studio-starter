@@ -29,9 +29,13 @@ const file = path.resolve(process.cwd(), first);
 if (!file.endsWith('.excalidraw')) fail(`${first} isn't a canvas. Canvases are .excalidraw files in a prototype.`);
 if (!fs.existsSync(file)) fail(`${first} doesn't exist. Make a canvas with + → New canvas in the app, or write an empty one (src/handbook/rules/canvases.md).`);
 const real = fs.realpathSync(file);
+const TOOLS = path.join(ROOT, 'src', 'tools');
+const inTools = fs.existsSync(TOOLS) ? path.relative(fs.realpathSync(TOOLS), real).split(path.sep) : ['..'];
 const inProtos = path.relative(fs.realpathSync(PROTOS), real).split(path.sep);
-if (inProtos[0] === '..' || path.isAbsolute(path.relative(PROTOS, real)) || inProtos.length < 3) fail(`${first} isn't in a prototype. A canvas is at src/prototypes/<contributor>/<prototype>/….excalidraw.`);
-const [contributor, prototype] = inProtos;
+const isTool = inTools[0] !== '..' && !path.isAbsolute(path.relative(TOOLS, real)) && inTools.length >= 2;
+if (!isTool && (inProtos[0] === '..' || path.isAbsolute(path.relative(PROTOS, real)) || inProtos.length < 3)) fail(`${first} isn't in a prototype. A canvas is at src/prototypes/<contributor>/<prototype>/….excalidraw (or src/tools/<tool>/….excalidraw).`);
+// A tool (src/tools/<id>/) is opened under the reserved key "tools" (src/studio/roots.ts).
+const [contributor, prototype] = isTool ? ['tools', inTools[0]] : inProtos;
 
 const tool = second ?? fail('Usage: pnpm canvas <file.excalidraw> <tool> \'<json>\'. Tools: pnpm canvas help');
 let args: unknown = {};
@@ -46,7 +50,8 @@ if ((scene!.studioVersion ?? 1) > FORMAT_VERSION) fail(`${first} was written by 
 // What the tools need to know about the app: the items in this canvas's prototype, from the manifest.
 const manifestFile = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
 if (!fs.existsSync(manifestFile)) fail('There is no manifest yet. Run: node scripts/build-manifest.js');
-const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8')) as { prototypes: { contributorKey: string; id: string }[] };
+const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8')) as { prototypes: { contributorKey: string; id: string }[]; tools?: { contributorKey: string; id: string }[] };
+const everything = [...manifest.prototypes, ...(manifest.tools ?? [])];
 // A prototype's items are in a file of their own (scripts/build-manifest.js).
 const itemsOf = (x: { contributorKey: string; id: string }): { path: string; fileType: string }[] => {
   const file = path.join(ROOT, 'public', 'prototypes', 'items', x.contributorKey, `${x.id}.json`);
@@ -62,13 +67,13 @@ const ctx: Ctx = {
     // A canvas shows only its own prototype's items.
     if (!appPath.startsWith(`${base}/`)) return null;
     const [c, p, ...slug] = appPath.split('/').filter(Boolean).map(decodeURIComponent);
-    const proto = manifest.prototypes.find((x) => x.contributorKey === c && x.id === p);
+    const proto = everything.find((x) => x.contributorKey === c && x.id === p);
     const item = proto && itemsOf(proto).find((i) => itemSlug(i.path) === slug.join('/'));
     if (!item) return null;
     const type = FILE_TYPES[item.fileType];
     return { path: appPath, title: title(item.path), type: item.fileType, typeLabel: type?.label ?? 'File', preview: Boolean(type?.preview) };
   },
-  items: () => manifest.prototypes
+  items: () => everything
     .filter((x) => x.contributorKey === contributor && x.id === prototype)
     .flatMap((x) => itemsOf(x).map((i) => `/${x.contributorKey}/${x.id}/${itemSlug(i.path)}`))
     .map((p) => ctx.item(p))

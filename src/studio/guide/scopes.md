@@ -21,6 +21,8 @@ The scope check sorts every changed file into one of two buckets: your folder, o
 - **Before you commit and push,** it prints a summary. It never blocks you, and your agent tells you when something is outside your folder.
 - **On every push to main,** GitHub runs it again. If anything is out of scope, it fails and opens an issue so the maintainer can follow up.
 
+A [tool](/guide/tools) is a team asset, so it doesn't live in anyone's folder. It's in scope for the people listed as its `maintainers`, and only for them. The scope check uses the list from before the change, so a change can't make its author a maintainer.
+
 Adding or editing your own entry in `contributors.json` counts as in scope. Before each commit, you'll also get a warning if your Git name or email doesn't match your entry, so your commits trace back to you.
 
 ## Prototype scope

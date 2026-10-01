@@ -1,6 +1,6 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  BookOpen01Icon, Layers01Icon, Moon02Icon, Notebook01Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Shapes01Icon, Sun01Icon,
+  BookOpen01Icon, Layers01Icon, Moon02Icon, Notebook01Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Shapes01Icon, Sun01Icon, Wrench01Icon,
 } from '@hugeicons/core-free-icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
 import { cn } from '@/lib/utils';
@@ -51,7 +51,7 @@ function RailButton({ label, onClick, children }: { label: string; onClick: () =
 }
 
 // Main navigation: a narrow icon rail, visible on every page.
-// Top: the parts of the environment (Prototypes, Systems, Handbook). Bottom: the Guide about the
+// Top: the parts of the environment (Prototypes, Tools, Systems, Handbook). Bottom: the Guide about the
 // tool itself, then the theme toggle. sectionNav is set only while a page has a section
 // navigation (shell/nav/), to show or hide it.
 type MainNavProps = {
@@ -67,6 +67,8 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
   const onGuide = Boolean(matchRoute({ to: '/guide', fuzzy: true }));
   // /handbook and its sections (/handbook/docs/...), which open through the prototype routes.
   const onHandbook = useRouterState({ select: (s) => s.location.pathname === '/handbook' || s.location.pathname.startsWith('/handbook/') });
+  // /tools and the tools themselves (/tools/<id>), which open through the prototype routes.
+  const onTools = useRouterState({ select: (s) => s.location.pathname === '/tools' || s.location.pathname.startsWith('/tools/') });
   return (
     <nav
       aria-label="Main"
@@ -83,8 +85,11 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
         <HugeiconsIcon icon={Search01Icon} size={16} />
       </RailButton>
       <div className="h-2" />
-      <RailLink to="/" label="Prototypes" active={!onSystems && !onGuide && !onHandbook}>
+      <RailLink to="/" label="Prototypes" active={!onSystems && !onGuide && !onHandbook && !onTools}>
         <HugeiconsIcon icon={Layers01Icon} size={16} />
+      </RailLink>
+      <RailLink to="/tools" label="Tools" active={onTools}>
+        <HugeiconsIcon icon={Wrench01Icon} size={16} />
       </RailLink>
       <RailLink to="/systems" label="Systems" active={onSystems}>
         <HugeiconsIcon icon={Shapes01Icon} size={16} />

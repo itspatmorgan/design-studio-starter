@@ -15,7 +15,7 @@ import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete';
 import { bracketMatching, foldGutter, foldKeymap, indentOnInput } from '@codemirror/language';
 import { highlightSelectionMatches, search, searchKeymap } from '@codemirror/search';
 import { FILE_TYPES } from '@/studio/app/data/fileTypes';
-import { readSource, repoPath, SourceChanged, useMe, writeSource } from '@/studio/app/data/files';
+import { ownsPrototype, readSource, repoPath, SourceChanged, useMe, writeSource } from '@/studio/app/data/files';
 import { HANDBOOK_KEY, SYSTEMS_KEY } from '@/studio/roots';
 import type { Item, Prototype } from '@/studio/app/data/types';
 import { Button } from '@/studio/components/button';
@@ -47,7 +47,7 @@ export default function SourcePane({ proto, item, label, actions, onDirty }: Sou
   const me = useMe();
   // Your own prototypes, and the platform's files (the Handbook's, and a prototype system's components; in dev, for review like any change).
   const isPlatform = proto.contributorKey === HANDBOOK_KEY || proto.contributorKey === SYSTEMS_KEY;
-  const editable = import.meta.env.DEV && (isPlatform || me === proto.contributorKey);
+  const editable = import.meta.env.DEV && (isPlatform || ownsPrototype(proto, me));
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
   // What's on disk as far as this pane knows: the text and version it last read or saved.

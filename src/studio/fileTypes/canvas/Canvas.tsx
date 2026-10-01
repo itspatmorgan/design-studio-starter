@@ -8,7 +8,7 @@ import { Excalidraw, FONT_FAMILY, getSceneVersion, restoreElements } from '@exca
 import '@excalidraw/excalidraw/index.css';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { AppState, ExcalidrawImperativeAPI, ExcalidrawProps, LibraryItems } from '@excalidraw/excalidraw/types';
-import { useMe } from '@/studio/app/data/files';
+import { ownsPrototype, useMe } from '@/studio/app/data/files';
 import { useManifest } from '@/studio/app/data/useManifest';
 import type { Item, Prototype } from '@/studio/app/data/types';
 import './canvas.css';
@@ -62,7 +62,7 @@ function OpenCanvas({ proto, item, text, version }: Props) {
   if ('error' in loaded) return <CanvasError message={loaded.error} />;
 
   // Editing is dev-only and only in your own prototypes; a file from a newer app is never saved over.
-  const editable = import.meta.env.DEV && me === proto.contributorKey && !loaded.parsed.tooNew;
+  const editable = import.meta.env.DEV && ownsPrototype(proto, me) && !loaded.parsed.tooNew;
   return <Editor {...{ proto, item, file, version, text, manifest, dark, container, api, setApi, editable, loaded }} />;
 }
 
