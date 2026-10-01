@@ -1,0 +1,479 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "studioVersion": 1,
+  "elements": [
+    {
+      "autoResize": true,
+      "fontFamily": 6,
+      "fontSize": 28,
+      "height": 35,
+      "id": "muosbflitp7wpc",
+      "lineHeight": 1.25,
+      "originalText": "Feedback Inbox: how it works",
+      "seed": 195551412,
+      "text": "Feedback Inbox: how it works",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 286254723,
+      "verticalAlign": "top",
+      "width": 439.04,
+      "x": 0,
+      "y": -110
+    },
+    {
+      "boundElements": [
+        {
+          "id": "muosbflibznxh2",
+          "type": "arrow"
+        }
+      ],
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "height": 338,
+      "id": "muosbfli174amm",
+      "link": "/patrick/feedback-inbox/lofi/inbox-sketch",
+      "seed": 623226790,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 1575510453,
+      "width": 480,
+      "x": 0,
+      "y": 0
+    },
+    {
+      "boundElements": [
+        {
+          "id": "muosbflibznxh2",
+          "type": "arrow"
+        },
+        {
+          "id": "muosbfljrvo6mu",
+          "type": "arrow"
+        }
+      ],
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "height": 338,
+      "id": "muosbfliqmz68u",
+      "link": "/patrick/feedback-inbox/app/inbox",
+      "seed": 1586055353,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 3,
+      "versionNonce": 627772539,
+      "width": 480,
+      "x": 760,
+      "y": 0
+    },
+    {
+      "boundElements": [
+        {
+          "id": "muosbfljrvo6mu",
+          "type": "arrow"
+        }
+      ],
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "height": 338,
+      "id": "muosbflipp7lj6",
+      "link": "/patrick/feedback-inbox/app/detail",
+      "seed": 103993178,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 704913727,
+      "width": 480,
+      "x": 1520,
+      "y": 0
+    },
+    {
+      "boundElements": [
+        {
+          "id": "muosbfljktmq8t",
+          "type": "text"
+        }
+      ],
+      "elbowed": false,
+      "endArrowhead": "arrow",
+      "endBinding": {
+        "elementId": "muosbfliqmz68u",
+        "focus": 0,
+        "gap": 8
+      },
+      "height": 0,
+      "id": "muosbflibznxh2",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          280,
+          0
+        ]
+      ],
+      "seed": 1852868484,
+      "startArrowhead": null,
+      "startBinding": {
+        "elementId": "muosbfli174amm",
+        "focus": 0,
+        "gap": 8
+      },
+      "type": "arrow",
+      "version": 1,
+      "versionNonce": 1409214430,
+      "width": 280,
+      "x": 480,
+      "y": 169
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosbflibznxh2",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 25,
+      "id": "muosbfljktmq8t",
+      "lineHeight": 1.25,
+      "originalText": "became",
+      "seed": 199337863,
+      "text": "became",
+      "textAlign": "center",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 446731915,
+      "verticalAlign": "middle",
+      "width": 67.2,
+      "x": 586.4,
+      "y": 156.5
+    },
+    {
+      "boundElements": [
+        {
+          "id": "muosbfljsb2h3j",
+          "type": "text"
+        }
+      ],
+      "elbowed": false,
+      "endArrowhead": "arrow",
+      "endBinding": {
+        "elementId": "muosbflipp7lj6",
+        "focus": 0,
+        "gap": 8
+      },
+      "height": 0,
+      "id": "muosbfljrvo6mu",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          280,
+          0
+        ]
+      ],
+      "seed": 1308183002,
+      "startArrowhead": null,
+      "startBinding": {
+        "elementId": "muosbfliqmz68u",
+        "focus": 0,
+        "gap": 8
+      },
+      "type": "arrow",
+      "version": 1,
+      "versionNonce": 1611750427,
+      "width": 280,
+      "x": 1240,
+      "y": 169
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosbfljrvo6mu",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 25,
+      "id": "muosbfljsb2h3j",
+      "lineHeight": 1.25,
+      "originalText": "click a row",
+      "seed": 1533156860,
+      "text": "click a row",
+      "textAlign": "center",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 1072905167,
+      "verticalAlign": "middle",
+      "width": 123.2,
+      "x": 1318.4,
+      "y": 156.5
+    },
+    {
+      "backgroundColor": "#ffc9c9",
+      "boundElements": [
+        {
+          "id": "muosbflj1lr156",
+          "type": "text"
+        }
+      ],
+      "height": 200,
+      "id": "muosbfljci3ivq",
+      "roughness": 0,
+      "seed": 1496341520,
+      "strokeColor": "#eeaeae",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 1,
+      "versionNonce": 241209769,
+      "width": 200,
+      "x": 0,
+      "y": 362
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosbfljci3ivq",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 100,
+      "id": "muosbflj1lr156",
+      "lineHeight": 1.25,
+      "originalText": "The first sketch. Compare it with the real inbox.",
+      "seed": 1291196907,
+      "text": "The first\nsketch. Compare\nit with the real\ninbox.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 1825654406,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 10,
+      "y": 372
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosbflj5vaism",
+          "type": "text"
+        }
+      ],
+      "height": 200,
+      "id": "muosbflj7gvddi",
+      "roughness": 0,
+      "seed": 588421118,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 1,
+      "versionNonce": 1093345161,
+      "width": 200,
+      "x": 760,
+      "y": 362
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosbflj7gvddi",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 150,
+      "id": "muosbflj5vaism",
+      "lineHeight": 1.25,
+      "originalText": "New feedback opens a panel on the right. Add something and watch the counts change.",
+      "seed": 960158010,
+      "text": "New feedback\nopens a panel on\nthe right. Add\nsomething and\nwatch the counts\nchange.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 1945247747,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 770,
+      "y": 372
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "muosbfljmlt2yy",
+          "type": "text"
+        }
+      ],
+      "height": 200,
+      "id": "muosbflj9hym2i",
+      "roughness": 0,
+      "seed": 799127756,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 1,
+      "versionNonce": 1000850339,
+      "width": 200,
+      "x": 1520,
+      "y": 362
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosbflj9hym2i",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 125,
+      "id": "muosbfljmlt2yy",
+      "lineHeight": 1.25,
+      "originalText": "Status and priority save as you pick them. Notes live on the item.",
+      "seed": 1653359100,
+      "text": "Status and\npriority save as\nyou pick them.\nNotes live on\nthe item.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 909196057,
+      "verticalAlign": "top",
+      "width": 179.2,
+      "x": 1530,
+      "y": 372
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "height": 338,
+      "id": "muosbflja1fjb",
+      "link": "/patrick/feedback-inbox/app/overview",
+      "seed": 164001366,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 1,
+      "versionNonce": 1107393736,
+      "width": 480,
+      "x": 760,
+      "y": 760
+    },
+    {
+      "backgroundColor": "#b2f2bb",
+      "boundElements": [
+        {
+          "id": "muosbflj7mp2cj",
+          "type": "text"
+        }
+      ],
+      "height": 200,
+      "id": "muosbfljgbyjm2",
+      "roughness": 0,
+      "seed": 1018373092,
+      "strokeColor": "#94dc9f",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 1,
+      "versionNonce": 96301898,
+      "width": 200,
+      "x": 760,
+      "y": 1122
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosbfljgbyjm2",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 150,
+      "id": "muosbflj7mp2cj",
+      "lineHeight": 1.25,
+      "originalText": "The overview is worked out from the same data, so it changes when the inbox does.",
+      "seed": 47646536,
+      "text": "The overview is\nworked out from\nthe same data,\nso it changes\nwhen the inbox\ndoes.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 1250898584,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": 770,
+      "y": 1132
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "height": 88,
+      "id": "muosbfljngp0vs",
+      "link": "/patrick/feedback-inbox/context",
+      "seed": 1403038924,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 1,
+      "versionNonce": 1113649646,
+      "width": 480,
+      "x": 1520,
+      "y": 760
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "height": 88,
+      "id": "muosbfljck3k8n",
+      "link": "/patrick/feedback-inbox/start-here",
+      "seed": 2133002746,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 1,
+      "versionNonce": 769493192,
+      "width": 480,
+      "x": 1520,
+      "y": 872
+    },
+    {
+      "backgroundColor": "#a5d8ff",
+      "boundElements": [
+        {
+          "id": "muosbfljb4zkzz",
+          "type": "text"
+        }
+      ],
+      "height": 200,
+      "id": "muosbflj9l1pb9",
+      "roughness": 0,
+      "seed": 92207006,
+      "strokeColor": "#87c0ec",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 1,
+      "versionNonce": 353062562,
+      "width": 200,
+      "x": -290,
+      "y": 760
+    },
+    {
+      "autoResize": true,
+      "containerId": "muosbflj9l1pb9",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "height": 325,
+      "id": "muosbfljb4zkzz",
+      "lineHeight": 1.25,
+      "originalText": "This is a canvas. The screens on it are live: click a title bar to open one. Press N for a note, drag a view in from the Files list, or ask your agent to lay something out.",
+      "seed": 1685577313,
+      "text": "This is a\ncanvas. The\nscreens on it\nare live: click\na title bar to\nopen one. Press\nN for a note,\ndrag a view in\nfrom the Files\nlist, or ask\nyour agent to\nlay something\nout.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 1,
+      "versionNonce": 1014183289,
+      "verticalAlign": "top",
+      "width": 168,
+      "x": -280,
+      "y": 770
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {}
+}

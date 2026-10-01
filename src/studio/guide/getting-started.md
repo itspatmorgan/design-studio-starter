@@ -31,6 +31,10 @@ pnpm dev        # starts the app at localhost:5173
 
 > **Use your work email.** Every commit is tied to the email in your Git config, so use the same work email in both places.
 
+## Take the tour
+
+The kit comes with a sample prototype, **Feedback Inbox**: a small working app with three screens, a canvas, and two documents. Open it from the Prototypes page and read its **Start here** page. It walks through how a prototype is put together, with the real files to click through. Delete it when you're done.
+
 ## Make your first prototype
 
 Ask your agent for one, like "Make a prototype called Hello World." It runs `pnpm new "Hello World"`, which creates the folder, fills in `meta.json`, and prints the URL. It shows up on the Prototypes page right away. You can also use **New prototype** on that page yourself.

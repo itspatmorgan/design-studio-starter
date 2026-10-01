@@ -16,6 +16,8 @@ The first release, described in [How I Set Up a Prototyping Sandbox](https://www
 - Contributor folders, `pnpm new`, and `pnpm join`
 - Scope checks before commit, before push, and on push to main
 - The import guard
+- A sample prototype, Feedback Inbox, that doubles as a tour: three screens on a working data store, a workflow canvas, and two documents
+- A Product system with its own look (teal, tighter corners, system font) and 16 components, each with a page
 - A small manifest: the file list of each prototype loads when you open it, so the deployed site stays fast as prototypes pile up
 - Archiving: set a prototype aside; the deployed site leaves archived prototypes out
 - The Handbook: team docs, agent rules, and skills, shown in the app, with a fixed shape and a check for it
