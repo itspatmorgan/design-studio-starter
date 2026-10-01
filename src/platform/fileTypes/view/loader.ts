@@ -5,10 +5,10 @@ import { createLoader } from '@/platform/app/data/createLoader';
 export type ViewModule = { default: ComponentType };
 
 // Every view file, .tsx or .jsx, at any depth, in prototypes and in the modules that hold prototype-shaped
-// folders (tools). Helpers (names starting with an underscore) aren't views. studioGlobs() is replaced by
+// folders (tools). Helpers (names starting with an underscore) aren't views. ['/__studio_globs__/*'] is replaced by
 // the list of patterns when Vite reads this file (scripts/build/vite-globs-plugin.js).
 export const views = createLoader<ViewModule>(
-  import.meta.glob<ViewModule>(studioGlobs()),
+  import.meta.glob<ViewModule>(['/__studio_globs__/*']),
   import.meta.hot,
 );
 

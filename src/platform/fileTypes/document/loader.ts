@@ -6,9 +6,9 @@ import type { DocFrontmatter } from '@/platform/app/docs/types';
 export type DocumentModule = { default: MDXContent; frontmatter?: DocFrontmatter };
 
 // Every .md file in a prototype or tool, at any depth, and in the Handbook. Helpers (names starting with an underscore) aren't documents.
-// studioGlobs() is replaced by the list of patterns when Vite reads this file (scripts/build/vite-globs-plugin.js).
+// ['/__studio_globs__/*'] is replaced by the list of patterns when Vite reads this file (scripts/build/vite-globs-plugin.js).
 export const documents = createLoader<DocumentModule>(
-  import.meta.glob<DocumentModule>(studioGlobs()),
+  import.meta.glob<DocumentModule>(['/__studio_globs__/*']),
   import.meta.hot,
 );
 

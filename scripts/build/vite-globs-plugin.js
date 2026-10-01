@@ -1,8 +1,9 @@
 // Gives each file type's loader (src/platform/fileTypes/<type>/loader.ts) the list of files it opens, and
 // leaves archived prototypes and views out of the production build (src/platform/core/archive.ts).
 //
-// Vite needs a glob written out literally, so a loader says studioGlobs() and this puts the patterns in
-// its place as the file is read: the type's extensions in every folder that holds items, which come from
+// Vite needs a glob written out literally, so a loader says import.meta.glob(['/__studio_globs__/*']), a placeholder
+// that is a valid glob (it matches nothing, so Vite's dependency scan, which reads the file before this runs,
+// is satisfied), and this puts the patterns in its place as the file is read: the type's extensions in every folder that holds items, which come from
 // the modules' sections (src/platform/core/modules/globs.ts). In a production build it adds a negated pattern
 // for each archived file or prototype, so those never become chunks. Nothing is left out in dev, where
 // everything shows. The deployed manifest leaves the same things out (scripts/build/build-manifest.js --deploy).
@@ -19,7 +20,7 @@ function literal(glob) {
 }
 
 const LOADER = /[\\/]fileTypes[\\/]([^\\/]+)[\\/]loader\.ts$/;
-const MACRO = /\bstudioGlobs\(\)/g;
+const MACRO = /\['\/__studio_globs__\/\*'\]/g;
 
 export default function globs() {
   let isBuild = false;
@@ -37,7 +38,7 @@ export default function globs() {
     },
     transform(code, id) {
       const match = LOADER.exec(id.split('?')[0]);
-      if (!match || !code.includes('studioGlobs()')) return null;
+      if (!match || !code.includes("'/__studio_globs__/*'")) return null;
       const list = JSON.stringify([...globsFor(match[1], FILE_TYPES, ENABLED_MODULES), ...negations]);
       replaced++;
       return { code: code.replace(MACRO, list), map: null };
@@ -45,7 +46,7 @@ export default function globs() {
     // Archived files that no loader was told about would ship in the build, so stop instead.
     buildEnd() {
       if (negations.length && replaced === 0) {
-        this.error('Archived views and prototypes could not be left out of the build: no file type loader (src/platform/fileTypes/<type>/loader.ts) lists its files with studioGlobs().');
+        this.error("Archived views and prototypes could not be left out of the build: no file type loader (src/platform/fileTypes/<type>/loader.ts) lists its files with the ['/__studio_globs__/*'] placeholder.");
       }
     },
   };

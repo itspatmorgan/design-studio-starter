@@ -3,7 +3,7 @@
 //     deleting a folder leaves nothing broken. Core reads types through the registries
 //     (src/platform/app/data/fileTypes.ts, scripts/lib/file-types.js).
 //   - a type's type.ts imports only ../index.ts, because the build loads it in Node.
-//   - a type's loader.ts lists its files with studioGlobs(), so a new section and archived files reach it
+//   - a type's loader.ts lists its files with the ['/__studio_globs__/*'] placeholder, so a new section and archived files reach it
 //     (scripts/build/vite-globs-plugin.js).
 // Usage: node scripts/check/check-file-types.js
 import fs from 'node:fs';
@@ -60,8 +60,8 @@ for (const file of [...files(path.join(ROOT, 'src')), ...files(path.join(ROOT, '
 
 for (const id of ids) {
   const loader = path.join(TYPES, id, 'loader.ts');
-  if (fs.existsSync(loader) && !fs.readFileSync(loader, 'utf8').includes('studioGlobs()')) {
-    problems.push(`${path.relative(ROOT, loader)} should list its files with studioGlobs(), not a glob written out by hand: a new section and archived files would never reach it.`);
+  if (fs.existsSync(loader) && !fs.readFileSync(loader, 'utf8').includes("'/__studio_globs__/*'")) {
+    problems.push(`${path.relative(ROOT, loader)} should list its files with import.meta.glob(['/__studio_globs__/*']), not a glob written out by hand: a new section and archived files would never reach it.`);
   }
 }
 
