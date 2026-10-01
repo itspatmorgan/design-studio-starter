@@ -59,18 +59,24 @@ export function revealInFinder(p: PrototypeInfo, file: string) {
   });
 }
 
-// Your contributors.json key, from the dev server, or null (on the deployed site, or if
-// you're not a contributor). The app lets you change files only in your own prototypes.
-let meRequest: Promise<string | null> | undefined;
-export function useMe() {
-  const [me, setMe] = useState<string | null>(null);
+// Who you are, from the dev server: your contributors.json key and name, both null on the deployed site or if
+// you're not a contributor. The name is undefined while the dev server hasn't answered yet.
+type Who = { key: string | null; name: string | null | undefined };
+let meRequest: Promise<Who> | undefined;
+function useWho(): Who {
+  const [who, setWho] = useState<Who>({ key: null, name: import.meta.hot ? undefined : null });
   useEffect(() => {
     if (!import.meta.hot) return;
-    meRequest ??= fetch('/__studio/me').then((r) => r.json()).then((j: { key: string | null }) => j.key).catch(() => null);
-    meRequest.then(setMe);
+    meRequest ??= fetch('/__studio/me').then((r) => r.json() as Promise<Who>).catch(() => ({ key: null, name: null }));
+    meRequest.then(setWho);
   }, []);
-  return me;
+  return who;
 }
+
+// Your contributors.json key. The app lets you change files only in your own prototypes.
+export const useMe = () => useWho().key;
+// Your name, as contributors.json has it; undefined until the dev server has answered.
+export const useMyName = () => useWho().name;
 
 // Whether you own a prototype (so you may archive or delete it): your own, or a tool you maintain. The
 // policy of its section decides (src/platform/core/permissions.ts); the dev server checks again on every change.

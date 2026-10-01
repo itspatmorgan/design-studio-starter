@@ -1,7 +1,7 @@
 // The file layer behind the prototype navigation's file tree, during `pnpm dev` only.
 // (The deployed site is static, so this doesn't exist there.)
 //
-//   GET  /__studio/me                                       your contributors.json key
+//   GET  /__studio/me                                       your contributors.json key and name
 //   GET  /__studio/files?contributor=<key>&prototype=<id>   the prototype's files and folders
 //        (contributor "handbook" reads a Handbook section, src/handbook/<id>/, which is read-only)
 //   GET  /__studio/file?contributor=<key>&prototype=<id>&path=<file>   an item's text and its version
@@ -43,7 +43,7 @@ import { resolveContributor } from '../cli/resolve-contributor.js';
 import { fileTypeOf, handbookTypeOf } from '../lib/file-types.js';
 import { HANDBOOK_KEY, SYSTEMS_KEY } from '../../src/platform/core/roots.ts';
 import { PROTOTYPE_SECTIONS, SERVER_FILES } from '../lib/modules.js';
-import { CONTRIBUTORS_DIR } from '../lib/contributors.js';
+import { CONTRIBUTORS_DIR, loadContributors } from '../lib/contributors.js';
 import { SKILL_FILE, skillProblems } from '../../src/platform/modules/handbook/skills.ts';
 import { frontmatter } from '../lib/frontmatter.js';
 import { BATCH_MS, HANDBOOK, MAX_SOURCE_BYTES, PROTOS, itemFile, prototypeDir, readTree, resolveInside, systemOf, versionOf } from './files/paths.js';
@@ -81,7 +81,7 @@ export default function filesPlugin() {
           if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
           return send(res, 200, { files: readTree(dir) });
         }
-        if (req.method === 'GET' && url.pathname === '/me') return send(res, 200, { key: me() });
+        if (req.method === 'GET' && url.pathname === '/me') return send(res, 200, { key: me(), name: (me() && loadContributors()[me()]?.name) || null });
         if (req.method === 'GET' && url.pathname === '/file') {
           const dir = prototypeDir(url.searchParams.get('contributor'), url.searchParams.get('prototype'));
           const file = dir && itemFile(dir, url.searchParams.get('path'), url.searchParams.get('contributor'));
