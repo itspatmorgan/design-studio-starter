@@ -1,9 +1,9 @@
-// The landing screen: summary cards, then the list. The cards are shortcuts: click Open and the list
-// narrows to everything not resolved. You can also filter by status, search, add feedback in a panel,
-// and use the menu on each row. Click a row to open it on the next screen.
+// Screen 2 of 3: the feedback table. Every piece of feedback in a list you can filter, search, and add to,
+// with a menu on each row. It has no numbers of its own: those live on the overview, and clicking one
+// there brings you here already filtered. Click a row to open it on the next screen.
 //
-// InboxScreen takes optional starting state, so the files in states/ can show it filtered, empty, with
-// the panel open, and so on. The default export is the screen as people reach it.
+// FeedbackInboxScreen takes optional starting state, so the files in states/ can show it filtered,
+// empty, with the panel open, and so on. The default export is the screen as people reach it.
 import { useMemo, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { MoreHorizontal, Plus, Search, X } from 'lucide-react';
@@ -14,14 +14,13 @@ import { Input } from '@/systems/product/components/input';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/systems/product/components/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/systems/product/components/table';
 import { Tabs, TabsList, TabsTrigger } from '@/systems/product/components/tabs';
-import { cn } from '@/lib/utils';
 import AppShell from './components/AppShell';
 import FeedbackForm from './components/FeedbackForm';
 import { PriorityBadge, StatusBadge } from './components/badges';
 import { useScreenPath } from './components/nav';
 import { NO_FILTER, STATUSES, addFeedback, formatDate, matchesFilter, removeFeedback, select, updateFeedback, useStore, type Filter, type Status } from './components/store';
 
-export type InboxStart = {
+export type FeedbackInboxStart = {
   filter?: Filter;
   query?: string;
   adding?: boolean;      // the New feedback panel is open
@@ -29,26 +28,10 @@ export type InboxStart = {
   menuFor?: string;      // the row menu of this item is open
 };
 
-const sameFilter = (a: Filter, b: Filter) => a.status === b.status && a.priority === b.priority;
-
-function SummaryCard({ label, value, hint, active, onClick }: { label: string; value: number; hint: string; active: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onClick}
-      className={cn('rounded-lg border bg-card p-4 text-left transition-colors hover:border-primary/50 hover:bg-accent/40', active ? 'border-primary ring-1 ring-primary' : 'border-border')}
-    >
-      <div className="text-sm text-muted-foreground">{label}</div>
-      <div className="mt-1 text-3xl font-semibold tabular-nums">{value}</div>
-      <div className="mt-1 text-xs text-muted-foreground">{hint}</div>
-    </button>
-  );
-}
-
-export function InboxScreen({ filter: startFilter = NO_FILTER, query: startQuery = '', adding: startAdding = false, tried = false, menuFor }: InboxStart) {
-  const { items } = useStore();
-  const [filter, setFilter] = useState<Filter>(startFilter);
+export function FeedbackInboxScreen({ filter: startFilter, query: startQuery = '', adding: startAdding = false, tried = false, menuFor }: FeedbackInboxStart) {
+  const { items, filter: asked } = useStore();
+  // Starts with what the overview asked for (or what a state file says), then the person takes over.
+  const [filter, setFilter] = useState<Filter>(startFilter ?? asked);
   const [query, setQuery] = useState(startQuery);
   const [adding, setAdding] = useState(startAdding);
   const navigate = useNavigate();
@@ -59,12 +42,7 @@ export function InboxScreen({ filter: startFilter = NO_FILTER, query: startQuery
     const q = query.trim().toLowerCase();
     return items.filter((f) => matchesFilter(f, filter) && (!q || `${f.title} ${f.customer} ${f.tags.join(' ')}`.toLowerCase().includes(q)));
   }, [items, filter, query]);
-  const count = (s: Status | 'all') => (s === 'all' ? items.length : items.filter((f) => f.status === s).length);
-  const openIssues = items.filter((f) => f.status !== 'resolved');
-  const OPEN: Filter = { status: 'open', priority: null };
-  const NEW: Filter = { status: 'new', priority: null };
-  const HIGH: Filter = { status: 'open', priority: 'high' };
-  // Tabs name one status; "open" and "high priority" aren't tabs, so none is selected and the bar below says what's showing.
+  // Tabs name one status; "open issues" and "high priority" aren't tabs, so none is selected and the bar below says what's showing.
   const tab = filter.status === 'open' || filter.priority ? '' : filter.status;
   const narrowed = filter.status === 'open' || filter.priority !== null;
 
@@ -73,23 +51,17 @@ export function InboxScreen({ filter: startFilter = NO_FILTER, query: startQuery
       <div className="mx-auto max-w-5xl px-8 py-8">
         <header className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">Inbox</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Everything customers have told us, in one place.</p>
+            <h1 className="text-xl font-semibold tracking-tight">Feedback inbox</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Everything customers have told us, newest first.</p>
           </div>
           <Button onClick={() => setAdding(true)}><Plus /> New feedback</Button>
         </header>
 
-        <div className="mb-6 grid grid-cols-3 gap-4">
-          <SummaryCard label="Open issues" value={openIssues.length} hint="Not resolved yet" active={sameFilter(filter, OPEN)} onClick={() => setFilter(OPEN)} />
-          <SummaryCard label="New" value={count('new')} hint="Waiting to be triaged" active={sameFilter(filter, NEW)} onClick={() => setFilter(NEW)} />
-          <SummaryCard label="High priority" value={openIssues.filter((f) => f.priority === 'high').length} hint="Open and high priority" active={sameFilter(filter, HIGH)} onClick={() => setFilter(HIGH)} />
-        </div>
-
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <Tabs value={tab} onValueChange={(v) => setFilter({ status: v as Status | 'all', priority: null })}>
             <TabsList>
-              <TabsTrigger value="all">All <span className="text-muted-foreground">{count('all')}</span></TabsTrigger>
-              {STATUSES.map((s) => <TabsTrigger key={s.value} value={s.value}>{s.label} <span className="text-muted-foreground">{count(s.value)}</span></TabsTrigger>)}
+              <TabsTrigger value="all">All</TabsTrigger>
+              {STATUSES.map((s) => <TabsTrigger key={s.value} value={s.value}>{s.label}</TabsTrigger>)}
             </TabsList>
           </Tabs>
           <div className="relative w-64">
@@ -155,7 +127,7 @@ export function InboxScreen({ filter: startFilter = NO_FILTER, query: startQuery
         <SheetContent side="right" className="sm:max-w-md">
           <SheetHeader>
             <SheetTitle>New feedback</SheetTitle>
-            <SheetDescription>Capture what you heard. You can triage it from the inbox.</SheetDescription>
+            <SheetDescription>Capture what you heard. You can triage it from the feedback inbox.</SheetDescription>
           </SheetHeader>
           <div className="px-4 pb-4">
             <FeedbackForm showErrors={tried} submitLabel="Add feedback" onCancel={() => setAdding(false)} onSubmit={(input) => { addFeedback(input); setAdding(false); }} />
@@ -166,6 +138,6 @@ export function InboxScreen({ filter: startFilter = NO_FILTER, query: startQuery
   );
 }
 
-export default function Inbox() {
-  return <InboxScreen />;
+export default function FeedbackInbox() {
+  return <FeedbackInboxScreen />;
 }

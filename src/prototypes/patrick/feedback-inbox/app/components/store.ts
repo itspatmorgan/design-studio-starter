@@ -51,13 +51,21 @@ const seed = (): Feedback[] => [
   { id: 'f8', title: 'Import from a spreadsheet drops line breaks', body: 'Multi-line descriptions come in as one long line after an import.', customer: 'Sofia Rossi', plan: 'Business', source: 'Email', priority: 'high', status: 'planned', tags: ['import'], createdAt: '2026-09-22T10:00:00Z', notes: [] },
 ];
 
-type State = { items: Feedback[]; selectedId: string | null };
-let state: State = { items: seed(), selectedId: null };
+// What the feedback table is showing: a status ("open" is everything not resolved) and, optionally, a priority.
+export type Filter = { status: Status | 'open' | 'all'; priority: Priority | null };
+export const NO_FILTER: Filter = { status: 'all', priority: null };
+export const matchesFilter = (f: Feedback, filter: Filter) =>
+  (filter.status === 'all' || (filter.status === 'open' ? f.status !== 'resolved' : f.status === filter.status)) &&
+  (!filter.priority || f.priority === filter.priority);
+
+// `filter` is what the overview asked the table to show: the table starts with it when it opens.
+type State = { items: Feedback[]; selectedId: string | null; filter: Filter };
+let state: State = { items: seed(), selectedId: null, filter: NO_FILTER };
 const listeners = new Set<() => void>();
 const set = (next: State) => { state = next; listeners.forEach((l) => l()); };
 const subscribe = (l: () => void) => { listeners.add(l); return () => { listeners.delete(l); }; };
 
-// A screen can be shown with data of its own (an empty inbox, say) by wrapping it in StaticItems. The
+// A screen can be shown with data of its own (an empty table, say) by wrapping it in StaticItems. The
 // screens in states/ do this, so each state can sit on a canvas without touching the live data.
 const Override = createContext<Feedback[] | null>(null);
 export const StaticItems = Override.Provider;
@@ -86,16 +94,11 @@ export function addNote(id: string, text: string) {
   set({ ...state, items: state.items.map((f) => (f.id === id ? { ...f, notes: [...f.notes, note] } : f)) });
 }
 export function removeFeedback(id: string) {
-  set({ items: state.items.filter((f) => f.id !== id), selectedId: state.selectedId === id ? null : state.selectedId });
+  set({ ...state, items: state.items.filter((f) => f.id !== id), selectedId: state.selectedId === id ? null : state.selectedId });
 }
 export const select = (id: string | null) => set({ ...state, selectedId: id });
-export const resetData = () => set({ items: seed(), selectedId: null });
+export const resetData = () => set({ items: seed(), selectedId: null, filter: NO_FILTER });
+// The overview's metrics send you to the table already filtered; the top bar's link clears it.
+export const showFiltered = (filter: Filter) => set({ ...state, filter });
 
 export const formatDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-
-// What the inbox is showing: a status ("open" is everything not resolved) and, optionally, a priority.
-export type Filter = { status: Status | 'open' | 'all'; priority: Priority | null };
-export const NO_FILTER: Filter = { status: 'all', priority: null };
-export const matchesFilter = (f: Feedback, filter: Filter) =>
-  (filter.status === 'all' || (filter.status === 'open' ? f.status !== 'resolved' : f.status === filter.status)) &&
-  (!filter.priority || f.priority === filter.priority);

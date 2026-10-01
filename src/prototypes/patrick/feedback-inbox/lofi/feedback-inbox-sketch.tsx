@@ -1,8 +1,8 @@
-// A lofi sketch of the inbox, from before it was designed properly. Lofi means grayscale and rough:
+// A lofi sketch of the feedback inbox, from before it was designed properly. Lofi means grayscale and rough:
 // theme colors only, dashed outlines for things that aren't decided, gray bars for text.
 const Bar = ({ w }: { w: string }) => <div className="h-2 rounded bg-muted" style={{ width: w }} />;
 
-export default function InboxSketch() {
+export default function FeedbackInboxSketch() {
   return (
     <div className="flex min-h-full bg-background text-foreground">
       <aside className="w-48 shrink-0 space-y-3 border-r border-border p-4">

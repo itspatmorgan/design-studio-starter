@@ -1,5 +1,5 @@
 // The form for creating or editing one piece of feedback. The same fields serve the "New feedback"
-// panel on the inbox and the "Edit" dialog on the detail screen.
+// panel on the feedback inbox and the "Edit" dialog on the detail screen.
 import { useState } from 'react';
 import { Button } from '@/systems/product/components/button';
 import { Input } from '@/systems/product/components/input';

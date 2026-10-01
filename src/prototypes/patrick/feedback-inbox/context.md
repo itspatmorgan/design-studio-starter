@@ -18,13 +18,13 @@ Customer feedback arrives in five places: email, chat, interviews, surveys, and 
 
 ## What we're making
 
-A small inbox for feedback. Anyone can add an item in a few seconds. Someone triages it by setting a status and a priority, adds notes on what they learned, and the overview shows where things stand.
+A small tool for collecting feedback. You land on an overview with the key numbers, and each number opens the feedback behind it. Anyone can add an item in a few seconds. Someone triages it by setting a status and a priority, adds notes on what they learned, and the overview shows where things stand.
 
 ## Decisions so far
 
-- **One list, not a board.** We looked at a board in the early [breadboard](breadboard) and the [lofi sketch](lofi/inbox-sketch); the list scales better once there are more than a dozen items.
+- **One list, not a board.** We looked at a board in the early [breadboard](breadboard) and the [lofi sketch](lofi/feedback-inbox-sketch); the list scales better once there are more than a dozen items.
 - **Four statuses**: New, Triaged, Planned, Resolved. Anything finer can wait until the team asks for it.
-- **Land on the inbox, with cards on top.** Open issues, New, and High priority are counts and shortcuts: click one and the list narrows. A separate dashboard would put a click between the person and the work.
+- **Land on the overview, and drill down from it.** The key numbers (open issues, new, high priority, resolved) are at the top, and each is a link to the feedback behind it. The table itself has no numbers, so it stays about the work.
 - **Notes live on the item.** A separate thread would split the story across two places.
 - **No assignees yet.** The team is small enough to talk. Revisit if triage becomes a bottleneck.
 
@@ -32,8 +32,8 @@ A small inbox for feedback. Anyone can add an item in a few seconds. Someone tri
 
 - Should the status filter sit above the list or in a sidebar?
 - Do customers need to hear back when their item is resolved?
-- How long should resolved items stay in the inbox?
+- How long should resolved items stay in the feedback inbox?
 
 ## Where to look
 
-The three screens are the [inbox](app/inbox), which is where you land, an item's [detail](app/detail), and the [overview](app/overview). Every state of them has its own view in `states`. The [breadboard](breadboard) is the early flow sketch, the [handoff canvas](eng-handoff) is what engineering gets, and the [tour](start-here) explains how this prototype is put together.
+The three screens are the [overview](app/overview), which is where you land, the [feedback inbox](app/feedback-inbox), and an item's [detail](app/detail). Every state of them has its own view in `states`. The [breadboard](breadboard) is the early flow sketch, the [handoff canvas](eng-handoff) is what engineering gets, and the [tour](start-here) explains how this prototype is put together.

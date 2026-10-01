@@ -1,5 +1,5 @@
 // Screen 2 of 3: one piece of feedback. Change its status and priority, add notes, edit it, or delete it.
-// The inbox opens this screen with the item it was on. Opened directly (or shown on a canvas), it
+// The feedback inbox opens this screen with the item it was on. Opened directly (or shown on a canvas), it
 // shows the newest item instead of an empty page. DetailScreen takes optional starting state, so the
 // files in states/ can show it with the edit dialog or the delete confirmation open.
 import { useState } from 'react';
@@ -29,7 +29,7 @@ export function DetailScreen({ editing: startEditing = false, deleting: startDel
   const screen = useScreenPath();
 
   const back = (
-    <ScreenLink to="app/inbox" className="mb-5 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" /> Inbox</ScreenLink>
+    <ScreenLink to="app/feedback-inbox" className="mb-5 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" /> Feedback inbox</ScreenLink>
   );
 
   if (!item) {
@@ -39,7 +39,7 @@ export function DetailScreen({ editing: startEditing = false, deleting: startDel
           {back}
           <div className="rounded-lg border border-dashed border-border px-6 py-14 text-center">
             <p className="text-sm font-medium">No feedback to show</p>
-            <p className="mt-1 text-sm text-muted-foreground">Add some from the inbox, or reset the sample data.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Add some in the feedback inbox, or reset the sample data.</p>
           </div>
         </div>
       </AppShell>
@@ -128,7 +128,7 @@ export function DetailScreen({ editing: startEditing = false, deleting: startDel
           <DialogHeader><DialogTitle>Delete this feedback?</DialogTitle><DialogDescription>“{item.title}” and its notes will be removed. Reset the sample data to get it back.</DialogDescription></DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleting(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={() => { removeFeedback(item.id); setDeleting(false); navigate({ to: screen('app/inbox') as never }); }}>Delete</Button>
+            <Button variant="destructive" onClick={() => { removeFeedback(item.id); setDeleting(false); navigate({ to: screen('app/feedback-inbox') as never }); }}>Delete</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

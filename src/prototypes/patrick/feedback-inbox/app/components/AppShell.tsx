@@ -6,23 +6,22 @@ import { Avatar, AvatarFallback } from '@/systems/product/components/avatar';
 import { Button } from '@/systems/product/components/button';
 import { cn } from '@/lib/utils';
 import { ScreenLink, useIsOn } from './nav';
-import { resetData, useStore } from './store';
+import { NO_FILTER, resetData, showFiltered } from './store';
 
-function NavItem({ to, children, count }: { to: string; children: ReactNode; count?: number }) {
+function NavItem({ to, children, onClick }: { to: string; children: ReactNode; onClick?: () => void }) {
   const on = useIsOn(to);
   return (
     <ScreenLink
       to={to}
+      onClick={onClick}
       className={cn('relative flex h-14 items-center gap-1.5 px-1 text-sm font-medium text-muted-foreground hover:text-foreground', on && 'text-foreground after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-primary')}
     >
       {children}
-      {count ? <span className="rounded-full bg-primary/10 px-1.5 text-xs text-primary">{count}</span> : null}
     </ScreenLink>
   );
 }
 
 export default function AppShell({ children }: { children: ReactNode }) {
-  const { items } = useStore();
   return (
     <div className="flex min-h-full flex-col bg-background text-foreground">
       <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur">
@@ -32,8 +31,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <span className="text-sm font-semibold">Echo</span>
           </div>
           <nav className="flex gap-6">
-            <NavItem to="app/inbox" count={items.filter((f) => f.status === 'new').length}>Inbox</NavItem>
             <NavItem to="app/overview">Overview</NavItem>
+            <NavItem to="app/feedback-inbox" onClick={() => showFiltered(NO_FILTER)}>Feedback inbox</NavItem>
           </nav>
           <div className="ml-auto flex items-center gap-3">
             <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={resetData}>Reset sample data</Button>

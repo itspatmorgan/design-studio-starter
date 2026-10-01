@@ -8,9 +8,9 @@ export function useScreenPath() {
   return (screen: string) => `/${contributor}/${prototype}/${screen}`;
 }
 
-export function ScreenLink({ to, className, children }: { to: string; className?: string; children: ReactNode }) {
+export function ScreenLink({ to, className, onClick, children }: { to: string; className?: string; onClick?: () => void; children: ReactNode }) {
   const path = useScreenPath()(to);
-  return <Link to={path as never} className={className}>{children}</Link>;
+  return <Link to={path as never} className={className} onClick={onClick}>{children}</Link>;
 }
 
 export function useIsOn(screen: string) {

@@ -12,7 +12,7 @@ Welcome. This is a working prototype, small enough to read in one sitting. It ex
 
 The navigation shows the prototype's folder as it is on disk. Choose **Reveal in Finder** in the **…** menu to see for yourself: what you see here is what's in the folder.
 
-- A **view** is a screen: a `.tsx` file, like [Inbox](app/inbox). This prototype has three screens in the `app` folder, and a view for each state in the `states` folder.
+- A **view** is a screen: a `.tsx` file, like [Feedback inbox](app/feedback-inbox). This prototype has three screens in the `app` folder, and a view for each state in the `states` folder.
 - A **document** is a page of writing: a `.md` file, like this one and [Project context](context).
 - A **canvas** is a page to arrange things on: an `.excalidraw` file, like [Breadboard](breadboard) and [Eng handoff](eng-handoff).
 - A **folder** only organizes. Move files between folders, and nothing about them changes.
@@ -21,13 +21,13 @@ The star beside this page means the prototype opens here. Right-click another fi
 
 ## 2. The screens
 
-Open the [Inbox](app/inbox). It's the landing page. Click the **Open issues** card and the list narrows to everything not resolved. Then add feedback with **New feedback**, click a row, change its status, add a note, delete something. The three screens share one set of data, so a change in one shows up in the others. Reloading the page resets it, and so does **Reset sample data** in the corner.
+Open the [Overview](app/overview). It's the landing page, with the key numbers at the top. Click **Open issues** and you land in the [Feedback inbox](app/feedback-inbox), already narrowed to everything not resolved. Then add feedback with **New feedback**, click a row, change its status, add a note, delete something. The three screens share one set of data, so a change in one shows up in the others. Reloading the page resets it, and so does **Reset sample data** in the corner.
 
 The screens use the **Product** design system, the same components your team's product would use. Open the **Systems** page from the rail to see them and their themes. The Product system looks different from the app around it on purpose.
 
 ## 3. Switch to Source
 
-Hover over **Files** and click the code icon to see any file's text. In the dev server you can edit it right there and save with ⌘S. The change shows up straight away. Try changing a title in [Inbox](app/inbox).
+Hover over **Files** and click the code icon to see any file's text. In the dev server you can edit it right there and save with ⌘S. The change shows up straight away. Try changing a title in [Feedback inbox](app/feedback-inbox).
 
 ## 4. The helpers folder
 
@@ -35,7 +35,7 @@ Look inside the `app` folder with **Show all files** in the **…** menu. There'
 
 ## 5. Sketch first
 
-The [lofi sketch](lofi/inbox-sketch) is a rough, gray version of the inbox from before it was designed. A `lofi` folder is just a habit. Rough work comes first, and it's quick to throw away.
+The [lofi sketch](lofi/feedback-inbox-sketch) is a rough, gray version of the feedback inbox from before it was designed. A `lofi` folder is just a habit. Rough work comes first, and it's quick to throw away.
 
 ## 6. Think on a canvas
 
@@ -48,7 +48,7 @@ Drag any view from the navigation onto a canvas, or ask your agent to lay someth
 
 ## 7. A view for every state
 
-A screen has more states than the one you land on: filtered, empty, a panel open, a dialog asking first. Each of those is a small file in the `states` folder that shows the same screen already in that state. [Inbox, filtered](states/inbox-open) is the page after clicking the Open card. [Inbox, empty](states/inbox-empty) runs on data of its own. They're ordinary views, so you can open them, and a canvas can embed them. That's how the handoff canvas shows a closed panel and an open one side by side.
+A screen has more states than the one you land on: filtered, empty, a panel open, a dialog asking first. Each of those is a small file in the `states` folder that shows the same screen already in that state. [Feedback inbox, open issues](states/feedback-open-issues) is the page after clicking Open issues on the overview. [Feedback inbox, empty](states/feedback-empty) runs on data of its own. They're ordinary views, so you can open them, and a canvas can embed them. That's how the handoff canvas shows a closed panel and an open one side by side.
 
 ## 8. Write down the why
 
