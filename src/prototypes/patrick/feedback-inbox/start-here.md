@@ -41,7 +41,7 @@ The [lofi sketch](lofi/inbox-sketch) is a rough, gray version of the inbox from 
 
 This prototype has two canvases, for two moments.
 
-- [Breadboard](breadboard) is for early ideas. It uses only Excalidraw's own shapes, so it looks rough on purpose: boxes for places, text for what you can do there, arrows for where it leads, pink notes for questions. Nobody mistakes it for a spec.
+- [Breadboard](breadboard) is for early ideas. It uses only Excalidraw's own shapes, a flowchart of the key workflows and of the logic behind create, read, update, and delete: ovals for starts and ends, boxes for screens, diamonds for decisions, arrows for what the person does. It looks rough on purpose, so nobody mistakes it for a spec.
 - [Eng handoff](eng-handoff) is for when the design is settled. It shows the real screens live: the main flow first, then each create, read, update, and delete state, with a yellow note under each saying what engineering needs to know.
 
 Drag any view from the navigation onto a canvas, or ask your agent to lay something out. A canvas shows only this prototype's own screens, so a prototype stays self-contained. To show a screen from another prototype, copy it in.
