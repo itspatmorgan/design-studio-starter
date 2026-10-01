@@ -10,8 +10,27 @@ The design rules behind it:
   nothing is loaded at run time: a module's files are copied into your repo, where you can read and change them (the shadcn idea, for design tooling).
 - **Plain words, a small config.** `studio.config.ts` holds only what nearly every team changes: the app's name, which optional modules are on, and
   the default design system. Everything else is code you own.
-- **Every module can be removed.** Delete its folder, or turn it off in the config, and the app still builds. `pnpm baseline removal <module>` proves it.
-  The Handbook and Systems stay required, because prototypes are built on them.
+- **An optional module can be removed.** Delete its folder, or turn it off in the config, and the app still builds. `pnpm baseline removal <module>` proves it.
+  The Handbook and Systems are required, because prototypes are built on them, but each keeps all its code in its own folder.
+
+## Where things are
+
+```
+src/studio/
+  core/          the rules every module may rely on: the config, permissions, where files live, archive, order, and the types in api.ts
+  app/           the app's own shell: router, rail, ⌘K palette, and the prototype pages
+  components/    the studio's own UI kit (not what prototypes use: that is a design system)
+  fileTypes/     what a prototype can hold: view, document, canvas, text
+  modules/       one folder per module, with everything it needs:
+    <id>/module.ts, app.tsx, server.ts, check.ts, lib/    the files above
+    <id>/pages/    its pages (browser)          <id>/node/    its helpers that run in Node (build and commands)
+src/systems/ prototypes/ tools/ handbook/ lib/      your content, not the platform
+scripts/         build/ (build and dev server)   check/ (pnpm check)   cli/ (commands people and agents run)   lib/ (shared by those)
+```
+
+`index.ts`, `globs.ts` and `pack.ts` here are the machinery that reads these folders, not modules. A module that can be turned off
+(`optional`) is fully contained: only its `module.ts` is read from outside. A required module (Handbook, Systems) is part of the platform,
+so the platform may import it, but all its code still lives in its one folder.
 
 ## What a module can provide
 
