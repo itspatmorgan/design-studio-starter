@@ -6,5 +6,6 @@ export default {
   id: 'tools',
   label: 'Tools',
   version: '0.1.0',
+  optional: true,
   section: { key: 'tools', folder: 'src/tools', items: 'prototypes', policy: 'maintainers', standalone: true },
 } satisfies ModuleSpec;
