@@ -5,7 +5,7 @@
 // Each loader file must also call import.meta.hot.accept() itself, at the bottom: Vite finds
 // self-accepting files by reading their own source, so it can't be done in here. Without it, a
 // new file reloads the whole page.
-import { rootOf } from '@/studio/roots';
+import { rootOf } from '@/studio/core/roots';
 
 type Glob<M> = Record<string, () => Promise<M>>;
 

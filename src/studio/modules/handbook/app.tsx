@@ -7,7 +7,7 @@ import { CommandGroup, CommandItem, CommandSeparator } from '@/studio/components
 import { NotFound } from '@/studio/app/shell/App';
 import { itemFolder, itemLabel, loadManifest } from '@/studio/app/data/manifest';
 import { itemLink } from '@/studio/app/data/manifest';
-import type { ModuleApp, PaletteContext } from '@/studio/api';
+import type { ModuleApp, PaletteContext } from '@/studio/core/api';
 
 function HandbookPlaces({ go }: PaletteContext) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });

@@ -1,6 +1,6 @@
 // Usage: node scripts/build-manifest.js [--strict] [--deploy]
 //   --strict  exits 1 if any meta.json is invalid
-//   --deploy  leaves archived prototypes and views out (src/studio/archive.ts), for the deployed site
+//   --deploy  leaves archived prototypes and views out (src/studio/core/archive.ts), for the deployed site
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -8,10 +8,10 @@ import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from './lib/systems.js';
 import { STUDIO_ID } from '../src/studio/systemSources.ts';
 import { isHelper, itemSlug } from '../src/studio/fileTypes/index.ts';
-import { HANDBOOK_KEY, HANDBOOK_SECTIONS, rootOf } from '../src/studio/roots.ts';
-import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../src/studio/archive.ts';
-import { byOrder, parseOrder } from '../src/studio/order.ts';
-import { parseMaintainers } from '../src/studio/permissions.ts';
+import { HANDBOOK_KEY, HANDBOOK_SECTIONS, rootOf } from '../src/studio/core/roots.ts';
+import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../src/studio/core/archive.ts';
+import { byOrder, parseOrder } from '../src/studio/core/order.ts';
+import { parseMaintainers } from '../src/studio/core/permissions.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from './lib/modules.js';
 import { frontmatter } from './lib/frontmatter.js';
@@ -42,7 +42,7 @@ const dirs = (p) => fs.existsSync(p)
 
 // A prototype's items (see src/studio/fileTypes/), in the order the file tree shows them: at each
 // level, files first, then folders, each alphabetical, unless meta.json "order" says otherwise
-// (src/studio/order.ts). Hidden files and helpers (names starting with an underscore) are skipped.
+// (src/studio/core/order.ts). Hidden files and helpers (names starting with an underscore) are skipped.
 // `typeOf` says which type opens a file (or null for a plain file), and `skip` which folders are
 // left out. Links are never followed: a symlink is neither a file nor a folder here.
 const inPrototype = { typeOf: (name) => (isHelper(name) ? null : fileTypeOf(name)), skip: isHelper };
@@ -128,7 +128,7 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
     if (!maintainers) return skip('needs "maintainers": a list with at least one contributor key, like ["patrick"]');
     for (const key of maintainers) if (!(key in contributors)) out.warn(`[manifest] ${metaFile}: maintainer "${key}" isn't in contributors.json`);
   }
-  // "order" (optional) lists paths to put first, in sequence (src/studio/order.ts).
+  // "order" (optional) lists paths to put first, in sequence (src/studio/core/order.ts).
   let order;
   if (meta.order !== undefined) {
     order = parseOrder(meta.order);
@@ -223,7 +223,7 @@ function writeManifest(manifest) {
 // Scans src/prototypes/, src/handbook/, and src/studio/guide/, writes public/prototypes/ (manifest.json, and items/), and returns the whole manifest.
 // Problems are printed; errors counts them. The dev server calls this on every change
 // (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
-// Options: `deploy` leaves archived prototypes and views out (see src/studio/archive.ts), `write: false`
+// Options: `deploy` leaves archived prototypes and views out (see src/studio/core/archive.ts), `write: false`
 // skips writing the file, and `quiet` prints nothing. `touched` is the files the dev server saw change since the last
 // build: a prototype with none of them is reused without a look at its files, so a rebuild costs what changed, not
 // how many prototypes there are. `archived` in the result lists what deploy
@@ -375,7 +375,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   }
   guide.sort((a, b) => a.order - b.order);
 
-  // What the deployed site leaves out (src/studio/archive.ts).
+  // What the deployed site leaves out (src/studio/core/archive.ts).
   const { kept, archived } = forDeploy([...prototypes, ...Object.values(sections).flat()]);
   const keptPrototypes = kept.filter((p) => !(p.contributorKey in sections));
   const keptSections = Object.fromEntries(Object.keys(sections).map((key) => [key, kept.filter((p) => p.contributorKey === key)]));

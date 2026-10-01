@@ -30,7 +30,7 @@ if (!file.endsWith('.excalidraw')) fail(`${first} isn't a canvas. Canvases are .
 if (!fs.existsSync(file)) fail(`${first} doesn't exist. Make a canvas with + → New canvas in the app, or write an empty one (src/handbook/rules/canvases.md).`);
 const real = fs.realpathSync(file);
 // A prototype is src/prototypes/<contributor>/<prototype>/; an item of a module's section of prototype-shaped
-// folders (a tool, src/tools/<id>/) is opened under the section's key (src/studio/roots.ts).
+// folders (a tool, src/tools/<id>/) is opened under the section's key (src/studio/core/roots.ts).
 const { PROTOTYPE_SECTIONS } = await import(pathToFileURL(path.join(ROOT, 'scripts', 'lib', 'modules.js')).href) as { PROTOTYPE_SECTIONS: { key: string; dir: string }[] };
 const inSection = PROTOTYPE_SECTIONS.map((s) => ({ key: s.key, rel: fs.existsSync(s.dir) ? path.relative(fs.realpathSync(s.dir), real).split(path.sep) : ['..'] }))
   .find((s) => s.rel[0] !== '..' && !path.isAbsolute(s.rel[0]) && s.rel.length >= 2);

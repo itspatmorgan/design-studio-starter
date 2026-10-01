@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { canChange, canMaintain, canOwn, parseMaintainers, policyFor, whyNot } from './permissions.ts';
-import type { ModuleSpec } from './modules/index.ts';
+import type { ModuleSpec } from '../modules/index.ts';
 
 const modules: ModuleSpec[] = [
   { id: 'tools', label: 'Tools', version: '0.1.0', section: { key: 'tools', folder: 'src/tools', items: 'prototypes', policy: 'maintainers' } },

@@ -4,7 +4,7 @@
 import { createRoute } from '@tanstack/react-router';
 import { Home01Icon } from '@hugeicons/core-free-icons';
 import { APP_NAME } from '@/studio/app/data/config';
-import type { ModuleApp } from '@/studio/api';
+import type { ModuleApp } from '@/studio/core/api';
 
 function Page() {
   return (

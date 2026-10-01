@@ -28,7 +28,7 @@ The design rules behind it:
 A design system is its own kind of folder, `src/systems/<id>/`, with `system.ts`, `components/` and `styles/theme.css`; see `src/handbook/rules/systems.md`.
 
 The contract is **0.x** (`PLATFORM_VERSION` in `index.ts`), so it can still change. A module says the oldest version it works with in `requires`; one that needs a
-newer platform is turned off, and `pnpm check` says why. The types a module is written against are listed in `src/studio/api.ts`.
+newer platform is turned off, and `pnpm check` says why. The types a module is written against are listed in `src/studio/core/api.ts`.
 
 ## Using them
 
@@ -63,7 +63,7 @@ This is review, not a sandbox: a module you add has the same power as any code i
 
 `scripts/lib/modules.js` (the build and dev server) and `src/studio/app/data/modules.ts` (the app) both find the `module.ts` files by folder. From that list:
 `scripts/vite-globs-plugin.js` gives each file type its file lists; `scripts/build-manifest.js` scans each section of prototype-shaped folders into
-`manifest.sections.<key>`; `src/studio/permissions.ts` answers who may change what; `src/studio/app/modules.ts` draws the rail, the routes and the palette.
+`manifest.sections.<key>`; `src/studio/core/permissions.ts` answers who may change what; `src/studio/app/modules.ts` draws the rail, the routes and the palette.
 Design systems are found the same way from `src/systems/*/system.ts` (`scripts/lib/systems.js`, `src/studio/app/data/systems.ts`), and the stylesheet's marker
 comments are filled in by `scripts/vite-css-plugin.js`.
 

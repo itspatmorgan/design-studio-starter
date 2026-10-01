@@ -5,7 +5,7 @@ import { Wrench01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/studio/components/command';
 import { APP_NAME } from '@/studio/app/data/config';
 import { prototypeLink } from '@/studio/app/data/manifest';
-import type { ModuleApp, PaletteContext } from '@/studio/api';
+import type { ModuleApp, PaletteContext } from '@/studio/core/api';
 import ToolsPage from './ToolsPage';
 import { useToolActions } from './actions';
 

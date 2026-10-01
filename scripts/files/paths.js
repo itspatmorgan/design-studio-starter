@@ -6,8 +6,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from '.././lib/file-types.js';
 import { isHelper } from '../../src/studio/fileTypes/index.ts';
-import { byOrder, parseOrder } from '../../src/studio/order.ts';
-import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../../src/studio/roots.ts';
+import { byOrder, parseOrder } from '../../src/studio/core/order.ts';
+import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../../src/studio/core/roots.ts';
 import { PROTOTYPE_SECTIONS } from '.././lib/modules.js';
 import { SYSTEM_SOURCES } from '.././lib/systems.js';
 
@@ -55,7 +55,7 @@ export function resolveInside(dir, rel) {
   } catch { return null; }
 }
 
-// A prototype's meta.json "order" (src/studio/order.ts), or none. The Handbook and system folders have no meta.json.
+// A prototype's meta.json "order" (src/studio/core/order.ts), or none. The Handbook and system folders have no meta.json.
 export function readOrder(dir) {
   try { return parseOrder(JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')).order) ?? []; } catch { return []; }
 }

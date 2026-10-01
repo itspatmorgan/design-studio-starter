@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRenamePrototype } from '@/studio/app/pages/prototype/useRenamePrototype';
 import type { PrototypeInfo } from '@/studio/app/data/types';
 import { MODULES } from '@/studio/app/data/modules';
-import { policyFor } from '@/studio/permissions';
+import { policyFor } from '@/studio/core/permissions';
 import { Button } from '@/studio/components/button';
 import { Input } from '@/studio/components/input';
 import { Textarea } from '@/studio/components/textarea';

@@ -6,5 +6,5 @@
 //   app.tsx     its rail button, routes, palette, menu      ModuleApp, PaletteContext, PrototypeAction
 // Types only: this file adds nothing to the app or the build. A module.ts and a server.ts are loaded by Node as well as
 // the app, so they take their types from ./modules/index.ts, where these two are defined; app.tsx takes all of them from here.
-export type { ModuleServer, ModuleSpec, ServerRoute } from './modules/index.ts';
-export type { ModuleApp, PaletteContext, PrototypeAction } from './app/modules.ts';
+export type { ModuleServer, ModuleSpec, ServerRoute } from '../modules/index.ts';
+export type { ModuleApp, PaletteContext, PrototypeAction } from '../app/modules.ts';

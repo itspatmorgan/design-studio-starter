@@ -13,7 +13,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pathToFileURL } from 'node:url';
 import { PLATFORM_VERSION, compatible, listProblems } from '../src/studio/modules/index.ts';
-import { configProblems } from '../src/studio/config.ts';
+import { configProblems } from '../src/studio/core/config.ts';
 import { CONFIG, MODULES, SECTION_KEYS, declarationProblems } from './lib/modules.js';
 import { PROTOTYPE_SYSTEMS, SYSTEM_IDS, systemDeclarationProblems } from './lib/systems.js';
 import { changesFromLock } from './lib/lock.js';

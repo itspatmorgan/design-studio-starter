@@ -1,5 +1,5 @@
 // Gives each file type's loader (src/studio/fileTypes/<type>/loader.ts) the list of files it opens, and
-// leaves archived prototypes and views out of the production build (src/studio/archive.ts).
+// leaves archived prototypes and views out of the production build (src/studio/core/archive.ts).
 //
 // Vite needs a glob written out literally, so a loader says studioGlobs() and this puts the patterns in
 // its place as the file is read: the type's extensions in every folder that holds items, which come from

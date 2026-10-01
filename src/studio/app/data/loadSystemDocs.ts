@@ -1,6 +1,6 @@
 import { useEffect, useState, type ComponentType } from 'react';
 import type { MDXContent } from 'mdx/types';
-import { SYSTEMS_KEY } from '@/studio/roots';
+import { SYSTEMS_KEY } from '@/studio/core/roots';
 import { STUDIO_ID } from '@/studio/systemSources';
 import { exampleNames, type ComponentPropsDoc } from '@/studio/systemDocs';
 

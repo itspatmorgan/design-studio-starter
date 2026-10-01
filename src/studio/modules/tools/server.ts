@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildManifest } from '../../../../scripts/build-manifest.js';
-import { parseMaintainers } from '../../permissions.ts';
+import { parseMaintainers } from '../../core/permissions.ts';
 import type { ModuleServer } from '../index.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');

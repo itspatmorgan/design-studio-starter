@@ -5,7 +5,7 @@ import type { Item, Prototype } from '@/studio/app/data/types';
 import { SectionNav } from '@/studio/app/shell/nav';
 import PrototypeHeader from '@/studio/app/pages/prototype/PrototypeHeader';
 import HandbookHeader from '@/studio/app/pages/handbook/HandbookHeader';
-import { HANDBOOK_KEY } from '@/studio/roots';
+import { HANDBOOK_KEY } from '@/studio/core/roots';
 import FileTree from '@/studio/app/pages/prototype/FileTree';
 
 export default function PrototypeNav({ proto, current }: { proto: Prototype; current: Item | undefined }) {

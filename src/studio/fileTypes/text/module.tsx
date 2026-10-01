@@ -4,7 +4,7 @@ import { lazy } from 'react';
 import { CodeIcon } from '@hugeicons/core-free-icons';
 import type { FileTypeModule } from '@/studio/app/data/fileTypeModule';
 import type { Item, Prototype } from '@/studio/app/data/types';
-import { rootOf } from '@/studio/roots';
+import { rootOf } from '@/studio/core/roots';
 import { textFiles } from './loader';
 
 const SourcePane = lazy(() => import('@/studio/app/pages/prototype/SourcePane'));

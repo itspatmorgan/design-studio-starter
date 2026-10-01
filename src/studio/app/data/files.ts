@@ -2,10 +2,10 @@
 // deployed site these return null, and the prototype navigation lists views from the manifest.
 import { useEffect, useState } from 'react';
 import type { Manifest, Prototype, PrototypeInfo } from '@/studio/app/data/types';
-import { SYSTEMS_KEY, rootOf } from '@/studio/roots';
+import { SYSTEMS_KEY, rootOf } from '@/studio/core/roots';
 import { MODULES } from '@/studio/app/data/modules';
-import { canChange, canOwn, policyFor } from '@/studio/permissions';
-import type { Status } from '@/studio/archive';
+import { canChange, canOwn, policyFor } from '@/studio/core/permissions';
+import type { Status } from '@/studio/core/archive';
 
 export type FileNode = { name: string; path: string; dir: boolean; children?: FileNode[] };
 
@@ -73,7 +73,7 @@ export function useMe() {
 }
 
 // Whether you own a prototype (so you may archive or delete it): your own, or a tool you maintain. The
-// policy of its section decides (src/studio/permissions.ts); the dev server checks again on every change.
+// policy of its section decides (src/studio/core/permissions.ts); the dev server checks again on every change.
 const subject = (p: PrototypeInfo, me: string | null) => ({ me, key: p.contributorKey, maintainers: p.maintainers });
 const policyOf = (p: PrototypeInfo) => policyFor(p.contributorKey, MODULES);
 export const ownsPrototype = (p: PrototypeInfo, me: string | null) => canOwn(policyOf(p), subject(p, me));
@@ -96,7 +96,7 @@ export type FileOp =
 export type FileOpResult = { path?: string; trashedTo?: string; manifest: Manifest };
 
 // A prototype system's components folder, in the shape the file layer takes for a prototype
-// (src/studio/roots.ts): what the Source view and the operations above are given.
+// (src/studio/core/roots.ts): what the Source view and the operations above are given.
 export const systemFiles = (system: string): Prototype => ({
   id: system, contributorKey: SYSTEMS_KEY, title: system, description: '', contributor: '', created: null, system, start: null, items: [],
 });

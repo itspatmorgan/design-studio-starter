@@ -51,7 +51,7 @@ export type GuidePage = {
 
 // `sections` holds the items of the modules' sections of prototype-shaped folders, by section key: the
 // published tools (src/tools/, as `sections.tools`), shaped like prototypes.
-// `handbook` holds the Handbook's sections (src/handbook/, see src/studio/roots.ts), shaped like
+// `handbook` holds the Handbook's sections (src/handbook/, see src/studio/core/roots.ts), shaped like
 // prototypes.
 // `handbookMap` is how an agent reads the Handbook, worked out from the files (handbookMap.ts).
 // `systems` holds each system's components and their docs (systemDocs.ts), the tokens its theme

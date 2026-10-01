@@ -1,7 +1,7 @@
 import type { ModuleSpec } from '../index.ts';
 
 // Tools: prototypes the team has published (/tools), in src/tools/. Who may change one is its
-// meta.json "maintainers" (src/studio/permissions.ts).
+// meta.json "maintainers" (src/studio/core/permissions.ts).
 export default {
   id: 'tools',
   label: 'Tools',

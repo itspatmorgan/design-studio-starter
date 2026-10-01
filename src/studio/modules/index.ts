@@ -25,7 +25,7 @@ export type ModuleSpec = {
   // `items` says the folder holds files the app opens as items, so each file type lists them (globs.ts):
   // "prototypes" for a folder of prototype-shaped folders, one per id (src/tools/<id>/), and "handbook"
   // for the Handbook's fixed shape. Leave it out when the module reads its own files.
-  // `policy` says who may change the section's files from the app (src/studio/permissions.ts): "maintainers"
+  // `policy` says who may change the section's files from the app (src/studio/core/permissions.ts): "maintainers"
   // (the people listed in an item's meta.json) or "open" (anyone running the app; a pull request reviews
   // it). Without one, nobody can: the module's files are changed in the repo.
   // `standalone` is for a section of prototype-shaped folders whose items open on their own, filling the

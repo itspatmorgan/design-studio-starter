@@ -5,7 +5,7 @@
 import path from 'node:path';
 import { changedFiles, git } from './changed-files.js';
 import { resolveContributor, keyForGithub } from './resolve-contributor.js';
-import { parseMaintainers } from '../src/studio/permissions.ts';
+import { parseMaintainers } from '../src/studio/core/permissions.ts';
 import { MODULES } from './lib/modules.js';
 
 const [mode, before, after] = process.argv.slice(2);

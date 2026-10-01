@@ -41,7 +41,7 @@ import { createPrototype, renamePrototype } from './create-prototype.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from './resolve-contributor.js';
 import { fileTypeOf, handbookTypeOf } from './lib/file-types.js';
-import { HANDBOOK_KEY, SYSTEMS_KEY } from '../src/studio/roots.ts';
+import { HANDBOOK_KEY, SYSTEMS_KEY } from '../src/studio/core/roots.ts';
 import { PROTOTYPE_SECTIONS, SERVER_FILES } from './lib/modules.js';
 import { CONTRIBUTORS_DIR } from './lib/contributors.js';
 import { SKILL_FILE, skillProblems } from '../src/studio/skills.ts';

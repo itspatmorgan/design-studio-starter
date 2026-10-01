@@ -26,12 +26,12 @@ import {
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { isHelper } from '@/studio/fileTypes';
 import { navIndent, navRow, navRowState } from '@/studio/app/shell/nav';
-import { HANDBOOK_KEY } from '@/studio/roots';
+import { HANDBOOK_KEY } from '@/studio/core/roots';
 import { creatableIn, isSkillFile, isSkillFolder, opProblem } from '@/studio/handbookRules';
 import { NEW_KINDS } from '@/studio/app/pages/handbook/newKinds';
 import NewSkillDialog from '@/studio/app/pages/handbook/NewSkillDialog';
 import { itemUrl } from '@/studio/app/items/itemLinks';
-import { place } from '@/studio/order';
+import { place } from '@/studio/core/order';
 import { DRAG_KIND, DragRow, type Dropped, type Operations } from '@/studio/app/pages/prototype/DragRow';
 import { creatableTypes, FILE_TYPES, fileTypeModules } from '@/studio/app/data/fileTypes';
 import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
@@ -66,7 +66,7 @@ function itemsAsNodes(proto: Prototype): FileNode[] {
     });
     level.push({ name: parts.at(-1)!, path: item.path, dir: false });
   }
-  // The manifest lists items in the prototype's order (src/studio/order.ts), so the tree keeps it.
+  // The manifest lists items in the prototype's order (src/studio/core/order.ts), so the tree keeps it.
   return root;
 }
 
@@ -272,7 +272,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   }
 
   // Drag and drop (DragRow.tsx): drag a row before or after another, or into a folder. Order is saved
-  // in meta.json (src/studio/order.ts). The Handbook has a fixed shape, so there a row can only move into a folder.
+  // in meta.json (src/studio/core/order.ts). The Handbook has a fixed shape, so there a row can only move into a folder.
   const movable = (node: FileNode) => editable && node.path !== 'meta.json' && !fixed(node) && !(isHandbook && isSkillFolder(proto.id, node.path, node.dir));
   const canMoveTo = (source: { path: string; dir: boolean }, folder: string) => !isHandbook || opProblem(proto.id, { op: 'move', path: source.path, to: folder }, source.dir) === null;
   // What dropping `source` on a row may do. A folder that's open has its contents below it, so "after" it is inside it.
