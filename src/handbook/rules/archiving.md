@@ -1,6 +1,6 @@
 # Archiving
 
-Archiving sets a whole prototype aside without deleting it. Read this when the person wants to shelve or retire a prototype, or keep it out of the deployed site. Human docs: the Guide's Prototypes page (`src/studio/guide/prototypes.md`).
+Archiving sets a whole prototype aside without deleting it. Read this when the person wants to shelve or retire a prototype, or keep it out of the deployed site. Human docs: the Guide's Prototypes page (`src/studio/modules/guide/pages/prototypes.md`).
 
 - Everything shows when the app runs locally. On the deployed site, an archived prototype is left out entirely: not built, listed, or shipped.
 - Archive a prototype by adding `"status": "archived"` to its `meta.json`. Remove the line to unarchive. There are two statuses, `active` (the default, never written) and `archived`. Don't invent others: an unknown value fails the build.

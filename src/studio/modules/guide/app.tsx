@@ -1,5 +1,5 @@
 // The Guide in the app: its rail button, its routes (/guide and /guide/<page>), and its pages in the ⌘K
-// palette. The pages are in src/studio/guide/, listed in the manifest.
+// palette. The pages are in src/studio/modules/guide/pages/, listed in the manifest.
 import { createRoute, lazyRouteComponent, notFound, useRouterState } from '@tanstack/react-router';
 import { BookOpen01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/studio/components/command';

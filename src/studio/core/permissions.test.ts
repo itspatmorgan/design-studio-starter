@@ -7,7 +7,7 @@ import type { ModuleSpec } from '../modules/index.ts';
 const modules: ModuleSpec[] = [
   { id: 'tools', label: 'Tools', version: '0.1.0', section: { key: 'tools', folder: 'src/tools', items: 'prototypes', policy: 'maintainers' } },
   { id: 'handbook', label: 'Handbook', version: '0.1.0', section: { key: 'handbook', folder: 'src/handbook', items: 'handbook', policy: 'open' } },
-  { id: 'guide', label: 'Guide', version: '0.1.0', section: { key: 'guide', folder: 'src/studio/guide' } },
+  { id: 'guide', label: 'Guide', version: '0.1.0', section: { key: 'guide', folder: 'src/studio/modules/guide/pages' } },
   { id: 'extra', label: 'Extra', version: '0.1.0' },
 ];
 

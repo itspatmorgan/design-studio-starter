@@ -52,5 +52,5 @@ Excalidraw's CDN.
 
 Delete this folder. Canvas files become plain files, and the navigation hides them unless you choose Show
 all files. Then remove what only canvas used: `@excalidraw/excalidraw` and the `canvas` script from `package.json`, `src/studio/fileTypes/canvas/cli.ts` from `tsconfig.node.json` and `tsconfig.app.json`,
-`patches/`, `pnpm-workspace.yaml`, its Guide page (`src/studio/guide/canvases.md` and the links to it),
+`patches/`, `pnpm-workspace.yaml`, its Guide page (`src/studio/modules/guide/pages/canvases.md` and the links to it),
 and its agent rule (`src/handbook/rules/canvases.md` and its line in `AGENTS.md`).

@@ -18,7 +18,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 
 // A module's own files (what removing it deletes) and the words that mean source code is using it.
 const MODULES = {
-  guide: { paths: ['src/studio/modules/guide', 'src/studio/guide'], pattern: "'guide'|src/guide|/guide|loadGuide" },
+  guide: { paths: ['src/studio/modules/guide'], pattern: "'guide'|src/guide|/guide|loadGuide" },
   tools: { paths: ['src/tools', 'src/studio/modules/tools'], pattern: "TOOLS_KEY|src/tools|'tools'|/tools" },
   handbook: { paths: ['src/handbook', 'src/studio/modules/handbook/map.ts', 'src/studio/modules/handbook/rules.ts', 'src/studio/modules/handbook/handbook.test.ts', 'src/studio/modules/handbook/pages'], pattern: 'handbook' },
   systems: { paths: ['src/systems', 'src/studio/modules/systems/pages', 'src/studio/modules/systems/data/loadDocs.ts'], pattern: 'systems' },

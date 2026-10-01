@@ -220,7 +220,7 @@ function writeManifest(manifest) {
   writeIfChanged(OUT, JSON.stringify({ ...manifest, prototypes, sections }) + '\n');
 }
 
-// Scans src/prototypes/, src/handbook/, and src/studio/guide/, writes public/prototypes/ (manifest.json, and items/), and returns the whole manifest.
+// Scans src/prototypes/, src/handbook/, and src/studio/modules/guide/pages/, writes public/prototypes/ (manifest.json, and items/), and returns the whole manifest.
 // Problems are printed; errors counts them. The dev server calls this on every change
 // (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
 // Options: `deploy` leaves archived prototypes and views out (see src/studio/core/archive.ts), `write: false`
@@ -362,13 +362,13 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     }
   }
 
-  // Guide pages: src/studio/guide/*.md, ordered by `order` in each page's frontmatter. They share
+  // Guide pages: src/studio/modules/guide/pages/*.md, ordered by `order` in each page's frontmatter. They share
   // the title, description, and toc fields with prototype documents, and add order and section.
   const guide = [];
   const guideFiles = GUIDE && fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.md')).sort() : [];
   for (const file of guideFiles) {
     const fm = frontmatter(fs.readFileSync(path.join(GUIDE, file), 'utf8'));
-    const where = `src/studio/guide/${file}`;
+    const where = `src/studio/modules/guide/pages/${file}`;
     if (!fm || typeof fm.title !== 'string' || !fm.title) { out.error(`[manifest] Skipped ${where}: needs frontmatter with a "title"`); errors++; continue; }
     if (typeof fm.order !== 'number') { out.error(`[manifest] Skipped ${where}: needs a numeric "order" in its frontmatter`); errors++; continue; }
     guide.push({ slug: file.replace(/\.md$/, ''), title: fm.title, description: fm.description ?? '', section: fm.section || null, order: fm.order });

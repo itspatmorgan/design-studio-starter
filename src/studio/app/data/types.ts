@@ -41,7 +41,7 @@ export type PrototypeRef = PrototypeInfo & {
   itemsHash?: string;     // changes when the items do, so a changed list is fetched again
 };
 
-// One Guide page (src/studio/guide/<slug>.md), from its frontmatter.
+// One Guide page (src/studio/modules/guide/pages/<slug>.md), from its frontmatter.
 export type GuidePage = {
   slug: string;           // file name without .md, e.g. "getting-started"
   title: string;

@@ -61,7 +61,7 @@ A document shows in the app's own style, not your prototype's design system, so 
 
 ## Where documents belong
 
-The Guide (the pages you're reading) is written the same way, in `src/studio/guide/`. It's the platform's own documentation, kept by whoever maintains it. A document belongs to a prototype and its contributor, and follows the same scope as everything else in your folder.
+The Guide (the pages you're reading) is written the same way, in `src/studio/modules/guide/pages/`. It's the platform's own documentation, kept by whoever maintains it. A document belongs to a prototype and its contributor, and follows the same scope as everything else in your folder.
 
 ## Not using them?
 

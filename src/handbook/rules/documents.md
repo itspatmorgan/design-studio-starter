@@ -1,6 +1,6 @@
 # Documents
 
-A document is written context in a prototype: problem framing, open questions, feedback, or handoff notes. Read this when the person asks for one. Human docs: the Guide's Documents page (`src/studio/guide/documents.md`).
+A document is written context in a prototype: problem framing, open questions, feedback, or handoff notes. Read this when the person asks for one. Human docs: the Guide's Documents page (`src/studio/modules/guide/pages/documents.md`).
 
 - A document is any `.md` file in the prototype, at any depth, outside helpers (names starting with `_`). There's nothing to register. Its URL is its path without the extension.
 - Frontmatter is optional: `title`, `description`, and `toc: true` (an "On this page" list). Give it a `title`; without one, a first `# Heading` is used as the title. Write standard Markdown (CommonMark plus GitHub's tables, task lists, and strikethrough). No JSX, components, or raw HTML: they aren't rendered. A stray `{` or `<` is fine.
