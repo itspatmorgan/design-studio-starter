@@ -1,7 +1,7 @@
 // Adding a module from a source (pack.ts). Run with `pnpm test`.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, plainPath, readDeclaration } from './pack.ts';
+import { agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, plainPath, readDeclaration, setDefaultSystem } from './pack.ts';
 
 test('a source is a folder, a git address, or an https tarball', () => {
   assert.deepEqual(parseSource('../my-module'), { kind: 'path', path: '../my-module' });
@@ -16,14 +16,20 @@ test('http, file, git:// and other schemes are refused, and so is anything that 
   assert.match((parseSource('http://example.com/x.tar.gz') as { error: string }).error, /https/);
   assert.match((parseSource('file:///etc') as { error: string }).error, /aren't supported/);
   assert.match((parseSource('ext::sh -c touch% /tmp/x') as { error: string }).error, /isn't a folder or an address/);
+  assert.match((parseSource('https://github.com/a/b c') as { error: string }).error, /isn't a folder or an address/);
   assert.match((parseSource('git://example.com/x') as { error: string }).error, /aren't supported/);
   assert.match((parseSource('--upload-pack=evil') as { error: string }).error, /isn't a folder or an address/);
   assert.match((parseSource('') as { error: string }).error, /Say where/);
 });
 
+test('a folder with spaces in its name is fine', () => {
+  assert.deepEqual(parseSource('/Users/me/My Modules/quote'), { kind: 'path', path: '/Users/me/My Modules/quote' });
+  assert.deepEqual(parseSource('C:\\Users\\me\\quote'), { kind: 'path', path: 'C:\\Users\\me\\quote' });
+});
+
 test('a ref has to look like a branch, tag or commit', () => {
   assert.match((parseSource('https://github.com/a/b#--evil') as { error: string }).error, /isn't a branch/);
-  assert.match((parseSource('https://github.com/a/b#a b') as { error: string }).error, /isn't a folder or an address/);
+  assert.match((parseSource('https://github.com/a/b#a b') as { error: string }).error, /isn't a branch/);
   assert.match((parseSource('./folder#main') as { error: string }).error, /no #ref/);
 });
 
@@ -138,4 +144,14 @@ test('a declaration that needs code is refused, never run', () => {
 
 test('a comment marker inside text is text', () => {
   assert.deepEqual(readDeclaration("export default { label: 'See https://x.y // not a comment', note: \"a /* b */ c\" };"), { value: { label: 'See https://x.y // not a comment', note: 'a /* b */ c' } });
+});
+
+test('the default system is pinned in studio.config.ts without disturbing anything else', () => {
+  const plain = "export default {\n  name: 'X',\n  modules: {},\n} satisfies StudioConfig;\n";
+  const pinned = setDefaultSystem(plain, 'product')!;
+  assert.equal(pinned, "export default {\n  name: 'X',\n  defaultSystem: 'product',\n  modules: {},\n} satisfies StudioConfig;\n");
+  assert.equal(setDefaultSystem(pinned, 'brand'), pinned.replace("'product'", "'brand'"));
+  const commented = "  name: 'X',\n  modules: {},\n  // defaultSystem: 'product',   // the design system a prototype uses\n";
+  assert.match(setDefaultSystem(commented, 'brand')!, /\n  defaultSystem: 'brand',\n/);
+  assert.equal(setDefaultSystem('export default {}', 'x'), null);
 });

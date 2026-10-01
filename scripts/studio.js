@@ -21,7 +21,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compatible, listProblems, moduleProblems, PLATFORM_VERSION } from '../src/studio/modules/index.ts';
 import {
-  agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, readDeclaration,
+  agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, readDeclaration, setDefaultSystem,
 } from '../src/studio/modules/pack.ts';
 import { systemProblems } from '../src/studio/systems.ts';
 import { MODULES, ENABLED_MODULES, CONFIG } from './lib/modules.js';
@@ -63,6 +63,17 @@ function removeEmptyParents(abs) {
   for (let dir = path.dirname(abs); dir.startsWith(rel('src') + path.sep) && !PROTECTED.has(path.relative(ROOT, dir)); dir = path.dirname(dir)) {
     if (fs.existsSync(dir) && fs.readdirSync(dir).length === 0) fs.rmdirSync(dir); else break;
   }
+}
+
+// Adding a second design system must not change which one existing prototypes use (they name none, so they get the
+// default): write the current default into studio.config.ts first. Returns nothing; throws if it can't.
+function pinDefaultSystem(remember) {
+  if (SYSTEM_IDS.length < 1 || CONFIG.defaultSystem) return;
+  const file = rel('studio.config.ts');
+  const next = setDefaultSystem(fs.readFileSync(file, 'utf8'), DEFAULT_SYSTEM);
+  if (next === null) throw new Error(`I couldn't set defaultSystem in studio.config.ts. Add defaultSystem: '${DEFAULT_SYSTEM}', to it by hand first, so existing prototypes keep their system.`);
+  remember(file);
+  fs.writeFileSync(file, next);
 }
 
 // ---- AGENTS.md
@@ -179,6 +190,7 @@ async function add() {
     if (!flags.yes) { say(); say(`Nothing was changed. To add it, run the same command with --yes.`); return; }
 
     // Add it.
+    if (kind === 'system') pinDefaultSystem(remember);
     for (const m of plan.moves) {
       const to = rel(m.to);
       if (fs.existsSync(to)) continue; // content that was already there stays
@@ -306,7 +318,9 @@ function create(kind) {
   const plan = packPlan(kind, id, spec, files);
   if (plan.problems.length) fail(plan.problems.join('\n'));
   const written = [];
+  const backups = new Map();
   try {
+    if (kind === 'system') pinDefaultSystem((file) => backups.set(file, fs.readFileSync(file)));
     for (const m of plan.moves) {
       const to = rel(m.to);
       if (fs.existsSync(to)) throw new Error(`${m.to} already exists.`);
@@ -318,6 +332,7 @@ function create(kind) {
     if (problem) throw new Error(problem);
   } catch (e) {
     for (const f of written.reverse()) { fs.rmSync(f, { force: true }); removeEmptyParents(f); }
+    for (const [file, content] of backups) fs.writeFileSync(file, content);
     fail(`Nothing was made. ${e.message}`);
   }
   syncInFreshProcess();

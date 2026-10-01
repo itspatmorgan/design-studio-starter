@@ -10,16 +10,19 @@ export type Source =
 
 const REF = /^[A-Za-z0-9][A-Za-z0-9._/-]*$/;
 const BAD_CHARS = /[\s\0-\x1f\x7f]/;
+const CONTROL = /[\0-\x1f\x7f]/;
 
 // What a source is: a folder on this computer, a git repository (https or ssh, with an optional #branch, tag or commit),
 // or a .tar.gz at an https address. Anything else (http, file://, git://, ext::) is refused with the reason.
 export function parseSource(text: string): Source | { error: string } {
   const raw = text.trim();
   if (!raw) return { error: 'Say where the module comes from: a folder, a git address, or a .tar.gz address.' };
-  if (BAD_CHARS.test(raw) || raw.startsWith('-')) return { error: `"${raw}" isn't a folder or an address.` };
+  if (CONTROL.test(raw) || raw.startsWith('-')) return { error: `"${raw}" isn't a folder or an address.` };
   const hashAt = raw.indexOf('#');
   const location = hashAt === -1 ? raw : raw.slice(0, hashAt);
   const ref = hashAt === -1 ? undefined : raw.slice(hashAt + 1);
+  const looksLikeAddress = /^([A-Za-z][A-Za-z0-9+.-]*:|git@)/.test(location) && !/^[A-Za-z]:[\\/]/.test(location);
+  if (looksLikeAddress && BAD_CHARS.test(location)) return { error: `"${raw}" isn't a folder or an address.` };
   if (/^https:\/\//i.test(location) && /\.(tar\.gz|tgz)$/i.test(location.split('?')[0])) {
     if (ref !== undefined) return { error: 'A .tar.gz address has no #ref. Point at the file you want.' };
     return { kind: 'tarball', url: location };
@@ -224,4 +227,17 @@ export function readDeclaration(source: string): { value: unknown } | { error: s
   } catch (e) {
     return { error: (e as Error).message };
   }
+}
+
+// studio.config.ts with defaultSystem set: replaces the line if there is one (or a commented example of it), else adds it after
+// `name`. Null if the file has no `name:` line to put it after. It is written when a second design system is added, so that
+// adding one never changes which system existing prototypes use.
+export function setDefaultSystem(text: string, id: string): string | null {
+  const line = `defaultSystem: '${id}',`;
+  const existing = /^([ \t]*)(?:\/\/[ \t]*)?defaultSystem:[^\n]*$/m.exec(text);
+  if (existing) return text.slice(0, existing.index) + `${existing[1]}${line}` + text.slice(existing.index + existing[0].length);
+  const name = /^([ \t]*)name:[^\n]*,[ \t]*$/m.exec(text);
+  if (!name) return null;
+  const end = name.index + name[0].length;
+  return text.slice(0, end) + `\n${name[1]}${line}` + text.slice(end);
 }
