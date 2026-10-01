@@ -79,3 +79,5 @@ src/prototypes/        one folder per contributor
 MIT. See [LICENSE](LICENSE).
 
 The Source view's syntax colors are [Flexoki](https://stephango.com/flexoki) by Steph Ango (MIT).
+
+Dragging in the file navigation uses [Pragmatic drag and drop](https://atlassian.design/components/pragmatic-drag-and-drop/) by Atlassian (Apache-2.0).

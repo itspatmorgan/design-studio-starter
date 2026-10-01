@@ -10,6 +10,7 @@ import { SYSTEM_SOURCES, STUDIO_ID } from '../src/studio/systemSources.ts';
 import { HELPER_FOLDER, itemSlug } from '../src/studio/fileTypes/index.ts';
 import { HANDBOOK_KEY, HANDBOOK_SECTIONS } from '../src/studio/roots.ts';
 import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../src/studio/archive.ts';
+import { byOrder, parseOrder } from '../src/studio/order.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { frontmatter } from './lib/frontmatter.js';
 import { handbookProblems } from './lib/handbook-check.js';
@@ -37,18 +38,21 @@ const dirs = (p) => fs.existsSync(p)
   : [];
 
 // A prototype's items (see src/studio/fileTypes/), in the order the file tree shows them: at each
-// level, files first, then folders, each alphabetical. Hidden files and components/ are skipped.
+// level, files first, then folders, each alphabetical, unless meta.json "order" says otherwise
+// (src/studio/order.ts). Hidden files and components/ are skipped.
 // `typeOf` says which type opens a file (or null for a plain file), and `skip` which folders are
 // left out. Links are never followed: a symlink is neither a file nor a folder here.
 const inPrototype = { typeOf: (name) => fileTypeOf(name), skip: (name) => name === HELPER_FOLDER };
-function itemsIn(dir, base = '', { typeOf, skip } = inPrototype) {
+function itemsIn(dir, base = '', { typeOf, skip, order } = inPrototype) {
   const entries = fs.readdirSync(dir, { withFileTypes: true }).filter((e) => !e.name.startsWith('.'));
-  const byName = (a, b) => a.name.localeCompare(b.name);
-  const files = entries.filter((e) => e.isFile()).sort(byName)
-    .flatMap((e) => { const fileType = typeOf(e.name, path.join(dir, e.name)); return fileType ? [{ path: base + e.name, fileType }] : []; });
-  const folders = entries.filter((e) => e.isDirectory() && !skip(e.name)).sort(byName)
-    .flatMap((e) => itemsIn(path.join(dir, e.name), `${base}${e.name}/`, { typeOf, skip }));
-  return [...files, ...folders];
+  const files = entries.filter((e) => e.isFile()).flatMap((e) => {
+    const fileType = typeOf(e.name, path.join(dir, e.name));
+    return fileType ? [{ name: e.name, path: base + e.name, dir: false, fileType }] : [];
+  });
+  const folders = entries.filter((e) => e.isDirectory() && !skip(e.name)).map((e) => ({ name: e.name, path: base + e.name, dir: true }));
+  return byOrder([...files, ...folders], order).flatMap((e) => (e.dir
+    ? itemsIn(path.join(dir, e.name), `${e.path}/`, { typeOf, skip, order })
+    : [{ path: e.path, fileType: e.fileType }]));
 }
 
 // In the Handbook, a document opens as a document and every other text file opens as text (a
@@ -158,7 +162,13 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
         skip(`is not valid JSON (${e.message})`); continue;
       }
       if (typeof meta?.title !== 'string' || !meta.title.trim()) { skip('needs a "title"'); continue; }
-      const items = itemsIn(dir);
+      // "order" (optional) lists paths to put first, in sequence (src/studio/order.ts).
+      let order;
+      if (meta.order !== undefined) {
+        order = parseOrder(meta.order);
+        if (!order) { skip('has an "order" that isn\'t a list of paths'); continue; }
+      }
+      const items = itemsIn(dir, '', { ...inPrototype, order });
       // Two items can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
       errors += checkItems(dir, items, out, { contributor: contributorKey, id });
       // "start" (optional) is the item the prototype opens on, as in its URL: "checkout/step-1".

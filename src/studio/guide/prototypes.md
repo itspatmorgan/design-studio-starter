@@ -57,6 +57,12 @@ The switch is one line at the top of the view's file, `/** @lofi */`, so it foll
 
 Folders are only for organizing, at any depth. A folder's name never changes what's inside it, with one exception: files in a `components/` folder are helpers, not views.
 
+## Order
+
+By default the navigation lists files first, then folders, each alphabetical. To put the important things at the top, drag a file or folder to where you want it: between two others to reorder, or onto a folder to move it inside. Dragging between two files in different folders does both. **Move to top**, **Move up**, and **Move down** in the file menu do the same without a mouse, and so does Option + Up or Down arrow on a focused row.
+
+The arrangement is saved in `meta.json` as `order`, so everyone sees the same navigation, and your agent can change it too: ask it to put the overview first. Files you add later land after the ones you arranged. Order never renames or moves a file.
+
 ## Archiving
 
 When a prototype is finished but you want to keep it, archive it instead of deleting it: choose **Archive** in its **…** menu. **Unarchive** brings it back.
@@ -76,6 +82,7 @@ An archived prototype has `"status": "archived"` in its `meta.json`. Your agent 
   "created": "2026-09-28",
   "system": "product",
   "start": "lofi/main",
+  "order": ["start-here.md", "lofi", "checkout"],
   "status": "archived"
 }
 ```
@@ -85,6 +92,8 @@ Only `title` is required. `pnpm new` fills in `created`. Your name comes from `c
 `system` is the [design system](/guide/systems) it builds with. Leave it out to use the default, which is all you need until your team has more than one.
 
 `start` is the view the prototype opens on, written the way it appears in the URL. Leave it out to open on the first view. **Set as start** in the navigation sets it for you, and it follows the view if you rename or move it.
+
+`order` is the [navigation's arrangement](#order): paths that go first, in sequence. Leave it out for the default.
 
 `status` is `archived` to [set the prototype aside](#archiving). Leave it out for an active prototype, which is the default.
 

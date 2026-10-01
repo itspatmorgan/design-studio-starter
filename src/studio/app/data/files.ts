@@ -75,6 +75,8 @@ export type FileOp =
   | { op: 'rename'; path: string; name: string }
   | { op: 'move'; path: string; to: string }
   | { op: 'delete'; path: string }
+  // Put a file or folder before another in its folder (`before` empty: last), moving it to folder `to` first if that's elsewhere.
+  | { op: 'reorder'; path: string; to?: string; before?: string }
   | { op: 'meta'; title?: string; description?: string; start?: string; status?: Status }
   // A Handbook skill: skills/<name>/SKILL.md, in the Agent Skills format.
   | { op: 'create-skill'; name: string; description: string }

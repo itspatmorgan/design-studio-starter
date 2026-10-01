@@ -6,15 +6,17 @@
 // src/studio/fileTypes/) and their folders. Everything else in the folder (meta.json, which the header
 // edits; components/ helpers; images and other files) is hidden until you choose Show all
 // files (in the header's … menu), and then opens in your editor. In your own prototypes you can also create, rename (F2), move
-// (drag and drop), and delete (to the Trash) files and folders, like a file browser, and
+// (drag and drop), arrange (drag, or Move up and down), and delete (to the Trash) files and folders, like a file browser, and
 // choose which item the prototype opens on (Set as start; it shows a star). Every change
 // is a plain file change, so agents see the same thing. On the deployed site, it lists the
 // prototype's items, from the manifest.
-import { Fragment, useEffect, useRef, useState, type DragEvent, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
+import { dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import { extractInstruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  Add01Icon, ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
+  Add01Icon, ArrowDown01Icon, ArrowUp01Icon, ArrowUpDoubleIcon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
   Folder01Icon, StarIcon, SourceCodeIcon, BrowserIcon, PencilEdit02Icon, Pen01Icon, PaintBoardIcon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
@@ -29,6 +31,8 @@ import { creatableIn, isSkillFile, isSkillFolder, opProblem } from '@/studio/han
 import { NEW_KINDS } from '@/studio/app/pages/handbook/newKinds';
 import NewSkillDialog from '@/studio/app/pages/handbook/NewSkillDialog';
 import { itemUrl } from '@/studio/app/items/itemLinks';
+import { place } from '@/studio/order';
+import { DRAG_KIND, DragRow, type Dropped, type Operations } from '@/studio/app/pages/prototype/DragRow';
 import { creatableTypes, FILE_TYPES, fileTypeModules } from '@/studio/app/data/fileTypes';
 import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
 import { Button } from '@/studio/components/button';
@@ -62,9 +66,8 @@ function itemsAsNodes(proto: Prototype): FileNode[] {
     });
     level.push({ name: parts.at(-1)!, path: item.path, dir: false });
   }
-  // Files first, then folders, like the dev server's tree (the manifest is already in order).
-  const order = (nodes: FileNode[]): FileNode[] => [...nodes.filter((n) => !n.dir), ...nodes.filter((n) => n.dir).map((n) => ({ ...n, children: order(n.children ?? []) }))];
-  return order(root);
+  // The manifest lists items in the prototype's order (src/studio/order.ts), so the tree keeps it.
+  return root;
 }
 
 // The items of a prototype in a manifest.
@@ -175,8 +178,6 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   const [newSkillOpen, setNewSkillOpen] = useState(false);
   // A skill's SKILL.md can't be renamed, moved, or deleted alone.
   const fixed = (node: FileNode) => isHandbook && isSkillFile(proto.id, node.path);
-  // What the row being dragged is, so a folder that can't take it doesn't accept the drop.
-  const dragging = useRef<{ path: string; dir: boolean } | null>(null);
   // What can be made in a folder: a prototype's file types and folders, or what the Handbook section holds there.
   const newOptions = (folder: string) => (isHandbook
     ? creatableIn(proto.id, folder).map((kind) => ({ target: kind === 'document' ? 'document' : kind, ...NEW_KINDS[kind] }))
@@ -199,7 +200,8 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   const [closed, setClosed] = useState(() => new Set<string>());
   const [editing, setEditing] = useState<Editing>(null);
   const [confirmDelete, setConfirmDelete] = useState<FileNode | null>(null);
-  const [dropTarget, setDropTarget] = useState<string | null>(null);
+  const [overTop, setOverTop] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLInputElement>(null);
   useEffect(() => { if (filterOpen) filterRef.current?.focus(); }, [filterOpen]);
 
@@ -226,7 +228,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
       const result = await fileOp(proto, op);
       setManifest(result.manifest);
       const open = current?.path;
-      if (open && (op.op === 'rename' || op.op === 'move' || op.op === 'delete') && within(open, op.path)) {
+      if (open && (op.op === 'rename' || op.op === 'move' || op.op === 'delete' || (op.op === 'reorder' && result.path !== op.path)) && within(open, op.path)) {
         const moved = result.path && `${result.path}${open.slice(op.path.length)}`;
         const next = moved && itemsOf(result.manifest, proto).find((i) => i.path === moved);
         await navigate(next ? itemLink(proto, next) : prototypeLink(proto));
@@ -273,36 +275,86 @@ export default function FileTree({ proto, current }: FileTreeProps) {
     if (item) navigate(itemLink(proto, item));
   }
 
-  // Drag and drop: drag a row onto a folder (or the empty space below the tree, for the top level).
-  const dragProps = (node: FileNode) => (editable && node.path !== 'meta.json' && !fixed(node) && !(isHandbook && isSkillFolder(proto.id, node.path, node.dir)) ? {
-    draggable: true,
-    onDragStart: (e: DragEvent) => { dragging.current = { path: node.path, dir: node.dir }; e.dataTransfer.setData('application/x-studio-path', node.path); e.dataTransfer.effectAllowed = 'move'; },
-    onDragEnd: () => { dragging.current = null; setDropTarget(null); },
-  } : {});
-  // Whether the row being dragged may go into a folder: in the Handbook, only where its shape allows.
-  const canDrop = (folder: string) => !isHandbook || !dragging.current || opProblem(proto.id, { op: 'move', path: dragging.current.path, to: folder }, dragging.current.dir) === null;
-  const dropProps = (folder: string) => (editable ? {
-    onDragOver: (e: DragEvent) => {
-      if (!e.dataTransfer.types.includes('application/x-studio-path') || !canDrop(folder)) return;
-      e.preventDefault();
-      e.stopPropagation();
-      setDropTarget(folder);
-    },
-    onDragLeave: (e: DragEvent) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDropTarget(null); },
-    onDrop: (e: DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setDropTarget(null);
-      const path = e.dataTransfer.getData('application/x-studio-path');
-      if (path && parentOf(path) !== folder && !within(folder, path) && canDrop(folder)) run({ op: 'move', path, to: folder });
-    },
-  } : {});
+  // Drag and drop (DragRow.tsx): drag a row before or after another, or into a folder. Order is saved
+  // in meta.json (src/studio/order.ts). The Handbook has a fixed shape, so there a row can only move into a folder.
+  const movable = (node: FileNode) => editable && node.path !== 'meta.json' && !fixed(node) && !(isHandbook && isSkillFolder(proto.id, node.path, node.dir));
+  const canMoveTo = (source: { path: string; dir: boolean }, folder: string) => !isHandbook || opProblem(proto.id, { op: 'move', path: source.path, to: folder }, source.dir) === null;
+  // What dropping `source` on a row may do. A folder that's open has its contents below it, so "after" it is inside it.
+  const operationsFor = (target: FileNode, open: boolean) => (source: { path: string; dir: boolean }): Operations => {
+    const ordering = !isHandbook && !q;
+    return {
+      combine: target.dir && parentOf(source.path) !== target.path && canMoveTo(source, target.path) ? 'available' : 'not-available',
+      'reorder-before': ordering ? 'available' : 'not-available',
+      'reorder-after': ordering && !(target.dir && open) ? 'available' : 'not-available',
+    };
+  };
+  const siblingsOf = (path: string) => (parentOf(path) ? findNode(nodes, parentOf(path))?.children : nodes) ?? [];
+  // Puts `path` before `before` (a path in the same folder, or '' for last), in that folder or `to`.
+  function arrange(path: string, to: string, before: string) {
+    const sibs = to === parentOf(path) ? siblingsOf(path).map((n) => n.path) : null;
+    if (sibs && place(sibs, path, before).every((p, i) => p === sibs[i])) return;
+    run({ op: 'reorder', path, to, before });
+  }
+  function drop(path: string, target: string | null, operation: Dropped) {
+    if (target === null) { // the empty space below the tree: the top level, last
+      if (isHandbook) run({ op: 'move', path, to: '' }); else arrange(path, '', '');
+      return;
+    }
+    if (operation === 'combine') { run({ op: 'move', path, to: target }); return; }
+    const parent = parentOf(target);
+    const others = (parent ? findNode(nodes, parent)?.children ?? [] : nodes).map((n) => n.path).filter((p) => p !== path);
+    arrange(path, parent, operation === 'reorder-before' ? target : others[others.indexOf(target) + 1] ?? '');
+  }
+  const dropRef = useRef(drop);
+  dropRef.current = drop;
+  useEffect(() => {
+    const list = listRef.current;
+    if (!editable || !list) return;
+    const dragged = (source: { data: Record<string, unknown> }) => source.data.kind === DRAG_KIND;
+    const stops = [
+      dropTargetForElements({
+        element: list,
+        canDrop: ({ source }) => dragged(source) && canMoveTo({ path: String(source.data.path), dir: Boolean(source.data.dir) }, ''),
+        onDrag: ({ location }) => setOverTop(location.current.dropTargets[0]?.element === list),
+        onDragLeave: () => setOverTop(false),
+        onDrop: () => setOverTop(false),
+      }),
+      monitorForElements({
+        canMonitor: ({ source }) => dragged(source),
+        onDrop: ({ source, location }) => {
+          const target = location.current.dropTargets[0];
+          if (!target) return;
+          const path = String(source.data.path);
+          if (target.element === list) { dropRef.current(path, null, 'combine'); return; }
+          const instruction = extractInstruction(target.data);
+          if (instruction && !instruction.blocked) dropRef.current(path, String(target.data.path), instruction.operation);
+        },
+      }),
+    ];
+    return () => stops.forEach((stop) => stop());
+  }, [editable, isHandbook]);
+
+  // Move up, down, or to the top: the same as dragging, for the menu and the keyboard.
+  const moves = (node: FileNode) => {
+    const sibs = siblingsOf(node.path);
+    const at = sibs.findIndex((n) => n.path === node.path);
+    const can = editable && !isHandbook && !q && node.path !== 'meta.json' && at >= 0;
+    return {
+      top: can && at > 1 ? () => arrange(node.path, parentOf(node.path), sibs[0].path) : null,
+      up: can && at > 0 ? () => arrange(node.path, parentOf(node.path), sibs[at - 1].path) : null,
+      down: can && at < sibs.length - 1 ? () => arrange(node.path, parentOf(node.path), sibs[at + 2]?.path ?? '') : null,
+    };
+  };
 
   // F2 renames, Delete (or ⌘⌫) moves to the Trash, on the focused row.
   const keyProps = (node: FileNode) => (editable && node.path !== 'meta.json' && !fixed(node) ? {
     onKeyDown: (e: React.KeyboardEvent) => {
       if (e.key === 'F2') { e.preventDefault(); setEditing({ kind: 'rename', path: node.path }); }
       if (e.key === 'Delete' || (e.key === 'Backspace' && e.metaKey)) { e.preventDefault(); setConfirmDelete(node); }
+      if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+        const move = e.key === 'ArrowUp' ? moves(node).up : moves(node).down;
+        if (move) { e.preventDefault(); move(); }
+      }
     },
   } : {});
 
@@ -343,6 +395,11 @@ export default function FileTree({ proto, current }: FileTreeProps) {
                   : <ContextMenuItem key="lofi" onClick={() => setTimeout(() => setLofi(items.get(node.path)!, true))}><HugeiconsIcon icon={Pen01Icon} /> Make lofi</ContextMenuItem>
               ),
               changeable && <ContextMenuItem key="rename" onClick={() => setTimeout(() => setEditing({ kind: 'rename', path: node.path }))}><HugeiconsIcon icon={PencilEdit02Icon} /> Rename</ContextMenuItem>,
+              ...(() => { const m = moves(node); return [
+                m.top && <ContextMenuItem key="top" onClick={() => setTimeout(m.top!)}><HugeiconsIcon icon={ArrowUpDoubleIcon} /> Move to top</ContextMenuItem>,
+                m.up && <ContextMenuItem key="up" onClick={() => setTimeout(m.up!)}><HugeiconsIcon icon={ArrowUp01Icon} /> Move up</ContextMenuItem>,
+                m.down && <ContextMenuItem key="down" onClick={() => setTimeout(m.down!)}><HugeiconsIcon icon={ArrowDown01Icon} /> Move down</ContextMenuItem>,
+              ]; })(),
             ],
             [changeable && <ContextMenuItem key="delete" variant="destructive" onClick={() => setTimeout(() => setConfirmDelete(node))}><HugeiconsIcon icon={Delete02Icon} /> Delete</ContextMenuItem>],
           ]).map((group, i) => (
@@ -396,14 +453,16 @@ export default function FileTree({ proto, current }: FileTreeProps) {
         const open = isOpen(node.path);
         return (
           <Collapsible key={node.path} open={open} onOpenChange={(o) => setOpen(node.path, o)} className="mt-1.5 first:mt-0">
-            <div {...dropProps(node.path)} className={cn('flex flex-col gap-0.5 rounded-md', dropTarget === node.path && 'bg-sidebar-foreground/10')}>
-              {rowMenu(node.path, node, (
-                <CollapsibleTrigger {...dragProps(node)} {...keyProps(node)} style={indent(depth)}
-                  className={cn(row, 'text-left font-medium text-sidebar-foreground hover:bg-sidebar-foreground/5')}>
-                  <HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !open && '-rotate-90')} />
-                  <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{itemLabel(node.name)}</span>
-                </CollapsibleTrigger>
-              ))}
+            <div className="flex flex-col gap-0.5 rounded-md">
+              <DragRow path={node.path} dir canDrag={movable(node)} operationsFor={operationsFor(node, open)}>
+                {rowMenu(node.path, node, (
+                  <CollapsibleTrigger draggable={false} {...keyProps(node)} style={indent(depth)}
+                    className={cn(row, 'text-left font-medium text-sidebar-foreground hover:bg-sidebar-foreground/5')}>
+                    <HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !open && '-rotate-90')} />
+                    <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{itemLabel(node.name)}</span>
+                  </CollapsibleTrigger>
+                ))}
+              </DragRow>
               <CollapsibleContent className="flex flex-col gap-0.5">
                 {createField(node.path, depth + 1)}
                 {rows(node.children ?? [], depth + 1)}
@@ -423,11 +482,12 @@ export default function FileTree({ proto, current }: FileTreeProps) {
       if (item) {
         const active = item === current;
         return (
-          rowMenu(node.path, node, (
+          <DragRow key={node.path} path={node.path} dir={false} canDrag={movable(node)} operationsFor={operationsFor(node, false)}>
+          {rowMenu(node.path, node, (
             <Link
               {...itemLink(proto, item)}
               search={(prev: { mode?: 'source' }) => ({ mode: prev.mode })} // stay in Source view while moving between items
-              {...dragProps(node)}
+              draggable={false} // the row is what drags (DragRow.tsx), not the link
               {...keyProps(node)}
               aria-current={active ? 'page' : undefined}
               style={indent(depth)}
@@ -441,19 +501,22 @@ export default function FileTree({ proto, current }: FileTreeProps) {
                 </span>
               )}
             </Link>
-          ))
+          ))}
+          </DragRow>
         );
       }
       // Everything else (meta.json, components/, images) opens in your editor.
       return (
-        rowMenu(node.path, node, (
-          <button type="button" title="Open in editor" onClick={() => openInEditor(proto, node.path)}
-            {...dragProps(node)} {...keyProps(node)} style={indent(depth)}
-            className={cn(row, 'text-left text-muted-foreground hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground')}>
-            <HugeiconsIcon icon={File01Icon} size={14} className="shrink-0 opacity-70" />
-            {label}
-          </button>
-        ))
+        <DragRow key={node.path} path={node.path} dir={false} canDrag={movable(node)} operationsFor={operationsFor(node, false)}>
+          {rowMenu(node.path, node, (
+            <button type="button" title="Open in editor" onClick={() => openInEditor(proto, node.path)}
+              draggable={false} {...keyProps(node)} style={indent(depth)}
+              className={cn(row, 'text-left text-muted-foreground hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground')}>
+              <HugeiconsIcon icon={File01Icon} size={14} className="shrink-0 opacity-70" />
+              {label}
+            </button>
+          ))}
+        </DragRow>
       );
     });
   }
@@ -528,8 +591,8 @@ export default function FileTree({ proto, current }: FileTreeProps) {
           )}
         </div>
       )}
-      {/* The whole list is the drop target for the top level. */}
-      <div {...dropProps('')} className={cn('flex min-h-0 flex-1 flex-col gap-0.5 rounded-md', dropTarget === '' && 'bg-sidebar-foreground/5')}>
+      {/* The whole list is the drop target for the top level (the end of it). */}
+      <div ref={listRef} className={cn('flex min-h-0 flex-1 flex-col gap-0.5 rounded-md', overTop && 'bg-sidebar-foreground/5')}>
         {q && shown.length === 0 && <p className="px-2.5 py-1 text-[12px] text-muted-foreground">No matching {noun}.</p>}
         {createField('', 0)}
         {rows(shown, 0)}

@@ -12,6 +12,7 @@
 //        rename   { path, name }
 //        move     { path, to: folder }           "" is the prototype's top level
 //        delete   { path }                        to the Trash (or .trash/ at the repo root)
+//        reorder  { path, to?, before? }         put a file or folder before another in its folder ("before" empty: last), moving it to folder "to" first if given; saved in meta.json "order"
 //        meta     { title?, description?, start?, status? }  edit meta.json (start "" opens the first item; status is "active" or "archived")
 //        create-skill { name, description }       Handbook skills only: skills/<name>/SKILL.md, in the Agent Skills format
 //      (In the Handbook, anyone can change files, but only in its fixed shape: src/studio/handbookRules.ts.)
@@ -41,6 +42,7 @@ import { resolveContributor } from './resolve-contributor.js';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { HELPER_FOLDER } from '../src/studio/fileTypes/index.ts';
 import { STATUSES, parseStatus } from '../src/studio/archive.ts';
+import { afterChange, byOrder, parentOf, parseOrder, place, withFolderOrder } from '../src/studio/order.ts';
 import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../src/studio/roots.ts';
 import { SYSTEM_SOURCES } from '../src/studio/systemSources.ts';
 import { scaffold } from './scaffold-component-docs.js';
@@ -85,15 +87,17 @@ export function resolveInside(dir, rel) {
   } catch { return null; }
 }
 
-// Files and folders, files first, then folders, each alphabetical. Hidden files are skipped.
-function readTree(dir, base = '') {
+// A prototype's meta.json "order" (src/studio/order.ts), or none. The Handbook and system folders have no meta.json.
+function readOrder(dir) {
+  try { return parseOrder(JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')).order) ?? []; } catch { return []; }
+}
+
+// Files and folders in the prototype's order: files first, then folders, each alphabetical, unless
+// meta.json says otherwise. Hidden files are skipped.
+function readTree(dir, base = '', order = readOrder(dir)) {
   const entries = fs.readdirSync(dir, { withFileTypes: true }).filter((e) => !e.name.startsWith('.'));
-  const byName = (a, b) => a.name.localeCompare(b.name);
-  const files = entries.filter((e) => e.isFile()).sort(byName)
-    .map((e) => ({ name: e.name, path: base + e.name, dir: false }));
-  const dirs = entries.filter((e) => e.isDirectory()).sort(byName)
-    .map((e) => ({ name: e.name, path: base + e.name, dir: true, children: readTree(path.join(dir, e.name), `${base}${e.name}/`) }));
-  return [...files, ...dirs];
+  return byOrder(entries.filter((e) => e.isFile() || e.isDirectory()).map((e) => ({ name: e.name, path: base + e.name, dir: e.isDirectory() })), order)
+    .map((e) => (e.dir ? { ...e, children: readTree(path.join(dir, e.name), `${e.path}/`, order) } : e));
 }
 
 // Only the app's own page may call these: browsers mark same-origin requests.
@@ -196,6 +200,20 @@ function fixStart(dir, fromRel, toRel) {
   fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
 }
 
+// Keeps meta.json "order" in step when a file or folder is renamed (toRel is its new path), or moves
+// or is deleted (toRel is null: a moved file lands after the arranged ones in its new folder).
+function fixOrder(dir, fromRel, toRel) {
+  const metaFile = path.join(dir, 'meta.json');
+  let meta;
+  try { meta = JSON.parse(fs.readFileSync(metaFile, 'utf8')); } catch { return; }
+  const order = parseOrder(meta.order);
+  if (!order) return;
+  const next = afterChange(order, fromRel, toRel);
+  if (next.length === order.length && next.every((p, i) => p === order[i])) return;
+  if (next.length) meta.order = next; else delete meta.order;
+  fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
+}
+
 // Sets `name:` in a SKILL.md's frontmatter (adding it if it's missing), leaving the rest as it is.
 function renameSkillInFile(file, name) {
   if (!fs.existsSync(file)) return;
@@ -210,7 +228,7 @@ function renameSkillInFile(file, name) {
 
 // One file operation. Returns { path } (the new path, for create, rename, and move) or throws a message.
 // `section` is the Handbook section the folder is (docs, rules, skills), or null for a prototype.
-function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, description, start, status }, section = null) {
+function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, title, description, start, status }, section = null) {
   const inside = (r) => resolveInside(dir, r);
   const relOf = (abs) => path.relative(fs.realpathSync(dir), abs).split(path.sep).join('/');
   // The Handbook has a fixed shape: check the change against it first (src/studio/handbookRules.ts).
@@ -267,6 +285,25 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, descripti
     fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
     return {};
   }
+  if (op === 'reorder') {
+    // Arranging is for prototypes: the Handbook has a fixed shape (src/studio/handbookRules.ts).
+    if (section) throw new Error('The Handbook keeps its own order.');
+    const from = inside(rel);
+    if (!from || from === fs.realpathSync(dir) || rel === 'meta.json') throw new Error('That file no longer exists. It may have been moved or deleted.');
+    let current = rel;
+    if (typeof to === 'string' && to !== parentOf(rel)) current = runOp(dir, { op: 'move', path: rel, to }).path;
+    const folder = parentOf(current);
+    const where = inside(folder);
+    if (!where || !fs.statSync(where).isDirectory()) throw new Error('That folder no longer exists. It may have been moved or deleted.');
+    const siblings = readTree(where, folder ? `${folder}/` : '', readOrder(dir)).map((n) => n.path);
+    if (!siblings.includes(current)) throw new Error('That file no longer exists. It may have been moved or deleted.');
+    if (before && !siblings.includes(before)) throw new Error('That place no longer exists. It may have been moved or deleted.');
+    const metaFile = path.join(dir, 'meta.json');
+    const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
+    meta.order = withFolderOrder(parseOrder(meta.order) ?? [], folder, place(siblings, current, before ?? ''));
+    fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
+    return { path: current };
+  }
   const source = inside(rel);
   if (!source || source === fs.realpathSync(dir)) throw new Error('That file no longer exists. It may have been moved or deleted.');
   if (rel === 'meta.json') throw new Error('meta.json holds the prototype\'s info, so it stays put. To change the title or description, choose Edit info.');
@@ -288,11 +325,13 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, title, descripti
     // A skill's name is its folder's name: keep the two together.
     if (section === 'skills' && op === 'rename' && !rel.includes('/')) renameSkillInFile(path.join(target, SKILL_FILE), path.basename(target));
     fixStart(dir, rel, next);
+    fixOrder(dir, rel, op === 'rename' ? next : null);
     return { path: next };
   }
   if (op === 'delete') {
     const where = trash(source);
     fixStart(dir, rel, null);
+    fixOrder(dir, rel, null);
     return { trashedTo: where };
   }
   throw new Error(`Unknown operation: ${op}`);
