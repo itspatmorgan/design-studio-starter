@@ -5,6 +5,8 @@
 // link points at nothing). This file knows nothing about any file type: it asks the registry.
 import { memo } from 'react';
 import { Link } from '@tanstack/react-router';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { SquareArrowExpand01Icon } from '@hugeicons/core-free-icons';
 import { CaptureUpdateAction, newElementWith } from '@excalidraw/excalidraw';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { AppState, ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
@@ -111,9 +113,20 @@ function CanvasItemInner({ element, manifest, current, offscreen, overview, moun
   const hidden = offscreen || overview;
   return (
     <div data-canvas-frame="" className="relative flex h-full w-full flex-col overflow-hidden border border-border bg-background">
-      <Link {...itemLink(proto, item)} data-open className="flex shrink-0 items-center gap-2 border-b border-border bg-card px-3 text-xs font-medium text-foreground hover:bg-muted" style={{ height: HEADER_HEIGHT }}>
-        <span className="truncate">{itemLabel(item.path)}</span>
-        {(proto.id !== current.id || proto.contributorKey !== current.contributorKey) && <span className="ml-auto shrink-0 truncate text-muted-foreground">{proto.title}</span>}
+      {/* The whole title bar is the link that opens the item: gray so it reads as a control, an icon that
+          turns teal on hover, and the word "Open" that appears with it. */}
+      <Link
+        {...itemLink(proto, item)}
+        data-open
+        aria-label={`Open ${itemLabel(item.path)}`}
+        className="group/open flex shrink-0 items-center justify-between gap-2 border-b border-border bg-muted/60 px-3 text-xs text-foreground no-underline transition-colors hover:bg-muted hover:no-underline"
+        style={{ height: HEADER_HEIGHT }}
+      >
+        <span className="truncate font-semibold">{itemLabel(item.path)}</span>
+        <span className="inline-flex shrink-0 items-center gap-1.5 font-medium">
+          <span className="opacity-0 transition-opacity group-hover/open:text-primary group-hover/open:opacity-100">Open</span>
+          <HugeiconsIcon icon={SquareArrowExpand01Icon} size={16} className="text-muted-foreground transition-colors group-hover/open:text-primary" />
+        </span>
       </Link>
       {/* Hidden means mounted but skipped for layout and paint (far off screen, or too small to
           read), so the live preview never reloads or jumps. */}
