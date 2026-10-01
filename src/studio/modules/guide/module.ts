@@ -1,4 +1,4 @@
-import type { ModuleSpec } from '../index.ts';
+import type { ModuleSpec } from '../../core/modules/index.ts';
 
 // The Guide: how to use Design Studio itself (/guide), pages in src/studio/modules/guide/pages/.
 export default {

@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import CONFIG from '../../studio.config.ts';
 import { isEnabled } from '../../src/studio/core/config.ts';
-import { compatible, itemFolders, moduleProblems, sectionKeys } from '../../src/studio/modules/index.ts';
+import { compatible, itemFolders, moduleProblems, sectionKeys } from '../../src/studio/core/modules/index.ts';
 import { setSections } from '../../src/studio/core/roots.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');

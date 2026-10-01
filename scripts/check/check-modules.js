@@ -1,4 +1,4 @@
-// Checks the modules in src/studio/modules/ (src/studio/modules/index.ts):
+// Checks the modules in src/studio/modules/ (src/studio/core/modules/index.ts):
 //   - each module.ts is well formed, and its id is its folder's name
 //   - no two modules claim the same section key or folder
 //   - a module's section folder exists
@@ -13,7 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pathToFileURL } from 'node:url';
-import { PLATFORM_VERSION, compatible, listProblems } from '../../src/studio/modules/index.ts';
+import { PLATFORM_VERSION, compatible, listProblems } from '../../src/studio/core/modules/index.ts';
 import { configProblems } from '../../src/studio/core/config.ts';
 import { CONFIG, MODULES, SECTION_KEYS, declarationProblems } from '../lib/modules.js';
 import { PROTOTYPE_SYSTEMS, SYSTEM_IDS, systemDeclarationProblems } from '../../src/studio/modules/systems/node/systems.js';

@@ -106,7 +106,7 @@ test('the AGENTS.md lines come from the modules that are on, and replace themsel
 });
 
 test('a declaration is read as plain data, comments and types ignored', () => {
-  const r = readDeclaration(`import type { ModuleSpec } from '../index.ts';
+  const r = readDeclaration(`import type { ModuleSpec } from '../../core/modules/index.ts';
 
 // A module.
 export default {

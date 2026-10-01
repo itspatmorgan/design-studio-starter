@@ -18,6 +18,7 @@ The design rules behind it:
 ```
 src/studio/
   core/          the rules every module may rely on: the config, permissions, where files live, archive, order, and the types in api.ts
+    modules/     the machinery that reads the folders below: the contract (index.ts), globs.ts, and pack.ts (what pnpm studio add runs)
   app/           the app's own shell: router, rail, ⌘K palette, and the prototype pages
   components/    the studio's own UI kit (not what prototypes use: that is a design system)
   fileTypes/     what a prototype can hold: view, document, canvas, text
@@ -28,7 +29,7 @@ src/systems/ prototypes/ tools/ handbook/ lib/      your content, not the platfo
 scripts/         build/ (build and dev server)   check/ (pnpm check)   cli/ (commands people and agents run)   lib/ (shared by those)
 ```
 
-`index.ts`, `globs.ts` and `pack.ts` here are the machinery that reads these folders, not modules. A module that can be turned off
+Apart from this file, modules/ holds only modules. A module that can be turned off
 (`optional`) is fully contained: only its `module.ts` is read from outside. A required module (Handbook, Systems) is part of the platform,
 so the platform may import it, but all its code still lives in its one folder.
 
@@ -46,7 +47,7 @@ so the platform may import it, but all its code still lives in its one folder.
 
 A design system is its own kind of folder, `src/systems/<id>/`, with `system.ts`, `components/` and `styles/theme.css`; see `src/handbook/rules/systems.md`.
 
-The contract is **0.x** (`PLATFORM_VERSION` in `index.ts`), so it can still change. A module says the oldest version it works with in `requires`; one that needs a
+The contract is **0.x** (`PLATFORM_VERSION` in `core/modules/index.ts`), so it can still change. A module says the oldest version it works with in `requires`; one that needs a
 newer platform is turned off, and `pnpm check` says why. The types a module is written against are listed in `src/studio/core/api.ts`.
 
 ## Using them

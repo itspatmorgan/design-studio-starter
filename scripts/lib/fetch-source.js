@@ -1,4 +1,4 @@
-// Gets a source (src/studio/modules/pack.ts parseSource) into a folder to read, and nothing else: nothing in it is
+// Gets a source (src/studio/core/modules/pack.ts parseSource) into a folder to read, and nothing else: nothing in it is
 // run. A git address is cloned shallow over https or ssh only, a tarball is downloaded over https and unpacked, and a
 // folder is used where it is. Every file is checked afterward: no links, no paths that climb out, and limits on how many
 // and how large. Returns { dir, origin, cleanup }.
@@ -6,7 +6,7 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { MAX_FILES, MAX_FILE_BYTES, MAX_TOTAL_BYTES, plainPath } from '../../src/studio/modules/pack.ts';
+import { MAX_FILES, MAX_FILE_BYTES, MAX_TOTAL_BYTES, plainPath } from '../../src/studio/core/modules/pack.ts';
 
 const MAX_DOWNLOAD = 50 * 1024 * 1024;
 const GIT_ENV = { ...process.env, GIT_TERMINAL_PROMPT: '0', GIT_ALLOW_PROTOCOL: 'https:ssh', GIT_CONFIG_NOSYSTEM: '1' };

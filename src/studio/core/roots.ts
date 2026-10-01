@@ -15,7 +15,7 @@ export const SYSTEMS_KEY = 'systems';
 
 // A module can hold prototype-shaped folders of its own, one per id (a tool is src/tools/<id>/): its section
 // key stands where a contributor's would, so a tool opens at /tools/<id>. The app and the build register the
-// keys from the module list at startup (src/studio/modules/index.ts), and rootOf reads them.
+// keys from the module list at startup (src/studio/core/modules/index.ts), and rootOf reads them.
 let sectionKeys: ReadonlySet<string> = new Set();
 export const setSections = (keys: Iterable<string>) => { sectionKeys = new Set(keys); };
 

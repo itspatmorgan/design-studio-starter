@@ -185,7 +185,7 @@ export async function deletePrototype(p: PrototypeInfo) {
   return body as { trashedTo: string; manifest: Manifest };
 }
 
-// Calls a route a module adds to the dev server (its server.ts, src/studio/modules/index.ts): POST /__studio/<module>/<route>.
+// Calls a route a module adds to the dev server (its server.ts, src/studio/core/modules/index.ts): POST /__studio/<module>/<route>.
 // Resolves with the server's reply, or throws its message.
 export async function callModule<T>(module: string, route: string, body: object): Promise<T> {
   const res = await fetch(`/__studio/${module}/${route}`, {

@@ -5,10 +5,10 @@
 //   open         whoever runs the app, because the files are the platform's and a pull request reviews
 //                the change (the Handbook, the systems' components)
 //   none         nobody, from the app (the Guide)
-// A module's section declares its policy (src/studio/modules/index.ts); a contributor's key matches no
+// A module's section declares its policy (src/studio/core/modules/index.ts); a contributor's key matches no
 // module, so it is "owner". The server still checks every request: the app only hides what you can't do.
 // Has only type imports, so Node scripts and the app can both load it.
-import type { ModuleSpec } from '../modules/index.ts';
+import type { ModuleSpec } from './modules/index.ts';
 
 export type Policy = 'owner' | 'maintainers' | 'open' | 'none';
 

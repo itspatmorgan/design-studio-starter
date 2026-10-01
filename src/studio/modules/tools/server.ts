@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildManifest } from '../../../../scripts/build/build-manifest.js';
 import { parseMaintainers } from '../../core/permissions.ts';
-import type { ModuleServer } from '../index.ts';
+import type { ModuleServer } from '../../core/modules/index.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 const KEY = 'tools';

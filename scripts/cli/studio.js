@@ -19,10 +19,10 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { compatible, listProblems, moduleProblems, PLATFORM_VERSION } from '../../src/studio/modules/index.ts';
+import { compatible, listProblems, moduleProblems, PLATFORM_VERSION } from '../../src/studio/core/modules/index.ts';
 import {
   agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, readDeclaration, setDefaultSystem,
-} from '../../src/studio/modules/pack.ts';
+} from '../../src/studio/core/modules/pack.ts';
 import { systemProblems } from '../../src/studio/modules/systems/spec.ts';
 import { MODULES, ENABLED_MODULES, CONFIG } from '../lib/modules.js';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from '../../src/studio/modules/systems/node/systems.js';

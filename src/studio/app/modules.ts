@@ -5,7 +5,7 @@
 import type { ComponentType } from 'react';
 import type { IconSvgElement } from '@hugeicons/react';
 import type { AnyRoute, NavigateOptions } from '@tanstack/react-router';
-import { compatible, type ModuleSpec } from '@/studio/modules';
+import { compatible, type ModuleSpec } from '@/studio/core/modules';
 import type { Item, Manifest, Prototype, PrototypeInfo } from '@/studio/app/data/types';
 import { MODULES } from '@/studio/app/data/modules';
 import { isEnabled } from '@/studio/app/data/config';

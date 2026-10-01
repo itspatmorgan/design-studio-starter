@@ -1,4 +1,4 @@
-import type { ModuleSpec } from '../index.ts';
+import type { ModuleSpec } from '../../core/modules/index.ts';
 
 // Systems: the design systems prototypes are built with (/systems), in src/systems/.
 export default {

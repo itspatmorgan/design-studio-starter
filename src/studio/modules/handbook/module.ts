@@ -1,4 +1,4 @@
-import type { ModuleSpec } from '../index.ts';
+import type { ModuleSpec } from '../../core/modules/index.ts';
 
 // The Handbook: what people and agents should know and follow (/handbook), in src/handbook/.
 export default {

@@ -3,7 +3,7 @@
 // to any loader. Vite needs globs written out literally, so scripts/build/vite-globs-plugin.js puts the
 // result in place of studioGlobs() when it reads a loader. Patterns are relative to src/.
 // Has no imports but types, so Node scripts and tests can load it.
-import type { FileTypeSpec } from '../fileTypes/index.ts';
+import type { FileTypeSpec } from '../../fileTypes/index.ts';
 import { itemFolders, type ModuleSpec } from './index.ts';
 
 // Prototypes live in src/prototypes/<contributor>/<id>/, which is part of the platform and not a module.
