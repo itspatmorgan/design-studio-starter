@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { stringifyScene } from './slim.ts';
+import { lineWidth, wrapText } from './elements.ts';
 import { run, ToolError, type Ctx, type El } from './tools.ts';
 
 const items: Record<string, { title: string; type: string; typeLabel: string; preview: boolean }> = {
@@ -188,4 +189,68 @@ test('moving an item to another prototype is refused, and items lists only this 
   const { refs } = s.call('create', { elements: [{ type: 'item', item: 'main', ref: 'main' }] });
   assert.throws(() => s.call('update', { id: refs.main, item: '/pat/other/main' }), /another prototype/);
   assert.deepEqual(s.call('items', {}).items.map((i: { item: string }) => i.item), ['main', 'notes']);
+});
+
+const LONG = 'A long note. This one has a lot more to say, because the agent was asked to explain a whole flow in a single sticky note, with reasons, edge cases, and a question at the end that nobody has answered yet. Does it fit?';
+
+test('a note stays square when its text fits, and grows taller when it does not', () => {
+  const s = session();
+  s.call('create', { elements: [{ type: 'note', text: 'Short' }, { type: 'note', text: LONG }] });
+  const [short, long] = s.live().filter((el) => el.type === 'rectangle');
+  assert.equal(short.height, 200);
+  assert.ok(long.height > 200, `a long note is taller (${long.height})`);
+  // Its text fits inside it, with the note's padding.
+  const label = s.live().find((el) => el.type === 'text' && el.containerId === long.id)!;
+  assert.ok(label.y + label.height <= long.y + long.height, 'the text ends inside the note');
+});
+
+test('a note says so when it had to be taller than the height asked for', () => {
+  const s = session();
+  const out = s.call('create', { elements: [{ type: 'note', text: LONG, height: 120 }] });
+  assert.match(out.warnings.join(' '), /made \d+ tall, not 120/);
+  assert.ok(s.live().find((el) => el.type === 'rectangle')!.height > 120);
+});
+
+test('wrapped text never runs wider than the box it wraps to', () => {
+  for (const width of [120, 180, 300]) {
+    for (const line of wrapText(`${LONG} Supercalifragilisticexpialidocious_and_more_words_without_spaces`, width, 20).split('\n')) {
+      assert.ok(lineWidth(line, 20) <= width, `"${line}" fits ${width}`);
+    }
+  }
+});
+
+test('free text wraps when a line is long, or when it is given a width', () => {
+  const s = session();
+  s.call('create', { elements: [
+    { type: 'text', text: LONG },
+    { type: 'text', text: 'A paragraph that should wrap at three hundred wide and no wider than that.', width: 300 },
+    { type: 'text', text: 'Short one' },
+  ] });
+  const [long, narrow, short] = s.live();
+  assert.ok(long.text.includes('\n') && long.width <= 560 && long.originalText === LONG, 'a long line wraps at 560 and keeps the original');
+  assert.equal(narrow.width, 300);
+  assert.ok(narrow.text.split('\n').every((l: string) => lineWidth(l, 20) <= 300));
+  assert.ok(!short.text.includes('\n') && short.autoResize !== false, 'short text stays one line and sizes to itself');
+});
+
+test('a box grows to hold its label, and the label stays centered in it', () => {
+  const s = session();
+  const out = s.call('create', { elements: [{ type: 'rectangle', text: 'A labelled box with a long label that needs to wrap inside the shape and make the box taller', width: 240, height: 80 }] });
+  const box = s.live().find((el) => el.type === 'rectangle')!;
+  const label = s.live().find((el) => el.type === 'text')!;
+  assert.ok(box.height > 80 && label.y >= box.y && label.y + label.height <= box.y + box.height);
+  assert.match(out.warnings.join(" "), /made \d+ tall, not 80/);
+});
+
+test('changing a note\'s text makes it taller when it needs to be', () => {
+  const s = session();
+  const { refs } = s.call('create', { elements: [{ type: 'note', text: 'Short', ref: 'n' }] });
+  s.call('update', { id: refs.n, text: LONG });
+  assert.ok(s.live().find((el) => el.id === refs.n)!.height > 200);
+});
+
+test('a size that is not sensible is refused', () => {
+  const s = session();
+  assert.throws(() => s.call('create', { elements: [{ type: 'note', text: 'x', width: 5 }] }), /between 20 and 4000/);
+  assert.throws(() => s.call('create', { elements: [{ type: 'text', text: 'x', width: 99999 }] }), /between 20 and 4000/);
 });

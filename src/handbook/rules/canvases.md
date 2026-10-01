@@ -16,7 +16,7 @@ The same tools work two ways, with the same arguments. Run `help` for the full l
 | `context` | What the person has selected and is looking at. Start here: "this one" and "here" mean their selection and screen. (Live only.) |
 | `describe` | Read the canvas: every element, with kind, position, size, text, colors, how it's drawn (dashed, rounded, opacity), and items named by title. `scope: "selection"` or `"view"` narrows it. |
 | `items` | The views and documents you can put on the canvas, by name. |
-| `create` | Make things: `note`, `text`, `rectangle`, `ellipse`, `diamond`, `arrow`, `line`, `item`, `section`. Style with `color`, `stroke`, `background`, `strokeStyle`, `rounded`. Place with `x`/`y`, or `below`, `rightOf`, `section`; `align` ("start" or "center") lines it up with what it is beside. `ref` names a result for later elements in the call. The result carries `warnings` if something landed on something else. |
+| `create` | Make things: `note`, `text`, `rectangle`, `ellipse`, `diamond`, `arrow`, `line`, `item`, `section`. Style with `color`, `stroke`, `background`, `strokeStyle`, `rounded`. Place with `x`/`y`, or `below`, `rightOf`, `section`; `align` ("start" or "center") lines it up with what it is beside. `ref` names a result for later elements in the call. The result carries `warnings` if something landed on something else, or if a note or box had to be made taller than you asked to fit its text. |
 | `update` | Change any of that on something that's there: text, color, size, position, an arrow's ends. |
 | `move`, `delete` | Move (a section takes its contents; arrows follow) or remove (labels and attached arrows go too). |
 | `point` | Select and scroll to something, so the person sees which one you mean. (Live only.) |
@@ -24,7 +24,7 @@ The same tools work two ways, with the same arguments. Run `help` for the full l
 
 **With a browser** (the app is running and the canvas is open, visible in a tab): call them on `window.__studioCanvas`, for example `__studioCanvas.create({ elements: [...] })`. Each change appears as you make it, and each call is one undo step for the person.
 
-**Without one:** `pnpm -s canvas <file.excalidraw> <tool> '<json>'` (`-s` keeps pnpm's own output out of the result), for example `pnpm -s canvas src/prototypes/patrick/checkout/flow.excalidraw create '{"type":"note","text":"Retry keeps the draft"}'`. It reads and writes the file, and prints the result. If the person has the canvas open, they see the change as it's written. Text sizes are estimated until the canvas is opened.
+**Without one:** `pnpm -s canvas <file.excalidraw> <tool> '<json>'` (`-s` keeps pnpm's own output out of the result), for example `pnpm -s canvas src/prototypes/patrick/checkout/flow.excalidraw create '{"type":"note","text":"Retry keeps the draft"}'`. It reads and writes the file, and prints the result. If the person has the canvas open, they see the change as it's written. Text is wrapped for you with the canvas font's real character widths, so sizes are close, and the app measures exactly when the canvas opens.
 
 Ids come from `describe` or `create`. Make a new empty canvas by choosing + → New canvas in the app, or by writing `{ "type": "excalidraw", "version": 2, "studioVersion": 1, "elements": [], "appState": { "viewBackgroundColor": "#ffffff" }, "files": {} }` to a `.excalidraw` file.
 
@@ -39,7 +39,7 @@ Ids come from `describe` or `create`. Make a new empty canvas by choosing + → 
 
 ## Sizes and layout
 
-A view is 480 × 338 (a 1440 × 900 screen at a third); a document card is 480 × 88; a note is 200 × 200. Space things 80 apart in a row, 24 under a view for its note, 120 between groups. `create` places things for you (below everything, or beside another element) when you don't give coordinates. Beside something (`rightOf`) it centers by default, so an arrow between a tall view and a short card runs straight; use `align: "start"` to line tops up instead. Notes under a view line up with its left edge; `align: "center"` centers them. Moving something doesn't move the notes beneath it: move them too, or put them together in a section.
+A view is 480 × 338 (a 1440 × 900 screen at a third); a document card is 480 × 88; a note is 200 × 200 and grows taller if its text needs it; long free text wraps at 560 wide, or at the `width` you give. Space things 80 apart in a row, 24 under a view for its note, 120 between groups. `create` places things for you (below everything, or beside another element) when you don't give coordinates. Beside something (`rightOf`) it centers by default, so an arrow between a tall view and a short card runs straight; use `align: "start"` to line tops up instead. Notes under a view line up with its left edge; `align: "center"` centers them. Moving something doesn't move the notes beneath it: move them too, or put them together in a section.
 
 ## Reading the file
 

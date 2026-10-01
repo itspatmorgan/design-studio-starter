@@ -11,7 +11,7 @@
 import { itemSlug } from '../index.ts';
 import {
   NOTE_COLORS, NOTE_SIZE, NOTE_TEXT_COLOR, ToolError, arrowEnds, boundsOf, bump, centerLabel, color, labelFor, make, measureText,
-  textElement, unionBounds, wrapText, type El,
+  labelRoom, textElement, textHeight, unionBounds, wrapText, type El,
 } from './elements.ts';
 
 export { ToolError, type El };
@@ -144,12 +144,12 @@ export const TOOLS: ToolDef[] = [
 const ELEMENT_TYPES: Record<string, { summary: string; args: Record<string, string>; example: unknown }> = {
   note: {
     summary: 'A sticky note: a square you write on. Use it for annotations, questions, and what to look at.',
-    args: { text: 'what it says', color: 'yellow (default), pink, blue, or green', width: 'default 200', height: 'default 200' },
+    args: { text: 'what it says. It wraps to the note, and the note gets taller if the text needs it', color: 'yellow (default), pink, blue, or green', width: 'default 200', height: 'default 200 (taller if the text needs it)' },
     example: { type: 'note', text: 'Retry keeps the draft', color: 'pink', below: '@main' },
   },
   text: {
     summary: 'Plain text with no box: a heading or a label.',
-    args: { text: 'what it says (\\n for a new line)', fontSize: 'default 20; 28 for a heading', ...STYLE_ARGS },
+    args: { text: 'what it says (\\n for a new line). A line longer than 560 wraps to that width', width: 'wrap to this width (20 to 4000), for a paragraph', fontSize: 'default 20; 28 for a heading', ...STYLE_ARGS },
     example: { type: 'text', text: 'Onboarding flow', fontSize: 28, x: 0, y: -80 },
   },
   rectangle: {
@@ -221,6 +221,16 @@ function num(value: unknown, field: string): number | undefined {
   if (typeof value !== 'number' || !Number.isFinite(value)) throw new ToolError(`${field} must be a number`);
   return value;
 }
+
+// A width or height someone asked for: a number, kept to a size a canvas can hold.
+function size(value: unknown, field: string): number | undefined {
+  const n = num(value, field);
+  if (n !== undefined && (n < 20 || n > 4000)) throw new ToolError(`${field} must be between 20 and 4000`);
+  return n;
+}
+
+// Free text wraps to this width when a line is longer, so a paragraph reads as one. Give `width` for another.
+const TEXT_WRAP_WIDTH = 560;
 
 function str(value: unknown, field: string): string {
   if (typeof value !== 'string') throw new ToolError(`${field} must be text`);
@@ -331,6 +341,7 @@ function create(input: El[], args: any, ctx: Ctx): Run {
     return all ? { x: x ?? all.x, y: y ?? all.y + all.height + SECTION_GAP } : { x: x ?? 0, y: y ?? 0 };
   };
   const grow = new Set<string>(); // sections that things were put into, to be made big enough
+  const notices: string[] = []; // things made bigger than asked, so the caller knows
   const frameOf = (spec: El) => { if (spec.section === undefined) return null; const id = find(spec.section, 'section').id; grow.add(id); return id; };
 
   for (const [i, spec] of specs.entries()) {
@@ -343,8 +354,12 @@ function create(input: El[], args: any, ctx: Ctx): Run {
         case 'note': {
           const c = NOTE_COLORS[spec.color ?? 'yellow'];
           if (!c) throw new ToolError(`a note's color must be one of ${Object.keys(NOTE_COLORS).join(', ')}`);
-          const w = num(spec.width, 'width') ?? NOTE_SIZE;
-          const h = num(spec.height, 'height') ?? NOTE_SIZE;
+          const w = size(spec.width, 'width') ?? NOTE_SIZE;
+          const asked = size(spec.height, 'height');
+          // A note grows to hold its text: text that doesn't fit would spill out over what's below it.
+          const needed = Math.ceil((textHeight(str(spec.text ?? '', 'text'), w - 20, 20) + 20) / 20) * 20;
+          const h = Math.max(asked ?? NOTE_SIZE, needed);
+          if (asked !== undefined && needed > asked) notices.push(`a note was made ${h} tall, not ${asked}, to fit its text. Shorten the text or give it more width.`);
           const at = place(spec, w, h);
           const rect = make('rectangle', { ...at, width: w, height: h, backgroundColor: c.fill, fillStyle: 'solid', strokeColor: c.edge, strokeWidth: 1, roughness: 0, roundness: null });
           const label: El = { ...textElement({ text: str(spec.text ?? '', 'text'), x: at.x + 10, y: at.y + 10, containerId: rect.id, boxWidth: w - 20, stroke: NOTE_TEXT_COLOR }), verticalAlign: 'top' };
@@ -354,14 +369,28 @@ function create(input: El[], args: any, ctx: Ctx): Run {
         case 'text': {
           const fontSize = num(spec.fontSize, 'fontSize') ?? 20;
           const text = str(spec.text, 'text');
-          const size = measureText(text, fontSize);
-          const at = place(spec, size.width, size.height);
-          made = [textElement({ text, ...at, fontSize, stroke: spec.stroke !== undefined || spec.color !== undefined ? styleOf(spec, 'text').strokeColor : undefined })];
+          // Text keeps the lines it was given. A line longer than TEXT_WRAP_WIDTH, or any with a `width`, wraps.
+          const asked = size(spec.width, 'width');
+          const width = asked ?? (measureText(text, fontSize).width > TEXT_WRAP_WIDTH ? TEXT_WRAP_WIDTH : undefined);
+          const box = width ? { width, height: textHeight(text, width, fontSize) } : measureText(text, fontSize);
+          const at = place(spec, box.width, box.height);
+          made = [textElement({ text, ...at, fontSize, boxWidth: width, fixedWidth: width !== undefined, stroke: spec.stroke !== undefined || spec.color !== undefined ? styleOf(spec, 'text').strokeColor : undefined })];
           break;
         }
         case 'rectangle': case 'ellipse': case 'diamond': {
-          const w = num(spec.width, 'width') ?? 200;
-          const h = num(spec.height, 'height') ?? 120;
+          const w = size(spec.width, 'width') ?? 200;
+          const asked = size(spec.height, 'height');
+          let h = asked ?? 120;
+          // A rectangle grows to hold its label. (An ellipse or diamond has less room inside, and can't just
+          // grow taller, so it gets a notice instead.)
+          if (spec.text) {
+            const fontSize = num(spec.fontSize, 'fontSize') ?? 20;
+            const needed = textHeight(str(spec.text, 'text'), labelRoom(spec.type, w), fontSize) + 24;
+            if (needed > h) {
+              if (spec.type === 'rectangle') { if (asked !== undefined) notices.push(`a box was made ${Math.ceil(needed / 10) * 10} tall, not ${asked}, to fit its label.`); h = Math.ceil(needed / 10) * 10; }
+              else notices.push(`the label "${String(spec.text).slice(0, 24)}" may not fit inside its ${spec.type}. Make it bigger or the label shorter.`);
+            }
+          }
           const at = place(spec, w, h);
           const shape = make(spec.type, { ...at, width: w, height: h, ...styleOf(spec) });
           if (spec.text) {
@@ -458,7 +487,7 @@ function create(input: El[], args: any, ctx: Ctx): Run {
   const top = (el: El) => !['arrow', 'line', 'frame'].includes(el.type) && !(el.type === 'text' && el.containerId);
   const newOnes = created.map((id) => scene.find((e) => e.id === id)!).filter(top);
   const before = live(input).filter(top);
-  const warnings: string[] = [];
+  const warnings: string[] = [...notices];
   const name = (el: El) => `${el.id} (${kindOf(el)}${el.text ? ` "${String(el.text).slice(0, 24)}"` : ''})`;
   const meet = (a: El, b: El) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
   newOnes.forEach((a, i) => {
@@ -552,7 +581,7 @@ function update(input: El[], args: any, ctx: Ctx): Run {
     // Text: a text element's own, or the label of a note, shape or arrow.
     if (args.text !== undefined || args.fontSize !== undefined || args.width !== undefined || args.height !== undefined || args.x !== undefined || args.y !== undefined) {
       const value = args.text !== undefined ? str(args.text, 'text') : undefined;
-      if (el.type === 'text' && !el.containerId && value !== undefined) set(el.id, { text: value, originalText: value, ...measureText(value, el.fontSize) });
+      if (el.type === 'text' && !el.containerId && value !== undefined) set(el.id, { text: value, originalText: value, ...(el.autoResize === false ? { height: textHeight(value, el.width, el.fontSize) } : measureText(value, el.fontSize)) });
       else if (el.type !== 'text') {
         const label = labelOf(scene, el);
         if (label || value) {
@@ -560,8 +589,15 @@ function update(input: El[], args: any, ctx: Ctx): Run {
           const words = value ?? label!.originalText ?? label!.text;
           let next: El;
           if (el.type === 'arrow') next = placeArrowLabel(el, textElement({ text: words, x: 0, y: 0, fontSize, containerId: el.id, align: 'center' }));
-          else if (isNote(el)) next = { ...textElement({ text: words, x: el.x + 10, y: el.y + 10, fontSize, containerId: el.id, boxWidth: el.width - 20, stroke: NOTE_TEXT_COLOR }), verticalAlign: 'top' };
-          else next = labelFor(el, words, fontSize, label?.strokeColor);
+          else if (isNote(el)) {
+            next = { ...textElement({ text: words, x: el.x + 10, y: el.y + 10, fontSize, containerId: el.id, boxWidth: el.width - 20, stroke: NOTE_TEXT_COLOR }), verticalAlign: 'top' };
+            // The note grows to hold its text.
+            const needed = Math.ceil((next.height + 20) / 20) * 20;
+            if (needed > el.height) set(el.id, { height: needed });
+          } else {
+            next = labelFor(el, words, fontSize, label?.strokeColor);
+            if (el.type === 'rectangle' && next.height + 24 > el.height) { set(el.id, { height: Math.ceil((next.height + 24) / 10) * 10 }); next = centerLabel({ ...el, height: Math.ceil((next.height + 24) / 10) * 10 }, next); }
+          }
           if (label) set(label.id, { text: next.text, originalText: next.originalText, fontSize, width: next.width, height: next.height, x: next.x, y: next.y });
           else {
             const made: El = { ...next, ...(el.frameId ? { frameId: el.frameId } : {}) };

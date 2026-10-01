@@ -47,34 +47,50 @@ export const newId = () => `${Date.now().toString(36)}${random().toString(36)}`.
 export const FONT_FAMILY = 6; // Nunito, the canvas's own font
 export const LINE_HEIGHT = 1.25;
 
-// Text sizes are estimated here (there's no font to measure with). The app measures them properly
-// when the canvas opens, so an estimate only needs to be close.
-const CHAR_WIDTH = 0.56; // of the font size, for Nunito
+// Text sizes are worked out here (there's no font to measure with in a script), from the width of each
+// character in Nunito, the canvas's font. These are its widths for ASCII 32 to 126, in hundredths of the
+// font size, measured in the app; anything else counts as 0.6. A little extra is kept back (SAFETY), so
+// a guess errs wide: a line breaks a touch early, and a box comes out a touch roomy, never the other
+// way. The app measures properly when the canvas opens, but it doesn't re-wrap text that already has line breaks.
+const NUNITO = [26,23,41,60,60,93,70,23,33,33,45,60,23,43,23,29,60,60,60,60,60,60,60,60,60,60,23,23,60,60,60,45,95,73,68,68,75,59,55,73,76,26,33,63,55,86,74,77,64,77,67,62,61,73,69,110,66,60,59,32,29,32,60,50,36,53,59,47,59,53,34,59,57,24,24,51,30,86,57,56,59,59,37,48,36,57,52,84,53,52,47,36,27,36,60];
+const SAFETY = 1.04;
+const charEm = (ch: string) => { const c = ch.charCodeAt(0); return c >= 32 && c <= 126 ? NUNITO[c - 32] / 100 : 0.6; };
+export const lineWidth = (line: string, fontSize: number) => [...line].reduce((sum, ch) => sum + charEm(ch), 0) * fontSize * SAFETY;
 
 export function measureText(text: string, fontSize: number) {
   const lines = text.split('\n');
   return {
-    width: Math.max(...lines.map((line) => line.length)) * fontSize * CHAR_WIDTH,
+    width: Math.max(...lines.map((line) => lineWidth(line, fontSize))),
     height: lines.length * fontSize * LINE_HEIGHT,
   };
 }
 
 // Breaks text into lines that fit `maxWidth` (words are kept whole, unless one is longer than a line).
 export function wrapText(text: string, maxWidth: number, fontSize: number): string {
-  const perLine = Math.max(1, Math.floor(maxWidth / (fontSize * CHAR_WIDTH)));
+  const fits = (line: string) => lineWidth(line, fontSize) <= maxWidth;
   return text.split('\n').flatMap((paragraph) => {
     const lines: string[] = [];
     let line = '';
     for (const word of paragraph.split(/\s+/).filter(Boolean)) {
-      const piece = word.length > perLine ? word.match(new RegExp(`.{1,${perLine}}`, 'g')) ?? [word] : [word];
-      for (const part of piece) {
-        if (line && `${line} ${part}`.length > perLine) { lines.push(line); line = part; } else line = line ? `${line} ${part}` : part;
+      // A word longer than a line is broken wherever it runs out of room.
+      let rest = word;
+      while (!fits(rest) && rest.length > 1) {
+        let n = rest.length - 1;
+        while (n > 1 && !fits(rest.slice(0, n))) n--;
+        if (line) { lines.push(line); line = ''; }
+        lines.push(rest.slice(0, n));
+        rest = rest.slice(n);
       }
+      if (line && !fits(`${line} ${rest}`)) { lines.push(line); line = rest; } else line = line ? `${line} ${rest}` : rest;
     }
     lines.push(line);
     return lines;
   }).join('\n');
 }
+
+// How tall some text is once wrapped to `maxWidth`: lines times the line height.
+export const textHeight = (text: string, maxWidth: number, fontSize: number) =>
+  wrapText(text, maxWidth, fontSize).split('\n').length * fontSize * LINE_HEIGHT;
 
 // Every element starts from this: a unique id, its place and size, and a first version.
 export function make(type: string, props: El): El {
@@ -82,10 +98,16 @@ export function make(type: string, props: El): El {
 }
 
 // A free-standing piece of text, or a label bound to a container (`containerId`).
-export function textElement(props: { text: string; x: number; y: number; fontSize?: number; containerId?: string; align?: 'left' | 'center'; stroke?: string; boxWidth?: number }): El {
+//
+// `boxWidth` is the width it wraps to. The text is broken into lines here, with the real character widths
+// (above), and the unbroken text is kept as `originalText`, which the app re-wraps from when the text is
+// edited or the box is resized. `fixedWidth` makes free text keep its width and wrap to it, instead of growing
+// with its longest line.
+export function textElement(props: { text: string; x: number; y: number; fontSize?: number; containerId?: string; align?: 'left' | 'center'; stroke?: string; boxWidth?: number; fixedWidth?: boolean }): El {
   const fontSize = props.fontSize ?? 20;
   const text = props.boxWidth ? wrapText(props.text, props.boxWidth, fontSize) : props.text;
-  const size = measureText(text, fontSize);
+  const measured = measureText(text, fontSize);
+  const size = props.fixedWidth && props.boxWidth ? { width: props.boxWidth, height: measured.height } : measured;
   return make('text', {
     x: props.x,
     y: props.y,
@@ -97,15 +119,19 @@ export function textElement(props: { text: string; x: number; y: number; fontSiz
     lineHeight: LINE_HEIGHT,
     textAlign: props.align ?? 'left',
     verticalAlign: props.containerId ? 'middle' : 'top',
-    autoResize: true,
+    autoResize: !props.fixedWidth,
     ...(props.containerId ? { containerId: props.containerId } : {}),
     ...(props.stroke ? { strokeColor: props.stroke } : {}),
   });
 }
 
 // Where a container's label goes: centered in it, wrapped to its width.
+// Room for a label inside a container, by shape: a rectangle's whole width less padding, an ellipse's
+// inscribed box, a diamond's inner box. The same rules Excalidraw wraps by.
+export const labelRoom = (shape: string, width: number) => Math.max(40, (shape === 'ellipse' ? width * 0.7 : shape === 'diamond' ? width * 0.5 : width) - 24);
+
 export function labelFor(container: El, text: string, fontSize = 20, stroke?: string): El {
-  const inner = Math.max(40, container.width - 24);
+  const inner = labelRoom(container.type, container.width);
   const label = textElement({ text, x: 0, y: 0, fontSize, containerId: container.id, align: 'center', boxWidth: inner, stroke });
   return centerLabel(container, label);
 }
