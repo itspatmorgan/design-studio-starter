@@ -89,14 +89,14 @@ function coupling() {
     let out = '';
     try {
       out = execFileSync('git', ['grep', '-lEi', m.pattern, '--', 'src', 'scripts', 'vite.config.ts', 'package.json', 'tsconfig.app.json', 'tsconfig.node.json',
-        ':!*.md', ':!*.mdx', ':!*.excalidraw', ':!src/prototypes', ':!src/handbook', ':!*.test.ts', ...m.paths.map((p) => `:!${p}`)],
+        ':!*.md', ':!*.mdx', ':!*.excalidraw', ':!src/prototypes', ':!src/handbook', ':!*.test.ts', ':!src/studio/modules', ...m.paths.map((p) => `:!${p}`)],
       { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
     } catch (e) {
       if (e.status !== 1) throw e; // git grep exits 1 when nothing matches
     }
     rows.push({ module: id, files: out.split('\n').filter(Boolean).length });
   }
-  console.log('Source files outside a module that name it (fewer is better; 0 means removable):');
+  console.log('Source files outside a module that name it, not counting the module declarations (fewer is better; 0 means removable):');
   console.table(rows);
 }
 

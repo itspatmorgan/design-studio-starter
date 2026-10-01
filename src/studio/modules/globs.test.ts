@@ -10,26 +10,28 @@ import { globsFor } from './globs.ts';
 import type { ModuleSpec } from './index.ts';
 
 const types = FILE_TYPES;
+// A file type is removable, so a test about one is skipped when it isn't installed.
+const needs = (...ids: string[]) => ({ skip: ids.some((id) => !types[id]) && 'needs a file type that is not installed' });
 const modules = [guide, handbook, systems, tools];
 
 // These are the lists the loaders were written with by hand, before they were worked out from the modules.
 const sorted = (list: string[]) => [...list].sort();
 
-test('views are listed in prototypes and tools, skipping helpers', () => {
+test('views are listed in prototypes and tools, skipping helpers', needs('view'), () => {
   assert.deepEqual(sorted(globsFor('view', types, modules)), sorted([
     '/prototypes/**/*.{tsx,jsx}', '!/prototypes/**/_*/**', '!/prototypes/**/_*',
     '/tools/**/*.{tsx,jsx}', '!/tools/**/_*/**', '!/tools/**/_*',
   ]));
 });
 
-test('canvases are listed in prototypes and tools, skipping helpers', () => {
+test('canvases are listed in prototypes and tools, skipping helpers', needs('canvas'), () => {
   assert.deepEqual(sorted(globsFor('canvas', types, modules)), sorted([
     '/prototypes/**/*.excalidraw', '!/prototypes/**/_*/**', '!/prototypes/**/_*',
     '/tools/**/*.excalidraw', '!/tools/**/_*/**', '!/tools/**/_*',
   ]));
 });
 
-test('documents are also listed in the Handbook', () => {
+test('documents are also listed in the Handbook', needs('document'), () => {
   assert.deepEqual(sorted(globsFor('document', types, modules)), sorted([
     '/prototypes/**/*.md', '!/prototypes/**/_*/**', '!/prototypes/**/_*',
     '/tools/**/*.md', '!/tools/**/_*/**', '!/tools/**/_*',
@@ -37,7 +39,7 @@ test('documents are also listed in the Handbook', () => {
   ]));
 });
 
-test('the fallback type lists the Handbook files no other type opens', () => {
+test('the fallback type lists the Handbook files no other type opens', needs('text', 'document'), () => {
   assert.deepEqual(globsFor('text', types, modules), ['/handbook/**/*', '!/handbook/**/*.md']);
 });
 
@@ -46,7 +48,7 @@ test('without the tools module, nothing looks in /tools', () => {
   for (const id of Object.keys(types)) assert.ok(!globsFor(id, types, without).some((g) => g.includes('/tools/')));
 });
 
-test('a new section that holds prototypes is listed by every type that opens prototype files', () => {
+test('a new section that holds prototypes is listed by every type that opens prototype files', needs('view', 'document', 'text'), () => {
   const playbooks: ModuleSpec = { id: 'playbooks', label: 'Playbooks', version: '0.1.0', section: { key: 'playbooks', folder: 'src/playbooks', items: 'prototypes' } };
   assert.ok(globsFor('view', types, [...modules, playbooks]).includes('/playbooks/**/*.{tsx,jsx}'));
   assert.ok(globsFor('document', types, [...modules, playbooks]).includes('!/playbooks/**/_*'));
