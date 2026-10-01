@@ -14,11 +14,11 @@ import { Input } from '@/systems/product/components/input';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/systems/product/components/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/systems/product/components/table';
 import { Tabs, TabsList, TabsTrigger } from '@/systems/product/components/tabs';
-import AppShell from './components/AppShell';
-import FeedbackForm from './components/FeedbackForm';
-import { PriorityBadge, StatusBadge } from './components/badges';
-import { useScreenPath } from './components/nav';
-import { NO_FILTER, STATUSES, addFeedback, formatDate, matchesFilter, removeFeedback, select, updateFeedback, useStore, type Filter, type Status } from './components/store';
+import AppShell from './_components/AppShell';
+import FeedbackForm from './_components/FeedbackForm';
+import { PriorityBadge, StatusBadge } from './_components/badges';
+import { useScreenPath } from './_components/nav';
+import { NO_FILTER, STATUSES, addFeedback, formatDate, matchesFilter, removeFeedback, select, updateFeedback, useStore, type Filter, type Status } from './_components/store';
 
 export type FeedbackInboxStart = {
   filter?: Filter;

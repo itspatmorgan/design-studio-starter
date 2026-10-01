@@ -4,7 +4,7 @@
 // In `pnpm dev`, it's the prototype's real files and folders, live from the dev server
 // (data/files.ts). It shows what you open and organize: items (views, at any depth; see
 // src/studio/fileTypes/) and their folders. Everything else in the folder (meta.json, which the header
-// edits; components/ helpers; images and other files) is hidden until you choose Show all
+// edits; _helpers; images and other files) is hidden until you choose Show all
 // files (in the header's … menu), and then opens in your editor. In your own prototypes you can also create, rename (F2), move
 // (drag and drop), arrange (drag, or Move up and down), and delete (to the Trash) files and folders, like a file browser, and
 // choose which item the prototype opens on (Set as start; it shows a star). Every change
@@ -24,7 +24,7 @@ import {
   fileOp, openInEditor, repoPath, revealInFinder, setItemLofi, useFileTree, useMe, type FileNode, type FileOp,
 } from '@/studio/app/data/files';
 import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
-import { HELPER_FOLDER } from '@/studio/fileTypes';
+import { isHelper } from '@/studio/fileTypes';
 import { navIndent, navRow, navRowState } from '@/studio/app/shell/nav';
 import { HANDBOOK_KEY } from '@/studio/roots';
 import { creatableIn, isSkillFile, isSkillFolder, opProblem } from '@/studio/handbookRules';
@@ -87,7 +87,7 @@ function filterNodes(nodes: FileNode[], q: string): FileNode[] {
 function visibleNodes(nodes: FileNode[], items: Map<string, Item>): FileNode[] {
   return nodes.flatMap((n) => {
     if (!n.dir) return items.has(n.path) ? [n] : [];
-    if (n.name === HELPER_FOLDER) return [];
+    if (isHelper(n.name)) return [];
     const children = visibleNodes(n.children ?? [], items);
     return children.length || !n.children?.length ? [{ ...n, children }] : [];
   });
@@ -498,7 +498,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
           </DragRow>
         );
       }
-      // Everything else (meta.json, components/, images) opens in your editor.
+      // Everything else (meta.json, _components/, images) opens in your editor.
       return (
         <DragRow key={node.path} path={node.path} dir={false} canDrag={movable(node)} operationsFor={operationsFor(node, false)}>
           {rowMenu(node.path, node, (

@@ -15,14 +15,14 @@ src/prototypes/<contributor>/<prototype>/
 ├── checkout/
 │   ├── steps/
 │   │   └── done.tsx       # a view, two folders deep
-│   └── components/        # helpers, not views (at any depth)
+│   └── _components/       # helpers, not views (any name starting with _, at any depth)
 ├── problem-framing.md     # a document (see documents.md)
 └── hero.webp              # a plain file
 ```
 
-- **View**: any `.tsx` file (or plain `.jsx`) that default-exports a React component, at any depth, except inside a `components/` folder. Write new views as `.tsx`. The build fails on a view without a default export (put helpers in `components/`), or on two files that would share a URL, like `main.tsx` and `main.jsx` (or `main.md`) in one folder.
-- **Document**: any `.md` file, at any depth, except inside `components/`. See [documents.md](documents.md).
-- **Folders**: any folder, at any depth, just for organizing. A folder's name never changes what's in it. The one exception is `components/`, at any depth: its files are helpers, never listed.
+- **View**: any `.tsx` file (or plain `.jsx`) that default-exports a React component, at any depth, except a helper (see Folders). Write new views as `.tsx`. The build fails on a view without a default export (put helpers in `_components/`), or on two files that would share a URL, like `main.tsx` and `main.jsx` (or `main.md`) in one folder.
+- **Document**: any `.md` file, at any depth, except a helper. See [documents.md](documents.md).
+- **Folders**: any folder, at any depth, just for organizing. A folder's name never changes what's in it. The one exception is a file or folder whose name starts with an underscore (`_components/`, `_data.ts`), at any depth: it and anything inside it is a helper, never listed or opened as a view. Put shared pieces a view imports there.
 - **Opens on**: the prototype opens on its `start` item (see meta.json), or else the first item in its navigation. To choose a different one, set `start`; don't rename files to change the order.
 - **Lofi**: a mode on a view, not a folder. Put `/** @lofi */` as a comment at the very top of a view file (above any code) and the app draws it in grayscale with handwritten type (Comic Neue), over the same components and the same design system. Remove the comment to go back; the person can also right-click the view and choose **Make lofi** or **Make hi-fi**, which edits that line. It applies to one view at a time, never a whole prototype. When the person says "lofi" about a screen that uses the system's components, set the marker; don't change the components or invent a different look. Sketching with plain boxes, dashed outlines, and gray bars, with no design system, is also fine for an idea that isn't ready for components, but that is a sketch, not lofi mode. A folder called `lofi/` is only a name.
 - **URLs**: `/<contributor>/<prototype>` opens the start item; `/<contributor>/<prototype>/<path>` opens an item by its path without the extension, at any depth (`/patrick/hello-world/lofi/main`, `/patrick/hello-world/checkout/steps/done`). To link between views, use TanStack Router's `Link` (https://tanstack.com/router/latest/docs/framework/react/guide/navigation).
@@ -36,7 +36,7 @@ src/prototypes/<contributor>/<prototype>/
 - Style with Tailwind classes. For custom CSS, use CSS Modules (`*.module.css`). Never a plain `.css` file or global rules like `body { … }`; they leak into the whole app. The import guard fails the build on a plain `.css` import from a prototype.
 - Use lucide-react for icons, and theme variables for color (see systems.md).
 - If a view throws, the viewer shows "This page couldn't load." with the error and a Copy button. Read the error before guessing.
-- If its design system doesn't have a component you need, build it in the prototype's `components/` folder, using [Base UI](https://base-ui.com/react/overview/quick-start) primitives (`@base-ui/react`) and theme classes; compose with the `render` prop, not `asChild`. Adding it to the system is a platform change: suggest it, and only do it if the person agrees.
+- If its design system doesn't have a component you need, build it in the prototype's `_components/` folder, using [Base UI](https://base-ui.com/react/overview/quick-start) primitives (`@base-ui/react`) and theme classes; compose with the `render` prop, not `asChild`. Adding it to the system is a platform change: suggest it, and only do it if the person agrees.
 - Type props in `.tsx` views; keep types light. `.jsx` views aren't type-checked.
 - Check your work with `pnpm build` before you commit. It type-checks (`pnpm typecheck`, which is `tsc -b`), then writes `dist/`, which is disposable and ignored by Git. Fix type errors rather than silencing them.
 

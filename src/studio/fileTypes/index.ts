@@ -1,6 +1,6 @@
 // File types: the kinds of file a prototype holds that the app can open. A file's type comes
 // from its extension, and folders are only for organizing, at any depth. The one exception:
-// anything inside a components/ folder is a helper, not an item. Every other file (images,
+// a file or folder whose name starts with an underscore (_components/, _data.ts) is a helper, not an item. Every other file (images,
 // meta.json) is a plain file: the nav hides it unless you choose Show all files in the prototype's … menu.
 //
 // Each type is a self-contained folder, src/studio/fileTypes/<type>/ (view/, document/), and the app
@@ -83,5 +83,6 @@ export function assertUniqueExtensions(specs: Record<string, FileTypeSpec>) {
 // ("checkout/step-1.tsx" → "checkout/step-1").
 export const itemSlug = (path: string) => path.replace(/\.[^./]+$/, '');
 
-// Folder names whose contents are helpers, not items.
-export const HELPER_FOLDER = 'components';
+// Helpers, not items: a file or folder named with a leading underscore, at any depth. Everything inside
+// a helper folder is a helper too.
+export const isHelper = (name: string) => name.startsWith('_');

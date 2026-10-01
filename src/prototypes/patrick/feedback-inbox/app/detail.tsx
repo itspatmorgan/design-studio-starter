@@ -13,11 +13,11 @@ import { Label } from '@/systems/product/components/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/systems/product/components/select';
 import { Separator } from '@/systems/product/components/separator';
 import { Textarea } from '@/systems/product/components/textarea';
-import AppShell from './components/AppShell';
-import FeedbackForm from './components/FeedbackForm';
-import { PriorityBadge, StatusBadge } from './components/badges';
-import { ScreenLink, useScreenPath } from './components/nav';
-import { PRIORITIES, STATUSES, addNote, formatDate, removeFeedback, updateFeedback, useFeedback, useStore, type Priority, type Status } from './components/store';
+import AppShell from './_components/AppShell';
+import FeedbackForm from './_components/FeedbackForm';
+import { PriorityBadge, StatusBadge } from './_components/badges';
+import { ScreenLink, useScreenPath } from './_components/nav';
+import { PRIORITIES, STATUSES, addNote, formatDate, removeFeedback, updateFeedback, useFeedback, useStore, type Priority, type Status } from './_components/store';
 
 export function DetailScreen({ editing: startEditing = false, deleting: startDeleting = false }: { editing?: boolean; deleting?: boolean }) {
   const { selectedId, items } = useStore();

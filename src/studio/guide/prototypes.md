@@ -22,12 +22,12 @@ src/prototypes/patrick/hello-world/
 └── checkout/
     ├── steps/
     │   └── done.tsx # a view, two folders deep
-    └── components/  # helpers, not views
+    └── _components/ # helpers, not views
 ```
 
 Always create a prototype with `pnpm new "Prototype Name"`, by asking your agent for one, or with **New prototype** on the Prototypes page while the app runs locally. All three set it up the same way.
 
-While the app is running locally, the prototype's navigation shows what you open and organize: its views, documents, canvases, and their folders, updating as they change. Helpers in `components/`, images, and `meta.json` (which the header edits for you) live beside them in the folder but stay out of the way. Choose **Show all files** in the **…** menu next to the prototype's title to list everything; those other files open in your code editor. Right-click any file to reveal it in Finder or copy its path. On the deployed site, the navigation lists just the views and documents.
+While the app is running locally, the prototype's navigation shows what you open and organize: its views, documents, canvases, and their folders, updating as they change. Helpers (anything named with a leading underscore, like `_components/`), images, and `meta.json` (which the header edits for you) live beside them in the folder but stay out of the way. Choose **Show all files** in the **…** menu next to the prototype's title to list everything; those other files open in your code editor. Right-click any file to reveal it in Finder or copy its path. On the deployed site, the navigation lists just the views and documents.
 
 In your own prototypes, the navigation works like a file browser:
 
@@ -43,7 +43,7 @@ Everything about the prototype sits at the top of its navigation. The **…** me
 
 ## Views
 
-A view is one screen of your prototype: any `.tsx` file that exports a React component, in any folder except `components/`.
+A view is one screen of your prototype: any `.tsx` file that exports a React component, in any folder except a helper one (see below).
 
 The prototype opens on its first view, the one at the top of its navigation, unless you choose another with **Set as start**. That saves to `start` in `meta.json`.
 
@@ -55,7 +55,7 @@ The switch is one line at the top of the view's file, `/** @lofi */`, so it foll
 
 ## Folders
 
-Folders are only for organizing, at any depth. A folder's name never changes what's inside it, with one exception: files in a `components/` folder are helpers, not views.
+Folders are only for organizing, at any depth. A folder's name never changes what's inside it, with one exception: a file or folder whose name starts with an underscore, like `_components/` or `_data.ts`, is a helper. Views import from it, but it isn't a screen and never appears in the navigation.
 
 ## Order
 

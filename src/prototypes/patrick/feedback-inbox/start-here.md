@@ -31,7 +31,7 @@ Right-click any file in the navigation and choose **Edit source** to see its tex
 
 ## 4. The helpers folder
 
-Look inside the `app` folder with **Show all files** in the **…** menu. There's a `components` folder: the data, the top bar, and the form the screens share. Files in a folder called `components` are helpers, not screens, so they never appear in the navigation. They're how three screens share one set of pieces without repeating them.
+Look inside the `app` folder with **Show all files** in the **…** menu. There's a `_components` folder: the data, the top bar, and the form the screens share. A name that starts with an underscore marks a helper, not a screen, so it never appears in the navigation. They're how three screens share one set of pieces without repeating them.
 
 ## 5. Lofi is a switch on a view
 

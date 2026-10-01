@@ -5,10 +5,10 @@
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/systems/product/components/card';
-import AppShell from './components/AppShell';
-import { PriorityBadge, StatusBadge } from './components/badges';
-import { ScreenLink, useScreenPath } from './components/nav';
-import { SOURCES, STATUSES, formatDate, select, showFiltered, useStore, type Filter } from './components/store';
+import AppShell from './_components/AppShell';
+import { PriorityBadge, StatusBadge } from './_components/badges';
+import { ScreenLink, useScreenPath } from './_components/nav';
+import { SOURCES, STATUSES, formatDate, select, showFiltered, useStore, type Filter } from './_components/store';
 
 function Metric({ label, value, hint, filter }: { label: string; value: number; hint: string; filter: Filter }) {
   const navigate = useNavigate();

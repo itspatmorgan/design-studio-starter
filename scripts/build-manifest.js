@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems/index.ts';
 import { SYSTEM_SOURCES, STUDIO_ID } from '../src/studio/systemSources.ts';
-import { HELPER_FOLDER, itemSlug } from '../src/studio/fileTypes/index.ts';
+import { isHelper, itemSlug } from '../src/studio/fileTypes/index.ts';
 import { HANDBOOK_KEY, HANDBOOK_SECTIONS } from '../src/studio/roots.ts';
 import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../src/studio/archive.ts';
 import { byOrder, parseOrder } from '../src/studio/order.ts';
@@ -39,10 +39,10 @@ const dirs = (p) => fs.existsSync(p)
 
 // A prototype's items (see src/studio/fileTypes/), in the order the file tree shows them: at each
 // level, files first, then folders, each alphabetical, unless meta.json "order" says otherwise
-// (src/studio/order.ts). Hidden files and components/ are skipped.
+// (src/studio/order.ts). Hidden files and helpers (names starting with an underscore) are skipped.
 // `typeOf` says which type opens a file (or null for a plain file), and `skip` which folders are
 // left out. Links are never followed: a symlink is neither a file nor a folder here.
-const inPrototype = { typeOf: (name) => fileTypeOf(name), skip: (name) => name === HELPER_FOLDER };
+const inPrototype = { typeOf: (name) => (isHelper(name) ? null : fileTypeOf(name)), skip: isHelper };
 function itemsIn(dir, base = '', { typeOf, skip, order } = inPrototype) {
   const entries = fs.readdirSync(dir, { withFileTypes: true }).filter((e) => !e.name.startsWith('.'));
   const files = entries.filter((e) => e.isFile()).flatMap((e) => {

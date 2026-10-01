@@ -41,5 +41,5 @@ export default defineFileType({
   // The app renders a view's default export.
   check: ({ source }) => (/export\s+default\b|export\s*\{[^}]*\bas\s+default\b/.test(source)
     ? []
-    : ['a view needs a default export, the component the app renders (export default function MyView() { ... }). Helpers belong in components/.']),
+    : ['a view needs a default export, the component the app renders (export default function MyView() { ... }). Helpers belong in a file or folder named with a leading underscore (_components/).']),
 });

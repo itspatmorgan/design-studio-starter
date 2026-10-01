@@ -40,7 +40,7 @@ import { createPrototype, renamePrototype } from './create-prototype.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from './resolve-contributor.js';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
-import { HELPER_FOLDER } from '../src/studio/fileTypes/index.ts';
+import { isHelper } from '../src/studio/fileTypes/index.ts';
 import { STATUSES, parseStatus } from '../src/studio/archive.ts';
 import { afterChange, byOrder, parentOf, parseOrder, place, withFolderOrder } from '../src/studio/order.ts';
 import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../src/studio/roots.ts';
@@ -124,14 +124,14 @@ const validName = (name) => typeof name === 'string' && /^[^/\\\0]+$/.test(name)
 // An item's name in meta.json "start" and URLs: its path without the extension ("lofi/main").
 const viewKey = (rel) => rel.replace(/\.[^./]+$/, '');
 
-// An existing item file (a view or document, not a helper in components/) in the prototype,
+// An existing item file (a view or document, not a helper: a name starting with an underscore) in the prototype,
 // as its real path, or null. The Source view reads and saves only these: never meta.json,
 // hidden files, or anything outside the prototype. In the Handbook, a file is an item if it opens
 // as a document or as text, and its folders can be named anything but hidden.
 function itemFile(dir, rel, contributor) {
   const handbook = contributor === HANDBOOK_KEY || contributor === SYSTEMS_KEY; // both open documents and text files
   const typeOf = handbook ? handbookTypeOf : fileTypeOf;
-  if (typeof rel !== 'string' || !typeOf(rel) || rel.split('/').some((part) => (!handbook && part === HELPER_FOLDER) || part.startsWith('.'))) return null;
+  if (typeof rel !== 'string' || !typeOf(rel) || rel.split('/').some((part) => (!handbook && isHelper(part)) || part.startsWith('.'))) return null;
   const file = resolveInside(dir, rel);
   if (!file || !fs.statSync(file).isFile()) return null;
   // Text only: the Handbook's plain-text fallback mustn't hand out binary files.
