@@ -6,7 +6,7 @@ import { getRouteApi, Link, useNavigate, useRouter } from '@tanstack/react-route
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Wrench01Icon } from '@hugeicons/core-free-icons';
 import { Card, CardContent } from '@/studio/components/card';
-import { Button } from '@/studio/components/button';
+import { Button, buttonVariants } from '@/studio/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
 import { toast } from '@/studio/components/toast';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
@@ -95,34 +95,73 @@ function PublishDialog({ me, prototypes, open, onOpenChange }: { me: string; pro
   );
 }
 
+// What the page says before any tool is published. Locally it explains how to make one; on the
+// deployed site, where people only use tools, it says where they will appear.
+function EmptyState({ local }: { local: boolean }) {
+  return (
+    <section className="flex flex-col items-center rounded-xl border border-dashed border-border px-8 py-16 text-center">
+      <span className="grid size-14 place-items-center rounded-2xl bg-muted text-muted-foreground">
+        <HugeiconsIcon icon={Wrench01Icon} size={28} />
+      </span>
+      <h2 className="mt-5 text-lg font-semibold tracking-tight text-foreground">No tools yet</h2>
+      {local ? (
+        <>
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+            A tool is a small app your team uses to make something, like a thumbnail or a branded graphic. Build it as a prototype first. When it's ready, publish it and it shows up here for everyone.
+          </p>
+          <ol className="mt-8 grid max-w-2xl gap-6 text-left sm:grid-cols-3">
+            {[
+              ['Start a tool prototype', 'Choose New tool prototype from the menu beside New prototype.'],
+              ['Build it with your agent', "Describe what it makes and who uses it. It's a prototype until you publish it."],
+              ['Publish it', 'Use Publish as tool in its … menu, or Publish a prototype… above.'],
+            ].map(([title, body], i) => (
+              <li key={title} className="flex gap-3">
+                <span className="grid size-6 shrink-0 place-items-center rounded-full border border-border text-xs font-medium text-muted-foreground">{i + 1}</span>
+                <span>
+                  <span className="block text-sm font-medium text-foreground">{title}</span>
+                  <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">{body}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+          <Link to="/" className={cn(buttonVariants({ variant: 'outline' }), 'mt-10')}>Go to Prototypes</Link>
+        </>
+      ) : (
+        <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">Tools your team publishes will show up here. Open one to use it.</p>
+      )}
+    </section>
+  );
+}
+
 export default function ToolsPage() {
   const manifest = rootApi.useLoaderData();
   const me = useMe();
   const [publishing, setPublishing] = useState(false);
   const tools = [...manifest.tools].sort((a, b) => a.title.localeCompare(b.title));
+  // Dev only (import.meta.env.DEV is false in the build), and only for contributors.
+  const local = import.meta.env.DEV && me !== null;
   return (
     <main className="mx-auto w-full max-w-5xl px-6 pt-12 pb-8">
-      <header className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Tools</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Small apps the team maintains. Open one to use it.</p>
-      </header>
-      {/* Dev only (import.meta.env.DEV is false in the build), and only for contributors. */}
-      {import.meta.env.DEV && me && (
-        <div className="mb-6 flex justify-end">
-          <Button variant="outline" onClick={() => setPublishing(true)}>
-            <HugeiconsIcon icon={Wrench01Icon} data-icon="inline-start" /> Publish a prototype…
-          </Button>
-          <PublishDialog me={me} prototypes={manifest.prototypes} open={publishing} onOpenChange={setPublishing} />
+      <header className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Tools</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Small apps the team maintains. Open one to use it.</p>
         </div>
-      )}
+        {local && (
+          <>
+            <Button variant="outline" onClick={() => setPublishing(true)}>
+              <HugeiconsIcon icon={Wrench01Icon} data-icon="inline-start" /> Publish a prototype…
+            </Button>
+            <PublishDialog me={me} prototypes={manifest.prototypes} open={publishing} onOpenChange={setPublishing} />
+          </>
+        )}
+      </header>
       {tools.length ? (
         <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {tools.map((t) => <li key={t.id}><ToolCard tool={t} /></li>)}
         </ul>
       ) : (
-        <p className="text-sm text-muted-foreground">
-          No tools yet. A tool starts as a prototype: use New tool prototype on the Prototypes page, then publish it from its menu.
-        </p>
+        <EmptyState local={local} />
       )}
     </main>
   );
