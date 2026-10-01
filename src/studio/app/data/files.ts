@@ -23,17 +23,19 @@ async function fetchFiles(p: Prototype): Promise<FileNode[] | null> {
 export function useFileTree(proto: Prototype) {
   const [files, setFiles] = useState<FileNode[] | null>(null);
   const [reload, setReload] = useState(() => () => {});
+  // Whether the first answer has come (or failed), so the nav can tell "still asking" from "no dev server".
+  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
-    if (!import.meta.hot) return;
+    if (!import.meta.hot) { setLoaded(true); return; }
     let live = true;
-    const load = () => fetchFiles(proto).then((f) => { if (live) setFiles(f); }).catch(() => {});
+    const load = () => fetchFiles(proto).then((f) => { if (live) setFiles(f); }).catch(() => {}).finally(() => { if (live) setLoaded(true); });
     setReload(() => load);
     load();
     const onChange = (changed: string[]) => { if (changed.includes(key(proto))) load(); };
     import.meta.hot.on('studio:files', onChange);
     return () => { live = false; import.meta.hot?.off('studio:files', onChange); };
   }, [proto.contributorKey, proto.id]);
-  return { files, reload };
+  return { files, reload, loaded };
 }
 
 // The file's path from the repo root, like src/prototypes/patrick/hello-world/meta.json (the
