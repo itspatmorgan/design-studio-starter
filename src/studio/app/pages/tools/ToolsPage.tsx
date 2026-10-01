@@ -107,13 +107,13 @@ function EmptyState({ local }: { local: boolean }) {
       {local ? (
         <>
           <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-            A tool is a small app your team uses to make something, like a thumbnail or a branded graphic. Build it as a prototype first. When it's ready, publish it and it shows up here for everyone.
+            A small app your team uses to make something, like a thumbnail or a graphic. Build it as a prototype, then publish it here.
           </p>
           <ol className="mt-8 grid max-w-2xl gap-6 text-left sm:grid-cols-3">
             {[
-              ['Start a tool prototype', 'Choose New tool prototype from the menu beside New prototype.'],
-              ['Build it with your agent', "Describe what it makes and who uses it. It's a prototype until you publish it."],
-              ['Publish it', 'Use Publish as tool in its … menu, or Publish a prototype… above.'],
+              ['Start a tool prototype', 'Use the menu beside New prototype.'],
+              ['Build it', 'Tell your agent what it makes and who uses it.'],
+              ['Publish it', 'Choose Publish as tool from its menu.'],
             ].map(([title, body], i) => (
               <li key={title} className="flex gap-3">
                 <span className="grid size-6 shrink-0 place-items-center rounded-full border border-border text-xs font-medium text-muted-foreground">{i + 1}</span>
@@ -127,7 +127,7 @@ function EmptyState({ local }: { local: boolean }) {
           <Link to="/" className={cn(buttonVariants({ variant: 'outline' }), 'mt-10')}>Go to Prototypes</Link>
         </>
       ) : (
-        <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">Tools your team publishes will show up here. Open one to use it.</p>
+        <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">Tools your team publishes will show up here.</p>
       )}
     </section>
   );
@@ -142,19 +142,20 @@ export default function ToolsPage() {
   const local = import.meta.env.DEV && me !== null;
   return (
     <main className="mx-auto w-full max-w-5xl px-6 pt-12 pb-8">
-      <header className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Tools</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Small apps the team maintains. Open one to use it.</p>
+      <header className="mb-5">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Tools</h1>
+        {/* The subtitle's line is as tall as the button (32px), so both centre their text on the same line. */}
+        <div className="mt-0.5 flex items-center justify-between gap-4">
+          <p className="text-sm leading-8 text-muted-foreground">Small apps the team maintains. Open one to use it.</p>
+          {local && (
+            <>
+              <Button variant="outline" onClick={() => setPublishing(true)}>
+                <HugeiconsIcon icon={Wrench01Icon} data-icon="inline-start" /> Publish a prototype
+              </Button>
+              <PublishDialog me={me} prototypes={manifest.prototypes} open={publishing} onOpenChange={setPublishing} />
+            </>
+          )}
         </div>
-        {local && (
-          <>
-            <Button variant="outline" onClick={() => setPublishing(true)}>
-              <HugeiconsIcon icon={Wrench01Icon} data-icon="inline-start" /> Publish a prototype…
-            </Button>
-            <PublishDialog me={me} prototypes={manifest.prototypes} open={publishing} onOpenChange={setPublishing} />
-          </>
-        )}
       </header>
       {tools.length ? (
         <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">

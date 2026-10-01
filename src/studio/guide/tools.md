@@ -12,7 +12,7 @@ A tool is a small app that makes something: a thumbnail, a gradient, a graphic w
 
 A tool starts as an ordinary prototype in your folder, so it looks and works like one while you build it. Start one from **New tool prototype**, in the menu beside **New prototype**. It's the same as any prototype, with a starter that asks your agent to build something people will use. Any prototype can become a tool later, whether or not it started as one.
 
-When it's ready, open the prototype's **…** menu and choose **Publish as tool**. Or open the **Tools** page and choose **Publish a prototype…** to pick from your list.
+When it's ready, open the prototype's **…** menu and choose **Publish as tool**. Or open the **Tools** page and choose **Publish a prototype** to pick from your list.
 
 Publishing moves the folder from `src/prototypes/<you>/<name>/` to `src/tools/<name>/` and adds you as a maintainer. Its address changes from `/<you>/<name>` to `/tools/<name>`. Links inside the tool's own canvases and documents are updated for you. If other prototypes link to the old address, the app says which files, and those need fixing by hand.
 
