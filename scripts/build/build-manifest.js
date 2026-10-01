@@ -16,10 +16,10 @@ import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from '../lib/file-
 import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from '../lib/modules.js';
 import { frontmatter } from '../lib/frontmatter.js';
 import { contributorsSignature, loadContributors } from '../lib/contributors.js';
-import { handbookProblems } from '../lib/handbook-check.js';
+import { handbookProblems } from '../../src/studio/modules/handbook/node/handbook-check.js';
 import { systemDocs } from '../../src/studio/modules/systems/node/docs.js';
 import { themeTokens } from '../../src/studio/modules/systems/themeTokens.ts';
-import { handbookMap } from '../../src/studio/handbookMap.ts';
+import { handbookMap } from '../../src/studio/modules/handbook/map.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -282,7 +282,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
 
   // The Handbook (src/handbook/): a prototype-shaped entry for each section, so the same file tree
   // and item pages open it. Nobody owns it: the app only reads it. Its shape is fixed
-  // (scripts/lib/handbook-check.js), and a file or folder out of place is a problem.
+  // (src/studio/modules/handbook/node/handbook-check.js), and a file or folder out of place is a problem.
   const handbook = [];
   if (fs.existsSync(HANDBOOK)) {
     for (const problem of handbookProblems(HANDBOOK)) { out.error(`[manifest] ${problem}`); errors++; }
@@ -296,7 +296,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   }
 
   // The Handbook's map: what an agent reads, in order, from AGENTS.md, the rules, and the skills
-  // (src/studio/handbookMap.ts). A link to a file that isn't there is a problem; a rule nothing
+  // (src/studio/modules/handbook/map.ts). A link to a file that isn't there is a problem; a rule nothing
   // links to is a warning, since no agent will ever read it.
   let map = null;
   if (handbook.length) {

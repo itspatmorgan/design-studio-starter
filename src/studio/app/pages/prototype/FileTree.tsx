@@ -27,9 +27,9 @@ import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
 import { isHelper } from '@/studio/fileTypes';
 import { navIndent, navRow, navRowState } from '@/studio/app/shell/nav';
 import { HANDBOOK_KEY } from '@/studio/core/roots';
-import { creatableIn, isSkillFile, isSkillFolder, opProblem } from '@/studio/handbookRules';
-import { NEW_KINDS } from '@/studio/app/pages/handbook/newKinds';
-import NewSkillDialog from '@/studio/app/pages/handbook/NewSkillDialog';
+import { creatableIn, isSkillFile, isSkillFolder, opProblem } from '@/studio/modules/handbook/rules';
+import { NEW_KINDS } from '@/studio/modules/handbook/pages/newKinds';
+import NewSkillDialog from '@/studio/modules/handbook/pages/NewSkillDialog';
 import { itemUrl } from '@/studio/app/items/itemLinks';
 import { place } from '@/studio/core/order';
 import { DRAG_KIND, DragRow, type Dropped, type Operations } from '@/studio/app/pages/prototype/DragRow';
@@ -172,7 +172,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   const navigate = useNavigate();
   const live = import.meta.env.DEV && files !== null;
   // Your own prototypes, and the Handbook (in dev): its files are platform files, changed here for
-  // review like any change, in the fixed shape src/studio/handbookRules.ts describes.
+  // review like any change, in the fixed shape src/studio/modules/handbook/rules.ts describes.
   const isHandbook = proto.contributorKey === HANDBOOK_KEY;
   const editable = live && canChangePrototype(proto, me);
   const [newSkillOpen, setNewSkillOpen] = useState(false);

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { HandbookMap } from '@/studio/handbookMap';
+import type { HandbookMap } from '@/studio/modules/handbook/map';
 import type { SystemComponentDoc } from '@/studio/modules/systems/docs';
 import type { ThemeToken } from '@/studio/modules/systems/themeTokens';
 import type { DocsMode } from '@/studio/modules/systems/sources';
@@ -53,7 +53,7 @@ export type GuidePage = {
 // published tools (src/tools/, as `sections.tools`), shaped like prototypes.
 // `handbook` holds the Handbook's sections (src/handbook/, see src/studio/core/roots.ts), shaped like
 // prototypes.
-// `handbookMap` is how an agent reads the Handbook, worked out from the files (handbookMap.ts).
+// `handbookMap` is how an agent reads the Handbook, worked out from the files (modules/handbook/map.ts).
 // `systems` holds each system's components and their docs (systemDocs.ts), the tokens its theme
 // defines (themeTokens.ts), and where its components come from (systemSources.ts). The app's own
 // system is one of them.

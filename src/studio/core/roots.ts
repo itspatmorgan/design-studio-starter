@@ -20,7 +20,7 @@ let sectionKeys: ReadonlySet<string> = new Set();
 export const setSections = (keys: Iterable<string>) => { sectionKeys = new Set(keys); };
 
 // The Handbook's sections: the folders in src/handbook/, in the order they're shown. The shape of
-// each is checked by scripts/lib/handbook-check.js.
+// each is checked by src/studio/modules/handbook/node/handbook-check.js.
 export const HANDBOOK_SECTIONS = {
   docs: { title: 'Docs', description: 'Context for people and agents: principles, personas, and anything worth writing down once.' },
   rules: { title: 'Rules', description: 'What your agent knows and follows every session. AGENTS.md points here.' },

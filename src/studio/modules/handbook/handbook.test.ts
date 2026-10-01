@@ -1,15 +1,15 @@
 // The Handbook's fixed shape: the Agent Skills rules (skills.ts) and the folder check
-// (scripts/lib/handbook-check.js). Run with `pnpm test`.
+// (src/studio/modules/handbook/node/handbook-check.js). Run with `pnpm test`.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { descriptionProblem, nameProblem, skillProblems } from './skills.ts';
-import { creatableIn, opProblem } from './handbookRules.ts';
-import { handbookMap } from './handbookMap.ts';
-import { handbookProblems } from '../../scripts/lib/handbook-check.js';
-import { frontmatter } from '../../scripts/lib/frontmatter.js';
+import { creatableIn, opProblem } from './rules.ts';
+import { handbookMap } from './map.ts';
+import { handbookProblems } from './node/handbook-check.js';
+import { frontmatter } from '../../../../scripts/lib/frontmatter.js';
 
 test('skill names follow the spec', () => {
   for (const ok of ['pdf-processing', 'a', 'code-review-2', 'x'.repeat(64)]) assert.equal(nameProblem(ok), null, ok);

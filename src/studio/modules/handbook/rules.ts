@@ -1,5 +1,5 @@
 // What can be made, renamed, moved, and deleted in the Handbook (src/handbook/), which has a fixed
-// shape (scripts/lib/handbook-check.js). The file layer checks every change with these, and the
+// shape (src/studio/modules/handbook/node/handbook-check.js). The file layer checks every change with these, and the
 // navigation uses them to offer only what fits. Paths are inside a section, like "review/SKILL.md"
 // in skills. This file has no imports beyond skills.ts, so Node scripts can load it directly.
 import { SKILL_FILE, nameProblem } from './skills.ts';

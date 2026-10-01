@@ -22,7 +22,7 @@ const SYSTEMS = path.join(ROOT, 'src', 'systems');
 // The app's own system: its components, and its theme (the tokens the Systems pages list).
 const STUDIO_COMPONENTS = path.join(ROOT, 'src', 'studio', 'components');
 const STUDIO_THEME = path.join(ROOT, 'src', 'studio', 'styles', 'index.css');
-// The Handbook's map reads it (src/studio/handbookMap.ts).
+// The Handbook's map reads it (src/studio/modules/handbook/map.ts).
 const AGENTS = path.join(ROOT, 'AGENTS.md');
 const BATCH_MS = 50;
 

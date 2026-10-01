@@ -7,9 +7,9 @@
 // where and what to fix. (Adding a new section is a platform change: add it there first.)
 import fs from 'node:fs';
 import path from 'node:path';
-import { HANDBOOK_SECTIONS } from '../../src/studio/core/roots.ts';
-import { SKILL_FILE, skillProblems } from '../../src/studio/skills.ts';
-import { frontmatter } from './frontmatter.js';
+import { HANDBOOK_SECTIONS } from '../../../core/roots.ts';
+import { SKILL_FILE, skillProblems } from '../skills.ts';
+import { frontmatter } from '../../../../../scripts/lib/frontmatter.js';
 
 const visible = (dir) => fs.readdirSync(dir, { withFileTypes: true }).filter((e) => !e.name.startsWith('.'));
 const sections = Object.keys(HANDBOOK_SECTIONS);

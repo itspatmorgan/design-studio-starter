@@ -2,9 +2,9 @@
 // (https://agentskills.io/specification): a name in lowercase words joined by hyphens, which is
 // also its folder's name, and a description that says what it does and when to use it. The
 // dialog stays short and shows a rule only when it's broken. Those are checked as you type
-// (src/studio/skills.ts), and again by the file layer.
+// (src/studio/modules/handbook/skills.ts), and again by the file layer.
 import { useState } from 'react';
-import { NAME_MAX, descriptionProblem, nameProblem } from '@/studio/skills';
+import { NAME_MAX, descriptionProblem, nameProblem } from '@/studio/modules/handbook/skills';
 import { Button } from '@/studio/components/button';
 import { Input } from '@/studio/components/input';
 import { Textarea } from '@/studio/components/textarea';

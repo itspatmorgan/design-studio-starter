@@ -15,7 +15,7 @@
 //        reorder  { path, to?, before? }         put a file or folder before another in its folder ("before" empty: last), moving it to folder "to" first if given; saved in meta.json "order"
 //        meta     { title?, description?, start?, status? }  edit meta.json (start "" opens the first item; status is "active" or "archived")
 //        create-skill { name, description }       Handbook skills only: skills/<name>/SKILL.md, in the Agent Skills format
-//      (In the Handbook, anyone can change files, but only in its fixed shape: src/studio/handbookRules.ts.)
+//      (In the Handbook, anyone can change files, but only in its fixed shape: src/studio/modules/handbook/rules.ts.)
 //      (contributor "systems" opens a prototype system's components, src/systems/<id>/components/. Anyone can
 //      read and save its text files, and it has one operation of its own:
 //        add-docs { component }                    the examples and page a component is missing)
@@ -44,7 +44,7 @@ import { fileTypeOf, handbookTypeOf } from '../lib/file-types.js';
 import { HANDBOOK_KEY, SYSTEMS_KEY } from '../../src/studio/core/roots.ts';
 import { PROTOTYPE_SECTIONS, SERVER_FILES } from '../lib/modules.js';
 import { CONTRIBUTORS_DIR } from '../lib/contributors.js';
-import { SKILL_FILE, skillProblems } from '../../src/studio/skills.ts';
+import { SKILL_FILE, skillProblems } from '../../src/studio/modules/handbook/skills.ts';
 import { frontmatter } from '../lib/frontmatter.js';
 import { BATCH_MS, HANDBOOK, MAX_SOURCE_BYTES, PROTOS, itemFile, prototypeDir, readTree, resolveInside, systemOf, versionOf } from './files/paths.js';
 import { readJson, sameOrigin, send } from './files/http.js';

@@ -9,8 +9,8 @@ import { STATUSES, parseStatus } from '../../../src/studio/core/archive.ts';
 import { afterChange, parentOf, parseOrder, place, withFolderOrder } from '../../../src/studio/core/order.ts';
 import { rootOf } from '../../../src/studio/core/roots.ts';
 import { scaffold } from '../../../src/studio/modules/systems/node/scaffold-docs.js';
-import { opProblem } from '../../../src/studio/handbookRules.ts';
-import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/studio/skills.ts';
+import { opProblem } from '../../../src/studio/modules/handbook/rules.ts';
+import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/studio/modules/handbook/skills.ts';
 import { ROOT, TRASH, readOrder, readTree, resolveInside, validName, viewKey } from './paths.js';
 
 // The contents of a new file: its file type's template, by extension (src/studio/fileTypes/<type>/type.ts).
@@ -19,7 +19,7 @@ export const templateFor = (name) => FILE_TYPES[fileTypeOf(name)]?.template?.(na
 
 // The Handbook's files are platform files: anyone can change their copy here, and the changes go
 // through review before they reach everyone. So it's open to whoever runs the app; what it does
-// enforce is the Handbook's shape (src/studio/handbookRules.ts).
+// enforce is the Handbook's shape (src/studio/modules/handbook/rules.ts).
 export const HANDBOOK_NOTE = 'The Handbook\'s sections (Docs, Rules, Skills) can\'t be renamed or deleted.';
 
 // "code-review" → "Code review"
@@ -94,7 +94,7 @@ export function renameSkillInFile(file, name) {
 export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, title, description, start, status }, section = null) {
   const inside = (r) => resolveInside(dir, r);
   const relOf = (abs) => path.relative(fs.realpathSync(dir), abs).split(path.sep).join('/');
-  // The Handbook has a fixed shape: check the change against it first (src/studio/handbookRules.ts).
+  // The Handbook has a fixed shape: check the change against it first (src/studio/modules/handbook/rules.ts).
   if (section) {
     if (op === 'create-skill') {
       if (section !== 'skills') throw new Error('Skills are made in the Skills tab.');
@@ -150,7 +150,7 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     return {};
   }
   if (op === 'reorder') {
-    // Arranging is for prototypes: the Handbook has a fixed shape (src/studio/handbookRules.ts).
+    // Arranging is for prototypes: the Handbook has a fixed shape (src/studio/modules/handbook/rules.ts).
     if (section) throw new Error('The Handbook keeps its own order.');
     const from = inside(rel);
     if (!from || from === fs.realpathSync(dir) || rel === 'meta.json') throw new Error('That file was moved or deleted.');

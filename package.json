@@ -15,7 +15,7 @@
     "baseline": "node scripts/cli/baseline.js",
     "studio": "node scripts/cli/studio.js",
     "canvas": "node src/studio/fileTypes/canvas/cli.ts",
-    "test": "node --test src/studio/fileTypes/canvas/tools.test.ts src/studio/fileTypes/view/lofi.test.ts src/studio/handbook.test.ts src/studio/modules/systems/docs.test.ts src/studio/core/archive.test.ts src/studio/core/order.test.ts src/studio/modules/tools/staleLinks.test.ts src/studio/modules/modules.test.ts src/studio/modules/globs.test.ts src/studio/core/permissions.test.ts src/studio/core/config.test.ts src/studio/modules/systems/spec.test.ts src/studio/modules/pack.test.ts src/tools/quote-card/_components/text.test.ts src/studio/modules/tools/toolArt.test.ts"
+    "test": "node --test src/studio/fileTypes/canvas/tools.test.ts src/studio/fileTypes/view/lofi.test.ts src/studio/modules/handbook/handbook.test.ts src/studio/modules/systems/docs.test.ts src/studio/core/archive.test.ts src/studio/core/order.test.ts src/studio/modules/tools/staleLinks.test.ts src/studio/modules/modules.test.ts src/studio/modules/globs.test.ts src/studio/core/permissions.test.ts src/studio/core/config.test.ts src/studio/modules/systems/spec.test.ts src/studio/modules/pack.test.ts src/tools/quote-card/_components/text.test.ts src/studio/modules/tools/toolArt.test.ts"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^4.0.0",
