@@ -8,6 +8,8 @@ toc: true
 
 A tool is a small app that makes something: a thumbnail, a gradient, a graphic with the right sizes. People use it to get an asset, not to look at a design. It's still a prototype. What changes is that it belongs to the team, has people who keep it working, and opens like an app.
 
+The sample includes one, Quote card, which opens from a feedback's Detail screen and turns it into a shareable image.
+
 ## From prototype to tool
 
 A tool starts as an ordinary prototype in your folder, so it looks and works like one while you build it. Any prototype can become a tool when it's ready.

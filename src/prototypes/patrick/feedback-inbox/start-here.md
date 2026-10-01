@@ -64,6 +64,10 @@ Your agent can build and change all of this: "add a due date to feedback," "make
 
 Archive a prototype from its **…** menu to keep it but leave it out of the deployed site. To tidy files inside a prototype, put them in a folder.
 
+## 11. Tools support the work
+
+A tool is a small app your team maintains, found on the **Tools** page in the rail. Open a feedback's [Detail](app/detail) and choose **Share as card**: the Quote card tool opens with that feedback filled in, and you can download the card as an image. The prototype only links to the tool, so the two stay separate. A tool starts as an ordinary prototype and is published from its **…** menu.
+
 ## Make it yours
 
 - Change the colors in `src/systems/product/styles/theme.css` and every screen follows.

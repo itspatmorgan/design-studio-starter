@@ -13,7 +13,7 @@
     "prepare": "husky",
     "check": "node scripts/check-file-types.js",
     "canvas": "node src/studio/fileTypes/canvas/cli.ts",
-    "test": "node --test src/studio/fileTypes/canvas/tools.test.ts src/studio/fileTypes/view/lofi.test.ts src/studio/handbook.test.ts src/studio/systemDocs.test.ts src/studio/archive.test.ts src/studio/order.test.ts src/studio/tools.test.ts"
+    "test": "node --test src/studio/fileTypes/canvas/tools.test.ts src/studio/fileTypes/view/lofi.test.ts src/studio/handbook.test.ts src/studio/systemDocs.test.ts src/studio/archive.test.ts src/studio/order.test.ts src/studio/tools.test.ts src/tools/quote-card/_components/text.test.ts"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^4.0.0",

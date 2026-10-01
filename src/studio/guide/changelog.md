@@ -17,6 +17,7 @@ The first release, described in [How I Set Up a Prototyping Sandbox](https://www
 - Scope checks before commit, before push, and on push to main
 - The import guard
 - A sample prototype, Feedback Inbox, that doubles as a tour: three screens on a working data store, a breadboard and an eng-handoff canvas, and two documents
+- A sample tool, Quote card, that turns a feedback into an image to share
 - A Product system with its own look (warm stone, emerald, square corners, Space Grotesk) and 16 components, each with a page
 - A small manifest: the file list of each prototype loads when you open it, so the deployed site stays fast as prototypes pile up
 - Tools: publish a prototype as a small app the team uses, with maintainers; it opens full-window on the deployed site
