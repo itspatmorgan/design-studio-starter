@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { deletePrototype } from '@/studio/app/data/files';
 import { setManifest } from '@/studio/app/data/manifest';
-import type { Prototype } from '@/studio/app/data/types';
+import type { PrototypeInfo } from '@/studio/app/data/types';
 import { toast } from '@/studio/components/toast';
 import { Button } from '@/studio/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
 
-type Props = { proto: Prototype; open: boolean; onOpenChange: (open: boolean) => void };
+type Props = { proto: PrototypeInfo; open: boolean; onOpenChange: (open: boolean) => void };
 
 export default function DeletePrototypeDialog({ proto, open, onOpenChange }: Props) {
   const router = useRouter();

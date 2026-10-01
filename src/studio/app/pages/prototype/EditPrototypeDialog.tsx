@@ -3,13 +3,13 @@
 // the same file an agent would edit, and a new title renames the folder to match. The app updates live.
 import { useState } from 'react';
 import { useRenamePrototype } from '@/studio/app/pages/prototype/useRenamePrototype';
-import type { Prototype } from '@/studio/app/data/types';
+import type { PrototypeInfo } from '@/studio/app/data/types';
 import { Button } from '@/studio/components/button';
 import { Input } from '@/studio/components/input';
 import { Textarea } from '@/studio/components/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
 
-type Props = { proto: Prototype; open: boolean; onOpenChange: (open: boolean) => void };
+type Props = { proto: PrototypeInfo; open: boolean; onOpenChange: (open: boolean) => void };
 
 export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props) {
   const applyRename = useRenamePrototype(proto);

@@ -8,20 +8,20 @@ import type { Status } from '@/studio/archive';
 
 export type FileNode = { name: string; path: string; dir: boolean; children?: FileNode[] };
 
-const key = (p: Prototype) => `${p.contributorKey}/${p.id}`;
+const key = (p: PrototypeInfo) => `${p.contributorKey}/${p.id}`;
 
 // This tab, sent with every change, so the manifest update it causes isn't applied twice
 // (router.tsx): the tab that made the change applies it from the reply, in order.
 export const TAB_ID = Math.random().toString(36).slice(2);
 
-async function fetchFiles(p: Prototype): Promise<FileNode[] | null> {
+async function fetchFiles(p: PrototypeInfo): Promise<FileNode[] | null> {
   const res = await fetch(`/__studio/files?contributor=${encodeURIComponent(p.contributorKey)}&prototype=${encodeURIComponent(p.id)}`);
   return res.ok ? ((await res.json()) as { files: FileNode[] }).files : null;
 }
 
 // The prototype's file tree, refreshed whenever its files are added or removed.
 // reload() refreshes it right away, after the app changes a file itself.
-export function useFileTree(proto: Prototype) {
+export function useFileTree(proto: PrototypeInfo) {
   const [files, setFiles] = useState<FileNode[] | null>(null);
   const [reload, setReload] = useState(() => () => {});
   useEffect(() => {
@@ -39,18 +39,18 @@ export function useFileTree(proto: Prototype) {
 
 // The file's path from the repo root, like src/prototypes/patrick/hello-world/meta.json (the
 // prototype's folder for an empty `file`).
-export const repoPath = (p: Prototype, file: string) => `src/${rootOf(p.contributorKey, p.id)}${file ? `/${file}` : ''}`;
+export const repoPath = (p: PrototypeInfo, file: string) => `src/${rootOf(p.contributorKey, p.id)}${file ? `/${file}` : ''}`;
 
 // Opens a file in your code editor, with Vite's built-in /__open-in-editor.
 // It uses $LAUNCH_EDITOR or the editor already running: https://github.com/yyx990803/launch-editor
 // Vite finds the file from the folder the dev server was started in (the repo root), so the path is
 // the full repo path, src/ included: without it the editor is never told to open anything.
-export function openInEditor(p: Prototype, file: string) {
+export function openInEditor(p: PrototypeInfo, file: string) {
   fetch(`/__open-in-editor?file=${encodeURIComponent(repoPath(p, file))}`);
 }
 
 // Shows a file in Finder (or your system's file browser).
-export function revealInFinder(p: Prototype, file: string) {
+export function revealInFinder(p: PrototypeInfo, file: string) {
   fetch('/__studio/reveal', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -97,7 +97,7 @@ export const systemFiles = (system: string): Prototype => ({
 });
 
 // Changes a file in your prototype (scripts/vite-files-plugin.js). Throws the server's message.
-export async function fileOp(p: Prototype, op: FileOp): Promise<FileOpResult> {
+export async function fileOp(p: PrototypeInfo, op: FileOp): Promise<FileOpResult> {
   const res = await fetch('/__studio/op', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },
@@ -110,7 +110,7 @@ export async function fileOp(p: Prototype, op: FileOp): Promise<FileOpResult> {
 
 // An item file's text and its version (a hash), for the Source view. Any prototype's, so other
 // people's can be read. Throws the server's message.
-export async function readSource(p: Prototype, path: string) {
+export async function readSource(p: PrototypeInfo, path: string) {
   const query = new URLSearchParams({ contributor: p.contributorKey, prototype: p.id, path });
   const res = await fetch(`/__studio/file?${query}`);
   const body = await res.json();
@@ -120,7 +120,7 @@ export async function readSource(p: Prototype, path: string) {
 
 // Switches an item in your prototype to lofi or back, by changing the marker in its file the way its
 // type says (fidelity in its type.ts). The manifest follows from the file changing, like any edit.
-export async function setItemLofi(p: Prototype, path: string, on: boolean, fidelity: { setLofi(source: string, on: boolean): string }) {
+export async function setItemLofi(p: PrototypeInfo, path: string, on: boolean, fidelity: { setLofi(source: string, on: boolean): string }) {
   const { content, version } = await readSource(p, path);
   const next = fidelity.setLofi(content, on);
   if (next !== content) await writeSource(p, path, next, version);
@@ -130,7 +130,7 @@ export async function setItemLofi(p: Prototype, path: string, on: boolean, fidel
 export class SourceChanged extends Error {}
 
 // Saves an item file in your prototype. `base` is the version you read or last saved.
-export async function writeSource(p: Prototype, path: string, content: string, base: string) {
+export async function writeSource(p: PrototypeInfo, path: string, content: string, base: string) {
   const res = await fetch('/__studio/write', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -157,7 +157,7 @@ export async function createPrototype(title: string, description: string, tool =
 
 // Changes a prototype's title (and description). A new title renames its folder too, so its link
 // changes: `prototype` in the reply is the folder name now. Throws the server's message.
-export async function renamePrototype(p: Prototype, change: { title: string; description?: string }) {
+export async function renamePrototype(p: PrototypeInfo, change: { title: string; description?: string }) {
   const res = await fetch('/__studio/prototype-rename', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },
@@ -169,7 +169,7 @@ export async function renamePrototype(p: Prototype, change: { title: string; des
 }
 
 // Moves a prototype you own to the Trash. Returns where it went and the new manifest.
-export async function deletePrototype(p: Prototype) {
+export async function deletePrototype(p: PrototypeInfo) {
   const res = await fetch('/__studio/prototype-delete', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },

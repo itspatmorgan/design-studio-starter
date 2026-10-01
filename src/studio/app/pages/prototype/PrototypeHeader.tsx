@@ -7,13 +7,10 @@
 // info or delete it, and double-clicking the title renames it in place. Everywhere else, the
 // "…" menu copies its link and shows details.
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
-import { useNavigate, useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Archive02Icon, ArchiveRestoreIcon, ArrowTurnBackwardIcon, Copy01Icon, Delete02Icon, FileEditIcon, Folder01Icon, InformationCircleIcon, Link01Icon, MoreHorizontalIcon, PencilEdit02Icon, ViewIcon, ViewOffSlashIcon, Wrench01Icon } from '@hugeicons/core-free-icons';
-import { fileOp, openInEditor, ownsPrototype, publishTool, repoPath, revealInFinder, unpublishTool, useMe } from '@/studio/app/data/files';
+import { Archive02Icon, InformationCircleIcon, MoreHorizontalIcon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
 import { useShowAllFiles } from '@/studio/app/shell/appPrefs';
-import { formatDate, prototypeLink, setManifest } from '@/studio/app/data/manifest';
-import { TOOLS_KEY } from '@/studio/roots';
+import { formatDate } from '@/studio/app/data/manifest';
 import type { Prototype } from '@/studio/app/data/types';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { Input } from '@/studio/components/input';
@@ -22,15 +19,12 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/too
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@/studio/components/context-menu';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/studio/components/dropdown-menu';
 import { useRenamePrototype } from '@/studio/app/pages/prototype/useRenamePrototype';
-import EditPrototypeDialog from '@/studio/app/pages/prototype/EditPrototypeDialog';
-import DeletePrototypeDialog from '@/studio/app/pages/prototype/DeletePrototypeDialog';
+import { usePrototypeActions, type Action } from '@/studio/app/pages/prototype/usePrototypeActions';
 import { NavHeader } from '@/studio/app/shell/nav';
 import { menuGroups } from '@/studio/app/shell/menuGroups';
 import { cn } from '@/lib/utils';
 
 const INFO_KEY = 'design-studio:prototype-info'; // "shown" | "hidden"
-
-type Action = { label: string; icon: typeof Link01Icon; onSelect: () => void; destructive?: boolean };
 
 // The title, renamed in place: Enter or leaving the field saves, Escape cancels.
 function TitleInput({ initial, onDone }: { initial: string; onDone: (title: string | null) => void }) {
@@ -54,17 +48,10 @@ function TitleInput({ initial, onDone }: { initial: string; onDone: (title: stri
 }
 
 export default function PrototypeHeader({ proto }: { proto: Prototype }) {
-  const router = useRouter();
-  const navigate = useNavigate();
   const applyRename = useRenamePrototype(proto);
-  const me = useMe();
-  // import.meta.env.DEV is false in the build, so editing isn't in the deployed site.
-  const local = import.meta.env.DEV && me !== null;
-  const isTool = proto.contributorKey === TOOLS_KEY;
-  const editable = local && ownsPrototype(proto, me);
+  const actions = usePrototypeActions(proto);
+  const { local, editable } = actions;
   const [renaming, setRenaming] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [expanded, setExpanded] = useState(false);
   // Shown or hidden for every prototype, and remembered.
   const [showInfo, setShowInfo] = useState(() => localStorage.getItem(INFO_KEY) === 'shown');
@@ -81,65 +68,19 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
     }
   }
 
-  // Archiving leaves the whole prototype out of the deployed site. Here it stays, marked, so it can be opened and brought back.
-  async function setArchived(archived: boolean) {
-    try {
-      const result = await fileOp(proto, { op: 'meta', status: archived ? 'archived' : 'active' });
-      setManifest(result.manifest);
-      await router.invalidate();
-      toast.add({ title: archived ? 'Archived. The deployed site leaves it out.' : 'Unarchived' });
-    } catch (e) {
-      toast.add({ type: 'error', title: (e as Error).message });
-    }
-  }
-
-  // Publishing moves the prototype's folder into src/tools/, so its address changes (and back, for Unpublish).
-  async function moveTool() {
-    try {
-      const result = await (isTool ? unpublishTool : publishTool)(proto);
-      setManifest(result.manifest);
-      await router.invalidate();
-      navigate({ to: '/$contributor/$prototype', params: { contributor: result.contributor, prototype: result.id } });
-      toast.add({ title: isTool ? 'Moved back to your prototypes' : 'Published as a tool' });
-      // Links in other prototypes still point at the old address.
-      if (result.linkedFrom.length) {
-        toast.add({ type: 'error', title: `${result.linkedFrom.length === 1 ? 'A file links' : `${result.linkedFrom.length} files link`} to the old address and need updating: ${result.linkedFrom.slice(0, 2).join(', ')}${result.linkedFrom.length > 2 ? ', …' : ''}` });
-      }
-    } catch (e) {
-      toast.add({ type: 'error', title: (e as Error).message });
-    }
-  }
-
-  const copyLink = () => {
-    const href = router.buildLocation(prototypeLink(proto)).href;
-    navigator.clipboard.writeText(new URL(href, location.origin).href);
-    toast.add({ title: 'Link copied' });
-  };
-
   // Groups, in this order, with a line between them (the file menu follows the same rule, FileTree.tsx):
   // how this panel looks; reach the prototype (open it elsewhere, then copy where it is); change it;
-  // delete it, last and alone. A group with nothing in it leaves no line.
+  // delete it, last and alone. A group with nothing in it leaves no line. The last three are shared
+  // with the prototype's card (usePrototypeActions.ts).
+  const [reach, change, remove] = actions.groups;
   const groups = menuGroups<Action>([
     [
       { label: showInfo ? 'Hide details' : 'Show details', icon: InformationCircleIcon, onSelect: toggleInfo },
       local && { label: showAll ? 'Hide other files' : 'Show all files', icon: showAll ? ViewOffSlashIcon : ViewIcon, onSelect: toggleShowAll },
     ],
-    [
-      local && { label: 'Open in editor', icon: FileEditIcon, onSelect: () => openInEditor(proto, '') },
-      local && { label: 'Reveal in Finder', icon: Folder01Icon, onSelect: () => revealInFinder(proto, '') },
-      { label: 'Copy link', icon: Link01Icon, onSelect: copyLink },
-      local && { label: 'Copy path', icon: Copy01Icon, onSelect: () => { navigator.clipboard.writeText(repoPath(proto, '')); toast.add({ title: 'Path copied' }); } },
-    ],
-    [
-      editable && { label: 'Edit', icon: PencilEdit02Icon, onSelect: () => setEditing(true) },
-      editable && (proto.status === 'archived'
-        ? { label: 'Unarchive', icon: ArchiveRestoreIcon, onSelect: () => setArchived(false) }
-        : { label: 'Archive', icon: Archive02Icon, onSelect: () => setArchived(true) }),
-      editable && (isTool
-        ? { label: 'Unpublish', icon: ArrowTurnBackwardIcon, onSelect: moveTool }
-        : { label: 'Publish as tool', icon: Wrench01Icon, onSelect: moveTool }),
-    ],
-    [editable && { label: 'Delete', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }],
+    reach,
+    change,
+    remove,
   ]);
   // Actions run after the menu has closed, so a dialog they open isn't closed by the same click.
   const menuItems = (Item: typeof DropdownMenuItem | typeof ContextMenuItem, Separator: typeof DropdownMenuSeparator) =>
@@ -212,8 +153,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
           )}
         </div>,
       )}
-      {editable && <EditPrototypeDialog proto={proto} open={editing} onOpenChange={setEditing} />}
-      {editable && <DeletePrototypeDialog proto={proto} open={deleting} onOpenChange={setDeleting} />}
+      {actions.dialogs}
     </NavHeader>
   );
 }

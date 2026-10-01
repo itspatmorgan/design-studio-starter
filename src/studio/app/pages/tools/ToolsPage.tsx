@@ -12,6 +12,7 @@ import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@
 import { toast } from '@/studio/components/toast';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { EmptyState } from '@/studio/app/shell/EmptyState';
+import PrototypeCardMenu from '@/studio/app/pages/index/PrototypeCardMenu';
 import { publishTool, useMe } from '@/studio/app/data/files';
 import { prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import type { PrototypeInfo } from '@/studio/app/data/types';
@@ -22,18 +23,21 @@ const rootApi = getRouteApi('__root__');
 function ToolCard({ tool }: { tool: PrototypeInfo }) {
   const name = tool.contributor || tool.maintainers?.join(', ') || '';
   return (
-    <Link {...prototypeLink(tool)} className="block h-full">
-      <Card className={cn('h-full transition-colors hover:bg-muted/40', tool.status === 'archived' && 'opacity-60')}>
-        <CardContent className="flex flex-1 flex-col gap-2.5">
-          <div className="flex h-7 items-center gap-2">
-            <ContributorAvatar name={name || tool.title} />
-            <span className="truncate text-xs font-medium text-muted-foreground" title={`Maintained by ${name}`}>{name.split(',')[0].split(' ')[0]}{(tool.maintainers?.length ?? 0) > 1 ? ` +${tool.maintainers!.length - 1}` : ''}</span>
-          </div>
-          <div className="text-sm font-semibold leading-snug text-foreground">{tool.title}</div>
-          <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">{tool.description || 'No description'}</p>
-        </CardContent>
-      </Card>
-    </Link>
+    <div className="group/card-wrap relative h-full">
+      <Link {...prototypeLink(tool)} className="block h-full">
+        <Card className={cn('h-full transition-colors hover:bg-muted/40', tool.status === 'archived' && 'opacity-60')}>
+          <CardContent className="flex flex-1 flex-col gap-2.5">
+            <div className="flex h-7 items-center gap-2">
+              <ContributorAvatar name={name || tool.title} />
+              <span className="truncate text-xs font-medium text-muted-foreground" title={`Maintained by ${name}`}>{name.split(',')[0].split(' ')[0]}{(tool.maintainers?.length ?? 0) > 1 ? ` +${tool.maintainers!.length - 1}` : ''}</span>
+            </div>
+            <div className="text-sm font-semibold leading-snug text-foreground">{tool.title}</div>
+            <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">{tool.description || 'No description'}</p>
+          </CardContent>
+        </Card>
+      </Link>
+      <PrototypeCardMenu proto={tool} />
+    </div>
   );
 }
 
