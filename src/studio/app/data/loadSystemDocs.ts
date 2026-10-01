@@ -53,7 +53,7 @@ export function useDocsVersion() {
   return version;
 }
 
-// The props of the components a file exports, read from the code (scripts/vite-system-props-plugin.js).
+// The props of the components a file exports, read from the code (scripts/build/vite-system-props-plugin.js).
 // While the app runs, the dev server reads them fresh, so an edit to a component shows; the
 // built site has them in a module made at build time.
 export async function loadProps(system: string, file: string): Promise<ComponentPropsDoc[]> {

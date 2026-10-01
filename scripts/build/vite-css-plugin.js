@@ -6,10 +6,10 @@
 //                                  Tailwind would otherwise scan for class names and reload the page when they change
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_DIRS } from './lib/modules.js';
-import { SYSTEM_IDS } from './lib/systems.js';
+import { PROTOTYPE_DIRS } from '../lib/modules.js';
+import { SYSTEM_IDS } from '../lib/systems.js';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const STYLESHEET = path.join(ROOT, 'src', 'studio', 'styles', 'index.css');
 const rel = (target) => path.relative(path.dirname(STYLESHEET), target).split(path.sep).join('/');
 

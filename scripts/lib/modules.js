@@ -17,7 +17,7 @@ const ids = fs.readdirSync(DIR, { withFileTypes: true })
   .map((d) => d.name)
   .sort();
 
-// Every module, by id. Problems with a declaration are reported by scripts/check-modules.js.
+// Every module, by id. Problems with a declaration are reported by scripts/check/check-modules.js.
 export const MODULES = Object.fromEntries(await Promise.all(
   ids.map(async (id) => [id, (await import(pathToFileURL(path.join(DIR, id, 'module.ts')).href)).default]),
 ));

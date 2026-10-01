@@ -1,6 +1,6 @@
 // What a new view shows until something is built in it: a quiet frame that says the view is
 // empty, and a prompt to hand your agent. New views and prototypes start with it
-// (scripts/vite-files-plugin.js, scripts/templates/prototype/).
+// (scripts/build/vite-files-plugin.js, scripts/templates/prototype/).
 //
 // Agents: replace the <Placeholder /> with the view you build, and remove the import.
 //

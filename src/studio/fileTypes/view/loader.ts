@@ -6,7 +6,7 @@ export type ViewModule = { default: ComponentType };
 
 // Every view file, .tsx or .jsx, at any depth, in prototypes and in the modules that hold prototype-shaped
 // folders (tools). Helpers (names starting with an underscore) aren't views. studioGlobs() is replaced by
-// the list of patterns when Vite reads this file (scripts/vite-globs-plugin.js).
+// the list of patterns when Vite reads this file (scripts/build/vite-globs-plugin.js).
 export const views = createLoader<ViewModule>(
   import.meta.glob<ViewModule>(studioGlobs()),
   import.meta.hot,

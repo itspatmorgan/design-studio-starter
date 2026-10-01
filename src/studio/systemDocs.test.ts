@@ -149,7 +149,7 @@ test('starter docs files sit next to the component and never break the checks', 
 });
 
 test('a first heading is the title when the frontmatter has none', async () => {
-  const { default: plugin } = await import('../../scripts/remark-title-from-heading.js');
+  const { default: plugin } = await import('../../scripts/build/remark-title-from-heading.js');
   const h1 = (text: string) => ({ type: 'heading', depth: 1, children: [{ type: 'text', value: text }] });
   const para = { type: 'paragraph', children: [{ type: 'text', value: 'x' }] };
   const run = (children: unknown[]) => { const tree = { type: 'root', children }; plugin()(tree); return tree.children as { type: string; value?: string }[]; };

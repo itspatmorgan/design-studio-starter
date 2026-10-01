@@ -1,5 +1,5 @@
 // Edits a prototype's title and description from the app, in dev. (Which item it opens on is set
-// from the file tree: right-click, Set as start.) Saving writes meta.json (scripts/vite-files-plugin.js),
+// from the file tree: right-click, Set as start.) Saving writes meta.json (scripts/build/vite-files-plugin.js),
 // the same file an agent would edit, and a new title renames the folder to match. The app updates live.
 import { useState } from 'react';
 import { useRenamePrototype } from '@/studio/app/pages/prototype/useRenamePrototype';

@@ -5,7 +5,7 @@ notes, text, and arrows. It's [Excalidraw](https://github.com/excalidraw/excalid
 look, and its design comes from Design Studio's canvas. Agent contract: `src/handbook/rules/canvases.md`.
 Human docs: the Guide's Canvases page.
 
-**This folder is a self-contained file type.** Core never imports it (`scripts/check-file-types.js`),
+**This folder is a self-contained file type.** Core never imports it (`scripts/check/check-file-types.js`),
 so the app runs with or without it. Canvas doesn't import another file type either: it asks the
 registry (`src/studio/app/data/fileTypes.ts`) how to show an item.
 

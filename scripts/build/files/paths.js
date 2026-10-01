@@ -1,17 +1,17 @@
 // Where a prototype's files are, and reading them: the folders, the file tree, one item's file.
-// Part of the dev server's file layer (scripts/vite-files-plugin.js).
+// Part of the dev server's file layer (scripts/build/vite-files-plugin.js).
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from '.././lib/file-types.js';
-import { isHelper } from '../../src/studio/fileTypes/index.ts';
-import { byOrder, parseOrder } from '../../src/studio/core/order.ts';
-import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../../src/studio/core/roots.ts';
-import { PROTOTYPE_SECTIONS } from '.././lib/modules.js';
-import { SYSTEM_SOURCES } from '.././lib/systems.js';
+import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from '../../lib/file-types.js';
+import { isHelper } from '../../../src/studio/fileTypes/index.ts';
+import { byOrder, parseOrder } from '../../../src/studio/core/order.ts';
+import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../../../src/studio/core/roots.ts';
+import { PROTOTYPE_SECTIONS } from '../../lib/modules.js';
+import { SYSTEM_SOURCES } from '../../lib/systems.js';
 
-export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 export const PROTOS = path.join(ROOT, 'src', 'prototypes');
 export const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 // Each system's components folder, to tell which system a file belongs to.

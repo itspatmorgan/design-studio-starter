@@ -2,7 +2,7 @@
 
 You can change anything in your folder, but only your own folder. Everything else is the platform.
 
-- First, work out who you're working with: run `node scripts/resolve-contributor.js`. It prints their key; their folder is `src/prototypes/<key>/`.
+- First, work out who you're working with: run `node scripts/cli/resolve-contributor.js`. It prints their key; their folder is `src/prototypes/<key>/`.
 - If they aren't in `contributors.json`, set them up with `pnpm join` (see src/handbook/skills/setup-contributor/SKILL.md). Don't edit `contributors.json` by hand. Adding or editing your own entry counts as in scope; changing anyone else's is a platform change.
 - Edit only files in that contributor's folder, and in tools they maintain: `src/tools/<id>/` is changed by the keys in its `meta.json` "maintainers" (see tools.md), whoever started it.
 - `systems`, `guide`, `tools`, and `handbook` can't be contributor keys: they're app pages (`/systems`, `/guide`, `/tools`, `/handbook`). `pnpm join` rejects them.

@@ -7,10 +7,10 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { resolveContributor, loadContributors } from './resolve-contributor.js';
-import { SECTION_KEYS } from './lib/modules.js';
-import { contributorFile } from './lib/contributors.js';
+import { SECTION_KEYS } from '../lib/modules.js';
+import { contributorFile } from '../lib/contributors.js';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 // Keys that are app page URLs, so they can't be contributor folders (/systems, /guide, /handbook, /tools): the modules' sections.
 const RESERVED = SECTION_KEYS;
 const PERSONAL = /@(gmail|googlemail|yahoo|hotmail|outlook|live|icloud|me|mac|aol|proton|protonmail|hey)\./i;

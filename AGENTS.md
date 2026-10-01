@@ -17,7 +17,7 @@ When the person asks to add or change a Guide page, read [src/handbook/rules/gui
 When the person wants to build a tool (a prototype the team uses as an app), or publish a prototype as one, read [src/handbook/rules/tools.md](src/handbook/rules/tools.md).
 <!-- /studio:modules -->
 
-Find out who you're working with by running `node scripts/resolve-contributor.js`.
+Find out who you're working with by running `node scripts/cli/resolve-contributor.js`.
 Create prototypes with `pnpm new "Prototype Name"`.
 You can change only your own folder in src/prototypes/, and the tools in src/tools/ that you maintain.
 A prototype can depend only on its own folder, its design system (src/systems/product/ by default; `defaultSystem` in studio.config.ts changes that), and src/lib/.

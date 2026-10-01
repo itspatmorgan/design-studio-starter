@@ -7,19 +7,19 @@
 //   - no contributor, and no folder in src/prototypes/, uses a section key, since both are addresses
 //   - modules don't import each other, and nothing outside a module imports its files other than its
 //     module.ts, so deleting a module's folder leaves nothing broken
-// Usage: node scripts/check-modules.js
+// Usage: node scripts/check/check-modules.js
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pathToFileURL } from 'node:url';
-import { PLATFORM_VERSION, compatible, listProblems } from '../src/studio/modules/index.ts';
-import { configProblems } from '../src/studio/core/config.ts';
-import { CONFIG, MODULES, SECTION_KEYS, declarationProblems } from './lib/modules.js';
-import { PROTOTYPE_SYSTEMS, SYSTEM_IDS, systemDeclarationProblems } from './lib/systems.js';
-import { changesFromLock } from './lib/lock.js';
-import { readContributors } from './lib/contributors.js';
+import { PLATFORM_VERSION, compatible, listProblems } from '../../src/studio/modules/index.ts';
+import { configProblems } from '../../src/studio/core/config.ts';
+import { CONFIG, MODULES, SECTION_KEYS, declarationProblems } from '../lib/modules.js';
+import { PROTOTYPE_SYSTEMS, SYSTEM_IDS, systemDeclarationProblems } from '../lib/systems.js';
+import { changesFromLock } from '../lib/lock.js';
+import { readContributors } from '../lib/contributors.js';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const problems = declarationProblems();
 const specs = Object.values(MODULES).filter((m) => m && typeof m === 'object');
 problems.push(...listProblems(specs), ...configProblems(CONFIG, specs, SYSTEM_IDS), ...systemDeclarationProblems());

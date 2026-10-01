@@ -5,7 +5,7 @@ import type { ThemeToken } from '@/studio/themeTokens';
 import type { DocsMode } from '@/studio/systemSources';
 
 
-// public/prototypes/manifest.json, written by scripts/build-manifest.js, with each prototype's items
+// public/prototypes/manifest.json, written by scripts/build/build-manifest.js, with each prototype's items
 // in public/prototypes/items/<contributor>/<prototype>.json.
 // One thing in a prototype the app can open (see src/studio/fileTypes/).
 export type Item = {

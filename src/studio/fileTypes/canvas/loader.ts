@@ -1,6 +1,6 @@
 // Every canvas file in a prototype or tool, as text, for the deployed site. In dev the app reads a canvas
 // from the file layer instead (module.tsx), which is always current.
-// studioGlobs() is replaced by the list of patterns when Vite reads this file (scripts/vite-globs-plugin.js).
+// studioGlobs() is replaced by the list of patterns when Vite reads this file (scripts/build/vite-globs-plugin.js).
 export const canvasFiles = import.meta.glob<string>(studioGlobs(), { query: '?raw', import: 'default' });
 
 // Vite runs this file again when a file is added or removed, with the new list.

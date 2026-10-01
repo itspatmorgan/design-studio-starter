@@ -50,10 +50,10 @@ if ((scene!.studioVersion ?? 1) > FORMAT_VERSION) fail(`${first} was written by 
 
 // What the tools need to know about the app: the items in this canvas's prototype, from the manifest.
 const manifestFile = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
-if (!fs.existsSync(manifestFile)) fail('There is no manifest yet. Run: node scripts/build-manifest.js');
+if (!fs.existsSync(manifestFile)) fail('There is no manifest yet. Run: node scripts/build/build-manifest.js');
 const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8')) as { prototypes: { contributorKey: string; id: string }[]; sections?: Record<string, { contributorKey: string; id: string }[]> };
 const everything = [...manifest.prototypes, ...Object.values(manifest.sections ?? {}).flat()];
-// A prototype's items are in a file of their own (scripts/build-manifest.js).
+// A prototype's items are in a file of their own (scripts/build/build-manifest.js).
 const itemsOf = (x: { contributorKey: string; id: string }): { path: string; fileType: string }[] => {
   const file = path.join(ROOT, 'public', 'prototypes', 'items', x.contributorKey, `${x.id}.json`);
   return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : [];

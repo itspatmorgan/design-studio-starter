@@ -8,7 +8,7 @@
 /* Tailwind scans the project for class names and reloads the page when a scanned file
    that isn't code changes. These are data, never classes, so skip them: editing a
    prototype's meta.json then updates the app live instead of reloading it. (The two markers below are filled in
-   by scripts/vite-css-plugin.js: a theme for each design system in src/systems/, and a line for each folder of
+   by scripts/build/vite-css-plugin.js: a theme for each design system in src/systems/, and a line for each folder of
    prototypes.) */
 /* @studio:data-files */
 @source not "../../../contributors.json";

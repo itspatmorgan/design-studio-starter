@@ -20,7 +20,7 @@ const ids = fs.existsSync(DIR)
   : [];
 
 // Every prototype system, by id: its system.ts and its folder. Problems with a declaration are reported by
-// scripts/check-modules.js.
+// scripts/check/check-modules.js.
 export const PROTOTYPE_SYSTEMS = Object.fromEntries(await Promise.all(
   ids.map(async (id) => {
     const spec = (await import(pathToFileURL(path.join(DIR, id, 'system.ts')).href)).default;

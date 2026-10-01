@@ -31,21 +31,21 @@
 // Requests must come from the app's own page, and every path is checked to stay inside
 // the prototype's folder.
 //
-// This file wires the requests to the pieces in scripts/files/: paths.js (where files are, and reading them), policy.js (who
+// This file wires the requests to the pieces in scripts/build/files/: paths.js (where files are, and reading them), policy.js (who
 // may change what), ops.js (the changes), and http.js (reading and answering requests).
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { buildManifest } from './build-manifest.js';
-import { createPrototype, renamePrototype } from './create-prototype.js';
+import { createPrototype, renamePrototype } from '../cli/create-prototype.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
-import { resolveContributor } from './resolve-contributor.js';
-import { fileTypeOf, handbookTypeOf } from './lib/file-types.js';
-import { HANDBOOK_KEY, SYSTEMS_KEY } from '../src/studio/core/roots.ts';
-import { PROTOTYPE_SECTIONS, SERVER_FILES } from './lib/modules.js';
-import { CONTRIBUTORS_DIR } from './lib/contributors.js';
-import { SKILL_FILE, skillProblems } from '../src/studio/skills.ts';
-import { frontmatter } from './lib/frontmatter.js';
+import { resolveContributor } from '../cli/resolve-contributor.js';
+import { fileTypeOf, handbookTypeOf } from '../lib/file-types.js';
+import { HANDBOOK_KEY, SYSTEMS_KEY } from '../../src/studio/core/roots.ts';
+import { PROTOTYPE_SECTIONS, SERVER_FILES } from '../lib/modules.js';
+import { CONTRIBUTORS_DIR } from '../lib/contributors.js';
+import { SKILL_FILE, skillProblems } from '../../src/studio/skills.ts';
+import { frontmatter } from '../lib/frontmatter.js';
 import { BATCH_MS, HANDBOOK, MAX_SOURCE_BYTES, PROTOS, itemFile, prototypeDir, readTree, resolveInside, systemOf, versionOf } from './files/paths.js';
 import { readJson, sameOrigin, send } from './files/http.js';
 import { canChange, ownerError, owns } from './files/policy.js';

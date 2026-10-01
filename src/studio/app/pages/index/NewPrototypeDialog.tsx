@@ -1,5 +1,5 @@
 // "New prototype" on the Prototypes page, in dev: the same as pnpm new, from the app.
-// It creates the folder in your space (scripts/create-prototype.js) and opens it.
+// It creates the folder in your space (scripts/cli/create-prototype.js) and opens it.
 import { useState } from 'react';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';

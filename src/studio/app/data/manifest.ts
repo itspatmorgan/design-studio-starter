@@ -19,7 +19,7 @@ export const findPrototype = (m: Manifest, contributor: string, prototype: strin
   allPrototypes(m).find((p) => p.contributorKey === contributor && p.id === prototype);
 
 // A prototype's items, fetched the first time they're needed (the deployed manifest leaves them out:
-// scripts/build-manifest.js) and then kept on the manifest's entry for it. One fetch per prototype,
+// scripts/build/build-manifest.js) and then kept on the manifest's entry for it. One fetch per prototype,
 // however many callers ask. The dev server sends items with the manifest, so this returns at once there.
 const fetching = new Map<string, Promise<Prototype>>();
 export function withItems(ref: PrototypeRef): Promise<Prototype> {

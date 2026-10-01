@@ -1,4 +1,4 @@
-// Tools on the dev server (scripts/vite-files-plugin.js serves these at POST /__studio/tools/<route>):
+// Tools on the dev server (scripts/build/vite-files-plugin.js serves these at POST /__studio/tools/<route>):
 // Publish moves one of your prototypes into src/tools/<id>/ with you as its maintainer, and Unpublish moves a
 // tool you maintain back into your own prototypes. The folder moves, so its address changes from
 // /<key>/<id> to /tools/<id>. Links to the old address inside the moved files (a canvas embedding one of
@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildManifest } from '../../../../scripts/build-manifest.js';
+import { buildManifest } from '../../../../scripts/build/build-manifest.js';
 import { parseMaintainers } from '../../core/permissions.ts';
 import type { ModuleServer } from '../index.ts';
 

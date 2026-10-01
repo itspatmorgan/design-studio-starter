@@ -1,6 +1,6 @@
 // The Source view of an item (?mode=source): the file's text in a code editor, in the space the
 // item's page normally fills. Dev only: it reads and saves through the file layer
-// (scripts/vite-files-plugin.js), and isn't in the deployed site.
+// (scripts/build/vite-files-plugin.js), and isn't in the deployed site.
 //
 // In your own prototypes you can edit and save it (⌘S), like your agent editing the same file.
 // In other people's it is read-only. The Handbook's files are platform files: you can edit them, and

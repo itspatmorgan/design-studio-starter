@@ -5,11 +5,11 @@
 // its place as the file is read: the type's extensions in every folder that holds items, which come from
 // the modules' sections (src/studio/modules/globs.ts). In a production build it adds a negated pattern
 // for each archived file or prototype, so those never become chunks. Nothing is left out in dev, where
-// everything shows. The deployed manifest leaves the same things out (scripts/build-manifest.js --deploy).
+// everything shows. The deployed manifest leaves the same things out (scripts/build/build-manifest.js --deploy).
 import { buildManifest } from './build-manifest.js';
-import { FILE_TYPES } from './lib/file-types.js';
-import { ENABLED_MODULES } from './lib/modules.js';
-import { globsFor } from '../src/studio/modules/globs.ts';
+import { FILE_TYPES } from '../lib/file-types.js';
+import { ENABLED_MODULES } from '../lib/modules.js';
+import { globsFor } from '../../src/studio/modules/globs.ts';
 
 // A path as a literal glob: characters that mean something to a glob are escaped. A trailing /**
 // (a whole prototype) is kept.

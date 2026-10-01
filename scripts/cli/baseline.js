@@ -1,11 +1,11 @@
 // Maintainer tool: measures how modular the platform is and how fast it builds, so a refactor can show
 // it changed neither the product nor the speed. Everything runs in a scratch copy under the system
 // temp folder; the repo is only read.
-//   node scripts/baseline.js coupling            which source files name each module
-//   node scripts/baseline.js build [dir]         build time, manifest size, bundle size (default: a scratch copy of this repo)
-//   node scripts/baseline.js removal <module>    delete a module in a scratch copy, then check the app still builds ("none" is the control);
+//   node scripts/cli/baseline.js coupling            which source files name each module
+//   node scripts/cli/baseline.js build [dir]         build time, manifest size, bundle size (default: a scratch copy of this repo)
+//   node scripts/cli/baseline.js removal <module>    delete a module in a scratch copy, then check the app still builds ("none" is the control);
 //                                                with --off, turn it off in studio.config.ts instead and keep its files
-//   node scripts/baseline.js fixture <count>     a scratch copy with <count> synthetic prototypes, then build it
+//   node scripts/cli/baseline.js fixture <count>     a scratch copy with <count> synthetic prototypes, then build it
 // Copies the committed files; add --working to include uncommitted changes, --keep to keep the copy. Modules: the names below. A removal that fails at a step shows which module the platform still depends on.
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -14,7 +14,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 // A module's own files (what removing it deletes) and the words that mean source code is using it.
 const MODULES = {
@@ -102,7 +102,7 @@ function coupling() {
 }
 
 function build(dir) {
-  const manifest = run(dir, 'node', ['scripts/build-manifest.js', '--deploy']);
+  const manifest = run(dir, 'node', ['scripts/build/build-manifest.js', '--deploy']);
   const bundle = manifest.ok ? run(dir, 'node', VITE) : { ok: false, seconds: 0, tail: manifest.tail };
   if (!bundle.ok) { console.error(`build failed:\n${bundle.tail}`); return null; }
   const m = sizeOf(path.join(dir, 'public', 'prototypes'));
@@ -114,9 +114,9 @@ function build(dir) {
 
 // The steps a healthy app passes, in order. The first to fail is what still depends on the removed module.
 const STEPS = [
-  ['manifest', 'node', ['scripts/build-manifest.js', '--strict', '--deploy']],
-  ['file types', 'node', ['scripts/check-file-types.js']],
-  ['modules', 'node', ['scripts/check-modules.js']],
+  ['manifest', 'node', ['scripts/build/build-manifest.js', '--strict', '--deploy']],
+  ['file types', 'node', ['scripts/check/check-file-types.js']],
+  ['modules', 'node', ['scripts/check/check-modules.js']],
   ['typecheck', 'node', ['node_modules/typescript/bin/tsc', '-b']],
   ['tests', 'node', TESTS],
   ['bundle', 'node', VITE],
@@ -176,6 +176,6 @@ else if (cmd === 'fixture') {
   if (!Number.isInteger(n) || n < 1 || n > 20000) { console.error('Give a count from 1 to 20000.'); process.exit(2); }
   fixture(n);
 } else {
-  console.error('Usage: node scripts/baseline.js coupling | build [dir] | removal <module> | fixture <count>');
+  console.error('Usage: node scripts/cli/baseline.js coupling | build [dir] | removal <module> | fixture <count>');
   process.exit(2);
 }

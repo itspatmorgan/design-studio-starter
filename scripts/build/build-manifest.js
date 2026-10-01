@@ -1,27 +1,27 @@
-// Usage: node scripts/build-manifest.js [--strict] [--deploy]
+// Usage: node scripts/build/build-manifest.js [--strict] [--deploy]
 //   --strict  exits 1 if any meta.json is invalid
 //   --deploy  leaves archived prototypes and views out (src/studio/core/archive.ts), for the deployed site
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from './lib/systems.js';
-import { STUDIO_ID } from '../src/studio/systemSources.ts';
-import { isHelper, itemSlug } from '../src/studio/fileTypes/index.ts';
-import { HANDBOOK_KEY, HANDBOOK_SECTIONS, rootOf } from '../src/studio/core/roots.ts';
-import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../src/studio/core/archive.ts';
-import { byOrder, parseOrder } from '../src/studio/core/order.ts';
-import { parseMaintainers } from '../src/studio/core/permissions.ts';
-import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
-import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from './lib/modules.js';
-import { frontmatter } from './lib/frontmatter.js';
-import { contributorsSignature, loadContributors } from './lib/contributors.js';
-import { handbookProblems } from './lib/handbook-check.js';
-import { systemDocs } from './lib/system-docs.js';
-import { themeTokens } from '../src/studio/themeTokens.ts';
-import { handbookMap } from '../src/studio/handbookMap.ts';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from '../lib/systems.js';
+import { STUDIO_ID } from '../../src/studio/systemSources.ts';
+import { isHelper, itemSlug } from '../../src/studio/fileTypes/index.ts';
+import { HANDBOOK_KEY, HANDBOOK_SECTIONS, rootOf } from '../../src/studio/core/roots.ts';
+import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../../src/studio/core/archive.ts';
+import { byOrder, parseOrder } from '../../src/studio/core/order.ts';
+import { parseMaintainers } from '../../src/studio/core/permissions.ts';
+import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from '../lib/file-types.js';
+import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from '../lib/modules.js';
+import { frontmatter } from '../lib/frontmatter.js';
+import { contributorsSignature, loadContributors } from '../lib/contributors.js';
+import { handbookProblems } from '../lib/handbook-check.js';
+import { systemDocs } from '../lib/system-docs.js';
+import { themeTokens } from '../../src/studio/themeTokens.ts';
+import { handbookMap } from '../../src/studio/handbookMap.ts';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 // The Guide's pages, or null when its module is off or not installed.
@@ -227,7 +227,7 @@ function writeManifest(manifest) {
 // skips writing the file, and `quiet` prints nothing. `touched` is the files the dev server saw change since the last
 // build: a prototype with none of them is reused without a look at its files, so a rebuild costs what changed, not
 // how many prototypes there are. `archived` in the result lists what deploy
-// leaves out, as paths in the app's file globs (scripts/vite-globs-plugin.js).
+// leaves out, as paths in the app's file globs (scripts/build/vite-globs-plugin.js).
 export function buildManifest({ deploy = false, write = true, quiet = false, touched: touchedPaths } = {}) {
   // Only trusted if every path is inside this repo as this script sees it. A path spelled another way (a linked folder)
   // could look unrelated to a prototype that did change, so then nothing is assumed unchanged.
@@ -395,7 +395,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   return { manifest, errors, archived: deploy ? archived : [] };
 }
 
-// Run as a script: node scripts/build-manifest.js [--strict]
+// Run as a script: node scripts/build/build-manifest.js [--strict]
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const { errors } = buildManifest({ deploy: process.argv.includes('--deploy') });
   // pnpm build passes --strict, so a broken meta.json or Guide page fails the build. In dev it's only a warning.

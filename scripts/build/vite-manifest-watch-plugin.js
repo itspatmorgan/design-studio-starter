@@ -8,11 +8,11 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildManifest } from './build-manifest.js';
-import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
-import { ENABLED_MODULES, PROTOTYPE_DIRS } from './lib/modules.js';
-import { CONTRIBUTORS_DIR, CONTRIBUTORS_FILE } from './lib/contributors.js';
+import { FILE_TYPES, fileTypeOf } from '../lib/file-types.js';
+import { ENABLED_MODULES, PROTOTYPE_DIRS } from '../lib/modules.js';
+import { CONTRIBUTORS_DIR, CONTRIBUTORS_FILE } from '../lib/contributors.js';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 // The Guide's pages, or null when its module is off or not installed.

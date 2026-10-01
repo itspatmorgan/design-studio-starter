@@ -1,11 +1,11 @@
-// Usage: node scripts/check-identity.js   (pre-commit, never blocks)
+// Usage: node scripts/check/check-identity.js   (pre-commit, never blocks)
 //
 // Warns when your Git name or email doesn't match your contributors.json entry, so every
 // commit traces back to the right person. Fix it with:
 //   git config user.name "Your Name"
 //   git config user.email you@yourcompany.com
 import { execFileSync } from 'node:child_process';
-import { loadContributors, resolveContributor } from './resolve-contributor.js';
+import { loadContributors, resolveContributor } from '../cli/resolve-contributor.js';
 
 const git = (key) => { try { return execFileSync('git', ['config', key], { encoding: 'utf8' }).trim(); } catch { return ''; } };
 

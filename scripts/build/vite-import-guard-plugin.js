@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from './lib/systems.js';
-import { ENABLED_MODULES, PROTOTYPE_DIRS } from './lib/modules.js';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../lib/systems.js';
+import { ENABLED_MODULES, PROTOTYPE_DIRS } from '../lib/modules.js';
 
-const SRC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../src');
+const SRC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src');
 const PROTOS = path.join(SRC, 'prototypes');
 const ROOT = path.dirname(SRC);
 // The one door into a module a prototype may use: its lib/ folder, for a module that says `lib: true`.

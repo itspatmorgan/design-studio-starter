@@ -19,18 +19,18 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { compatible, listProblems, moduleProblems, PLATFORM_VERSION } from '../src/studio/modules/index.ts';
+import { compatible, listProblems, moduleProblems, PLATFORM_VERSION } from '../../src/studio/modules/index.ts';
 import {
   agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, readDeclaration, setDefaultSystem,
-} from '../src/studio/modules/pack.ts';
-import { systemProblems } from '../src/studio/systems.ts';
-import { MODULES, ENABLED_MODULES, CONFIG } from './lib/modules.js';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from './lib/systems.js';
-import { fetchSource, walk } from './lib/fetch-source.js';
-import { loadContributors } from './lib/contributors.js';
-import { changesFromLock, hashFile, readLock, writeLock } from './lib/lock.js';
+} from '../../src/studio/modules/pack.ts';
+import { systemProblems } from '../../src/studio/systems.ts';
+import { MODULES, ENABLED_MODULES, CONFIG } from '../lib/modules.js';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from '../lib/systems.js';
+import { fetchSource, walk } from '../lib/fetch-source.js';
+import { loadContributors } from '../lib/contributors.js';
+import { changesFromLock, hashFile, readLock, writeLock } from '../lib/lock.js';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const rel = (...parts) => path.join(ROOT, ...parts);
 const say = (line = '') => console.log(line);
 const fail = (message) => { console.error(message); process.exit(1); };
@@ -87,8 +87,8 @@ function syncAgents() {
   fs.writeFileSync(file, next);
   return true;
 }
-const syncInFreshProcess = () => run('node', ['scripts/studio.js', 'sync']);
-const checkInFreshProcess = () => { try { run('node', ['scripts/check-modules.js']); return null; } catch (e) { return `${e.stderr ?? ''}${e.stdout ?? ''}`.trim(); } };
+const syncInFreshProcess = () => run('node', ['scripts/cli/studio.js', 'sync']);
+const checkInFreshProcess = () => { try { run('node', ['scripts/check/check-modules.js']); return null; } catch (e) { return `${e.stderr ?? ''}${e.stdout ?? ''}`.trim(); } };
 
 // ---- commands
 function list() {
@@ -349,7 +349,7 @@ function SECTION_TAKEN(id) {
 
 function check() {
   const problem = checkInFreshProcess();
-  say(problem ?? run('node', ['scripts/check-modules.js']).trim());
+  say(problem ?? run('node', ['scripts/check/check-modules.js']).trim());
   const changes = changesFromLock();
   for (const c of changes) {
     say(`${c.kind} ${c.id}: ${c.changed.length ? `${c.changed.length} file(s) changed from the original (${c.changed[0]}${c.changed.length > 1 ? ', ...' : ''})` : ''}${c.changed.length && c.missing.length ? '; ' : ''}${c.missing.length ? `${c.missing.length} file(s) deleted` : ''}. That's yours to change; this just says where it differs.`);
@@ -363,7 +363,7 @@ const commands = {
   add, remove, 'create-module': () => create('module'), 'create-system': () => create('system'),
 };
 if (!command || !Object.hasOwn(commands, command)) {
-  console.error(`Usage: pnpm studio <command>\n  ${Object.keys(commands).join(', ')}\nSee the top of scripts/studio.js for what each does.`);
+  console.error(`Usage: pnpm studio <command>\n  ${Object.keys(commands).join(', ')}\nSee the top of scripts/cli/studio.js for what each does.`);
   process.exit(command ? 1 : 0);
 }
 await commands[command]();

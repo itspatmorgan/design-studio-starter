@@ -35,9 +35,9 @@ pnpm dev        # starts the app at localhost:5173
 - **Components.** shadcn/ui on [Base UI](https://base-ui.com/react/overview/quick-start) (`@base-ui/react`). Compose with the `render` prop, e.g. `<DialogTrigger render={<Button />}>Open</DialogTrigger>`.
 - **Icons.** The app UI (`src/studio/`) uses HugeIcons. Product components and prototypes use `lucide-react`, which shadcn/ui brings in.
 - **Guide.** Pages are `.md` files in `src/studio/guide/`. Frontmatter sets the `title`, `description`, sidebar `section`, and `order`, plus `toc: true` for an "On this page" list. Adding a file adds the page.
-- **Files in dev.** During `pnpm dev`, the prototype navigation is a live file tree (`scripts/vite-files-plugin.js`), and the app updates without reloading as files change (`scripts/vite-manifest-watch-plugin.js`). Neither exists on the deployed site.
+- **Files in dev.** During `pnpm dev`, the prototype navigation is a live file tree (`scripts/build/vite-files-plugin.js`), and the app updates without reloading as files change (`scripts/build/vite-manifest-watch-plugin.js`). Neither exists on the deployed site.
 - **Source.** In dev, the Files row has a source button that switches the open item between its page and its text (`?mode=source`): the open file's text in a CodeMirror editor, editable in your own prototypes (⌘S) and read-only in others'. Saves go through the file layer, which refuses a write if the file changed on disk since it was opened. The editor loads only in dev.
-- **Errors.** A view that throws shows its error with a Copy button. `pnpm build` fails on a broken `meta.json` or an out-of-scope import (another prototype, `src/studio/`, or a design system the prototype doesn't use), and CI runs it on every push to main. It also fails on a plain `.css` import from a prototype, a system theme rule outside its class, and a view with no default export or a duplicate name. Files over 750 KB are blocked at commit and in CI (`scripts/check-asset-size.js`), and a commit whose Git identity doesn't match `contributors.json` gets a warning.
+- **Errors.** A view that throws shows its error with a Copy button. `pnpm build` fails on a broken `meta.json` or an out-of-scope import (another prototype, `src/studio/`, or a design system the prototype doesn't use), and CI runs it on every push to main. It also fails on a plain `.css` import from a prototype, a system theme rule outside its class, and a view with no default export or a duplicate name. Files over 750 KB are blocked at commit and in CI (`scripts/check/check-asset-size.js`), and a commit whose Git identity doesn't match `contributors.json` gets a warning.
 
 ## Commands
 
@@ -52,7 +52,7 @@ pnpm new "Prototype Name"    # create a prototype in your folder
 pnpm join                    # add yourself to contributors.json
 pnpm studio list             # the modules and design systems, and which are on (add, remove, create-module: see pnpm studio)
 pnpm check                   # confirm the file types and modules are well formed
-node scripts/resolve-contributor.js   # print your contributors.json key
+node scripts/cli/resolve-contributor.js   # print your contributors.json key
 ```
 
 ## Hosting

@@ -1,1 +1,1 @@
-node scripts/check-scope.js --push
+node scripts/check/check-scope.js --push

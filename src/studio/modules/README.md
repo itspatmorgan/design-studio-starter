@@ -62,10 +62,10 @@ This is review, not a sandbox: a module you add has the same power as any code i
 ## How the app reads it
 
 `scripts/lib/modules.js` (the build and dev server) and `src/studio/app/data/modules.ts` (the app) both find the `module.ts` files by folder. From that list:
-`scripts/vite-globs-plugin.js` gives each file type its file lists; `scripts/build-manifest.js` scans each section of prototype-shaped folders into
+`scripts/build/vite-globs-plugin.js` gives each file type its file lists; `scripts/build/build-manifest.js` scans each section of prototype-shaped folders into
 `manifest.sections.<key>`; `src/studio/core/permissions.ts` answers who may change what; `src/studio/app/modules.ts` draws the rail, the routes and the palette.
 Design systems are found the same way from `src/systems/*/system.ts` (`scripts/lib/systems.js`, `src/studio/app/data/systems.ts`), and the stylesheet's marker
-comments are filled in by `scripts/vite-css-plugin.js`.
+comments are filled in by `scripts/build/vite-css-plugin.js`.
 
 `pnpm check` confirms every declaration is well formed, no two modules claim the same address, no contributor uses a module's address, modules don't
 import each other, and code outside a module reads only its `module.ts`.

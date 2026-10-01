@@ -5,11 +5,11 @@
 // component page first asks, and again after a component file is added, removed or edited.
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SYSTEM_SOURCES } from './lib/systems.js';
-import { systemDocs } from './lib/system-docs.js';
-import { extractProps } from './lib/extract-props.js';
+import { SYSTEM_SOURCES } from '../lib/systems.js';
+import { systemDocs } from '../lib/system-docs.js';
+import { extractProps } from '../lib/extract-props.js';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 // Any file under a system's components folder can change its props.
 const inComponents = (file) => Object.values(SYSTEM_SOURCES).some((s) => file.startsWith(path.join(ROOT, s.components) + path.sep));
 const ID = 'virtual:system-props';

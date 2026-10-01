@@ -1,16 +1,16 @@
-// Usage: node scripts/scaffold-component-docs.js <system> [component]
+// Usage: node scripts/cli/scaffold-component-docs.js <system> [component]
 // Adds the docs files a component is missing (<name>.examples.tsx and <name>.md, next to its
 // component file), or for every component in the system when none is named. Files that exist are
 // never touched. See src/studio/systemDocs.ts for how the files make a page.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SYSTEM_SOURCES } from './lib/systems.js';
-import { docTemplates } from '../src/studio/systemScaffold.ts';
-import { systemDocs } from './lib/system-docs.js';
-import { extractProps } from './lib/extract-props.js';
+import { SYSTEM_SOURCES } from '../lib/systems.js';
+import { docTemplates } from '../../src/studio/systemScaffold.ts';
+import { systemDocs } from '../lib/system-docs.js';
+import { extractProps } from '../lib/extract-props.js';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 // The component's main export and its required props, read from its code; null if it has none.
 function mainExport(source, stem) {

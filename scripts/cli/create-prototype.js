@@ -1,14 +1,14 @@
 // Usage: pnpm new "Prototype Name"
-// Also used by the app's "New prototype" button in dev (scripts/vite-files-plugin.js).
+// Also used by the app's "New prototype" button in dev (scripts/build/vite-files-plugin.js).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildManifest } from './build-manifest.js';
-import { rootOf } from '../src/studio/core/roots.ts';
-import { PROTOTYPE_SECTIONS } from './lib/modules.js';
+import { buildManifest } from '../build/build-manifest.js';
+import { rootOf } from '../../src/studio/core/roots.ts';
+import { PROTOTYPE_SECTIONS } from '../lib/modules.js';
 import { resolveContributor } from './resolve-contributor.js';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 // "Agent Config" → "agent-config"
 export const slugify = (title) => title.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');

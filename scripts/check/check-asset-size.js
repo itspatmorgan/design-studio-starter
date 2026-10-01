@@ -1,6 +1,6 @@
 // Usage:
-//   node scripts/check-asset-size.js --staged              (pre-commit, blocks the commit)
-//   node scripts/check-asset-size.js --ci <before> <after> (CI, fails the check)
+//   node scripts/check/check-asset-size.js --staged              (pre-commit, blocks the commit)
+//   node scripts/check/check-asset-size.js --ci <before> <after> (CI, fails the check)
 //
 // Blocks files over the limit from entering the repo. Git keeps every version of every
 // file forever, so one big image makes every future clone slower. Only added or modified
@@ -33,6 +33,6 @@ if (oversized.length) {
   for (const { file, kb } of oversized) console.error(`  ${file}: ${Math.round(kb)} KB`);
   console.error('Make it smaller before committing: export images as WebP (or compressed JPEG),');
   console.error('at the size they are shown. A full-screen image is usually 100-300 KB as WebP.');
-  if (mode === '--staged') console.error('Then stage the new file. If it truly can\'t be smaller, add it to ALLOWLIST in scripts/check-asset-size.js.');
+  if (mode === '--staged') console.error('Then stage the new file. If it truly can\'t be smaller, add it to ALLOWLIST in scripts/check/check-asset-size.js.');
   process.exit(1);
 }

@@ -13,8 +13,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: jdx/mise-action@v2
-      - run: node scripts/check-scope.js --ci ${{ github.event.before }} ${{ github.event.after }}
-      - run: node scripts/check-asset-size.js --ci ${{ github.event.before }} ${{ github.event.after }}
+      - run: node scripts/check/check-scope.js --ci ${{ github.event.before }} ${{ github.event.after }}
+      - run: node scripts/check/check-asset-size.js --ci ${{ github.event.before }} ${{ github.event.after }}
       - if: failure()
         env:
           GH_TOKEN: ${{ github.token }}

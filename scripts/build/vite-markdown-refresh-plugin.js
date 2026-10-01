@@ -7,9 +7,9 @@
 // (vite.config.ts leaves prototype documents out of Fast Refresh, so the two don't collide.)
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_DIRS } from './lib/modules.js';
+import { PROTOTYPE_DIRS } from '../lib/modules.js';
 
-const SRC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../src');
+const SRC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src');
 // Prototypes, and the modules' prototype-shaped folders (src/tools/).
 const FOLDERS = [path.join(SRC, 'prototypes'), ...PROTOTYPE_DIRS].map((dir) => dir + path.sep);
 

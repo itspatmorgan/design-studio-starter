@@ -4,13 +4,13 @@
 //     (src/studio/app/data/fileTypes.ts, scripts/lib/file-types.js).
 //   - a type's type.ts imports only ../index.ts, because the build loads it in Node.
 //   - a type's loader.ts lists its files with studioGlobs(), so a new section and archived files reach it
-//     (scripts/vite-globs-plugin.js).
-// Usage: node scripts/check-file-types.js
+//     (scripts/build/vite-globs-plugin.js).
+// Usage: node scripts/check/check-file-types.js
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const TYPES = path.join(ROOT, 'src', 'studio', 'fileTypes');
 const ids = fs.readdirSync(TYPES, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
 

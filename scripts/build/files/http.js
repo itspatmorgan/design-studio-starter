@@ -1,5 +1,5 @@
 // Reading and answering the app's requests.
-// Part of the dev server's file layer (scripts/vite-files-plugin.js).
+// Part of the dev server's file layer (scripts/build/vite-files-plugin.js).
 import { MAX_SOURCE_BYTES } from './paths.js';
 
 // Only the app's own page may call these: browsers mark same-origin requests.

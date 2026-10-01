@@ -34,7 +34,7 @@ restart `pnpm dev` after adding or removing a folder.
 2. Delete its Guide page (`src/studio/guide/documents.md`, and the links to it in `src/studio/guide/prototypes.md`) and its
    agent rule (`src/handbook/rules/documents.md`, and its line in `AGENTS.md`).
 
-`pnpm build` runs `scripts/check-file-types.js`, which fails if core code imports a type's folder or
+`pnpm build` runs `scripts/check/check-file-types.js`, which fails if core code imports a type's folder or
 one type imports another, so a folder that passes stays removable.
 
 ## Add a type

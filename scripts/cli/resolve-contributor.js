@@ -2,7 +2,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-import { loadContributors } from './lib/contributors.js';
+import { loadContributors } from '../lib/contributors.js';
 
 export { loadContributors };
 

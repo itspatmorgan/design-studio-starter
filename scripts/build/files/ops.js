@@ -1,16 +1,16 @@
 // The changes the app can make to files: create, rename, move, delete, reorder, edit meta.json, and the Handbook's skills.
-// Part of the dev server's file layer (scripts/vite-files-plugin.js).
+// Part of the dev server's file layer (scripts/build/vite-files-plugin.js).
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
-import { buildManifest } from '.././build-manifest.js';
-import { FILE_TYPES, fileTypeOf } from '.././lib/file-types.js';
-import { STATUSES, parseStatus } from '../../src/studio/core/archive.ts';
-import { afterChange, parentOf, parseOrder, place, withFolderOrder } from '../../src/studio/core/order.ts';
-import { rootOf } from '../../src/studio/core/roots.ts';
-import { scaffold } from '.././scaffold-component-docs.js';
-import { opProblem } from '../../src/studio/handbookRules.ts';
-import { SKILL_FILE, descriptionProblem, nameProblem } from '../../src/studio/skills.ts';
+import { buildManifest } from '../build-manifest.js';
+import { FILE_TYPES, fileTypeOf } from '../../lib/file-types.js';
+import { STATUSES, parseStatus } from '../../../src/studio/core/archive.ts';
+import { afterChange, parentOf, parseOrder, place, withFolderOrder } from '../../../src/studio/core/order.ts';
+import { rootOf } from '../../../src/studio/core/roots.ts';
+import { scaffold } from '../../cli/scaffold-component-docs.js';
+import { opProblem } from '../../../src/studio/handbookRules.ts';
+import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/studio/skills.ts';
 import { ROOT, TRASH, readOrder, readTree, resolveInside, validName, viewKey } from './paths.js';
 
 // The contents of a new file: its file type's template, by extension (src/studio/fileTypes/<type>/type.ts).

@@ -1,6 +1,6 @@
 // The file types installed in src/studio/fileTypes/: one folder each, found with a glob, so the app
 // runs with any of them removed. (scripts/lib/file-types.js finds the same folders for the
-// build.) Core code reads types here and never imports a type's folder (scripts/check-file-types.js).
+// build.) Core code reads types here and never imports a type's folder (scripts/check/check-file-types.js).
 import { assertUniqueExtensions, matchFileType, type FileTypeSpec } from '@/studio/fileTypes';
 import type { FileTypeModule } from '@/studio/app/data/fileTypeModule';
 

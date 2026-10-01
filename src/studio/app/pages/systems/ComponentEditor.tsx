@@ -1,7 +1,7 @@
 // A component's files in the Source editor, one tab each: its page (Markdown), its examples, and
 // the component itself. Shown in place of the component's page while you edit (ComponentDocPage's
 // Edit button); the page updates as you save. A file the component doesn't have yet is offered as
-// a template. Dev only: it reads and saves through the file layer (scripts/vite-files-plugin.js).
+// a template. Dev only: it reads and saves through the file layer (scripts/build/vite-files-plugin.js).
 import { useState } from 'react';
 import { useRouter } from '@tanstack/react-router';
 import SourcePane from '@/studio/app/pages/prototype/SourcePane';

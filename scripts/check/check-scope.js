@@ -1,12 +1,12 @@
 // Usage:
-//   node scripts/check-scope.js --staged           (pre-commit, never blocks)
-//   node scripts/check-scope.js --push             (pre-push, never blocks)
-//   node scripts/check-scope.js --ci <before> <after>   (CI, fails if out of scope)
+//   node scripts/check/check-scope.js --staged           (pre-commit, never blocks)
+//   node scripts/check/check-scope.js --push             (pre-push, never blocks)
+//   node scripts/check/check-scope.js --ci <before> <after>   (CI, fails if out of scope)
 import path from 'node:path';
 import { changedFiles, git } from './changed-files.js';
-import { resolveContributor, keyForGithub } from './resolve-contributor.js';
-import { parseMaintainers } from '../src/studio/core/permissions.ts';
-import { MODULES } from './lib/modules.js';
+import { resolveContributor, keyForGithub } from '../cli/resolve-contributor.js';
+import { parseMaintainers } from '../../src/studio/core/permissions.ts';
+import { MODULES } from '../lib/modules.js';
 
 const [mode, before, after] = process.argv.slice(2);
 let changed;
