@@ -17,7 +17,7 @@ import { extractInstruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/lis
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Add01Icon, ArrowDown01Icon, ArrowUp01Icon, ArrowUpDoubleIcon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
-  Folder01Icon, StarIcon, SourceCodeIcon, BrowserIcon, PencilEdit02Icon, Pen01Icon, PaintBoardIcon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
+  Folder01Icon, StarIcon, SourceCodeIcon, BrowserIcon, PencilEdit02Icon, PaintBoardIcon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import {
@@ -390,9 +390,9 @@ export default function FileTree({ proto, current }: FileTreeProps) {
                   : opensOn?.path !== node.path && <ContextMenuItem key="start" onClick={() => setTimeout(() => run({ op: 'meta', start: itemSlug(node.path) }))}><HugeiconsIcon icon={StarIcon} /> Set as start</ContextMenuItem>
               ),
               editable && !isHandbook && FILE_TYPES[items.get(node.path)?.fileType ?? '']?.fidelity && (
-                items.get(node.path)?.lofi
-                  ? <ContextMenuItem key="lofi" onClick={() => setTimeout(() => setLofi(items.get(node.path)!, false))}><HugeiconsIcon icon={PaintBoardIcon} /> Make hi-fi</ContextMenuItem>
-                  : <ContextMenuItem key="lofi" onClick={() => setTimeout(() => setLofi(items.get(node.path)!, true))}><HugeiconsIcon icon={Pen01Icon} /> Make lofi</ContextMenuItem>
+                <ContextMenuItem key="lofi" onClick={() => setTimeout(() => setLofi(items.get(node.path)!, !items.get(node.path)!.lofi))}>
+                  <HugeiconsIcon icon={PaintBoardIcon} /> {items.get(node.path)?.lofi ? 'Make hi-fi' : 'Make lofi'}
+                </ContextMenuItem>
               ),
               changeable && <ContextMenuItem key="rename" onClick={() => setTimeout(() => setEditing({ kind: 'rename', path: node.path }))}><HugeiconsIcon icon={PencilEdit02Icon} /> Rename</ContextMenuItem>,
               ...(() => { const m = moves(node); return [
