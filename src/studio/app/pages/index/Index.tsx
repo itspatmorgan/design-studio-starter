@@ -128,11 +128,15 @@ export default function Index() {
 
   return (
     <main className="mx-auto w-full max-w-5xl px-6 pt-12 pb-8">
-      <header className="mb-6">
+      <header className="mb-5">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Prototypes</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Every prototype in the sandbox, newest first.</p>
+        {/* The subtitle's line is as tall as the button (32px), so both centre their text on the same line. */}
+        <div className="mt-0.5 flex items-center justify-between gap-4">
+          <p className="text-sm leading-8 text-muted-foreground">Every prototype in the sandbox, newest first.</p>
+          <NewPrototypeButton />
+        </div>
       </header>
-      <div className="mb-6 flex items-center justify-between gap-3">{!empty && <SearchBox value={search} />}<div className="ml-auto"><NewPrototypeButton /></div></div>
+      {!empty && <div className="mb-6"><SearchBox value={search} /></div>}
       {body}
     </main>
   );
