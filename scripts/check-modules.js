@@ -17,6 +17,7 @@ import { configProblems } from '../src/studio/config.ts';
 import { CONFIG, MODULES, SECTION_KEYS, declarationProblems } from './lib/modules.js';
 import { PROTOTYPE_SYSTEMS, SYSTEM_IDS, systemDeclarationProblems } from './lib/systems.js';
 import { changesFromLock } from './lib/lock.js';
+import { readContributors } from './lib/contributors.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const problems = declarationProblems();
@@ -36,12 +37,13 @@ for (const m of specs) {
   }
 }
 
-const contributorsFile = path.join(ROOT, 'contributors.json');
-const contributors = fs.existsSync(contributorsFile) ? Object.keys(JSON.parse(fs.readFileSync(contributorsFile, 'utf8'))) : [];
+const { contributors: contributorMap, twice, problems: contributorProblems } = readContributors();
+const contributors = Object.keys(contributorMap);
+problems.push(...contributorProblems, ...twice.map((k) => `"${k}" is in contributors.json and also has its own file, contributors/${k}.json. Keep one.`));
 const protoDir = path.join(ROOT, 'src', 'prototypes');
 const folders = fs.existsSync(protoDir) ? fs.readdirSync(protoDir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name) : [];
 for (const key of SECTION_KEYS) {
-  if (contributors.includes(key)) problems.push(`"${key}" is a contributor in contributors.json and also the address of a module. Give the contributor another key.`);
+  if (contributors.includes(key)) problems.push(`"${key}" is a contributor and also the address of a module. Give the contributor another key.`);
   if (folders.includes(key)) problems.push(`src/prototypes/${key}/ uses "${key}", which is the address of a module. Rename the folder.`);
 }
 

@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { buildManifest } from './build-manifest.js';
 import { FILE_TYPES, fileTypeOf } from './lib/file-types.js';
 import { ENABLED_MODULES, PROTOTYPE_DIRS } from './lib/modules.js';
+import { CONTRIBUTORS_DIR, CONTRIBUTORS_FILE } from './lib/contributors.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -21,7 +22,6 @@ const SYSTEMS = path.join(ROOT, 'src', 'systems');
 // The app's own system: its components, and its theme (the tokens the Systems pages list).
 const STUDIO_COMPONENTS = path.join(ROOT, 'src', 'studio', 'components');
 const STUDIO_THEME = path.join(ROOT, 'src', 'studio', 'styles', 'index.css');
-const CONTRIBUTORS = path.join(ROOT, 'contributors.json');
 // The Handbook's map reads it (src/studio/handbookMap.ts).
 const AGENTS = path.join(ROOT, 'AGENTS.md');
 const BATCH_MS = 50;
@@ -40,7 +40,7 @@ const inside = (dir, file) => file === dir || file.startsWith(dir + path.sep);
 // for meta.json, Guide frontmatter, contributor names, and a file that can be lofi (a view says so
 // in its own text). Other edits to a view's code are left to Vite's hot reload.
 function relevant(file, kind) {
-  if (file === CONTRIBUTORS || file === AGENTS) return true;
+  if (file === CONTRIBUTORS_FILE || inside(CONTRIBUTORS_DIR, file) || file === AGENTS) return true;
   if (GUIDE && inside(GUIDE, file)) return file.endsWith('.md');
   if (inside(HANDBOOK, file)) return kind !== 'change';
   // A system's component docs: files coming and going, and edits to the ones that describe a component
@@ -58,7 +58,7 @@ export default function manifestWatch() {
     name: 'prototype-manifest-watch',
     apply: 'serve',
     configureServer(server) {
-      server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, HANDBOOK, ...(GUIDE ? [GUIDE] : []), SYSTEMS, CONTRIBUTORS, AGENTS]);
+      server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, HANDBOOK, ...(GUIDE ? [GUIDE] : []), SYSTEMS, CONTRIBUTORS_FILE, CONTRIBUTORS_DIR, AGENTS]);
       let timer = null;
       const flush = () => {
         timer = null;

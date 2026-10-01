@@ -2,6 +2,7 @@
 //   node scripts/check-scope.js --staged           (pre-commit, never blocks)
 //   node scripts/check-scope.js --push             (pre-push, never blocks)
 //   node scripts/check-scope.js --ci <before> <after>   (CI, fails if out of scope)
+import path from 'node:path';
 import { changedFiles, git } from './changed-files.js';
 import { resolveContributor, keyForGithub } from './resolve-contributor.js';
 import { parseMaintainers } from '../src/studio/permissions.ts';
@@ -15,13 +16,17 @@ if (!changed) { console.error('Usage: check-scope.js --staged | --push | --ci <b
 const { files, baseRef } = changed;
 const key = mode === '--ci' ? keyForGithub(process.env.GITHUB_ACTOR) : resolveContributor();
 const prefix = key ? `src/prototypes/${key}/` : null;
-// contributors.json at a ref (null means the working version being checked).
+// The contributors at a ref (null means the working version being checked): contributors.json, and the
+// contributors/<key>.json files, merged the way scripts/lib/contributors.js does.
 function contributorsAt(ref) {
-  try {
-    if (ref === null && mode === '--staged') return JSON.parse(git('show', ':contributors.json'));
-    if (ref === null) return JSON.parse(git('show', `${mode === '--ci' ? after : 'HEAD'}:contributors.json`));
-    return JSON.parse(git('show', `${ref}:contributors.json`));
-  } catch { return {}; }
+  const staged = ref === null && mode === '--staged';
+  const treeish = ref === null ? (mode === '--ci' ? after : 'HEAD') : ref;
+  const show = (file) => { try { return JSON.parse(git('show', `${staged ? '' : treeish}:${file}`)); } catch { return null; } };
+  const out = show('contributors.json') ?? {};
+  let files = [];
+  try { files = (staged ? git('ls-files', '--', 'contributors/') : git('ls-tree', '--name-only', treeish, 'contributors/')).split('\n').filter((f) => /^contributors\/[a-z0-9][a-z0-9-]*\.json$/.test(f)); } catch { /* none */ }
+  for (const file of files) { const entry = show(file); if (entry) out[path.basename(file, '.json')] = entry; }
+  return out;
 }
 
 // Adding or editing only your own entry in contributors.json counts as in scope,
@@ -62,7 +67,7 @@ function maintainedItem(f) {
   return null;
 }
 
-const isInScope = (f) => (prefix && f.startsWith(prefix)) || ((m) => Boolean(m) && maintains(...m))(maintainedItem(f)) || (f === 'contributors.json' && onlyOwnEntryChanged());
+const isInScope = (f) => (prefix && f.startsWith(prefix)) || (key && f === `contributors/${key}.json`) || ((m) => Boolean(m) && maintains(...m))(maintainedItem(f)) || (f === 'contributors.json' && onlyOwnEntryChanged());
 const inScope = files.filter(isInScope);
 const platform = files.filter((f) => !isInScope(f));
 

@@ -12,6 +12,7 @@
    prototypes.) */
 /* @studio:data-files */
 @source not "../../../contributors.json";
+@source not "../../../contributors/**";
 
 /* dark: utilities follow the app's color mode (the .dark class on <html>). */
 @custom-variant dark (&:where(.dark, .dark *));

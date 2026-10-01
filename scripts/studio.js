@@ -27,6 +27,7 @@ import { systemProblems } from '../src/studio/systems.ts';
 import { MODULES, ENABLED_MODULES, CONFIG } from './lib/modules.js';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from './lib/systems.js';
 import { fetchSource, walk } from './lib/fetch-source.js';
+import { loadContributors } from './lib/contributors.js';
 import { changesFromLock, hashFile, readLock, writeLock } from './lib/lock.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -341,7 +342,7 @@ function create(kind) {
 
 function SECTION_TAKEN(id) {
   const keys = new Set(Object.values(MODULES).flatMap((m) => (m?.section ? [m.section.key] : [])));
-  const contributors = fs.existsSync(rel('contributors.json')) ? Object.keys(JSON.parse(fs.readFileSync(rel('contributors.json'), 'utf8'))) : [];
+  const contributors = Object.keys(loadContributors());
   const folders = fs.existsSync(rel('src', 'prototypes')) ? fs.readdirSync(rel('src', 'prototypes')) : [];
   return keys.has(id) || contributors.includes(id) || folders.includes(id);
 }

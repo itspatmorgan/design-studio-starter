@@ -1,6 +1,6 @@
 // Usage:
 //   pnpm join                          (dry run: prints the entry it would add)
-//   pnpm join --yes                    (adds it to contributors.json)
+//   pnpm join --yes                    (adds it as contributors/<key>.json)
 //   pnpm join --key sam --name "Sam Lee" --github samlee --email sam@yourcompany.com --yes
 import fs from 'node:fs';
 import path from 'node:path';
@@ -8,6 +8,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { resolveContributor, loadContributors } from './resolve-contributor.js';
 import { SECTION_KEYS } from './lib/modules.js';
+import { contributorFile } from './lib/contributors.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // Keys that are app page URLs, so they can't be contributor folders (/systems, /guide, /handbook, /tools): the modules' sections.
@@ -67,7 +68,7 @@ if (problems.length) {
 }
 
 const entry = { name, github, email };
-console.log(`${yes ? 'Adding' : 'Proposed'} contributors.json entry:\n${JSON.stringify({ [key]: entry }, null, 2)}`);
+console.log(`${yes ? 'Adding' : 'Proposed'} contributors/${key}.json:\n${JSON.stringify(entry, null, 2)}`);
 if (!yes) console.log('Name and email come from your Git config, and the GitHub username from the GitHub CLI, unless passed as flags.');
 console.log(`Your folder will be src/prototypes/${key}/.`);
 if (!github) console.log('Warning: no GitHub username (is the GitHub CLI installed and signed in?). Pass --github, or CI will not recognize your pushes.');
@@ -78,8 +79,9 @@ if (!yes) {
   process.exit(0);
 }
 
-fs.writeFileSync(path.join(ROOT, 'contributors.json'), JSON.stringify({ ...contributors, [key]: entry }, null, 2) + '\n');
+fs.mkdirSync(path.dirname(contributorFile(key)), { recursive: true });
+fs.writeFileSync(contributorFile(key), JSON.stringify(entry, null, 2) + '\n');
 const folder = path.join(ROOT, 'src', 'prototypes', key);
 fs.mkdirSync(folder, { recursive: true });
 fs.writeFileSync(path.join(folder, '.gitkeep'), '');
-console.log(`Added "${key}" to contributors.json and created src/prototypes/${key}/.`);
+console.log(`Added contributors/${key}.json and created src/prototypes/${key}/.`);

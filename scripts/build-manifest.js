@@ -15,6 +15,7 @@ import { parseMaintainers } from '../src/studio/permissions.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from './lib/modules.js';
 import { frontmatter } from './lib/frontmatter.js';
+import { contributorsSignature, loadContributors } from './lib/contributors.js';
 import { handbookProblems } from './lib/handbook-check.js';
 import { systemDocs } from './lib/system-docs.js';
 import { themeTokens } from '../src/studio/themeTokens.ts';
@@ -164,11 +165,35 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
   };
 }
 
-// Writes a file only when its text changes, so a dev server doesn't see files it already has as new.
+// Writes a file only when its text changes, so a dev server doesn't see files it already has as new. What was last
+// written is remembered, so a rebuild with thousands of unchanged files checks that each exists and reads none of them.
+const written = new Map();
 function writeIfChanged(file, text) {
-  if (fs.existsSync(file) && fs.readFileSync(file, 'utf8') === text) return;
+  const exists = fs.existsSync(file);
+  if (exists && (written.get(file) === text || fs.readFileSync(file, 'utf8') === text)) { written.set(file, text); return; }
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, text);
+  written.set(file, text);
+}
+
+// The dev server rebuilds the manifest on every change, and nearly all of it is unchanged prototypes. So a prototype's
+// entry is kept between builds, along with what reading it printed, and reused while nothing in its folder has changed
+// (each file's name, modified time and size) or any contributor has (their names are in the entries).
+const cache = new Map();
+let cachedFor = '';
+function signatureOf(dir) {
+  const parts = [];
+  const visit = (abs, base) => {
+    let entries;
+    try { entries = fs.readdirSync(abs, { withFileTypes: true }); } catch { return; }
+    for (const e of entries) {
+      if (e.name === 'node_modules') continue;
+      if (e.isDirectory()) { parts.push(`${base}${e.name}/`); visit(path.join(abs, e.name), `${base}${e.name}/`); }
+      else if (e.isFile()) { const s = fs.statSync(path.join(abs, e.name)); parts.push(`${base}${e.name}:${s.mtimeMs}:${s.size}`); }
+    }
+  };
+  visit(dir, '');
+  return parts.join('\n');
 }
 
 // Writes the manifest the app fetches: prototypes without their items (with how many, and a hash
@@ -203,18 +228,30 @@ function writeManifest(manifest) {
 // leaves out, as paths in the app's file globs (scripts/vite-globs-plugin.js).
 export function buildManifest({ deploy = false, write = true, quiet = false } = {}) {
   const out = quiet ? { log() {}, warn() {}, error() {} } : console;
-  // Display names come from contributors.json, so they live in one place.
-  const contributorsFile = path.join(ROOT, 'contributors.json');
-  const contributors = fs.existsSync(contributorsFile) ? JSON.parse(fs.readFileSync(contributorsFile, 'utf8')) : {};
+  // Display names come from the contributors (contributors.json, and contributors/<key>.json), so they live in one place.
+  const contributors = loadContributors();
 
   const prototypes = [];
   // Items of the modules' sections of prototype-shaped folders, by section key (tools).
   const sections = Object.fromEntries(PROTOTYPE_SECTIONS.map((s) => [s.key, []]));
   let errors = 0;
+  const people = contributorsSignature();
+  if (people !== cachedFor) { cache.clear(); cachedFor = people; }
+  const seen = new Set();
   const read = (dir, contributorKey, id, policy) => {
-    const { entry, errors: found } = readPrototype(dir, contributorKey, id, out, contributors, policy);
-    errors += found;
-    return entry;
+    const key = `${contributorKey}/${id}`;
+    const signature = signatureOf(dir);
+    seen.add(key);
+    let hit = cache.get(key);
+    if (!hit || hit.signature !== signature || hit.policy !== policy) {
+      const messages = [];
+      const sink = Object.fromEntries(['log', 'warn', 'error'].map((level) => [level, (text) => messages.push([level, text])]));
+      hit = { signature, policy, messages, ...readPrototype(dir, contributorKey, id, sink, contributors, policy) };
+      cache.set(key, hit);
+    }
+    for (const [level, text] of hit.messages) out[level](text);
+    errors += hit.errors;
+    return hit.entry;
   };
   for (const contributorKey of dirs(PROTOS)) {
     if (SECTION_KEYS.has(contributorKey)) {
@@ -234,6 +271,8 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
       if (entry) sections[section.key].push(entry);
     }
   }
+
+  for (const key of cache.keys()) if (!seen.has(key)) cache.delete(key);
 
   // The Handbook (src/handbook/): a prototype-shaped entry for each section, so the same file tree
   // and item pages open it. Nobody owns it: the app only reads it. Its shape is fixed

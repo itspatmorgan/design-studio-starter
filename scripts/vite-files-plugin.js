@@ -46,6 +46,7 @@ import { afterChange, byOrder, parentOf, parseOrder, place, withFolderOrder } fr
 import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection, rootOf } from '../src/studio/roots.ts';
 import { canChange as mayChange, canOwn, parseMaintainers, policyFor, whyNot } from '../src/studio/permissions.ts';
 import { MODULES, PROTOTYPE_SECTIONS, SERVER_FILES } from './lib/modules.js';
+import { CONTRIBUTORS_DIR } from './lib/contributors.js';
 import { SYSTEM_SOURCES } from './lib/systems.js';
 import { scaffold } from './scaffold-component-docs.js';
 import { opProblem } from '../src/studio/handbookRules.ts';
@@ -390,7 +391,7 @@ export default function filesPlugin() {
       // Who you are, worked out once (it can call the GitHub CLI), and again if contributors.json changes.
       let key;
       const me = () => (key === undefined ? (key = resolveContributor()) : key);
-      server.watcher.on('change', (f) => { if (path.basename(f) === 'contributors.json') key = undefined; });
+      server.watcher.on('change', (f) => { if (path.basename(f) === 'contributors.json' || path.dirname(f) === CONTRIBUTORS_DIR) key = undefined; });
 
       server.middlewares.use('/__studio', async (req, res, next) => {
         if (!sameOrigin(req)) return send(res, 403, { error: 'Only the app can use this.' });

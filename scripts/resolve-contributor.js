@@ -1,13 +1,10 @@
-import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+import { loadContributors } from './lib/contributors.js';
 
-export function loadContributors() {
-  return JSON.parse(fs.readFileSync(path.join(ROOT, 'contributors.json'), 'utf8'));
-}
+export { loadContributors };
 
 function run(cmd, args) {
   try { return execFileSync(cmd, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); }
