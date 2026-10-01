@@ -301,14 +301,16 @@ function create(kind) {
   if (/[\n\r<>`$\\]/.test(label)) fail('The label should be plain text.');
   const template = rel('scripts', 'templates', kind);
   const fill = (text) => text.replaceAll('__ID__', id).replaceAll('__LABEL__', label);
-  const files = walk(template).map((f) => f.rel);
+  const templateFiles = walk(template).map((f) => f.rel);
+  const sourceOf = new Map(templateFiles.map((f) => [fill(f), f])); // a file's name has the id in it too
+  const files = templateFiles.map(fill);
   if (flags.out) {
     // A pack in its own folder, to publish.
     const out = path.resolve(flags.out);
     if (fs.existsSync(out) && fs.readdirSync(out).length) fail(`${out} isn't empty.`);
     for (const f of files) {
-      const to = path.join(out, fill(f)); fs.mkdirSync(path.dirname(to), { recursive: true });
-      fs.writeFileSync(to, fill(fs.readFileSync(path.join(template, f), 'utf8')));
+      const to = path.join(out, f); fs.mkdirSync(path.dirname(to), { recursive: true });
+      fs.writeFileSync(to, fill(fs.readFileSync(path.join(template, sourceOf.get(f)), 'utf8')));
     }
     say(`Made the ${kind} in ${out}. Publish it as a git repository, then anyone can run: pnpm studio add <its address>`);
     return;
@@ -326,7 +328,7 @@ function create(kind) {
       const to = rel(m.to);
       if (fs.existsSync(to)) throw new Error(`${m.to} already exists.`);
       fs.mkdirSync(path.dirname(to), { recursive: true });
-      fs.writeFileSync(to, fill(fs.readFileSync(path.join(template, m.from), 'utf8')));
+      fs.writeFileSync(to, fill(fs.readFileSync(path.join(template, sourceOf.get(m.from)), 'utf8')));
       written.push(to);
     }
     const problem = checkInFreshProcess();
