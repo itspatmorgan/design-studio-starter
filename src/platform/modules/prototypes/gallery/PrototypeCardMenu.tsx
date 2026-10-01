@@ -6,7 +6,7 @@ import { Fragment } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { MoreHorizontalIcon } from '@hugeicons/core-free-icons';
 import type { PrototypeInfo } from '@/platform/app/data/types';
-import { usePrototypeActions } from '@/platform/app/pages/prototype/usePrototypeActions';
+import { usePrototypeActions } from '@/platform/modules/prototypes/viewer/usePrototypeActions';
 import { menuGroups } from '@/platform/app/shell/menuGroups';
 import { cn } from '@/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/platform/components/dropdown-menu';

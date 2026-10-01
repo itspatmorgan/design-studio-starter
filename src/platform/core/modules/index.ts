@@ -30,7 +30,9 @@ export type ModuleSpec = {
   // it). Without one, nobody can: the module's files are changed in the repo.
   // `standalone` is for a section of prototype-shaped folders whose items open on their own, filling the
   // window with no rail or navigation, on the deployed site (a published tool is an app).
-  section?: { key: string; folder?: string; items?: 'prototypes' | 'handbook'; policy?: 'maintainers' | 'open'; standalone?: boolean };
+  // `byPerson` is for the one section whose folders are grouped by the person who owns them
+  // (src/prototypes/<person>/<id>/, opening at /prototypes/<person>/<id>), where the others have one folder per id.
+  section?: { key: string; folder?: string; items?: 'prototypes' | 'handbook'; policy?: 'maintainers' | 'open'; standalone?: boolean; byPerson?: boolean };
   // Prototypes may import the module's lib/index.ts as `@module/<id>`, the one way a prototype can reach into a
   // module (the import guard allows exactly that). Removing the module while a prototype imports it is refused.
   lib?: true;
@@ -109,6 +111,8 @@ export function moduleProblems(spec: unknown, folder: string): string[] {
     else if (items !== undefined && dir === undefined) problems.push(`${where}: a section with items needs a folder to keep them in, like src/tools.`);
     else if (items !== undefined && !(typeof dir === 'string' && /^src\/[a-z0-9][a-z0-9-]*$/.test(dir))) problems.push(`${where}: a section with items keeps them in a folder directly under src/, like src/tools.`);
     else if (items === 'prototypes' && dir !== `src/${(m.section as { key?: string }).key}`) problems.push(`${where}: a section of prototype-shaped folders keeps them in src/ under its own key, like src/tools for "tools".`);
+    const byPerson = (m.section as { byPerson?: unknown }).byPerson;
+    if (byPerson !== undefined && (byPerson !== true || items !== 'prototypes')) problems.push(`${where}: section.byPerson is true, and only for a section with items: "prototypes".`);
     const standalone = (m.section as { standalone?: unknown }).standalone;
     if (standalone !== undefined && (standalone !== true || items !== 'prototypes')) problems.push(`${where}: section.standalone is true, and only for a section with items: "prototypes".`);
   }

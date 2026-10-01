@@ -3,7 +3,7 @@
 import { useState, type ComponentType } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { PortalContext } from '@/lib/portal';
-import ViewError from '@/platform/app/pages/prototype/ViewError';
+import ViewError from '@/platform/modules/prototypes/viewer/ViewError';
 import './lofi.css';
 
 // The route's loader has already loaded Component.

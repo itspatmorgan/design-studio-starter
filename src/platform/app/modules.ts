@@ -35,6 +35,9 @@ export type ModuleApp = {
   // whether you may change this prototype. It's a hook: the shell calls every module's, in the same order each
   // time, since the modules that are on don't change while the app runs.
   useActions?: (proto: PrototypeInfo, can: { editable: boolean }) => PrototypeAction[];
+  // A line or two for the module's card on the app's front page, like how many items it holds. The card already
+  // shows its name and description, and links to its section. Leave it out to show just those.
+  overview?: ComponentType<{ manifest: Manifest }>;
   // CommandItems it adds to the palette's Places group, and groups of its own.
   places?: ComponentType<PaletteContext>;
   palette?: ComponentType<PaletteContext>;

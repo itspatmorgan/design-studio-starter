@@ -10,6 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { itemSlug } from '../index.ts';
+import { addressOf, canonicalPath, parseAddress } from '../../core/roots.ts';
 import { FORMAT_VERSION, stringifyScene } from './slim.ts';
 import { help, run, ToolError, type Ctx, type El, type ItemInfo } from './tools.ts';
 
@@ -61,25 +62,25 @@ const itemsOf = (x: { contributorKey: string; id: string }): { path: string; fil
 const { FILE_TYPES } = await import(pathToFileURL(path.join(ROOT, 'scripts', 'lib', 'file-types.js')).href) as { FILE_TYPES: Record<string, { label: string; preview?: boolean }> };
 
 const title = (p: string) => itemSlug(p).split('/').pop()!.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-const base = `/${contributor}/${prototype}`;
+const base = addressOf(contributor, prototype);
 const ctx: Ctx = {
   base,
   item(appPath) {
     // A canvas shows only its own prototype's items.
     if (!appPath.startsWith(`${base}/`)) return null;
-    const [c, p, ...slug] = appPath.split('/').filter(Boolean).map(decodeURIComponent);
-    const proto = everything.find((x) => x.contributorKey === c && x.id === p);
-    const item = proto && itemsOf(proto).find((i) => itemSlug(i.path) === slug.join('/'));
+    const address = parseAddress(appPath.split('/').map(decodeURIComponent).join('/'));
+    const proto = address && everything.find((x) => x.contributorKey === address.contributor && x.id === address.id);
+    const item = proto && itemsOf(proto).find((i) => itemSlug(i.path) === address!.rest.join('/'));
     if (!item) return null;
     const type = FILE_TYPES[item.fileType];
     return { path: appPath, title: title(item.path), type: item.fileType, typeLabel: type?.label ?? 'File', preview: Boolean(type?.preview) };
   },
   items: () => everything
     .filter((x) => x.contributorKey === contributor && x.id === prototype)
-    .flatMap((x) => itemsOf(x).map((i) => `/${x.contributorKey}/${x.id}/${itemSlug(i.path)}`))
+    .flatMap((x) => itemsOf(x).map((i) => `${addressOf(x.contributorKey, x.id)}/${itemSlug(i.path)}`))
     .map((p) => ctx.item(p))
     .filter((i): i is ItemInfo => i !== null),
-  linkPath: (link) => (link.startsWith('/') && !link.startsWith('//') ? link : null),
+  linkPath: (link) => (link.startsWith('/') && !link.startsWith('//') ? canonicalPath(link) : null),
 };
 
 try {

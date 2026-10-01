@@ -50,6 +50,8 @@ test('a policy must be one a section can have', () => {
 test('items must be a known kind, in a folder directly under src', () => {
   assert.deepEqual(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/tools', items: 'prototypes' } }, 'tools'), []);
   assert.match(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/tools', items: 'files' as 'prototypes' } }, 'tools')[0], /section\.items/);
+  assert.deepEqual(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/tools', items: 'prototypes', byPerson: true } }, 'tools'), []);
+  assert.match(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/tools', byPerson: true } }, 'tools')[0], /byPerson/);
   assert.match(moduleProblems({ ...tools, section: { key: 'tools', folder: 'src/platform/tools', items: 'prototypes' } }, 'tools')[0], /directly under src/);
 });
 

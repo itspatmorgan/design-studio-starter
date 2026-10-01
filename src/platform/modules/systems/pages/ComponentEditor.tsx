@@ -4,7 +4,7 @@
 // a template. Dev only: it reads and saves through the file layer (scripts/build/vite-files-plugin.js).
 import { useState } from 'react';
 import { useRouter } from '@tanstack/react-router';
-import SourcePane from '@/platform/app/pages/prototype/SourcePane';
+import SourcePane from '@/platform/modules/prototypes/viewer/SourcePane';
 import { fileOp, systemFiles } from '@/platform/app/data/files';
 import { setManifest } from '@/platform/app/data/manifest';
 import { Button } from '@/platform/components/button';

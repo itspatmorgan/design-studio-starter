@@ -3,17 +3,17 @@ import { ContributorAvatar } from '@/platform/app/shell/ContributorAvatar';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/platform/components/input-group';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, Layers01Icon, Search01Icon } from '@hugeicons/core-free-icons';
-import { getRouteApi, Link, useNavigate } from '@tanstack/react-router';
+import { getRouteApi, Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { formatDate, newestFirst, prototypeLink } from '@/platform/app/data/manifest';
 import type { PrototypeInfo } from '@/platform/app/data/types';
 import { cn } from '@/lib/utils';
-import NewPrototypeButton from '@/platform/app/pages/index/NewPrototypeDialog';
-import PrototypeCardMenu from '@/platform/app/pages/index/PrototypeCardMenu';
+import { ItemGrid } from '@/platform/app/items/ItemGrid';
+import NewPrototypeButton from '@/platform/modules/prototypes/gallery/NewPrototypeDialog';
+import PrototypeCardMenu from '@/platform/modules/prototypes/gallery/PrototypeCardMenu';
 import { EmptyState } from '@/platform/app/shell/EmptyState';
 import { useMe } from '@/platform/app/data/files';
 
 const rootApi = getRouteApi('__root__');
-const indexApi = getRouteApi('/');
 
 function PrototypeCard({ prototype: p }: { prototype: PrototypeInfo }) {
   const name = p.contributor || p.contributorKey;
@@ -40,9 +40,10 @@ function PrototypeCard({ prototype: p }: { prototype: PrototypeInfo }) {
 // Search box: filters by title, description, and contributor. The text lives in ?q=. It's short until
 // you use it, then widens: while it's focused, and while it holds a search.
 function SearchBox({ value }: { value: string }) {
-  const navigate = useNavigate({ from: '/' });
-  // replace: typing doesn't add a history entry per keystroke.
-  const set = (q: string) => navigate({ search: { q: q || undefined }, replace: true });
+  const navigate = useNavigate();
+  // replace: typing doesn't add a history entry per keystroke. (The gallery's route is added by the module,
+  // so the router's types don't know it: it's written loosely.)
+  const set = (q: string) => navigate({ to: '.', search: { q: q || undefined } as never, replace: true });
   return (
     <form
       role="search"
@@ -76,9 +77,9 @@ function SearchBox({ value }: { value: string }) {
 const matches = (p: PrototypeInfo, q: string) =>
   [p.title, p.description, p.contributor, p.contributorKey, p.id].some((f) => f?.toLowerCase().includes(q));
 
-export default function Index() {
+export default function Gallery() {
   const manifest = rootApi.useLoaderData();
-  const search = indexApi.useSearch().q ?? '';
+  const search = (useSearch({ strict: false }) as { q?: string }).q ?? '';
   const q = search.trim().toLowerCase();
   // Only while the app runs locally, for contributors: the others can't make one.
   const me = useMe();
@@ -107,11 +108,11 @@ export default function Index() {
       .sort(newestFirst);
     // Archived prototypes show here, below the rest. The deployed site leaves them out.
     const list = (ps: PrototypeInfo[]) => (
-      <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <ItemGrid>
         {ps.map((p) => (
           <li key={`${p.contributorKey}/${p.id}`}><PrototypeCard prototype={p} /></li>
         ))}
-      </ul>
+      </ItemGrid>
     );
     const active = prototypes.filter((p) => p.status !== 'archived');
     const archived = prototypes.filter((p) => p.status === 'archived');
@@ -130,7 +131,7 @@ export default function Index() {
       <div className="py-16 text-center">
         <p className="mb-2 text-lg font-semibold text-foreground">No matches</p>
         <p className="mb-4 text-sm text-muted-foreground">Try a different search.</p>
-        <Link to="/" className="text-sm text-primary hover:underline">View all prototypes</Link>
+        <Link to={'/prototypes' as never} className="text-sm text-primary hover:underline">View all prototypes</Link>
       </div>
     );
   }

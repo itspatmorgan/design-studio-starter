@@ -14,7 +14,7 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an item.
 - **One file per canvas:** `<name>.excalidraw`, anywhere in a prototype. An Excalidraw scene as JSON.
   The name in the navigation comes from the file name.
 - **Items are embeds.** A view or document on a canvas is an Excalidraw `embeddable` element whose
-  `link` is the item's address in the app (`/patrick/hello-world/lofi/main`). The link resolves through
+  `link` is the item's address in the app (`/prototypes/patrick/hello-world/lofi/main`; one saved in the older form, without `/prototypes`, still resolves and is written back in the new form when the canvas is saved). The link resolves through
   the manifest (`src/platform/app/items/itemLinks.ts`) to a prototype and an item, and the item's file type
   decides how it looks: a type with an `Embed` in its `module.tsx` (views) shows live, any other
   type shows a card (`src/platform/app/items/ItemCard.tsx`), and a link to nothing shows "Not found".

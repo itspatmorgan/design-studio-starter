@@ -24,7 +24,8 @@ export function forDeploy<P extends Proto>(prototypes: P[]) {
 
 // Links to archived prototypes, in the text of a canvas or document that stays on the deployed site.
 // The site has nothing to open there, so it shows a placeholder, and the build names the file so it
-// can be fixed. `prototypes` are archived prototypes' app paths ("/patrick/checkout"). Returns the
+// can be fixed. `prototypes` are archived prototypes' addresses without /prototypes ("/patrick/checkout"), which also finds the full address
+// ("/prototypes/patrick/checkout") and the older one. Returns the
 // ones the text links to. Reads text and changes nothing.
 const slugChar = (c: string | undefined) => c !== undefined && /[A-Za-z0-9_%\-/]/.test(c);
 export function linksToArchived(text: string, prototypes: string[]): string[] {

@@ -3,12 +3,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildManifest } from '../build/build-manifest.js';
-import { rootOf } from '../../src/platform/core/roots.ts';
-import { PROTOTYPE_SECTIONS } from '../lib/modules.js';
-import { resolveContributor } from './resolve-contributor.js';
+import { buildManifest } from '../../../../../scripts/build/build-manifest.js';
+import { rootOf } from '../../../core/roots.ts';
+import { PROTOTYPE_SECTIONS } from '../../../../../scripts/lib/modules.js';
+import { resolveContributor } from '../../../../../scripts/cli/resolve-contributor.js';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
 
 // "Agent Config" → "agent-config"
 export const slugify = (title) => title.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');

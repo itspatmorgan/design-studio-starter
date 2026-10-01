@@ -3,7 +3,7 @@
 import { Outlet, useParams } from '@tanstack/react-router';
 import { findItem, firstItem } from '@/platform/app/data/manifest';
 import type { Prototype } from '@/platform/app/data/types';
-import PrototypeNav from '@/platform/app/pages/prototype/PrototypeNav';
+import PrototypeNav from '@/platform/modules/prototypes/viewer/PrototypeNav';
 import { isStandalone } from '@/platform/app/data/modules';
 
 export default function PrototypeLayout({ proto }: { proto: Prototype }) {

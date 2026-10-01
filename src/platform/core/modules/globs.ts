@@ -6,8 +6,6 @@
 import type { FileTypeSpec } from '../../fileTypes/index.ts';
 import { itemFolders, type ModuleSpec } from './index.ts';
 
-// Prototypes live in src/prototypes/<contributor>/<id>/, which is part of the platform and not a module.
-const PROTOTYPES = '/prototypes';
 const rootOf = (folder: string) => folder.replace(/^src/, ''); // "src/tools" → "/tools"
 const extensionGlob = (extensions: readonly string[]) =>
   extensions.length === 1 ? `*${extensions[0]}` : `*.{${extensions.map((e) => e.slice(1)).join(',')}}`;
@@ -28,9 +26,9 @@ export function globsFor(id: string, types: Record<string, FileTypeSpec>, module
   }
   if (!spec.extensions.length) return patterns;
 
-  // In prototypes and tools, helpers (names starting with an underscore) aren't items.
+  // In prototypes and tools (every section of prototype-shaped folders), helpers (names starting with an underscore) aren't items.
   const extensions = extensionGlob(spec.extensions);
-  for (const root of [PROTOTYPES, ...itemFolders(modules, 'prototypes').map(rootOf)]) {
+  for (const root of itemFolders(modules, 'prototypes').map(rootOf)) {
     patterns.push(`${root}/**/${extensions}`, `!${root}/**/_*/**`, `!${root}/**/_*`);
   }
   if (spec.inHandbook) for (const root of handbook) patterns.push(`${root}/**/${extensions}`);

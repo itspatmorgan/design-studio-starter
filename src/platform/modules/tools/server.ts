@@ -26,9 +26,14 @@ function filesIn(dir: string): string[] {
   });
 }
 
-// Rewrites links to `from` (an app address like "/patrick/gradient") to `to`, in a folder's canvases and documents.
+// An app address as a pattern: a prototype's is "/prototypes/patrick/gradient", and links saved before prototypes
+// moved under /prototypes have just "/patrick/gradient", so both match.
+const person = (me: string, id: string) => `(?:/prototypes)?${escape(`/${me}/${id}`)}`;
+const section = (id: string) => escape(`/${KEY}/${id}`);
+
+// Rewrites links to `from` (an address pattern, above) to `to`, in a folder's canvases and documents.
 function rewriteLinks(dir: string, from: string, to: string) {
-  const link = new RegExp(`${escape(from)}(?!${slugChar})`, 'g');
+  const link = new RegExp(`${from}(?!${slugChar})`, 'g');
   for (const file of filesIn(dir)) {
     const text = fs.readFileSync(file, 'utf8');
     const next = text.replace(link, to);
@@ -36,9 +41,9 @@ function rewriteLinks(dir: string, from: string, to: string) {
   }
 }
 
-// The files outside `dir` that link to `address`, as repo-relative paths.
+// The files outside `dir` that link to `address` (an address pattern), as repo-relative paths.
 function linkedFrom(dir: string, address: string): string[] {
-  const link = new RegExp(`${escape(address)}(?!${slugChar})`);
+  const link = new RegExp(`${address}(?!${slugChar})`);
   const roots = [path.join(ROOT, 'src', 'prototypes'), path.join(ROOT, 'src', KEY)].filter((r) => fs.existsSync(r));
   return roots.flatMap((r) => filesIn(r))
     .filter((f) => !f.startsWith(dir + path.sep) && link.test(fs.readFileSync(f, 'utf8')))
@@ -65,9 +70,9 @@ export default {
     const metaFile = path.join(to, 'meta.json');
     const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
     fs.writeFileSync(metaFile, JSON.stringify({ ...meta, maintainers: [me] }, null, 2) + '\n');
-    rewriteLinks(to, `/${me}/${id}`, `/${KEY}/${id}`);
+    rewriteLinks(to, person(me, id), `/${KEY}/${id}`);
     const { manifest } = buildManifest();
-    return { body: { contributor: KEY, id, linkedFrom: linkedFrom(to, `/${me}/${id}`), manifest }, manifest };
+    return { body: { contributor: KEY, id, linkedFrom: linkedFrom(to, person(me, id)), manifest }, manifest };
   },
 
   // Moves a tool you maintain back into your own prototypes.
@@ -85,8 +90,8 @@ export default {
     fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
     fs.mkdirSync(path.dirname(to), { recursive: true });
     fs.renameSync(from, to);
-    rewriteLinks(to, `/${KEY}/${id}`, `/${me}/${id}`);
+    rewriteLinks(to, section(id), `/prototypes/${me}/${id}`);
     const { manifest } = buildManifest();
-    return { body: { contributor: me, id, linkedFrom: linkedFrom(to, `/${KEY}/${id}`), manifest }, manifest };
+    return { body: { contributor: me, id, linkedFrom: linkedFrom(to, section(id)), manifest }, manifest };
   },
 } satisfies ModuleServer;

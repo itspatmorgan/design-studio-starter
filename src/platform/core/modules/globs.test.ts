@@ -12,6 +12,7 @@ const needs = (...ids: string[]) => ({ skip: ids.some((id) => !types[id]) && 'ne
 const module = (id: string, section?: ModuleSpec['section']): ModuleSpec => ({ id, label: id, version: '0.1.0', section });
 const tools = module('tools', { key: 'tools', folder: 'src/tools', items: 'prototypes' });
 const modules = [
+  module('prototypes', { key: 'prototypes', folder: 'src/prototypes', items: 'prototypes', byPerson: true }),
   module('guide', { key: 'guide', folder: 'src/platform/modules/guide/pages' }),
   module('handbook', { key: 'handbook', folder: 'src/handbook', items: 'handbook' }),
   module('systems', { key: 'systems', folder: 'src/systems' }),

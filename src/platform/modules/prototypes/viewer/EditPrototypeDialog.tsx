@@ -2,7 +2,7 @@
 // from the file tree: right-click, Set as start.) Saving writes meta.json (scripts/build/vite-files-plugin.js),
 // the same file an agent would edit, and a new title renames the folder to match. The app updates live.
 import { useState } from 'react';
-import { useRenamePrototype } from '@/platform/app/pages/prototype/useRenamePrototype';
+import { useRenamePrototype } from '@/platform/modules/prototypes/viewer/useRenamePrototype';
 import type { PrototypeInfo } from '@/platform/app/data/types';
 import { MODULES } from '@/platform/app/data/modules';
 import { policyFor } from '@/platform/core/permissions';

@@ -6,6 +6,7 @@ import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/componen
 import { APP_NAME } from '@/platform/app/data/config';
 import { prototypeLink } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
+import type { Manifest } from '@/platform/app/data/types';
 import ToolsPage from './ToolsPage';
 import { useToolActions } from './actions';
 
@@ -31,6 +32,12 @@ function ToolsPalette({ manifest, current, go }: PaletteContext) {
   );
 }
 
+// How many tools there are.
+function Overview({ manifest }: { manifest: Manifest }) {
+  const n = (manifest.sections.tools ?? []).length;
+  return <>{n === 1 ? '1 tool' : `${n} tools`}</>;
+}
+
 export default {
   icon: Wrench01Icon,
   rail: 'top',
@@ -44,6 +51,7 @@ export default {
     }),
   ],
   useActions: useToolActions,
+  overview: Overview,
   places: ToolsPlaces,
   palette: ToolsPalette,
 } satisfies ModuleApp;

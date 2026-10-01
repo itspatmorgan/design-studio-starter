@@ -16,6 +16,7 @@ import { FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
 import { itemLabel } from '@/platform/app/data/manifest';
 import type { Item, Manifest, Prototype } from '@/platform/app/data/types';
 import { appPathOf, isInPrototype, resolveItemPath } from '@/platform/app/items/itemLinks';
+import { addressOf, canonicalPath } from '@/platform/core/roots';
 import { boundsOf } from './elements';
 import { help, run, ToolError, type Ctx, type El, type ItemInfo } from './tools';
 
@@ -37,7 +38,7 @@ export function createCanvasAgent({ api, proto, item, manifest, editable, persis
   const file = `src/prototypes/${proto.contributorKey}/${proto.id}/${item.path}`;
 
   const ctx: Ctx = {
-    base: `/${proto.contributorKey}/${proto.id}`,
+    base: addressOf(proto.contributorKey, proto.id),
     item(path) {
       // A canvas shows only its own prototype's items.
       if (!isInPrototype(path, proto)) return null;
@@ -49,10 +50,10 @@ export function createCanvasAgent({ api, proto, item, manifest, editable, persis
     items() {
       const own = [...manifest().prototypes, ...Object.values(manifest().sections).flat()].find((p) => p.contributorKey === proto.contributorKey && p.id === proto.id);
       return (own?.items ?? proto.items)
-        .map((i) => ctx.item(`/${proto.contributorKey}/${proto.id}/${i.path.replace(/\.[^./]+$/, '')}`) as ItemInfo)
+        .map((i) => ctx.item(`${addressOf(proto.contributorKey, proto.id)}/${i.path.replace(/\.[^./]+$/, '')}`) as ItemInfo)
         .filter(Boolean);
     },
-    linkPath: (link) => appPathOf(link) ?? (link.startsWith('/') && !link.startsWith('//') ? link : null),
+    linkPath: (link) => appPathOf(link) ?? (link.startsWith('/') && !link.startsWith('//') ? canonicalPath(link) : null),
   };
 
   // Excalidraw wants whole URLs in links; the tools deal in app paths.

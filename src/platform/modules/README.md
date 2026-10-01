@@ -11,7 +11,7 @@ The design rules behind it:
 - **Plain words, a small config.** `studio.config.ts` holds only what nearly every team changes: the app's name, which optional modules are on, and
   the default design system. Everything else is code you own.
 - **An optional module can be removed.** Delete its folder, or turn it off in the config, and the app still builds. `pnpm baseline removal <module>` proves it.
-  The Handbook and Systems are required, because prototypes are built on them, but each keeps all its code in its own folder.
+  Prototypes, the Handbook and Systems are required, because everything else is built on them, but each keeps all its code in its own folder.
 
 ## Where things are
 
@@ -30,15 +30,15 @@ scripts/         build/ (build and dev server)   check/ (pnpm check)   cli/ (com
 ```
 
 Apart from this file, modules/ holds only modules. A module that can be turned off
-(`optional`) is fully contained: only its `module.ts` is read from outside. A required module (Handbook, Systems) is part of the platform,
+(`optional`) is fully contained: only its `module.ts` is read from outside. A required module (Prototypes, Handbook, Systems) is part of the platform,
 so the platform may import it, but all its code still lives in its one folder.
 
 ## What a module can provide
 
 | File in the module's folder | What it gives the platform |
 |---|---|
-| `module.ts` | Who it is, and its **section**: an address (`/tools`), optionally a content folder, and if that folder holds prototype-shaped folders (`items: "prototypes"`, one per id like `src/tools/<id>/`), who may change them (`policy`) and whether they open as full-window apps on the deployed site (`standalone`). Also: `optional` (may be turned off), `requires` (oldest platform version), `lib`, `handbook`, `dependencies`, `upstream`. |
-| `app.tsx` | Its **rail button**, **routes**, entries in the ⌘K palette (`places`, `palette`), and entries in every prototype's "…" menu (`useActions`). |
+| `module.ts` | Who it is, and its **section**: an address (`/tools`), optionally a content folder, and if that folder holds prototype-shaped folders (`items: "prototypes"`, one per id like `src/tools/<id>/`, or grouped by person like `src/prototypes/<person>/<id>/` with `byPerson`), who may change them (`policy`) and whether they open as full-window apps on the deployed site (`standalone`). Also: `optional` (may be turned off), `requires` (oldest platform version), `lib`, `handbook`, `dependencies`, `upstream`. |
+| `app.tsx` | Its **rail button**, **routes**, a card on the app's front page (`overview`: a line or two under its name and description), entries in the ⌘K palette (`places`, `palette`), and entries in every prototype's "…" menu (`useActions`). |
 | `server.ts` | **Routes it adds to the dev server**, at `POST /__studio/<module>/<route>`. Dev only. |
 | `check.ts` | A **check** that runs in `pnpm check` while the module is on. |
 | `lib/index.ts(x)` | A **library** prototypes import as `@module/<id>`: the one door a prototype has into a module (`lib: true`). |

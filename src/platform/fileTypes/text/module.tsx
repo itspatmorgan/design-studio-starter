@@ -7,7 +7,7 @@ import type { Item, Prototype } from '@/platform/app/data/types';
 import { rootOf } from '@/platform/core/roots';
 import { textFiles } from './loader';
 
-const SourcePane = lazy(() => import('@/platform/app/pages/prototype/SourcePane'));
+const SourcePane = lazy(() => import('@/platform/modules/prototypes/viewer/SourcePane'));
 
 type Props = { proto: Prototype; item: Item; text: string | null };
 

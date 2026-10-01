@@ -2,6 +2,7 @@ import { useRouter } from '@tanstack/react-router';
 import { renamePrototype } from '@/platform/app/data/files';
 import { toast } from '@/platform/components/toast';
 import { setManifest } from '@/platform/app/data/manifest';
+import { addressOf } from '@/platform/core/roots';
 import type { PrototypeInfo } from '@/platform/app/data/types';
 
 // Saves a prototype's new title (and description). A new title renames its folder, so its link
@@ -13,11 +14,12 @@ export function useRenamePrototype(proto: PrototypeInfo) {
     const result = await renamePrototype(proto, change);
     setManifest(result.manifest);
     const { pathname, search, hash } = router.state.location;
-    const oldBase = `/${proto.contributorKey}/${proto.id}`;
+    const oldBase = addressOf(proto.contributorKey, proto.id);
+    const newBase = addressOf(proto.contributorKey, result.prototype);
     // Only a page inside the renamed prototype moves with it. From the Prototypes page, stay put.
     if (result.prototype !== proto.id && pathname.startsWith(oldBase)) {
       await router.navigate({
-        to: `/${proto.contributorKey}/${result.prototype}${pathname.slice(oldBase.length)}` as never,
+        to: `${newBase}${pathname.slice(oldBase.length)}` as never,
         search: search as never,
         hash,
         replace: true,
@@ -25,7 +27,7 @@ export function useRenamePrototype(proto: PrototypeInfo) {
     }
     await router.invalidate();
     if (result.prototype !== proto.id) {
-      toast.add({ title: `Its link is now /${proto.contributorKey}/${result.prototype}` });
+      toast.add({ title: `Its link is now ${newBase}` });
     }
   };
 }

@@ -3,10 +3,10 @@
 // SectionNav (shell/nav/), so it resizes like every section's navigation.
 import type { Item, Prototype } from '@/platform/app/data/types';
 import { SectionNav } from '@/platform/app/shell/nav';
-import PrototypeHeader from '@/platform/app/pages/prototype/PrototypeHeader';
+import PrototypeHeader from '@/platform/modules/prototypes/viewer/PrototypeHeader';
 import HandbookHeader from '@/platform/modules/handbook/pages/HandbookHeader';
 import { HANDBOOK_KEY } from '@/platform/core/roots';
-import FileTree from '@/platform/app/pages/prototype/FileTree';
+import FileTree from '@/platform/modules/prototypes/viewer/FileTree';
 
 export default function PrototypeNav({ proto, current }: { proto: Prototype; current: Item | undefined }) {
   return (

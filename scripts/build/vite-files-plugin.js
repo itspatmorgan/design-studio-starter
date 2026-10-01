@@ -37,7 +37,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { buildManifest } from './build-manifest.js';
-import { createPrototype, renamePrototype } from '../cli/create-prototype.js';
+import { createPrototype, renamePrototype } from '../../src/platform/modules/prototypes/node/create.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from '../cli/resolve-contributor.js';
 import { fileTypeOf, handbookTypeOf } from '../lib/file-types.js';

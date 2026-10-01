@@ -11,7 +11,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/platform/components/select';
 import { toast } from '@/platform/components/toast';
 import { EmptyState } from '@/platform/app/shell/EmptyState';
-import PrototypeCardMenu from '@/platform/app/pages/index/PrototypeCardMenu';
+import { ItemGrid } from '@/platform/app/items/ItemGrid';
+import PrototypeCardMenu from '@/platform/modules/prototypes/gallery/PrototypeCardMenu';
 import { useMe } from '@/platform/app/data/files';
 import { prototypeLink, setManifest } from '@/platform/app/data/manifest';
 import { staleLinksMessage } from './staleLinks';
@@ -64,7 +65,7 @@ function PublishDialog({ me, prototypes, open, onOpenChange }: { me: string; pro
       setManifest(result.manifest);
       await router.invalidate();
       onOpenChange(false);
-      navigate({ to: '/$contributor/$prototype', params: { contributor: result.contributor, prototype: result.id } });
+      navigate(prototypeLink({ contributorKey: result.contributor, id: result.id }));
       toast.add({ title: 'Published as a tool' });
       if (result.linkedFrom.length) toast.add({ type: 'error', title: staleLinksMessage(result.linkedFrom) });
     } catch (e) {
@@ -150,9 +151,9 @@ export default function ToolsPage() {
         </div>
       </header>
       {tools.length ? (
-        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <ItemGrid>
           {tools.map((t) => <li key={t.id}><ToolCard tool={t} /></li>)}
-        </ul>
+        </ItemGrid>
       ) : (
         <ToolsEmpty local={local} />
       )}

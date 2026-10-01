@@ -4,7 +4,7 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import { ArrowTurnBackwardIcon, Wrench01Icon } from '@hugeicons/core-free-icons';
 import { toast } from '@/platform/components/toast';
 import { callModule } from '@/platform/app/data/files';
-import { setManifest } from '@/platform/app/data/manifest';
+import { prototypeLink, setManifest } from '@/platform/app/data/manifest';
 import type { Manifest, PrototypeInfo } from '@/platform/app/data/types';
 import type { PrototypeAction } from '@/platform/core/api';
 import { staleLinksMessage } from './staleLinks';
@@ -27,7 +27,7 @@ export function useToolActions(proto: PrototypeInfo, { editable }: { editable: b
       const result = await (isTool ? unpublishTool : publishTool)(proto);
       setManifest(result.manifest);
       await router.invalidate();
-      navigate({ to: '/$contributor/$prototype', params: { contributor: result.contributor, prototype: result.id } });
+      navigate(prototypeLink({ contributorKey: result.contributor, id: result.id }));
       toast.add({ title: isTool ? 'Moved back to your prototypes' : 'Published as a tool' });
       // Links in other prototypes still point at the old address.
       if (result.linkedFrom.length) toast.add({ type: 'error', title: staleLinksMessage(result.linkedFrom) });

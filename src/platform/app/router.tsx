@@ -1,20 +1,24 @@
 // Routes and router, in code (TanStack Router's code-based routing):
 // https://tanstack.com/router/latest/docs/framework/react/routing/code-based-routing
 //
-//   /                                        Index (search: ?q=)
-//   /$contributor/$prototype                 a prototype, on its start item (or its first)
-//   /$contributor/$prototype/$               an item, by its path without the extension,
-//                                            at any depth: /patrick/hello-world/lofi/main
+//   /                                        Home: what each module adds to the app's front page
+//   /prototypes/$contributor/$prototype      a prototype, on its start item (or its first)
+//   /prototypes/$contributor/$prototype/$    an item, by its path without the extension, at any depth:
+//                                            /prototypes/patrick/hello-world/lofi/main
 //                                            (?mode=source shows its text, in dev: SourcePane)
+//   /$contributor/$prototype[/$]             the same for a section's items: /tools/quote-card, /handbook/docs.
+//                                            An address from before prototypes moved, /patrick/hello-world, is
+//                                            sent on to /prototypes/patrick/hello-world.
 //
-// The modules add their own: /tools, /systems/$system, /handbook, /guide/$page (src/platform/modules/<id>/app.tsx).
-// The Handbook's sections and the tools open through the prototype routes, as /handbook/docs and /tools/<id>.
+// The modules add their own: /prototypes (the gallery), /tools, /systems/$system, /handbook, /guide/$page
+// (src/platform/modules/<id>/app.tsx). Everything that opens in the viewer does so through the routes above.
 import { lazy, Suspense } from 'react';
-import { createRootRoute, createRoute, createRouter, notFound, useNavigate } from '@tanstack/react-router';
+import { createRootRoute, createRoute, createRouter, notFound, redirect, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/platform/components/button';
 import App, { NotFound } from '@/platform/app/shell/App';
-import Index from '@/platform/app/pages/index/Index';
-import PrototypeLayout from '@/platform/app/pages/prototype/PrototypeLayout';
+import Home from '@/platform/app/pages/home/Home';
+import PrototypeLayout from '@/platform/modules/prototypes/viewer/PrototypeLayout';
+import { isSectionKey } from '@/platform/core/roots';
 import { findItem, firstItem, itemLabel, loadManifest, loadPrototype, setManifest } from '@/platform/app/data/manifest';
 import { FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
 import type { Item, Manifest, Prototype } from '@/platform/app/data/types';
@@ -31,35 +35,15 @@ const rootRoute = createRootRoute({
   notFoundComponent: NotFound,
 });
 
-type IndexSearch = { q?: string };
-
-const indexRoute = createRoute({
+const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
-  // https://tanstack.com/router/latest/docs/framework/react/guide/search-params#validating-search-params
-  validateSearch: (search: Record<string, unknown>): IndexSearch => ({
-    q: typeof search.q === 'string' && search.q ? search.q : undefined,
-  }),
-  head: () => ({ meta: [{ title: `Prototypes — ${APP_NAME}` }] }),
-  component: Index,
+  head: () => ({ meta: [{ title: APP_NAME }] }),
+  component: Home,
 });
 
 // ?mode=source shows an item's text instead of the item (dev only): "Edit source" in its file menu.
 type ItemSearch = { mode?: 'source' };
-
-// The prototype's navigation, around whichever item is open.
-const prototypeRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '$contributor/$prototype',
-  validateSearch: (search: Record<string, unknown>): ItemSearch => ({ mode: search.mode === 'source' ? 'source' : undefined }),
-  loader: async ({ params }) => {
-    const proto = await loadPrototype(params.contributor, params.prototype).catch(() => undefined);
-    if (!proto) throw notFound();
-    return { proto };
-  },
-  component: () => <PrototypeLayout proto={prototypeRoute.useLoaderData().proto} />,
-  notFoundComponent: NotFound,
-});
 
 // Loads an item before the route renders, so the current one stays on screen until the next
 // one is ready. Its file type (src/platform/fileTypes/) loads the file. An unknown address, or a type
@@ -83,7 +67,7 @@ async function itemLoader({ contributor, prototype, _splat }: { contributor: str
 type ItemData = { fileType: string; props: object | null; source?: { proto: Prototype; item: Item }; title: string };
 
 // Dev only: import.meta.env.DEV is false in the build, so the editor isn't in the deployed site.
-const SourcePane = import.meta.env.DEV ? lazy(() => import('@/platform/app/pages/prototype/SourcePane')) : null;
+const SourcePane = import.meta.env.DEV ? lazy(() => import('@/platform/modules/prototypes/viewer/SourcePane')) : null;
 
 // The open item, in its file type's page. It shows its own not-found page, inside the
 // prototype's navigation, and never renders without its loader's data.
@@ -97,16 +81,35 @@ function ItemPage({ data }: { data: ItemData | undefined }) {
   return <Suspense fallback={null}><Page {...data.props!} /></Suspense>;
 }
 
+// The routes that open an item in the viewer: one set for a prototype (/prototypes/<person>/<id>) and one for an item
+// of a section (/tools/<id>, /handbook/<section>). They do the same thing and are written twice, not made by a
+// function, because the router's types need each path written out to check links to it.
+const loadProto = async ({ contributor, prototype }: { contributor: string; prototype: string }) => {
+  const proto = await loadPrototype(contributor, prototype).catch(() => undefined);
+  if (!proto) throw notFound();
+  return { proto };
+};
+const searchOf = (search: Record<string, unknown>): ItemSearch => ({ mode: search.mode === 'source' ? 'source' : undefined });
+const titleOf = ({ loaderData }: { loaderData?: ItemData }) => ({ meta: [{ title: loaderData?.title ?? APP_NAME }] });
+
+// A prototype's, with its navigation around whichever item is open.
+const prototypeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: 'prototypes/$contributor/$prototype',
+  validateSearch: searchOf,
+  loader: ({ params }) => loadProto(params),
+  component: () => <PrototypeLayout proto={prototypeRoute.useLoaderData().proto} />,
+  notFoundComponent: NotFound,
+});
 const prototypeIndexRoute = createRoute({
   getParentRoute: () => prototypeRoute,
   path: '/',
   loaderDeps: ({ search }) => ({ mode: search.mode }),
   loader: ({ params, deps }) => itemLoader(params, deps.mode),
-  head: ({ loaderData }) => ({ meta: [{ title: loaderData?.title ?? APP_NAME }] }),
+  head: titleOf,
   component: () => <ItemPage data={prototypeIndexRoute.useLoaderData()} />,
   notFoundComponent: NotFound,
 });
-
 // Splat route: everything after the prototype is the item's path.
 // https://tanstack.com/router/latest/docs/framework/react/routing/routing-concepts#splat--catch-all-routes
 const itemRoute = createRoute({
@@ -114,21 +117,53 @@ const itemRoute = createRoute({
   path: '$',
   loaderDeps: ({ search }) => ({ mode: search.mode }),
   loader: ({ params, deps }) => itemLoader(params, deps.mode),
-  head: ({ loaderData }) => ({ meta: [{ title: loaderData?.title ?? APP_NAME }] }),
+  head: titleOf,
   component: () => <ItemPage data={itemRoute.useLoaderData()} />,
+  notFoundComponent: NotFound,
+});
+
+// A section's. A first part that isn't a section is a prototype's address from before prototypes moved under
+// /prototypes (/patrick/hello-world), so it is sent there.
+const sectionItemRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '$contributor/$prototype',
+  beforeLoad: ({ params, location }) => {
+    if (!isSectionKey(params.contributor)) throw redirect({ to: `/prototypes${location.pathname}` as never, search: location.search as never, replace: true });
+  },
+  validateSearch: searchOf,
+  loader: ({ params }) => loadProto(params),
+  component: () => <PrototypeLayout proto={sectionItemRoute.useLoaderData().proto} />,
+  notFoundComponent: NotFound,
+});
+const sectionItemIndexRoute = createRoute({
+  getParentRoute: () => sectionItemRoute,
+  path: '/',
+  loaderDeps: ({ search }) => ({ mode: search.mode }),
+  loader: ({ params, deps }) => itemLoader(params, deps.mode),
+  head: titleOf,
+  component: () => <ItemPage data={sectionItemIndexRoute.useLoaderData()} />,
+  notFoundComponent: NotFound,
+});
+const sectionItemSplatRoute = createRoute({
+  getParentRoute: () => sectionItemRoute,
+  path: '$',
+  loaderDeps: ({ search }) => ({ mode: search.mode }),
+  loader: ({ params, deps }) => itemLoader(params, deps.mode),
+  head: titleOf,
+  component: () => <ItemPage data={sectionItemSplatRoute.useLoaderData()} />,
   notFoundComponent: NotFound,
 });
 
 // The app's own routes are typed, so links to them are checked. The modules' routes (Tools, Systems, the
 // Handbook, the Guide, in src/platform/modules/<id>/app.tsx) are added at run time, and the types leave
 // them out: a link to one is written loosely.
-const coreRoutes = [indexRoute, prototypeRoute.addChildren([prototypeIndexRoute, itemRoute])] as const;
+const coreRoutes = [homeRoute, prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]), sectionItemRoute.addChildren([sectionItemIndexRoute, sectionItemSplatRoute])] as const;
 const routeTree = rootRoute.addChildren([...coreRoutes, ...moduleApps.flatMap(({ app }) => app.routes?.(rootRoute) ?? [])] as unknown as typeof coreRoutes);
 
 export const router = createRouter({
   routeTree,
   // Browser history: clean URLs; the host must serve index.html for every path (see README, Hosting).
-  // No rewrites on your host? Use hash URLs instead (/#/patrick/hello-world):
+  // No rewrites on your host? Use hash URLs instead (/#/prototypes/patrick/hello-world):
   //   import { createHashHistory } from '@tanstack/react-router';
   //   history: createHashHistory(),
   // https://tanstack.com/router/latest/docs/framework/react/guide/history-types

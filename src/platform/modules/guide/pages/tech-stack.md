@@ -38,4 +38,4 @@ Every tool here is open source and popular. That matters for two reasons: you ca
 
 The build is a static site in `dist/`, so it runs on any static host. Before you deploy, check who can see it, so you don't publish company work to the open internet by accident.
 
-URLs are clean paths, like `/patrick/hello-world`. Set your host to serve `index.html` for every path. See [TanStack's history docs](https://tanstack.com/router/latest/docs/framework/react/guide/history-types), and the README for fallbacks.
+URLs are clean paths, like `/prototypes/patrick/hello-world`. Set your host to serve `index.html` for every path. See [TanStack's history docs](https://tanstack.com/router/latest/docs/framework/react/guide/history-types), and the README for fallbacks.

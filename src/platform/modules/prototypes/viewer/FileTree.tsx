@@ -32,7 +32,7 @@ import { NEW_KINDS } from '@/platform/modules/handbook/pages/newKinds';
 import NewSkillDialog from '@/platform/modules/handbook/pages/NewSkillDialog';
 import { itemUrl } from '@/platform/app/items/itemLinks';
 import { place } from '@/platform/core/order';
-import { DRAG_KIND, DragRow, type Dropped, type Operations } from '@/platform/app/pages/prototype/DragRow';
+import { DRAG_KIND, DragRow, type Dropped, type Operations } from '@/platform/modules/prototypes/viewer/DragRow';
 import { creatableTypes, FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
 import { useShowAllFiles } from '@/platform/app/shell/appPrefs';
 import { Button } from '@/platform/components/button';

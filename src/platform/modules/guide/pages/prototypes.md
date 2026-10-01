@@ -105,10 +105,10 @@ Every view has its own link, so you can share exactly what you mean:
 
 | URL | Opens |
 | --- | --- |
-| `/patrick/hello-world` | The view it opens on |
-| `/patrick/hello-world/prototype` | A view |
-| `/patrick/hello-world/lofi/main` | A view in a folder |
-| `/patrick/hello-world/checkout/steps/done` | A view, two folders deep |
+| `/prototypes/patrick/hello-world` | The view it opens on |
+| `/prototypes/patrick/hello-world/prototype` | A view |
+| `/prototypes/patrick/hello-world/lofi/main` | A view in a folder |
+| `/prototypes/patrick/hello-world/checkout/steps/done` | A view, two folders deep |
 
 ## When a view breaks
 

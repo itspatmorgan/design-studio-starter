@@ -17,7 +17,7 @@ src/prototypes/patrick/hello-world/
     └── interviews.md     # a document, in a folder
 ```
 
-There's nothing to register. Add the file and it appears in the prototype's navigation, with a document icon, and opens at its path without the extension: `/patrick/hello-world/research/interviews`.
+There's nothing to register. Add the file and it appears in the prototype's navigation, with a document icon, and opens at its path without the extension: `/prototypes/patrick/hello-world/research/interviews`.
 
 ## Make one
 

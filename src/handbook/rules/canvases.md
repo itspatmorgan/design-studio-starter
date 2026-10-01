@@ -43,4 +43,4 @@ A view is 480 × 338 (a 1440 × 900 screen at a third); a document card is 480 �
 
 ## Reading the file
 
-A canvas is JSON: a list of `elements`. An item is `{ "type": "embeddable", "link": "/patrick/hello-world/lofi/main" }`, a note is a rectangle with a text element bound to it (`containerId`), an arrow's `startBinding`/`endBinding` name what it joins. Prefer the tools to editing this by hand: they keep both sides of every binding and raise each element's `version`, which is how an open canvas knows to take your change.
+A canvas is JSON: a list of `elements`. An item is `{ "type": "embeddable", "link": "/prototypes/patrick/hello-world/lofi/main" }`, a note is a rectangle with a text element bound to it (`containerId`), an arrow's `startBinding`/`endBinding` name what it joins. Prefer the tools to editing this by hand: they keep both sides of every binding and raise each element's `version`, which is how an open canvas knows to take your change.

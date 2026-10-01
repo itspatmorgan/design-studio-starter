@@ -1,5 +1,6 @@
 import { linkOptions } from '@tanstack/react-router';
 import { itemSlug } from '@/platform/fileTypes';
+import { isSectionKey } from '@/platform/core/roots';
 import type { Item, Manifest, Prototype, PrototypeInfo, PrototypeRef } from '@/platform/app/data/types';
 
 // Fetched once, then shared by every route loader. In dev, replaced whenever it changes.
@@ -70,10 +71,13 @@ export function formatDate(date: string | null) {
 
 export const newestFirst = (a: PrototypeInfo, b: PrototypeInfo) => (b.created ?? '').localeCompare(a.created ?? '');
 
-// Where a prototype's links go. The prototype's own URL opens its default view.
-export const prototypeLink = (p: PrototypeInfo) =>
-  linkOptions({ to: '/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.id } });
+// Where a prototype's links go. The prototype's own URL opens its default view: /prototypes/<person>/<id>, or
+// /tools/<id> for an item of a section.
+export const prototypeLink = (p: Pick<PrototypeInfo, 'contributorKey' | 'id'>) => isSectionKey(p.contributorKey)
+  ? linkOptions({ to: '/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.id } })
+  : linkOptions({ to: '/prototypes/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.id } });
 
 // An item's URL: the prototype's, plus the item's path without its extension.
-export const itemLink = (p: PrototypeInfo, item: Item) =>
-  linkOptions({ to: '/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: itemSlug(item.path) } });
+export const itemLink = (p: PrototypeInfo, item: Item) => isSectionKey(p.contributorKey)
+  ? linkOptions({ to: '/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: itemSlug(item.path) } })
+  : linkOptions({ to: '/prototypes/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: itemSlug(item.path) } });

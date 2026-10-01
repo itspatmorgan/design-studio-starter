@@ -3,6 +3,7 @@ import { lazy } from 'react';
 import { File01Icon } from '@hugeicons/core-free-icons';
 import type { FileTypeModule } from '@/platform/app/data/fileTypeModule';
 import { itemFolder, itemSlug } from '@/platform/app/data/manifest';
+import { addressOf } from '@/platform/core/roots';
 import { documents } from './loader';
 
 // Loaded with the first document, so the reader (Markdown provider, table of contents) isn't in
@@ -24,7 +25,7 @@ export default {
       preload(),
     ]);
     if (!mod) return undefined;
-    const app = `/${file.contributor}/${file.prototype}`;
+    const app = addressOf(file.contributor, file.prototype);
     return {
       Component: mod instanceof Error
         ? () => { throw mod; }

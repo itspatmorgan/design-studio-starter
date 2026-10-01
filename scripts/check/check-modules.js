@@ -5,9 +5,9 @@
 //   - studio.config.ts is well formed, and only turns off modules that can be turned off
 //   - each design system in src/systems/ has a well formed system.ts, components/, and styles/theme.css
 //   - no contributor, and no folder in src/prototypes/, uses a section key, since both are addresses
-//   - modules don't import each other, and nothing outside an optional module imports its files other
-//     than its module.ts, so deleting its folder leaves nothing broken (a required module is part of the
-//     platform, so the platform may import it)
+//   - nothing outside an optional module imports its files other than its module.ts, and no module imports an
+//     optional one, so deleting its folder leaves nothing broken (a required module is part of the platform,
+//     so the platform and the other modules may import it)
 // Usage: node scripts/check/check-modules.js
 import fs from 'node:fs';
 import path from 'node:path';
@@ -75,7 +75,7 @@ for (const file of [...sources(path.join(ROOT, 'src')), ...sources(path.join(ROO
     const target = path.relative(MODULES_DIR, resolved).split(path.sep);
     if (target[0].startsWith('..') || !ids.includes(target[0]) || target[0] === inside) continue;
     const isDeclaration = target.length === 2 && /^module(\.ts)?$/.test(target[1]);
-    if (inside) problems.push(`${rel} imports the ${target[0]} module. Modules can't depend on each other: ${target[0]}/ has to be removable.`);
+    if (inside) { if (MODULES[target[0]].optional) problems.push(`${rel} imports the ${target[0]} module. A module can depend only on a required module, not on one that can be turned off: ${target[0]}/ has to be removable.`); }
     else if (!isDeclaration && MODULES[target[0]].optional) problems.push(`${rel} imports into the ${target[0]} module ("${specifier}"). Code outside a module can read only its module.ts, or the app wouldn't run without it.`);
   }
 }

@@ -12,7 +12,7 @@ You don't run commands for this. Ask your agent, and it follows the steps in `sr
 
 ## See what you have
 
-Ask your agent to list the modules. Each one is **on**, **off**, or **required**. Required ones (the Handbook and the design systems) can't be turned off, because prototypes are built on them. The Guide and Tools are optional.
+Ask your agent to list the modules. Each one is **on**, **off**, or **required**. Required ones (Prototypes, the Handbook and the design systems) can't be turned off, because the rest of the app is built on them. The Guide and Tools are optional.
 
 ## Turn one off, or on
 

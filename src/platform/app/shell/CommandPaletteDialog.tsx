@@ -5,7 +5,7 @@ import { getRouteApi, useMatchRoute, useNavigate, useParams, type NavigateOption
 import {
   Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
 } from '@/platform/components/command';
-import { findItem, findPrototype, firstItem, itemFolder, itemLabel, itemLink, newestFirst, prototypeLink } from '@/platform/app/data/manifest';
+import { findItem, findPrototype, firstItem, itemFolder, itemLabel, itemLink } from '@/platform/app/data/manifest';
 import { moduleApps, type PaletteContext } from '@/platform/app/modules';
 import type { Item, Prototype } from '@/platform/app/data/types';
 
@@ -22,13 +22,12 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
     navigate(to);
   };
 
-  const prototypes = [...manifest.prototypes].sort(newestFirst);
   // The open prototype, once its items have loaded (the route loads them: manifest.ts).
   const openRef = params.contributor && params.prototype ? findPrototype(manifest, params.contributor, params.prototype) : undefined;
   const current = openRef?.items ? (openRef as Prototype) : undefined;
   const openItem = current && (params._splat ? findItem(current, params._splat) : firstItem(current));
   const isOpen = (item: Item) => item === openItem;
-  const onIndex = Boolean(matchRoute({ to: '/' }));
+  const onHome = Boolean(matchRoute({ to: '/' }));
   const context: PaletteContext = { manifest, current, isOpen, go };
 
   return (
@@ -59,30 +58,12 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
             )}
   
             <CommandGroup heading="Places">
-              <CommandItem value="prototypes index home" disabled={onIndex} onSelect={() => go({ to: '/' })}>Prototypes</CommandItem>
+              <CommandItem value="home overview" disabled={onHome} onSelect={() => go({ to: '/' })}>Home</CommandItem>
               {moduleApps.map(({ spec, app }) => app.places && <app.places key={spec.id} {...context} />)}
             </CommandGroup>
 
             {moduleApps.map(({ spec, app }) => app.palette && <Fragment key={spec.id}><app.palette {...context} /></Fragment>)}
 
-            {prototypes.length > 0 && (
-              <>
-                <CommandSeparator />
-                <CommandGroup heading="Prototypes">
-                  {prototypes.map((p) => (
-                    <CommandItem
-                      key={`${p.contributorKey}/${p.id}`}
-                      value={`${p.title} ${p.description ?? ''} ${p.contributor ?? ''} ${p.contributorKey}/${p.id}`}
-                      disabled={p === current}
-                      onSelect={() => go(prototypeLink(p))}
-                    >
-                      <span className="truncate">{p.title}</span>
-                      <span className="ml-auto shrink-0 text-xs text-muted-foreground">{(p.contributor || p.contributorKey).split(' ')[0]}</span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </>
-            )}
           </CommandList>
         </Command>
       </CommandDialog>

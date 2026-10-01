@@ -30,13 +30,14 @@ export default defineFileType({
     else if (canvas.elements.some((el) => (el as { type?: string })?.type === 'image')) problems.push("a canvas can't hold images: their bytes would be stored inside the file. Remove the image elements, and put the view itself on the canvas instead of a screenshot of it.");
     if (canvas.files && Object.keys(canvas.files).length) problems.push('"files" must be empty. Images aren\'t stored in a canvas.');
     // A canvas shows only its own prototype's items, so a prototype is all of its own. Links are stored as app
-    // paths ("/patrick/hello-world/lofi/main").
+    // paths ("/prototypes/patrick/hello-world/lofi/main", or the older "/patrick/hello-world/lofi/main").
     if (prototype && Array.isArray(canvas.elements)) {
-      const here = `/${prototype.contributor}/${prototype.id}/`;
+      // (This file can import only ../index.ts, so the address is checked here in both forms.)
+      const isHere = (link: string) => link.startsWith(`/prototypes/${prototype.contributor}/${prototype.id}/`) || link.startsWith(`/${prototype.contributor}/${prototype.id}/`);
       const elsewhere = new Set<string>();
       for (const el of canvas.elements as { link?: unknown }[]) {
         const link = el?.link;
-        if (typeof link === 'string' && link.startsWith('/') && !link.startsWith('//') && !link.startsWith(here)) elsewhere.add(link);
+        if (typeof link === 'string' && link.startsWith('/') && !link.startsWith('//') && !isHere(link)) elsewhere.add(link);
       }
       if (elsewhere.size) problems.push(`it links to another prototype (${[...elsewhere].slice(0, 3).join(', ')}${elsewhere.size > 3 ? ', …' : ''}). A canvas shows only items from its own prototype: copy the view into this prototype, then link that copy.`);
     }

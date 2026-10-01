@@ -1,6 +1,6 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  Layers01Icon, Moon02Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Sun01Icon,
+  Moon02Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Sun01Icon,
 } from '@hugeicons/core-free-icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/platform/components/tooltip';
 import { cn } from '@/lib/utils';
@@ -54,7 +54,7 @@ function RailButton({ label, onClick, children }: { label: string; onClick: () =
 }
 
 // Main navigation: a narrow icon rail, visible on every page.
-// Top: Prototypes, then the modules that sit at the top (Tools, Systems, Handbook). Bottom: the modules that
+// Top: the logo (the front page), then the modules that sit at the top (Prototypes, Tools, Systems, Handbook). Bottom: the modules that
 // sit at the bottom (the Guide about the tool itself), then the theme toggle. The modules come from
 // src/platform/modules/<id>/app.tsx, so the rail has exactly the ones installed and on. sectionNav is set only
 // while a page has a section navigation (shell/nav/), to show or hide it.
@@ -67,7 +67,6 @@ type MainNavProps = {
 export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: MainNavProps) {
   const openPalette = useOpenPalette();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const onModule = moduleApps.some(({ spec }) => inSection(spec, pathname));
   const moduleLinks = (place: 'top' | 'bottom') => moduleApps.filter(({ app }) => app.rail === place).map(({ spec, app }) => (
     <RailLink key={spec.id} to={sectionPath(spec) as never} label={spec.label} active={inSection(spec, pathname)}>
       <HugeiconsIcon icon={app.icon} size={16} />
@@ -88,9 +87,6 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
       <div className="h-2" />
       {/* With many modules the top group scrolls, so none is ever out of reach. */}
       <div className="flex min-h-0 flex-col items-center gap-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <RailLink to="/" label="Prototypes" active={!onModule}>
-          <HugeiconsIcon icon={Layers01Icon} size={16} />
-        </RailLink>
         {moduleLinks('top')}
       </div>
 

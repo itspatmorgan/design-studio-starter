@@ -8,6 +8,7 @@ import { NotFound } from '@/platform/app/shell/App';
 import { itemFolder, itemLabel, loadManifest } from '@/platform/app/data/manifest';
 import { itemLink } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
+import type { Manifest } from '@/platform/app/data/types';
 
 function HandbookPlaces({ go }: PaletteContext) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -36,6 +37,11 @@ function HandbookPalette({ manifest, current, isOpen, go }: PaletteContext) {
   );
 }
 
+// How much is in each of its sections: "3 docs · 8 rules · 2 skills".
+function Overview({ manifest }: { manifest: Manifest }) {
+  return <>{manifest.handbook.map((section) => `${section.items.length} ${section.title.toLowerCase()}`).join(' · ')}</>;
+}
+
 export default {
   icon: Notebook01Icon,
   rail: 'top',
@@ -52,6 +58,7 @@ export default {
       notFoundComponent: NotFound,
     }),
   ],
+  overview: Overview,
   places: HandbookPlaces,
   palette: HandbookPalette,
 } satisfies ModuleApp;

@@ -19,7 +19,7 @@ import { canChangePrototype, readSource, repoPath, SourceChanged, useMe, writeSo
 import type { Item, Prototype } from '@/platform/app/data/types';
 import { Button } from '@/platform/components/button';
 import { toast } from '@/platform/components/toast';
-import { sourceTheme } from '@/platform/app/pages/prototype/sourceTheme';
+import { sourceTheme } from '@/platform/modules/prototypes/viewer/sourceTheme';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
 
 // The file type's syntax, loaded when it's needed.
@@ -31,7 +31,7 @@ async function languageExtension(language: 'tsx' | 'markdown' | 'json' | 'text',
     else if (ext === 'md') language = 'markdown';
     else return [];
   }
-  if (language === 'markdown') return (await import('@/platform/app/pages/prototype/markdownSource')).markdownSource();
+  if (language === 'markdown') return (await import('@/platform/modules/prototypes/viewer/markdownSource')).markdownSource();
   const { javascript } = await import('@codemirror/lang-javascript');
   return language === 'json' ? javascript() : javascript({ jsx: true, typescript: true });
 }
