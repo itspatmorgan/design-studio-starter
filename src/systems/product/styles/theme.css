@@ -1,8 +1,8 @@
 @import "@fontsource-variable/space-grotesk";
 
-/* Product look, scoped to prototypes: warm stone neutrals with an orange accent, square corners, and
+/* Product look, scoped to prototypes: warm stone neutrals with an emerald accent, square corners, and
    Space Grotesk, so it can't be mistaken for the app UI (Studio is neutral gray with Inter and
-   rounded corners). In shadcn/ui's theme terms: base color stone, accent orange, radius none.
+   rounded corners). In shadcn/ui's theme terms: base color stone, accent emerald, radius none.
    Swap in your product's colors, radius, and type here. The .dark block follows the app's color mode. */
 .product-theme {
   --font-sans: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
@@ -13,32 +13,32 @@
   --card-foreground: oklch(0.147 0.004 49.25);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.147 0.004 49.25);
-  --primary: oklch(0.646 0.222 41.116);
-  --primary-foreground: oklch(0.98 0.016 73.684);
+  --primary: oklch(0.508 0.118 165.612);
+  --primary-foreground: oklch(0.979 0.021 166.113);
   --secondary: oklch(0.923 0.003 48.717);
   --secondary-foreground: oklch(0.216 0.006 56.043);
   --muted: oklch(0.97 0.001 106.424);
   --muted-foreground: oklch(0.444 0.011 73.639);
-  --accent: oklch(0.954 0.038 75.164);
-  --accent-foreground: oklch(0.408 0.123 38.172);
+  --accent: oklch(0.95 0.052 163.051);
+  --accent-foreground: oklch(0.378 0.077 168.94);
   --destructive: oklch(0.505 0.213 16);
   --border: oklch(0.869 0.005 56.366);
   --input: oklch(0.869 0.005 56.366);
-  --ring: oklch(0.705 0.213 47.604);
-  --chart-1: oklch(0.837 0.128 66.29);
-  --chart-2: oklch(0.705 0.213 47.604);
-  --chart-3: oklch(0.646 0.222 41.116);
-  --chart-4: oklch(0.553 0.195 38.402);
-  --chart-5: oklch(0.47 0.157 37.304);
+  --ring: oklch(0.696 0.17 162.48);
+  --chart-1: oklch(0.845 0.143 164.978);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.508 0.118 165.612);
+  --chart-4: oklch(0.432 0.095 166.913);
+  --chart-5: oklch(0.378 0.077 168.94);
   --radius: 0rem;
   --sidebar: oklch(0.97 0.001 106.424);
   --sidebar-foreground: oklch(0.147 0.004 49.25);
-  --sidebar-primary: oklch(0.646 0.222 41.116);
-  --sidebar-primary-foreground: oklch(0.98 0.016 73.684);
-  --sidebar-accent: oklch(0.954 0.038 75.164);
-  --sidebar-accent-foreground: oklch(0.408 0.123 38.172);
+  --sidebar-primary: oklch(0.508 0.118 165.612);
+  --sidebar-primary-foreground: oklch(0.979 0.021 166.113);
+  --sidebar-accent: oklch(0.95 0.052 163.051);
+  --sidebar-accent-foreground: oklch(0.378 0.077 168.94);
   --sidebar-border: oklch(0.869 0.005 56.366);
-  --sidebar-ring: oklch(0.705 0.213 47.604);
+  --sidebar-ring: oklch(0.696 0.17 162.48);
 }
 
 .dark .product-theme {
@@ -48,29 +48,29 @@
   --card-foreground: oklch(0.985 0.001 106.423);
   --popover: oklch(0.216 0.006 56.043);
   --popover-foreground: oklch(0.985 0.001 106.423);
-  --primary: oklch(0.705 0.213 47.604);
+  --primary: oklch(0.696 0.17 162.48);
   --primary-foreground: oklch(0.147 0.004 49.25);
   --secondary: oklch(0.268 0.007 34.298);
   --secondary-foreground: oklch(0.985 0.001 106.423);
   --muted: oklch(0.268 0.007 34.298);
   --muted-foreground: oklch(0.709 0.01 56.259);
-  --accent: oklch(0.32 0.06 45);
-  --accent-foreground: oklch(0.901 0.076 70.697);
+  --accent: oklch(0.3 0.05 166);
+  --accent-foreground: oklch(0.905 0.093 164.15);
   --destructive: oklch(0.65 0.21 16);
   --border: oklch(1 0 0 / 14%);
   --input: oklch(1 0 0 / 18%);
-  --ring: oklch(0.646 0.222 41.116);
-  --chart-1: oklch(0.837 0.128 66.29);
-  --chart-2: oklch(0.705 0.213 47.604);
-  --chart-3: oklch(0.646 0.222 41.116);
-  --chart-4: oklch(0.553 0.195 38.402);
-  --chart-5: oklch(0.47 0.157 37.304);
+  --ring: oklch(0.596 0.145 163.225);
+  --chart-1: oklch(0.845 0.143 164.978);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.596 0.145 163.225);
+  --chart-4: oklch(0.432 0.095 166.913);
+  --chart-5: oklch(0.378 0.077 168.94);
   --sidebar: oklch(0.216 0.006 56.043);
   --sidebar-foreground: oklch(0.985 0.001 106.423);
-  --sidebar-primary: oklch(0.705 0.213 47.604);
+  --sidebar-primary: oklch(0.696 0.17 162.48);
   --sidebar-primary-foreground: oklch(0.147 0.004 49.25);
-  --sidebar-accent: oklch(0.32 0.06 45);
-  --sidebar-accent-foreground: oklch(0.901 0.076 70.697);
+  --sidebar-accent: oklch(0.3 0.05 166);
+  --sidebar-accent-foreground: oklch(0.905 0.093 164.15);
   --sidebar-border: oklch(1 0 0 / 14%);
-  --sidebar-ring: oklch(0.646 0.222 41.116);
+  --sidebar-ring: oklch(0.596 0.145 163.225);
 }

@@ -28,7 +28,7 @@ export const product: DesignSystem = {
       </div>
       <h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2>
       <Prose>
-        <p>The placeholder is shadcn/ui components on a theme of its own, in <Code>src/systems/product/styles/theme.css</Code>: warm stone neutrals with an orange accent, square corners, and Space Grotesk. In shadcn/ui's terms: base color stone, accent orange, radius none. It is different from the app UI's neutral gray, rounded corners, and Inter on purpose, so you can tell at a glance which system a screen is in.</p>
+        <p>The placeholder is shadcn/ui components on a theme of its own, in <Code>src/systems/product/styles/theme.css</Code>: warm stone neutrals with an emerald accent, square corners, and Space Grotesk. In shadcn/ui's terms: base color stone, accent emerald, radius none. It is different from the app UI's neutral gray, rounded corners, and Inter on purpose, so you can tell at a glance which system a screen is in.</p>
         <p>Prototypes use <Code>lucide-react</Code> for icons until your system brings its own.</p>
       </Prose>
     </>

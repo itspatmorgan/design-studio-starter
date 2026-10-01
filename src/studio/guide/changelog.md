@@ -17,7 +17,7 @@ The first release, described in [How I Set Up a Prototyping Sandbox](https://www
 - Scope checks before commit, before push, and on push to main
 - The import guard
 - A sample prototype, Feedback Inbox, that doubles as a tour: three screens on a working data store, a breadboard and an eng-handoff canvas, and two documents
-- A Product system with its own look (warm stone, orange, square corners, Space Grotesk) and 16 components, each with a page
+- A Product system with its own look (warm stone, emerald, square corners, Space Grotesk) and 16 components, each with a page
 - A small manifest: the file list of each prototype loads when you open it, so the deployed site stays fast as prototypes pile up
 - Order: drag files and folders into the order you want (Option + arrows works too); it's saved in `meta.json` so the whole team sees it
 - Lofi: switch any view to grayscale with handwritten type, over its own design system, from the file menu
