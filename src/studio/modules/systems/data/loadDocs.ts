@@ -1,11 +1,11 @@
 import { useEffect, useState, type ComponentType } from 'react';
 import type { MDXContent } from 'mdx/types';
 import { SYSTEMS_KEY } from '@/studio/core/roots';
-import { STUDIO_ID } from '@/studio/systemSources';
-import { exampleNames, type ComponentPropsDoc } from '@/studio/systemDocs';
+import { STUDIO_ID } from '@/studio/modules/systems/sources';
+import { exampleNames, type ComponentPropsDoc } from '@/studio/modules/systems/docs';
 
 // A component's docs files in a system (src/systems/<system>/components/, or src/studio/components/; see
-// src/studio/systemDocs.ts): its examples, the examples file's text, and its Markdown page.
+// src/studio/modules/systems/docs.ts): its examples, the examples file's text, and its Markdown page.
 export type Example = { name: string; Component: ComponentType };
 
 // Vite only loads a file when it is asked for.
@@ -53,7 +53,7 @@ export function useDocsVersion() {
   return version;
 }
 
-// The props of the components a file exports, read from the code (scripts/build/vite-system-props-plugin.js).
+// The props of the components a file exports, read from the code (src/studio/modules/systems/node/props-plugin.js).
 // While the app runs, the dev server reads them fresh, so an edit to a component shows; the
 // built site has them in a module made at build time.
 export async function loadProps(system: string, file: string): Promise<ComponentPropsDoc[]> {

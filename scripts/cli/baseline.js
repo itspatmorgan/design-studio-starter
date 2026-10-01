@@ -21,7 +21,7 @@ const MODULES = {
   guide: { paths: ['src/studio/modules/guide', 'src/studio/guide'], pattern: "'guide'|src/guide|/guide|loadGuide" },
   tools: { paths: ['src/tools', 'src/studio/modules/tools'], pattern: "TOOLS_KEY|src/tools|'tools'|/tools" },
   handbook: { paths: ['src/handbook', 'src/studio/handbookMap.ts', 'src/studio/handbookRules.ts', 'src/studio/handbook.test.ts', 'src/studio/app/pages/handbook'], pattern: 'handbook' },
-  systems: { paths: ['src/systems', 'src/studio/app/pages/systems', 'src/studio/app/data/loadSystemDocs.ts'], pattern: 'systems' },
+  systems: { paths: ['src/systems', 'src/studio/modules/systems/pages', 'src/studio/modules/systems/data/loadDocs.ts'], pattern: 'systems' },
   canvas: { paths: ['src/studio/fileTypes/canvas'], pattern: 'excalidraw|canvas' },
   document: { paths: ['src/studio/fileTypes/document'], pattern: 'fileTypes/document' },
   view: { paths: ['src/studio/fileTypes/view'], pattern: 'fileTypes/view' },

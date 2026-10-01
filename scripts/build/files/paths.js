@@ -9,7 +9,7 @@ import { isHelper } from '../../../src/studio/fileTypes/index.ts';
 import { byOrder, parseOrder } from '../../../src/studio/core/order.ts';
 import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../../../src/studio/core/roots.ts';
 import { PROTOTYPE_SECTIONS } from '../../lib/modules.js';
-import { SYSTEM_SOURCES } from '../../lib/systems.js';
+import { SYSTEM_SOURCES } from '../../../src/studio/modules/systems/node/systems.js';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 export const PROTOS = path.join(ROOT, 'src', 'prototypes');

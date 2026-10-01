@@ -5,8 +5,8 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from '../lib/systems.js';
-import { STUDIO_ID } from '../../src/studio/systemSources.ts';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from '../../src/studio/modules/systems/node/systems.js';
+import { STUDIO_ID } from '../../src/studio/modules/systems/sources.ts';
 import { isHelper, itemSlug } from '../../src/studio/fileTypes/index.ts';
 import { HANDBOOK_KEY, HANDBOOK_SECTIONS, rootOf } from '../../src/studio/core/roots.ts';
 import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../../src/studio/core/archive.ts';
@@ -17,8 +17,8 @@ import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from '../l
 import { frontmatter } from '../lib/frontmatter.js';
 import { contributorsSignature, loadContributors } from '../lib/contributors.js';
 import { handbookProblems } from '../lib/handbook-check.js';
-import { systemDocs } from '../lib/system-docs.js';
-import { themeTokens } from '../../src/studio/themeTokens.ts';
+import { systemDocs } from '../../src/studio/modules/systems/node/docs.js';
+import { themeTokens } from '../../src/studio/modules/systems/themeTokens.ts';
 import { handbookMap } from '../../src/studio/handbookMap.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -342,7 +342,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   }
 
   // Each system's components and tokens, for the Systems pages, and what its component pages lack
-  // (src/studio/systemDocs.ts, themeTokens.ts). The app's own system (Studio) is one of them. By
+  // (src/studio/modules/systems/docs.ts, themeTokens.ts). The app's own system (Studio) is one of them. By
   // default a gap is a warning, and the first few are listed; docs: 'strict' fails the build and
   // 'off' says nothing.
   if (STUDIO_ID in PROTOTYPE_SYSTEMS) { out.error(`[manifest] src/systems/${STUDIO_ID}/: "${STUDIO_ID}" is the app's own system, so a prototype system can't use that name`); errors++; }

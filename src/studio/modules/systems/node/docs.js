@@ -1,11 +1,11 @@
 // Reads a design system's components folder and works out its component docs
-// (src/studio/systemDocs.ts has the rules). Returns the components for the manifest, and the
+// (src/studio/modules/systems/docs.ts has the rules). Returns the components for the manifest, and the
 // problems found, each with the file it is about (a path inside the components folder).
 import fs from 'node:fs';
 import path from 'node:path';
-import { componentProblems, discoverComponents, duplicateProblems } from '../../src/studio/systemDocs.ts';
-import { titleOf } from '../../src/studio/systemScaffold.ts';
-import { frontmatter } from './frontmatter.js';
+import { componentProblems, discoverComponents, duplicateProblems } from '../docs.ts';
+import { titleOf } from '../scaffold.ts';
+import { frontmatter } from '../../../../../scripts/lib/frontmatter.js';
 
 // Every file under dir as a "/"-separated path, skipping hidden files and node_modules.
 // Links are never followed: a symlink is neither a file nor a folder here.

@@ -23,9 +23,9 @@ import { compatible, listProblems, moduleProblems, PLATFORM_VERSION } from '../.
 import {
   agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, readDeclaration, setDefaultSystem,
 } from '../../src/studio/modules/pack.ts';
-import { systemProblems } from '../../src/studio/systems.ts';
+import { systemProblems } from '../../src/studio/modules/systems/spec.ts';
 import { MODULES, ENABLED_MODULES, CONFIG } from '../lib/modules.js';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from '../lib/systems.js';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from '../../src/studio/modules/systems/node/systems.js';
 import { fetchSource, walk } from '../lib/fetch-source.js';
 import { loadContributors } from '../lib/contributors.js';
 import { changesFromLock, hashFile, readLock, writeLock } from '../lib/lock.js';

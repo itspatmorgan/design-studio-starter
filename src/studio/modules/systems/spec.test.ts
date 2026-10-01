@@ -1,7 +1,7 @@
 // What a design system's system.ts may say (systems.ts). Run with `pnpm test`.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { systemProblems, type SystemSpec } from './systems.ts';
+import { systemProblems, type SystemSpec } from './spec.ts';
 
 const product: SystemSpec = { label: 'Product', themeClass: 'product-theme', docs: 'warn', origin: 'shadcn' };
 

@@ -2,7 +2,7 @@
 // next to its components/ and styles/theme.css. The build, the dev server and the app all find the systems by
 // their folders, so adding one is adding a folder (pnpm studio create-system), and no list is kept anywhere.
 // The app's own system (Studio, src/studio/) is documented the same way but isn't one of these: prototypes
-// never use it (src/studio/systemSources.ts). This file has no imports, so Node scripts and the app can load it.
+// never use it (src/studio/modules/systems/sources.ts). This file has no imports, so Node scripts and the app can load it.
 
 // How the build treats a component without examples or a description (systemDocs.ts): 'warn' says
 // so, 'strict' fails the build, and 'off' says nothing.

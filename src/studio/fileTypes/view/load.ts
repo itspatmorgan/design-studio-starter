@@ -1,7 +1,7 @@
 // Loads a view for its page (module.tsx) and for embeds (ViewEmbed.tsx).
 import type { ItemContext } from '@/studio/app/data/fileTypeModule';
 import { itemSlug } from '@/studio/app/data/manifest';
-import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/studio/app/data/systems';
+import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/studio/modules/systems/data/systems';
 import { views } from './loader';
 
 export async function loadView({ proto, item }: ItemContext) {

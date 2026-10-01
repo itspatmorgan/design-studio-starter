@@ -1,15 +1,15 @@
 // `virtual:system-props`: the props of every component in every system (the app's own too), read from their
-// TypeScript (scripts/lib/extract-props.js), keyed "<system>/<file>" ("product/button.tsx").
+// TypeScript (src/studio/modules/systems/node/extract-props.js), keyed "<system>/<file>" ("product/button.tsx").
 // The built site imports it; while the app runs, the same props are served at /__studio/system-props
 // instead (a module can't be re-imported after an edit). Either way they're worked out when a
 // component page first asks, and again after a component file is added, removed or edited.
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SYSTEM_SOURCES } from '../lib/systems.js';
-import { systemDocs } from '../lib/system-docs.js';
-import { extractProps } from '../lib/extract-props.js';
+import { SYSTEM_SOURCES } from './systems.js';
+import { systemDocs } from './docs.js';
+import { extractProps } from './extract-props.js';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
 // Any file under a system's components folder can change its props.
 const inComponents = (file) => Object.values(SYSTEM_SOURCES).some((s) => file.startsWith(path.join(ROOT, s.components) + path.sep));
 const ID = 'virtual:system-props';

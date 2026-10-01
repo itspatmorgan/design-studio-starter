@@ -7,7 +7,7 @@ import {
 // Studio system: the app UI's own components, stock shadcn/ui vendored into src/studio/components/.
 // Like every system, its component and foundations pages come from its files; this is what only
 // its people can write: the introduction (which covers the theme), and the icons.
-import { Code, CodeBlock, IconGrid, Prose } from '@/studio/app/pages/systems/foundations';
+import { Code, CodeBlock, IconGrid, Prose } from '@/studio/modules/systems/pages/foundations';
 import type { DesignSystem } from '@/studio/app/data/types';
 
 const ICONS = {

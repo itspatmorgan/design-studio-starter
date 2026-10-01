@@ -1,5 +1,5 @@
 // Systems in the app: its rail button, its routes (/systems, /systems/<system>, /systems/<system>/<page>),
-// and the two systems in the ⌘K palette. The pages are in src/studio/app/pages/systems/.
+// and the two systems in the ⌘K palette. The pages are in src/studio/modules/systems/pages/.
 import { createRoute, lazyRouteComponent, redirect, useRouterState } from '@tanstack/react-router';
 import { Shapes01Icon } from '@hugeicons/core-free-icons';
 import { CommandItem } from '@/studio/components/command';
@@ -9,7 +9,7 @@ import type { ModuleApp, PaletteContext } from '@/studio/core/api';
 
 // Loaded on first visit, so it isn't in the main bundle:
 // https://tanstack.com/router/latest/docs/framework/react/guide/code-splitting
-const SystemsPage = lazyRouteComponent(() => import('@/studio/app/pages/systems/SystemsPage'));
+const SystemsPage = lazyRouteComponent(() => import('@/studio/modules/systems/pages/SystemsPage'));
 const systemsTitle = (...parts: (string | undefined)[]) =>
   [...parts.filter(Boolean).map((p) => itemLabel(p!)), 'Systems', APP_NAME].join(' — ');
 

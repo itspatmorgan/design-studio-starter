@@ -8,7 +8,7 @@ import { FILE_TYPES, fileTypeOf } from '../../lib/file-types.js';
 import { STATUSES, parseStatus } from '../../../src/studio/core/archive.ts';
 import { afterChange, parentOf, parseOrder, place, withFolderOrder } from '../../../src/studio/core/order.ts';
 import { rootOf } from '../../../src/studio/core/roots.ts';
-import { scaffold } from '../../cli/scaffold-component-docs.js';
+import { scaffold } from '../../../src/studio/modules/systems/node/scaffold-docs.js';
 import { opProblem } from '../../../src/studio/handbookRules.ts';
 import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/studio/skills.ts';
 import { ROOT, TRASH, readOrder, readTree, resolveInside, validName, viewKey } from './paths.js';

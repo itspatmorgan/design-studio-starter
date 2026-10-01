@@ -1,9 +1,9 @@
 // Where each design system keeps its parts, for the Systems pages and everything that reads a system's files:
-// the app's own (Studio) and each prototype system (src/systems/<id>/system.ts, src/studio/systems.ts). Studio is
+// the app's own (Studio) and each prototype system (src/systems/<id>/system.ts, src/studio/modules/systems/spec.ts). Studio is
 // built in here, because prototypes never use it. Build scripts and the file layer take their paths from these,
 // so a system's components and theme are found the same way whichever it is.
 // This file has no imports beyond types, so Node scripts and the app can both load it.
-import type { DocsMode, SystemSpec } from './systems.ts';
+import type { DocsMode, SystemSpec } from './spec.ts';
 
 export type { DocsMode };
 

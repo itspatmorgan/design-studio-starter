@@ -1,11 +1,11 @@
 // The foundations pages other than Colors, built from the tokens a prototype system's theme.css
-// defines (src/studio/themeTokens.ts): typography, radius, shadows, spacing, and everything else.
+// defines (src/studio/modules/systems/themeTokens.ts): typography, radius, shadows, spacing, and everything else.
 // Each token is drawn with its own value (`var(--name)`), inside the system's theme class, and its
 // value is read live, so the pages follow the color mode and the theme file.
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { RadiusScale, useComputed } from '@/studio/app/pages/systems/foundations';
-import type { ThemeToken, TokenGroup } from '@/studio/themeTokens';
+import { RadiusScale, useComputed } from '@/studio/modules/systems/pages/foundations';
+import type { ThemeToken, TokenGroup } from '@/studio/modules/systems/themeTokens';
 
 type Props = { tokens: ThemeToken[]; scopeClass: string };
 

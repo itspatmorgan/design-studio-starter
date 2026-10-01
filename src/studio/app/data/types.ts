@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import type { HandbookMap } from '@/studio/handbookMap';
-import type { SystemComponentDoc } from '@/studio/systemDocs';
-import type { ThemeToken } from '@/studio/themeTokens';
-import type { DocsMode } from '@/studio/systemSources';
+import type { SystemComponentDoc } from '@/studio/modules/systems/docs';
+import type { ThemeToken } from '@/studio/modules/systems/themeTokens';
+import type { DocsMode } from '@/studio/modules/systems/sources';
 
 
 // public/prototypes/manifest.json, written by scripts/build/build-manifest.js, with each prototype's items

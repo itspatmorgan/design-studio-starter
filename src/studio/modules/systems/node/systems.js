@@ -1,15 +1,15 @@
 // The design systems installed in src/systems/ (one folder each, with a system.ts), for the build and the dev
 // server. Delete a folder and its system is gone from here too. The app finds the same folders with a glob
-// (src/studio/app/data/systems.ts). The app's own system (Studio) is added to SYSTEM_SOURCES, since the Systems
+// (src/studio/modules/systems/data/systems.ts). The app's own system (Studio) is added to SYSTEM_SOURCES, since the Systems
 // pages document it too.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import CONFIG from '../../studio.config.ts';
-import { STUDIO_ID, STUDIO_SOURCE, sourceOf } from '../../src/studio/systemSources.ts';
-import { systemProblems } from '../../src/studio/systems.ts';
+import CONFIG from '../../../../../studio.config.ts';
+import { STUDIO_ID, STUDIO_SOURCE, sourceOf } from '../sources.ts';
+import { systemProblems } from '../spec.ts';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
 const DIR = path.join(ROOT, 'src', 'systems');
 
 const ids = fs.existsSync(DIR)

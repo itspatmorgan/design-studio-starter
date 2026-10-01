@@ -7,7 +7,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_DIRS } from '../lib/modules.js';
-import { SYSTEM_IDS } from '../lib/systems.js';
+import { SYSTEM_IDS } from '../../src/studio/modules/systems/node/systems.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const STYLESHEET = path.join(ROOT, 'src', 'studio', 'styles', 'index.css');

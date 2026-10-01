@@ -1,6 +1,6 @@
 // The prototype design systems installed in src/systems/: one folder each, found with a glob, so the app runs with
-// any of them removed. (scripts/lib/systems.js finds the same folders for the build.)
-import type { SystemSpec } from '@/studio/systems';
+// any of them removed. (src/studio/modules/systems/node/systems.js finds the same folders for the build.)
+import type { SystemSpec } from '@/studio/modules/systems/spec';
 import { CONFIG } from '@/studio/app/data/config';
 
 const specs = import.meta.glob<SystemSpec>('/systems/*/system.ts', { eager: true, import: 'default' });

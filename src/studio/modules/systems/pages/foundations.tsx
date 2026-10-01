@@ -3,7 +3,7 @@ import type { DesignSystem } from '@/studio/app/data/types';
 import { useEffect, useRef, useState, type ReactNode, type Ref } from 'react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
-import { KNOWN_COLORS, type ThemeToken } from '@/studio/themeTokens';
+import { KNOWN_COLORS, type ThemeToken } from '@/studio/modules/systems/themeTokens';
 
 // Shared building blocks for the Systems page. Everything here reads live values
 // from the CSS at runtime, so it stays true when someone edits a theme file.

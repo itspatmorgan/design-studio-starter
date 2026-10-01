@@ -1,6 +1,6 @@
 // The starter files for a component's docs (see systemDocs.ts): an examples file and a Markdown
 // page, written next to the component. Nothing here reads a disk or imports anything, so Node
-// scripts and the app can both load it. scripts/cli/scaffold-component-docs.js writes them.
+// scripts and the app can both load it. src/studio/modules/systems/node/scaffold-docs.js writes them.
 
 // "icon-button" or "IconButton" → "Icon button".
 export function titleOf(stem: string): string {

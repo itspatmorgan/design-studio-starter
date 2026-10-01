@@ -8,7 +8,7 @@
 // first sentence of the prop's comment.
 import path from 'node:path';
 import ts from 'typescript';
-import { conciseDescription } from '../../src/studio/systemDocs.ts';
+import { conciseDescription } from '../docs.ts';
 
 const NATIVE = /[\\/]node_modules[\\/]@types[\\/]react[\\/]|[\\/]typescript[\\/]lib[\\/]lib\./;
 

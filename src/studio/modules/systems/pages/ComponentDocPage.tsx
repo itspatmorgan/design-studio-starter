@@ -4,13 +4,13 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowDown01Icon } from '@hugeicons/core-free-icons';
 import { Button } from '@/studio/components/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/studio/components/tooltip';
-import { CodeBlock, PageHeader, SystemFrame } from '@/studio/app/pages/systems/foundations';
+import { CodeBlock, PageHeader, SystemFrame } from '@/studio/modules/systems/pages/foundations';
 import { Prose } from '@/studio/app/docs/Prose';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/studio/components/collapsible';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/studio/components/table';
-import { loadComponentDoc, loadExamples, loadExamplesSource, loadProps, useDocsVersion, type Example } from '@/studio/app/data/loadSystemDocs';
-import type { ComponentPropsDoc, PropDoc, SystemComponentDoc } from '@/studio/systemDocs';
-import { shadcnDocsUrl } from '@/studio/systemSources';
+import { loadComponentDoc, loadExamples, loadExamplesSource, loadProps, useDocsVersion, type Example } from '@/studio/modules/systems/data/loadDocs';
+import type { ComponentPropsDoc, PropDoc, SystemComponentDoc } from '@/studio/modules/systems/docs';
+import { shadcnDocsUrl } from '@/studio/modules/systems/sources';
 import type { DesignSystem } from '@/studio/app/data/types';
 
 // One component's page in the Systems section, built from its files: the title and description

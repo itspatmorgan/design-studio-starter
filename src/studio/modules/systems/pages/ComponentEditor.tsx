@@ -11,7 +11,7 @@ import { Button } from '@/studio/components/button';
 import { toast } from '@/studio/components/toast';
 import { Tabs, TabsList, TabsTrigger } from '@/studio/components/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
-import type { SystemComponentDoc } from '@/studio/systemDocs';
+import type { SystemComponentDoc } from '@/studio/modules/systems/docs';
 
 type Kind = keyof SystemComponentDoc['files'];
 

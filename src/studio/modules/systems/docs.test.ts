@@ -1,12 +1,12 @@
 // How a system's components and their docs are worked out (systemDocs.ts and
-// scripts/lib/system-docs.js). Run with `pnpm test`.
+// src/studio/modules/systems/node/docs.js). Run with `pnpm test`.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { componentProblems, conciseDescription, discoverComponents, duplicateProblems, exampleNames, type ComponentPropsDoc } from './systemDocs.ts';
-import { systemDocs } from '../../scripts/lib/system-docs.js';
+import { componentProblems, conciseDescription, discoverComponents, duplicateProblems, exampleNames, type ComponentPropsDoc } from './docs.ts';
+import { systemDocs } from './node/docs.js';
 
 const names = (files: string[]) => discoverComponents(files).map((c) => c.name);
 
@@ -107,8 +107,8 @@ test('scanning a folder returns manifest entries and problems', () => {
 });
 
 test('props are read from the code: types from other packages, defaults, native attributes', async () => {
-  const { extractProps } = await import('../../scripts/lib/extract-props.js');
-  const root = path.resolve(import.meta.dirname, '../..');
+  const { extractProps } = await import('./node/extract-props.js');
+  const root = path.resolve(import.meta.dirname, '../../../..');
   const dir = path.join(root, 'src/systems/product/components');
   const files = ['button', 'input', 'dialog'].map((n) => path.join(dir, `${n}.tsx`));
   const result: Record<string, ComponentPropsDoc[]> = extractProps(files, root) as Record<string, ComponentPropsDoc[]>;
@@ -128,7 +128,7 @@ test('props are read from the code: types from other packages, defaults, native 
 });
 
 test('starter docs files sit next to the component and never break the checks', async () => {
-  const { docTemplates, titleOf } = await import('./systemScaffold.ts');
+  const { docTemplates, titleOf } = await import('./scaffold.ts');
   assert.equal(titleOf('icon-button'), 'Icon button');
   assert.equal(titleOf('IconButton'), 'Icon button');
   const flat = docTemplates({ system: 'product', source: 'icon-button.tsx' });
@@ -149,7 +149,7 @@ test('starter docs files sit next to the component and never break the checks', 
 });
 
 test('a first heading is the title when the frontmatter has none', async () => {
-  const { default: plugin } = await import('../../scripts/build/remark-title-from-heading.js');
+  const { default: plugin } = await import('../../../../scripts/build/remark-title-from-heading.js');
   const h1 = (text: string) => ({ type: 'heading', depth: 1, children: [{ type: 'text', value: text }] });
   const para = { type: 'paragraph', children: [{ type: 'text', value: 'x' }] };
   const run = (children: unknown[]) => { const tree = { type: 'root', children }; plugin()(tree); return tree.children as { type: string; value?: string }[]; };
@@ -247,7 +247,7 @@ test('a theme\'s tokens: scoped light and dark values, sorted into groups', asyn
 
 test('the shipped product theme is colors, a font, and one radius', async () => {
   const { themeTokens } = await import('./themeTokens.ts');
-  const css = fs.readFileSync(path.resolve(import.meta.dirname, '../systems/product/styles/theme.css'), 'utf8');
+  const css = fs.readFileSync(path.resolve(import.meta.dirname, '../../../systems/product/styles/theme.css'), 'utf8');
   const tokens = themeTokens(css, 'product-theme');
   assert.equal(tokens.filter((t) => t.group === 'colors').length, 31);
   assert.deepEqual(tokens.filter((t) => t.group !== 'colors').map((t) => t.name).sort(), ['--font-sans', '--radius']);
@@ -256,7 +256,7 @@ test('the shipped product theme is colors, a font, and one radius', async () => 
 });
 
 test('a menu\'s items are grouped: what doesn\'t apply is dropped, and groups are never merged', async () => {
-  const { menuGroups } = await import('./app/shell/menuGroups.ts');
+  const { menuGroups } = await import('../../app/shell/menuGroups.ts');
   // A file's menu, all of it.
   assert.deepEqual(menuGroups([['open', 'reveal', 'link', 'path'], ['start', 'rename'], ['delete']]), [['open', 'reveal', 'link', 'path'], ['start', 'rename'], ['delete']]);
   // A folder's: the groups that are left keep their order, and a group of one stays a group.

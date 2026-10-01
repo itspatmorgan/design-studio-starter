@@ -7,7 +7,7 @@
 //                         anything else the team wants to write
 //
 // Only the first is needed to appear; the others add to the page. Nothing here reads a disk or
-// imports anything, so Node scripts and the app can both load it. scripts/lib/system-docs.js
+// imports anything, so Node scripts and the app can both load it. src/studio/modules/systems/node/docs.js
 // reads the files and calls this.
 
 export type SystemComponent = {
@@ -34,7 +34,7 @@ export function conciseDescription(text: string, max = 140): string {
   return `${cut.slice(0, Math.max(cut.lastIndexOf(' '), 1)).replace(/[\s,;:.\-]+$/, '')}…`;
 }
 
-// A component's props, read from its TypeScript (scripts/lib/extract-props.js). `native` is true
+// A component's props, read from its TypeScript (src/studio/modules/systems/node/extract-props.js). `native` is true
 // when it also accepts the native attributes of the element it renders, which are left out of the list.
 export type PropDoc = { name: string; type: string; required: boolean; default: string | null; description: string };
 export type ComponentPropsDoc = { name: string; props: PropDoc[]; native: boolean };

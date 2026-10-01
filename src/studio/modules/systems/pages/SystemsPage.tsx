@@ -2,24 +2,24 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from '@tanstack/react-router';
 import { NavGroup, NavHeader, NavList, NavTabs, NavTitle, SectionNav, navLinkClass, navLinkStyle, navTabClass } from '@/studio/app/shell/nav';
 import { NotFound } from '@/studio/app/shell/App';
-import { Code, ColorTokens, IconsPage, PageHeader, Prose } from '@/studio/app/pages/systems/foundations';
-import { OtherTokens, RadiusTokens, ShadowTokens, SpacingTokens, TypographyTokens } from '@/studio/app/pages/systems/tokens';
-import { ComponentDocPage } from '@/studio/app/pages/systems/ComponentDocPage';
-import { ComponentEditor } from '@/studio/app/pages/systems/ComponentEditor';
+import { Code, ColorTokens, IconsPage, PageHeader, Prose } from '@/studio/modules/systems/pages/foundations';
+import { OtherTokens, RadiusTokens, ShadowTokens, SpacingTokens, TypographyTokens } from '@/studio/modules/systems/pages/tokens';
+import { ComponentDocPage } from '@/studio/modules/systems/pages/ComponentDocPage';
+import { ComponentEditor } from '@/studio/modules/systems/pages/ComponentEditor';
 import { useManifest } from '@/studio/app/data/useManifest';
 import type { DesignSystem, SystemIntro } from '@/studio/app/data/types';
-import type { SystemComponentDoc } from '@/studio/systemDocs';
-import type { ThemeToken, TokenGroup } from '@/studio/themeTokens';
-import { PROTOTYPE_SYSTEMS } from '@/studio/app/data/systems';
-import { studio } from '@/studio/app/pages/systems/studioSystem';
+import type { SystemComponentDoc } from '@/studio/modules/systems/docs';
+import type { ThemeToken, TokenGroup } from '@/studio/modules/systems/themeTokens';
+import { PROTOTYPE_SYSTEMS } from '@/studio/modules/systems/data/systems';
+import { studio } from '@/studio/modules/systems/pages/studioSystem';
 
 // Systems: one tab per design system, and one page per foundation and component,
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
 // Every system is treated the same, the app's own (Studio) included. What only its people can write
 // comes from its spec (src/systems/<id>/intro.tsx, studioSystem.tsx): the introduction (which covers its
 // theme), and icons. The rest comes from its files: a component page for each component in its components
-// folder (src/studio/systemDocs.ts), and a foundations page for each kind of token its theme
-// defines (src/studio/themeTokens.ts). One tab for each prototype system in src/systems/, then Studio.
+// folder (src/studio/modules/systems/docs.ts), and a foundations page for each kind of token its theme
+// defines (src/studio/modules/systems/themeTokens.ts). One tab for each prototype system in src/systems/, then Studio.
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
 const introOf = (id: string): SystemIntro => intros[`/systems/${id}/intro.tsx`]?.default ?? {
   intro: <Prose><p>This system has no introduction yet. Add one in <Code>src/systems/{id}/intro.tsx</Code>.</p></Prose>,

@@ -16,7 +16,7 @@ import manifestWatch from './scripts/build/vite-manifest-watch-plugin.js';
 import spa404 from './scripts/build/vite-spa-404-plugin.js';
 import files from './scripts/build/vite-files-plugin.js';
 import markdownRefresh from './scripts/build/vite-markdown-refresh-plugin.js';
-import systemProps from './scripts/build/vite-system-props-plugin.js';
+import systemProps from './src/studio/modules/systems/node/props-plugin.js';
 import globs from './scripts/build/vite-globs-plugin.js';
 import css from './scripts/build/vite-css-plugin.js';
 import { ENABLED_MODULES, PROTOTYPE_DIRS } from './scripts/lib/modules.js';
