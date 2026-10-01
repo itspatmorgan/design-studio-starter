@@ -33,13 +33,18 @@ function PrototypeCard({ prototype: p }: { prototype: PrototypeInfo }) {
   );
 }
 
-// Search box: filters by title, description, and contributor. The text lives in ?q=.
+// Search box: filters by title, description, and contributor. The text lives in ?q=. It's short until
+// you use it, then widens: while it's focused, and while it holds a search.
 function SearchBox({ value }: { value: string }) {
   const navigate = useNavigate({ from: '/' });
   // replace: typing doesn't add a history entry per keystroke.
   const set = (q: string) => navigate({ search: { q: q || undefined }, replace: true });
   return (
-    <form role="search" onSubmit={(e) => e.preventDefault()} className="w-full max-w-xs">
+    <form
+      role="search"
+      onSubmit={(e) => e.preventDefault()}
+      className={cn('shrink-0 transition-[width] duration-200 ease-out motion-reduce:transition-none', value ? 'w-64' : 'w-36 focus-within:w-64')}
+    >
       <InputGroup>
         <InputGroupAddon>
           <HugeiconsIcon icon={Search01Icon} />
@@ -48,7 +53,7 @@ function SearchBox({ value }: { value: string }) {
           name="q"
           inputMode="search"
           aria-label="Search prototypes"
-          placeholder="Search prototypes..."
+          placeholder="Search"
           value={value}
           onChange={(e) => set(e.target.value)}
         />
@@ -128,15 +133,17 @@ export default function Index() {
 
   return (
     <main className="mx-auto w-full max-w-5xl px-6 pt-12 pb-8">
-      <header className="mb-5">
+      <header className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Prototypes</h1>
-        {/* The subtitle's line is as tall as the button (32px), so both centre their text on the same line. */}
+        {/* The subtitle's line is as tall as the controls (32px), so all of them centre on the same line. */}
         <div className="mt-0.5 flex items-center justify-between gap-4">
-          <p className="text-sm leading-8 text-muted-foreground">Every prototype in the sandbox, newest first.</p>
-          <NewPrototypeButton />
+          <p className="min-w-0 truncate text-sm leading-8 text-muted-foreground">Every prototype in the sandbox, newest first.</p>
+          <div className="flex shrink-0 items-center gap-2">
+            {!empty && <SearchBox value={search} />}
+            <NewPrototypeButton />
+          </div>
         </div>
       </header>
-      {!empty && <div className="mb-6"><SearchBox value={search} /></div>}
       {body}
     </main>
   );
