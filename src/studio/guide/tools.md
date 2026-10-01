@@ -8,7 +8,7 @@ toc: true
 
 A tool is a small app that makes something: a thumbnail, a gradient, a graphic with the right sizes. People use it to get an asset, not to look at a design. It's still a prototype. What changes is that it belongs to the team, has people who keep it working, and opens like an app.
 
-The sample includes one, Quote card, which opens from a feedback's Detail screen and turns it into a shareable image.
+The sample includes one, Quote card, which turns a quote into a shareable image.
 
 ## From prototype to tool
 
@@ -41,6 +41,16 @@ A tool isn't anyone's folder, so `meta.json` says who may change it:
 `maintainers` is a list of `contributors.json` keys. Publishing writes yours. Anyone can use the tool and read its files, but only a maintainer can change it, in the app or in a pull request. Add a name to hand over or share the work. [Scopes](/guide/scopes) covers the check.
 
 Whether changes to a tool are reviewed is up to your team. If you want that, add a `CODEOWNERS` line for `src/tools/<name>/`.
+
+## Using a tool from a prototype
+
+A prototype can't import from a tool or from another prototype, so each stays safe to change, rename, or delete. Everything is still open to you. There are three ways to use what's there:
+
+- **Link** to it. Navigating is always fine.
+- **Copy** it in. Ask your agent to copy the code you want into your prototype's folder. From then on it's yours, and it won't change when the tool does.
+- **Share** through the design system or `src/lib/`, which every prototype can use.
+
+The sample shows the second one. The **Share as card** button on a feedback's Detail screen draws a card like the Quote card tool, using its own copy of the drawing code.
 
 ## Building a good one
 

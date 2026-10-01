@@ -3,10 +3,10 @@
 // shows the newest item instead of an empty page. DetailScreen takes optional starting state, so the
 // files in states/ can show it with the edit dialog or the delete confirmation open.
 import { useState } from 'react';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { ArrowLeft, Pencil, Quote, Trash2 } from 'lucide-react';
 import { Badge } from '@/systems/product/components/badge';
-import { Button, buttonVariants } from '@/systems/product/components/button';
+import { Button } from '@/systems/product/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/systems/product/components/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/systems/product/components/dialog';
 import { Label } from '@/systems/product/components/label';
@@ -15,6 +15,7 @@ import { Separator } from '@/systems/product/components/separator';
 import { Textarea } from '@/systems/product/components/textarea';
 import AppShell from './_components/AppShell';
 import FeedbackForm from './_components/FeedbackForm';
+import ShareCardDialog from './_components/ShareCardDialog';
 import { PriorityBadge, StatusBadge } from './_components/badges';
 import { ScreenLink, useScreenPath } from './_components/nav';
 import { PRIORITIES, STATUSES, addNote, formatDate, removeFeedback, updateFeedback, useFeedback, useStore, type Priority, type Status } from './_components/store';
@@ -24,6 +25,7 @@ export function DetailScreen({ editing: startEditing = false, deleting: startDel
   const item = useFeedback(selectedId) ?? items[0];
   const [editing, setEditing] = useState(startEditing);
   const [deleting, setDeleting] = useState(startDeleting);
+  const [sharing, setSharing] = useState(false);
   const [note, setNote] = useState('');
   const navigate = useNavigate();
   const screen = useScreenPath();
@@ -57,12 +59,7 @@ export function DetailScreen({ editing: startEditing = false, deleting: startDel
             <p className="mt-1 text-sm text-muted-foreground">{item.customer} · {item.plan} plan · via {item.source} · {formatDate(item.createdAt)}</p>
           </div>
           <div className="flex gap-2">
-            {/* The Quote card tool (src/tools/quote-card) opens with this feedback filled in. A link, not an import: a prototype and a tool stay separate. */}
-            <Link
-              to={'/tools/quote-card' as never}
-              search={{ quote: item.body || item.title, customer: item.customer, source: item.source } as never}
-              className={buttonVariants({ variant: 'outline' })}
-            ><Quote /> Share as card</Link>
+            <Button variant="outline" onClick={() => setSharing(true)}><Quote /> Share as card</Button>
             <Button variant="outline" onClick={() => setEditing(true)}><Pencil /> Edit</Button>
             <Button variant="outline" onClick={() => setDeleting(true)}><Trash2 /> Delete</Button>
           </div>
@@ -117,6 +114,7 @@ export function DetailScreen({ editing: startEditing = false, deleting: startDel
         </div>
       </div>
 
+      <ShareCardDialog item={item} open={sharing} onOpenChange={setSharing} />
       <Dialog open={editing} onOpenChange={setEditing}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader><DialogTitle>Edit feedback</DialogTitle><DialogDescription>Fix a typo or add what you learned.</DialogDescription></DialogHeader>

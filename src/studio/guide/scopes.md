@@ -29,7 +29,7 @@ Adding or editing your own entry in `contributors.json` counts as in scope. Befo
 
 > A prototype can depend only on its own folder, its design system, and shared utilities.
 
-A prototype can import from its own folder, its design system (`src/systems/product/` unless it picks another), and `src/lib/`. It can't import from another prototype, so nobody's change breaks your work, or from `src/studio/`, so the app can change freely.
+A prototype can import from its own folder, its design system (`src/systems/product/` unless it picks another), and `src/lib/`. It can't import from another prototype or a [tool](/guide/tools), so nobody's change breaks your work, or from `src/studio/`, so the app can change freely. To reuse something from one, link to it or ask your agent to copy it into your folder.
 
 It also can't import from a different design system than the one it picks in `meta.json`, so its look stays consistent.
 

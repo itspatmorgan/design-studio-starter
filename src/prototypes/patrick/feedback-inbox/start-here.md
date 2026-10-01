@@ -64,9 +64,17 @@ Your agent can build and change all of this: "add a due date to feedback," "make
 
 Archive a prototype from its **…** menu to keep it but leave it out of the deployed site. To tidy files inside a prototype, put them in a folder.
 
-## 11. Tools support the work
+## 11. Tools, and how things relate
 
-A tool is a small app your team maintains, found on the **Tools** page in the rail. Open a feedback's [Detail](app/detail) and choose **Share as card**: the Quote card tool opens with that feedback filled in, and you can download the card as an image. The prototype only links to the tool, so the two stay separate. A tool starts as an ordinary prototype and is published from its **…** menu.
+A tool is a small app your team maintains, on the **Tools** page in the rail. Open a feedback's [Detail](app/detail) and choose **Share as card**: it makes a card like the Quote card tool does, without leaving the prototype.
+
+That is on purpose. The prototype has its own copy of the tool's drawing code (`app/_components/quoteCard.ts`), because a prototype never imports from a tool or another prototype. Everything in the codebase is open to you, and there are three ways to use it:
+
+- **Link** to it. Navigating is always fine.
+- **Copy** it in. Ask your agent to copy what you want into your folder; from then on it's yours.
+- **Share** through the design system or `src/lib/`, which every prototype can use.
+
+Not allowed: importing from another prototype or tool. That keeps each one safe to change, rename, or delete.
 
 ## Make it yours
 
