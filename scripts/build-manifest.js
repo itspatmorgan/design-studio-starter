@@ -13,6 +13,7 @@ import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../src/studio
 import { byOrder, parseOrder } from '../src/studio/order.ts';
 import { parseMaintainers } from '../src/studio/tools.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
+import { SECTION_KEYS } from './lib/modules.js';
 import { frontmatter } from './lib/frontmatter.js';
 import { handbookProblems } from './lib/handbook-check.js';
 import { systemDocs } from './lib/system-docs.js';
@@ -30,10 +31,8 @@ const OUT = path.join(OUT_DIR, 'manifest.json');
 // prototype's when it opens it, so the manifest every visitor downloads stays small however many
 // files prototypes hold.
 const ITEMS_DIR = path.join(OUT_DIR, 'items');
-// App page URLs, so they can't be contributor folders. Keep in sync with setup-contributor.js.
 // How many component doc gaps the build lists before summarizing the rest.
 const DOC_WARNINGS = 5;
-const RESERVED_KEYS = new Set(['systems', 'guide', HANDBOOK_KEY, TOOLS_KEY]);
 
 const dirs = (p) => fs.existsSync(p)
   ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort()
@@ -215,7 +214,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
     return entry;
   };
   for (const contributorKey of dirs(PROTOS)) {
-    if (RESERVED_KEYS.has(contributorKey)) {
+    if (SECTION_KEYS.has(contributorKey)) {
       out.error(`[manifest] Skipped src/prototypes/${contributorKey}/: "${contributorKey}" is an app page URL, so it can't be a contributor folder`);
       errors++; continue;
     }
