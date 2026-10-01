@@ -11,7 +11,8 @@
 //                                            at any depth: /patrick/hello-world/lofi/main
 //                                            (?mode=source shows its text, in dev: SourcePane)
 import { lazy, Suspense } from 'react';
-import { createRootRoute, createRoute, createRouter, lazyRouteComponent, notFound, redirect } from '@tanstack/react-router';
+import { createRootRoute, createRoute, createRouter, lazyRouteComponent, notFound, redirect, useNavigate } from '@tanstack/react-router';
+import { Button } from '@/studio/components/button';
 import App, { NotFound } from '@/studio/app/shell/App';
 import Index from '@/studio/app/pages/index/Index';
 import { loadGuidePage } from '@/studio/app/data/loadGuide';
@@ -110,7 +111,7 @@ const guidePageRoute = createRoute({
   component: () => <DocLayout {...guidePageRoute.useLoaderData()} />,
 });
 
-// ?mode=source shows an item's text instead of the item (dev only).
+// ?mode=source shows an item's text instead of the item (dev only): "Edit source" in its file menu.
 type ItemSearch = { mode?: 'source' };
 
 // The prototype's navigation, around whichever item is open.
@@ -154,8 +155,11 @@ const SourcePane = import.meta.env.DEV ? lazy(() => import('@/studio/app/pages/p
 // The open item, in its file type's page. It shows its own not-found page, inside the
 // prototype's navigation, and never renders without its loader's data.
 function ItemPage({ data }: { data: ItemData | undefined }) {
+  const navigate = useNavigate();
   if (!data) return null;
-  if (data.source) return SourcePane && <Suspense fallback={null}><SourcePane key={data.source.item.path} {...data.source} /></Suspense>;
+  // Done goes back to the item's page; unsaved edits ask first (SourcePane.tsx).
+  const done = <Button size="sm" variant="outline" onClick={() => navigate({ to: '.', search: ((prev: object) => ({ ...prev, mode: undefined })) as never })}>Done</Button>;
+  if (data.source) return SourcePane && <Suspense fallback={null}><SourcePane key={data.source.item.path} {...data.source} actions={done} /></Suspense>;
   const { Page } = fileTypeModules[data.fileType];
   return <Suspense fallback={null}><Page {...data.props!} /></Suspense>;
 }

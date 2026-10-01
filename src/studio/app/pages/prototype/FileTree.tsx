@@ -1,5 +1,5 @@
 // The prototype's files, in its navigation: a filterable tree with expand/collapse all, and a
-// button that switches the open item between its page and its source (SourcePane.tsx).
+// "Edit source" in a file's menu, which opens its text in place of its page (SourcePane.tsx).
 //
 // In `pnpm dev`, it's the prototype's real files and folders, live from the dev server
 // (data/files.ts). It shows what you open and organize: items (views, at any depth; see
@@ -11,13 +11,13 @@
 // is a plain file change, so agents see the same thing. On the deployed site, it lists the
 // prototype's items, from the manifest.
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
+import { Link, useNavigate, useRouter } from '@tanstack/react-router';
 import { dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { extractInstruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  Add01Icon, ArrowDown01Icon, ArrowUp01Icon, ArrowUpDoubleIcon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
-  Folder01Icon, StarIcon, SourceCodeIcon, BrowserIcon, PencilEdit02Icon, PaintBoardIcon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
+  Add01Icon, ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
+  Folder01Icon, StarIcon, SourceCodeIcon, PencilEdit02Icon, PaintBoardIcon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import {
@@ -185,11 +185,6 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   const items = new Map(proto.items.map((i) => [i.path, i]));
   // Switched in the header's "…" menu, and remembered for every prototype.
   const [showAll] = useShowAllFiles();
-  // The open item's Source view (?mode=source, SourcePane.tsx), for types that have source.
-  const { mode } = useSearch({ strict: false }) as { mode?: 'source' };
-  const hasSource = live && Boolean(current && FILE_TYPES[current.fileType]?.language);
-  const sourceOn = hasSource && mode === 'source';
-  const toggleSource = () => navigate({ to: '.', search: ((prev: object) => ({ ...prev, mode: sourceOn ? undefined : 'source' })) as never });
   const nodes = !files ? itemsAsNodes(proto) : showAll ? files : visibleNodes(files, items);
   // The item the prototype opens on: its start, or its first item. It gets a star. (A Handbook
   // section has no start to mark.)
@@ -334,13 +329,12 @@ export default function FileTree({ proto, current }: FileTreeProps) {
     return () => stops.forEach((stop) => stop());
   }, [editable, isHandbook]);
 
-  // Move up, down, or to the top: the same as dragging, for the menu and the keyboard.
+  // Move up or down: the same as dragging, from the keyboard (Option + arrow).
   const moves = (node: FileNode) => {
     const sibs = siblingsOf(node.path);
     const at = sibs.findIndex((n) => n.path === node.path);
     const can = editable && !isHandbook && !q && node.path !== 'meta.json' && at >= 0;
     return {
-      top: can && at > 1 ? () => arrange(node.path, parentOf(node.path), sibs[0].path) : null,
       up: can && at > 0 ? () => arrange(node.path, parentOf(node.path), sibs[at - 1].path) : null,
       down: can && at < sibs.length - 1 ? () => arrange(node.path, parentOf(node.path), sibs[at + 2]?.path ?? '') : null,
     };
@@ -378,6 +372,11 @@ export default function FileTree({ proto, current }: FileTreeProps) {
               <ContextMenuItem key={o.target} onClick={() => setTimeout(() => startCreate(node.path, o.target))}><HugeiconsIcon icon={o.icon} /> {o.label}</ContextMenuItem>
             )) : [],
             [
+              items.has(node.path) && FILE_TYPES[items.get(node.path)!.fileType]?.language && (
+                <ContextMenuItem key="source" onClick={() => setTimeout(() => navigate({ ...itemLink(proto, items.get(node.path)!), search: { mode: 'source' } } as never))}>
+                  <HugeiconsIcon icon={SourceCodeIcon} /> {editable ? 'Edit source' : 'View source'}
+                </ContextMenuItem>
+              ),
               !node.dir && <ContextMenuItem key="editor" onClick={() => setTimeout(() => openInEditor(proto, node.path))}><HugeiconsIcon icon={FileEditIcon} /> Open in editor</ContextMenuItem>,
               <ContextMenuItem key="reveal" onClick={() => setTimeout(() => revealInFinder(proto, node.path))}><HugeiconsIcon icon={Folder01Icon} /> Reveal in Finder</ContextMenuItem>,
               items.has(node.path) && <ContextMenuItem key="link" onClick={() => setTimeout(() => { navigator.clipboard.writeText(itemUrl(proto, proto.items.find((i) => i.path === node.path)!)); toast.add({ title: 'Link copied' }); })}><HugeiconsIcon icon={Link01Icon} /> Copy link</ContextMenuItem>,
@@ -395,11 +394,6 @@ export default function FileTree({ proto, current }: FileTreeProps) {
                 </ContextMenuItem>
               ),
               changeable && <ContextMenuItem key="rename" onClick={() => setTimeout(() => setEditing({ kind: 'rename', path: node.path }))}><HugeiconsIcon icon={PencilEdit02Icon} /> Rename</ContextMenuItem>,
-              ...(() => { const m = moves(node); return [
-                m.top && <ContextMenuItem key="top" onClick={() => setTimeout(m.top!)}><HugeiconsIcon icon={ArrowUpDoubleIcon} /> Move to top</ContextMenuItem>,
-                m.up && <ContextMenuItem key="up" onClick={() => setTimeout(m.up!)}><HugeiconsIcon icon={ArrowUp01Icon} /> Move up</ContextMenuItem>,
-                m.down && <ContextMenuItem key="down" onClick={() => setTimeout(m.down!)}><HugeiconsIcon icon={ArrowDown01Icon} /> Move down</ContextMenuItem>,
-              ]; })(),
             ],
             [changeable && <ContextMenuItem key="delete" variant="destructive" onClick={() => setTimeout(() => setConfirmDelete(node))}><HugeiconsIcon icon={Delete02Icon} /> Delete</ContextMenuItem>],
           ]).map((group, i) => (
@@ -486,7 +480,6 @@ export default function FileTree({ proto, current }: FileTreeProps) {
           {rowMenu(node.path, node, (
             <Link
               {...itemLink(proto, item)}
-              search={(prev: { mode?: 'source' }) => ({ mode: prev.mode })} // stay in Source view while moving between items
               draggable={false} // the row is what drags (DragRow.tsx), not the link
               {...keyProps(node)}
               aria-current={active ? 'page' : undefined}
@@ -526,18 +519,13 @@ export default function FileTree({ proto, current }: FileTreeProps) {
       <div className="flex h-7 shrink-0 items-center justify-between gap-1 px-2.5 pr-0.5">
         <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{live ? 'Files' : 'Pages'}</p>
         {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
-        <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && !sourceOn && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
+        <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
           <IconButton label="Filter" pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
             <HugeiconsIcon icon={Search01Icon} size={14} />
           </IconButton>
           {dirs.length > 0 && (
             <IconButton label={allOpen ? 'Collapse all' : 'Expand all'} onClick={() => setClosed(allOpen ? new Set(dirs) : new Set())}>
               <HugeiconsIcon icon={allOpen ? UnfoldLessIcon : UnfoldMoreIcon} size={14} />
-            </IconButton>
-          )}
-          {hasSource && (
-            <IconButton label={sourceOn ? 'Show preview' : 'Show source'} onClick={toggleSource}>
-              <HugeiconsIcon icon={sourceOn ? BrowserIcon : SourceCodeIcon} size={14} />
             </IconButton>
           )}
         </div>

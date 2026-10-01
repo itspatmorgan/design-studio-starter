@@ -35,7 +35,7 @@ In your own prototypes, the navigation works like a file browser:
 - **Rename:** right-click, or select a file and press F2.
 - **Move:** drag a file or folder onto another folder, or onto the empty space below the list for the top level.
 - **Delete:** right-click, or press Delete. It goes to the Trash, so you can put it back.
-- **Read or edit the file:** the source button (`</>`) in the Files row shows the open file's text. Its icon then becomes a browser window, and pressing it goes back to the page. In your own prototypes you can edit it and save with ⌘S; in other people's it's read-only. Find (⌘F), go to line (⌘⌥G), and folding (the chevrons beside the line numbers) are built in. If your agent changes the file while it's open, the editor updates (or asks, if you have unsaved edits). Source is available while the app runs locally, not on the deployed site.
+- **Read or edit the file:** right-click a view, document, or canvas and choose **Edit source** to see its text in place of its page. **Done** goes back to the page. In your own prototypes you can edit it and save with ⌘S; in other people's the menu says **View source** and it's read-only. Find (⌘F), go to line (⌘⌥G), and folding (the chevrons beside the line numbers) are built in. If your agent changes the file while it's open, the editor updates (or asks, if you have unsaved edits). Source is available while the app runs locally, not on the deployed site.
 - **Choose what opens first:** right-click a view or document and choose **Set as start**. A small star marks what the prototype opens on.
 
 Each of these is an ordinary change to the files, the same as your agent would make, so you can mix both ways of working. If you rename or move the file you're looking at, the app follows it, and `start` in `meta.json` is updated to match.
@@ -59,7 +59,7 @@ Folders are only for organizing, at any depth. A folder's name never changes wha
 
 ## Order
 
-By default the navigation lists files first, then folders, each alphabetical. To put the important things at the top, drag a file or folder to where you want it: between two others to reorder, or onto a folder to move it inside. Dragging between two files in different folders does both. **Move to top**, **Move up**, and **Move down** in the file menu do the same without a mouse, and so does Option + Up or Down arrow on a focused row.
+By default the navigation lists files first, then folders, each alphabetical. To put the important things at the top, drag a file or folder to where you want it: between two others to reorder, or onto a folder to move it inside. Dragging between two files in different folders does both. Without a mouse, Option + Up or Down arrow moves a focused row.
 
 The arrangement is saved in `meta.json` as `order`, so everyone sees the same navigation, and your agent can change it too: ask it to put the overview first. Files you add later land after the ones you arranged. Order never renames or moves a file.
 

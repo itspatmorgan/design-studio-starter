@@ -27,7 +27,7 @@ The screens use the **Product** design system, the same components your team's p
 
 ## 3. Switch to Source
 
-Hover over **Files** and click the code icon to see any file's text. In the dev server you can edit it right there and save with ⌘S. The change shows up straight away. Try changing a title in [Feedback inbox](app/feedback-inbox).
+Right-click any file in the navigation and choose **Edit source** to see its text. In the dev server you can edit it right there and save with ⌘S, then press **Done** to go back to the page. The change shows up straight away. Try changing a title in [Feedback inbox](app/feedback-inbox).
 
 ## 4. The helpers folder
 
