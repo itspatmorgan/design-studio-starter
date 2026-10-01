@@ -8,7 +8,7 @@ import { Wrench01Icon } from '@hugeicons/core-free-icons';
 import { Card, CardContent } from '@/studio/components/card';
 import { Button } from '@/studio/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/studio/components/command';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/studio/components/select';
 import { toast } from '@/studio/components/toast';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { EmptyState } from '@/studio/app/shell/EmptyState';
@@ -41,7 +41,7 @@ function ToolCard({ tool }: { tool: PrototypeInfo }) {
   );
 }
 
-// Pick one of your prototypes to publish as a tool, in dev. A searchable list, since you may have many.
+// Pick one of your prototypes to publish as a tool, in dev.
 function PublishDialog({ me, prototypes, open, onOpenChange }: { me: string; prototypes: PrototypeInfo[]; open: boolean; onOpenChange: (open: boolean) => void }) {
   const router = useRouter();
   const navigate = useNavigate();
@@ -77,20 +77,15 @@ function PublishDialog({ me, prototypes, open, onOpenChange }: { me: string; pro
           </DialogDescription>
         </DialogHeader>
         {mine.length ? (
-          <Command className="border border-border">
-            <CommandInput placeholder="Search your prototypes" />
-            <CommandList className="max-h-56">
-              <CommandEmpty>No prototypes match.</CommandEmpty>
-              {mine.map((p) => (
-                <CommandItem key={p.id} value={`${p.title} ${p.description} ${p.id}`} data-checked={chosen === p.id} onSelect={() => setChosen(p.id)}>
-                  <span className="min-w-0">
-                    <span className="block truncate font-medium text-foreground">{p.title}</span>
-                    {p.description && <span className="block truncate text-xs text-muted-foreground">{p.description}</span>}
-                  </span>
-                </CommandItem>
-              ))}
-            </CommandList>
-          </Command>
+          <div className="grid gap-1.5">
+            <label htmlFor="publish-prototype" className="text-sm font-medium text-foreground">Prototype</label>
+            <Select items={mine.map((p) => ({ value: p.id, label: p.title }))} value={chosen} onValueChange={setChosen}>
+              <SelectTrigger id="publish-prototype" className="w-full"><SelectValue placeholder="Choose a prototype" /></SelectTrigger>
+              <SelectContent>
+                {mine.map((p) => <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
         ) : (
           <p className="text-sm text-muted-foreground">You have no prototypes to publish yet. Start one with New tool prototype on the Prototypes page.</p>
         )}
