@@ -17,16 +17,16 @@ const indexApi = getRouteApi('/');
 function PrototypeCard({ prototype: p }: { prototype: PrototypeInfo }) {
   const name = p.contributor || p.contributorKey;
   return (
-    <Link {...prototypeLink(p)} className="block">
-      <Card className={cn('transition-colors hover:bg-muted/40', p.status === 'archived' && 'opacity-60')}>
-        <CardContent className="flex flex-col gap-2.5">
+    <Link {...prototypeLink(p)} className="block h-full">
+      <Card className={cn('h-full transition-colors hover:bg-muted/40', p.status === 'archived' && 'opacity-60')}>
+        <CardContent className="flex flex-1 flex-col gap-2.5">
           <div className="flex h-7 items-center gap-2">
             <ContributorAvatar name={name} />
             <span className="truncate text-xs font-medium text-muted-foreground">{name.split(' ')[0]}</span>
           </div>
           <div className="text-sm font-semibold leading-snug text-foreground">{p.title}</div>
           <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">{p.description || 'No description'}</p>
-          <span className="text-xs text-muted-foreground">{formatDate(p.created)}</span>
+          <span className="mt-auto pt-0.5 text-xs text-muted-foreground">{formatDate(p.created)}</span>
         </CardContent>
       </Card>
     </Link>
@@ -103,7 +103,7 @@ export default function Index() {
       .sort(newestFirst);
     // Archived prototypes show here, below the rest. The deployed site leaves them out.
     const list = (ps: PrototypeInfo[]) => (
-      <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {ps.map((p) => (
           <li key={`${p.contributorKey}/${p.id}`}><PrototypeCard prototype={p} /></li>
         ))}

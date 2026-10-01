@@ -22,9 +22,9 @@ const rootApi = getRouteApi('__root__');
 function ToolCard({ tool }: { tool: PrototypeInfo }) {
   const name = tool.contributor || tool.maintainers?.join(', ') || '';
   return (
-    <Link {...prototypeLink(tool)} className="block">
-      <Card className={cn('transition-colors hover:bg-muted/40', tool.status === 'archived' && 'opacity-60')}>
-        <CardContent className="flex flex-col gap-2.5">
+    <Link {...prototypeLink(tool)} className="block h-full">
+      <Card className={cn('h-full transition-colors hover:bg-muted/40', tool.status === 'archived' && 'opacity-60')}>
+        <CardContent className="flex flex-1 flex-col gap-2.5">
           <div className="flex h-7 items-center gap-2">
             <ContributorAvatar name={name || tool.title} />
             <span className="truncate text-xs font-medium text-muted-foreground" title={`Maintained by ${name}`}>{name.split(',')[0].split(' ')[0]}{(tool.maintainers?.length ?? 0) > 1 ? ` +${tool.maintainers!.length - 1}` : ''}</span>
@@ -144,7 +144,7 @@ export default function ToolsPage() {
         </div>
       </header>
       {tools.length ? (
-        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {tools.map((t) => <li key={t.id}><ToolCard tool={t} /></li>)}
         </ul>
       ) : (
