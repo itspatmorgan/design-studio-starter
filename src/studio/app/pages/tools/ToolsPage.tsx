@@ -8,6 +8,7 @@ import { Wrench01Icon } from '@hugeicons/core-free-icons';
 import { Card, CardContent } from '@/studio/components/card';
 import { Button, buttonVariants } from '@/studio/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/studio/components/command';
 import { toast } from '@/studio/components/toast';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { publishTool, useMe } from '@/studio/app/data/files';
@@ -35,15 +36,17 @@ function ToolCard({ tool }: { tool: PrototypeInfo }) {
   );
 }
 
-// Pick one of your prototypes to publish as a tool, in dev.
+// Pick one of your prototypes to publish as a tool, in dev. A searchable list, since you may have many.
 function PublishDialog({ me, prototypes, open, onOpenChange }: { me: string; prototypes: PrototypeInfo[]; open: boolean; onOpenChange: (open: boolean) => void }) {
   const router = useRouter();
   const navigate = useNavigate();
-  const [saving, setSaving] = useState<string | null>(null);
+  const [chosen, setChosen] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const mine = prototypes.filter((p) => p.contributorKey === me && p.status !== 'archived');
+  const picked = mine.find((p) => p.id === chosen);
 
   async function publish(p: PrototypeInfo) {
-    setSaving(p.id);
+    setSaving(true);
     try {
       const result = await publishTool(p);
       setManifest(result.manifest);
@@ -55,40 +58,40 @@ function PublishDialog({ me, prototypes, open, onOpenChange }: { me: string; pro
     } catch (e) {
       toast.add({ type: 'error', title: (e as Error).message });
     } finally {
-      setSaving(null);
+      setSaving(false);
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(o) => { if (!o) setChosen(null); onOpenChange(o); }}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Publish a prototype as a tool</DialogTitle>
           <DialogDescription>
-            It moves to src/tools/ and you become its maintainer. People then use it as an app, from this page. Its address changes to /tools/….
+            The team can then use it as an app. You become its maintainer.
           </DialogDescription>
         </DialogHeader>
         {mine.length ? (
-          <ul className="grid max-h-72 gap-1 overflow-y-auto">
-            {mine.map((p) => (
-              <li key={p.id}>
-                <button
-                  type="button"
-                  disabled={saving !== null}
-                  onClick={() => publish(p)}
-                  className="flex w-full flex-col rounded-md px-3 py-2 text-left outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
-                >
-                  <span className="text-sm font-medium text-foreground">{saving === p.id ? 'Publishing…' : p.title}</span>
-                  {p.description && <span className="line-clamp-1 text-xs text-muted-foreground">{p.description}</span>}
-                </button>
-              </li>
-            ))}
-          </ul>
+          <Command className="border border-border">
+            <CommandInput placeholder="Search your prototypes" />
+            <CommandList className="max-h-56">
+              <CommandEmpty>No prototypes match.</CommandEmpty>
+              {mine.map((p) => (
+                <CommandItem key={p.id} value={`${p.title} ${p.description} ${p.id}`} data-checked={chosen === p.id} onSelect={() => setChosen(p.id)}>
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium text-foreground">{p.title}</span>
+                    {p.description && <span className="block truncate text-xs text-muted-foreground">{p.description}</span>}
+                  </span>
+                </CommandItem>
+              ))}
+            </CommandList>
+          </Command>
         ) : (
           <p className="text-sm text-muted-foreground">You have no prototypes to publish yet. Start one with New tool prototype on the Prototypes page.</p>
         )}
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button disabled={!picked || saving} onClick={() => picked && publish(picked)}>{saving ? 'Publishing…' : 'Publish'}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
