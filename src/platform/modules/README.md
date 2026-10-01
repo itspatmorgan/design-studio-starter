@@ -38,7 +38,7 @@ so the platform may import it, but all its code still lives in its one folder.
 | File in the module's folder | What it gives the platform |
 |---|---|
 | `module.ts` | Who it is, and its **section**: an address (`/tools`), optionally a content folder, and if that folder holds prototype-shaped folders (`items: "prototypes"`, one per id like `src/tools/<id>/`, or grouped by person like `src/prototypes/<person>/<id>/` with `byPerson`), who may change them (`policy`) and whether they open as full-window apps on the deployed site (`standalone`). Also: `optional` (may be turned off), `requires` (oldest platform version), `lib`, `handbook`, `dependencies`, `upstream`. |
-| `app.tsx` | Its **rail button**, **routes**, a card on the app's front page (`overview`: a line or two under its name and description), entries in the ⌘K palette (`places`, `palette`), and entries in every prototype's "…" menu (`useActions`). |
+| `app.tsx` | Its **rail button**, **routes**, a block on the app's front page (`overview`: a few of its items with a link to all of them, drawn with `HomeSection`; leave it out if the rail already says enough), entries in the ⌘K palette (`places`, `palette`), and entries in every prototype's "…" menu (`useActions`). |
 | `server.ts` | **Routes it adds to the dev server**, at `POST /__studio/<module>/<route>`. Dev only. |
 | `check.ts` | A **check** that runs in `pnpm check` while the module is on. |
 | `lib/index.ts(x)` | A **library** prototypes import as `@module/<id>`: the one door a prototype has into a module (`lib: true`). |

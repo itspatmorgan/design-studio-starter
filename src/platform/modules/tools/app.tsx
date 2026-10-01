@@ -3,11 +3,14 @@
 import { createRoute, useRouterState } from '@tanstack/react-router';
 import { Wrench01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
+import { HomeSection } from '@/platform/app/items/HomeSection';
+import { ItemGrid } from '@/platform/app/items/ItemGrid';
 import { APP_NAME } from '@/platform/app/data/config';
 import { prototypeLink } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 import type { Manifest } from '@/platform/app/data/types';
 import ToolsPage from './ToolsPage';
+import ToolCard from './ToolCard';
 import { useToolActions } from './actions';
 
 function ToolsPlaces({ go }: PaletteContext) {
@@ -32,10 +35,15 @@ function ToolsPalette({ manifest, current, go }: PaletteContext) {
   );
 }
 
-// How many tools there are.
+// On the front page: the first few tools, with a link to all of them.
 function Overview({ manifest }: { manifest: Manifest }) {
-  const n = (manifest.sections.tools ?? []).length;
-  return <>{n === 1 ? '1 tool' : `${n} tools`}</>;
+  const tools = (manifest.sections.tools ?? []).filter((t) => t.status !== 'archived').slice(0, 3);
+  if (!tools.length) return null;
+  return (
+    <HomeSection title="Tools" to="/tools" linkLabel="All tools">
+      <ItemGrid>{tools.map((t) => <li key={t.id}><ToolCard tool={t} /></li>)}</ItemGrid>
+    </HomeSection>
+  );
 }
 
 export default {

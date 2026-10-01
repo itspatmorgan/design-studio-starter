@@ -3,7 +3,11 @@
 // manifest like prototypes; /handbook itself opens the first section.
 import { createRoute, notFound, redirect, useRouterState } from '@tanstack/react-router';
 import { Notebook01Icon } from '@hugeicons/core-free-icons';
+import { Link } from '@tanstack/react-router';
+import { Card, CardContent } from '@/platform/components/card';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
+import { HomeSection } from '@/platform/app/items/HomeSection';
+import { ItemGrid } from '@/platform/app/items/ItemGrid';
 import { NotFound } from '@/platform/app/shell/App';
 import { itemFolder, itemLabel, loadManifest } from '@/platform/app/data/manifest';
 import { itemLink } from '@/platform/app/data/manifest';
@@ -37,9 +41,27 @@ function HandbookPalette({ manifest, current, isOpen, go }: PaletteContext) {
   );
 }
 
-// How much is in each of its sections: "3 docs · 8 rules · 2 skills".
+// On the front page: the first few docs, the part of the Handbook written for people. Its rules and skills
+// are for agents, so they stay out of sight here.
 function Overview({ manifest }: { manifest: Manifest }) {
-  return <>{manifest.handbook.map((section) => `${section.items.length} ${section.title.toLowerCase()}`).join(' · ')}</>;
+  const docs = manifest.handbook.find((section) => section.id === 'docs');
+  const items = docs?.items.slice(0, 3) ?? [];
+  if (!docs || !items.length) return null;
+  return (
+    <HomeSection title="Docs" to="/handbook/docs" linkLabel="All docs">
+      <ItemGrid>
+        {items.map((item) => (
+          <li key={item.path}>
+            <Link {...itemLink(docs, item)} className="block h-full">
+              <Card className="h-full transition-colors hover:bg-muted/40">
+                <CardContent className="text-sm font-semibold leading-snug text-foreground">{itemLabel(item.path)}</CardContent>
+              </Card>
+            </Link>
+          </li>
+        ))}
+      </ItemGrid>
+    </HomeSection>
+  );
 }
 
 export default {

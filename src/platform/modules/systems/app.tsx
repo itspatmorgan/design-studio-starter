@@ -6,7 +6,6 @@ import { CommandItem } from '@/platform/components/command';
 import { APP_NAME } from '@/platform/app/data/config';
 import { itemLabel } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
-import { PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
 
 // Loaded on first visit, so it isn't in the main bundle:
 // https://tanstack.com/router/latest/docs/framework/react/guide/code-splitting
@@ -23,11 +22,6 @@ function SystemsPlaces({ go }: PaletteContext) {
       <CommandItem value="studio system components" disabled={on('studio')} onSelect={() => go({ to: '/systems/studio' } as never)}>Studio system</CommandItem>
     </>
   );
-}
-
-// The design systems, by name: the ones in src/systems/ and the studio's own.
-function Overview() {
-  return <>{[...Object.values(PROTOTYPE_SYSTEMS).map((s) => s.label), 'Studio'].join(' · ')}</>;
 }
 
 export default {
@@ -56,6 +50,5 @@ export default {
       }),
     ])];
   },
-  overview: Overview,
   places: SystemsPlaces,
 } satisfies ModuleApp;
