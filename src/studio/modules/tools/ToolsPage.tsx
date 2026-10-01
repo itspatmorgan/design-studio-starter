@@ -12,9 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from '@/studio/components/toast';
 import { EmptyState } from '@/studio/app/shell/EmptyState';
 import PrototypeCardMenu from '@/studio/app/pages/index/PrototypeCardMenu';
-import { publishTool, useMe } from '@/studio/app/data/files';
+import { useMe } from '@/studio/app/data/files';
 import { prototypeLink, setManifest } from '@/studio/app/data/manifest';
-import { staleLinksMessage } from '@/studio/tools';
+import { staleLinksMessage } from './staleLinks';
+import { publishTool } from './actions';
 import { toolArt } from './toolArt';
 import type { PrototypeInfo } from '@/studio/app/data/types';
 import { cn } from '@/lib/utils';
@@ -128,7 +129,7 @@ export default function ToolsPage() {
   const manifest = rootApi.useLoaderData();
   const me = useMe();
   const [publishing, setPublishing] = useState(false);
-  const tools = [...manifest.tools].sort((a, b) => a.title.localeCompare(b.title));
+  const tools = [...(manifest.sections.tools ?? [])].sort((a, b) => a.title.localeCompare(b.title));
   // Dev only (import.meta.env.DEV is false in the build), and only for contributors.
   const local = import.meta.env.DEV && me !== null;
   return (

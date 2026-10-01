@@ -7,6 +7,7 @@ import { APP_NAME } from '@/studio/app/data/config';
 import { prototypeLink } from '@/studio/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/studio/app/modules';
 import ToolsPage from './ToolsPage';
+import { useToolActions } from './actions';
 
 function ToolsPlaces({ go }: PaletteContext) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -14,12 +15,13 @@ function ToolsPlaces({ go }: PaletteContext) {
 }
 
 function ToolsPalette({ manifest, current, go }: PaletteContext) {
-  if (!manifest.tools.length) return null;
+  const tools = manifest.sections.tools ?? [];
+  if (!tools.length) return null;
   return (
     <>
       <CommandSeparator />
       <CommandGroup heading="Tools">
-        {manifest.tools.map((t) => (
+        {tools.map((t) => (
           <CommandItem key={t.id} value={`tool ${t.title} ${t.description ?? ''} ${t.id}`} disabled={t === current} onSelect={() => go(prototypeLink(t))}>
             <span className="truncate">{t.title}</span>
           </CommandItem>
@@ -41,6 +43,7 @@ export default {
       component: ToolsPage,
     }),
   ],
+  useActions: useToolActions,
   places: ToolsPlaces,
   palette: ToolsPalette,
 } satisfies ModuleApp;

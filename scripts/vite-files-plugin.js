@@ -34,18 +34,18 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildManifest } from './build-manifest.js';
-import { createPrototype, publishTool, renamePrototype, unpublishTool } from './create-prototype.js';
+import { createPrototype, renamePrototype } from './create-prototype.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from './resolve-contributor.js';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from './lib/file-types.js';
 import { isHelper } from '../src/studio/fileTypes/index.ts';
 import { STATUSES, parseStatus } from '../src/studio/archive.ts';
 import { afterChange, byOrder, parentOf, parseOrder, place, withFolderOrder } from '../src/studio/order.ts';
-import { HANDBOOK_KEY, SYSTEMS_KEY, TOOLS_KEY, isHandbookSection, rootOf } from '../src/studio/roots.ts';
+import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection, rootOf } from '../src/studio/roots.ts';
 import { canChange as mayChange, canOwn, parseMaintainers, policyFor, whyNot } from '../src/studio/permissions.ts';
-import { MODULES } from './lib/modules.js';
+import { MODULES, PROTOTYPE_SECTIONS, SERVER_FILES } from './lib/modules.js';
 import { SYSTEM_SOURCES } from '../src/studio/systemSources.ts';
 import { scaffold } from './scaffold-component-docs.js';
 import { opProblem } from '../src/studio/handbookRules.ts';
@@ -55,7 +55,6 @@ import { frontmatter } from './lib/frontmatter.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
-const TOOLS = path.join(ROOT, 'src', 'tools');
 // Each system's components folder, to tell which system a file belongs to.
 const COMPONENT_DIRS = Object.entries(SYSTEM_SOURCES).map(([id, s]) => [id, path.join(ROOT, s.components) + path.sep]);
 const systemOf = (file) => COMPONENT_DIRS.find(([, dir]) => file.startsWith(dir));
@@ -72,10 +71,11 @@ function prototypeDir(contributor, prototype) {
     const dir = typeof prototype === 'string' && Object.hasOwn(SYSTEM_SOURCES, prototype) ? path.join(ROOT, SYSTEM_SOURCES[prototype].components) : null;
     return dir && fs.existsSync(dir) ? dir : null;
   }
-  // A tool (src/tools/<id>/): found by its folder name.
-  if (contributor === TOOLS_KEY) {
+  // An item of a module's section of prototype-shaped folders (a tool, src/tools/<id>/): found by its folder name.
+  const section = PROTOTYPE_SECTIONS.find((s) => s.key === contributor);
+  if (section) {
     if (!NAME.test(prototype ?? '')) return null;
-    const dir = path.join(TOOLS, prototype);
+    const dir = path.join(section.dir, prototype);
     return fs.existsSync(dir) ? dir : null;
   }
   if (contributor === HANDBOOK_KEY) return isHandbookSection(prototype) && fs.existsSync(path.join(HANDBOOK, prototype)) ? path.join(HANDBOOK, prototype) : null;
@@ -293,7 +293,7 @@ function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, title, d
     if (start === '') delete meta.start;
     else if (start !== undefined) {
       const made = buildManifest().manifest;
-      const items = [...made.prototypes, ...made.tools].find((p) => path.join(ROOT, 'src', rootOf(p.contributorKey, p.id)) === dir)?.items ?? [];
+      const items = [...made.prototypes, ...Object.values(made.sections).flat()].find((p) => path.join(ROOT, 'src', rootOf(p.contributorKey, p.id)) === dir)?.items ?? [];
       if (!items.some((i) => viewKey(i.path) === start)) throw new Error(`“${start}” isn't a view in this prototype.`);
       meta.start = start;
     }
@@ -380,11 +380,13 @@ export default function filesPlugin() {
     // the file itself and let its importers, like those lists, update as usual. Edits to a
     // file are left to Vite's normal hot reload.
     hotUpdate({ type, file, modules }) {
-      if (type === 'update' || !(file.startsWith(PROTOS + path.sep) || file.startsWith(TOOLS + path.sep) || file.startsWith(HANDBOOK + path.sep) || systemOf(file))) return;
+      if (type === 'update' || !(file.startsWith(PROTOS + path.sep) || PROTOTYPE_SECTIONS.some((s) => file.startsWith(s.dir + path.sep)) || file.startsWith(HANDBOOK + path.sep) || systemOf(file))) return;
       for (const m of modules) if (m.file === file) this.environment.moduleGraph.invalidateModule(m);
       return modules.filter((m) => m.file !== file);
     },
-    configureServer(server) {
+    async configureServer(server) {
+      // The routes the modules add (a server.ts in a module's folder), by module id.
+      const moduleServers = Object.fromEntries(await Promise.all(SERVER_FILES.map(async ([id, file]) => [id, (await import(pathToFileURL(file).href)).default])));
       // Who you are, worked out once (it can call the GitHub CLI), and again if contributors.json changes.
       let key;
       const me = () => (key === undefined ? (key = resolveContributor()) : key);
@@ -449,15 +451,14 @@ export default function filesPlugin() {
             return send(res, 400, { error: e.message });
           }
         }
-        // Publish one of your prototypes as a tool, or move a tool you maintain back into your prototypes.
-        if (req.method === 'POST' && (url.pathname === '/tool-publish' || url.pathname === '/tool-unpublish')) {
-          const { prototype } = await readJson(req);
-          if (!NAME.test(prototype ?? '')) return send(res, 400, { error: 'Say which prototype.' });
+        // A route a module adds (its server.ts): POST /__studio/<module>/<route>, for modules that are on.
+        const added = req.method === 'POST' ? /^\/([a-z][a-z0-9-]*)\/([a-z][a-z0-9-]*)$/.exec(url.pathname) : null;
+        if (added && Object.hasOwn(moduleServers, added[1]) && Object.hasOwn(moduleServers[added[1]], added[2])) {
+          const body = await readJson(req);
           try {
-            const publish = url.pathname === '/tool-publish';
-            const result = (publish ? publishTool : unpublishTool)({ key: me(), id: prototype });
-            publishManifest(server, result.manifest, req.headers['x-studio-tab']);
-            return send(res, 200, { contributor: publish ? TOOLS_KEY : me(), ...result });
+            const result = await moduleServers[added[1]][added[2]]({ me: me(), body });
+            if (result.manifest) publishManifest(server, result.manifest, req.headers['x-studio-tab']);
+            return send(res, result.status ?? 200, result.body);
           } catch (e) {
             return send(res, 400, { error: e.message });
           }
@@ -509,9 +510,10 @@ export default function filesPlugin() {
         }
         const system = systemOf(file);
         if (system) return { contributor: SYSTEMS_KEY, prototype: system[0], rel: path.relative(system[1], file).split(path.sep).join('/') };
-        if (file.startsWith(TOOLS + path.sep)) {
-          const [id, ...rest] = path.relative(TOOLS, file).split(path.sep);
-          return rest.length ? { contributor: TOOLS_KEY, prototype: id, rel: rest.join('/') } : null;
+        const section = PROTOTYPE_SECTIONS.find((s) => file.startsWith(s.dir + path.sep));
+        if (section) {
+          const [id, ...rest] = path.relative(section.dir, file).split(path.sep);
+          return rest.length ? { contributor: section.key, prototype: id, rel: rest.join('/') } : null;
         }
         const [contributor, prototype, ...rest] = path.relative(PROTOS, file).split(path.sep);
         return contributor && !contributor.startsWith('..') && prototype ? { contributor, prototype, rel: rest.join('/') } : null;

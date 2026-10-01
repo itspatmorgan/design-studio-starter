@@ -29,13 +29,14 @@ const file = path.resolve(process.cwd(), first);
 if (!file.endsWith('.excalidraw')) fail(`${first} isn't a canvas. Canvases are .excalidraw files in a prototype.`);
 if (!fs.existsSync(file)) fail(`${first} doesn't exist. Make a canvas with + → New canvas in the app, or write an empty one (src/handbook/rules/canvases.md).`);
 const real = fs.realpathSync(file);
-const TOOLS = path.join(ROOT, 'src', 'tools');
-const inTools = fs.existsSync(TOOLS) ? path.relative(fs.realpathSync(TOOLS), real).split(path.sep) : ['..'];
+// A prototype is src/prototypes/<contributor>/<prototype>/; an item of a module's section of prototype-shaped
+// folders (a tool, src/tools/<id>/) is opened under the section's key (src/studio/roots.ts).
+const { PROTOTYPE_SECTIONS } = await import(pathToFileURL(path.join(ROOT, 'scripts', 'lib', 'modules.js')).href) as { PROTOTYPE_SECTIONS: { key: string; dir: string }[] };
+const inSection = PROTOTYPE_SECTIONS.map((s) => ({ key: s.key, rel: fs.existsSync(s.dir) ? path.relative(fs.realpathSync(s.dir), real).split(path.sep) : ['..'] }))
+  .find((s) => s.rel[0] !== '..' && !path.isAbsolute(s.rel[0]) && s.rel.length >= 2);
 const inProtos = path.relative(fs.realpathSync(PROTOS), real).split(path.sep);
-const isTool = inTools[0] !== '..' && !path.isAbsolute(path.relative(TOOLS, real)) && inTools.length >= 2;
-if (!isTool && (inProtos[0] === '..' || path.isAbsolute(path.relative(PROTOS, real)) || inProtos.length < 3)) fail(`${first} isn't in a prototype. A canvas is at src/prototypes/<contributor>/<prototype>/….excalidraw (or src/tools/<tool>/….excalidraw).`);
-// A tool (src/tools/<id>/) is opened under the reserved key "tools" (src/studio/roots.ts).
-const [contributor, prototype] = isTool ? ['tools', inTools[0]] : inProtos;
+if (!inSection && (inProtos[0] === '..' || path.isAbsolute(path.relative(PROTOS, real)) || inProtos.length < 3)) fail(`${first} isn't in a prototype. A canvas is at src/prototypes/<contributor>/<prototype>/….excalidraw (or src/tools/<tool>/….excalidraw).`);
+const [contributor, prototype] = inSection ? [inSection.key, inSection.rel[0]] : inProtos;
 
 const tool = second ?? fail('Usage: pnpm canvas <file.excalidraw> <tool> \'<json>\'. Tools: pnpm canvas help');
 let args: unknown = {};
@@ -50,8 +51,8 @@ if ((scene!.studioVersion ?? 1) > FORMAT_VERSION) fail(`${first} was written by 
 // What the tools need to know about the app: the items in this canvas's prototype, from the manifest.
 const manifestFile = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
 if (!fs.existsSync(manifestFile)) fail('There is no manifest yet. Run: node scripts/build-manifest.js');
-const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8')) as { prototypes: { contributorKey: string; id: string }[]; tools?: { contributorKey: string; id: string }[] };
-const everything = [...manifest.prototypes, ...(manifest.tools ?? [])];
+const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8')) as { prototypes: { contributorKey: string; id: string }[]; sections?: Record<string, { contributorKey: string; id: string }[]> };
+const everything = [...manifest.prototypes, ...Object.values(manifest.sections ?? {}).flat()];
 // A prototype's items are in a file of their own (scripts/build-manifest.js).
 const itemsOf = (x: { contributorKey: string; id: string }): { path: string; fileType: string }[] => {
   const file = path.join(ROOT, 'public', 'prototypes', 'items', x.contributorKey, `${x.id}.json`);

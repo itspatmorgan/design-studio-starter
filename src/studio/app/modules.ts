@@ -6,7 +6,7 @@ import type { ComponentType } from 'react';
 import type { IconSvgElement } from '@hugeicons/react';
 import type { AnyRoute, NavigateOptions } from '@tanstack/react-router';
 import type { ModuleSpec } from '@/studio/modules';
-import type { Item, Manifest, Prototype } from '@/studio/app/data/types';
+import type { Item, Manifest, Prototype, PrototypeInfo } from '@/studio/app/data/types';
 import { MODULES } from '@/studio/app/data/modules';
 import { isEnabled } from '@/studio/app/data/config';
 
@@ -19,6 +19,9 @@ export type PaletteContext = {
   go: (to: NavigateOptions) => void;
 };
 
+// One entry a module adds to a prototype's "…" menu (on its card and in its navigation).
+export type PrototypeAction = { label: string; icon: IconSvgElement; onSelect: () => void; destructive?: boolean };
+
 export type ModuleApp = {
   icon: IconSvgElement;
   // Where its rail button sits, and its place among the others: low first, in the rail, the palette and the routes.
@@ -28,6 +31,10 @@ export type ModuleApp = {
   // /tools opens the Tools module. Links to them are written loosely, since the router's types
   // are made from the app's own routes.
   routes?: (root: AnyRoute) => AnyRoute[];
+  // Entries it adds to a prototype's "…" menu, among the ones that change it (Edit, Archive). `editable` is
+  // whether you may change this prototype. It's a hook: the shell calls every module's, in the same order each
+  // time, since the modules that are on don't change while the app runs.
+  useActions?: (proto: PrototypeInfo, can: { editable: boolean }) => PrototypeAction[];
   // CommandItems it adds to the palette's Places group, and groups of its own.
   places?: ComponentType<PaletteContext>;
   palette?: ComponentType<PaletteContext>;

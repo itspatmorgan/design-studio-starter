@@ -19,8 +19,17 @@ export type ModuleSpec = {
   // `policy` says who may change the section's files from the app (src/studio/permissions.ts): "maintainers"
   // (the people listed in an item's meta.json) or "open" (anyone running the app; a pull request reviews
   // it). Without one, nobody can: the module's files are changed in the repo.
-  section?: { key: string; folder: string; items?: 'prototypes' | 'handbook'; policy?: 'maintainers' | 'open' };
+  // `standalone` is for a section of prototype-shaped folders whose items open on their own, filling the
+  // window with no rail or navigation, on the deployed site (a published tool is an app).
+  section?: { key: string; folder: string; items?: 'prototypes' | 'handbook'; policy?: 'maintainers' | 'open'; standalone?: boolean };
 };
+
+// A module can add routes to the dev server (src/studio/modules/<id>/server.ts, served by
+// scripts/vite-files-plugin.js at POST /__studio/<id>/<route>). A handler gets who is asking (their
+// contributors.json key, or null) and the request's JSON, and returns what to send back; a manifest it returns
+// is sent to the open app. It throws an Error to answer with that message. Dev only: the deployed site has no server.
+export type ServerRoute = (request: { me: string | null; body: unknown }) => { status?: number; body: object; manifest?: unknown } | Promise<{ status?: number; body: object; manifest?: unknown }>;
+export type ModuleServer = Record<string, ServerRoute>;
 
 const ID = /^[a-z][a-z0-9-]*$/;
 const VERSION = /^\d+\.\d+\.\d+$/;
@@ -46,6 +55,9 @@ export function moduleProblems(spec: unknown, folder: string): string[] {
     const items = (m.section as { items?: unknown }).items;
     if (items !== undefined && items !== 'prototypes' && items !== 'handbook') problems.push(`${where}: section.items should be "prototypes" or "handbook".`);
     else if (items !== undefined && !(typeof dir === 'string' && /^src\/[a-z0-9][a-z0-9-]*$/.test(dir))) problems.push(`${where}: a section with items keeps them in a folder directly under src/, like src/tools.`);
+    else if (items === 'prototypes' && dir !== `src/${(m.section as { key?: string }).key}`) problems.push(`${where}: a section of prototype-shaped folders keeps them in src/ under its own key, like src/tools for "tools".`);
+    const standalone = (m.section as { standalone?: unknown }).standalone;
+    if (standalone !== undefined && (standalone !== true || items !== 'prototypes')) problems.push(`${where}: section.standalone is true, and only for a section with items: "prototypes".`);
   }
   return problems;
 }

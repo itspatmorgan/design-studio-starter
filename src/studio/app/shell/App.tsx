@@ -4,6 +4,7 @@ import MainNav from '@/studio/app/shell/MainNav';
 import { TooltipProvider } from '@/studio/components/tooltip';
 import { Toaster } from '@/studio/components/toast';
 import { CommandPaletteProvider } from '@/studio/app/shell/CommandPalette';
+import { MODULES } from '@/studio/app/data/modules';
 import { SectionNavContext, SectionNavPresenceContext, useColorMode, useSectionNav } from '@/studio/app/shell/appPrefs';
 
 // The root route's layout: the rail, the current page, and the ⌘K palette.
@@ -14,9 +15,9 @@ export default function App() {
   // offers its hide/show toggle exactly when there is one.
   const [navs, setNavs] = useState(0);
   const registerNav = useCallback((present: boolean) => setNavs((n) => n + (present ? 1 : -1)), []);
-  // A published tool on the deployed site fills the window like an app: no rail, no navigation.
-  // (Locally it keeps them, so you can still edit it.)
-  const toolApp = useRouterState({ select: (s) => !import.meta.env.DEV && s.location.pathname.startsWith('/tools/') });
+  // A standalone item (a published tool, /tools/<id>) on the deployed site fills the window like an app: no rail,
+  // no navigation. (Locally it keeps them, so you can still edit it.)
+  const standaloneApp = useRouterState({ select: (s) => !import.meta.env.DEV && MODULES.some((m) => m.section?.standalone && s.location.pathname.startsWith(`/${m.section.key}/`)) });
 
   return (
     <TooltipProvider>
@@ -25,7 +26,7 @@ export default function App() {
         <SectionNavPresenceContext.Provider value={registerNav}>
           <CommandPaletteProvider>
             <div className="flex h-screen overflow-hidden">
-              {!toolApp && <MainNav colorMode={colorMode} onToggleColorMode={toggleColorMode} sectionNav={navs > 0 ? sectionNav : null} />}
+              {!standaloneApp && <MainNav colorMode={colorMode} onToggleColorMode={toggleColorMode} sectionNav={navs > 0 ? sectionNav : null} />}
               <div className="flex min-w-0 flex-1 flex-col overflow-auto">
                 <Outlet />
               </div>

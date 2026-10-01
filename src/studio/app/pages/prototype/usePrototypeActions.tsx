@@ -1,18 +1,18 @@
 // What you can do to a prototype (or tool) from a menu: the prototype's "…" menu in its navigation
 // (PrototypeHeader.tsx) and the "…" on its card (PrototypeCardMenu.tsx) share this, so they offer the same
 // things. Reaching it (copy its link; locally, open it in your editor) is open to everyone. Changing it
-// (edit, archive, publish, delete) is only for its owner, or a tool's maintainers (ownsPrototype). That
-// only decides what is shown: the dev server checks ownership again on every change.
+// (edit, archive, delete, and whatever a module adds, like publish) is only for its owner, or the maintainers
+// of an item in a module's section (ownsPrototype). That only decides what is shown: the dev server checks
+// ownership again on every change.
 import { useState, type ReactNode } from 'react';
-import { useNavigate, useRouter } from '@tanstack/react-router';
+import { useRouter } from '@tanstack/react-router';
 import {
-  Archive02Icon, ArchiveRestoreIcon, ArrowTurnBackwardIcon, Copy01Icon, Delete02Icon, FileEditIcon, Folder01Icon, Link01Icon, PencilEdit02Icon, Wrench01Icon,
+  Archive02Icon, ArchiveRestoreIcon, Copy01Icon, Delete02Icon, FileEditIcon, Folder01Icon, Link01Icon, PencilEdit02Icon,
 } from '@hugeicons/core-free-icons';
-import { fileOp, openInEditor, ownsPrototype, publishTool, repoPath, revealInFinder, unpublishTool, useMe } from '@/studio/app/data/files';
+import { fileOp, openInEditor, ownsPrototype, repoPath, revealInFinder, useMe } from '@/studio/app/data/files';
 import { prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import type { PrototypeInfo } from '@/studio/app/data/types';
-import { TOOLS_KEY } from '@/studio/roots';
-import { staleLinksMessage } from '@/studio/tools';
+import { moduleApps } from '@/studio/app/modules';
 import { toast } from '@/studio/components/toast';
 import EditPrototypeDialog from '@/studio/app/pages/prototype/EditPrototypeDialog';
 import DeletePrototypeDialog from '@/studio/app/pages/prototype/DeletePrototypeDialog';
@@ -22,12 +22,12 @@ export type Action = { label: string; icon: Icon; onSelect: () => void; destruct
 
 export function usePrototypeActions(proto: PrototypeInfo) {
   const router = useRouter();
-  const navigate = useNavigate();
   const me = useMe();
   // import.meta.env.DEV is false in the build, so editing isn't in the deployed site.
   const local = import.meta.env.DEV && me !== null;
-  const isTool = proto.contributorKey === TOOLS_KEY;
   const editable = local && ownsPrototype(proto, me);
+  // What the modules add. Their hooks run in a fixed order, because the modules that are on never change while the app runs.
+  const contributed = moduleApps.flatMap(({ app }) => app.useActions?.(proto, { editable }) ?? []);
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -38,23 +38,6 @@ export function usePrototypeActions(proto: PrototypeInfo) {
       setManifest(result.manifest);
       await router.invalidate();
       toast.add({ title: archived ? 'Archived. The deployed site leaves it out.' : 'Unarchived' });
-    } catch (e) {
-      toast.add({ type: 'error', title: (e as Error).message });
-    }
-  }
-
-  // Publishing moves the prototype's folder into src/tools/, so its address changes (and back, for Unpublish).
-  async function moveTool() {
-    try {
-      const result = await (isTool ? unpublishTool : publishTool)(proto);
-      setManifest(result.manifest);
-      await router.invalidate();
-      navigate({ to: '/$contributor/$prototype', params: { contributor: result.contributor, prototype: result.id } });
-      toast.add({ title: isTool ? 'Moved back to your prototypes' : 'Published as a tool' });
-      // Links in other prototypes still point at the old address.
-      if (result.linkedFrom.length) {
-        toast.add({ type: 'error', title: staleLinksMessage(result.linkedFrom) });
-      }
     } catch (e) {
       toast.add({ type: 'error', title: (e as Error).message });
     }
@@ -79,9 +62,7 @@ export function usePrototypeActions(proto: PrototypeInfo) {
       editable && (proto.status === 'archived'
         ? { label: 'Unarchive', icon: ArchiveRestoreIcon, onSelect: () => setArchived(false) }
         : { label: 'Archive', icon: Archive02Icon, onSelect: () => setArchived(true) }),
-      editable && (isTool
-        ? { label: 'Unpublish', icon: ArrowTurnBackwardIcon, onSelect: moveTool }
-        : { label: 'Publish as tool', icon: Wrench01Icon, onSelect: moveTool }),
+      ...contributed,
     ],
     [editable && { label: 'Delete', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }],
   ];
@@ -94,5 +75,5 @@ export function usePrototypeActions(proto: PrototypeInfo) {
     </>
   ) : null;
 
-  return { local, editable, isTool, groups, dialogs };
+  return { local, editable, groups, dialogs };
 }

@@ -1,7 +1,5 @@
-// Tools: prototypes the team has published. A tool lives in src/tools/<id>/ (the reserved key "tools",
-// roots.ts), not under a person, and meta.json "maintainers" lists the contributors.json keys of the
-// people who may change it (src/studio/permissions.ts). Anyone can use a tool and read its files.
-// Has no imports, so Node scripts and the app can both load it.
+// The sentence a tool's Publish or Unpublish shows when files still link to the address the prototype left
+// (src/studio/modules/tools/server.ts). Has no imports, so Node scripts and the app can both load it.
 
 // The sentence for files that still link to an address a prototype has left (after Publish or Unpublish):
 // one file by name, or the count and the first two.

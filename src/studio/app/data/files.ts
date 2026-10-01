@@ -185,17 +185,15 @@ export async function deletePrototype(p: PrototypeInfo) {
   return body as { trashedTo: string; manifest: Manifest };
 }
 
-// Publishes one of your prototypes as a tool (its folder moves to src/tools/, so its address changes), or
-// moves a tool you maintain back into your prototypes. `linkedFrom` lists other files that link to the old address.
-async function moveTool(action: 'publish' | 'unpublish', p: PrototypeInfo) {
-  const res = await fetch(`/__studio/tool-${action}`, {
+// Calls a route a module adds to the dev server (its server.ts, src/studio/modules/index.ts): POST /__studio/<module>/<route>.
+// Resolves with the server's reply, or throws its message.
+export async function callModule<T>(module: string, route: string, body: object): Promise<T> {
+  const res = await fetch(`/__studio/${module}/${route}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },
-    body: JSON.stringify({ prototype: p.id }),
+    body: JSON.stringify(body),
   });
-  const body = await res.json();
-  if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');
-  return body as { contributor: string; id: string; linkedFrom: string[]; manifest: Manifest };
+  const reply = await res.json();
+  if (!res.ok) throw new Error(reply.error ?? 'Something went wrong. Check that the dev server is still running.');
+  return reply as T;
 }
-export const publishTool = (p: PrototypeInfo) => moveTool('publish', p);
-export const unpublishTool = (p: PrototypeInfo) => moveTool('unpublish', p);

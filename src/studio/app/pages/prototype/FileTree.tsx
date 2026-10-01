@@ -19,7 +19,7 @@ import {
   Add01Icon, ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
   Folder01Icon, StarIcon, SourceCodeIcon, PencilEdit02Icon, PaintBoardIcon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
-import { firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
+import { allPrototypes, firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import {
   canChangePrototype, fileOp, openInEditor, repoPath, revealInFinder, setItemLofi, useFileTree, useMe, type FileNode, type FileOp,
 } from '@/studio/app/data/files';
@@ -71,7 +71,7 @@ function itemsAsNodes(proto: Prototype): FileNode[] {
 }
 
 // The items of a prototype in a manifest.
-const itemsOf = (m: Manifest, p: Prototype) => [...m.prototypes, ...m.tools, ...m.handbook].find((x) => x.contributorKey === p.contributorKey && x.id === p.id)?.items ?? [];
+const itemsOf = (m: Manifest, p: Prototype) => allPrototypes(m).find((x) => x.contributorKey === p.contributorKey && x.id === p.id)?.items ?? [];
 
 // While filtering, keep files whose name matches, and folders with a match inside.
 function filterNodes(nodes: FileNode[], q: string): FileNode[] {

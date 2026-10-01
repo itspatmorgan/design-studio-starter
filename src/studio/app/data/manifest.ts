@@ -8,12 +8,15 @@ export const setManifest = (m: Manifest) => { manifest = Promise.resolve(m); };
 export function loadManifest(): Promise<Manifest> {
   manifest ??= fetch(`${import.meta.env.BASE_URL}prototypes/manifest.json`)
     .then((r) => r.json() as Promise<Manifest>)
-    .catch(() => ({ prototypes: [], tools: [], guide: [], handbook: [], handbookMap: null, systems: {} }));
+    .catch(() => ({ prototypes: [], sections: {}, guide: [], handbook: [], handbookMap: null, systems: {} }));
   return manifest;
 }
 
+// Everything that opens like a prototype: prototypes, the items of the modules' sections (tools), the Handbook's sections.
+export const allPrototypes = (m: Manifest): PrototypeRef[] => [...m.prototypes, ...Object.values(m.sections).flat(), ...m.handbook];
+
 export const findPrototype = (m: Manifest, contributor: string, prototype: string): PrototypeRef | undefined =>
-  [...m.prototypes, ...m.tools, ...m.handbook].find((p) => p.contributorKey === contributor && p.id === prototype);
+  allPrototypes(m).find((p) => p.contributorKey === contributor && p.id === prototype);
 
 // A prototype's items, fetched the first time they're needed (the deployed manifest leaves them out:
 // scripts/build-manifest.js) and then kept on the manifest's entry for it. One fetch per prototype,
