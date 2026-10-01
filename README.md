@@ -8,7 +8,7 @@ The full docs live in the app itself: run it and open the Guide (`/guide`), or r
 
 - **Three contracts.** A prototype is a folder. A script turns folders into a manifest. The app reads the manifest and the URL.
 - **Contributor scope.** You can change anything in your folder, but only your own folder. Everything else is the platform.
-- **Scoped design systems.** The studio system (`src/studio/`) is the app's own UI: nav, index, prototype navigation, palette, Systems pages, and Guide. Prototypes build with a prototype system instead, each in its own folder with its theme scoped under a class, listed in `src/systems/index.ts`. The kit ships one, `product` (`src/systems/product/`), a placeholder for your product's design system. Replace it, or add others, like a `brand` system for marketing work.
+- **Scoped design systems.** The studio system (`src/studio/`) is the app's own UI: nav, index, prototype navigation, palette, Systems pages, and Guide. Prototypes build with a prototype system instead, each in its own folder with its theme scoped under a class, found by their folders in `src/systems/`. The kit ships one, `product` (`src/systems/product/`), a placeholder for your product's design system. Replace it, or add others, like a `brand` system for marketing work.
 - **Handbook.** The team's context and instructions in `src/handbook/`: docs, agent rules, and skills (in the Agent Skills format). It's platform: shown in the app, changed through review.
 - **Prototype scope.** A prototype can depend only on its own folder, its design system (`src/systems/product/` by default), and shared utilities (`src/lib/`).
 

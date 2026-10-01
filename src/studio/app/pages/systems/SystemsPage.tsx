@@ -2,27 +2,31 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from '@tanstack/react-router';
 import { NavGroup, NavHeader, NavList, NavTabs, NavTitle, SectionNav, navLinkClass, navLinkStyle, navTabClass } from '@/studio/app/shell/nav';
 import { NotFound } from '@/studio/app/shell/App';
-import { ColorTokens, IconsPage, PageHeader } from '@/studio/app/pages/systems/foundations';
+import { Code, ColorTokens, IconsPage, PageHeader, Prose } from '@/studio/app/pages/systems/foundations';
 import { OtherTokens, RadiusTokens, ShadowTokens, SpacingTokens, TypographyTokens } from '@/studio/app/pages/systems/tokens';
 import { ComponentDocPage } from '@/studio/app/pages/systems/ComponentDocPage';
 import { ComponentEditor } from '@/studio/app/pages/systems/ComponentEditor';
 import { useManifest } from '@/studio/app/data/useManifest';
-import type { DesignSystem } from '@/studio/app/data/types';
+import type { DesignSystem, SystemIntro } from '@/studio/app/data/types';
 import type { SystemComponentDoc } from '@/studio/systemDocs';
 import type { ThemeToken, TokenGroup } from '@/studio/themeTokens';
-import type { PrototypeSystemId } from '@/systems';
-import { product } from '@/studio/app/pages/systems/productSystem';
+import { PROTOTYPE_SYSTEMS } from '@/studio/app/data/systems';
 import { studio } from '@/studio/app/pages/systems/studioSystem';
 
 // Systems: one tab per design system, and one page per foundation and component,
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
 // Every system is treated the same, the app's own (Studio) included. What only its people can write
-// comes from its spec (productSystem.tsx, studioSystem.tsx): the introduction (which covers its theme),
-// and icons. The rest comes from its files: a component page for each component in its components
+// comes from its spec (src/systems/<id>/intro.tsx, studioSystem.tsx): the introduction (which covers its
+// theme), and icons. The rest comes from its files: a component page for each component in its components
 // folder (src/studio/systemDocs.ts), and a foundations page for each kind of token its theme
-// defines (src/studio/themeTokens.ts). One spec per prototype system in src/systems/index.ts (a
-// type error if one is missing), then Studio.
-const PROTOTYPE_SPECS: Record<PrototypeSystemId, DesignSystem> = { product };
+// defines (src/studio/themeTokens.ts). One tab for each prototype system in src/systems/, then Studio.
+const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
+const introOf = (id: string): SystemIntro => intros[`/systems/${id}/intro.tsx`]?.default ?? {
+  intro: <Prose><p>This system has no introduction yet. Add one in <Code>src/systems/{id}/intro.tsx</Code>.</p></Prose>,
+};
+const PROTOTYPE_SPECS: Record<string, DesignSystem> = Object.fromEntries(Object.entries(PROTOTYPE_SYSTEMS).map(([id, spec]) => [id, {
+  label: spec.label, dir: `${spec.dir}components/`, scopeClass: spec.themeClass, ...introOf(id),
+}]));
 const SYSTEMS: Record<string, DesignSystem> = { ...PROTOTYPE_SPECS, studio };
 type SystemId = string;
 type NavGroup = { heading?: string; items: [id: string | null, label: string][] };

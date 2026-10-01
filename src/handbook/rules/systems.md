@@ -3,7 +3,7 @@
 There are two kinds of design system, each in its own scope.
 
 - **Studio system**: `src/studio/components/` and `src/studio/styles/`. The app's own system, the wrapper that makes the sandbox work (nav rail, index, prototype navigation, command palette, Systems pages, Guide, the error message shown when a view fails). Stock shadcn/ui components, vendored so they can be read and changed. Maintained with the platform. Prototypes never import it.
-- **Prototype systems**: what prototypes build with, listed in `src/systems/index.ts`. The kit ships one, `product` (`src/systems/product/`), a placeholder a team replaces with their real product design system. A team can add others, like a `brand` system for marketing work. Each prototype uses one: `"system"` in its `meta.json`, or the first one listed.
+- **Prototype systems**: what prototypes build with, one folder each in `src/systems/`. The kit ships one, `product` (`src/systems/product/`), a placeholder a team replaces with their real product design system. A team can add others, like a `brand` system for marketing work. Each prototype uses one: `"system"` in its `meta.json`, or the default (`defaultSystem` in `studio.config.ts`, else the first by name).
 
 The Systems pages treat both the same: each system's components and foundations pages come from its own files (below), so nothing about Studio is special-cased except that it is `docs: 'off'` (no warnings about pages and examples nobody needs to write for stock components).
 
@@ -11,12 +11,12 @@ The Systems pages treat both the same: each system's components and foundations 
 
 Every prototype system has the same parts. Keep them true when replacing one, and follow them when adding one:
 
-1. **A folder**: `src/systems/<system>/`, with `components/` and `styles/theme.css`. Prototypes import from `@/systems/<system>/...`.
+1. **A folder**: `src/systems/<system>/`, with `components/`, `styles/theme.css`, and a `system.ts` (its label, theme class, how the build treats missing docs, and where its components come from). Prototypes import from `@/systems/<system>/...`. Nothing else lists the systems: the build, the dev server and the app find them by their folders.
 2. **A scoped theme**: every variable in `theme.css` is set under `.<system>-theme`, with a `.dark .<system>-theme` block for dark mode. Nothing is global, so systems can't leak into each other or into the app UI. The build fails on any rule in a system's `theme.css` that isn't under its class, like `:root` or `body`, which themes pasted from a theme builder often include.
 3. **Portals**: components that render a pop-up pass `usePortalContainer()` from `@/lib/portal` as the Base UI Portal's `container` (`<DialogPrimitive.Portal container={usePortalContainer()} />`), so pop-ups stay inside the system's theme and the prototype frame.
-4. **An entry in `src/systems/index.ts`** (label, folder, theme class), and **a spec** for its introduction (what the system is, and how its theme is set up), like `src/studio/app/pages/systems/productSystem.tsx`, added to `PROTOTYPE_SPECS` in `SystemsPage.tsx`. Its components and foundations pages come from its files. Import its `theme.css` in `src/studio/styles/index.css`, next to the product one.
+4. **An introduction** (optional): `src/systems/<system>/intro.tsx` exports what the system is, and how its theme is set up, for its Systems page, like `src/systems/product/intro.tsx`. Without one the page says it has none. Its components and foundations pages come from its files, and its `theme.css` is imported by the app for you.
 
-Adding or replacing a system is a platform change: describe it and confirm with the person first. To add one, copy `src/systems/product/` as the starting point.
+Adding or replacing a system is a platform change: describe it and confirm with the person first. To add one, run `pnpm studio create-system <id>`, which makes the folder with a starter theme, or copy `src/systems/product/`.
 
 ## Components
 
@@ -44,7 +44,7 @@ A prototype system's component pages come from its files, not from a spec. Files
 
 After adding or bringing in a component, run `pnpm component-docs <system> <component>` (or without the component, for every one that lacks its files). It writes the missing files from a template and never touches one that exists. Then fill in the description, the "When to use" section, and the examples. To do all of it, follow the `document-component` skill. While the app runs, the person can edit a component's files from its page (an Edit button), and create the examples and page it is missing. Adding, renaming, moving, and deleting a component aren't offered there; do those in the files.
 
-The build warns about a component without its examples or page, and about a page missing its title, description, or "When to use". A system with `docs: 'strict'` in `src/systems/index.ts` fails the build instead. Where a system's components come from is `origin` in its registry entry (`src/systems/index.ts`). `origin: 'shadcn'` gives every component page a "shadcn/ui docs" link to that component's page on ui.shadcn.com (from its file name), so people can see exactly where it came from. A page can set its own link with `docs: <https address>` in its frontmatter, for a component that is ported or bespoke. When a team replaces the placeholder with components that aren't shadcn/ui, remove `origin` (or set `docs:` per page) so pages stop linking to shadcn.
+The build warns about a component without its examples or page, and about a page missing its title, description, or "When to use". A system with `docs: 'strict'` in its `system.ts` fails the build instead. Where a system's components come from is `origin` in its `system.ts`. `origin: 'shadcn'` gives every component page a "shadcn/ui docs" link to that component's page on ui.shadcn.com (from its file name), so people can see exactly where it came from. A page can set its own link with `docs: <https address>` in its frontmatter, for a component that is ported or bespoke. When a team replaces the placeholder with components that aren't shadcn/ui, remove `origin` (or set `docs:` per page) so pages stop linking to shadcn.
 
 ## Icons
 

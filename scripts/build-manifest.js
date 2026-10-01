@@ -5,8 +5,8 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM } from '../src/systems/index.ts';
-import { SYSTEM_SOURCES, STUDIO_ID } from '../src/studio/systemSources.ts';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from './lib/systems.js';
+import { STUDIO_ID } from '../src/studio/systemSources.ts';
 import { isHelper, itemSlug } from '../src/studio/fileTypes/index.ts';
 import { HANDBOOK_KEY, HANDBOOK_SECTIONS, rootOf } from '../src/studio/roots.ts';
 import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../src/studio/archive.ts';
@@ -143,9 +143,9 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
     start = items.find((i) => itemSlug(i.path) === meta.start)?.path ?? null;
     if (!start) return skip(`has "start": "${meta.start}", which isn't an item in this prototype`);
   }
-  // "system" (optional) is the design system it builds with, from src/systems/index.ts.
+  // "system" (optional) is the design system it builds with, one of the folders in src/systems/.
   const system = meta.system ?? DEFAULT_SYSTEM;
-  if (!(system in PROTOTYPE_SYSTEMS)) return skip(`has "system": "${system}", which isn't in src/systems/index.ts (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`);
+  if (!(system in PROTOTYPE_SYSTEMS)) return skip(`has "system": "${system}", which isn't a folder in src/systems/ (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`);
   // "status" (optional) is 'active' (the default) or 'archived'.
   let status = null;
   if (meta.status !== undefined) {
@@ -298,7 +298,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
   // (src/studio/systemDocs.ts, themeTokens.ts). The app's own system (Studio) is one of them. By
   // default a gap is a warning, and the first few are listed; docs: 'strict' fails the build and
   // 'off' says nothing.
-  if (STUDIO_ID in PROTOTYPE_SYSTEMS) { out.error(`[manifest] src/systems/index.ts: "${STUDIO_ID}" is the app's own system, so a prototype system can't use that name`); errors++; }
+  if (STUDIO_ID in PROTOTYPE_SYSTEMS) { out.error(`[manifest] src/systems/${STUDIO_ID}/: "${STUDIO_ID}" is the app's own system, so a prototype system can't use that name`); errors++; }
   const systems = {};
   for (const [id, sys] of Object.entries(SYSTEM_SOURCES)) {
     const dir = path.join(ROOT, sys.components);
@@ -311,7 +311,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false } = 
     if (sys.docs === 'strict') { for (const line of lines) out.error(`[manifest] ${line}`); errors += lines.length; }
     else {
       for (const line of lines.slice(0, DOC_WARNINGS)) out.warn(`[manifest] ${line}`);
-      if (lines.length > DOC_WARNINGS) out.warn(`[manifest] ${id}: and ${lines.length - DOC_WARNINGS} more component doc gap(s). Set docs: 'strict' in src/systems/index.ts to fail the build on them.`);
+      if (lines.length > DOC_WARNINGS) out.warn(`[manifest] ${id}: and ${lines.length - DOC_WARNINGS} more component doc gap(s). Set docs: 'strict' in the system's system.ts to fail the build on them.`);
     }
   }
 

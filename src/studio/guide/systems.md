@@ -11,7 +11,7 @@ A design system here is a set of components plus a theme. The kit keeps each one
 ## Two kinds of system
 
 - **The studio system** is the app's own UI: the navigation, the Prototypes page, the command palette, and this Guide. It lives in `src/studio/`, is made of stock shadcn/ui components vendored into the repo (so you can read and change them), uses shadcn/ui's default neutral theme, and belongs to the platform. Prototypes never use it, and the build fails if one tries. That way, changing the app's look never changes anyone's prototype.
-- **Prototype systems** are what prototypes build with. Each one is listed in `src/systems/index.ts`, and each prototype uses one.
+- **Prototype systems** are what prototypes build with. Each one is a folder in `src/systems/`, and each prototype uses one.
 
 ## The product system
 
@@ -33,7 +33,7 @@ Each component gets a page on the [Systems pages](/systems), built from files th
 
 While the app runs on your computer, each component's page has an **Edit** button that opens its files in the editor, one tab each for the page, the examples, and the component itself, and the page updates as you save. If a component is missing its page or examples, the tab offers to create them from a template. Like the Handbook, these are platform files, so a change goes through review before it reaches everyone. On the deployed site the pages are read-only.
 
-Both systems get the same pages, the studio system included. Where a system's components come from shadcn/ui, each page links to that component's shadcn/ui docs, so you can see where it came from. A page can point somewhere else with a `docs:` link in its frontmatter, and a system whose components aren't shadcn/ui just doesn't set `origin` in `src/systems/index.ts`.
+Both systems get the same pages, the studio system included. Where a system's components come from shadcn/ui, each page links to that component's shadcn/ui docs, so you can see where it came from. A page can point somewhere else with a `docs:` link in its frontmatter, and a system whose components aren't shadcn/ui just doesn't set `origin` in its `system.ts`.
 
 Ask your agent to add or document a component and it creates the missing files from a template for you to fill in. A component with only some of them still gets a page, and the build only warns about what's missing. If you want the missing pieces to fail the build instead, ask your agent to turn on strict docs for the system.
 
@@ -43,14 +43,14 @@ A prototype system can be anything your team designs with. If you also design yo
 
 Every prototype system has the same parts:
 
-1. **A folder**, like `src/brand/`, with its components and a `theme.css`.
+1. **A folder**, like `src/systems/brand/`, with `components/` and `styles/theme.css`.
 2. **A scoped theme.** Its variables are set under one class, like `.brand-theme`, and nowhere else, so it can't leak into the app or another system.
 3. **Pop-ups that stay in scope.** Dialogs and menus render inside the prototype's frame, so they keep the system's look.
-4. **An entry in `src/systems/index.ts`**, plus a short spec for its introduction, which also says how its theme is set up.
+4. **A `system.ts`** that names it and its theme class, and optionally an `intro.tsx` for its page on this site. The app finds it by its folder, so there's no list to edit.
 
-Adding one is a platform change, so it's a job for whoever maintains the kit. Ask your agent to add a system, and it follows the steps in `src/handbook/rules/systems.md`, starting from a copy of `src/systems/product/`.
+Adding one is a platform change, so it's a job for whoever maintains the kit. Ask your agent to add a system, and it follows the steps in `src/handbook/rules/systems.md`, starting from a new system folder (`pnpm studio create-system brand`).
 
-A prototype picks its system in `meta.json`, with `"system": "brand"`. Without it, a prototype uses the first system listed, so nothing changes for anyone until you add a second one.
+A prototype picks its system in `meta.json`, with `"system": "brand"`. Without it, a prototype uses the default system (`defaultSystem` in `studio.config.ts`, else the first by name), so nothing changes for anyone until you add a second one.
 
 ## Themes and color mode
 

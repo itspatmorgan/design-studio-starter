@@ -1,7 +1,7 @@
 // Loads a view for its page (module.tsx) and for embeds (ViewEmbed.tsx).
 import type { ItemContext } from '@/studio/app/data/fileTypeModule';
 import { itemSlug } from '@/studio/app/data/manifest';
-import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS, type PrototypeSystemId } from '@/systems';
+import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/studio/app/data/systems';
 import { views } from './loader';
 
 export async function loadView({ proto, item }: ItemContext) {
@@ -19,6 +19,6 @@ export async function loadView({ proto, item }: ItemContext) {
       : () => { throw new Error(`${repoFile} has no default export. A view needs one: export default function MyView() { ... }`); },
     viewKey: `${file.contributor}/${file.prototype}/${itemSlug(item.path)}`,
     lofi: item.lofi === true,
-    themeClass: PROTOTYPE_SYSTEMS[proto.system as PrototypeSystemId]?.themeClass ?? PROTOTYPE_SYSTEMS[DEFAULT_SYSTEM].themeClass,
+    themeClass: PROTOTYPE_SYSTEMS[proto.system]?.themeClass ?? PROTOTYPE_SYSTEMS[DEFAULT_SYSTEM]?.themeClass ?? '',
   };
 }

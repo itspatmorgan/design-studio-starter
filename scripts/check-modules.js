@@ -3,6 +3,7 @@
 //   - no two modules claim the same section key or folder
 //   - a module's section folder exists
 //   - studio.config.ts is well formed, and only turns off modules that can be turned off
+//   - each design system in src/systems/ has a well formed system.ts, components/, and styles/theme.css
 //   - no contributor, and no folder in src/prototypes/, uses a section key, since both are addresses
 //   - modules don't import each other, and nothing outside a module imports its files other than its
 //     module.ts, so deleting a module's folder leaves nothing broken
@@ -13,11 +14,18 @@ import { fileURLToPath } from 'node:url';
 import { PLATFORM_VERSION, compatible, listProblems } from '../src/studio/modules/index.ts';
 import { configProblems } from '../src/studio/config.ts';
 import { CONFIG, MODULES, SECTION_KEYS, declarationProblems } from './lib/modules.js';
+import { PROTOTYPE_SYSTEMS, SYSTEM_IDS, systemDeclarationProblems } from './lib/systems.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const problems = declarationProblems();
 const specs = Object.values(MODULES).filter((m) => m && typeof m === 'object');
-problems.push(...listProblems(specs), ...configProblems(CONFIG, specs));
+problems.push(...listProblems(specs), ...configProblems(CONFIG, specs, SYSTEM_IDS), ...systemDeclarationProblems());
+if (!SYSTEM_IDS.length) problems.push('There is no design system in src/systems/. Prototypes need one to build with: add one with pnpm studio create-system.');
+for (const id of SYSTEM_IDS) {
+  for (const part of ['components', 'styles/theme.css']) {
+    if (!fs.existsSync(path.join(ROOT, PROTOTYPE_SYSTEMS[id].dir, part))) problems.push(`src/systems/${id}/${part} is missing. A design system has components/ and styles/theme.css.`);
+  }
+}
 
 for (const m of specs) {
   if (m.section && !fs.existsSync(path.join(ROOT, m.section.folder))) {
@@ -75,4 +83,4 @@ if (problems.length) {
   console.error(problems.map((p) => `[modules] ${p}`).join('\n'));
   process.exit(1);
 }
-console.log(`[modules] ${specs.length} module(s) (${Object.keys(MODULES).join(', ')}), all well formed`);
+console.log(`[modules] ${specs.length} module(s) (${Object.keys(MODULES).join(', ')}) and ${SYSTEM_IDS.length} design system(s) (${SYSTEM_IDS.join(', ')}), all well formed`);

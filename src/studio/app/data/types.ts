@@ -21,7 +21,7 @@ export type PrototypeInfo = {
   description: string;
   contributor: string;    // display name, from contributors.json
   created: string | null;
-  system: string;         // meta.json "system", or the first in src/systems/index.ts
+  system: string;         // meta.json "system", or the default (studio.config.ts defaultSystem, else the first in src/systems/)
   start: string | null;   // meta.json "start", as an item path: the item it opens on
   status?: 'archived';    // meta.json "status", when archived; absent means active
   maintainers?: string[]; // meta.json "maintainers" (contributors.json keys), where a section's policy is maintainers (tools); prototypes don't have them
@@ -64,6 +64,10 @@ export type Manifest = {
 
 // One tab on the Systems page: what only its people can write, its introduction (and icons, if it
 // has them). Its components and foundations pages come from its files (systemDocs.ts, themeTokens.ts).
+// What only a system's people can write for its Systems page: its introduction (which covers its theme), and
+// icons if it has them. A prototype system keeps this in src/systems/<id>/intro.tsx.
+export type SystemIntro = { intro: ReactNode; icons?: DesignSystem['icons'] };
+
 export type DesignSystem = {
   label: string;
   dir: string;            // where its components live, e.g. "src/studio/components/"

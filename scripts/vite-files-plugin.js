@@ -46,7 +46,7 @@ import { afterChange, byOrder, parentOf, parseOrder, place, withFolderOrder } fr
 import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection, rootOf } from '../src/studio/roots.ts';
 import { canChange as mayChange, canOwn, parseMaintainers, policyFor, whyNot } from '../src/studio/permissions.ts';
 import { MODULES, PROTOTYPE_SECTIONS, SERVER_FILES } from './lib/modules.js';
-import { SYSTEM_SOURCES } from '../src/studio/systemSources.ts';
+import { SYSTEM_SOURCES } from './lib/systems.js';
 import { scaffold } from './scaffold-component-docs.js';
 import { opProblem } from '../src/studio/handbookRules.ts';
 import { SKILL_FILE, descriptionProblem, nameProblem, skillProblems } from '../src/studio/skills.ts';

@@ -18,6 +18,7 @@ import files from './scripts/vite-files-plugin.js';
 import markdownRefresh from './scripts/vite-markdown-refresh-plugin.js';
 import systemProps from './scripts/vite-system-props-plugin.js';
 import globs from './scripts/vite-globs-plugin.js';
+import css from './scripts/vite-css-plugin.js';
 import { PROTOTYPE_DIRS } from './scripts/lib/modules.js';
 
 // Prototype documents (src/prototypes/ and the modules' prototype-shaped folders, like src/tools/) refresh in
@@ -47,6 +48,7 @@ export default defineConfig({
     // Prototype documents refresh through scripts/vite-markdown-refresh-plugin.js instead.
     react({ include: /\.(md|[jt]sx)$/, exclude: new RegExp(`[\\\\/](${prototypeFolders})[\\\\/].*\\.md$`) }),
     markdownRefresh(),
+    css(),
     tailwindcss(),
     importGuard(),
     globs(),

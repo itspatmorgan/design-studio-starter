@@ -5,7 +5,7 @@
 // component page first asks, and again after a component file is added, removed or edited.
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SYSTEM_SOURCES } from '../src/studio/systemSources.ts';
+import { SYSTEM_SOURCES } from './lib/systems.js';
 import { systemDocs } from './lib/system-docs.js';
 import { extractProps } from './lib/extract-props.js';
 

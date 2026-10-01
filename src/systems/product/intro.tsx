@@ -1,15 +1,12 @@
-// Product system: the placeholder prototype system (see src/systems/index.ts). Demos render inside .product-theme.
-// Its introduction is all a spec holds for a system (with icons, if it has them). Kept short on purpose:
-// it shows how the product look differs from the app UI. Its component pages come from the files in
-// src/systems/product/components/ (button.tsx, button.examples.tsx, button.md).
-import { PROTOTYPE_SYSTEMS } from '@/systems';
+// The product system's introduction on the Systems page: the placeholder design system (system.ts). Demos render
+// inside .product-theme. An intro.tsx is the one thing a system's people write for that page (with icons, if it has
+// them); without one the page says so. Kept short on purpose: it shows how the product look differs from the app
+// UI. Its component pages come from the files in src/systems/product/components/ (button.tsx, button.examples.tsx,
+// button.md), and its foundations pages from styles/theme.css.
 import { Code, Prose } from '@/studio/app/pages/systems/foundations';
-import type { DesignSystem } from '@/studio/app/data/types';
+import type { SystemIntro } from '@/studio/app/data/types';
 
-export const product: DesignSystem = {
-  label: PROTOTYPE_SYSTEMS.product.label,
-  dir: `${PROTOTYPE_SYSTEMS.product.dir}components/`,
-  scopeClass: PROTOTYPE_SYSTEMS.product.themeClass,
+export default {
   intro: (
     <>
       <div className="rounded-xl border-2 border-dashed border-foreground/25 bg-muted/40 p-6">
@@ -23,7 +20,7 @@ export const product: DesignSystem = {
             <li>Its styles are scoped under <Code>.product-theme</Code>, with a <Code>.dark .product-theme</Code> block if your product has dark mode.</li>
             <li>Pop-ups render into the portal container from <Code>portal.tsx</Code>, so they keep the product look.</li>
           </ol>
-          <p>The component pages link to shadcn/ui's docs, because these components come from it. If yours don't, remove <Code>origin</Code> from this system's entry in <Code>src/systems/index.ts</Code>.</p>
+          <p>The component pages link to shadcn/ui's docs, because these components come from it. If yours don't, remove <Code>origin</Code> from <Code>src/systems/product/system.ts</Code>.</p>
         </Prose>
       </div>
       <h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2>
@@ -33,4 +30,4 @@ export const product: DesignSystem = {
       </Prose>
     </>
   ),
-};
+} satisfies SystemIntro;

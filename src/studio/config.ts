@@ -8,16 +8,22 @@ export type StudioConfig = {
   // Modules to turn off, by id: { guide: false }. A module left out is on. Turning one off keeps its
   // files, so turning it on again is one line; to remove it for good, delete its folder.
   modules?: Record<string, boolean>;
+  // The design system a prototype uses when its meta.json doesn't name one: an id from src/systems/. Left out,
+  // it's the first by name.
+  defaultSystem?: string;
 };
 
 // What is wrong with a config, each as a sentence that says what to fix. `modules` is the installed
-// modules and whether each can be turned off.
-export function configProblems(config: unknown, modules: readonly { id: string; optional?: boolean }[]): string[] {
+// modules and whether each can be turned off, and `systems` the installed design systems' ids.
+export function configProblems(config: unknown, modules: readonly { id: string; optional?: boolean }[], systems?: readonly string[]): string[] {
   const where = 'studio.config.ts';
   if (!config || typeof config !== 'object') return [`${where} must export a config as its default.`];
   const c = config as Partial<StudioConfig>;
   const problems: string[] = [];
   if (typeof c.name !== 'string' || !c.name.trim()) problems.push(`${where}: add a name, what the app calls itself.`);
+  if (c.defaultSystem !== undefined && systems && !systems.includes(c.defaultSystem)) {
+    problems.push(`${where}: defaultSystem is "${c.defaultSystem}", but no system has that id. Installed: ${systems.join(', ') || 'none'}.`);
+  }
   if (c.modules !== undefined) {
     if (!c.modules || typeof c.modules !== 'object' || Array.isArray(c.modules)) {
       problems.push(`${where}: modules should list module ids with true or false, like { guide: false }.`);
