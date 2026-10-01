@@ -5,7 +5,7 @@ import { createRoute } from '@tanstack/react-router';
 import { Layers01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
-import { ItemGrid } from '@/platform/app/items/ItemGrid';
+import { HomeRow } from '@/platform/app/items/HomeRows';
 import { useMe } from '@/platform/app/data/files';
 import { APP_NAME } from '@/platform/app/data/config';
 import { newestFirst, prototypeLink } from '@/platform/app/data/manifest';
@@ -13,7 +13,7 @@ import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 import type { Manifest } from '@/platform/app/data/types';
 import Gallery from './gallery/Gallery';
 import NewPrototypeButton from './gallery/NewPrototypeDialog';
-import PrototypeCard from './gallery/PrototypeCard';
+import PrototypeCardMenu from './gallery/PrototypeCardMenu';
 
 type GallerySearch = { q?: string };
 
@@ -44,22 +44,37 @@ function PrototypesPalette({ manifest, current, go }: PaletteContext) {
   );
 }
 
-// On the front page, the newest prototypes, nine at most (three rows of the grid). While you run the app locally, a
-// row of your own comes first and the newest ones are the other people's, so none is shown twice.
+// On the front page, the newest prototypes, five at most, with the title above linking to all of them. While you run
+// the app locally, a section of your own comes first and the newest are the other people's, so none is shown twice.
+const SHOWN = 5;
 function Overview({ manifest }: { manifest: Manifest }) {
   const me = useMe();
   const live = manifest.prototypes.filter((p) => p.status !== 'archived').sort(newestFirst);
   const mine = me ? live.filter((p) => p.contributorKey === me) : [];
-  const latest = (me ? live.filter((p) => p.contributorKey !== me) : live).slice(0, 9);
-  const cards = (list: typeof live) => <ItemGrid>{list.map((p) => <li key={`${p.contributorKey}/${p.id}`}><PrototypeCard prototype={p} /></li>)}</ItemGrid>;
+  const latest = (me ? live.filter((p) => p.contributorKey !== me) : live).slice(0, SHOWN);
+  const rows = (list: typeof live, byline: boolean) => (
+    <ul>
+      {list.map((p) => (
+        <HomeRow
+          key={`${p.contributorKey}/${p.id}`}
+          link={prototypeLink(p)}
+          id={p.id}
+          title={p.title}
+          description={p.description}
+          meta={byline ? (p.contributor || p.contributorKey).split(' ')[0] : undefined}
+          menu={<PrototypeCardMenu proto={p} />}
+        />
+      ))}
+    </ul>
+  );
   return (
     <>
       {me && (
         <HomeSection title="Your prototypes" to="/prototypes">
-          {mine.length ? cards(mine.slice(0, 9)) : <NewPrototypeButton />}
+          {mine.length ? rows(mine.slice(0, SHOWN), false) : <div className="px-4 py-2"><NewPrototypeButton /></div>}
         </HomeSection>
       )}
-      {latest.length > 0 && <HomeSection title={me ? 'Latest from the team' : 'Latest prototypes'} to="/prototypes">{cards(latest)}</HomeSection>}
+      {latest.length > 0 && <HomeSection title={me ? 'Latest from the team' : 'Latest prototypes'} to="/prototypes">{rows(latest, true)}</HomeSection>}
     </>
   );
 }

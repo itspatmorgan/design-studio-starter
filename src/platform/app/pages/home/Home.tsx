@@ -1,6 +1,7 @@
-// The app's front page: a greeting, then what each module chooses to show (its `overview`,
-// src/platform/app/modules.ts), in the order of the rail. The modules decide what is worth showing, so a module
-// added to the app can put something here with no change to this file.
+// The app's front page: a greeting, and under it one small panel of what each module chooses to show (its `overview`,
+// src/platform/app/modules.ts), in the order of the rail. The panel is narrow and centred, so it reads as a
+// welcome rather than a page to fill, and stays comfortable in the narrow window an agent's harness gives the app.
+// The modules decide what is worth showing, so a module added to the app can put something here with no change to this file.
 import { getRouteApi } from '@tanstack/react-router';
 import { APP_NAME } from '@/platform/app/data/config';
 import { moduleApps } from '@/platform/app/modules';
@@ -16,11 +17,11 @@ export default function Home() {
   const first = name?.split(' ')[0];
   const heading = name === undefined ? '\u00a0' : first ? `Welcome back, ${first}` : APP_NAME;
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 pt-12 pb-8">
-      <header className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{heading}</h1>
-      </header>
-      {moduleApps.map(({ spec, app }) => app.overview && <app.overview key={spec.id} manifest={manifest} />)}
+    <main className="mx-auto w-full max-w-xl px-4 pt-[12vh] pb-10">
+      <h1 className="mb-6 text-center text-2xl font-semibold tracking-tight text-foreground">{heading}</h1>
+      <div className="overflow-hidden rounded-xl border border-border bg-card">
+        {moduleApps.map(({ spec, app }) => app.overview && <app.overview key={spec.id} manifest={manifest} />)}
+      </div>
     </main>
   );
 }

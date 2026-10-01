@@ -22,3 +22,12 @@ export function cardArt(id: string): { backgroundColor: string; backgroundImage:
     backgroundImage: `radial-gradient(at 18% 24%, ${tint(a, 70)}, transparent 62%), radial-gradient(at 84% 80%, ${tint(b, 64)}, transparent 60%)`,
   };
 }
+
+// A flat, quiet tint for a small tile (a row's monogram), in the same hue as the item's picture.
+export function cardTint(id: string): { backgroundColor: string } {
+  const [a] = cardHues(id);
+  return { backgroundColor: `color-mix(in oklch, oklch(0.74 0.12 ${a}) 38%, var(--card))` };
+}
+
+// The first letter or number of a title, in capitals: the mark on a tile, so no two items repeat one icon.
+export const monogram = (title: string) => (title.match(/[\p{L}\p{N}]/u)?.[0] ?? '·').toUpperCase();

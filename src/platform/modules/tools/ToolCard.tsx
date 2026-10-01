@@ -1,4 +1,3 @@
-import { Wrench01Icon } from '@hugeicons/core-free-icons';
 import { CollectionCard } from '@/platform/app/items/CollectionCard';
 import PrototypeCardMenu from '@/platform/modules/prototypes/gallery/PrototypeCardMenu';
 import { prototypeLink } from '@/platform/app/data/manifest';
@@ -10,7 +9,6 @@ export default function ToolCard({ tool }: { tool: PrototypeInfo }) {
     <CollectionCard
       link={prototypeLink(tool)}
       id={tool.id}
-      icon={Wrench01Icon}
       title={tool.title}
       description={tool.description}
       archived={tool.status === 'archived'}

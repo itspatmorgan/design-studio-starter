@@ -1,4 +1,3 @@
-import { Layers01Icon } from '@hugeicons/core-free-icons';
 import { ContributorAvatar } from '@/platform/app/shell/ContributorAvatar';
 import { CollectionCard } from '@/platform/app/items/CollectionCard';
 import { formatDate, prototypeLink } from '@/platform/app/data/manifest';
@@ -12,7 +11,6 @@ export default function PrototypeCard({ prototype: p }: { prototype: PrototypeIn
     <CollectionCard
       link={prototypeLink(p)}
       id={p.id}
-      icon={Layers01Icon}
       title={p.title}
       description={p.description}
       archived={p.status === 'archived'}

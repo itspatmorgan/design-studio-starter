@@ -3,11 +3,9 @@
 // manifest like prototypes; /handbook itself opens the first section.
 import { createRoute, notFound, redirect, useRouterState } from '@tanstack/react-router';
 import { Notebook01Icon } from '@hugeicons/core-free-icons';
-import { File01Icon } from '@hugeicons/core-free-icons';
-import { CollectionCard } from '@/platform/app/items/CollectionCard';
+import { HomeLinkRow } from '@/platform/app/items/HomeRows';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
-import { ItemGrid } from '@/platform/app/items/ItemGrid';
 import { NotFound } from '@/platform/app/shell/App';
 import { itemFolder, itemLabel, loadManifest } from '@/platform/app/data/manifest';
 import { itemLink } from '@/platform/app/data/manifest';
@@ -49,13 +47,9 @@ function Overview({ manifest }: { manifest: Manifest }) {
   if (!docs || !items.length) return null;
   return (
     <HomeSection title="Docs" to="/handbook/docs">
-      <ItemGrid>
-        {items.map((item) => (
-          <li key={item.path}>
-            <CollectionCard link={itemLink(docs, item)} id={item.path} icon={File01Icon} title={itemLabel(item.path)} meta="Doc" />
-          </li>
-        ))}
-      </ItemGrid>
+      <ul>
+        {items.map((item) => <HomeLinkRow key={item.path} link={itemLink(docs, item)} title={itemLabel(item.path)} />)}
+      </ul>
     </HomeSection>
   );
 }

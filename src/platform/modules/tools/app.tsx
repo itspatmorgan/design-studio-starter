@@ -4,13 +4,13 @@ import { createRoute, useRouterState } from '@tanstack/react-router';
 import { Wrench01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
-import { ItemGrid } from '@/platform/app/items/ItemGrid';
+import { HomeRow } from '@/platform/app/items/HomeRows';
 import { APP_NAME } from '@/platform/app/data/config';
 import { prototypeLink } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 import type { Manifest } from '@/platform/app/data/types';
 import ToolsPage from './ToolsPage';
-import ToolCard from './ToolCard';
+import PrototypeCardMenu from '@/platform/modules/prototypes/gallery/PrototypeCardMenu';
 import { useToolActions } from './actions';
 
 function ToolsPlaces({ go }: PaletteContext) {
@@ -41,7 +41,11 @@ function Overview({ manifest }: { manifest: Manifest }) {
   if (!tools.length) return null;
   return (
     <HomeSection title="Tools" to="/tools">
-      <ItemGrid>{tools.map((t) => <li key={t.id}><ToolCard tool={t} /></li>)}</ItemGrid>
+      <ul>
+        {tools.map((t) => (
+          <HomeRow key={t.id} link={prototypeLink(t)} id={t.id} title={t.title} description={t.description} meta={t.contributor || undefined} menu={<PrototypeCardMenu proto={t} />} />
+        ))}
+      </ul>
     </HomeSection>
   );
 }
