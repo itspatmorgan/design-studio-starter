@@ -6,11 +6,12 @@ import { getRouteApi, Link, useNavigate, useRouter } from '@tanstack/react-route
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Wrench01Icon } from '@hugeicons/core-free-icons';
 import { Card, CardContent } from '@/studio/components/card';
-import { Button, buttonVariants } from '@/studio/components/button';
+import { Button } from '@/studio/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/studio/components/dialog';
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/studio/components/command';
 import { toast } from '@/studio/components/toast';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
+import { EmptyState } from '@/studio/app/shell/EmptyState';
 import { publishTool, useMe } from '@/studio/app/data/files';
 import { prototypeLink, setManifest } from '@/studio/app/data/manifest';
 import type { PrototypeInfo } from '@/studio/app/data/types';
@@ -100,39 +101,21 @@ function PublishDialog({ me, prototypes, open, onOpenChange }: { me: string; pro
 
 // What the page says before any tool is published. Locally it explains how to make one; on the
 // deployed site, where people only use tools, it says where they will appear.
-function EmptyState({ local }: { local: boolean }) {
-  return (
-    <section className="flex flex-col items-center rounded-xl border border-dashed border-border px-8 py-16 text-center">
-      <span className="grid size-14 place-items-center rounded-2xl bg-muted text-muted-foreground">
-        <HugeiconsIcon icon={Wrench01Icon} size={28} />
-      </span>
-      <h2 className="mt-5 text-lg font-semibold tracking-tight text-foreground">No tools yet</h2>
-      {local ? (
-        <>
-          <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-            A small app your team uses to make something, like a thumbnail or a graphic. Build it as a prototype, then publish it here.
-          </p>
-          <ol className="mt-8 grid max-w-2xl gap-6 text-left sm:grid-cols-3">
-            {[
-              ['Start a tool prototype', 'Use the menu beside New prototype.'],
-              ['Build it', 'Tell your agent what it makes and who uses it.'],
-              ['Publish it', 'Choose Publish as tool from its menu.'],
-            ].map(([title, body], i) => (
-              <li key={title} className="flex gap-3">
-                <span className="grid size-6 shrink-0 place-items-center rounded-full border border-border text-xs font-medium text-muted-foreground">{i + 1}</span>
-                <span>
-                  <span className="block text-sm font-medium text-foreground">{title}</span>
-                  <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">{body}</span>
-                </span>
-              </li>
-            ))}
-          </ol>
-          <Link to="/" className={cn(buttonVariants({ variant: 'outline' }), 'mt-10')}>Go to Prototypes</Link>
-        </>
-      ) : (
-        <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">Tools your team publishes will show up here.</p>
-      )}
-    </section>
+function ToolsEmpty({ local }: { local: boolean }) {
+  return local ? (
+    <EmptyState
+      icon={Wrench01Icon}
+      title="No tools yet"
+      steps={[
+        ['Start a tool prototype', 'Use the menu beside New prototype.'],
+        ['Build it', 'Tell your agent what it makes and who uses it.'],
+        ['Publish it', 'Choose Publish as tool from its menu.'],
+      ]}
+    >
+      A small app your team uses to make something, like a thumbnail or a graphic. Build it as a prototype, then publish it here.
+    </EmptyState>
+  ) : (
+    <EmptyState icon={Wrench01Icon} title="No tools yet">Tools your team publishes will show up here.</EmptyState>
   );
 }
 
@@ -165,7 +148,7 @@ export default function ToolsPage() {
           {tools.map((t) => <li key={t.id}><ToolCard tool={t} /></li>)}
         </ul>
       ) : (
-        <EmptyState local={local} />
+        <ToolsEmpty local={local} />
       )}
     </main>
   );

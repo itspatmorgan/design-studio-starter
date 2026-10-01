@@ -2,12 +2,14 @@ import { Card, CardContent } from '@/studio/components/card';
 import { ContributorAvatar } from '@/studio/app/shell/ContributorAvatar';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/studio/components/input-group';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Cancel01Icon, Search01Icon } from '@hugeicons/core-free-icons';
+import { Cancel01Icon, Layers01Icon, Search01Icon } from '@hugeicons/core-free-icons';
 import { getRouteApi, Link, useNavigate } from '@tanstack/react-router';
 import { formatDate, newestFirst, prototypeLink } from '@/studio/app/data/manifest';
 import type { PrototypeInfo } from '@/studio/app/data/types';
 import { cn } from '@/lib/utils';
 import NewPrototypeButton from '@/studio/app/pages/index/NewPrototypeDialog';
+import { EmptyState } from '@/studio/app/shell/EmptyState';
+import { useMe } from '@/studio/app/data/files';
 
 const rootApi = getRouteApi('__root__');
 const indexApi = getRouteApi('/');
@@ -69,8 +71,26 @@ export default function Index() {
   const manifest = rootApi.useLoaderData();
   const search = indexApi.useSearch().q ?? '';
   const q = search.trim().toLowerCase();
+  // Only while the app runs locally, for contributors: the others can't make one.
+  const me = useMe();
+  const local = import.meta.env.DEV && me !== null;
+  const empty = !manifest.prototypes.length;
   let body;
-  if (!manifest.prototypes.length) body = <p className="text-sm text-muted-foreground">No prototypes yet. Ask your agent to make one, or use New prototype.</p>;
+  if (empty) body = local ? (
+    <EmptyState
+      icon={Layers01Icon}
+      title="No prototypes yet"
+      steps={[
+        ['Start one', 'Choose New prototype above, or ask your agent.'],
+        ['Describe it', 'Tell your agent what it is for and who it is for.'],
+        ['Share it', 'Every prototype has a link of its own.'],
+      ]}
+    >
+      A prototype is a working sketch of an idea: real screens you can click through, kept in your own folder.
+    </EmptyState>
+  ) : (
+    <EmptyState icon={Layers01Icon} title="No prototypes yet">Prototypes your team makes will show up here.</EmptyState>
+  );
   else {
     // Newest first, by meta.json "created".
     const prototypes = manifest.prototypes
@@ -112,7 +132,7 @@ export default function Index() {
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Prototypes</h1>
         <p className="mt-2 text-sm text-muted-foreground">Every prototype in the sandbox, newest first.</p>
       </header>
-      <div className="mb-6 flex items-center justify-between gap-3"><SearchBox value={search} /><NewPrototypeButton /></div>
+      <div className="mb-6 flex items-center justify-between gap-3">{!empty && <SearchBox value={search} />}<div className="ml-auto"><NewPrototypeButton /></div></div>
       {body}
     </main>
   );
