@@ -6,7 +6,19 @@ order: 20
 toc: true
 ---
 
-A module adds a capability to the studio. Examples include the Guide and the file types used by prototypes.
+Design Studio is built from modules. Each module adds a capability, such as the Guide or a prototype file type.
+
+The starter establishes this foundation so you can add, disable, or remove features in your own studio.
+
+## Extend your studio
+
+You own the code and can change any part of it. For a new platform feature, we recommend building a module.
+
+Modules provide consistent places for code, content, checks, and agent instructions. Clear boundaries help contain changes and make custom features easier to maintain.
+
+Keeping extensions separate also helps the starter maintainer understand your setup and support it. Future platform updates are easier to review when custom features use the documented extension points.
+
+See [Build a module](/guide/build-a-module) for the structure and creation workflow.
 
 Managing modules is a shared platform change. Ask your agent to perform it as part of an authorized maintainer task.
 
@@ -28,7 +40,7 @@ Ask the agent to turn the module on again when you need it.
 
 ## Add a module
 
-Give your agent a local folder, Git repository address, or download address. Ask it to preview the module.
+Ask your agent to build a module for the feature you need. If you already have a prepared module folder, ask it to preview installation.
 
 Before installation, review:
 
@@ -37,7 +49,7 @@ Before installation, review:
 - Required packages and any upstream license.
 - Agent rules, skills, and checks it includes.
 
-Approve installation only for code you trust. Preview reads the pack as data. Installation can run its checks as trusted code on your computer.
+Approve installation only for code you trust. Preview reads the prepared folder as data. Installation can run its checks as trusted code on your computer.
 
 Packages install with lifecycle scripts disabled. If an installation check fails, project files are restored. Downloaded packages may remain in `node_modules`.
 

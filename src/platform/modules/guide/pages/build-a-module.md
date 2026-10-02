@@ -1,12 +1,16 @@
 ---
 title: "Build a module"
-description: "Create an extension for your studio or a pack for other studios."
+description: "Use the module structure to add features to your own studio."
 section: "Reference"
 order: 40
 toc: true
 ---
 
-This page is for maintainers and extension authors. A module is a folder with a `module.ts` declaration and optional capability files.
+This page is for people extending their own studio. A module is a folder with a `module.ts` declaration and optional capability files.
+
+You can change any code you own. We recommend modules for new platform features because they provide consistent extension points and dependency boundaries.
+
+Keeping custom features in modules makes their changes easier to review and helps when applying future platform updates.
 
 ## Create a module
 
@@ -17,7 +21,7 @@ This page is for maintainers and extension authors. A module is a folder with a 
 
 The starter includes a declaration, an app page, and a Handbook rule. The app page appears at the module's address.
 
-To create a separate pack, use `--out <folder>`. A pack is the installable folder you can share with another studio.
+The module lives in `src/platform/modules/<id>/`. Keep its implementation there and use the documented extension points to connect it to the studio.
 
 ## Available capabilities
 
@@ -41,22 +45,23 @@ Platform modules can use required modules. Runtime library code has tighter boun
 
 Prototypes use only the enabled module's `@module/<id>` entry. They cannot import its private library files. Run `pnpm check` to verify dependencies.
 
-## Share a pack
+## Verify your module
 
-1. Set `requires` to the oldest compatible platform version, if needed.
-2. Declare the module's license and any upstream library information.
-3. Include the required upstream license files.
-4. Verify the pack in a disposable studio copy.
-5. Put the pack in a Git repository.
+1. Run `pnpm check` and fix reported problems.
+2. Run `pnpm build`.
+3. Review the feature in the local app.
+4. If the module is optional, verify the studio also works with it disabled.
 
-An incompatible module is disabled. The installer rejects missing or unsupported licenses unless the person installing it explicitly allows an exception.
+Declare compatibility with `requires` when needed. A module that requires a newer platform version is disabled.
 
-Installation previews show the files and packages before approval. After approval, the module's checks can execute on the recipient's computer.
+When adapting an open source library, retain its license and record its source. If you vendor its code, record adaptations in `CHANGES.md`.
 
-If you vendor a library, keep it in the pack and record your adaptations in `CHANGES.md`.
+When updating the platform, review changes to the extension points your module uses. Run the checks and review your feature again.
 
-## Design-system packs
+## Design systems
 
-A design-system pack contains `system.ts`, `components/`, and `styles/theme.css`. Create a starter with `pnpm studio create-system <id>`.
+A prototype design system is separate content in `src/systems/<id>/`. It contains `system.ts`, `components/`, and `styles/theme.css`.
+
+Create a starter with `pnpm studio create-system <id>`. You do not need to build a platform module to add a design system.
 
 Use [Systems](/guide/systems) for the user workflow and the system rules in the Handbook for implementation requirements.
