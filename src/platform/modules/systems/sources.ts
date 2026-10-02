@@ -1,5 +1,5 @@
 // Where each design system keeps its parts, for the Systems pages and everything that reads a system's files:
-// the app's own (Studio) and each prototype system (src/systems/<id>/system.ts, src/platform/modules/systems/spec.ts). Studio is
+// the app's own (Platform) and each prototype system (src/systems/<id>/system.ts, src/platform/modules/systems/spec.ts). Platform is
 // built in here, because prototypes never use it. Build scripts and the file layer take their paths from these,
 // so a system's components and theme are found the same way whichever it is.
 // This file has no imports beyond types, so Node scripts and the app can both load it.
@@ -17,7 +17,7 @@ export type SystemSource = {
   origin: 'shadcn' | null;                       // where its components come from, so each page can link to their docs
 };
 
-export const STUDIO_ID = 'studio';
+export const PLATFORM_ID = 'platform';
 
 // A prototype system's parts, from its system.ts and the folder it was found in.
 export const sourceOf = (id: string, spec: SystemSpec): SystemSource => ({
@@ -31,8 +31,8 @@ export const sourceOf = (id: string, spec: SystemSpec): SystemSource => ({
 });
 
 // The app's own system: stock shadcn/ui components, themed on the page itself (:root and .dark).
-export const STUDIO_SOURCE: SystemSource = {
-  label: 'Studio',
+export const PLATFORM_SOURCE: SystemSource = {
+  label: 'Platform',
   dir: 'src/platform/',
   components: 'src/platform/components',
   theme: 'src/platform/styles/index.css',

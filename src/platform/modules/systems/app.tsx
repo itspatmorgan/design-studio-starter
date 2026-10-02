@@ -22,7 +22,7 @@ function SystemsPlaces({ go }: PaletteContext) {
   return (
     <>
       <CommandItem value="product system components" disabled={on('product')} onSelect={() => go({ to: '/systems/product' } as never)}>Product system</CommandItem>
-      <CommandItem value="studio system components" disabled={on('studio')} onSelect={() => go({ to: '/systems/studio' } as never)}>Studio system</CommandItem>
+      <CommandItem value="platform system components" disabled={on('platform')} onSelect={() => go({ to: '/systems/platform' } as never)}>Platform system</CommandItem>
     </>
   );
 }

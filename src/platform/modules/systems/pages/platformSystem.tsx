@@ -4,7 +4,7 @@ import {
   Download01Icon, FavouriteIcon, FilterIcon, Home01Icon, InformationCircleIcon, LinkSquare02Icon, Mail01Icon, Menu01Icon,
   Notification01Icon, PencilEdit01Icon, Search01Icon, Settings01Icon, StarIcon, Tick02Icon, Upload01Icon, UserIcon,
 } from '@hugeicons/core-free-icons';
-// Studio system: the app UI's own components, stock shadcn/ui vendored into src/platform/components/.
+// Platform system: the app UI's own components, stock shadcn/ui vendored into src/platform/components/.
 // Like every system, its component and foundations pages come from its files; this is what only
 // its people can write: the introduction (which covers the theme), and the icons.
 import { Code, CodeBlock, IconGrid, Prose } from '@/platform/modules/systems/pages/foundations';
@@ -16,8 +16,8 @@ const ICONS = {
   Upload01Icon, Copy01Icon, LinkSquare02Icon, InformationCircleIcon, Alert02Icon, StarIcon, FavouriteIcon, Menu01Icon,
 };
 
-export const studio: DesignSystem = {
-  label: 'Studio',
+export const platform: DesignSystem = {
+  label: 'Platform',
   dir: 'src/platform/components/',
   scopeClass: '',
   intro: (

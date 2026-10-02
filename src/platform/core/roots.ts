@@ -9,7 +9,7 @@ export const HANDBOOK_KEY = 'handbook';
 
 // A prototype system's components (src/systems/<id>/components/) are opened for editing the same
 // way: under the reserved key "systems" (already an app page URL, so nobody's folder), with the
-// system's id as the prototype ("studio" is the app's own, in src/platform/components/). Platform
+// system's id as the prototype ("platform" is the app's own, in src/platform/components/). Platform
 // files too: changed in the repo and reviewed.
 export const SYSTEMS_KEY = 'systems';
 
@@ -62,5 +62,5 @@ export function canonicalPath(path: string): string {
 export const rootOf = (contributor: string, id: string) =>
   contributor === HANDBOOK_KEY ? `${HANDBOOK_KEY}/${id}`
     : sectionKeys.has(contributor) ? `${contributor}/${id}`
-    : contributor === SYSTEMS_KEY ? (id === 'studio' ? 'platform/components' : `${SYSTEMS_KEY}/${id}/components`)
+    : contributor === SYSTEMS_KEY ? (id === 'platform' ? 'platform/components' : `${SYSTEMS_KEY}/${id}/components`)
     : `prototypes/${contributor}/${id}`;

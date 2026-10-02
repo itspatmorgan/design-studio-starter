@@ -11,15 +11,15 @@ import type { DesignSystem, SystemIntro } from '@/platform/app/data/types';
 import type { SystemComponentDoc } from '@/platform/modules/systems/docs';
 import type { ThemeToken, TokenGroup } from '@/platform/modules/systems/themeTokens';
 import { PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
-import { studio } from '@/platform/modules/systems/pages/studioSystem';
+import { platform } from '@/platform/modules/systems/pages/platformSystem';
 
 // Systems: one tab per design system, and one page per foundation and component,
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
-// Every system is treated the same, the app's own (Studio) included. What only its people can write
-// comes from its spec (src/systems/<id>/intro.tsx, studioSystem.tsx): the introduction (which covers its
+// Every system is treated the same, the app's own (Platform) included. What only its people can write
+// comes from its spec (src/systems/<id>/intro.tsx, platformSystem.tsx): the introduction (which covers its
 // theme), and icons. The rest comes from its files: a component page for each component in its components
 // folder (src/platform/modules/systems/docs.ts), and a foundations page for each kind of token its theme
-// defines (src/platform/modules/systems/themeTokens.ts). One tab for each prototype system in src/systems/, then Studio.
+// defines (src/platform/modules/systems/themeTokens.ts). One tab for each prototype system in src/systems/, then Platform.
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
 const introOf = (id: string): SystemIntro => intros[`/systems/${id}/intro.tsx`]?.default ?? {
   intro: <Prose><p>This system has no introduction yet. Add one in <Code>src/systems/{id}/intro.tsx</Code>.</p></Prose>,
@@ -27,7 +27,7 @@ const introOf = (id: string): SystemIntro => intros[`/systems/${id}/intro.tsx`]?
 const PROTOTYPE_SPECS: Record<string, DesignSystem> = Object.fromEntries(Object.entries(PROTOTYPE_SYSTEMS).map(([id, spec]) => [id, {
   label: spec.label, dir: `${spec.dir}components/`, scopeClass: spec.themeClass, ...introOf(id),
 }]));
-const SYSTEMS: Record<string, DesignSystem> = { ...PROTOTYPE_SPECS, studio };
+const SYSTEMS: Record<string, DesignSystem> = { ...PROTOTYPE_SPECS, platform };
 type SystemId = string;
 type NavGroup = { heading?: string; items: [id: string | null, label: string][] };
 

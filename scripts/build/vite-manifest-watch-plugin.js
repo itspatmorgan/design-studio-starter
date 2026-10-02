@@ -20,8 +20,8 @@ const guideModule = ENABLED_MODULES.find((m) => m.id === 'guide');
 const GUIDE = guideModule?.section?.folder ? path.join(ROOT, guideModule.section.folder) : null;
 const SYSTEMS = path.join(ROOT, 'src', 'systems');
 // The app's own system: its components, and its theme (the tokens the Systems pages list).
-const STUDIO_COMPONENTS = path.join(ROOT, 'src', 'platform', 'components');
-const STUDIO_THEME = path.join(ROOT, 'src', 'platform', 'styles', 'index.css');
+const PLATFORM_COMPONENTS = path.join(ROOT, 'src', 'platform', 'components');
+const PLATFORM_THEME = path.join(ROOT, 'src', 'platform', 'styles', 'index.css');
 // The Handbook's map reads it (src/platform/modules/handbook/map.ts).
 const AGENTS = path.join(ROOT, 'AGENTS.md');
 const BATCH_MS = 50;
@@ -45,8 +45,8 @@ function relevant(file, kind) {
   if (inside(HANDBOOK, file)) return kind !== 'change';
   // A system's component docs: files coming and going, and edits to the ones that describe a component
   // and to its theme (the tokens it lists).
-  if (file === STUDIO_THEME) return kind === 'change';
-  if (inside(SYSTEMS, file) || inside(STUDIO_COMPONENTS, file)) return kind !== 'change' || /\.(md|examples\.[jt]sx)$|styles[\\/]theme\.css$/.test(file);
+  if (file === PLATFORM_THEME) return kind === 'change';
+  if (inside(SYSTEMS, file) || inside(PLATFORM_COMPONENTS, file)) return kind !== 'change' || /\.(md|examples\.[jt]sx)$|styles[\\/]theme\.css$/.test(file);
   if (![PROTOS, ...PROTOTYPE_DIRS].some((dir) => inside(dir, file))) return false;
   return kind !== 'change' || path.basename(file) === 'meta.json' || hasFidelity(file);
 }

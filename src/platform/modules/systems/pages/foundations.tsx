@@ -177,7 +177,7 @@ export function IconsPage({ icons, scopeClass }: { icons: NonNullable<DesignSyst
 }
 
 // A prototype system's theme class and portal container, like ViewFrame gives each view,
-// so demos and their pop-ups keep the system's look. The studio system has no class.
+// so demos and their pop-ups keep the system's look. The platform system has no class.
 export function SystemFrame({ themeClass, children }: { themeClass: string; children: ReactNode }) {
   const [portal, setPortal] = useState<HTMLElement | null>(null);
   if (!themeClass) return <>{children}</>;

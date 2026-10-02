@@ -132,7 +132,7 @@ test('starter docs files sit next to the component and never break the checks', 
   assert.equal(titleOf('icon-button'), 'Icon button');
   assert.equal(titleOf('IconButton'), 'Icon button');
   const flat = docTemplates({ system: 'product', source: 'icon-button.tsx' });
-  assert.match(docTemplates({ system: 'studio', source: 'item.tsx' }).examples.content, /from '@\/platform\/components\/item'/);
+  assert.match(docTemplates({ system: 'platform', source: 'item.tsx' }).examples.content, /from '@\/platform\/components\/item'/);
   assert.equal(flat.examples.file, 'icon-button.examples.tsx');
   assert.equal(flat.doc.file, 'icon-button.md');
   assert.match(flat.examples.content, /import \{ IconButton \} from '@\/systems\/product\/components\/icon-button'/);

@@ -1,7 +1,7 @@
 import { useEffect, useState, type ComponentType } from 'react';
 import type { MDXContent } from 'mdx/types';
 import { SYSTEMS_KEY } from '@/platform/core/roots';
-import { STUDIO_ID } from '@/platform/modules/systems/sources';
+import { PLATFORM_ID } from '@/platform/modules/systems/sources';
 import { exampleNames, type ComponentPropsDoc } from '@/platform/modules/systems/docs';
 
 // A component's docs files in a system (src/systems/<system>/components/, or src/platform/components/; see
@@ -9,7 +9,7 @@ import { exampleNames, type ComponentPropsDoc } from '@/platform/modules/systems
 export type Example = { name: string; Component: ComponentType };
 
 // Vite only loads a file when it is asked for.
-// The app's own system (Studio) keeps its components in /platform/components/.
+// The app's own system (Platform) keeps its components in /platform/components/.
 const globs = {
   examples: import.meta.glob<Record<string, unknown>>(['/systems/*/components/**/*.examples.{tsx,jsx}', '/platform/components/**/*.examples.{tsx,jsx}']),
   sources: import.meta.glob<string>(['/systems/*/components/**/*.examples.{tsx,jsx}', '/platform/components/**/*.examples.{tsx,jsx}'], { query: '?raw', import: 'default' }),
@@ -21,7 +21,7 @@ const globs = {
 // (like loadGuide.ts).
 const state: { globs: typeof globs; listeners: Set<() => void> } = import.meta.hot?.data.state ?? { globs, listeners: new Set() };
 
-const at = (system: string, file: string) => `${system === STUDIO_ID ? '/platform' : `/systems/${system}`}/components/${file}`;
+const at = (system: string, file: string) => `${system === PLATFORM_ID ? '/platform' : `/systems/${system}`}/components/${file}`;
 
 // The examples an examples file exports: each export named with a capital that is a component,
 // in the order the file lists them (a module's exports come alphabetically).

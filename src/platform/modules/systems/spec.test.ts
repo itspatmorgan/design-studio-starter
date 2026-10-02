@@ -22,7 +22,7 @@ test('docs and origin take only the values the build understands', () => {
 
 test('the folder is the id: lowercase, and not the app\'s own', () => {
   assert.match(systemProblems(product, 'Product')[0], /lowercase letters/);
-  assert.match(systemProblems(product, 'studio')[0], /app's own system/);
+  assert.match(systemProblems(product, 'platform')[0], /app's own system/);
 });
 
 test('anything that is not an object is not a system', () => {

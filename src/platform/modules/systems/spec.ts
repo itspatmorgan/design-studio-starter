@@ -1,7 +1,7 @@
 // A design system prototypes build with is a folder in src/systems/<id>/ with a system.ts that says what it is,
 // next to its components/ and styles/theme.css. The build, the dev server and the app all find the systems by
 // their folders, so adding one is adding a folder (pnpm studio create-system), and no list is kept anywhere.
-// The app's own system (Studio, src/platform/) is documented the same way but isn't one of these: prototypes
+// The app's own system (Platform, src/platform/) is documented the same way but isn't one of these: prototypes
 // never use it (src/platform/modules/systems/sources.ts). This file has no imports, so Node scripts and the app can load it.
 
 // How the build treats a component without examples or a description (systemDocs.ts): 'warn' says
@@ -28,7 +28,7 @@ const CLASS = /^[a-z][a-z0-9-]*$/;
 export function systemProblems(spec: unknown, folder: string): string[] {
   const where = `src/systems/${folder}/system.ts`;
   if (!ID.test(folder)) return [`src/systems/${folder}/: a system's folder should be lowercase letters, numbers, and dashes, starting with a letter.`];
-  if (folder === 'studio') return [`src/systems/${folder}/: "studio" is the app's own system, so a prototype system can't use that name.`];
+  if (folder === 'platform') return [`src/systems/${folder}/: "platform" is the app's own system, so a prototype system can't use that name.`];
   if (!spec || typeof spec !== 'object') return [`${where} must export a system as its default.`];
   const s = spec as Partial<SystemSpec>;
   const problems: string[] = [];

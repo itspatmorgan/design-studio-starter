@@ -1,12 +1,12 @@
 // The design systems installed in src/systems/ (one folder each, with a system.ts), for the build and the dev
 // server. Delete a folder and its system is gone from here too. The app finds the same folders with a glob
-// (src/platform/modules/systems/data/systems.ts). The app's own system (Studio) is added to SYSTEM_SOURCES, since the Systems
+// (src/platform/modules/systems/data/systems.ts). The app's own system (Platform) is added to SYSTEM_SOURCES, since the Systems
 // pages document it too.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import CONFIG from '../../../../../studio.config.ts';
-import { STUDIO_ID, STUDIO_SOURCE, sourceOf } from '../sources.ts';
+import { PLATFORM_ID, PLATFORM_SOURCE, sourceOf } from '../sources.ts';
 import { systemProblems } from '../spec.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
@@ -33,7 +33,7 @@ export const DEFAULT_SYSTEM = CONFIG.defaultSystem in PROTOTYPE_SYSTEMS ? CONFIG
 
 export const SYSTEM_SOURCES = {
   ...Object.fromEntries(ids.map((id) => [id, sourceOf(id, PROTOTYPE_SYSTEMS[id])])),
-  [STUDIO_ID]: STUDIO_SOURCE,
+  [PLATFORM_ID]: PLATFORM_SOURCE,
 };
 
 export const systemDeclarationProblems = () => ids.flatMap((id) => systemProblems(PROTOTYPE_SYSTEMS[id], id));

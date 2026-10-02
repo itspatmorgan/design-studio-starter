@@ -2,10 +2,10 @@
 
 There are two kinds of design system, each in its own scope.
 
-- **Studio system**: `src/platform/components/` and `src/platform/styles/`. The app's own system, the wrapper that makes the sandbox work (nav rail, index, prototype navigation, command palette, Systems pages, Guide, the error message shown when a view fails). Stock shadcn/ui components, vendored so they can be read and changed. Maintained with the platform. Prototypes never import it.
+- **Platform system**: `src/platform/components/` and `src/platform/styles/`. The app's own system, the wrapper that makes the sandbox work (nav rail, index, prototype navigation, command palette, Systems pages, Guide, the error message shown when a view fails). Stock shadcn/ui components, vendored so they can be read and changed. Maintained with the platform. Prototypes never import it.
 - **Prototype systems**: what prototypes build with, one folder each in `src/systems/`. The kit ships one, `product` (`src/systems/product/`), a placeholder a team replaces with their real product design system. A team can add others, like a `brand` system for marketing work. Each prototype uses one: `"system"` in its `meta.json`, or the default (`defaultSystem` in `studio.config.ts`, else the first by name).
 
-The Systems pages treat both the same: each system's components and foundations pages come from its own files (below), so nothing about Studio is special-cased except that it is `docs: 'off'` (no warnings about pages and examples nobody needs to write for stock components).
+The Systems pages treat both the same: each system's components and foundations pages come from its own files (below), so nothing about the Platform system is special-cased except that it is `docs: 'off'` (no warnings about pages and examples nobody needs to write for stock components).
 
 ## What makes a prototype system
 

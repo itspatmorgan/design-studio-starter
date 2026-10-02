@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from '../../src/platform/modules/systems/node/systems.js';
-import { STUDIO_ID } from '../../src/platform/modules/systems/sources.ts';
+import { PLATFORM_ID } from '../../src/platform/modules/systems/sources.ts';
 import { isHelper, itemSlug } from '../../src/platform/fileTypes/index.ts';
 import { HANDBOOK_KEY, HANDBOOK_SECTIONS, rootOf } from '../../src/platform/core/roots.ts';
 import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../../src/platform/core/archive.ts';
@@ -342,10 +342,10 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   }
 
   // Each system's components and tokens, for the Systems pages, and what its component pages lack
-  // (src/platform/modules/systems/docs.ts, themeTokens.ts). The app's own system (Studio) is one of them. By
+  // (src/platform/modules/systems/docs.ts, themeTokens.ts). The app's own system (Platform) is one of them. By
   // default a gap is a warning, and the first few are listed; docs: 'strict' fails the build and
   // 'off' says nothing.
-  if (STUDIO_ID in PROTOTYPE_SYSTEMS) { out.error(`[manifest] src/systems/${STUDIO_ID}/: "${STUDIO_ID}" is the app's own system, so a prototype system can't use that name`); errors++; }
+  if (PLATFORM_ID in PROTOTYPE_SYSTEMS) { out.error(`[manifest] src/systems/${PLATFORM_ID}/: "${PLATFORM_ID}" is the app's own system, so a prototype system can't use that name`); errors++; }
   const systems = {};
   for (const [id, sys] of Object.entries(SYSTEM_SOURCES)) {
     const dir = path.join(ROOT, sys.components);

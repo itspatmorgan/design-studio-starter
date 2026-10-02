@@ -12,7 +12,7 @@ The first release, described in [How I Set Up a Prototyping Sandbox](https://www
 - The app: Prototypes page, prototype navigation, Systems page, Guide, and command palette
 - File types, each a removable folder: views (`.tsx`), documents (`.md`), and canvases (`.excalidraw`)
 - A source button in the Files row: read or edit a file's text in the app, while it runs locally
-- Studio and product systems on shadcn/ui and Base UI
+- Platform and product systems on shadcn/ui and Base UI
 - Contributor folders, `pnpm new`, and `pnpm join`
 - Scope checks before commit, before push, and on push to main
 - The import guard
