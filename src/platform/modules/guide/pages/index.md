@@ -40,7 +40,7 @@ Throughout the Guide, a feedback inbox provides a simple example: build an inter
 
 ## Edit the Guide
 
-While running locally, select **Edit source** on a Guide page. Edit the Markdown, then save with Command+S on macOS or Ctrl+S on other systems. Select **Done** to return to the chapter.
+While running locally, select **Edit** on a Guide page. Edit the Markdown, then save with Command+S on macOS or Ctrl+S on other systems. Select **Done** to return to the chapter.
 
 The editor shows the source file path. A module chapter opens its full README, including the developer section that the Guide does not display. Guide changes are shared platform changes; use the maintainer's review process when sharing them.
 

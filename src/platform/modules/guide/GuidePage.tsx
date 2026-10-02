@@ -49,6 +49,6 @@ export default function GuidePage({ slug, source, ...props }: Props) {
   );
   if (source && GuideEditor) return <Suspense fallback={<p className="p-4 text-sm text-muted-foreground">Opening source…</p>}><GuideEditor slug={slug} path={source.path} /></Suspense>;
   if (!props.Component) return null;
-  const edit = import.meta.env.DEV && <Button size="sm" variant="outline" className="shrink-0" onClick={() => navigate({ to: '.', search: ((previous: object) => ({ ...previous, mode: 'source' })) as never })}>Edit source</Button>;
+  const edit = import.meta.env.DEV && <Button size="sm" variant="outline" className="shrink-0" onClick={() => navigate({ to: '.', search: ((previous: object) => ({ ...previous, mode: 'source' })) as never })}>Edit</Button>;
   return <MDXProvider components={components}><DocLayout {...props} Component={props.Component} actions={edit} scrollKey={slug} footer={footer} /></MDXProvider>;
 }
