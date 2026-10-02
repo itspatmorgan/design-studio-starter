@@ -26,7 +26,9 @@ Managing modules is a shared platform change. Ask your agent to perform it as pa
 
 Ask: "List the studio's modules."
 
-Prototypes, Handbook, and Systems are required modules. The Guide and the view, document, canvas, and text file types are optional.
+Prototypes, Views, Text files, Handbook, and Systems are required modules. Code-based views are the core of a prototype.
+
+Documents and Canvases add optional ways to explain and explore the work. You can disable either feature. The Guide is also optional.
 
 **Systems** is the module that supports design systems. Each prototype design system is separate content in `src/systems/`.
 
@@ -35,6 +37,8 @@ Prototypes, Handbook, and Systems are required modules. The Guide and the view, 
 Ask your agent to turn off an optional module. Its files remain, but its capabilities are unavailable. Restart the dev server after the change.
 
 Turning off a file type hides its items from normal navigation. It does not delete the files. Consider retained content before disabling a type.
+
+Disabling Documents affects Markdown files within prototypes. The Handbook and Guide keep their own Markdown support.
 
 Ask the agent to turn the module on again when you need it.
 

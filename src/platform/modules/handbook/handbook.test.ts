@@ -9,6 +9,7 @@ import { descriptionProblem, nameProblem, skillProblems } from './skills.ts';
 import { creatableIn, opProblem } from './rules.ts';
 import { handbookMap } from './map.ts';
 import { handbookProblems } from './node/handbook-check.js';
+import { templateFor } from '../../../../scripts/build/files/ops.js';
 import { frontmatter } from '../../../../scripts/lib/frontmatter.js';
 
 test('skill names follow the spec', () => {
@@ -144,4 +145,9 @@ test('the map: what an agent reads, in order, from the real files', () => {
   assert.equal(map.entry, true);
   assert.equal(handbookMap({ agents: null, rules: { 'a.md': '' }, skills: [] }).entry, false);
   assert.deepEqual(handbookMap({ agents: null, rules: { 'a.md': '' }, skills: [] }).unrouted, ['a.md']);
+});
+
+test('Handbook creation uses its own Markdown template', () => {
+  assert.match(templateFor('team-context.md', true), /title: Team Context/);
+  assert.equal(templateFor('support.js', true), '');
 });

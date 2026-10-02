@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
 import { buildManifest } from '../build-manifest.js';
-import { FILE_TYPES, fileTypeOf } from '../../lib/file-types.js';
+import { FILE_TYPES, fileTypeOf, handbookTypeOf } from '../../lib/file-types.js';
 import { STATUSES, parseStatus } from '../../../src/platform/core/archive.ts';
 import { afterChange, parentOf, parseOrder, place, withFolderOrder } from '../../../src/platform/core/order.ts';
 import { rootOf } from '../../../src/platform/core/roots.ts';
@@ -15,7 +15,7 @@ import { ROOT, TRASH, readOrder, readTree, resolveInside, validName, viewKey } f
 
 // The contents of a new file: its file type's template, by extension (src/platform/modules/<type>/type.ts).
 // Files of no type start empty.
-export const templateFor = (name) => FILE_TYPES[fileTypeOf(name)]?.template?.(name) ?? '';
+export const templateFor = (name, handbook = false) => FILE_TYPES[(handbook ? handbookTypeOf : fileTypeOf)(name)]?.template?.(name) ?? '';
 
 // The Handbook's files are platform files: anyone can change their copy here, and the changes go
 // through review before they reach everyone. So it's open to whoever runs the app; what it does
@@ -120,7 +120,7 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     const target = path.join(parent, name);
     if (fs.existsSync(target)) throw new Error(`Something named “${name}” already exists here.`);
     if (isDir) fs.mkdirSync(target);
-    else fs.writeFileSync(target, section === 'rules' ? ruleTemplate(name) : templateFor(name));
+    else fs.writeFileSync(target, section === 'rules' ? ruleTemplate(name) : templateFor(name, Boolean(section)));
     return { path: relOf(target) };
   }
   if (op === 'meta') {

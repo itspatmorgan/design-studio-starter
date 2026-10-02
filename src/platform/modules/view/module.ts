@@ -6,5 +6,4 @@ export default {
   label: 'Views',
   version: '0.1.0',
   description: 'A .tsx or .jsx file in a prototype opens as a page.',
-  optional: true,
 } satisfies ModuleSpec;

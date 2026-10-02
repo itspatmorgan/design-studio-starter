@@ -2,6 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { FILE_TYPES } from '../../../../scripts/lib/file-types.js';
+import { assertUniqueExtensions, handbookType, matchFileType } from '../fileTypes.ts';
 import { globsFor } from './globs.ts';
 import type { ModuleSpec } from './index.ts';
 
@@ -36,15 +37,14 @@ test('canvases are listed in prototypes and examples, skipping helpers', needs('
   ]));
 });
 
-test('documents are also listed in the Handbook', needs('document'), () => {
+test('prototype documents stay within prototype-shaped sections', needs('document'), () => {
   assert.deepEqual(sorted(globsFor('document', types, modules)), sorted([
     '/prototypes/**/*.md', '!/prototypes/**/_*/**', '!/prototypes/**/_*',
     '/examples/**/*.md', '!/examples/**/_*/**', '!/examples/**/_*',
-    '/handbook/**/*.md',
   ]));
 });
 
-test('the fallback type lists the Handbook files no other type opens', needs('text', 'document'), () => {
+test('the fallback type lists the Handbook files no other type opens', needs('text', 'handbook'), () => {
   assert.deepEqual(globsFor('text', types, modules), ['/handbook/**/*', '!/handbook/**/*.md']);
 });
 
@@ -62,4 +62,23 @@ test('a new section that holds prototypes is listed by every type that opens pro
 
 test('an unknown type is named', () => {
   assert.throws(() => globsFor('nope', types, modules), /no "nope" file type/);
+});
+
+test('Handbook Markdown stays readable and validated without prototype Documents', () => {
+  const { document: _document, ...withoutDocuments } = types;
+  assert.equal(matchFileType(withoutDocuments, 'notes.md'), null);
+  assert.equal(handbookType(withoutDocuments, 'notes.md'), 'handbook');
+  assert.equal(handbookType(withoutDocuments, 'support.js'), 'text');
+  assert.deepEqual(globsFor('handbook', withoutDocuments, modules), ['/handbook/**/*.md']);
+  assert.deepEqual(globsFor('text', withoutDocuments, modules), ['/handbook/**/*', '!/handbook/**/*.md']);
+  assert.match(withoutDocuments.handbook.template!('team-context.md'), /title: Team Context/);
+  assert.ok(withoutDocuments.handbook.check!({ source: '---\ntitle: Unclosed', frontmatter: null }).length);
+});
+
+const withoutDocument = (specs: typeof types) => Object.fromEntries(Object.entries(specs).filter(([id]) => id !== 'document'));
+
+test('extension ownership is unique within each content scope', () => {
+  assert.doesNotThrow(() => assertUniqueExtensions(types));
+  assert.throws(() => assertUniqueExtensions({ ...withoutDocument(types), prototypeMarkdown: {extensions: ['.md'], label: 'Markdown'}, other: { extensions: ['.md'], label: 'Other' } }), /both use .md in prototype/);
+  assert.throws(() => assertUniqueExtensions({ ...types, other: { extensions: ['.md'], label: 'Other', inPrototype: false, inHandbook: true } }), /both use .md in handbook/);
 });

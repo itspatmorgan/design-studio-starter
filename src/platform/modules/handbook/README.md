@@ -68,6 +68,7 @@ The Handbook: the docs, rules and skills in `src/handbook/` that people and agen
 
 - `module.ts`, `app.tsx`: who it is, its rail button and routes.
 - `map.ts`: how an agent reads the Handbook, worked out from the files.
+- `type.ts`, `open.tsx`, `loader.ts`: the Handbook's Markdown file type. It uses the shared platform reader and does not depend on prototype Documents.
 - `rules.ts`: what may change in the Handbook (its fixed shape), checked on every change.
 - `skills.ts`: how a skill's folder and SKILL.md are read and written.
 - `pages/`: the Handbook header and the dialogs for new files (browser).

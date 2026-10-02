@@ -1,6 +1,8 @@
 // What studio.config.ts may say (config.ts). Run with `pnpm test`.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import viewModule from '../modules/view/module.ts';
+import textModule from '../modules/text/module.ts';
 import { configProblems, isEnabled } from './config.ts';
 
 const modules = [{ id: 'guide', optional: true }, { id: 'prototypes' }];
@@ -49,4 +51,10 @@ test('personal and team guidance are supported without changing module permissio
     assert.equal(isEnabled({ name: 'A', usage }, 'guide'), true);
   }
   assert.match(configProblems({ name: 'A', usage: 'other' } as unknown, modules)[0], /usage should be personal or team/);
+});
+
+test('Views and Text are required studio capabilities', () => {
+  for (const module of [viewModule, textModule]) {
+    assert.ok(configProblems({ name: 'Studio', modules: { [module.id]: false } }, [module]).length);
+  }
 });

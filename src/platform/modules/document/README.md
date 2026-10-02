@@ -74,7 +74,7 @@ Links to external sites open in a new tab. To show a live screen beside written 
 
 Keep decisions about this prototype here. Put context for the whole product in the Handbook.
 
-Documents are an optional file-type module. Disabling the module preserves the files but hides them from normal prototype navigation.
+Documents are an optional file-type module. Disabling the module preserves the files but hides them from normal prototype navigation. The Handbook and Guide keep their Markdown support.
 
 ## For developers
 
@@ -82,7 +82,7 @@ Documents are an optional file-type module. Disabling the module preserves the f
 
 - `type.ts`: what the build reads: the `.md` extension, a template (a title and an empty-document line), and the checks on frontmatter.
 - `open.tsx`: the icon, how a document loads, and its page.
-- `DocumentPage.tsx`: the page a document opens as, in the app's own style (not the prototype's design system).
+- `src/platform/app/docs/`: the shared Markdown reader and page style. The Handbook uses this reader independently.
 - `loader.ts`: the glob of document files for the deployed site.
 
 Agent contract: `src/handbook/rules/documents.md`.

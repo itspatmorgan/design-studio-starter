@@ -20,7 +20,7 @@ pnpm check
 - **Review first, then ask.** `add`, `remove` and `create-*` show what they will do and change nothing without `--yes`. Run it without `--yes`, tell the person what the module is, where it comes from, what it adds and any packages it wants, and add it only when they say to. A module is code that runs in their app: never add one the person didn't ask for or didn't trust, and never run anything from a source yourself.
 - **Never edit what the commands manage by hand:** `studio.lock.json`, the module lines in `AGENTS.md` (between the `studio:modules` markers), and the `modules` list in `studio.config.ts`. Use the commands.
 - **Say when to restart.** After any change to modules or design systems, the dev server must be restarted to show it.
-- **Some can't be turned off or removed**: the Handbook and Systems, because prototypes are built on them. Don't work around that.
+- **Some can't be turned off or removed**: Prototypes, Views, Text files, the Handbook, and Systems. Documents and Canvases are optional prototype features. Disabling Documents does not disable Markdown in the Handbook or Guide. Don't work around that.
 - **A license matters.** If a module is built on an open source library and the command refuses its license, tell the person; `--allow-license` is their decision, not yours.
 - **When a module is off or removed**, its rule leaves AGENTS.md. Don't follow a rule from a module that is off.
 - **Adding a design system** records the current default in `studio.config.ts` first, so existing prototypes keep their system. Say which system is the default.

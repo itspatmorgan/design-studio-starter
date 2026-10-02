@@ -30,7 +30,7 @@ scripts/         build/ (build and dev server)   check/ (pnpm check)   cli/ (com
 ```
 
 Apart from this file, modules/ holds only modules. A module that can be turned off
-(`optional`) is fully contained: only its `module.ts` is read from outside. A required module (Prototypes, Handbook, Systems) is part of the platform,
+(`optional`) is fully contained: only its `module.ts` is read from outside. A required module (Prototypes, Views, Text files, Handbook, Systems) is part of the platform,
 so the platform may import it, but all its code still lives in its one folder.
 
 ## What a module can provide

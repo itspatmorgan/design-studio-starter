@@ -96,15 +96,23 @@ test('create and rename preserve addresses, file errors recover, and system remo
       let handler;
       await plugin.configureServer({ middlewares: { use: (_path, fn) => { handler = fn; } }, watcher: { on() {} }, ws: { send() {} }, config: { logger: { error() {} } } });
       const originalRead = fs.readFileSync;
-      const notes = path.join(moved, 'notes.md');
-      const request = { method: 'GET', url: '/file?contributor=patrick&prototype=beta-roundtrip&path=notes.md', headers: {'sec-fetch-site':'same-origin'} };
+      const readable = path.join(moved, 'prototype.tsx');
+      const request = { method: 'GET', url: '/file?contributor=patrick&prototype=beta-roundtrip&path=prototype.tsx', headers: {'sec-fetch-site':'same-origin'} };
       const response = () => ({ statusCode: 0, headersSent: false, setHeader() {}, end(body) { this.body = body; } });
       const failed = response();
-      fs.readFileSync = (file, ...args) => { if (file === notes) throw new Error('Simulated read failure'); return originalRead(file, ...args); };
+      fs.readFileSync = (file, ...args) => { if (file === readable) throw new Error('Simulated read failure'); return originalRead(file, ...args); };
       try { await handler(request, failed, () => assert.fail('Unexpected fallback')); } finally { fs.readFileSync = originalRead; }
       assert.equal(failed.statusCode, 500);
       const recovered = response(); await handler(request, recovered, () => assert.fail('Unexpected fallback'));
       assert.equal(recovered.statusCode, 200);
+      // Shared Markdown remains editable even when prototype Documents is absent.
+      const { runOp } = await load('scripts/build/files/ops.js');
+      runOp(path.resolve('src/handbook/docs'), {op:'create', name:'beta-context.md'}, 'docs');
+      assert.match(fs.readFileSync('src/handbook/docs/beta-context.md', 'utf8'), /title: Beta Context/);
+      const handbookResponse = response();
+      await handler({...request, url:'/file?contributor=handbook&prototype=docs&path=beta-context.md'}, handbookResponse, () => assert.fail('Unexpected fallback'));
+      assert.equal(handbookResponse.statusCode, 200);
+
       fs.mkdirSync('src/systems/z-beta-fixture');
       fs.copyFileSync('src/systems/product/system.ts', 'src/systems/z-beta-fixture/system.ts');
       const metaPath = path.join(moved, 'meta.json');
@@ -117,7 +125,7 @@ test('create and rename preserve addresses, file errors recover, and system remo
       assert.equal(fs.existsSync('src/systems/z-beta-fixture/system.ts'), true);
 
     `;
-    execFileSync(process.execPath, ['--input-type=module', '--eval', script], { cwd: dir, timeout: 30000, stdio: 'pipe', env: { ...process.env, MISE_TRUSTED_CONFIG_PATHS: dir } });
+    execFileSync(process.execPath, ['--input-type=module', '--eval', script], { cwd: dir, timeout: 30000, encoding: 'utf8', stdio: 'pipe', env: { ...process.env, MISE_TRUSTED_CONFIG_PATHS: dir } });
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
 

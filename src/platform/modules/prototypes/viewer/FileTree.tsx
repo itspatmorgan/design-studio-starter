@@ -180,7 +180,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   const fixed = (node: FileNode) => isHandbook && isSkillFile(proto.id, node.path);
   // What can be made in a folder: a prototype's file types and folders, or what the Handbook section holds there.
   const newOptions = (folder: string) => (isHandbook
-    ? creatableIn(proto.id, folder).map((kind) => ({ target: kind === 'document' ? 'document' : kind, ...NEW_KINDS[kind] }))
+    ? creatableIn(proto.id, folder).map((kind) => ({ target: kind === 'document' ? 'handbook' : kind, ...NEW_KINDS[kind] }))
     : [...creatableTypes.map((t) => ({ target: t.id, label: `New ${t.label.toLowerCase()}`, icon: t.icon })), { target: 'folder', ...NEW_KINDS.folder }]);
   const items = new Map(proto.items.map((i) => [i.path, i]));
   // Switched in the header's "…" menu, and remembered for every prototype.

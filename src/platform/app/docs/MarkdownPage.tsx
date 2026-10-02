@@ -9,7 +9,7 @@ import ViewError from '@/platform/modules/prototypes/viewer/ViewError';
 
 // docKey (contributor/prototype/path) resets the error boundary when the document changes,
 // and so does a new Component (the file was fixed, in dev).
-export default function DocumentPage({ Component, frontmatter, docKey, base }: {
+export default function MarkdownPage({ Component, frontmatter, docKey, base }: {
   Component: MDXContent;
   frontmatter: DocFrontmatter;
   docKey: string;

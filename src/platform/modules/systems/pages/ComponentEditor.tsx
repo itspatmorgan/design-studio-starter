@@ -16,8 +16,8 @@ import type { SystemComponentDoc } from '@/platform/modules/systems/docs';
 type Kind = keyof SystemComponentDoc['files'];
 
 // What each tab holds, in order, and how the editor opens its file (Markdown as a document; the rest as text).
-const TABS: { kind: Kind; label: string; fileType: 'document' | 'text'; missing: string }[] = [
-  { kind: 'doc', label: 'Page', fileType: 'document', missing: 'This component has no page yet.' },
+const TABS: { kind: Kind; label: string; fileType: 'handbook' | 'text'; missing: string }[] = [
+  { kind: 'doc', label: 'Page', fileType: 'handbook', missing: 'This component has no page yet.' },
   { kind: 'examples', label: 'Examples', fileType: 'text', missing: 'This component has no examples yet.' },
   { kind: 'source', label: 'Component', fileType: 'text', missing: 'This component has no file yet.' },
 ];
