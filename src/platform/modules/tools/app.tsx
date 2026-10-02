@@ -3,7 +3,8 @@
 import { createRoute, useRouterState } from '@tanstack/react-router';
 import { Wrench01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
-import { HomeSection } from '@/platform/app/items/HomeSection';
+import { HomeHint, HomeSection } from '@/platform/app/items/HomeSection';
+import { useMe } from '@/platform/app/data/files';
 import { APP_NAME } from '@/platform/app/data/config';
 import { prototypeLink } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
@@ -34,10 +35,11 @@ function ToolsPalette({ manifest, current, go }: PaletteContext) {
   );
 }
 
-// On the front page: the first few tools, with a link to all of them.
+// On the front page: the first few tools, with a link to all of them. Locally, with none yet, it says how to make one.
 function Overview({ manifest }: { manifest: Manifest }) {
+  const me = useMe();
   const tools = (manifest.sections.tools ?? []).filter((t) => t.status !== 'archived').slice(0, 3);
-  if (!tools.length) return null;
+  if (!tools.length) return import.meta.env.DEV && me ? <HomeSection title="Tools" to="/tools"><HomeHint>None yet. Publish one of your prototypes from its menu.</HomeHint></HomeSection> : null;
   return (
     <HomeSection title="Tools" to="/tools">
       <ul>{tools.map((t) => <ToolRow key={t.id} tool={t} />)}</ul>

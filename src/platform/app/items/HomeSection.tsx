@@ -3,6 +3,11 @@ import { Link } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowRight01Icon } from '@hugeicons/core-free-icons';
 
+// One line of grey text for a section with nothing in it yet, on the same left edge as the headings above it.
+export function HomeHint({ children }: { children: ReactNode }) {
+  return <p className="px-2 py-1.5 text-sm text-muted-foreground">{children}</p>;
+}
+
 // A block of the front page's panel, set apart from the next by space, not a line: a heading that links to the module's own page (the chevron says so), then
 // the rows the module chose to show (ItemRow.tsx). A module's `overview` (src/platform/app/modules.ts) draws one of these.
 export function HomeSection({ title, to, children }: { title: string; to: string; children: ReactNode }) {

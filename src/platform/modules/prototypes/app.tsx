@@ -4,7 +4,7 @@
 import { createRoute } from '@tanstack/react-router';
 import { Layers01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
-import { HomeSection } from '@/platform/app/items/HomeSection';
+import { HomeHint, HomeSection } from '@/platform/app/items/HomeSection';
 import { useMe } from '@/platform/app/data/files';
 import { APP_NAME } from '@/platform/app/data/config';
 import { newestFirst, prototypeLink } from '@/platform/app/data/manifest';
@@ -43,20 +43,23 @@ function PrototypesPalette({ manifest, current, go }: PaletteContext) {
   );
 }
 
-// On the front page, the newest prototypes, five at most, with the title above linking to all of them. While you run
-// the app locally, a section of your own comes first and the newest are the other people's, so none is shown twice.
-const SHOWN = 5;
+// On the front page, the newest prototypes with the title above linking to all of them: five on the deployed site, where
+// they are the main thing, and three of each below when you run the app locally, where your own come first and the
+// newest are the other people's, so none is shown twice. With none at all, locally it offers to start one, and on the
+// deployed site it says nothing is published yet.
 function Overview({ manifest }: { manifest: Manifest }) {
   const me = useMe();
+  const shown = me ? 3 : 5;
   const live = manifest.prototypes.filter((p) => p.status !== 'archived').sort(newestFirst);
   const mine = me ? live.filter((p) => p.contributorKey === me) : [];
-  const latest = (me ? live.filter((p) => p.contributorKey !== me) : live).slice(0, SHOWN);
+  const latest = (me ? live.filter((p) => p.contributorKey !== me) : live).slice(0, shown);
   const rows = (list: typeof live, byline: boolean) => <ul>{list.map((p) => <PrototypeRow key={`${p.contributorKey}/${p.id}`} prototype={p} byline={byline} />)}</ul>;
+  if (!live.length && !(import.meta.env.DEV && me)) return <HomeSection title="Prototypes" to="/prototypes"><HomeHint>Nothing published yet.</HomeHint></HomeSection>;
   return (
     <>
       {me && (
         <HomeSection title="Your prototypes" to="/prototypes">
-          {mine.length ? rows(mine.slice(0, SHOWN), false) : <div className="py-[7px] pl-2"><NewPrototypeButton /></div>}
+          {mine.length ? rows(mine.slice(0, shown), false) : <div className="py-[7px] pl-2"><NewPrototypeButton /></div>}
         </HomeSection>
       )}
       {latest.length > 0 && <HomeSection title={me ? 'Latest from the team' : 'Latest prototypes'} to="/prototypes">{rows(latest, true)}</HomeSection>}

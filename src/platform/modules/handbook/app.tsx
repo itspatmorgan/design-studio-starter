@@ -4,7 +4,8 @@
 import { createRoute, notFound, redirect, useRouterState } from '@tanstack/react-router';
 import { Notebook01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
-import { HomeSection } from '@/platform/app/items/HomeSection';
+import { HomeHint, HomeSection } from '@/platform/app/items/HomeSection';
+import { useMe } from '@/platform/app/data/files';
 import { ItemRow } from '@/platform/app/items/ItemRow';
 import { NotFound } from '@/platform/app/shell/App';
 import { itemFolder, itemLabel, loadManifest } from '@/platform/app/data/manifest';
@@ -40,11 +41,12 @@ function HandbookPalette({ manifest, current, isOpen, go }: PaletteContext) {
 }
 
 // On the front page: the first few docs, the part of the Handbook written for people. Its rules and skills
-// are for agents, so they stay out of sight here.
+// are for agents, so they stay out of sight here. Locally, with none yet, it says how to write one.
 function Overview({ manifest }: { manifest: Manifest }) {
+  const me = useMe();
   const docs = manifest.handbook.find((section) => section.id === 'docs');
   const items = docs?.items.slice(0, 3) ?? [];
-  if (!docs || !items.length) return null;
+  if (!docs || !items.length) return import.meta.env.DEV && me ? <HomeSection title="Docs" to="/handbook/docs"><HomeHint>None yet. Ask your agent to write one.</HomeHint></HomeSection> : null;
   return (
     <HomeSection title="Docs" to="/handbook/docs">
       <ul>{items.map((item) => <ItemRow key={item.path} link={itemLink(docs, item)} icon={Notebook01Icon} title={itemLabel(item.path)} />)}</ul>

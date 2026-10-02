@@ -30,10 +30,10 @@ function SystemsPlaces({ go }: PaletteContext) {
   );
 }
 
-// On the front page: a link to each of the team's design systems. The studio's own is how the app itself is
+// On the front page: a link to the team's design systems, three at most. The platform's own is how the app itself is
 // built, so it isn't offered here.
 function Overview() {
-  const systems = Object.entries(PROTOTYPE_SYSTEMS);
+  const systems = Object.entries(PROTOTYPE_SYSTEMS).slice(0, 3);
   if (!systems.length) return null;
   return (
     <HomeSection title="Design systems" to="/systems">
