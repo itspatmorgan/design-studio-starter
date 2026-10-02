@@ -25,19 +25,21 @@ export default function Home() {
   const heading = name === undefined ? '\u00a0' : first ? `Welcome back, ${first}` : APP_NAME;
   return (
     <main className="mx-auto w-full max-w-xl px-4 pt-[12vh] pb-10">
-      <h1 className="text-center text-2xl font-semibold tracking-tight text-foreground">{heading}</h1>
-      {!local && TAGLINE && <p className="mt-1.5 text-center text-sm text-muted-foreground">{TAGLINE}</p>}
-      {/* Opens the ⌘K palette: the search every page has, put where a first-time visitor will see it. */}
-      <button
-        type="button"
-        onClick={openPalette}
-        className="mt-5 mb-4 flex h-10 w-full items-center gap-2.5 rounded-xl border border-border bg-card px-3.5 text-left text-sm text-muted-foreground shadow-xs transition-colors outline-none hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <HugeiconsIcon icon={Search01Icon} size={16} />
-        <span className="flex-1">Search prototypes, tools, docs</span>
-        <kbd className="rounded border border-border px-1.5 py-0.5 font-sans text-[11px] leading-none">⌘K</kbd>
-      </button>
+      <header className="mb-6">
+        <h1 className="text-center text-2xl font-semibold tracking-tight text-foreground">{heading}</h1>
+        {!local && TAGLINE && <p className="mt-1.5 text-center text-sm text-muted-foreground">{TAGLINE}</p>}
+      </header>
       <div className="overflow-hidden rounded-xl border border-border bg-card">
+        {/* The panel's first row opens the ⌘K palette: the search every page has, put where a first-time visitor will see it. */}
+        <button
+          type="button"
+          onClick={openPalette}
+          className="flex h-11 w-full items-center gap-2.5 border-b border-border px-4 text-left text-sm text-muted-foreground transition-colors outline-none hover:bg-muted/50 focus-visible:bg-muted/50"
+        >
+          <HugeiconsIcon icon={Search01Icon} size={16} />
+          <span className="flex-1">Search prototypes, tools, docs</span>
+          <kbd className="rounded border border-border px-1.5 py-0.5 font-sans text-[11px] leading-none">⌘K</kbd>
+        </button>
         {homeApps(local).map(({ spec, app }) => app.overview && <app.overview key={spec.id} manifest={manifest} />)}
       </div>
     </main>

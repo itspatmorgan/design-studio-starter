@@ -3,8 +3,7 @@
 import { createRoute, lazyRouteComponent, redirect, useRouterState } from '@tanstack/react-router';
 import { Shapes01Icon } from '@hugeicons/core-free-icons';
 import { CommandItem } from '@/platform/components/command';
-import { HomeSection } from '@/platform/app/items/HomeSection';
-import { HomeLinkRow } from '@/platform/app/items/HomeRows';
+import { HomeLinksSection } from '@/platform/app/items/HomeSection';
 import { PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
 import { APP_NAME } from '@/platform/app/data/config';
 import { itemLabel } from '@/platform/app/data/manifest';
@@ -27,16 +26,11 @@ function SystemsPlaces({ go }: PaletteContext) {
   );
 }
 
-// On the front page: a link to each design system, so a visitor can find the components and tokens.
+// On the front page: a link to each of the team's design systems. The studio's own is how the app itself is
+// built, so it isn't offered here.
 function Overview() {
-  const systems = [...Object.entries(PROTOTYPE_SYSTEMS).map(([id, s]) => ({ id, label: s.label })), { id: 'studio', label: 'Studio' }];
-  return (
-    <HomeSection title="Design systems" to="/systems">
-      <ul>
-        {systems.map((s) => <HomeLinkRow key={s.id} link={{ to: `/systems/${s.id}` }} title={s.label} icon={Shapes01Icon} />)}
-      </ul>
-    </HomeSection>
-  );
+  const links = Object.entries(PROTOTYPE_SYSTEMS).map(([id, s]) => ({ label: s.label, link: { to: `/systems/${id}` } }));
+  return links.length ? <HomeLinksSection title="Design systems" to="/systems" links={links} /> : null;
 }
 
 export default {

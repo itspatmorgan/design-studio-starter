@@ -1,12 +1,10 @@
 import type { ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
-import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/react';
-import { File01Icon } from '@hugeicons/core-free-icons';
 import { cardTint, monogram } from './cardArt';
 
-// The rows on the front page (HomeSection.tsx). `link` is a link from manifest.ts (prototypeLink, itemLink).
+// The row on the front page for a prototype or a tool (HomeSection.tsx). `link` is a link from manifest.ts (prototypeLink).
 
-// A prototype or a tool: a small tile marked with the title's first letter, the title with a muted detail after it, and one
+// A small tile marked with the title's first letter, the title with a muted detail after it, and one
 // line of what it is. `menu` is drawn beside the link (PrototypeCardMenu), so the row sits in a "card-wrap" group.
 export function HomeRow({ link, id, title, description, meta, menu }: { link: object; id: string; title: string; description?: string; meta?: ReactNode; menu?: ReactNode }) {
   return (
@@ -22,18 +20,6 @@ export function HomeRow({ link, id, title, description, meta, menu }: { link: ob
         </span>
       </Link>
       {menu}
-    </li>
-  );
-}
-
-// A doc, or anything that is just a title: no tile, only a small icon (a page unless told otherwise).
-export function HomeLinkRow({ link, title, icon = File01Icon }: { link: object; title: string; icon?: IconSvgElement }) {
-  return (
-    <li>
-      <Link {...(link as { to: never })} className="flex items-center gap-3 px-4 py-2 text-sm text-foreground outline-none transition-colors hover:bg-muted/50 focus-visible:bg-muted/50">
-        <HugeiconsIcon icon={icon} size={16} className="shrink-0 text-muted-foreground" />
-        <span className="truncate">{title}</span>
-      </Link>
     </li>
   );
 }
