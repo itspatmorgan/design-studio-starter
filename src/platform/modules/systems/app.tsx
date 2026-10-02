@@ -34,7 +34,7 @@ function Overview() {
   if (!systems.length) return null;
   return (
     <HomeSection title="Design systems" to="/systems">
-      <ul>{systems.map(([id, s]) => <HomeRow key={id} link={{ to: `/systems/${id}` }} tint="systems" icon={Shapes01Icon} title={s.label} />)}</ul>
+      <ul>{systems.map(([id, s]) => <HomeRow key={id} link={{ to: `/systems/${id}` }} icon={Shapes01Icon} title={s.label} />)}</ul>
     </HomeSection>
   );
 }

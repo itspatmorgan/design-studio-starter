@@ -23,11 +23,5 @@ export function cardArt(id: string): { backgroundColor: string; backgroundImage:
   };
 }
 
-// A flat, quiet tint for a small tile (a row's icon tile), in the same hue cardArt gives the id.
-export function cardTint(id: string): { backgroundColor: string } {
-  const [a] = cardHues(id);
-  return { backgroundColor: `color-mix(in oklch, oklch(0.74 0.12 ${a}) 38%, var(--card))` };
-}
-
 // The first letter or number of a title, in capitals: the mark on a tile, so no two items repeat one icon.
 export const monogram = (title: string) => (title.match(/[\p{L}\p{N}]/u)?.[0] ?? '·').toUpperCase();

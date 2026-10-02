@@ -47,7 +47,7 @@ function Overview({ manifest }: { manifest: Manifest }) {
   if (!docs || !items.length) return null;
   return (
     <HomeSection title="Docs" to="/handbook/docs">
-      <ul>{items.map((item) => <HomeRow key={item.path} link={itemLink(docs, item)} tint="handbook" icon={Notebook01Icon} title={itemLabel(item.path)} />)}</ul>
+      <ul>{items.map((item) => <HomeRow key={item.path} link={itemLink(docs, item)} icon={Notebook01Icon} title={itemLabel(item.path)} />)}</ul>
     </HomeSection>
   );
 }

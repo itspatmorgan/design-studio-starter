@@ -7,8 +7,8 @@ import { ArrowRight01Icon } from '@hugeicons/core-free-icons';
 // the rows the module chose to show (HomeRows.tsx). A module's `overview` (src/platform/app/modules.ts) draws one of these.
 export function HomeSection({ title, to, children }: { title: string; to: string; children: ReactNode }) {
   return (
-    <section className="py-2">
-      <h2 className="px-4 pt-1 pb-1 text-xs font-medium text-muted-foreground">
+    <section className="px-2 py-2">
+      <h2 className="px-2 pt-1 pb-1 text-xs font-medium text-muted-foreground">
         <Link to={to as never} className="group/title -mx-1 inline-flex items-center gap-0.5 rounded px-1 outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
           {title}
           <HugeiconsIcon icon={ArrowRight01Icon} size={12} className="transition-transform group-hover/title:translate-x-0.5 motion-reduce:transition-none" />

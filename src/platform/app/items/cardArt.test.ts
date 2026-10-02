@@ -1,7 +1,7 @@
 // The gradient on a card (cardArt.ts). Run with `pnpm test`.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { cardArt, cardHues, cardTint, monogram } from './cardArt.ts';
+import { cardArt, cardHues, monogram } from './cardArt.ts';
 
 test('the same item always gets the same colours', () => {
   assert.deepEqual(cardHues('quote-card'), cardHues('quote-card'));
@@ -19,5 +19,4 @@ test('a tile is marked with the first letter of the title', () => {
   assert.equal(monogram('  \u201cHello\u201d'), 'H');
   assert.equal(monogram('42 things'), '4');
   assert.equal(monogram('***'), '·');
-  assert.deepEqual(cardTint('quote-card'), cardTint('quote-card'));
 });
