@@ -1,3 +1,4 @@
+import moduleEntries from './scripts/build/vite-module-entries-plugin.js';
 import { defineConfig } from 'vite';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -64,10 +65,11 @@ export default defineConfig({
     // Prototype documents refresh through scripts/build/vite-markdown-refresh-plugin.js instead.
     react({ include: /\.(md|[jt]sx)$/, exclude: new RegExp(`[\\\\/](${prototypeFolders})[\\\\/].*\\.md$`) }),
     markdownRefresh(),
+    importGuard(),
     css(),
     tailwindcss(),
-    importGuard(),
     globs(),
+    moduleEntries(),
     manifestWatch(),
     files(),
     systemProps(),

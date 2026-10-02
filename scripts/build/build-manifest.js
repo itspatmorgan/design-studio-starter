@@ -1,3 +1,4 @@
+import { cssProblems } from '../lib/css-scope.js';
 // Usage: node scripts/build/build-manifest.js [--strict] [--deploy]
 //   --strict  exits 1 if any meta.json is invalid
 //   --deploy  leaves archived prototypes and views out (src/platform/core/archive.ts), for the deployed site
@@ -332,14 +333,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   for (const [id, sys] of Object.entries(PROTOTYPE_SYSTEMS)) {
     const file = path.join(ROOT, sys.dir, 'styles', 'theme.css');
     if (!fs.existsSync(file)) { out.error(`[manifest] ${path.relative(ROOT, file)} is missing (the ${id} system's theme)`); errors++; continue; }
-    const css = fs.readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
-    // Every selector: the text before each "{", skipping at-rules (@media, @layer, ...) and keyframe steps.
-    for (const m of css.matchAll(/([^{};]+)\{/g)) {
-      const selector = m[1].trim();
-      if (selector.startsWith('@') || /^(from|to|[\d.]+%)(\s*,\s*(from|to|[\d.]+%))*$/.test(selector)) continue;
-      const leaks = selector.split(',').map((s) => s.trim()).filter((s) => !s.includes(`.${sys.themeClass}`));
-      if (leaks.length) { out.error(`[manifest] ${path.relative(ROOT, file)}: "${leaks.join(', ')}" isn't under .${sys.themeClass}, so it would style the whole app. Put it inside .${sys.themeClass} (or .dark .${sys.themeClass}).`); errors++; }
-    }
+    for (const problem of cssProblems(fs.readFileSync(file, 'utf8'), { file, themeClass: sys.themeClass })) { out.error(`[manifest] ${problem}`); errors++; }
   }
 
   // Each system's components and tokens, for the Systems pages, and what its component pages lack

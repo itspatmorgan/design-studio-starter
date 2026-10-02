@@ -1,3 +1,4 @@
+import { moduleConsumers } from '../lib/imports.js';
 // pnpm studio <command>: add, remove, turn on or off, and make modules and design systems. For your agent: designers
 // ask in plain words and the agent runs these. Every command that changes files says what it will do first, and
 // changes nothing until it is run again with --yes.
@@ -230,21 +231,6 @@ async function add() {
   }
 }
 
-function usesLib(id) {
-  const pattern = `@module/${id}`;
-  const hits = [];
-  const visit = (dir) => {
-    if (!fs.existsSync(dir)) return;
-    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-      const p = path.join(dir, e.name);
-      if (e.isDirectory()) { if (e.name !== 'node_modules') visit(p); }
-      else if (/\.(tsx?|jsx?)$/.test(e.name) && fs.readFileSync(p, 'utf8').includes(pattern)) hits.push(path.relative(ROOT, p));
-    }
-  };
-  visit(rel('src', 'prototypes'));
-  for (const m of Object.values(MODULES)) if (m?.section?.items === 'prototypes' && m.section.folder) visit(rel(m.section.folder));
-  return hits;
-}
 
 function remove() {
   const [id] = positional;
@@ -263,8 +249,8 @@ function remove() {
       if (flags.content) paths.push(spec.section.folder);
       else if (fs.existsSync(rel(spec.section.folder))) notes.push(`Its content in ${spec.section.folder} stays. Add --content to delete that too.`);
     }
-    const users = spec.lib ? usesLib(id) : [];
-    if (users.length && !flags.force) fail(`${users.length} file(s) import @module/${id}, like ${users[0]}, and would stop working. Change them first, or add --force.`);
+    const users = moduleConsumers(ROOT, id);
+    if (users.length && !flags.force) fail(`${users.length} file(s) depend on ${id}, like ${users[0]}, and would stop working. Change them first, or add --force.`);
     if (Object.keys(spec.dependencies ?? {}).length) notes.push(`Its npm packages stay installed: ${Object.keys(spec.dependencies).join(', ')}. Remove them with pnpm remove if nothing else uses them.`);
   } else {
     paths.push(`src/systems/${id}`);

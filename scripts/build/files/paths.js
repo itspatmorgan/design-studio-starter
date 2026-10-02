@@ -1,3 +1,4 @@
+import { canonicalDirectory } from '../../lib/safe-paths.js';
 // Where a prototype's files are, and reading them: the folders, the file tree, one item's file.
 // Part of the dev server's file layer (scripts/build/vite-files-plugin.js).
 import crypto from 'node:crypto';
@@ -24,28 +25,38 @@ export const MAX_SOURCE_BYTES = 750 * 1024; // the same limit as any committed f
 
 // A prototype's folder, or null if the contributor or prototype name isn't valid. The Handbook
 // sections (src/handbook/docs, rules, skills) are found here too, by their fixed names, to read.
+export const safeScope = (dir) => {
+  if (!dir || !canonicalDirectory(dir, ROOT)) return null;
+  const meta = path.join(dir, 'meta.json');
+  try {
+    const stat = fs.lstatSync(meta);
+    if (stat.isSymbolicLink() || !stat.isFile()) return null;
+  } catch (error) { if (error.code !== 'ENOENT') return null; }
+  return dir;
+};
+
 export function prototypeDir(contributor, prototype) {
   // A system's components (its own list, systemSources.ts): only the systems listed there.
   if (contributor === SYSTEMS_KEY) {
     const dir = typeof prototype === 'string' && Object.hasOwn(SYSTEM_SOURCES, prototype) ? path.join(ROOT, SYSTEM_SOURCES[prototype].components) : null;
-    return dir && fs.existsSync(dir) ? dir : null;
+    return safeScope(dir);
   }
   // An item of a module's section of prototype-shaped folders (a section item, src/examples/<id>/): found by its folder name.
   const section = PROTOTYPE_SECTIONS.find((s) => s.key === contributor);
   if (section) {
     if (!NAME.test(prototype ?? '')) return null;
     const dir = path.join(section.dir, prototype);
-    return fs.existsSync(dir) ? dir : null;
+    return safeScope(dir);
   }
-  if (contributor === HANDBOOK_KEY) return isHandbookSection(prototype) && fs.existsSync(path.join(HANDBOOK, prototype)) ? path.join(HANDBOOK, prototype) : null;
+  if (contributor === HANDBOOK_KEY) return isHandbookSection(prototype) ? safeScope(path.join(HANDBOOK, prototype)) : null;
   if (!NAME.test(contributor ?? '') || !NAME.test(prototype ?? '')) return null;
   const dir = path.join(PROTOS, contributor, prototype);
-  return fs.existsSync(path.join(dir)) ? dir : null;
+  return safeScope(dir);
 }
 
 // A path inside a prototype's folder, resolved for real (so links can't point outside), or null.
 export function resolveInside(dir, rel) {
-  if (typeof rel !== 'string' || rel.includes('\0')) return null;
+  if (!safeScope(dir) || typeof rel !== 'string' || rel.includes('\0')) return null;
   const target = path.resolve(dir, rel);
   if (target !== dir && !target.startsWith(dir + path.sep)) return null;
   try {

@@ -1,3 +1,5 @@
+import { scopePolicy } from '../lib/scope.js';
+import { dependencyResolver, importsOf, sourceFiles } from '../lib/imports.js';
 // Checks the modules in src/platform/modules/ (src/platform/core/modules/index.ts):
 //   - each module.ts is well formed, and its id is its folder's name
 //   - no two modules claim the same section key or folder
@@ -18,8 +20,8 @@ import { fileURLToPath } from 'node:url';
 import { pathToFileURL } from 'node:url';
 import { PLATFORM_VERSION, compatible, listProblems } from '../../src/platform/core/modules/index.ts';
 import { configProblems } from '../../src/platform/core/config.ts';
-import { CONFIG, MODULES, SECTION_KEYS, PROTOTYPE_DIRS, declarationProblems } from '../lib/modules.js';
-import { PROTOTYPE_SYSTEMS, SYSTEM_IDS, systemDeclarationProblems } from '../../src/platform/modules/systems/node/systems.js';
+import { CONFIG, MODULES, ENABLED_MODULES, SECTION_KEYS, PROTOTYPE_DIRS, declarationProblems } from '../lib/modules.js';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS, systemDeclarationProblems } from '../../src/platform/modules/systems/node/systems.js';
 import { changesFromLock } from '../lib/lock.js';
 import { readContributors } from '../lib/contributors.js';
 
@@ -52,34 +54,28 @@ for (const key of SECTION_KEYS) {
 }
 
 // Imports, as written: from '...', import('...'), import '...'.
-const SPECIFIER = /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)['"]([^'"]+)['"]/g;
+const resolveDependency = dependencyResolver(ROOT);
+const runtimePolicy = scopePolicy({ root: ROOT, systems: PROTOTYPE_SYSTEMS, defaultSystem: DEFAULT_SYSTEM, modules: ENABLED_MODULES, prototypeDirs: PROTOTYPE_DIRS });
 const MODULES_DIR = path.join(ROOT, 'src', 'platform', 'modules');
 const ids = Object.keys(MODULES);
 
-function* sources(dir) {
-  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (e.name === 'node_modules' || e.name.startsWith('.')) continue;
-    const full = path.join(dir, e.name);
-    if (full === protoDir || PROTOTYPE_DIRS.includes(full)) continue; // prototype sections have the import guard
-    if (e.isDirectory()) yield* sources(full);
-    else if (/\.(ts|tsx|js|jsx)$/.test(e.name)) yield full;
-  }
-}
-
-for (const file of [...sources(path.join(ROOT, 'src')), ...sources(path.join(ROOT, 'scripts')), path.join(ROOT, 'vite.config.ts')]) {
+for (const file of [...sourceFiles(path.join(ROOT, 'src')), ...sourceFiles(path.join(ROOT, 'scripts')), path.join(ROOT, 'vite.config.ts')]) {
   const own = path.relative(MODULES_DIR, file).split(path.sep);
   const inside = ids.includes(own[0]) ? own[0] : null;
   const rel = path.relative(ROOT, file);
-  for (const [, specifier] of fs.readFileSync(file, 'utf8').matchAll(SPECIFIER)) {
-    let resolved;
-    if (specifier.startsWith('@/')) resolved = path.join(ROOT, 'src', specifier.slice(2));
-    else if (specifier.startsWith('.')) resolved = path.resolve(path.dirname(file), specifier);
-    else continue;
+  const dependencies = importsOf(fs.readFileSync(file, 'utf8'), file);
+  if (runtimePolicy.scopeOf(file) && dependencies.some((i) => i.source === null)) problems.push(`${rel}: computed imports cannot be checked; use literal import paths.`);
+  for (const { source: specifier } of dependencies) {
+    const resolved = resolveDependency(specifier, file);
+    if (!resolved) continue;
+    const problem = runtimePolicy.problem(specifier, file, resolved);
+    if (problem) problems.push(problem);
     const target = path.relative(MODULES_DIR, resolved).split(path.sep);
     if (target[0].startsWith('..') || !ids.includes(target[0]) || target[0] === inside) continue;
+    const publicEntry = MODULES[target[0]].lib && ENABLED_MODULES.some((m) => m.id === target[0]) && specifier === `@module/${target[0]}` && /^index\.[jt]sx?$/.test(path.relative(path.join(MODULES_DIR, target[0], 'lib'), resolved));
     const isDeclaration = target.length === 2 && /^module(\.ts)?$/.test(target[1]);
     if (inside) { if (MODULES[target[0]].optional) problems.push(`${rel} imports the ${target[0]} module. A module can depend only on a required module, not on one that can be turned off: ${target[0]}/ has to be removable.`); }
-    else if (!isDeclaration && MODULES[target[0]].optional) problems.push(`${rel} imports into the ${target[0]} module ("${specifier}"). Code outside a module can read only its module.ts, or the app wouldn't run without it.`);
+    else if (!isDeclaration && !publicEntry && MODULES[target[0]].optional) problems.push(`${rel} imports into the ${target[0]} module ("${specifier}"). Code outside a module can read only its module.ts, or the app wouldn't run without it.`);
   }
 }
 

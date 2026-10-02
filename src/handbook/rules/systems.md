@@ -12,7 +12,7 @@ The Systems pages treat both the same: each system's components and foundations 
 Every prototype system has the same parts. Keep them true when replacing one, and follow them when adding one:
 
 1. **A folder**: `src/systems/<system>/`, with `components/`, `styles/theme.css`, and a `system.ts` (its label, theme class, how the build treats missing docs, and where its components come from). Prototypes import from `@/systems/<system>/...`. Nothing else lists the systems: the build, the dev server and the app find them by their folders.
-2. **A scoped theme**: every variable in `theme.css` is set under `.<system>-theme`, with a `.dark .<system>-theme` block for dark mode. Nothing is global, so systems can't leak into each other or into the app UI. The build fails on any rule in a system's `theme.css` that isn't under its class, like `:root` or `body`, which themes pasted from a theme builder often include.
+2. **A scoped theme**: every variable in `theme.css` is set under `.<system>-theme`, with a `.dark .<system>-theme` block for dark mode. Each system needs a unique theme class. Selectors must target that class or its descendants; merely mentioning it inside a pseudo-class does not scope a rule. Imported stylesheets are checked recursively. Font-face registration is allowed, while keyframe names must start with the theme class and a dash. The build fails on any rule in a system's `theme.css` that isn't under its class, like `:root` or `body`, which themes pasted from a theme builder often include.
 3. **Portals**: components that render a pop-up pass `usePortalContainer()` from `@/lib/portal` as the Base UI Portal's `container` (`<DialogPrimitive.Portal container={usePortalContainer()} />`), so pop-ups stay inside the system's theme and the prototype frame.
 4. **An introduction** (optional): `src/systems/<system>/intro.tsx` exports what the system is, and how its theme is set up, for its Systems page, like `src/systems/product/intro.tsx`. Without one the page says it has none. Its components and foundations pages come from its files, and its `theme.css` is imported by the app for you.
 
@@ -57,3 +57,7 @@ The build warns about a component without its examples or page, and about a page
 The app puts `.dark` on `<html>`, and each system's `theme.css` sets dark values under `.dark .<system>-theme`, so prototypes follow the app's color mode. Use the theme's variables through Tailwind classes (`bg-background`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-primary`), not hard-coded colors like `bg-white` or `#333`, or the view breaks in one of the modes.
 
 To see what a system offers, look in its `components/` folder or open its pages in the app (`/systems/product`, one page per component).
+
+## Runtime and documentation boundaries
+
+Runtime components and helpers cannot import platform UI, other design systems, or prototypes. They may use their own system, `src/lib/`, installed packages, and enabled public module entries (`@module/<id>`). Keep platform adapters in `intro.tsx`, `system.ts`, component examples, and Markdown documentation; runtime code and prototypes cannot import those documentation files.

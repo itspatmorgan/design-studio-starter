@@ -47,7 +47,7 @@ export type ModuleApp = {
   palette?: ComponentType<PaletteContext>;
 };
 
-const apps = import.meta.glob<ModuleApp>('/platform/modules/*/app.tsx', { eager: true, import: 'default' });
+const apps = import.meta.glob<ModuleApp>('/__studio_modules__/app.tsx', { eager: true, import: 'default' });
 const idOf = (path: string) => path.split('/').at(-2)!;
 
 export type InstalledModule = { spec: ModuleSpec; app: ModuleApp };

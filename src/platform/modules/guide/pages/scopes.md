@@ -34,9 +34,9 @@ A prototype can import from its own folder, its design system (`src/systems/prod
 
 It also can't import from a different design system than the one it picks in `meta.json`, so its look stays consistent.
 
-The import guard enforces this. It warns while the app runs, and fails the build.
+The import guard enforces this. Invalid dependencies produce an error locally and fail the build, including indirect dependencies through shared utilities and design-system components.
 
-Styles stay contained too. Use Tailwind classes, or CSS Modules (`*.module.css`) for custom CSS. A plain `.css` file would restyle the whole app, so the build fails if a prototype imports one. Each design system's theme is checked the same way: every value has to sit under its own class, like `.product-theme`.
+Styles stay contained too. Use Tailwind classes, or CSS Modules (`*.module.css`) for custom CSS. A plain `.css` file would restyle the whole app, so the build fails if a prototype imports one. Each design system needs a unique theme class, like `.product-theme`. Rules must target that class or its descendants, and imported stylesheets are checked too. CSS Modules cannot use global selectors. Shared utilities cannot depend on prototype, system, or platform code.
 
 ## Keeping the repo fast
 

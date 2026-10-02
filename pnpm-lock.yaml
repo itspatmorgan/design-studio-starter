@@ -135,6 +135,12 @@ importers:
       husky:
         specifier: ^9.1.7
         version: 9.1.7
+      postcss:
+        specifier: 8.5.28
+        version: 8.5.28
+      postcss-selector-parser:
+        specifier: 7.1.6
+        version: 7.1.6
       rehype-pretty-code:
         specifier: ^0.14.5
         version: 0.14.5(shiki@4.4.3)

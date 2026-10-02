@@ -1,3 +1,4 @@
+import { safeScope } from './paths.js';
 // Who may change a prototype's files: the policy of its section (src/platform/core/permissions.ts).
 // Part of the dev server's file layer (scripts/build/vite-files-plugin.js).
 import fs from 'node:fs';
@@ -13,8 +14,8 @@ export const maintainersOf = (dir) => {
 };
 export const policyOf = (contributor) => policyFor(contributor, Object.values(MODULES));
 export const subjectOf = (contributor, me, dir) => ({ me, key: contributor, maintainers: policyOf(contributor) === 'maintainers' ? maintainersOf(dir) : undefined });
-export const owns = (contributor, me, dir) => canOwn(policyOf(contributor), subjectOf(contributor, me, dir));
-export const canChange = (contributor, me, dir) => mayChange(policyOf(contributor), subjectOf(contributor, me, dir));
+export const owns = (contributor, me, dir) => Boolean(safeScope(dir)) && canOwn(policyOf(contributor), subjectOf(contributor, me, dir));
+export const canChange = (contributor, me, dir) => Boolean(safeScope(dir)) && mayChange(policyOf(contributor), subjectOf(contributor, me, dir));
 
 // Why you can't change a prototype: it's someone else's, you aren't a maintainer, or you aren't set up yet.
 export const ownerError = (contributor, me) => whyNot(policyOf(contributor), me);

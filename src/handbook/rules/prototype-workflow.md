@@ -32,8 +32,8 @@ src/prototypes/<contributor>/<prototype>/
 ## Rules
 
 - Always create prototypes with `pnpm new "Prototype Name"`. Never copy folders by hand.
-- Import only from the prototype's own folder, its design system (`@/systems/product/` by default), and `@/lib/` (plus installed packages). The import guard warns in `pnpm dev` and fails `pnpm build` otherwise, including for imports from a different prototype system than the one in `meta.json`.
-- Style with Tailwind classes. For custom CSS, use CSS Modules (`*.module.css`). Never a plain `.css` file or global rules like `body { … }`; they leak into the whole app. The import guard fails the build on a plain `.css` import from a prototype.
+- Import only from the prototype's own folder, its design system (`@/systems/product/` by default), and `@/lib/` (plus installed packages). Scope violations fail in `pnpm dev` and `pnpm build`, including for imports from a different prototype system than the one in `meta.json`.
+- Style with Tailwind classes. For custom CSS, use CSS Modules (`*.module.css`) with local class selectors. Do not use `:global`, sibling selectors that target unscoped elements, or CSS `@import`. Never a plain `.css` file or global rules like `body { … }`; they leak into the whole app. The import guard fails the build on a plain `.css` import from a prototype.
 - Use lucide-react for icons, and theme variables for color (see systems.md).
 - If a view throws, the viewer shows "This page couldn't load." with the error and a Copy button. Read the error before guessing.
 - If its design system doesn't have a component you need, build it in the prototype's `_components/` folder, using [Base UI](https://base-ui.com/react/overview/quick-start) primitives (`@base-ui/react`) and theme classes; compose with the `render` prop, not `asChild`. Adding it to the system is a platform change: suggest it, and only do it if the person agrees.
@@ -50,3 +50,7 @@ src/prototypes/<contributor>/<prototype>/
 
 - Commit when a piece of work is done, with a short message like "Add Settings Page" or "Settings Page: add save state".
 - Don't push until the person asks to share. Pushing to main checks scope and builds a site artifact. It publishes for the team once the studio maintainer connects the deployment workflow to a host.
+
+## Shared dependency boundaries
+
+The same rules apply to indirect dependencies. Shared utilities in `src/lib/` may use other shared utilities and installed packages, but cannot import prototypes, systems, or platform code. Design-system runtime files use their own system, shared utilities, installed packages, and enabled module public entries. A module exposing `lib: true` is reached only through `@module/<id>`; its private library files are not direct prototype imports. Type-only imports also create dependencies and follow these boundaries. Use literal paths for dynamic imports so they can be checked.

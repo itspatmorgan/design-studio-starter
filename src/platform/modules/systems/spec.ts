@@ -38,3 +38,16 @@ export function systemProblems(spec: unknown, folder: string): string[] {
   if (s.origin !== undefined && s.origin !== 'shadcn') problems.push(`${where}: origin should be 'shadcn', or left out.`);
   return problems;
 }
+
+// A theme scope is shared by every mounted instance of one system, never by different systems.
+export function themeClassProblems(systems: Record<string, Partial<SystemSpec>>): string[] {
+  const seen = new Map<string, string>();
+  const problems: string[] = [];
+  for (const [id, spec] of Object.entries(systems)) {
+    if (!spec.themeClass) continue;
+    if (['dark', 'light', 'platform-theme'].includes(spec.themeClass)) problems.push(`${id}: themeClass ${spec.themeClass} is reserved by the platform.`);
+    if (seen.has(spec.themeClass)) problems.push(`${id} and ${seen.get(spec.themeClass)} use the same themeClass ${spec.themeClass}. Give each system its own scope.`);
+    seen.set(spec.themeClass, id);
+  }
+  return problems;
+}

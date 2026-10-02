@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import CONFIG from '../../../../../studio.config.ts';
 import { PLATFORM_ID, PLATFORM_SOURCE, sourceOf } from '../sources.ts';
-import { systemProblems } from '../spec.ts';
+import { systemProblems, themeClassProblems } from '../spec.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
 const DIR = path.join(ROOT, 'src', 'systems');
@@ -36,5 +36,5 @@ export const SYSTEM_SOURCES = {
   [PLATFORM_ID]: PLATFORM_SOURCE,
 };
 
-export const systemDeclarationProblems = () => ids.flatMap((id) => systemProblems(PROTOTYPE_SYSTEMS[id], id));
+export const systemDeclarationProblems = () => [...ids.flatMap((id) => systemProblems(PROTOTYPE_SYSTEMS[id], id)), ...themeClassProblems(PROTOTYPE_SYSTEMS)];
 export const SYSTEM_IDS = ids;
