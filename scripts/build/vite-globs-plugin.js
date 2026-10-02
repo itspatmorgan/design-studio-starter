@@ -39,7 +39,9 @@ export default function globs() {
     transform(code, id) {
       const match = LOADER.exec(id.split('?')[0]);
       if (!match || !code.includes("'/__studio_globs__/*'")) return null;
-      const list = JSON.stringify([...globsFor(match[1], FILE_TYPES, ENABLED_MODULES), ...negations]);
+      // A type that is turned off is still bundled (the app reads every type's folder and keeps the ones that are on), so
+      // its loader gets an empty list: it opens nothing.
+      const list = JSON.stringify(FILE_TYPES[match[1]] ? [...globsFor(match[1], FILE_TYPES, ENABLED_MODULES), ...negations] : []);
       replaced++;
       return { code: code.replace(MACRO, list), map: null };
     },
