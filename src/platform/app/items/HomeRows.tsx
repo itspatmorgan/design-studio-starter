@@ -5,7 +5,7 @@ import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/react';
 // The row on the front page for anything in a section (HomeSection.tsx). `link` is a link from manifest.ts (prototypeLink,
 // itemLink). Every row is one line high and starts with a 28px neutral tile holding the module's rail icon, so all of a
 // section's rows look alike. The row is inset from the panel's edge and rounded, so its hover is a pill and not a stripe.
-// `menu` is drawn beside the link (PrototypeCardMenu), so the row sits in a "card-wrap" group.
+// `menu` is drawn beside the link (PrototypeCardMenu, inline), so the row sits in a "card-wrap" group.
 export function HomeRow({ link, icon, title, meta, menu }: { link: object; icon: IconSvgElement; title: string; meta?: ReactNode; menu?: ReactNode }) {
   return (
     <li className="group/card-wrap relative">
@@ -18,7 +18,8 @@ export function HomeRow({ link, icon, title, meta, menu }: { link: object; icon:
           {meta && <span className="shrink-0 text-xs text-muted-foreground">{meta}</span>}
         </span>
       </Link>
-      {menu}
+      {/* Centred on the row's height, with the row's own padding from the pill's edge. */}
+      {menu && <div className="absolute top-1/2 right-2 -translate-y-1/2">{menu}</div>}
     </li>
   );
 }

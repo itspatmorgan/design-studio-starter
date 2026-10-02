@@ -61,7 +61,7 @@ function Overview({ manifest }: { manifest: Manifest }) {
           icon={Layers01Icon}
           title={p.title}
           meta={byline ? (p.contributor || p.contributorKey).split(' ')[0] : undefined}
-          menu={<PrototypeCardMenu proto={p} />}
+          menu={<PrototypeCardMenu proto={p} inline />}
         />
       ))}
     </ul>

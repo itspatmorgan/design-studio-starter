@@ -43,7 +43,7 @@ function Overview({ manifest }: { manifest: Manifest }) {
     <HomeSection title="Tools" to="/tools">
       <ul>
         {tools.map((t) => (
-          <HomeRow key={t.id} link={prototypeLink(t)} icon={Wrench01Icon} title={t.title} meta={t.contributor || undefined} menu={<PrototypeCardMenu proto={t} />} />
+          <HomeRow key={t.id} link={prototypeLink(t)} icon={Wrench01Icon} title={t.title} meta={t.contributor || undefined} menu={<PrototypeCardMenu proto={t} inline />} />
         ))}
       </ul>
     </HomeSection>

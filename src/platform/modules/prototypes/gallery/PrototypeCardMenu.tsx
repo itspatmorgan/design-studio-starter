@@ -11,11 +11,12 @@ import { menuGroups } from '@/platform/app/shell/menuGroups';
 import { cn } from '@/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/platform/components/dropdown-menu';
 
-// `triggerClassName` adds to the button's look, for a card whose top isn't a plain surface.
-export default function PrototypeCardMenu({ proto, triggerClassName }: { proto: PrototypeInfo; triggerClassName?: string }) {
+// `triggerClassName` adds to the button's look, for a card whose top isn't a plain surface. By default it sits in the
+// card's top right corner; `inline` leaves it where it is drawn, for a row that places it itself.
+export default function PrototypeCardMenu({ proto, triggerClassName, inline }: { proto: PrototypeInfo; triggerClassName?: string; inline?: boolean }) {
   const { groups, dialogs } = usePrototypeActions(proto);
   return (
-    <div className="absolute top-2 right-2">
+    <div className={inline ? undefined : 'absolute top-2 right-2'}>
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label={`Actions for ${proto.title}`}
