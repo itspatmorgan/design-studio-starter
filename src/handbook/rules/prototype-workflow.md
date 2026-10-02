@@ -42,7 +42,7 @@ src/prototypes/<contributor>/<prototype>/
 
 - Keep every committed file under 750 KB. Export images as WebP or compressed JPEG, at the size they're shown. The pre-commit hook blocks larger files, and CI fails on them; when it does, make the file smaller rather than working around the check.
 
-- New views and prototypes start as `<Placeholder file={import.meta.url} />` (`src/lib/placeholder.tsx`), an empty state that asks the person to describe what to build. When you build the view, replace the placeholder and remove its import.
+- New views and prototypes start as `export default emptyView` (`src/lib/emptyView.ts`): the platform shows its own "This view is empty" page, with a prompt for the person to hand you. When you build the view, replace that export with your component and remove the import.
 - The person may also edit a view or document's text in the app (the source button in the Files row, saved with ⌘S). If you change a file they have open, the editor updates or asks them; they don't need to reload.
 - The person may also create, rename, move, and delete files from the app's file tree while `pnpm dev` runs. Those are ordinary file changes: re-read the folder rather than assuming it's as you left it. The tree hides `meta.json`, `components/`, and files that aren't views or documents by default, so the person may not see a helper or asset you mention; point them to it by path, or to Show all files in the … menu.
 

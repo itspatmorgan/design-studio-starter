@@ -1,13 +1,6 @@
 // A view: a React component in a .tsx or .jsx file, opened as a page in the prototype.
 import { defineFileType } from '../index.ts';
 
-// "user-settings.tsx" → UserSettings
-function componentName(name: string) {
-  const base = name.replace(/\.[jt]sx$/, '');
-  const component = base.split(/[^a-z0-9]+/i).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join('') || 'View';
-  return /^[A-Z]/.test(component) ? component : `View${component}`;
-}
-
 // Lofi is a comment at the top of the view, above any code: /** @lofi */
 const HEADER = /^\uFEFF?(?:\s|\/\*[\s\S]*?\*\/|\/\/[^\n]*)*/;
 const TAG = /@lofi\b/;
@@ -34,9 +27,9 @@ export default defineFileType({
   preview: true,
   fidelity: { isLofi, setLofi },
 
-  // It starts as a placeholder (src/lib/placeholder.tsx) until something is built in it.
-  template: (name) =>
-    `import { Placeholder } from '@/lib/placeholder';\n\nexport default function ${componentName(name)}() {\n  return <Placeholder file={import.meta.url} />;\n}\n`,
+  // It starts as emptyView (src/lib/emptyView.ts), which the platform shows as an empty page, until something is built in it.
+  template: () =>
+    `import { emptyView } from '@/lib/emptyView';\n\n// Empty until something is built here: describe it to your agent, who replaces this export with the view.\nexport default emptyView;\n`,
 
   // The app renders a view's default export.
   check: ({ source }) => (/export\s+default\b|export\s*\{[^}]*\bas\s+default\b/.test(source)

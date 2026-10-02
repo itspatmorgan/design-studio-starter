@@ -1,4 +1,4 @@
-// How a view says it's lofi, and how that is switched on and off (type.ts). Run with `pnpm test`.
+// How a view says it's lofi, and how that is switched on and off, and what a new view starts with (type.ts). Run with `pnpm test`.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import view from './type.ts';
@@ -44,4 +44,11 @@ test('the byte order mark stays first', () => {
   const on = setLofi(`﻿${SOURCE}`, true);
   assert.ok(on.startsWith('﻿/** @lofi */'));
   assert.equal(setLofi(on, false), `﻿${SOURCE}`);
+});
+
+test('a new view exports emptyView, which the platform shows as its empty page, and passes the view check', () => {
+  const source = view.template!('user-settings.tsx');
+  assert.match(source, /import \{ emptyView \} from '@\/lib\/emptyView'/);
+  assert.match(source, /export default emptyView;/);
+  assert.deepEqual(view.check!({ source } as never), []);
 });

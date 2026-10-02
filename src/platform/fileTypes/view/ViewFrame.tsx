@@ -4,14 +4,17 @@ import { useState, type ComponentType } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { PortalContext } from '@/lib/portal';
 import ViewError from '@/platform/modules/prototypes/viewer/ViewError';
+import EmptyView from './EmptyView';
 import './lofi.css';
 
 // The route's loader has already loaded Component.
 // viewKey (contributor/prototype/group/view) resets the error boundary when the view changes,
 // and so does a new Component (the file was fixed, in dev).
 // `lofi` is a view that says so in its file (type.ts): the override in lofi.css puts it in grayscale with handwritten type.
-export default function ViewFrame({ Component, viewKey, themeClass, lofi = false }: { Component: ComponentType; viewKey: string; themeClass: string; lofi?: boolean }) {
+// `empty` is set for a view that hasn't been built yet (src/lib/emptyView.ts): the platform's own page shows, not in the system's theme.
+export default function ViewFrame({ Component, viewKey, themeClass, empty, lofi = false }: { Component: ComponentType; viewKey: string; themeClass: string; empty?: { path: string | null }; lofi?: boolean }) {
   const [portal, setPortal] = useState<HTMLElement | null>(null);
+  if (empty) return <div className="bg-background text-foreground min-w-0 flex-1 overflow-auto"><EmptyView path={empty.path} /></div>;
   return (
     <div className="min-w-0 flex-1">
       {/* The boundary sits outside the system's theme class, so its fallback keeps the app UI's look. */}

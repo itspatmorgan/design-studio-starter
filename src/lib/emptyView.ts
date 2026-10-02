@@ -1,0 +1,8 @@
+// What a new view exports until something is built in it: `export default emptyView`. The platform
+// recognizes it and shows its own "This view is empty" page, with a prompt to hand your agent
+// (src/platform/fileTypes/view/EmptyView.tsx), so the view doesn't have to draw one.
+// New views and prototypes start with it (scripts/build/vite-files-plugin.js, scripts/templates/prototype/).
+//
+// Agents: when you build the view, replace `export default emptyView` with the component you write, and
+// remove the import. Nothing else needs to change.
+export const emptyView = () => null;
