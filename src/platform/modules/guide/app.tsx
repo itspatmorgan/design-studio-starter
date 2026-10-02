@@ -1,10 +1,9 @@
-// The Guide in the app: its rail button, its routes (/guide and /guide/<page>), and its pages in the ⌘K
-// palette. The pages are in src/platform/modules/guide/pages/, listed in the manifest.
-import { createRoute, lazyRouteComponent, notFound, useRouterState } from '@tanstack/react-router';
+// The Guide in the app: its rail button and its routes (/guide and /guide/<page>). The pages are in
+// src/platform/modules/guide/pages/, listed in the manifest. It adds nothing to the ⌘K palette: that searches the team's own content.
+import { createRoute, lazyRouteComponent, notFound } from '@tanstack/react-router';
 import { BookOpen01Icon } from '@hugeicons/core-free-icons';
-import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
 import { APP_NAME } from '@/platform/app/data/config';
-import type { ModuleApp, PaletteContext } from '@/platform/core/api';
+import type { ModuleApp } from '@/platform/core/api';
 import { loadGuidePage } from './loadGuide';
 
 // Guide pages render in DocLayout, loaded with the first Guide page.
@@ -16,26 +15,6 @@ async function guideLoader(slug: string) {
   if (!mod) throw notFound();
   const { title, description, toc } = mod.frontmatter ?? {};
   return { Component: mod.default, title, description, toc, pageTitle: [title, 'Guide', APP_NAME].filter(Boolean).join(' — ') };
-}
-
-function GuidePalette({ manifest, go }: PaletteContext) {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  if (!manifest.guide.length) return null;
-  return (
-    <>
-      <CommandSeparator />
-      <CommandGroup heading="Guide">
-        {manifest.guide.map((page) => {
-          const to = page.slug === 'index' ? '/guide' : `/guide/${page.slug}`;
-          return (
-            <CommandItem key={page.slug} value={`guide ${page.title} ${page.description}`} disabled={pathname === to} onSelect={() => go({ to } as never)}>
-              {page.title}
-            </CommandItem>
-          );
-        })}
-      </CommandGroup>
-    </>
-  );
 }
 
 export default {
@@ -65,5 +44,4 @@ export default {
     });
     return [guideRoute.addChildren([indexRoute, pageRoute])];
   },
-  palette: GuidePalette,
 } satisfies ModuleApp;

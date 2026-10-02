@@ -19,10 +19,13 @@ const systemsTitle = (...parts: (string | undefined)[]) =>
 function SystemsPlaces({ go }: PaletteContext) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const on = (system: string) => pathname === `/systems/${system}` || pathname.startsWith(`/systems/${system}/`);
+  // The team's own design systems, one entry each. The platform's own system is how the app itself is built, so the
+  // palette, which searches the team's content, leaves it out.
   return (
     <>
-      <CommandItem value="product system components" disabled={on('product')} onSelect={() => go({ to: '/systems/product' } as never)}>Product system</CommandItem>
-      <CommandItem value="platform system components" disabled={on('platform')} onSelect={() => go({ to: '/systems/platform' } as never)}>Platform system</CommandItem>
+      {Object.entries(PROTOTYPE_SYSTEMS).map(([id, system]) => (
+        <CommandItem key={id} value={`${system.label} system components`} disabled={on(id)} onSelect={() => go({ to: `/systems/${id}` } as never)}>{system.label} system</CommandItem>
+      ))}
     </>
   );
 }
