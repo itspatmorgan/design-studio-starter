@@ -1,64 +1,77 @@
 ---
 title: "Canvases"
-description: "A page to arrange views, documents, and notes on, to compare and explain."
-section: "Core concepts"
-order: 15
+description: "Arrange screens, notes, and arrows to explain a flow."
+section: "Working in the studio"
+order: 12
 toc: true
 slug: "canvases"
 ---
 
 # Canvases
 
-A canvas is a page you arrange things on. Put your prototype's views side by side, add a document card, a sticky note under a screen, some text, an arrow. It's for the moments a list of pages isn't enough: showing a whole flow at once, comparing two directions, or handing someone the map before the details.
+A canvas brings a prototype's screens and context together. Use it to compare alternatives, review a flow, or explain a handoff.
 
-A canvas is an `.excalidraw` file, anywhere in your prototype, and it's drawn with [Excalidraw](https://excalidraw.com).
+Each canvas is an `.excalidraw` file. The canvas module uses Excalidraw for shapes, notes, text, and arrows.
+
+## Create a canvas
+
+Ask your agent to create a canvas and describe what it should show. You can also select **New** (+), then **New canvas**, in the Files row.
+
+A new canvas is empty. Add items and notes to explain the relationship between screens.
+
+## Add screens and context
+
+1. Right-click an item in the prototype's navigation.
+2. Select **Copy link**.
+3. Place the pointer over the canvas.
+4. Paste the link.
+
+| Linked item | Canvas display |
+| --- | --- |
+| View | A live-rendered preview. Open the view to interact with it. |
+| Document | A card with an Open link. |
+| Another canvas | A card with an Open link. |
+
+A canvas can embed only items from its own prototype. To reuse another prototype's screen, copy it into this prototype first.
+
+An embed from another prototype shows a scope message and fails the build. A missing item shows a placeholder.
+
+## Explain a flow
+
+Arrange the screens in order. Use arrows for transitions and notes for decisions or unresolved questions.
+
+For example:
 
 ```text
-src/prototypes/patrick/hello-world/
-├── prototype.tsx
-├── onboarding-flow.excalidraw   # a canvas
-└── lofi/
-    └── main.tsx
+[Inbox]  →  [New feedback]  →  [Inbox with new item]
+                 ↓
+          Note: What happens
+          if submission fails?
 ```
 
-Like every file type, there's nothing to register. It appears in the prototype's navigation with a canvas icon, named from the file (`onboarding-flow.excalidraw` is "Onboarding Flow"), and opens at its path without the extension.
+Use **N** to add a sticky note. Double-click the note to enter text. The text and arrow tools are in the toolbar.
 
-## Make one
+## Work with your agent
 
-Choose **+ → New canvas** next to the prototype's title, or ask your agent to make one and say what to put on it. A new canvas is empty, with a hint on how to fill it.
+Ask: "Arrange the checkout screens in order, with arrows and a note for each open question."
 
-## What goes on it
+The agent can edit the saved file. Agents with browser access can also use the studio's live canvas tools.
 
-- **Views.** Copy a view's link (right-click it in the navigation and choose **Copy link**, or copy the address from the browser), then paste it with the pointer over the canvas. It becomes a live preview of that page. Click its title bar to open it.
-- **Documents and other canvases.** Paste their links too. They appear as small cards with an **Open** link.
-- **Only this prototype's.** A canvas shows items from its own prototype, so a prototype stays self-contained. To show a view from another prototype, copy it into this one and link the copy. Linking to another prototype's view shows a card that says so, and the build fails until the link is fixed.
-- **Notes and text.** Press **N** for a sticky note, or open the library on the right for the other colors. Double-click a note to write on it. The **A** tool adds text; the arrow tool joins things.
+Live tools can report the selection and viewport when the agent reads them. These capabilities depend on the agent's integrations.
 
-A canvas doesn't own what's on it, it points at it. If a file is moved or deleted, its spot shows a "Not found" card, and your agent can fix the link.
+Live canvas operations support undo. File edits made outside the live tool are not necessarily individual undo steps.
 
-The tools in the toolbar are Excalidraw's. Its menu (the button at the bottom left, or the top left on a wide screen) has undo, redo, grid, snapping, and the background color. **⌘.** hides all the controls, for a clean view.
+## Save and review
 
-## With your agent
+Your canvas saves automatically while the studio runs locally. Changes made to its file are reflected in the open canvas.
 
-A canvas is a good place to work with your agent: to ask it to lay out a flow, put the screens of two directions side by side, or annotate what you're looking at. Your agent can see what you've selected and what's on your screen, so "this one" and "here" mean what you'd expect. It adds things while you watch, points at what it's talking about, and uses the whole of Excalidraw (boxes, arrows, colors, notes), not only screens. Each thing it does is one step you can undo with ⌘Z.
+You can edit only canvases in your own prototypes. Other contributors' canvases and deployed canvases are read-only.
 
-Ask for what you want in your own words. For example: "Put the checkout screens on a canvas in order, with arrows, and a note under any that has an open question."
+Use the canvas menu for undo, redo, grid, snapping, and background color. To hide or show controls, press Command+. or Ctrl+.
 
-Your agent works on the canvas whether or not you have a browser open: with the canvas open it changes it live, and without, it edits the file. You'll see changes as they're made if you have it open. Its tools are listed in `src/handbook/rules/canvases.md`.
+The canvas cannot store images. Use a view preview instead of a screenshot.
 
-## Saving
-
-While the app is running locally, a canvas saves itself a moment after you stop editing, into the file, and your agent can edit the same file: changes show up on the open canvas as they're made, and merge with yours. On the deployed site, a canvas is read-only.
-
-You can edit only your own prototypes' canvases. Others' open in a view you can look around, but not change.
-
-## No images
-
-A canvas can't hold images: Excalidraw would store their bytes inside the file, and a few screenshots would swell the repository. Put the real view on the canvas instead of a picture of it.
-
-## Not using them?
-
-Canvases are optional for a prototype, and for the platform. Ask your agent to remove them, and the app runs without them (and without Excalidraw). This page goes with them.
+Canvases are an optional file-type module. Disabling the module preserves the files but hides them from normal navigation.
 
 ## For developers
 

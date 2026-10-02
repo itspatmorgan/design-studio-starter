@@ -1,43 +1,70 @@
 ---
 title: "Scopes"
-description: "Who can change what, and the checks that keep it that way."
-section: "Core concepts"
-order: 12
+description: "Understand which files you can change and which dependencies a prototype can use."
+section: "Working in the studio"
+order: 17
 toc: true
 ---
 
-Two rules let a whole team work in one repo without stepping on each other.
+Scopes are boundaries around work and dependencies. They help contributors change prototypes without coupling them to other prototypes or shared app code.
 
 ## Contributor scope
 
-> You can change anything in your folder, but only your own folder. Everything else is the platform.
+Your work belongs in `src/prototypes/<your-key>/`. Your contributor key identifies your folder and registration.
 
-Each person has an entry in `contributors.json` or `contributors/<key>.json` and a folder in `src/prototypes/`. Your folder is yours to break. The platform, meaning the app, the systems, the scripts, the [Handbook](/guide/handbook), and this Guide, is shared, so changes there should go through whoever maintains it.
+The studio app, design systems, shared utilities, Handbook, and Guide are platform files. Changes there affect the shared environment.
 
-It works like an open source project. Anyone can propose a change to the platform: make it on a branch, and open a pull request. The maintainer decides what goes in.
+| Change | Who reviews it |
+| --- | --- |
+| Your prototypes | Follow your team's normal review process. |
+| Your contributor registration | Follow the team's onboarding process. |
+| Shared platform files | A studio maintainer. |
+| Another person's prototypes | Coordinate with their owner; do not edit them as your own work. |
 
-The scope check sorts every changed file into one of two buckets: your folder, or the platform.
+For a shared change, ask your agent to create a branch and open a pull request. A maintainer decides whether to merge it.
 
-- **Before you commit and push,** it prints a summary. It never blocks you, and your agent tells you when something is outside your folder.
-- **On pull requests,** GitHub checks the build and flags platform changes for maintainer review.
-- **On every push to main,** platform changes pass only when the pushing account has the repository's `admin` or `maintain` role. Other accounts can push changes within their contributor scope. Deployment waits for these checks.
+A personal studio uses the same boundaries. You can also act as its maintainer.
 
-The studio maintainer should protect `main`, require pull requests and the Checks jobs, and require maintainer review for shared code. The starter does not configure GitHub branch protection for you.
+## Checks and repository protection
 
-Adding or editing your own entry in `contributors.json` or `contributors/<key>.json` counts as in scope. Before each commit, you'll also get a warning if your Git name or email doesn't match your entry, so your commits trace back to you.
+Before commit and push, the scope check reports which files are yours and which are platform files. This scope summary does not block the operation.
 
-## Prototype scope
+Other checks can block a commit or fail a build. These include file size, module dependencies, and type checks.
 
-> A prototype can depend only on its own folder, its design system, and shared utilities.
+Pull requests run checks and flag platform changes for review. On pushes to `main`, platform changes require the pushing account's `admin` or `maintain` role.
 
-A prototype can import from its own folder, its design system (`src/systems/product/` unless it picks another), and `src/lib/`. It can't import from another prototype, so nobody's change breaks your work, or from `src/platform/`, so the app can change freely. To reuse something from one, link to it or ask your agent to copy it into your folder.
+These checks do not prevent an unauthorized Git push by themselves. The maintainer must configure GitHub branch protection and required reviews.
 
-It also can't import from a different design system than the one it picks in `meta.json`, so its look stays consistent.
+Before commit, an identity check warns if your Git name or email differs from your contributor registration.
 
-The import guard enforces this. Invalid dependencies produce an error locally and fail the build, including indirect dependencies through shared utilities and design-system components.
+## Prototype dependencies
 
-Styles stay contained too. Use Tailwind classes, or CSS Modules (`*.module.css`) for custom CSS. A plain `.css` file would restyle the whole app, so the build fails if a prototype imports one. Each design system needs a unique theme class, like `.product-theme`. Rules must target that class or its descendants, and imported stylesheets are checked too. CSS Modules cannot use global selectors. Shared utilities cannot depend on prototype, system, or platform code.
+A prototype can use these sources:
 
-## Keeping the repo fast
+| Source | Example |
+| --- | --- |
+| Its own files | `./_components/header` |
+| Its assigned design system | `@/systems/product/components/button` |
+| Shared utilities | `@/lib/portal` |
+| An enabled module's public library entry | `@module/<id>` |
+| Installed packages | `react` |
 
-Git keeps every version of every file forever, so one oversized image makes every future clone slower for everyone. Any file over 750 KB is blocked when you commit, and fails the check on push. Export images as WebP or compressed JPEG, at the size they're shown. If your agent hits the limit, it will shrink the file for you.
+It cannot import another prototype, another design system, or private platform files. A module's public library entry is the explicit platform exception.
+
+These boundaries also apply to indirect and type-only dependencies. Shared utilities cannot depend on prototypes, design systems, or platform code.
+
+Invalid dependencies produce errors during local development and fail the build. To reuse another prototype's code, copy it or move a suitable component into the design system.
+
+## Contain styles
+
+Use Tailwind classes or CSS Modules (`*.module.css`) for prototype styles. CSS Modules must use local class selectors and cannot use global selectors.
+
+Plain CSS imports from runtime components fail. Design-system themes load through the platform and must target their unique theme class or its descendants.
+
+## Keep files small
+
+The file size check blocks new or changed files over 750 KB, unless they have an explicit exception. It runs before commit and in CI.
+
+Use WebP or compressed JPEG for images. Export them at the size needed. Ask your agent to reduce an oversized asset.
+
+Git history retains committed file versions. Removing an oversized file later does not remove its earlier versions from history.

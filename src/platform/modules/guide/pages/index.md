@@ -1,34 +1,37 @@
 ---
 title: "Introduction"
-description: "A shared place where designers and their coding agents build React prototypes side by side."
+description: "Build, review, and refine prototypes with your agent."
 order: 1
 ---
 
-Design Studio Starter is the kit behind Design Studio, the prototype sandbox I built for my team at Sublime Security. It's one repo where each designer gets their own folder, prototypes show up in a shared app automatically, and a few light checks keep one person's work from breaking anyone else's.
+Design Studio is a workspace for designers and product managers who build with coding agents. Use it on your own or with a team.
 
-It's a starting point, not a finished product. Everything here is meant to be changed to fit your team.
+Create interactive prototypes with your product's components. Arrange screens on a canvas. Keep decisions and questions beside the work.
 
-## Three contracts
+Design Studio Starter is the open source kit for this workspace. You own the code, the context, and the work you create.
 
-The whole sandbox rests on three agreements:
+## What you can make
 
-1. **A prototype is a folder.** Every prototype lives in its own folder, with a small `meta.json` that describes it.
-2. **A script builds the manifest.** A script reads those folders and writes a list of every prototype and its views.
-3. **The app reads the manifest and the URL.** The app lists what's in the manifest, and opens whichever prototype and view the URL points to.
+| Item | Use it to |
+| --- | --- |
+| View | Try an interactive screen or state. |
+| Document | Describe a problem, decision, or open question. |
+| Canvas | Arrange screens, notes, and arrows to explain a flow. |
 
-Nothing else needs to know about anything else. That's what keeps it simple.
+These file types are modules. Your studio owner can choose which ones are available.
 
-## Two scopes
+## Work with your agent
 
-Two rules keep it working as more people join:
+Describe what you want to make. The agent builds it and asks for missing information. Review the result and direct the next change.
 
-- **Contributor scope.** You can change anything in your folder, but only your own folder. Everything else is the platform.
-- **Prototype scope.** A prototype can depend only on its own folder, its design system, and shared utilities.
+You can also edit files, text, and canvases yourself while the studio runs locally.
 
-[Scopes](/guide/scopes) covers how they're enforced.
+Each contributor has a folder for their prototypes. Shared components belong to a design system. Shared context belongs to the Handbook.
 
-## Where to go next
+[Scopes](/guide/scopes) explains the boundaries between these parts.
 
-- New here? Start with [Getting started](/guide/getting-started).
-- Curious what it's built with? See the [Tech stack](/guide/tech-stack).
-- Ready to build? Read [Prototypes](/guide/prototypes).
+## Start here
+
+1. Follow [Getting started](/guide/getting-started) to set up or join a studio.
+2. Create a [prototype](/guide/prototypes).
+3. Ask your agent to build a screen, then review it in the app.

@@ -1,38 +1,45 @@
 ---
 title: "Documents"
-description: "Written context in a prototype: problem framing, open questions, handoff notes."
-section: "Core concepts"
-order: 14
+description: "Keep decisions, questions, and handoff context beside a prototype."
+section: "Working in the studio"
+order: 11
 toc: true
 slug: "documents"
 ---
 
 # Documents
 
-A document is a page of Markdown in a prototype, for the context that shouldn't live only in a chat: the problem, open questions, feedback, or notes for whoever builds it. It's a plain `.md` file, so it opens in Obsidian, GitHub, or any Markdown editor, and anywhere in your prototype.
+A document is a Markdown file in a prototype. Use it for the problem, decisions, feedback, or questions that explain the work.
 
-```text
-src/prototypes/patrick/hello-world/
-├── meta.json
-├── prototype.tsx
-├── problem-framing.md   # a document
-└── research/
-    └── interviews.md     # a document, in a folder
-```
+Documents use the platform's page style. They do not use the prototype's design-system theme.
 
-There's nothing to register. Add the file and it appears in the prototype's navigation, with a document icon, and opens at its path without the extension: `/prototypes/patrick/hello-world/research/interviews`.
+## Create a document
 
-## Make one
+Ask your agent to write a document from the context you provide. You can also create one locally:
 
-Choose **+ → New document** next to the prototype's title (or right-click a folder), or ask your agent to write one. A new document starts with a title and a line inviting you to fill it in.
+1. Select **New** (+) in the Files row.
+2. Select **New document**.
+3. Enter the file name.
 
-You can name a document however you like. A document and a view in the same folder can't share a name (`notes.md` and `notes.tsx` would both be `/notes`); the build says so.
+The document appears in the navigation. A document and another item cannot share a URL, such as `notes.md` and `notes.tsx`.
 
-You can also write one yourself: use the source button in the Files row to edit its text, and press it again to see the document rendered.
+## Edit the text
 
-## What goes in it
+1. Right-click the document.
+2. Select **Edit source**.
+3. Edit the text.
+4. Save with Command+S on macOS or Ctrl+S on other systems.
+5. Select **Done**.
 
-Write Markdown: headings, lists, tables, links, and code blocks with syntax highlighting. Frontmatter at the top is optional:
+Other contributors' documents are read-only in your local studio. The deployed site does not offer source editing.
+
+## Supported Markdown
+
+Use headings, lists, links, tables, task lists, strikethrough, and highlighted code blocks.
+
+The app does not execute JSX or embedded components. Raw HTML appears as text, except HTML comments, which are hidden.
+
+Optional frontmatter supplies page details:
 
 ```md
 ---
@@ -42,33 +49,32 @@ toc: true
 ---
 ```
 
-| Field | What it does |
+| Field | Purpose |
 | --- | --- |
-| `title` | The page's heading. Without it, a first `# Heading` in the text is used |
-| `description` | A line under the title |
-| `toc` | `true` adds an "On this page" list of its headings |
+| `title` | Page heading. Without it, the first level-one heading supplies the title. |
+| `description` | Short text below the title. |
+| `toc` | Set to `true` for an On this page list. |
 
-It's standard Markdown (CommonMark with GitHub's tables, task lists, and strikethrough) and nothing more, so what you write here reads the same everywhere. There are no components, and raw HTML isn't shown. A document that can't be read shows what's wrong and where, and loads as soon as you fix the file.
+## Link to items
 
-## Linking to a view or another document
-
-Link with a path relative to the document, the way you would in any folder of files:
+Use a relative path from the document:
 
 ```md
-See the [main flow](./lofi/main) and the [interviews](./research/interviews).
+See the [main flow](./lofi/main.tsx).
+Read the [interviews](./research/interviews.md).
 ```
 
-Extensions are optional, so `./lofi/main.tsx` works too. Relative links keep working if you rename the prototype's folder, but not if you move either file, so check links after moving things around. Links to other sites open in a new tab.
+The app accepts paths with or without file extensions. Outside the studio, Markdown tools may handle these links differently.
 
-A document shows in the app's own style, not your prototype's design system, so it can't embed a view. Link to it instead.
+Renaming the prototype folder preserves relative links. Moving either linked file can break them. Check links after moving files.
 
-## Where documents belong
+Links to external sites open in a new tab. To show a live screen beside written context, use a canvas rather than embedding it in a document.
 
-The Guide (the pages you're reading) is written the same way, in `src/platform/modules/guide/pages/` and in the READMEs of the modules and file types it describes. It's the platform's own documentation, kept by whoever maintains it. A document belongs to a prototype and its contributor, and follows the same scope as everything else in your folder.
+## Shared versus prototype context
 
-## Not using them?
+Keep decisions about this prototype here. Put context for the whole product in the Handbook.
 
-Documents are optional for a prototype, and for the platform: ask your agent to remove them, and the app runs without them. This page goes with them.
+Documents are an optional file-type module. Disabling the module preserves the files but hides them from normal prototype navigation.
 
 ## For developers
 

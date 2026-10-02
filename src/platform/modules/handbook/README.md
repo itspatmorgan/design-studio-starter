@@ -1,31 +1,60 @@
 ---
 title: "Handbook"
-description: "The team's context and instructions, for the people and the agents who work here."
-section: "Core concepts"
-order: 16
+description: "Keep product context and agent instructions in the studio."
+section: "Working in the studio"
+order: 15
 toc: true
 slug: "handbook"
 ---
 
 # Handbook
 
-The Handbook is where your team writes down how it works, so that people and agents can follow it. It's a set of Markdown files, shown in the app under **Handbook** and kept in `src/handbook/`.
+The Handbook holds shared context for people and agents. Its files live in `src/handbook/` and appear under **Handbook** in the app.
 
-It has three parts, and the shape is fixed so that nothing gets lost:
+## Choose the right part
 
-- **Docs** are context: what good design means here, who you design for, and anything worth writing down once. The kit starts with placeholders for design principles and personas. Replace them with yours.
-- **Rules** are what your agent knows and follows, every session or when a task comes up. `AGENTS.md` points to them.
-- **Skills** are procedures your agent follows when you ask, like setting up a contributor. Each is a folder with a `SKILL.md` that says what it does and when to use it, and any scripts or references beside it.
+| Part | What belongs here | Example |
+| --- | --- | --- |
+| Docs | Product context. | Principles, intended users, or research summaries. |
+| Rules | Standing instructions. | Contributor boundaries or component conventions. |
+| Skills | Procedures for specific tasks. | Setting up a contributor. |
 
-## Adding to it
+The starter's Principles and Personas describe Design Studio. They demonstrate useful context; adapt or replace them for your product.
 
-In the Handbook navigation, the **+** at the end of the Files row makes what the open tab holds: a document or a folder in Docs and Rules, and a skill in Skills. **New skill** asks for a name (lowercase words joined by hyphens) and a description, and follows the [Agent Skills format](https://agentskills.io/specification), so any agent that reads skills can use it. The skill's name is its page title and the description sits under it, so its text needs no heading of its own. Inside a skill you can add any files or folders.
+Keep prototype-specific decisions in that prototype. Use the Handbook for context that applies across work.
 
-Your agent can do the same. Ask it to add a doc, a rule, or a skill, and it follows `src/handbook/rules/handbook.md`. The build checks the shape, and says what to fix if a file or folder is out of place.
+## Add context
 
-## Who can change it
+Ask your agent to add or update a document. Supply the facts, decisions, or source material it needs.
 
-The Handbook is part of the platform, so it isn't yours alone. You can edit it on your own branch, and the change goes through a pull request. The maintainer decides what goes in. While you run the app locally you can edit it in the app. On the deployed site it's read-only.
+You can also create content locally:
+
+1. Open **Handbook**.
+2. Select **Docs**, **Rules**, or **Skills**.
+3. Select **New** (+) in the Files row, or **New skill** in Skills.
+4. Enter the requested details.
+
+Docs and Rules support documents and folders. Skills requires a skill folder with a `SKILL.md` file.
+
+A skill's name and description appear above its content. Supporting files can live beside `SKILL.md` inside its folder.
+
+To edit text, right-click the file and select **Edit source**. Save your changes, then select **Done**.
+
+## Make context available to agents
+
+`AGENTS.md` points to rules and skills. Ask your agent to update the routing when a new rule needs to apply to future work.
+
+A document's presence does not guarantee an agent reads it. Relevant session and task instructions must point to the context it needs.
+
+See [Agents](/guide/agents) for the included skills and how agents use these files.
+
+## Review shared changes
+
+The Handbook is shared platform content. In a team studio, propose changes on a branch and use the maintainer's review process.
+
+Local editing changes your copy. It does not update another contributor's copy until those changes are shared through Git.
+
+The deployed Handbook is read-only. Build checks validate its structure and linked agent instructions.
 
 ## For developers
 

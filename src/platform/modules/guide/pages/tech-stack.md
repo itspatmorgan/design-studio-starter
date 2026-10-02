@@ -1,41 +1,47 @@
 ---
 title: "Tech stack"
-description: "What the kit is built with, and where to find each tool's docs."
-order: 3
+description: "Find the frameworks and libraries used by the starter."
+section: "Reference"
+order: 41
 toc: true
 ---
 
-Every tool here is open source and popular. That matters for two reasons: you can change anything, and agents know these tools well, so they use and troubleshoot them better. When you have a question about one of them, its own docs are the best answer.
+This reference is for maintainers and people who want to inspect or extend the code. Your agent can use these projects' documentation.
 
-## The app
+## App and build
 
-- [React](https://react.dev) for the UI
-- [TypeScript](https://www.typescriptlang.org), in strict mode. New views are `.tsx`. Plain `.jsx` views still work; they just aren't type-checked.
-- [Vite](https://vite.dev) for the dev server and build
-- [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview) for URLs. Routes live in `src/platform/app/router.tsx`.
-- [react-error-boundary](https://github.com/bvaughn/react-error-boundary), so one broken view can't take down the app
+| Project | Purpose |
+| --- | --- |
+| [React](https://react.dev) | User interface. |
+| [TypeScript](https://www.typescriptlang.org) | Type checking for `.tsx` views and platform code. Plain `.jsx` views are also supported. |
+| [Vite](https://vite.dev) | Local dev server and production build. |
+| [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview) | App routes and URLs. |
+| [react-error-boundary](https://github.com/bvaughn/react-error-boundary) | Recovery from view rendering errors. |
 
-## Styling and components
+Routes live in `src/platform/app/router.tsx`.
 
-- [Tailwind CSS](https://tailwindcss.com) for styling
-- [shadcn/ui](https://ui.shadcn.com) components, built on [Base UI](https://base-ui.com/react/overview/quick-start). Compose them with the `render` prop, not Radix's `asChild`, which most examples online still use.
-- [HugeIcons](https://hugeicons.com) for the app's own icons, and [Lucide](https://lucide.dev) for product components and prototypes
-- [Inter](https://rsms.me/inter/) for type
+## Components and styles
 
-## The Guide
+The starter uses [Tailwind CSS](https://tailwindcss.com) and [shadcn/ui](https://ui.shadcn.com) components built on [Base UI](https://base-ui.com).
 
-- [MDX](https://mdxjs.com)'s compiler, in plain Markdown mode, for these pages and prototype documents
-- [Shiki](https://shiki.style) for code highlighting
-- [Tailwind Typography](https://github.com/tailwindlabs/tailwindcss-typography) for page styling
+Starter components use Base UI's `render` prop for composition. Replacement design systems can use different component APIs.
 
-## Tools and automation
+[HugeIcons](https://hugeicons.com) supplies platform icons. [Lucide](https://lucide.dev) supplies starter product icons. The platform uses [Inter](https://rsms.me/inter/).
 
-- [mise](https://mise.jdx.dev) pins the versions of [Node](https://nodejs.org) and [pnpm](https://pnpm.io), so everyone runs the same setup
-- [Husky](https://typicode.github.io/husky/) runs the scope check before you commit and push
-- [GitHub Actions](https://docs.github.com/en/actions) runs the same check, plus a build, on every push to main
+## Documents and canvases
 
-## Hosting
+[MDX](https://mdxjs.com) compiles plain Markdown. [Shiki](https://shiki.style) highlights code. [Tailwind Typography](https://github.com/tailwindlabs/tailwindcss-typography) styles document pages.
 
-The build is a static site in `dist/`, so it runs on any static host. Before you deploy, check who can see it, so you don't publish company work to the open internet by accident.
+The canvas module uses [Excalidraw](https://excalidraw.com). It loads when a canvas opens.
 
-URLs are clean paths, like `/prototypes/patrick/hello-world`. Set your host to serve `index.html` for every path. See [TanStack's history docs](https://tanstack.com/router/latest/docs/framework/react/guide/history-types), and the README for fallbacks.
+## Local tools and checks
+
+[Mise](https://mise.jdx.dev) pins [Node](https://nodejs.org) and [pnpm](https://pnpm.io) versions. [Husky](https://typicode.github.io/husky/) runs local Git hooks.
+
+[GitHub Actions](https://docs.github.com/en/actions) runs scope, asset-size, and build checks for pull requests and pushes to `main`.
+
+## Built site
+
+The production build is a static site in `dist/`. A host must serve `index.html` for app paths that do not identify an asset.
+
+See the repository README for fallback examples. Hosting configuration and access control are the studio maintainer's responsibility.

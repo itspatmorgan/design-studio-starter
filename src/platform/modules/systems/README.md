@@ -1,63 +1,83 @@
 ---
 title: "Systems"
-description: "Design systems each live in their own scope: one for the app, and one or more for prototypes."
-section: "Core concepts"
-order: 11
+description: "Use your product's components and keep them separate from the studio UI."
+section: "Working in the studio"
+order: 13
 toc: true
 slug: "systems"
 ---
 
 # Systems
 
-A design system here is a set of components plus a theme. The kit keeps each one in its own scope, so changing one never changes another. You can browse them all on the [Systems pages](/systems).
+A design system provides components and design tokens. Tokens are named values for colors, typography, spacing, and other design choices.
 
-## Two kinds of system
+Browse available systems on the **Systems** pages.
 
-- **The platform system** is the app's own UI: the navigation, the Prototypes page, the command palette, and this Guide. It lives in `src/platform/`, is made of stock shadcn/ui components vendored into the repo (so you can read and change them), uses shadcn/ui's default neutral theme, and belongs to the platform. Prototypes never use it, and the build fails if one tries. That way, changing the app's look never changes anyone's prototype.
-- **Prototype systems** are what prototypes build with. Each one is a folder in `src/systems/`, and each prototype uses one.
+## Platform and prototype systems
 
-## The product system
+| System | Used by |
+| --- | --- |
+| Platform | Studio navigation, menus, editors, and documentation pages. |
+| A prototype's assigned system | Its views and live view previews. |
 
-The kit ships one prototype system, `product`, in `src/systems/product/`. It's a placeholder: a few shadcn/ui components on one of shadcn/ui's preset themes, so you can see it's separate from the app. Replace it with your real product's components and theme, so prototypes look like what ships.
+Prototypes cannot import the platform UI. Each prototype uses one assigned system, with separate runtime components and a scoped theme.
 
-## Foundations
+The starter includes **Product**, an example prototype system. Replace it with your product's components and tokens when they are available.
 
-The Systems pages also show what the theme is made of, read straight from the system's `theme.css`: **Colors**, **Typography**, **Radius**, **Shadows**, **Spacing**, and **Other tokens**. You don't write anything for these. A page appears when the theme defines that kind of value, so a theme with only colors and a radius gets those two, and one with its own shadows and spacing scale gets them too. **Typography** is always there: it shows the theme's fonts, and the sizes and weights, which are Tailwind's own scale unless the theme sets its own. Each token is drawn with its real value and follows light and dark mode, and edit `theme.css` and the pages update.
+## Review foundations
 
-Colors are grouped by what they are: shadcn/ui's names (surfaces, actions, charts, sidebar) keep their usual groups, and a ramp like `--blue-100` to `--blue-900` becomes a "Blue" group.
+Foundation pages show tokens read from each system's theme:
 
-## Component pages
+- Colors.
+- Typography.
+- Radius.
+- Shadows.
+- Spacing.
+- Other tokens.
 
-Each component gets a page on the [Systems pages](/systems), built from the files in the component's folder (`button/`), all named after it:
+A page appears when the theme defines relevant values. Typography also includes the Tailwind defaults where the theme does not override them.
 
-- **The component itself**, like `button/button.tsx`. This alone gives it a page listing its props, read straight from the code, so the table can't drift.
-- **Examples**, like `button/button.examples.tsx`. Each example is shown live in the system's theme, with its code one click away.
-- **A page**, like `button/button.md`. An `index.ts` beside them re-exports the component, so it's imported as `components/button`. It holds the title, a short description, and a "When to use" section. Add anything else your team wants to say: usage guidelines, accessibility notes, links to Figma. It's plain Markdown you can edit freely.
+Switch the studio's color mode to review light and dark values.
 
-While the app runs on your computer, each component's page has an **Edit** button that opens its files in the editor, one tab each for the page, the examples, and the component itself, and the page updates as you save. If a component is missing its page or examples, the tab offers to create them from a template. Like the Handbook, these are platform files, so a change goes through review before it reaches everyone. On the deployed site the pages are read-only.
+## Review components
 
-Both systems get the same pages, the platform system included. Where a system's components come from shadcn/ui, each page links to that component's shadcn/ui docs, so you can see where it came from. A page can point somewhere else with a `docs:` link in its frontmatter, and a system whose components aren't shadcn/ui just doesn't set `origin` in its `system.ts`.
+A component page can include a description, a generated props table, and live examples. Props are inputs that configure a component.
 
-Ask your agent to add or document a component and it creates the missing files from a template for you to fill in. A component with only some of them still gets a page, and the build only warns about what's missing. If you want the missing pieces to fail the build instead, ask your agent to turn on strict docs for the system.
+Use the examples to review behavior and appearance. Open their code when you need an implementation example.
 
-## Adding another system
+Props tables are read from TypeScript. They summarize supported component inputs; they do not replace the component's full API documentation.
 
-A prototype system can be anything your team designs with. If you also design your marketing site, you might add a `brand` system beside `product`, so those prototypes use the brand's type and colors instead.
+A component can link to upstream documentation. Follow the library used by that system rather than assuming every system uses shadcn/ui.
 
-Every prototype system has the same parts:
+## Edit component documentation
 
-1. **A folder**, like `src/systems/brand/`, with `components/` and `styles/theme.css`.
-2. **A scoped theme.** Its variables are set under one class, like `.brand-theme`, and nowhere else, so it can't leak into the app or another system.
-3. **Pop-ups that stay in scope.** Dialogs and menus render inside the prototype's frame, so they keep the system's look.
-4. **A `system.ts`** that names it and its theme class, and optionally an `intro.tsx` for its page on this site. The app finds it by its folder, so there's no list to edit.
+Component files are shared platform files. Make changes as part of an authorized maintainer task.
 
-Adding one is a platform change, so it's a job for whoever maintains the kit. Ask your agent to add a system, and it follows the steps in `src/handbook/rules/systems.md`, starting from a new system folder (`pnpm studio create-system brand`).
+While running locally, select **Edit** on a component page. The editor provides tabs for the page, examples, and component code.
 
-A prototype picks its system in `meta.json`, with `"system": "brand"`. Without it, a prototype uses the default system (`defaultSystem` in `studio.config.ts`, else the first by name), so nothing changes for anyone until you add a second one.
+Missing page or example files can be created from a template. Ask your agent to complete the text and examples. Deployed pages are read-only.
 
-## Themes and color mode
+The build normally warns about missing component documentation. A system can require complete documentation with `docs: 'strict'`.
 
-Every theme uses the same CSS variable names, like `--background` and `--primary`, through Tailwind classes like `bg-background`. Prototypes should use those instead of hard-coded colors, so they work with any system and in both light and dark mode. Prototypes follow the app's color mode.
+## Replace Product or add another system
+
+Give your agent the component source, dependencies, tokens, and usage guidance. Ask it to set up the system.
+
+The `setup-design-system` skill guides imports, documentation, theme checks, and review of representative components.
+
+Review the replacement before making it the default. Keep Product until retained prototypes no longer depend on it.
+
+A second system can support another product or a marketing site. Adding one preserves the current default; changing the default does not migrate existing prototypes.
+
+Ask the agent to migrate a prototype's imports and system choice together.
+
+## Theme boundaries
+
+Each prototype system has a unique theme class. Theme rules must target that class or its descendants. Pop-ups must remain inside the system's themed container.
+
+The starter uses variables such as `--background` through Tailwind classes such as `bg-background`. Imported systems can use their own token conventions.
+
+Use your assigned system's tokens and component APIs. Review the prototype in both color modes.
 
 ## For developers
 

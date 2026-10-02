@@ -1,35 +1,52 @@
 ---
 title: "Agents"
-description: "How the kit teaches any coding agent to work within it."
-section: "Core concepts"
-order: 13
+description: "Give your agent the context and instructions it needs."
+section: "Working in the studio"
+order: 16
 toc: true
 ---
 
-The kit works with any coding agent. Everything the agent needs to know lives once, in `src/handbook/`, and `AGENTS.md` points to it.
+Your agent builds and changes the studio from instructions in the repository. Supported tools and integrations depend on the agent you use.
 
-## AGENTS.md
+## Direct the work
 
-`AGENTS.md` is the file most coding agents read first. It's short on purpose: it only routes, to the rules to read and the skill to follow. Everything it points to is in the [Handbook](/guide/handbook).
+Tell the agent the outcome you want. Include the users, the problem, and any constraints you already know.
 
-## Rules
+For example: "Build a feedback inbox for a product manager. Include an empty state and a form to add feedback."
 
-Rules in `src/handbook/rules/` are standing knowledge the agent reads every session:
+The agent should ask for missing decisions, do the work it can perform, and verify the result. Review its work and direct changes.
 
-- `systems.md`: the two systems, icons, and theme colors
-- `prototype-workflow.md`: what a prototype is, and how to build one
-- `contributor-scope.md`: working out who you are, and staying in your folder
+## Give it lasting context
 
-Others are read when the task comes up: `documents.md`, `canvases.md`, and `handbook.md`.
+Save reusable product context in the [Handbook](/guide/handbook). Keep prototype-specific decisions beside that prototype.
 
-Keep them short. A rule that says too much gets followed into situations it wasn't written for.
+The Handbook has three parts:
 
-## Skills
+| Part | Purpose |
+| --- | --- |
+| Docs | Product context, such as principles and intended users. |
+| Rules | Instructions that apply across tasks. |
+| Skills | Procedures for a specific task. |
 
-Skills are step-by-step instructions for a specific task, used only when the task comes up. The kit ships four: `initialize-studio` configures a new personal or shared studio; `setup-contributor` onboards someone into an existing studio; `setup-design-system` establishes or replaces its product kit; `document-component` adds a component page and live examples. Agents perform the work, ask for missing context, and verify the result.
+`AGENTS.md` tells the agent which files to read. It points to the Handbook rather than repeating its content.
 
-Skills live in `src/handbook/skills/`. Different agents look for skills in different places, so `.agents/skills` and `.claude/skills` are links to the same folder.
+Some rules apply every session. Others apply only to a particular task, such as editing a canvas or adding a module.
 
-## Rules for judgment, scripts for repetition
+## Included skills
 
-When something needs to happen the same way every time, like creating a prototype, it's a script, and the rule just says to run it. Rules and skills are for the parts that need judgment.
+| Skill | Task |
+| --- | --- |
+| `initialize-studio` | Set up a new personal or team studio. |
+| `setup-contributor` | Join an existing studio. |
+| `setup-design-system` | Add or replace a prototype design system. |
+| `document-component` | Document a component with examples and a props table. |
+
+Skills live in `src/handbook/skills/`. Links in `.agents/skills` and `.claude/skills` expose the same files to compatible agents.
+
+An agent that does not read these locations needs another way to load the instructions. Ask it to read `AGENTS.md` first.
+
+## Repeatable tasks
+
+Scripts handle tasks that need a consistent result, such as creating a prototype. Rules and skills tell the agent when to use them.
+
+You direct the work. The agent runs the scripts and explains any input or decision it needs from you.

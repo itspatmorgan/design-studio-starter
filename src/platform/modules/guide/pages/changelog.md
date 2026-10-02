@@ -1,28 +1,22 @@
 ---
 title: "Changelog"
-description: "What's changed in each release."
+description: "Changes in the starter kit."
 section: "Reference"
 order: 90
 ---
 
-## 0.1.0 (beta)
+## Beta preparation
 
-The first release, described in [How I Set Up a Prototyping Sandbox](https://www.unknownarts.com/p/TODO).
+The current starter includes:
 
-- The app: Prototypes page, prototype navigation, Systems page, Guide, and command palette
-- File types, each a removable folder: views (`.tsx`), documents (`.md`), and canvases (`.excalidraw`)
-- A source button in the Files row: read or edit a file's text in the app, while it runs locally
-- Platform and product systems on shadcn/ui and Base UI
-- Contributor folders, `pnpm new`, and `pnpm join`
-- Scope checks before commit, before push, and on push to main
-- The import guard
-- A sample prototype, Feedback Inbox, that doubles as a tour: three screens on a working data store, a breadboard and an eng-handoff canvas, and two documents
-- A Product system with its own look (warm stone, emerald, square corners, Space Grotesk) and 16 components, each with a page
-- A small manifest: the file list of each prototype loads when you open it, so the deployed site stays fast as prototypes pile up
-- Order: drag files and folders into the order you want (Option + arrows works too); it's saved in `meta.json` so the whole team sees it
-- Lofi: switch any view to grayscale with handwritten type, over its own design system, from the file menu
-- Archiving: set a prototype aside; the deployed site leaves archived prototypes out
-- The Handbook: team docs, agent rules, and skills, shown in the app, with a fixed shape and a check for it
-- Modules: the Guide, the Handbook and Systems are folders that declare what they add. Turn an optional one off in `studio.config.ts`, remove it, or add one from a folder, a git address or a download with `pnpm studio add`, after a review. A module can add a page and rail button, routes, palette and menu entries, dev-server routes, a library for prototypes, checks, and rules for agents
-- Design systems are folders too (`system.ts`, `components/`, `styles/theme.css`), and `pnpm studio create-system` starts one
-- `AGENTS.md`, which points to the Handbook's rules, and the `setup-contributor` skill
+- Personal studio setup and contributor onboarding for shared studios.
+- Prototypes with views, documents, and Excalidraw canvases.
+- Local file management, source editing, ordering, and per-view lofi mode.
+- Prototype archiving that excludes archived work from the built site.
+- Separate platform and prototype design systems, with component examples and token pages.
+- A Handbook for product context, agent rules, and four setup and documentation skills.
+- Optional modules and design-system packs, with installation previews and dependency checks.
+- Contributor scope, import boundaries, scoped-style checks, and file-size checks.
+- The Feedback Inbox sample, with screens, states, two canvases, and two documents.
+
+Dated release entries will follow published releases.

@@ -1,47 +1,62 @@
 ---
 title: "Build a module"
-description: "Make a module that other teams can add: what it can provide, and how to share it."
-section: "Extending"
-order: 30
+description: "Create an extension for your studio or a pack for other studios."
+section: "Reference"
+order: 40
 toc: true
 ---
 
-A module is a folder with a `module.ts` that says what it is. Everything else is optional, and each file adds one kind of thing. You can build one for your team, or share it for others to add with `pnpm studio add`.
+This page is for maintainers and extension authors. A module is a folder with a `module.ts` declaration and optional capability files.
 
-## Start one
+## Create a module
 
-Ask your agent to create a module with a name, like "quote wall". It runs `pnpm studio create-module quote-wall`, which adds:
+1. Ask your agent to create a module, such as `quote-wall`.
+2. Review the preview from `pnpm studio create-module quote-wall`.
+3. Approve creation when the files and purpose are correct.
+4. Restart the dev server.
 
-- `module.ts`: the module's name, version, and what it adds
-- `app.tsx`: a button on the rail and a page at `/quote-wall`
-- a Handbook rule: what an agent should know before changing it. It's installed into `src/handbook/rules/`, and `AGENTS.md` routes agents to it while the module is on
+The starter includes a declaration, an app page, and a Handbook rule. The app page appears at the module's address.
 
-The module appears after you restart the dev server. To make one you can publish, ask for it in its own folder (`--out`); that folder is a **pack** you can put in a git repository.
+To create a separate pack, use `--out <folder>`. A pack is the installable folder you can share with another studio.
 
-## What a module can provide
+## Available capabilities
 
-| File | What it adds |
-|---|---|
-| `module.ts` | A **section**: an address, and a folder for its content. If the folder holds prototype-shaped items, you can say who may change them, and whether they open full-window like apps. |
-| `app.tsx` | A button on the rail, routes, entries in the ⌘K palette, and entries in every prototype's "…" menu. |
-| `server.ts` | Routes on the dev server, for things that need to change files. |
-| `check.ts` | A check that runs with `pnpm check` while the module is on. |
-| `lib/` | Code prototypes can import, as `@module/<name>`. This is the only way a prototype reaches into a module. |
-| Handbook files | Rules and skills for agents, which are removed with the module. |
+| File or folder | Capability |
+| --- | --- |
+| `module.ts` | Declares identity, compatibility, and an optional content section. |
+| `app.tsx` | Adds navigation, routes, palette entries, or prototype actions. |
+| `type.ts` and `open.tsx` | Declare and display a file type. |
+| `server.ts` | Adds local dev-server routes. |
+| `check.ts` | Runs a module check while enabled. |
+| `lib/index.ts` | Exposes a public library through `@module/<id>` when `lib: true`. |
+| Handbook files | Supply agent rules and skills. |
 
-The full list, with every field, is in `src/platform/modules/README.md`.
+The repository reference at `src/platform/modules/README.md` describes the fields and extension contracts.
 
-## Share it
+## Keep dependencies contained
 
-Put the pack in a git repository. Anyone can then ask their agent to add it by its address. They see a review of every file first, and nothing is run from your module while it's reviewed.
+An optional module must be removable. Modules cannot depend on another optional module's implementation.
 
-Keep a few things in mind:
+Platform modules can use required modules. Runtime library code has tighter boundaries: its own library, shared utilities, packages, and permitted public entries.
 
-- **Say what it needs.** `requires` is the oldest Design Studio version it works with. A module that needs a newer one is turned off, with a message, and doesn't break anything.
-- **Contain it.** A module should touch only its own folder and the documented ways in. `pnpm check` fails a module that imports another module's files.
-- **Name the license.** If your module is built around an open source library, include the library's license file and say where it came from in `module.ts` (`upstream`). Modules with no license, or one that isn't permissive, are refused unless the person adding them says it's fine.
-- **Copy, don't depend, when you must change it.** A library module can carry a copy of the library in `vendor/`, with a short `CHANGES.md` listing what differs from the original. That's the point: it's the team's copy to change.
+Prototypes use only the enabled module's `@module/<id>` entry. They cannot import its private library files. Run `pnpm check` to verify dependencies.
 
-## Design systems
+## Share a pack
 
-A design system is shared the same way. Start one with `pnpm studio create-system brand`, or share a folder with `system.ts`, `styles/theme.css`, and `components/` in a git repository.
+1. Set `requires` to the oldest compatible platform version, if needed.
+2. Declare the module's license and any upstream library information.
+3. Include the required upstream license files.
+4. Verify the pack in a disposable studio copy.
+5. Put the pack in a Git repository.
+
+An incompatible module is disabled. The installer rejects missing or unsupported licenses unless the person installing it explicitly allows an exception.
+
+Installation previews show the files and packages before approval. After approval, the module's checks can execute on the recipient's computer.
+
+If you vendor a library, keep it in the pack and record your adaptations in `CHANGES.md`.
+
+## Design-system packs
+
+A design-system pack contains `system.ts`, `components/`, and `styles/theme.css`. Create a starter with `pnpm studio create-system <id>`.
+
+Use [Systems](/guide/systems) for the user workflow and the system rules in the Handbook for implementation requirements.

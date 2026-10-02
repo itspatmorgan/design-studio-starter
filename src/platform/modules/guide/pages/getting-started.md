@@ -1,44 +1,89 @@
 ---
 title: "Getting started"
-description: "Get set up and make your first prototype, with your agent doing the typing."
+description: "Set up or join a studio, then create your first prototype."
 order: 2
 toc: true
 ---
 
-Ask your coding agent to set you up. It performs installation, configuration and checks, and asks you for identity, design decisions or source material it cannot determine. You can use Design Studio personally or with a team; both use the same prototype and contributor system.
+Your agent handles installation, configuration, and verification. You provide the identity, goals, and source material it needs.
+
+## Choose your setup
+
+| Your situation | Ask your agent |
+| --- | --- |
+| You have a new copy of the starter. | "Set up my studio." |
+| You are joining a studio that already exists. | "Get me set up as a contributor." |
+| You stopped partway through setup. | "Resume my studio setup." |
+
+Personal and team studios use the same contributor system. Personal local use does not require GitHub or a hosted site.
 
 ## Before you start
 
-You need Git, [mise](https://mise.jdx.dev) for the pinned Node and pnpm versions, and a coding agent. The agent can install and configure the local tools. A shared GitHub repository and your own GitHub account are needed when collaborating through GitHub, but personal local use needs neither a remote nor hosting.
+Open the studio repository with your coding agent. A repository is the folder that Git uses to store and track your work.
 
-## Set up a studio
+The studio uses Git and [mise](https://mise.jdx.dev). Mise provides the pinned Node and pnpm versions. Your agent can help install these tools.
 
-For a new copy of the starter, ask: "Set up my studio." The agent follows `initialize-studio`, establishes personal or team use, configures the studio's name and active modules, registers you, and helps set up your design system and Handbook.
+To collaborate through GitHub, you also need an account and access to the studio's repository.
 
-`studio.config.ts` holds the lasting choices. Under the hood, `pnpm studio configure` previews changes to name, tagline, usage and default system; `--yes` applies them. `pnpm -s studio status --json` reports current configuration, contributor identity, modules, systems and remaining Handbook placeholders. It does not declare setup complete: the agent verifies the build and a first working prototype.
+## Set up a new studio
+
+Ask: "Set up my studio."
+
+The agent helps you choose the studio name, personal or team use, and enabled modules. It registers you as the first contributor.
+
+Provide these details when the agent asks:
+
+- Your name and the email you use for Git commits.
+- Your GitHub username, if you will share changes through GitHub.
+- Your product's components, design tokens, or other design guidance.
+- Context for the Handbook, such as your product principles and intended users.
+
+The agent verifies the build and a working prototype. If materials are missing, it explains what remains to do.
 
 ## Join an existing studio
 
-Clone your team's repository and ask: "Get me set up as a contributor." The agent follows `setup-contributor`, installs dependencies, checks your Git identity, and registers your own `contributors/<key>.json` and prototype folder. It preserves the shared studio configuration and design system. Matching existing registrations are reused, so interrupted onboarding can resume.
+Ask your agent to clone the team's repository and set you up as a contributor. Provide the repository address and your contributor details.
 
-Use the same email in your Git identity and contributor entry. A personal studio accepts a personal email. For a shared studio, use the identity your team expects and register your GitHub username before sharing changes through GitHub. Your agent checks any uncertain details with you.
+The agent installs dependencies and creates or reuses your registration. It preserves the studio's configuration, design systems, and Handbook.
 
-## Bring your design system
+Use the same email for Git and your contributor entry. For a team studio, use the identity your team expects.
 
-Product is the placeholder kit. Supply your agent with existing component code or a package, tokens, design files or written guidance. It follows `setup-design-system`, imports and documents the kit, verifies its theme and representative components, then makes it the default. You can review the result on the Systems pages. Keep Product until the replacement works; the agent checks retained prototypes and disabled sample content before retiring it. Missing materials remain explicit next steps.
+## Use your product's design system
 
-Changing the default with `pnpm studio configure --system <key>` keeps existing prototypes on their previous system, including content in disabled modules. New prototypes use the new default. To move an existing prototype to the replacement kit, ask your agent to update its component imports and system choice together.
+The starter includes **Product**, an example design system. You can try the studio with it before replacing it.
 
-## Take the tour
+Give your agent your component code or package, design tokens, and supporting guidance. Ask it to set up your design system.
 
-The kit comes with a sample prototype, **Feedback Inbox**: a small working app with three screens, a canvas, and two documents. Open it from the Prototypes page and read its **Start here** page. It walks through how a prototype is put together, with the real files to click through. It belongs to the sample contributor, `patrick`. To experiment, ask your agent to create a prototype in your own folder and bring over the parts you want. Only the studio maintainer should remove the shared sample.
+Review the result on the **Systems** pages. Keep Product until the replacement works and retained prototypes no longer need it.
 
-## Make your first prototype
+Changing the default system does not migrate existing prototypes. Ask your agent to update their component imports and system choice together.
 
-Ask your agent for one, like "Make a prototype called Hello World." It runs `pnpm new "Hello World"`, which creates the folder, fills in `meta.json`, and prints the URL. It shows up on the Prototypes page right away. You can also use **New prototype** on that page yourself.
+## Try the sample
 
-From there, describe what you want to see. The agent builds it with the product components, so it looks like your product and not like this app.
+Open **Feedback Inbox** from the **Prototypes** page. Read **Start Here** for a tour of screens, states, documents, and canvases.
+
+The sample belongs to `patrick`. Ask your agent to copy useful parts into a prototype in your own folder. The studio maintainer can remove the shared sample.
+
+## Create your first prototype
+
+1. Ask: "Make a prototype called Hello World."
+2. Describe the screen or flow you want to try.
+3. Review the result in the app.
+4. Ask for changes to the layout, content, or behavior.
+
+Your agent creates the prototype in your folder. You can also select **New prototype** on the Prototypes page while running locally.
 
 ## Save and share
 
-Ask your agent to commit when a piece of work feels done. When you're ready for your team to see it, ask it to push. Pushing to main runs the checks described in [Scopes](/guide/scopes) and produces a site artifact. Your studio maintainer must connect the deployment workflow to your host before that push also publishes the site.
+| Action | Result |
+| --- | --- |
+| Save a file | Updates your local copy. |
+| Commit | Records a version in Git. |
+| Push | Sends commits to the shared repository. |
+| Publish a site | Makes a built version available through a configured host. |
+
+Ask your agent to commit completed work. When you want to share the commits, ask it to push through your team's review process.
+
+A push to `main` runs checks and creates a site artifact. It publishes a site only after the maintainer connects a host.
+
+See [Scopes](/guide/scopes) for contributor permissions and [Modules](/guide/modules) for studio configuration.

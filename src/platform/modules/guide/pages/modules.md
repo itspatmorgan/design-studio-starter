@@ -1,47 +1,76 @@
 ---
 title: "Modules"
-description: "The parts of Design Studio you can turn off, add, or remove, and how."
-section: "Core concepts"
-order: 18
+description: "Choose the studio's capabilities and manage its configuration."
+section: "Maintaining the studio"
+order: 20
 toc: true
 ---
 
-A module is one part of Design Studio that you can add or take away: the Guide you're reading, the Handbook, and the design systems are all modules. Each one is a folder in the repo. Because they follow the same rules, a team can turn parts off, and other people can build modules that you add without anyone changing the platform.
+A module adds a capability to the studio. Examples include the Guide and the file types used by prototypes.
 
-You don't run commands for this. Ask your agent, and it follows the steps in `src/handbook/rules/modules.md`.
+Managing modules is a shared platform change. Ask your agent to perform it as part of an authorized maintainer task.
 
-## See what you have
+## See what is installed
 
-Ask your agent to list the modules. Each one is **on**, **off**, or **required**. Required ones (Prototypes, the Handbook and the design systems) can't be turned off, because the rest of the app is built on them. The Guide is optional, and so are the kinds of file a prototype holds: views, documents, canvases, and plain text files each come as a module you can turn off or remove.
+Ask: "List the studio's modules."
 
-## Turn one off, or on
+Prototypes, Handbook, and Systems are required modules. The Guide and the view, document, canvas, and text file types are optional.
 
-"Turn off the Guide" changes one line in `studio.config.ts`. Its files stay, so turning it back on is another line. The app doesn't show it, and nothing else breaks. Restart the dev server for the change to show.
+**Systems** is the module that supports design systems. Each prototype design system is separate content in `src/systems/`.
+
+## Turn a module off
+
+Ask your agent to turn off an optional module. Its files remain, but its capabilities are unavailable. Restart the dev server after the change.
+
+Turning off a file type hides its items from normal navigation. It does not delete the files. Consider retained content before disabling a type.
+
+Ask the agent to turn the module on again when you need it.
 
 ## Add a module
 
-Modules come from a **source**: a folder on your computer, a git address (like a GitHub repository), or a download. Ask your agent to add one and give it the address.
+Give your agent a local folder, Git repository address, or download address. Ask it to preview the module.
 
-Before anything changes, your agent shows you a review:
+Before installation, review:
 
-- what the module is and where it came from
-- every file it would add, and where
-- what it provides: a page, a button on the rail, entries in prototype menus, rules for agents
-- any npm packages it needs, which are installed only if you say yes
-- for a module built around an open source library: that library's license
+- The source and what the module provides.
+- The files it adds and their destinations.
+- Required packages and any upstream license.
+- Agent rules, skills, and checks it includes.
 
-Nothing changes until you say yes. A module is code that will run in your app, so treat it like any code you'd put in the repo: read it, or ask your agent to, and only add modules from people you trust. A module can't overwrite your files. Preview reads the pack as data. Once you approve installation, packages are installed with lifecycle scripts disabled, then the pack's `check.ts`, if present, runs as trusted code on your computer. If a check fails, the project files are restored; packages already downloaded into `node_modules` may remain.
+Approve installation only for code you trust. Preview reads the pack as data. Installation can run its checks as trusted code on your computer.
+
+Packages install with lifecycle scripts disabled. If an installation check fails, project files are restored. Downloaded packages may remain in `node_modules`.
+
+Restart the dev server after installation.
 
 ## Remove a module
 
-"Remove the Quote wall module" deletes its folder and the rules it brought. Anything it kept for you, like its prototype folders, stays unless you ask to delete that too. If prototypes use a library the module provides, your agent tells you which, and you decide.
+Ask your agent to preview removal. It checks for code that depends on the module and explains what must change first.
 
-## Design systems work the same way
+Removal deletes the module and its installed Handbook files. Content folders remain unless you also request their removal.
 
-A design system is a folder in `src/systems/`. Adding one from a source, or starting a new one, uses the same review and the same rules. Adding a second system doesn't change which one your existing prototypes use: it records the current one as the default in `studio.config.ts` first.
+Restart the dev server after removal. Required modules cannot be removed with this command.
 
-## What you can change in the config
+## Manage design systems
 
-`studio.config.ts` is deliberately small: the app's name, a one-line tagline for the deployed site's front page, which optional modules are off, the default design system, and personal or team onboarding guidance. It's meant for the few things nearly every team changes. Everything else is code you own, and you can change anything in the repo.
+Design systems use the same preview and installation process. See [Systems](/guide/systems) for replacing Product or adding another system.
 
-To build a module of your own, see [Build a module](/guide/build-a-module).
+Adding another system preserves the current default. Changing the default through the configuration command preserves existing prototypes' system choices.
+
+## Studio configuration
+
+`studio.config.ts` stores the studio's shared choices:
+
+| Setting | Purpose |
+| --- | --- |
+| Name | Identifies the studio. |
+| Tagline | Describes it on the deployed front page. |
+| Usage | Guides personal or team onboarding. |
+| Modules | Selects optional capabilities. |
+| Default system | Selects the system for new prototypes. |
+
+Ask your agent to configure these settings. It previews changes before applying them.
+
+The agent can inspect setup with `pnpm -s studio status --json`. This report does not replace verifying a build and a working prototype.
+
+For extension development, see [Build a module](/guide/build-a-module).
