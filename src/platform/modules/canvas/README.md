@@ -21,10 +21,11 @@ A new canvas is empty. Add items and notes to explain the relationship between s
 
 ## Add screens and context
 
-1. Right-click an item in the prototype's navigation.
-2. Select **Copy link**.
-3. Place the pointer over the canvas.
-4. Paste the link.
+1. Find the item in the prototype's navigation.
+2. Drag it onto the canvas.
+3. Release it where you want the preview or card.
+
+You can also right-click the item and select **Copy link**. Place the pointer over the canvas, then paste the link.
 
 | Linked item | Canvas display |
 | --- | --- |

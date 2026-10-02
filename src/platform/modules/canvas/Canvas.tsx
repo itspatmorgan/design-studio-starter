@@ -246,7 +246,7 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
             <p className="text-sm font-medium text-foreground">This canvas is empty</p>
             <p className="mt-1.5 text-sm text-muted-foreground">
               {editable
-                ? 'Paste the address of a view or document from this prototype to put it here, press N for a sticky note, or ask your agent to lay it out for you.'
+                ? 'Drag a view or document from the navigation onto this canvas, press N for a sticky note, or ask your agent to lay it out for you.'
                 : 'Nothing has been put on it yet.'}
             </p>
           </div>

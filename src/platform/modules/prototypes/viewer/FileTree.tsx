@@ -477,7 +477,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
       if (item) {
         const active = item === current;
         return (
-          <DragRow key={node.path} path={node.path} dir={false} canDrag={movable(node)} operationsFor={operationsFor(node, false)}>
+          <DragRow key={node.path} path={node.path} dir={false} canDrag={movable(node)} url={itemUrl(proto, item)} operationsFor={operationsFor(node, false)}>
           {rowMenu(node.path, node, (
             <Link
               {...itemLink(proto, item)}

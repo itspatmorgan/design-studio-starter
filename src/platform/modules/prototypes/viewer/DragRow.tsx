@@ -14,10 +14,12 @@ export type Dragged = { kind: typeof DRAG_KIND; path: string; dir: boolean };
 export type Dropped = Operation;
 export type Operations = Partial<Record<Operation, Availability>>;
 
-export function DragRow({ path, dir, canDrag, operationsFor, children }: {
+export function DragRow({ path, dir, canDrag, url, operationsFor, children }: {
   path: string;
   dir: boolean;
   canDrag: boolean;
+  // Navigable items also carry the native link payload used by canvas drops.
+  url?: string;
   // What dropping `source` here may do: before this row, after it, or inside it (a folder).
   operationsFor: (source: { path: string; dir: boolean }) => Operations;
   children: ReactNode;
@@ -26,8 +28,8 @@ export function DragRow({ path, dir, canDrag, operationsFor, children }: {
   const [over, setOver] = useState<Operation | null>(null);
   const [dragging, setDragging] = useState(false);
   // The latest props, so the registration below doesn't restart on every render.
-  const latest = useRef({ operationsFor });
-  latest.current = { operationsFor };
+  const latest = useRef({ operationsFor, url });
+  latest.current = { operationsFor, url };
 
   useEffect(() => {
     const element = ref.current;
@@ -37,6 +39,9 @@ export function DragRow({ path, dir, canDrag, operationsFor, children }: {
         element,
         canDrag: () => canDrag,
         getInitialData: (): Dragged => ({ kind: DRAG_KIND, path, dir }),
+        getInitialDataForExternal: () => latest.current.url
+          ? { 'text/plain': latest.current.url, 'text/uri-list': latest.current.url }
+          : {},
         onDragStart: () => setDragging(true),
         onDrop: () => setDragging(false),
       }),
