@@ -35,6 +35,7 @@
 // may change what), ops.js (the changes), and http.js (reading and answering requests).
 import fs from 'node:fs';
 import path from 'node:path';
+import { ROOT } from './files/paths.js';
 import { pathToFileURL } from 'node:url';
 import { buildManifest } from './build-manifest.js';
 import { createPrototype, renamePrototype } from '../../src/platform/modules/prototypes/node/create.js';
@@ -226,6 +227,10 @@ export default function filesPlugin() {
       // An item file's text changed on disk (an agent, an editor, or a save from the Source view):
       // an open Source view for it reloads or asks. Not batched: it is one file at a time.
       server.watcher.on('change', (file) => {
+        const relative = path.relative(ROOT, file).split(path.sep).join('/');
+        if (relative.endsWith('.md') && !relative.startsWith('..') && !path.isAbsolute(relative)) {
+          server.ws.send({ type: 'custom', event: 'studio:source', data: { path: relative } });
+        }
         const at = locate(file);
         if (!at || !(at.contributor === HANDBOOK_KEY || at.contributor === SYSTEMS_KEY ? handbookTypeOf : fileTypeOf)(at.rel)) return;
         const { contributor, prototype, rel } = at;

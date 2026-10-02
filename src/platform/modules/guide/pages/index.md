@@ -37,3 +37,11 @@ The chapters follow a path from setup to creation, collaboration, and maintenanc
 The **Reference** pages supply file conventions and detailed checks. **Releases** records changes to the starter.
 
 Throughout the Guide, a feedback inbox provides a simple example: build an interactive flow, record its decisions, and prepare it for review. The starter includes a Feedback Inbox sample you can inspect.
+
+## Edit the Guide
+
+While running locally, select **Edit source** on a Guide page. Edit the Markdown, then save with Command+S on macOS or Ctrl+S on other systems. Select **Done** to return to the chapter.
+
+The editor shows the source file path. A module chapter opens its full README, including the developer section that the Guide does not display. Guide changes are shared platform changes; use the maintainer's review process when sharing them.
+
+If the agent changes the same file while you have unsaved edits, the editor asks which version to keep. Published Guide pages are read-only.

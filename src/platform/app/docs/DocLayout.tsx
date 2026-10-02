@@ -5,11 +5,11 @@ import { Prose } from '@/platform/app/docs/Prose';
 
 // scrollKey: what the page is. It scrolls to the top or to a heading when this changes, not when
 // only the content does (a document edited while it's open keeps its place). Defaults to Component.
-type DocLayoutProps = { Component: MDXContent; title?: string; description?: string; toc?: boolean; scrollKey?: string; footer?: ReactNode };
+type DocLayoutProps = { Component: MDXContent; title?: string; description?: string; toc?: boolean; scrollKey?: string; footer?: ReactNode; actions?: ReactNode };
 
 // A Markdown document: title and description from its frontmatter, the content,
 // and an "On this page" list when the frontmatter says `toc: true`.
-export function DocLayout({ Component, title, description, toc, scrollKey, footer }: DocLayoutProps) {
+export function DocLayout({ Component, title, description, toc, scrollKey, footer, actions }: DocLayoutProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Open at the heading in the URL (/guide/prototypes#groups), or at the top.
@@ -26,7 +26,10 @@ export function DocLayout({ Component, title, description, toc, scrollKey, foote
       <article ref={contentRef} className="min-w-0 max-w-[65ch] flex-1">
         {(title || description) && (
           <header className="mb-10">
-            {title && <h1 className="mb-3 text-3xl font-semibold tracking-tight text-foreground">{title}</h1>}
+            <div className="mb-3 flex items-start justify-between gap-4">
+              {title && <h1 className="text-3xl font-semibold tracking-tight text-foreground">{title}</h1>}
+              {actions}
+            </div>
             {description && <p className="text-base leading-relaxed text-muted-foreground">{description}</p>}
           </header>
         )}

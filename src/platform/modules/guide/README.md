@@ -8,3 +8,5 @@ The Guide: pages about Design Studio itself, at `/guide`. Optional: turn it off 
 - A page for a module or file type is that folder's `README.md`, when it opens with Guide frontmatter: the Guide shows it down to a `## For developers` heading (`scripts/lib/guide-pages.js` finds them, `scripts/build/remark-readme-guide.js` trims them). Removing the folder removes the page.
 - `GuideLayout.tsx`, `GuidePage.tsx`, `loadGuide.ts`: the sidebar, reader, and enabled-page previous/next navigation. Releases remain outside the reading sequence.
 - `assets/`: diagrams imported by the reader, so they remain owned by this optional module.
+
+- `GuideEditor.tsx`, `source.ts`, `server.ts`: local Markdown editing through the shared source editor, with source allowlisting and version checks. Published builds omit the editor.

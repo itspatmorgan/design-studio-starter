@@ -153,3 +153,35 @@ test('CI accepts reviewed platform proposals and maintainer pushes, rejecting ot
     }
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('Guide source access edits chapters and module READMEs without opening arbitrary files', { skip: !fs.existsSync('src/platform/modules/guide/server.ts') }, async () => {
+  const { execFileSync } = await import('node:child_process');
+  const root = path.resolve('.');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-guide-source-'));
+  try {
+    fs.cpSync(root, dir, { recursive: true, filter: file => !['.git', 'node_modules', 'dist'].includes(path.basename(file)) });
+    fs.symlinkSync(path.join(root, 'node_modules'), path.join(dir, 'node_modules'));
+    execFileSync(process.execPath, ['--input-type=module', '--eval', `
+      import fs from 'node:fs'; import path from 'node:path'; import assert from 'node:assert/strict';
+      const {default:routes}=await import('./src/platform/modules/'+'guide/server.ts');
+      const read=slug=>routes.read({me:null,body:{slug}});
+      const write=(slug,content,base)=>routes.write({me:null,body:{slug,content,base}});
+      for(const slug of ['index','prototypes']) {
+        const before=read(slug); assert.equal(before.status,undefined);
+        assert.match(before.body.path, slug==='index' ? /guide\\/pages\\/index.md$/ : /prototypes\\/README.md$/);
+        const content=before.body.content+'\\nGuide editor check.\\n';
+        assert.equal(write(slug,content,before.body.version).status,undefined);
+        assert.equal(read(slug).body.content,content);
+        assert.equal(write(slug,'stale',before.body.version).status,409);
+        assert.equal(write(slug,'x'.repeat(750*1024+1),read(slug).body.version).status,413);
+      }
+      for(const slug of ['../index','../../README','/etc/passwd','index.md','missing']) assert.equal(read(slug).status,404);
+      assert.equal(routes.read({me:null,body:null}).status,400);
+      const index='src/platform/modules/guide/pages/index.md';
+      fs.unlinkSync(index); fs.symlinkSync(path.resolve('README.md'),index);
+      assert.equal(read('index').status,404);
+      fs.unlinkSync(index); fs.writeFileSync(index,'---\\ntitle: broken');
+      assert.equal(read('index').body.content,'---\\ntitle: broken');
+    `], { cwd: dir, encoding: 'utf8', stdio: 'pipe', env: { ...process.env, MISE_TRUSTED_CONFIG_PATHS: dir } });
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});
