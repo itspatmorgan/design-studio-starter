@@ -5,6 +5,7 @@ import type { FileTypeModule } from '@/platform/app/data/fileTypeModule';
 import type { Item, Prototype } from '@/platform/app/data/types';
 import { readSource } from '@/platform/app/data/files';
 import { canvasFiles } from './loader';
+import { rootOf } from '@/platform/core/roots';
 
 const preload = () => import('./Canvas');
 const Canvas = lazy(preload);
@@ -13,7 +14,7 @@ export default {
   icon: CanvasIcon,
 
   async load({ proto, item }) {
-    const key = `/prototypes/${proto.contributorKey}/${proto.id}/${item.path}`;
+    const key = `/${rootOf(proto.contributorKey, proto.id)}/${item.path}`;
     // Dev reads the file itself, so an agent's changes show; the deployed site has it bundled.
     const [file] = await Promise.all([
       import.meta.env.DEV ? readSource(proto, item.path) : canvasFiles[key]?.().then((content) => ({ content, version: '' })),

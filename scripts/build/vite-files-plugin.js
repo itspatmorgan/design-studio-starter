@@ -71,113 +71,124 @@ export default function filesPlugin() {
       // Who you are, worked out once (it can call the GitHub CLI), and again if contributors.json changes.
       let key;
       const me = () => (key === undefined ? (key = resolveContributor()) : key);
-      server.watcher.on('change', (f) => { if (path.basename(f) === 'contributors.json' || path.dirname(f) === CONTRIBUTORS_DIR) key = undefined; });
+      const identityChanged = (file) => {
+        if (path.basename(file) !== 'contributors.json' && path.dirname(file) !== CONTRIBUTORS_DIR) return;
+        key = undefined;
+        server.ws.send({ type: 'custom', event: 'studio:identity', data: {} });
+      };
+      for (const event of ['add', 'change', 'unlink']) server.watcher.on(event, identityChanged);
 
       server.middlewares.use('/__studio', async (req, res, next) => {
-        if (!sameOrigin(req)) return send(res, 403, { error: 'Only the app can use this.' });
-        const url = new URL(req.url ?? '/', 'http://localhost');
-        if (req.method === 'GET' && url.pathname === '/files') {
-          const dir = prototypeDir(url.searchParams.get('contributor'), url.searchParams.get('prototype'));
-          if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
-          return send(res, 200, { files: readTree(dir) });
-        }
-        if (req.method === 'GET' && url.pathname === '/me') return send(res, 200, { key: me(), name: (me() && loadContributors()[me()]?.name) || null });
-        if (req.method === 'GET' && url.pathname === '/file') {
-          const dir = prototypeDir(url.searchParams.get('contributor'), url.searchParams.get('prototype'));
-          const file = dir && itemFile(dir, url.searchParams.get('path'), url.searchParams.get('contributor'));
-          if (!file) return send(res, 404, { error: 'This file no longer exists.' });
-          if (fs.statSync(file).size > MAX_SOURCE_BYTES) return send(res, 413, { error: 'This file is too large to show here. Open it in your editor.' });
-          const content = fs.readFileSync(file, 'utf8');
-          return send(res, 200, { content, version: versionOf(content) });
-        }
-        if (req.method === 'POST' && url.pathname === '/write') {
-          const { contributor, prototype, path: rel, content, base } = await readJson(req);
-          const dir = prototypeDir(contributor, prototype);
-          const file = dir && itemFile(dir, rel, contributor);
-          if (!file) return send(res, 404, { error: 'This file no longer exists.' });
-          // Contributor scope: you can change only your own folder (and the Handbook's, for review).
-          if (!canChange(contributor, me(), dir)) return send(res, 403, { error: ownerError(contributor, me()) });
-          if (typeof content !== 'string' || Buffer.byteLength(content) > MAX_SOURCE_BYTES) return send(res, 413, { error: 'This file is too large to save here. Keep files under 750 KB.' });
-          // Never overwrite a version you haven't seen: if it changed on disk since you opened it, say so.
-          if (versionOf(fs.readFileSync(file, 'utf8')) !== base) return send(res, 409, { error: 'This file changed on disk since you opened it.', code: 'changed' });
-          fs.writeFileSync(file, content);
-          // Saving is never blocked, but a skill that's out of the format is said so now, not at the next build.
-          const skill = contributor === HANDBOOK_KEY && prototype === 'skills' && rel.split('/').length === 2 && rel.endsWith(`/${SKILL_FILE}`);
-          const warnings = skill ? skillProblems(rel.split('/')[0], frontmatter(content)) : [];
-          return send(res, 200, { version: versionOf(content), warnings });
-        }
-        if (req.method === 'POST' && url.pathname === '/op') {
-          const body = await readJson(req);
-          const dir = prototypeDir(body.contributor, body.prototype);
-          if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
-          // Contributor scope: you can change only your own folder (and the Handbook's, for review).
-          if (!canChange(body.contributor, me(), dir)) return send(res, 403, { error: ownerError(body.contributor, me()) });
-          try {
-            const result = body.contributor === SYSTEMS_KEY ? runSystemOp(body.prototype, body) : runOp(dir, body, body.contributor === HANDBOOK_KEY ? body.prototype : null);
+        try {
+          if (!sameOrigin(req)) return send(res, 403, { error: 'Only the app can use this.' });
+          const url = new URL(req.url ?? '/', 'http://localhost');
+          if (req.method === 'GET' && url.pathname === '/files') {
+            const dir = prototypeDir(url.searchParams.get('contributor'), url.searchParams.get('prototype'));
+            if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
+            return send(res, 200, { files: readTree(dir) });
+          }
+          if (req.method === 'GET' && url.pathname === '/me') return send(res, 200, { key: me(), name: (me() && loadContributors()[me()]?.name) || null });
+          if (req.method === 'GET' && url.pathname === '/file') {
+            const dir = prototypeDir(url.searchParams.get('contributor'), url.searchParams.get('prototype'));
+            const file = dir && itemFile(dir, url.searchParams.get('path'), url.searchParams.get('contributor'));
+            if (!file) return send(res, 404, { error: 'This file no longer exists.' });
+            if (fs.statSync(file).size > MAX_SOURCE_BYTES) return send(res, 413, { error: 'This file is too large to show here. Open it in your editor.' });
+            const content = fs.readFileSync(file, 'utf8');
+            return send(res, 200, { content, version: versionOf(content) });
+          }
+          if (req.method === 'POST' && url.pathname === '/write') {
+            const { contributor, prototype, path: rel, content, base } = await readJson(req);
+            const dir = prototypeDir(contributor, prototype);
+            const file = dir && itemFile(dir, rel, contributor);
+            if (!file) return send(res, 404, { error: 'This file no longer exists.' });
+            // Contributor scope: you can change only your own folder (and the Handbook's, for review).
+            if (!canChange(contributor, me(), dir)) return send(res, 403, { error: ownerError(contributor, me()) });
+            if (typeof content !== 'string' || Buffer.byteLength(content) > MAX_SOURCE_BYTES) return send(res, 413, { error: 'This file is too large to save here. Keep files under 750 KB.' });
+            // Never overwrite a version you haven't seen: if it changed on disk since you opened it, say so.
+            if (versionOf(fs.readFileSync(file, 'utf8')) !== base) return send(res, 409, { error: 'This file changed on disk since you opened it.', code: 'changed' });
+            fs.writeFileSync(file, content);
+            // Saving is never blocked, but a skill that's out of the format is said so now, not at the next build.
+            const skill = contributor === HANDBOOK_KEY && prototype === 'skills' && rel.split('/').length === 2 && rel.endsWith(`/${SKILL_FILE}`);
+            const warnings = skill ? skillProblems(rel.split('/')[0], frontmatter(content)) : [];
+            return send(res, 200, { version: versionOf(content), warnings });
+          }
+          if (req.method === 'POST' && url.pathname === '/op') {
+            const body = await readJson(req);
+            const dir = prototypeDir(body.contributor, body.prototype);
+            if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
+            // Contributor scope: you can change only your own folder (and the Handbook's, for review).
+            if (!canChange(body.contributor, me(), dir)) return send(res, 403, { error: ownerError(body.contributor, me()) });
+            try {
+              const result = body.contributor === SYSTEMS_KEY ? runSystemOp(body.prototype, body) : runOp(dir, body, body.contributor === HANDBOOK_KEY ? body.prototype : null);
+              const { manifest } = buildManifest();
+              // Other tabs update now; the tab that asked (X-Studio-Tab) handles it from the reply.
+              publishManifest(server, manifest, req.headers['x-studio-tab']);
+              return send(res, 200, { ...result, manifest });
+            } catch (e) {
+              return send(res, 400, { error: e.message });
+            }
+          }
+          if (req.method === 'POST' && url.pathname === '/prototype') {
+            const { title, description } = await readJson(req);
+            try {
+              const { slug, manifest } = createPrototype({ title, description, key: me() });
+              publishManifest(server, manifest, req.headers['x-studio-tab']);
+              return send(res, 200, { contributor: me(), prototype: slug, manifest });
+            } catch (e) {
+              return send(res, 400, { error: e.message });
+            }
+          }
+          // A route a module adds (its server.ts): POST /__studio/<module>/<route>, for modules that are on.
+          const added = req.method === 'POST' ? /^\/([a-z][a-z0-9-]*)\/([a-z][a-z0-9-]*)$/.exec(url.pathname) : null;
+          if (added && Object.hasOwn(moduleServers, added[1]) && Object.hasOwn(moduleServers[added[1]], added[2])) {
+            const body = await readJson(req);
+            try {
+              const result = await moduleServers[added[1]][added[2]]({ me: me(), body });
+              if (result.manifest) publishManifest(server, result.manifest, req.headers['x-studio-tab']);
+              return send(res, result.status ?? 200, result.body);
+            } catch (e) {
+              return send(res, 400, { error: e.message });
+            }
+          }
+          if (req.method === 'POST' && url.pathname === '/prototype-rename') {
+            const { contributor, prototype, title, description } = await readJson(req);
+            const dir = prototypeDir(contributor, prototype);
+            if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
+            if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_NOTE });
+            if (!owns(contributor, me(), dir)) return send(res, 403, { error: ownerError(contributor, me()) });
+            try {
+              const { id, manifest } = renamePrototype({ key: contributor, id: prototype, title, description });
+              publishManifest(server, manifest, req.headers['x-studio-tab']);
+              return send(res, 200, { prototype: id, manifest });
+            } catch (e) {
+              return send(res, 400, { error: e.message });
+            }
+          }
+          if (req.method === 'POST' && url.pathname === '/prototype-delete') {
+            const { contributor, prototype } = await readJson(req);
+            const dir = prototypeDir(contributor, prototype);
+            if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
+            if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_NOTE });
+            if (!owns(contributor, me(), dir)) return send(res, 403, { error: ownerError(contributor, me()) });
+            const trashedTo = trash(dir);
             const { manifest } = buildManifest();
-            // Other tabs update now; the tab that asked (X-Studio-Tab) handles it from the reply.
             publishManifest(server, manifest, req.headers['x-studio-tab']);
-            return send(res, 200, { ...result, manifest });
-          } catch (e) {
-            return send(res, 400, { error: e.message });
+            return send(res, 200, { trashedTo, manifest });
           }
-        }
-        if (req.method === 'POST' && url.pathname === '/prototype') {
-          const { title, description } = await readJson(req);
-          try {
-            const { slug, manifest } = createPrototype({ title, description, key: me() });
-            publishManifest(server, manifest, req.headers['x-studio-tab']);
-            return send(res, 200, { contributor: me(), prototype: slug, manifest });
-          } catch (e) {
-            return send(res, 400, { error: e.message });
+          if (req.method === 'POST' && url.pathname === '/reveal') {
+            const { contributor, prototype, path: rel } = await readJson(req);
+            const dir = prototypeDir(contributor, prototype);
+            const file = dir && resolveInside(dir, rel ?? '');
+            if (!file) return send(res, 404, { error: 'This file no longer exists.' });
+            reveal(file);
+            return send(res, 200, { ok: true });
           }
+          next();
+        } catch (error) {
+          server.config.logger.error(`[studio-files] ${error.stack ?? error}`);
+          if (res.headersSent) res.destroy();
+          else send(res, 500, { error: "Couldn't read or save this file. Check its permissions and try again." });
         }
-        // A route a module adds (its server.ts): POST /__studio/<module>/<route>, for modules that are on.
-        const added = req.method === 'POST' ? /^\/([a-z][a-z0-9-]*)\/([a-z][a-z0-9-]*)$/.exec(url.pathname) : null;
-        if (added && Object.hasOwn(moduleServers, added[1]) && Object.hasOwn(moduleServers[added[1]], added[2])) {
-          const body = await readJson(req);
-          try {
-            const result = await moduleServers[added[1]][added[2]]({ me: me(), body });
-            if (result.manifest) publishManifest(server, result.manifest, req.headers['x-studio-tab']);
-            return send(res, result.status ?? 200, result.body);
-          } catch (e) {
-            return send(res, 400, { error: e.message });
-          }
-        }
-        if (req.method === 'POST' && url.pathname === '/prototype-rename') {
-          const { contributor, prototype, title, description } = await readJson(req);
-          const dir = prototypeDir(contributor, prototype);
-          if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
-          if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_NOTE });
-          if (!owns(contributor, me(), dir)) return send(res, 403, { error: ownerError(contributor, me()) });
-          try {
-            const { id, manifest } = renamePrototype({ key: contributor, id: prototype, title, description });
-            publishManifest(server, manifest, req.headers['x-studio-tab']);
-            return send(res, 200, { prototype: id, manifest });
-          } catch (e) {
-            return send(res, 400, { error: e.message });
-          }
-        }
-        if (req.method === 'POST' && url.pathname === '/prototype-delete') {
-          const { contributor, prototype } = await readJson(req);
-          const dir = prototypeDir(contributor, prototype);
-          if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
-          if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_NOTE });
-          if (!owns(contributor, me(), dir)) return send(res, 403, { error: ownerError(contributor, me()) });
-          const trashedTo = trash(dir);
-          const { manifest } = buildManifest();
-          publishManifest(server, manifest, req.headers['x-studio-tab']);
-          return send(res, 200, { trashedTo, manifest });
-        }
-        if (req.method === 'POST' && url.pathname === '/reveal') {
-          const { contributor, prototype, path: rel } = await readJson(req);
-          const dir = prototypeDir(contributor, prototype);
-          const file = dir && resolveInside(dir, rel ?? '');
-          if (!file) return send(res, 404, { error: 'This file no longer exists.' });
-          reveal(file);
-          return send(res, 200, { ok: true });
-        }
-        next();
       });
 
       // Tell the app which prototypes' (or the Handbook's) files changed, batched.

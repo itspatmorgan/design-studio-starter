@@ -8,13 +8,16 @@ import { resolveContributor, keyForGithub } from '../cli/resolve-contributor.js'
 import { parseMaintainers } from '../../src/platform/core/permissions.ts';
 import { MODULES } from '../lib/modules.js';
 
-const [mode, before, after] = process.argv.slice(2);
+const [mode, before, after, policy] = process.argv.slice(2);
+const review = mode === '--ci' && policy === '--review';
+const platformMaintainer = mode === '--ci' && ['admin', 'maintain'].includes(process.env.STUDIO_PLATFORM_ROLE);
 let changed;
 try { changed = changedFiles(mode, before, after); } catch (e) { console.error(e.message); process.exit(2); }
 if (!changed) { console.error('Usage: check-scope.js --staged | --push | --ci <before> <after>'); process.exit(2); }
 // baseRef is the "before" side of the change, so contributors.json can be compared.
 const { files, baseRef } = changed;
-const key = mode === '--ci' ? keyForGithub(process.env.GITHUB_ACTOR) : resolveContributor();
+const actor = process.env.STUDIO_SCOPE_ACTOR ?? process.env.GITHUB_ACTOR;
+const key = mode === '--ci' ? keyForGithub(actor) : resolveContributor();
 const prefix = key ? `src/prototypes/${key}/` : null;
 // The contributors at a ref (null means the working version being checked): contributors.json, and the
 // contributors/<key>.json files, merged the way scripts/lib/contributors.js does.
@@ -24,7 +27,7 @@ function contributorsAt(ref) {
   const show = (file) => { try { return JSON.parse(git('show', `${staged ? '' : treeish}:${file}`)); } catch { return null; } };
   const out = show('contributors.json') ?? {};
   let files = [];
-  try { files = (staged ? git('ls-files', '--', 'contributors/') : git('ls-tree', '--name-only', treeish, 'contributors/')).split('\n').filter((f) => /^contributors\/[a-z0-9][a-z0-9-]*\.json$/.test(f)); } catch { /* none */ }
+  try { files = (staged ? git('ls-files', '--', 'contributors/') : git('ls-tree', '-r', '--name-only', treeish, 'contributors/')).split('\n').filter((f) => /^contributors\/[a-z0-9][a-z0-9-]*\.json$/.test(f)); } catch { /* none */ }
   for (const file of files) { const entry = show(file); if (entry) out[path.basename(file, '.json')] = entry; }
   return out;
 }
@@ -71,10 +74,12 @@ const isInScope = (f) => (prefix && f.startsWith(prefix)) || (key && f === `cont
 const inScope = files.filter(isInScope);
 const platform = files.filter((f) => !isInScope(f));
 
-const who = key ?? (mode === '--ci' ? `unknown actor "${process.env.GITHUB_ACTOR ?? ''}"` : 'unknown contributor');
+const who = key ?? (mode === '--ci' ? `unknown actor "${actor ?? ''}"` : 'unknown contributor');
 console.log(`Scope check (${who}): ${inScope.length} in scope, ${platform.length} platform.`);
 if (!key) console.log('  Not in contributors.json, so every file counts as out of scope.');
 for (const f of platform) console.log(`  platform: ${f}`);
 
-if (mode === '--ci' && platform.length) process.exit(1);
+if (platform.length && review) console.log('  Platform changes require maintainer review before merging. Configure required reviews on main.');
+if (platform.length && platformMaintainer) console.log('  Platform changes accepted from a repository admin or maintainer.');
+if (mode === '--ci' && platform.length && !review && !platformMaintainer) process.exit(1);
 process.exit(0);

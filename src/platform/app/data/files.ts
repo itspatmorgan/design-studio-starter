@@ -63,12 +63,24 @@ export function revealInFinder(p: PrototypeInfo, file: string) {
 // you're not a contributor. The name is undefined while the dev server hasn't answered yet.
 type Who = { key: string | null; name: string | null | undefined };
 let meRequest: Promise<Who> | undefined;
+const identityListeners = new Set<() => void>();
+if (import.meta.hot) {
+  const changed = () => { meRequest = undefined; identityListeners.forEach((reload) => reload()); };
+  import.meta.hot.on('studio:identity', changed);
+  import.meta.hot.dispose(() => import.meta.hot?.off('studio:identity', changed));
+}
 function useWho(): Who {
   const [who, setWho] = useState<Who>({ key: null, name: import.meta.hot ? undefined : null });
   useEffect(() => {
     if (!import.meta.hot) return;
-    meRequest ??= fetch('/__studio/me').then((r) => r.json() as Promise<Who>).catch(() => ({ key: null, name: null }));
-    meRequest.then(setWho);
+    let live = true;
+    const reload = () => {
+      const request = meRequest ??= fetch('/__studio/me').then((r) => { if (!r.ok) throw new Error('Identity unavailable'); return r.json() as Promise<Who>; }).catch(() => ({ key: null, name: null }));
+      void request.then((next) => { if (live && request === meRequest) setWho(next); });
+    };
+    identityListeners.add(reload);
+    reload();
+    return () => { live = false; identityListeners.delete(reload); };
   }, []);
   return who;
 }
@@ -144,6 +156,7 @@ export class SourceChanged extends Error {}
 export async function writeSource(p: PrototypeInfo, path: string, content: string, base: string) {
   const res = await fetch('/__studio/write', {
     method: 'POST',
+    signal: AbortSignal.timeout(10_000),
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ contributor: p.contributorKey, prototype: p.id, path, content, base }),
   });

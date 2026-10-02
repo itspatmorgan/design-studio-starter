@@ -2,16 +2,17 @@ name: Deploy
 on:
   push:
     branches: [main]
+permissions:
+  contents: read
 jobs:
-  build:
+  checks:
+    uses: ./.github/workflows/scope-check.yml
+  publish:
+    needs: checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: jdx/mise-action@v2
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - uses: actions/upload-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: site
           path: dist/
-      # Add your host's deploy step here to publish dist/.
+      # Add your host's deploy step here. This job runs only after all checks pass.

@@ -1,17 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from '@tanstack/react-router';
 import { NavGroup, NavHeader, NavList, NavTabs, NavTitle, SectionNav, navLinkClass, navLinkStyle, navTabClass } from '@/platform/app/shell/nav';
 import { NotFound } from '@/platform/app/shell/App';
 import { Code, ColorTokens, IconsPage, PageHeader, Prose } from '@/platform/modules/systems/pages/foundations';
 import { OtherTokens, RadiusTokens, ShadowTokens, SpacingTokens, TypographyTokens } from '@/platform/modules/systems/pages/tokens';
 import { ComponentDocPage } from '@/platform/modules/systems/pages/ComponentDocPage';
-import { ComponentEditor } from '@/platform/modules/systems/pages/ComponentEditor';
 import { useManifest } from '@/platform/app/data/useManifest';
 import type { DesignSystem, SystemIntro } from '@/platform/app/data/types';
 import type { SystemComponentDoc } from '@/platform/modules/systems/docs';
 import type { ThemeToken, TokenGroup } from '@/platform/modules/systems/themeTokens';
 import { PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
 import { platform } from '@/platform/modules/systems/pages/platformSystem';
+
+const ComponentEditor = import.meta.env.DEV ? lazy(() => import('./ComponentEditor').then((module) => ({ default: module.ComponentEditor }))) : null;
 
 // Systems: one tab per design system, and one page per foundation and component,
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
@@ -143,8 +144,8 @@ export default function SystemsPage() {
   return (
     <div className="flex min-h-0 flex-1">
       <SystemNav system={system} components={components} tokens={tokens} />
-      {editing && editable ? (
-        <main className="flex min-h-0 min-w-0 flex-1 flex-col"><ComponentEditor system={system} component={editable} onDone={() => setEditing(false)} /></main>
+      {editing && editable && ComponentEditor ? (
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col"><Suspense fallback={<p className="p-4 text-sm">Loading editor…</p>}><ComponentEditor system={system} component={editable} onDone={() => setEditing(false)} /></Suspense></main>
       ) : (
         <main ref={mainRef} className="min-w-0 flex-1 overflow-y-auto">
           <div className="mx-auto w-full max-w-3xl px-8 py-10" data-testid={`${system}-set`}>{content}</div>

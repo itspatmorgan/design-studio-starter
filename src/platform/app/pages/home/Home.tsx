@@ -40,7 +40,7 @@ export default function Home() {
           className="flex h-11 w-full items-center gap-2.5 border-b border-border px-4 text-left text-sm text-muted-foreground transition-colors outline-none hover:bg-muted/50 focus-visible:bg-muted/50"
         >
           <HugeiconsIcon icon={Search01Icon} size={16} />
-          <span className="flex-1">Search prototypes, tools, docs</span>
+          <span className="flex-1">Search the studio</span>
           <kbd className="rounded border border-border px-1.5 py-0.5 font-sans text-[11px] leading-none">⌘K</kbd>
         </button>
         {/* A little more space under the search than between sections, so the top of the list is as far from the line as the bottom is from the edge. */}

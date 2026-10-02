@@ -5,6 +5,8 @@
 export type StudioConfig = {
   // What the app calls itself: the rail's tooltip and every page's title.
   name: string;
+  // Onboarding guidance only; contributor ownership is identical in both modes. Left out, team.
+  usage?: 'personal' | 'team';
   // One line on the front page of the deployed site, under the name, that tells a visitor what this is: "Our team's
   // prototypes, tools and design systems." Left out, there's no line.
   tagline?: string;
@@ -24,6 +26,7 @@ export function configProblems(config: unknown, modules: readonly { id: string; 
   const c = config as Partial<StudioConfig>;
   const problems: string[] = [];
   if (typeof c.name !== 'string' || !c.name.trim()) problems.push(`${where}: add a name, what the app calls itself.`);
+  if (c.usage !== undefined && !['personal', 'team'].includes(c.usage)) problems.push(`${where}: usage should be personal or team.`);
   if (c.tagline !== undefined && (typeof c.tagline !== 'string' || c.tagline.length > 140)) problems.push(`${where}: tagline should be one short line of text, under 140 characters.`);
   if (c.defaultSystem !== undefined && systems && !systems.includes(c.defaultSystem)) {
     problems.push(`${where}: defaultSystem is "${c.defaultSystem}", but no system has that id. Installed: ${systems.join(', ') || 'none'}.`);

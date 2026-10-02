@@ -42,3 +42,11 @@ test('every module is on unless the config turns it off', () => {
   assert.equal(isEnabled({ name: 'A', modules: { guide: false } }, 'guide'), false);
   assert.equal(isEnabled({ name: 'A', modules: { guide: false } }, 'tools'), true);
 });
+
+test('personal and team guidance are supported without changing module permissions', () => {
+  for (const usage of ['personal', 'team'] as const) {
+    assert.deepEqual(configProblems({ name: 'A', usage }, modules), []);
+    assert.equal(isEnabled({ name: 'A', usage }, 'guide'), true);
+  }
+  assert.match(configProblems({ name: 'A', usage: 'other' } as unknown, modules)[0], /usage should be personal or team/);
+});

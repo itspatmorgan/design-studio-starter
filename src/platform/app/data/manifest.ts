@@ -8,8 +8,11 @@ let manifest: Promise<Manifest> | undefined;
 export const setManifest = (m: Manifest) => { manifest = Promise.resolve(m); };
 export function loadManifest(): Promise<Manifest> {
   manifest ??= fetch(`${import.meta.env.BASE_URL}prototypes/manifest.json`)
-    .then((r) => r.json() as Promise<Manifest>)
-    .catch(() => ({ prototypes: [], sections: {}, guide: [], handbook: [], handbookMap: null, systems: {} }));
+    .then((r) => {
+      if (!r.ok) throw new Error(`Couldn't load the studio (${r.status}). Check the connection and try again.`);
+      return r.json() as Promise<Manifest>;
+    })
+    .catch((error: unknown) => { manifest = undefined; throw error; });
   return manifest;
 }
 

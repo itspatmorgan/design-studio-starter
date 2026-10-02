@@ -12,18 +12,21 @@ Two rules let a whole team work in one repo without stepping on each other.
 
 > You can change anything in your folder, but only your own folder. Everything else is the platform.
 
-Each person has an entry in `contributors.json` and a folder in `src/prototypes/`. Your folder is yours to break. The platform, meaning the app, the systems, the scripts, the [Handbook](/guide/handbook), and this Guide, is shared, so changes there should go through whoever maintains it.
+Each person has an entry in `contributors.json` or `contributors/<key>.json` and a folder in `src/prototypes/`. Your folder is yours to break. The platform, meaning the app, the systems, the scripts, the [Handbook](/guide/handbook), and this Guide, is shared, so changes there should go through whoever maintains it.
 
 It works like an open source project. Anyone can propose a change to the platform: make it on a branch, and open a pull request. The maintainer decides what goes in.
 
 The scope check sorts every changed file into one of two buckets: your folder, or the platform.
 
 - **Before you commit and push,** it prints a summary. It never blocks you, and your agent tells you when something is outside your folder.
-- **On every push to main,** GitHub runs it again. If anything is out of scope, it fails and opens an issue so the maintainer can follow up.
+- **On pull requests,** GitHub checks the build and flags platform changes for maintainer review.
+- **On every push to main,** platform changes pass only when the pushing account has the repository's `admin` or `maintain` role. Other accounts can push changes within their contributor scope. Deployment waits for these checks.
+
+The studio maintainer should protect `main`, require pull requests and the Checks jobs, and require maintainer review for shared code. The starter does not configure GitHub branch protection for you.
 
 A [tool](/guide/tools) is a team asset, so it doesn't live in anyone's folder. It's in scope for the people listed as its `maintainers`, and only for them. The scope check uses the list from before the change, so a change can't make its author a maintainer.
 
-Adding or editing your own entry in `contributors.json` counts as in scope. Before each commit, you'll also get a warning if your Git name or email doesn't match your entry, so your commits trace back to you.
+Adding or editing your own entry in `contributors.json` or `contributors/<key>.json` counts as in scope. Before each commit, you'll also get a warning if your Git name or email doesn't match your entry, so your commits trace back to you.
 
 ## Prototype scope
 

@@ -22,6 +22,8 @@ import { CanvasMenu, UI_OPTIONS } from './menu';
 import { useCanvasShortcuts } from './shortcuts';
 import { STICKY_IDS, STICKY_LIBRARY } from './stickyNotes';
 import { useCanvasFile } from './useCanvasFile';
+import { Button } from '@/platform/components/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
 
 type Props = { proto: Prototype; item: Item; text: string; version: string };
 
@@ -88,7 +90,7 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
   loaded: Loaded;
 }) {
   useHelpDialogPruning();
-  const { onChange: saveChanges, persist } = useCanvasFile({ proto, item, api, editable, initial: { text, version, elements: loaded.elements, sceneVersion: loaded.sceneVersion } });
+  const { onChange: saveChanges, persist, saveState, blocker, retry, discard } = useCanvasFile({ proto, item, api, editable, initial: { text, version, elements: loaded.elements, sceneVersion: loaded.sceneVersion } });
   const onScrollChange = useRememberCamera(cameraKey(file));
   const { controlsHidden, toggleControls, onPointerUpdate } = useCanvasShortcuts(api, container, { editable });
   const [itemsOnly, setItemsOnly] = useState(false);
@@ -251,6 +253,19 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
         </div>
       )}
       <ControlTooltip container={container} />
+      {editable && <div role="status" className="absolute right-3 bottom-3 z-10 flex items-center gap-2 rounded-md border border-border bg-background px-3 py-1.5 text-xs text-muted-foreground">
+        {saveState === 'saved' ? 'Saved' : saveState === 'saving' ? 'Saving…' : saveState === 'failed' ? "Couldn't save" : 'Unsaved changes'}
+        {saveState === 'failed' && <Button size="sm" variant="outline" onClick={retry}>Retry</Button>}
+      </div>}
+      <Dialog open={blocker.status === 'blocked'} onOpenChange={(open) => { if (!open) blocker.reset?.(); }}>
+        <DialogContent showCloseButton={false}>
+          <DialogHeader><DialogTitle>This canvas has unsaved changes</DialogTitle><DialogDescription>Saving hasn't finished. Keep the canvas open to retry, or discard the unsaved changes.</DialogDescription></DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => blocker.reset?.()}>Keep editing</Button>
+            <Button variant="destructive" onClick={() => { discard(); blocker.proceed?.(); }}>Discard</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

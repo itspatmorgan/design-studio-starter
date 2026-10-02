@@ -5,7 +5,8 @@ import type { StudioConfig } from './src/platform/core/config.ts';
 
 export default {
   name: 'Design Studio',
-  tagline: 'Prototypes, tools and design systems for our team.',
-  modules: {},
-  // defaultSystem: 'product',   // the design system a prototype uses when its meta.json doesn't name one
+  usage: 'team',
+  tagline: 'Prototypes and design systems for our team.',
+  modules: { tools: false },
+  defaultSystem: 'product',   // the design system a prototype uses when its meta.json doesn't name one
 } satisfies StudioConfig;

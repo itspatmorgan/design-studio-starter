@@ -27,9 +27,10 @@ const at = (system: string, file: string) => `${system === PLATFORM_ID ? '/platf
 // in the order the file lists them (a module's exports come alphabetically).
 export async function loadExamples(system: string, file: string): Promise<Example[]> {
   const [module, source] = await Promise.all([state.globs.examples[at(system, file)]?.(), state.globs.sources[at(system, file)]?.()]);
+  if (!module || source === undefined) throw new Error(`Couldn't load the examples in ${file}.`);
   const order = exampleNames(source ?? '');
   const rank = (name: string) => { const i = order.indexOf(name); return i < 0 ? order.length : i; };
-  return Object.entries(module ?? {})
+  return Object.entries(module)
     .filter(([name, value]) => /^[A-Z]/.test(name) && typeof value === 'function')
     .sort(([a], [b]) => rank(a) - rank(b))
     .map(([name, value]) => ({ name, Component: value as ComponentType }));
@@ -58,7 +59,7 @@ export function useDocsVersion() {
 // built site has them in a module made at build time.
 export async function loadProps(system: string, file: string): Promise<ComponentPropsDoc[]> {
   const all = import.meta.env.DEV
-    ? ((await (await fetch('/__studio/system-props')).json()) as Record<string, ComponentPropsDoc[]>)
+    ? (await fetch('/__studio/system-props').then((response) => { if (!response.ok) throw new Error("Couldn't load component props."); return response.json() as Promise<Record<string, ComponentPropsDoc[]>>; }))
     : (await import('virtual:system-props')).default;
   return all[`${system}/${file}`] ?? [];
 }

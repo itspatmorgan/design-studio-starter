@@ -1,6 +1,7 @@
 # Design Studio Starter
 
-If `node_modules/` doesn't exist, or the person is new, follow [src/handbook/skills/setup-contributor/SKILL.md](src/handbook/skills/setup-contributor/SKILL.md) first.
+For a new studio or first-time kit configuration, follow [src/handbook/skills/initialize-studio/SKILL.md](src/handbook/skills/initialize-studio/SKILL.md). For someone joining an existing studio, follow [src/handbook/skills/setup-contributor/SKILL.md](src/handbook/skills/setup-contributor/SKILL.md). Missing dependencies alone do not mean the studio needs initialization.
+When setting up or replacing the prototype design system, follow [src/handbook/skills/setup-design-system/SKILL.md](src/handbook/skills/setup-design-system/SKILL.md).
 
 At the start of every session, read:
 - [src/handbook/rules/systems.md](src/handbook/rules/systems.md)
@@ -14,8 +15,9 @@ When the person wants to turn off, add, remove, or build a module or a design sy
 When the person asks for a canvas (a page of views, documents, and notes arranged together), read [src/handbook/rules/canvases.md](src/handbook/rules/canvases.md).
 When the person asks for a document (written context in a prototype), read [src/handbook/rules/documents.md](src/handbook/rules/documents.md).
 When the person asks to add or change a Guide page, read [src/handbook/rules/guide.md](src/handbook/rules/guide.md).
-When the person wants to build a tool (a prototype the team uses as an app), or publish a prototype as one, read [src/handbook/rules/tools.md](src/handbook/rules/tools.md).
 <!-- /studio:modules -->
+
+When the person asks to critique a design or explore directions, read [src/handbook/docs/principles.md](src/handbook/docs/principles.md) and [src/handbook/docs/personas.md](src/handbook/docs/personas.md). Treat their placeholder examples as examples until the team replaces them.
 
 Find out who you're working with by running `node scripts/cli/resolve-contributor.js`.
 Create prototypes with `pnpm new "Prototype Name"`.

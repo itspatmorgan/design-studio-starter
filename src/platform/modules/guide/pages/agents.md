@@ -26,7 +26,7 @@ Keep them short. A rule that says too much gets followed into situations it wasn
 
 ## Skills
 
-Skills are step-by-step instructions for a specific task, used only when the task comes up. The kit ships one, `setup-contributor`, which handles onboarding: confirming your details with you, then running `pnpm join`.
+Skills are step-by-step instructions for a specific task, used only when the task comes up. The kit ships four: `initialize-studio` configures a new personal or shared studio; `setup-contributor` onboards someone into an existing studio; `setup-design-system` establishes or replaces its product kit; `document-component` adds a component page and live examples. Agents perform the work, ask for missing context, and verify the result.
 
 Skills live in `src/handbook/skills/`. Different agents look for skills in different places, so `.agents/skills` and `.claude/skills` are links to the same folder.
 

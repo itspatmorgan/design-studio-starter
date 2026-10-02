@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { MAX_FILES, MAX_FILE_BYTES, MAX_TOTAL_BYTES, plainPath } from '../../src/platform/core/modules/pack.ts';
+import { boundedDownload, extractArchive } from './source-archive.js';
 
 const MAX_DOWNLOAD = 50 * 1024 * 1024;
 const GIT_ENV = { ...process.env, GIT_TERMINAL_PROMPT: '0', GIT_ALLOW_PROTOCOL: 'https:ssh', GIT_CONFIG_NOSYSTEM: '1' };
@@ -81,13 +82,10 @@ export async function fetchSource(source, sub) {
     if (!/^https:/i.test(res.url)) throw new Error('The download was redirected away from https.');
     const length = Number(res.headers.get('content-length') ?? 0);
     if (length > MAX_DOWNLOAD) throw new Error('The download is larger than 50 MB.');
-    const buffer = Buffer.from(await res.arrayBuffer());
-    if (buffer.length > MAX_DOWNLOAD) throw new Error('The download is larger than 50 MB.');
-    const file = path.join(tmp, 'pack.tar.gz');
+    const buffer = await boundedDownload(res, MAX_DOWNLOAD);
     const dir = path.join(tmp, 'pack');
-    fs.writeFileSync(file, buffer);
     fs.mkdirSync(dir);
-    execFileSync('tar', ['-xzf', file, '-C', dir], { stdio: ['ignore', 'pipe', 'pipe'] });
+    extractArchive(buffer, dir);
     return { dir: enter(dir, sub), origin: { source: source.url }, cleanup };
   } catch (e) {
     cleanup();

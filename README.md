@@ -15,18 +15,18 @@ The full docs live in the app itself: run it and open the Guide (`/guide`), or r
 
 ## Getting started
 
-Ask your agent to get you set up. It follows `src/handbook/skills/setup-contributor/SKILL.md`. Under the hood, once [mise](https://mise.jdx.dev) is activated in your shell, that's:
+Ask your agent to get you set up. For a new studio it follows `initialize-studio`; for joining an existing one it follows `setup-contributor`, both in `src/handbook/skills/`. Under the hood, once [mise](https://mise.jdx.dev) is activated in your shell, that's:
 
 ```sh
 mise install    # installs the pinned Node and pnpm
 pnpm install    # installs the project's packages
-pnpm join       # proposes your contributors.json entry; --yes writes it
+pnpm join       # proposes contributors/<key>.json; --yes writes it
 pnpm dev        # starts the app at localhost:5173
 ```
 
-`pnpm join` reads your name and email from Git and your username from the GitHub CLI, and creates your folder in `src/prototypes/`. Use your work email. (It's `join`, not `setup`, because `pnpm setup` is a built-in pnpm command.)
+`pnpm join` reads your name and email from Git and your username from the GitHub CLI, and creates your folder in `src/prototypes/`. Use the email matching your Git identity; personal studios accept personal email. (It's `join`, not `setup`, because `pnpm setup` is a built-in pnpm command.)
 
-`patrick` is me, the kit's author, left in as an example contributor: one entry in `contributors.json`, and one folder in `src/prototypes/` that only I can change. Delete both once you've added yourself.
+`patrick` is me, the kit's author, left in as an example contributor: one entry in `contributors.json`, and one folder in `src/prototypes/` that only I can change. When maintaining your own copy, remove the sample prototype folder after adding yourself. Before removing the `patrick` entry, transfer the sample tool's `maintainers` in `src/tools/quote-card/meta.json` to your key, or remove the sample folder `src/tools/quote-card/`. Run `pnpm build` to check the result. Contributors joining an existing team should leave the samples for the studio maintainer.
 
 ## Notes
 
@@ -49,8 +49,10 @@ pnpm test                    # the canvas tools' tests
 pnpm canvas <file> <tool> '<json>'   # run a canvas tool on a canvas file (for agents; pnpm canvas help)
 pnpm preview                 # serve dist/ locally
 pnpm new "Prototype Name"    # create a prototype in your folder
-pnpm join                    # add yourself to contributors.json
+pnpm join                    # add your contributors/<key>.json entry
 pnpm studio list             # the modules and design systems, and which are on (add, remove, create-module: see pnpm studio)
+pnpm studio status --json    # current local setup, for the agent
+pnpm studio configure --name "My Studio" --usage personal --yes  # apply studio choices
 pnpm check                   # confirm the file types and modules are well formed
 node scripts/cli/resolve-contributor.js   # print your contributors.json key
 ```
@@ -65,10 +67,10 @@ The app uses TanStack Router's browser history, so URLs are clean paths like `/p
 AGENTS.md              agent entry point; points to src/handbook/rules/
 src/handbook/          the team's context and instructions: docs/, rules/, skills/
 .agents/skills, .claude/skills   symlinks to src/handbook/skills, so each agent finds the skills
-contributors.json      who owns which folder
+contributors.json      starter contributors; contributors/<key>.json holds new entries
 scripts/               manifest, create, scope check, Vite plugins (plain Node .js)
 .husky/                pre-commit and pre-push scope checks
-.github/workflows/     scope check and build on push to main, build for deploy
+.github/workflows/     pull request checks, checked build artifact on push to main
 src/platform/            the app: routes (app/router.tsx), components, the Guide's pages (guide/, Markdown),
                        and the kinds of file a prototype holds (modules/view, document, canvas), each a removable module
 studio.config.ts       the few things nearly every team changes: the app's name, a one-line tagline for the deployed front page, which modules are off, the default system
@@ -87,3 +89,9 @@ MIT. See [LICENSE](LICENSE).
 The Source view's syntax colors are [Flexoki](https://stephango.com/flexoki) by Steph Ango (MIT).
 
 Dragging in the file navigation uses [Pragmatic drag and drop](https://atlassian.design/components/pragmatic-drag-and-drop/) by Atlassian (Apache-2.0).
+
+### Preparing your studio for a team
+
+The studio maintainer should set `studio.config.ts`, replace the Handbook principles and personas, add the team's design system, and decide which optional modules to keep. Contributors can then join without changing shared setup. Require reviewed pull requests and the Checks jobs on `main`. The supplied deployment workflow builds and uploads `dist/`; add your host's deployment step after the checks and configure access and deep-link rewrites before inviting the team.
+
+The beta starter keeps Tools disabled and explicitly selects Product as the placeholder default. `usage` in `studio.config.ts` selects personal or team onboarding guidance (team when omitted); it does not change contributor permissions. Ask the agent to set up your own design system before treating the studio as initialized.

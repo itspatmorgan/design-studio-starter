@@ -7,6 +7,7 @@ import { buildManifest } from '../../../../../scripts/build/build-manifest.js';
 import { rootOf } from '../../../core/roots.ts';
 import { PROTOTYPE_SECTIONS } from '../../../../../scripts/lib/modules.js';
 import { resolveContributor } from '../../../../../scripts/cli/resolve-contributor.js';
+import { moveWithLinks, personAddress } from '../../../../../scripts/lib/prototype-links.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
 
@@ -55,8 +56,8 @@ export function renamePrototype({ key, id, title, description }) {
   if (rename && fs.existsSync(to)) throw new Error(`You already have a prototype in a folder called “${slug}”. Choose a different title.`);
   meta.title = title;
   if (description !== undefined) meta.description = String(description).trim();
-  fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
-  if (rename) fs.renameSync(from, to);
+  if (rename) moveWithLinks(from, to, meta, personAddress(key, id), `/prototypes/${key}/${slug}`);
+  else fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
   return { id: rename ? slug : id, manifest: buildManifest().manifest };
 }
 
@@ -68,7 +69,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   try {
     const { slug } = createPrototype({ title, key });
     console.log(`Created src/prototypes/${key}/${slug}/`);
-    console.log(`Open it with pnpm dev, at /${key}/${slug}`);
+    console.log(`Open it with pnpm dev, at /prototypes/${key}/${slug}`);
   } catch (e) {
     console.error(e.message);
     process.exit(1);

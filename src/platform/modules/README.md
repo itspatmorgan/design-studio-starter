@@ -71,7 +71,7 @@ would do and change nothing until run again with `--yes`. Restart the dev server
 
 A source is code that will run in your app, so adding one is a decision for a person. The command only helps make it an informed one:
 
-- **Nothing is run.** The pack's `module.ts` is read as plain data (no calls, names, or templates), never imported. Install scripts are off for npm packages.
+- **Preview reads data.** The pack's `module.ts` is read as plain data (no calls, names, or templates). With `--yes`, installation trusts that code: packages are installed with lifecycle scripts disabled, then the installed module's declaration and `check.ts` run on your computer. Project files are restored if checks fail; downloaded packages in `node_modules` may remain.
 - **Files are checked before any is written:** no links, no paths that climb out of the folder, at most 500 files, 2 MB each, 20 MB in all, and a file never
   overwrites another. Handbook files go only where the module lists them.
 - **Sources:** https or ssh git, https tarballs, or a folder. Not http, `file://`, or `git://`.

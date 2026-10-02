@@ -30,7 +30,7 @@ Before anything changes, your agent shows you a review:
 - any npm packages it needs, which are installed only if you say yes
 - for a module built around an open source library: that library's license
 
-Nothing changes until you say yes. A module is code that will run in your app, so treat it like any code you'd put in the repo: read it, or ask your agent to, and only add modules from people you trust. A module can't overwrite your files, and if a check fails after it's added, everything is put back.
+Nothing changes until you say yes. A module is code that will run in your app, so treat it like any code you'd put in the repo: read it, or ask your agent to, and only add modules from people you trust. A module can't overwrite your files. Preview reads the pack as data. Once you approve installation, packages are installed with lifecycle scripts disabled, then the pack's `check.ts`, if present, runs as trusted code on your computer. If a check fails, the project files are restored; packages already downloaded into `node_modules` may remain.
 
 ## Remove a module
 
@@ -42,6 +42,6 @@ A design system is a folder in `src/systems/`. Adding one from a source, or star
 
 ## What you can change in the config
 
-`studio.config.ts` is deliberately small: the app's name, a one-line tagline for the deployed site's front page, which optional modules are off, and the default design system. It's meant for the few things nearly every team changes. Everything else is code you own, and you can change anything in the repo.
+`studio.config.ts` is deliberately small: the app's name, a one-line tagline for the deployed site's front page, which optional modules are off, the default design system, and personal or team onboarding guidance. It's meant for the few things nearly every team changes. Everything else is code you own, and you can change anything in the repo.
 
 To build a module of your own, see [Build a module](/guide/build-a-module).

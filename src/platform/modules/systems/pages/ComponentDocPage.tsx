@@ -12,6 +12,8 @@ import { loadComponentDoc, loadExamples, loadExamplesSource, loadProps, useDocsV
 import type { ComponentPropsDoc, PropDoc, SystemComponentDoc } from '@/platform/modules/systems/docs';
 import { shadcnDocsUrl } from '@/platform/modules/systems/sources';
 import type { DesignSystem } from '@/platform/app/data/types';
+import { ErrorBoundary } from 'react-error-boundary';
+import ViewError from '@/platform/modules/prototypes/viewer/ViewError';
 
 // One component's page in the Systems section, built from its files: the title and description
 // and the Markdown page, then live examples, then its props read from the code. Whatever the
@@ -105,18 +107,26 @@ function webLink(url: string | null) {
 export function ComponentDocPage({ system, sys, component, origin, onEdit }: { system: string; sys: DesignSystem; component: SystemComponentDoc; origin: 'shadcn' | null; onEdit?: () => void }) {
   const { source, examples, doc } = component.files;
   const [loaded, setLoaded] = useState<Loaded>({});
+  const [errors, setErrors] = useState<string[]>([]);
+  const [retry, setRetry] = useState(0);
   const version = useDocsVersion();
   useEffect(() => {
     let current = true;
+    setLoaded({});
+    setErrors([]);
     const settle = <T,>(load: (() => Promise<T> | undefined) | null, key: keyof Loaded) => {
-      Promise.resolve(load?.()).then((value) => { if (current && value !== undefined) setLoaded((l) => ({ ...l, [key]: value })); }).catch(() => {});
+      if (!load) return;
+      Promise.resolve().then(load).then((value) => {
+        if (value === undefined) throw new Error('The file is missing.');
+        if (current) setLoaded((l) => ({ ...l, [key]: value }));
+      }).catch((error: unknown) => { if (current) setErrors((previous) => [...previous, `${key}: ${error instanceof Error ? error.message : String(error)}`]); });
     };
     settle(doc ? () => loadComponentDoc(system, doc) : null, 'doc');
     settle(examples ? () => loadExamples(system, examples) : null, 'examples');
     settle(examples ? () => loadExamplesSource(system, examples) : null, 'source');
     settle(source ? () => loadProps(system, source) : null, 'props');
     return () => { current = false; };
-  }, [system, source, examples, doc, version]);
+  }, [system, source, examples, doc, version, retry]);
 
   const stem = (source ?? component.name).replace(/^.*\//, '').replace(/\.[jt]sx$/, '');
   const docsLink = webLink(component.docsUrl) ?? webLink(origin === 'shadcn' && source ? shadcnDocsUrl(stem) : null);
@@ -139,7 +149,8 @@ export function ComponentDocPage({ system, sys, component, origin, onEdit }: { s
         />
         {onEdit && <Button variant="outline" size="sm" onClick={onEdit} className="absolute top-1 right-0">Edit</Button>}
       </div>
-      {Doc ? <Prose className={PAGE_PROSE}><Doc /></Prose> : !doc && <Note>No page yet. Add <code>{stem}.md</code> next to the component to describe it and say when to use it.</Note>}
+      {errors.length > 0 && <div role="alert" className="space-y-2 rounded-md border border-border p-3 text-sm"><p>Some component files couldn't load.</p>{errors.map((error) => <p key={error} className="text-muted-foreground">{error}</p>)}<Button variant="outline" size="sm" onClick={() => setRetry((value) => value + 1)}>Try again</Button></div>}
+      {Doc ? <ErrorBoundary resetKeys={[Doc, retry]} FallbackComponent={ViewError}><Prose className={PAGE_PROSE}><Doc /></Prose></ErrorBoundary> : !doc && <Note>No page yet. Add <code>{stem}.md</code> next to the component to describe it and say when to use it.</Note>}
 
       <Section title="Examples">
         {!examples ? (
@@ -151,7 +162,7 @@ export function ComponentDocPage({ system, sys, component, origin, onEdit }: { s
                 {loaded.examples.map(({ name, Component }) => (
                   <div key={name}>
                     <h3 className="mb-2 text-xs font-medium text-muted-foreground">{sentence(name)}</h3>
-                    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-background p-6"><Component /></div>
+                    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-background p-6"><ErrorBoundary resetKeys={[Component, retry]} FallbackComponent={ViewError}><Component /></ErrorBoundary></div>
                   </div>
                 ))}
               </div>

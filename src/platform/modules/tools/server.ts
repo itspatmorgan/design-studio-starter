@@ -10,43 +10,23 @@ import { fileURLToPath } from 'node:url';
 import { buildManifest } from '../../../../scripts/build/build-manifest.js';
 import { parseMaintainers } from '../../core/permissions.ts';
 import type { ModuleServer } from '../../core/modules/index.ts';
+import { addressPattern, escapeAddress, linkedFiles, moveWithLinks, personAddress } from '../../../../scripts/lib/prototype-links.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 const KEY = 'tools';
 const NAME = /^[a-z0-9][a-z0-9._-]*$/i;
-const LINKED = /\.(excalidraw|md)$/;
-const slugChar = '[A-Za-z0-9_%-]';
-const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-function filesIn(dir: string): string[] {
-  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
-    if (e.name.startsWith('.')) return [];
-    const p = path.join(dir, e.name);
-    return e.isDirectory() ? filesIn(p) : e.isFile() && LINKED.test(e.name) ? [p] : [];
-  });
-}
 
 // An app address as a pattern: a prototype's is "/prototypes/patrick/gradient", and links saved before prototypes
 // moved under /prototypes have just "/patrick/gradient", so both match.
-const person = (me: string, id: string) => `(?:/prototypes)?${escape(`/${me}/${id}`)}`;
-const section = (id: string) => escape(`/${KEY}/${id}`);
-
-// Rewrites links to `from` (an address pattern, above) to `to`, in a folder's canvases and documents.
-function rewriteLinks(dir: string, from: string, to: string) {
-  const link = new RegExp(`${from}(?!${slugChar})`, 'g');
-  for (const file of filesIn(dir)) {
-    const text = fs.readFileSync(file, 'utf8');
-    const next = text.replace(link, to);
-    if (next !== text) fs.writeFileSync(file, next);
-  }
-}
+const person = personAddress;
+const section = (id: string) => escapeAddress(`/${KEY}/${id}`);
 
 // The files outside `dir` that link to `address` (an address pattern), as repo-relative paths.
 function linkedFrom(dir: string, address: string): string[] {
-  const link = new RegExp(`${address}(?!${slugChar})`);
+  const link = addressPattern(address);
   const roots = [path.join(ROOT, 'src', 'prototypes'), path.join(ROOT, 'src', KEY)].filter((r) => fs.existsSync(r));
-  return roots.flatMap((r) => filesIn(r))
-    .filter((f) => !f.startsWith(dir + path.sep) && link.test(fs.readFileSync(f, 'utf8')))
+  return roots.flatMap((r) => linkedFiles(r))
+    .filter((f) => { link.lastIndex = 0; return !f.startsWith(dir + path.sep) && link.test(fs.readFileSync(f, 'utf8')); })
     .map((f) => path.relative(ROOT, f));
 }
 
@@ -65,12 +45,9 @@ export default {
     const to = path.join(ROOT, 'src', KEY, id);
     if (!fs.existsSync(path.join(from, 'meta.json'))) throw new Error('That prototype no longer exists.');
     if (fs.existsSync(to)) throw new Error(`There's already a tool called “${id}”. Rename your prototype's folder first, then publish it.`);
-    fs.mkdirSync(path.dirname(to), { recursive: true });
-    fs.renameSync(from, to);
-    const metaFile = path.join(to, 'meta.json');
+    const metaFile = path.join(from, 'meta.json');
     const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
-    fs.writeFileSync(metaFile, JSON.stringify({ ...meta, maintainers: [me] }, null, 2) + '\n');
-    rewriteLinks(to, person(me, id), `/${KEY}/${id}`);
+    moveWithLinks(from, to, { ...meta, maintainers: [me] }, person(me, id), `/${KEY}/${id}`);
     const { manifest } = buildManifest();
     return { body: { contributor: KEY, id, linkedFrom: linkedFrom(to, person(me, id)), manifest }, manifest };
   },
@@ -87,10 +64,7 @@ export default {
     const to = path.join(ROOT, 'src', 'prototypes', me, id);
     if (fs.existsSync(to)) throw new Error(`You already have a prototype called “${id}”. Rename or move that one first.`);
     delete meta.maintainers;
-    fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
-    fs.mkdirSync(path.dirname(to), { recursive: true });
-    fs.renameSync(from, to);
-    rewriteLinks(to, section(id), `/prototypes/${me}/${id}`);
+    moveWithLinks(from, to, meta, section(id), `/prototypes/${me}/${id}`);
     const { manifest } = buildManifest();
     return { body: { contributor: me, id, linkedFrom: linkedFrom(to, section(id)), manifest }, manifest };
   },

@@ -2,7 +2,7 @@
 
 The Handbook (`src/handbook/`) is the team's context and instructions: docs, rules, and skills. The app shows it under Handbook. Read this before adding or changing anything in it. Human docs: the Guide's Handbook page (`src/platform/modules/guide/pages/handbook.md`).
 
-- **It's platform.** Describe the change and ask the person before making it. Anyone can make it on a branch and open a pull request; the maintainer decides what merges.
+- **It's platform.** Describe the change and obtain authorization when the current request does not already include it. Anyone can make it on a branch and open a pull request; the maintainer decides what merges.
 - **Its shape is fixed; what's inside is open.** Only `docs/`, `rules/`, and `skills/` sit at the top. `pnpm dev` warns, and `pnpm build` fails, on a file or folder out of place.
 - **`docs/`** is Markdown pages for people and agents: principles, personas, research notes. Folders are fine. Give each page a `title` in its frontmatter.
 - **`rules/`** is Markdown files of standing instructions, each short and about one thing. If a rule should be read every session, or when a certain task comes up, add one line to `AGENTS.md` saying so. `AGENTS.md` only routes: keep the detail in the rule. The build warns about a rule nothing links to, since no agent would read it, and fails on a link in `AGENTS.md` to a file that isn't there.

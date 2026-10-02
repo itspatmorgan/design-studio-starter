@@ -9,7 +9,7 @@ const PROTOS = path.join(SRC, 'prototypes');
 const ROOT = path.dirname(SRC);
 // The one door into a module a prototype may use: its lib/ folder, for a module that says `lib: true`.
 const LIB_DIRS = ENABLED_MODULES.filter((m) => m.lib).map((m) => path.join(SRC, 'platform', 'modules', m.id, 'lib') + path.sep);
-const systemDir = (id) => path.join(ROOT, PROTOTYPE_SYSTEMS[id].dir);
+const systemDir = (id) => path.resolve(ROOT, PROTOTYPE_SYSTEMS[id].dir);
 
 // The design system a prototype uses: "system" in its meta.json, or the default.
 // build-manifest.js reports a missing or invalid meta.json, so this just falls back.
@@ -56,18 +56,17 @@ export default function importGuard() {
       const resolved = await this.resolve(source, importer, { ...options, skipSelf: true });
       if (!resolved || resolved.external) return resolved;
       const target = resolved.id.split('?')[0];
-      if (!path.isAbsolute(target) || target.includes('node_modules')) return resolved;
+      if (!path.isAbsolute(target) || target.split(path.sep).includes('node_modules')) return resolved;
       const inOwn = target === root || target.startsWith(root + path.sep);
-      const inStudio = target.startsWith(path.join(SRC, 'platform') + path.sep) && !LIB_DIRS.some((dir) => target.startsWith(dir));
-      const inOtherProto = [PROTOS, ...PROTOTYPE_DIRS].some((dir) => target.startsWith(dir + path.sep)) && !inOwn;
       // Another prototype system than the one in the prototype's meta.json.
       const system = systemOf(root);
-      const otherSystem = Object.keys(PROTOTYPE_SYSTEMS).find((id) => id !== system && target.startsWith(systemDir(id)));
+      const otherSystem = Object.keys(PROTOTYPE_SYSTEMS).find((id) => id !== system && target.startsWith(systemDir(id) + path.sep));
       if (otherSystem) {
         const msg = `Prototype scope: ${path.relative(SRC, importerPath)} imports ${path.relative(SRC, target)}, from the ${otherSystem} system, but the prototype uses the ${system} system. A prototype can depend only on its own folder, its design system, and src/lib/. To build it with ${otherSystem}, set "system": "${otherSystem}" in its meta.json.`;
         if (isBuild) this.error(msg); else this.warn(msg);
       }
-      if (inStudio || inOtherProto) {
+      const allowed = inOwn || target.startsWith(systemDir(system) + path.sep) || target.startsWith(path.join(SRC, 'lib') + path.sep) || LIB_DIRS.some((dir) => target.startsWith(dir));
+      if (!allowed && !otherSystem) {
         const msg = `Prototype scope: ${path.relative(SRC, importerPath)} imports ${path.relative(SRC, target)}. A prototype can depend only on its own folder, its design system, and src/lib/.`;
         if (isBuild) this.error(msg); else this.warn(msg);
       }

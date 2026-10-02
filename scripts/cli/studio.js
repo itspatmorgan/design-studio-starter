@@ -14,7 +14,7 @@
 //                                     start a new one; with --out, as a pack in that folder to publish
 //   sync                              rewrite the module lines in AGENTS.md
 //   check                             pnpm check, and what has changed from the original of a module you added
-// Nothing in a source is ever run: its declaration is read as data, and its files are copied, not executed.
+// Dry runs read declarations as data. --yes trusts the source: its checks run after packages install.
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -26,6 +26,9 @@ import {
 import { systemProblems } from '../../src/platform/modules/systems/spec.ts';
 import { MODULES, ENABLED_MODULES, CONFIG } from '../lib/modules.js';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from '../../src/platform/modules/systems/node/systems.js';
+import { configProblems } from '../../src/platform/core/config.ts';
+import { editStudioConfig } from '../lib/studio-setup.js';
+import { resolveContributor } from './resolve-contributor.js';
 import { fetchSource, walk } from '../lib/fetch-source.js';
 import { loadContributors } from '../lib/contributors.js';
 import { changesFromLock, hashFile, readLock, writeLock } from '../lib/lock.js';
@@ -42,8 +45,8 @@ const flags = {}; const positional = [];
 for (let i = 0; i < rest.length; i++) {
   const a = rest[i];
   if (a === '--') continue;
-  if (['--yes', '--content', '--force', '--allow-license'].includes(a)) flags[a.slice(2)] = true;
-  else if (['--path', '--id', '--label', '--out'].includes(a)) { flags[a.slice(2)] = rest[++i]; if (flags[a.slice(2)] === undefined) fail(`${a} needs a value.`); }
+  if (['--yes', '--content', '--force', '--allow-license', '--json'].includes(a)) flags[a.slice(2)] = true;
+  else if (['--path', '--id', '--label', '--out', '--name', '--tagline', '--usage', '--system'].includes(a)) { flags[a.slice(2)] = rest[++i]; if (flags[a.slice(2)] === undefined) fail(`${a} needs a value.`); }
   else if (a.startsWith('--')) fail(`Unknown option ${a}.`);
   else positional.push(a);
 }
@@ -187,6 +190,7 @@ async function add() {
     if (deps.length) say(`It needs npm packages: ${deps.map(([n, v]) => `${n}@${v}${needed.some(([x]) => x === n) ? '' : ' (already installed)'}`).join(', ')}. ${needed.length ? 'They are installed only if you say yes, with install scripts off.' : ''}`);
     if (plan.skipped.length) say(`Left behind: ${plan.skipped.length} hidden or dependency file(s).`);
     say('Everything it adds is code that will run in your app and your dev server, so read it before you say yes.');
+    if (names.includes('check.ts')) say('With --yes, its check.ts runs on your computer during installation, after its packages are installed.');
     if (problems.length) { say(); for (const p of problems) console.error(`Can't add it: ${p}`); process.exit(1); }
     if (!flags.yes) { say(); say(`Nothing was changed. To add it, run the same command with --yes.`); return; }
 
@@ -208,12 +212,12 @@ async function add() {
     };
     lock[kind === 'module' ? 'modules' : 'systems'][id] = entry;
     writeLock(lock);
-    const problem = checkInFreshProcess();
-    if (problem) throw new Error(`It didn't pass the checks:\n${problem}`);
     if (needed.length) {
       say(`Installing ${needed.map(([n]) => n).join(', ')} ...`);
       run('pnpm', ['add', '--ignore-scripts', ...needed.map(([n, v]) => `${n}@${v}`)]);
     }
+    const problem = checkInFreshProcess();
+    if (problem) throw new Error(`It didn't pass the checks:\n${problem}`);
     syncInFreshProcess();
     say(`Added ${spec.label}. Restart the dev server to see it.`);
   } catch (e) {
@@ -268,9 +272,16 @@ function remove() {
     if (id === DEFAULT_SYSTEM) fail(`${id} is the default design system. Set defaultSystem in studio.config.ts to another one first.`);
     const users = [];
     const protoRoot = rel('src', 'prototypes');
-    for (const who of fs.existsSync(protoRoot) ? fs.readdirSync(protoRoot) : []) {
-      for (const proto of fs.existsSync(path.join(protoRoot, who)) ? fs.readdirSync(path.join(protoRoot, who)) : []) {
-        try { if (JSON.parse(fs.readFileSync(path.join(protoRoot, who, proto, 'meta.json'), 'utf8')).system === id) users.push(`${who}/${proto}`); } catch { /* not a prototype */ }
+    for (const who of fs.existsSync(protoRoot) ? fs.readdirSync(protoRoot, { withFileTypes: true }).filter((entry) => entry.isDirectory()) : []) {
+      for (const proto of fs.readdirSync(path.join(protoRoot, who.name), { withFileTypes: true }).filter((entry) => entry.isDirectory())) {
+        try { if (JSON.parse(fs.readFileSync(path.join(protoRoot, who.name, proto.name, 'meta.json'), 'utf8')).system === id) users.push(`${who.name}/${proto.name}`); } catch { /* not a prototype */ }
+      }
+    }
+    for (const module of Object.values(MODULES)) {
+      if (module?.section?.items !== 'prototypes' || module.section.byPerson || !module.section.folder) continue;
+      const folder = rel(module.section.folder);
+      for (const item of fs.existsSync(folder) ? fs.readdirSync(folder, { withFileTypes: true }).filter((entry) => entry.isDirectory()) : []) {
+        try { if (JSON.parse(fs.readFileSync(path.join(folder, item.name, 'meta.json'), 'utf8')).system === id) users.push(`${module.section.key}/${item.name}`); } catch { /* not an item */ }
       }
     }
     if (users.length && !flags.force) fail(`${users.length} prototype(s) use ${id}, like ${users[0]}. Change their "system" first, or add --force.`);
@@ -359,7 +370,43 @@ function check() {
   if (problem) process.exit(1);
 }
 
+function configure() {
+  const changes = Object.fromEntries(['name', 'tagline', 'usage'].filter((key) => flags[key] !== undefined).map((key) => [key, flags[key]]));
+  if (flags.system !== undefined) changes.defaultSystem = flags.system;
+  if (!Object.keys(changes).length) fail('Usage: pnpm studio configure --name "My Studio" --usage personal|team --system <id> [--tagline "..."] [--yes]');
+  const problems = configProblems({ ...CONFIG, ...changes }, Object.values(MODULES), SYSTEM_IDS);
+  if (problems.length) fail(problems.join('\n'));
+  const file = rel('studio.config.ts');
+  const next = editStudioConfig(fs.readFileSync(file, 'utf8'), changes);
+  say(JSON.stringify(changes, null, 2));
+  if (!flags.yes) { say('Nothing written. Apply these choices with --yes.'); return; }
+  fs.writeFileSync(file, next);
+  say('Updated studio.config.ts. Restart the dev server.');
+}
+
+function status() {
+  const handbook = ['principles', 'personas'].map((name) => `src/handbook/docs/${name}.md`);
+  const report = {
+    config: { name: CONFIG.name, usage: CONFIG.usage ?? 'team', defaultSystem: DEFAULT_SYSTEM },
+    contributor: resolveContributor(),
+    modules: { enabled: ENABLED_MODULES.map((module) => module.id), disabled: Object.keys(MODULES).filter((id) => !ENABLED_MODULES.some((module) => module.id === id)) },
+    systems: SYSTEM_IDS,
+    handbookPlaceholders: handbook.filter((file) => fs.existsSync(rel(file)) && fs.readFileSync(rel(file), 'utf8').includes('**Placeholder.**')),
+    problems: configProblems(CONFIG, Object.values(MODULES), SYSTEM_IDS),
+  };
+  if (flags.json) say(JSON.stringify(report, null, 2));
+  else {
+    say(`${report.config.name} (${report.config.usage})`);
+    say(`Contributor: ${report.contributor ?? 'not registered'}. Default system: ${DEFAULT_SYSTEM}.`);
+    say(`Enabled: ${report.modules.enabled.join(', ')}. Disabled: ${report.modules.disabled.join(', ') || 'none'}.`);
+    for (const file of report.handbookPlaceholders) say(`Team context still has starter examples: ${file}`);
+    for (const problem of report.problems) say(problem);
+    say('This reports current files, not setup completion. Verify with pnpm build and a first prototype.');
+  }
+}
+
 const commands = {
+  configure, status,
   list, check, sync: () => { say(syncAgents() ? 'Updated AGENTS.md.' : 'AGENTS.md is up to date.'); },
   enable: () => setEnabled(positional[0], true), disable: () => setEnabled(positional[0], false),
   add, remove, 'create-module': () => create('module'), 'create-system': () => create('system'),

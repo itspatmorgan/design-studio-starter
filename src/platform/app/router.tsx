@@ -13,7 +13,7 @@
 // The modules add their own: /prototypes (the gallery), /tools, /systems/$system, /handbook, /guide/$page
 // (src/platform/modules/<id>/app.tsx). Everything that opens in the viewer does so through the routes above.
 import { lazy, Suspense } from 'react';
-import { createRootRoute, createRoute, createRouter, notFound, redirect, useNavigate } from '@tanstack/react-router';
+import { createRootRoute, createRoute, createRouter, notFound, redirect, useNavigate, useRouter } from '@tanstack/react-router';
 import { Button } from '@/platform/components/button';
 import App, { NotFound } from '@/platform/app/shell/App';
 import Home from '@/platform/app/pages/home/Home';
@@ -27,12 +27,22 @@ import { moduleApps } from '@/platform/app/modules';
 import { APP_NAME } from '@/platform/app/data/config';
 
 
+function LoadError({ error, reset }: { error: unknown; reset: () => void }) {
+  const router = useRouter();
+  return <div role="alert" className="space-y-3 p-8">
+    <p className="text-sm font-medium">This page couldn't load.</p>
+    <p className="text-sm text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
+    <Button variant="outline" onClick={() => { void router.invalidate().then(reset); }}>Try again</Button>
+  </div>;
+}
+
 const rootRoute = createRootRoute({
   loader: () => loadManifest(),
   staleTime: Infinity,
   head: () => ({ meta: [{ title: APP_NAME }] }),
   component: App,
   notFoundComponent: NotFound,
+  errorComponent: LoadError,
 });
 
 const homeRoute = createRoute({
@@ -49,7 +59,7 @@ type ItemSearch = { mode?: 'source' };
 // one is ready. Its file type (src/platform/modules/<type>/) loads the file. An unknown address, or a type
 // that isn't installed, shows the not-found page.
 async function itemLoader({ contributor, prototype, _splat }: { contributor: string; prototype: string; _splat?: string }, mode?: ItemSearch['mode']): Promise<ItemData> {
-  const proto = await loadPrototype(contributor, prototype).catch(() => undefined);
+  const proto = await loadPrototype(contributor, prototype);
   // No path in the URL: the prototype's start item, or its first.
   const item = proto && (_splat ? findItem(proto, _splat) : firstItem(proto));
   const type = item && fileTypeModules[item.fileType];
@@ -85,7 +95,7 @@ function ItemPage({ data }: { data: ItemData | undefined }) {
 // of a section (/tools/<id>, /handbook/<section>). They do the same thing and are written twice, not made by a
 // function, because the router's types need each path written out to check links to it.
 const loadProto = async ({ contributor, prototype }: { contributor: string; prototype: string }) => {
-  const proto = await loadPrototype(contributor, prototype).catch(() => undefined);
+  const proto = await loadPrototype(contributor, prototype);
   if (!proto) throw notFound();
   return { proto };
 };
@@ -168,6 +178,7 @@ export const router = createRouter({
   //   history: createHashHistory(),
   // https://tanstack.com/router/latest/docs/framework/react/guide/history-types
   basepath: import.meta.env.BASE_URL,
+  defaultErrorComponent: LoadError,
   defaultPreload: 'intent',
 });
 

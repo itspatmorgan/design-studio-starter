@@ -1,10 +1,10 @@
-name: Scope check
+name: Checks
 on:
-  push:
+  pull_request:
     branches: [main]
+  workflow_call:
 permissions:
   contents: read
-  issues: write
 jobs:
   scope:
     runs-on: ubuntu-latest
@@ -12,21 +12,39 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: jdx/mise-action@v2
-      - run: node scripts/check/check-scope.js --ci ${{ github.event.before }} ${{ github.event.after }}
-      - run: node scripts/check/check-asset-size.js --ci ${{ github.event.before }} ${{ github.event.after }}
-      - if: failure()
+      - name: Check scope and asset sizes
         env:
           GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          PUSH_ACTOR: ${{ github.actor }}
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+          STUDIO_SCOPE_ACTOR: ${{ github.event.pull_request.user.login || github.actor }}
         run: |
-          gh issue create \
-            --title "Scope or asset-size check failed for a push by ${{ github.actor }}" \
-            --body "The scope or asset-size check failed for ${{ github.event.compare }} (run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})."
-  # Fails on type errors (tsc -b), import-guard errors, and broken meta.json files.
+          if [ "$EVENT" = "pull_request" ]; then
+            BASE_REF=$(git merge-base "$BASE_REF" "$HEAD_REF")
+            node scripts/check/check-scope.js --ci "$BASE_REF" "$HEAD_REF" --review
+          else
+            STUDIO_PLATFORM_ROLE=$(gh api "repos/$REPOSITORY/collaborators/$PUSH_ACTOR/permission" --jq '.role_name')
+            export STUDIO_PLATFORM_ROLE
+            node scripts/check/check-scope.js --ci "$BASE_REF" "$HEAD_REF"
+          fi
+          node scripts/check/check-asset-size.js --ci "$BASE_REF" "$HEAD_REF"
   build:
+    needs: scope
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: jdx/mise-action@v2
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist/

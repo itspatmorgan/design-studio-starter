@@ -16,11 +16,11 @@ Every prototype system has the same parts. Keep them true when replacing one, an
 3. **Portals**: components that render a pop-up pass `usePortalContainer()` from `@/lib/portal` as the Base UI Portal's `container` (`<DialogPrimitive.Portal container={usePortalContainer()} />`), so pop-ups stay inside the system's theme and the prototype frame.
 4. **An introduction** (optional): `src/systems/<system>/intro.tsx` exports what the system is, and how its theme is set up, for its Systems page, like `src/systems/product/intro.tsx`. Without one the page says it has none. Its components and foundations pages come from its files, and its `theme.css` is imported by the app for you.
 
-Adding or replacing a system is a platform change: describe it and confirm with the person first. To add one, run `pnpm studio create-system <id>`, which makes the folder with a starter theme, or copy `src/systems/product/`.
+Adding or replacing a system is a platform change: describe it and obtain authorization if the current request does not already cover it. To add one, run `pnpm studio create-system <id>`, which makes the folder with a starter theme, or copy `src/systems/product/`.
 
 ## Components
 
-All systems use shadcn/ui components on [Base UI](https://base-ui.com/react/overview/quick-start) (`components.json` style `base-nova`), not Radix. To make a trigger render as another element, use the `render` prop, not `asChild`:
+The starter systems use shadcn/ui components on [Base UI](https://base-ui.com/react/overview/quick-start) (`components.json` style `base-nova`), not Radix. A replacement system can use the team's own component library; follow its APIs and keep themes and portals scoped. For the starter components, to make a trigger render as another element, use the `render` prop, not `asChild`:
 
 ```tsx
 <DialogTrigger render={<Button variant="outline" />}>Open</DialogTrigger>

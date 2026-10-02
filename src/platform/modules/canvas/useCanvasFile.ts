@@ -9,7 +9,8 @@
 //   - Leaving the canvas, or hiding the tab, saves what is unsaved right away.
 //   - The scene Excalidraw hands back right after load is the file itself, not an edit, and so is
 //     a change taken in from the file: both are recognized by their scene version.
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useBlocker } from '@tanstack/react-router';
 import { CaptureUpdateAction, getSceneVersion, restoreElements } from '@excalidraw/excalidraw';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { AppState, ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
@@ -49,6 +50,8 @@ export function useCanvasFile({ proto, item, api, initial, editable }: {
   const conflicts = useRef(0);
   const failures = useRef(0);
   const timer = useRef(0);
+  const [saveState, setSaveState] = useState<'saved' | 'unsaved' | 'saving' | 'failed'>('saved');
+  const paused = useRef(false);
   const apiRef = useRef(api);
   apiRef.current = api;
   const editableRef = useRef(editable);
@@ -76,7 +79,10 @@ export function useCanvasFile({ proto, item, api, initial, editable }: {
       a.updateScene({ elements, appState: { viewBackgroundColor: parsed.background }, captureUpdate: CaptureUpdateAction.NEVER });
       known.current = getSceneVersion(a.getSceneElementsIncludingDeleted());
     } catch { return false; } // the canvas was closed meanwhile
-    if (needsWriteBack) { dirty.current = true; schedule(); }
+    if (needsWriteBack) {
+      dirty.current = true;
+      if (!paused.current) { setSaveState('unsaved'); schedule(); }
+    }
     return true;
   }, [schedule]);
 
@@ -85,19 +91,23 @@ export function useCanvasFile({ proto, item, api, initial, editable }: {
     const snap = latest.current;
     if (saving.current || !dirty.current || !editableRef.current || !snap) return;
     const content = serializeCanvas(snap.elements, snap.appState);
-    if (content === disk.current.content) { dirty.current = false; burst.current = 0; return; }
+    if (content === disk.current.content) { dirty.current = false; burst.current = 0; setSaveState('saved'); return; }
     saving.current = true;
     dirty.current = false; // an edit during the save sets it again
     burst.current = 0;
     inflight.current = content;
+    setSaveState('saving');
     let retryIn: number | null = null;
     try {
       const { version } = await writeSource(proto, item.path, content, disk.current.version);
       disk.current = { content, version, ids: idsOf(snap.elements) };
       conflicts.current = 0;
       failures.current = 0;
+      paused.current = false;
+      setSaveState(dirty.current ? 'unsaved' : 'saved');
     } catch (error) {
       dirty.current = true;
+      setSaveState('failed');
       if (error instanceof SourceChanged) {
         // The file changed since we read it: merge the newer one in, then save the union.
         if (++conflicts.current <= MAX_CONFLICTS) {
@@ -105,6 +115,7 @@ export function useCanvasFile({ proto, item, api, initial, editable }: {
           if (next) takeFile(next);
           retryIn = 300 + Math.random() * 300;
         } else {
+          paused.current = true;
           toast.add({ type: 'error', title: "Couldn't save: the file keeps changing." });
         }
       } else {
@@ -116,7 +127,7 @@ export function useCanvasFile({ proto, item, api, initial, editable }: {
       inflight.current = null;
     }
     if (retryIn !== null) schedule(retryIn);
-    else if (dirty.current) schedule();
+    else if (dirty.current && !paused.current) schedule();
   };
   const saveRef = useRef(save);
   saveRef.current = save;
@@ -130,18 +141,43 @@ export function useCanvasFile({ proto, item, api, initial, editable }: {
     if (version === known.current) return;
     known.current = version;
     dirty.current = true;
+    setSaveState('unsaved');
     if (!burst.current) burst.current = Date.now();
-    schedule();
+    if (!paused.current) schedule();
   }, [schedule]);
 
   // Writes what's unsaved now, and resolves whether nothing is left (for the agent's `persist`).
   const persist = useCallback(async () => {
-    for (let waited = 0; waited < 5000; waited += 100) {
+    const deadline = Date.now() + 5000;
+    while (Date.now() < deadline) {
       if (!dirty.current && !saving.current) return true;
-      if (editableRef.current && !saving.current) await saveRef.current();
+      if (paused.current) return false;
+      if (editableRef.current && !saving.current) {
+        await saveRef.current();
+        if (dirty.current) return false;
+      }
       else await new Promise((resolve) => setTimeout(resolve, 100));
     }
     return false;
+  }, []);
+
+  // Navigation offers a choice if saving fails; browser reload/close warns while a write is pending.
+  const blocker = useBlocker({
+    shouldBlockFn: async () => (dirty.current || saving.current) && !(await persist()),
+    enableBeforeUnload: () => dirty.current || saving.current,
+    withResolver: true,
+  });
+
+  const retry = useCallback(() => {
+    paused.current = false;
+    conflicts.current = 0;
+    void saveRef.current();
+  }, []);
+
+  const discard = useCallback(() => {
+    dirty.current = false;
+    paused.current = true;
+    window.clearTimeout(timer.current);
   }, []);
 
   // The file changed on disk. Our own saves come back here too, and are recognized.
@@ -160,11 +196,11 @@ export function useCanvasFile({ proto, item, api, initial, editable }: {
 
   // Leaving, or hiding the tab, saves what's unsaved right away.
   useEffect(() => {
-    const flush = () => { if (dirty.current && !saving.current) void saveRef.current(); };
+    const flush = () => { if (dirty.current && !saving.current && !paused.current) void saveRef.current(); };
     const onVisibility = () => { if (document.visibilityState === 'hidden') flush(); };
     document.addEventListener('visibilitychange', onVisibility);
     return () => { document.removeEventListener('visibilitychange', onVisibility); window.clearTimeout(timer.current); flush(); };
   }, []);
 
-  return { onChange, persist };
+  return { onChange, persist, saveState, blocker, retry, discard };
 }
