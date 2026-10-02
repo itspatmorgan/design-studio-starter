@@ -6,7 +6,7 @@
 import type { FileTypeSpec } from '../fileTypes.ts';
 import { itemFolders, type ModuleSpec } from './index.ts';
 
-const rootOf = (folder: string) => folder.replace(/^src/, ''); // "src/examples" → "/examples"
+const rootOf = (folder: string) => folder.replace(/^src/, ''); // "src/tools" → "/tools"
 const extensionGlob = (extensions: readonly string[]) =>
   extensions.length === 1 ? `*${extensions[0]}` : `*.{${extensions.map((e) => e.slice(1)).join(',')}}`;
 
@@ -26,7 +26,7 @@ export function globsFor(id: string, types: Record<string, FileTypeSpec>, module
   }
   if (!spec.extensions.length) return patterns;
 
-  // In every section of prototype-shaped folders, helpers (names starting with an underscore) aren't items.
+  // In prototypes and tools (every section of prototype-shaped folders), helpers (names starting with an underscore) aren't items.
   const extensions = extensionGlob(spec.extensions);
   for (const root of itemFolders(modules, 'prototypes').map(rootOf)) {
     patterns.push(`${root}/**/${extensions}`, `!${root}/**/_*/**`, `!${root}/**/_*`);

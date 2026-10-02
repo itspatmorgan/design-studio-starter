@@ -44,7 +44,7 @@ export function renamePrototype({ key, id, title, description }) {
   if (!title) throw new Error('Add a title.');
   const slug = slugify(title);
   if (!slug) throw new Error('Use at least one letter or number in the title.');
-  // An item of a module's section (a section item) has its folder name as its address (/examples/<id>), which people rely on, so it keeps its name.
+  // An item of a module's section (a tool) has its folder name as its address (/tools/<id>), which people rely on, so it keeps its name.
   const sectionItem = PROTOTYPE_SECTIONS.some((s) => s.key === key);
   const from = path.join(ROOT, 'src', rootOf(key, id));
   const metaFile = path.join(from, 'meta.json');

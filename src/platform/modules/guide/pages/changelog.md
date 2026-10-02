@@ -17,12 +17,14 @@ The first release, described in [How I Set Up a Prototyping Sandbox](https://www
 - Scope checks before commit, before push, and on push to main
 - The import guard
 - A sample prototype, Feedback Inbox, that doubles as a tour: three screens on a working data store, a breadboard and an eng-handoff canvas, and two documents
+- A sample tool, Quote card, that turns a feedback into an image to share
 - A Product system with its own look (warm stone, emerald, square corners, Space Grotesk) and 16 components, each with a page
 - A small manifest: the file list of each prototype loads when you open it, so the deployed site stays fast as prototypes pile up
+- Tools: publish a prototype as a small app the team uses, with maintainers; it opens full-window on the deployed site
 - Order: drag files and folders into the order you want (Option + arrows works too); it's saved in `meta.json` so the whole team sees it
 - Lofi: switch any view to grayscale with handwritten type, over its own design system, from the file menu
 - Archiving: set a prototype aside; the deployed site leaves archived prototypes out
 - The Handbook: team docs, agent rules, and skills, shown in the app, with a fixed shape and a check for it
-- Modules: the Guide, the Handbook and Systems are folders that declare what they add. Turn an optional one off in `studio.config.ts`, remove it, or add one from a folder, a git address or a download with `pnpm studio add`, after a review. A module can add a page and rail button, routes, palette and menu entries, dev-server routes, a library for prototypes, checks, and rules for agents
+- Modules: the Guide, Tools, the Handbook and Systems are folders that declare what they add. Turn an optional one off in `studio.config.ts`, remove it, or add one from a folder, a git address or a download with `pnpm studio add`, after a review. A module can add a page and rail button, routes, palette and menu entries, dev-server routes, a library for prototypes, checks, and rules for agents
 - Design systems are folders too (`system.ts`, `components/`, `styles/theme.css`), and `pnpm studio create-system` starts one
 - `AGENTS.md`, which points to the Handbook's rules, and the `setup-contributor` skill

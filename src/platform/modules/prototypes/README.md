@@ -119,7 +119,7 @@ If a view throws an error, the app shows the error with a Copy button, and every
 
 ## For developers
 
-The Prototypes module: the gallery at `/prototypes`, and the viewer every prototype, module item and Handbook section opens in. Required. The prototypes themselves are in `src/prototypes/<person>/<id>/`, which are your content.
+The Prototypes module: the gallery at `/prototypes`, and the viewer every prototype, tool and Handbook section opens in. Required. The prototypes themselves are in `src/prototypes/<person>/<id>/`, which are your content.
 
 - `module.ts`, `app.tsx`: who it is, its rail button, the `/prototypes` route, its front-page block, and its palette entries. A prototype opens through the platform's item routes (`src/platform/app/router.tsx`).
 - `gallery/`: the gallery, a prototype's card, and the New prototype dialog (browser).

@@ -28,16 +28,16 @@ export const declarationProblems = () => ids.flatMap((id) => moduleProblems(MODU
 export const ENABLED_MODULES = Object.values(MODULES).filter((m) => m && isEnabled(CONFIG, m.id) && compatible(m));
 export { CONFIG, isEnabled };
 
-// App page addresses (/examples, /guide, ...), so they can't be a contributor's folder.
+// App page addresses (/tools, /guide, ...), so they can't be a contributor's folder.
 export const SECTION_KEYS = new Set(sectionKeys(Object.values(MODULES).filter(Boolean)));
 
-// Absolute folders of the modules that hold prototype-shaped folders, one per id (src/examples/), and the
+// Absolute folders of the modules that hold prototype-shaped folders, one per id (src/tools/), and the
 // Handbook's. src/prototypes/, where the folders are grouped by person, is the Prototypes module's own and isn't listed.
 const oneFolderPerId = (m) => m.section?.items === 'prototypes' && !m.section.byPerson;
 export const PROTOTYPE_DIRS = ENABLED_MODULES.filter(oneFolderPerId).map((m) => path.join(ROOT, m.section.folder));
 export const HANDBOOK_DIRS = itemFolders(ENABLED_MODULES, 'handbook').map((folder) => path.join(ROOT, folder));
 
-// Sections of prototype-shaped folders (custom sections), registered so rootOf can find their folders. Installed ones
+// Sections of prototype-shaped folders (tools), registered so rootOf can find their folders. Installed ones
 // count even when off, so their files are still found.
 setSections(Object.values(MODULES).filter((m) => m && oneFolderPerId(m)).map((m) => m.section.key));
 // Their keys and folders, for the code that scans or watches them.

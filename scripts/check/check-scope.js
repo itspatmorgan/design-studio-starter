@@ -42,7 +42,7 @@ function onlyOwnEntryChanged() {
   return others(before) === others(now);
 }
 
-// An item in a section whose policy is "maintainers" (a section item, src/examples/<id>/) is changed by the people
+// An item in a section whose policy is "maintainers" (a tool, src/tools/<id>/) is changed by the people
 // listed in its meta.json. The list that counts is the one before the change, so a change can't make its
 // author a maintainer of someone else's. An item that is new in the change (a prototype just published)
 // has no earlier list, so its own is used.
@@ -61,7 +61,7 @@ function maintains(folder, id) {
   if (!maintained.has(name)) maintained.set(name, (((baseRef && toolMeta(baseRef, folder, id)) || toolMeta(null, folder, id)) ?? []).includes(key));
   return maintained.get(name);
 }
-// The maintained section and item a file is in, like ["src/examples", "sample"], or null.
+// The maintained section and item a file is in, like ["src/tools", "quote-card"], or null.
 function maintainedItem(f) {
   for (const folder of MAINTAINED) {
     const [id, ...rest] = f.startsWith(`${folder}/`) ? f.slice(folder.length + 1).split('/') : [];

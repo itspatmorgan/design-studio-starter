@@ -20,7 +20,7 @@ function systemOf(root) {
   } catch { return DEFAULT_SYSTEM; }
 }
 
-// A prototype's folder (src/prototypes/<contributor>/<id>) or a section item's (src/examples/<id>, in the folder of a
+// A prototype's folder (src/prototypes/<contributor>/<id>) or a tool's (src/tools/<id>, in the folder of a
 // module that holds prototype-shaped folders) that holds `file`, or null.
 function prototypeRoot(file) {
   for (const dir of PROTOTYPE_DIRS) {

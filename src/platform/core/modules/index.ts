@@ -11,7 +11,7 @@ export const PLATFORM_VERSION = '0.1.0';
 
 export type ModuleSpec = {
   id: string;        // the folder's name
-  label: string;     // "Examples"
+  label: string;     // "Tools"
   version: string;   // this module's own version, like "0.1.0"
   description?: string;   // one sentence on what it adds, shown when you list or add modules
   // The oldest platform version the module works with, like "0.1.0". A module that needs a newer one than
@@ -20,23 +20,23 @@ export type ModuleSpec = {
   // True if studio.config.ts may turn the module off. Leave it out while other parts of the app still
   // depend on the module, so turning it off can't leave a page broken.
   optional?: boolean;
-  // The top-level area the module adds: its address in the app (/examples) and, if it keeps content, the folder
+  // The top-level area the module adds: its address in the app (/tools) and, if it keeps content, the folder
   // that content lives in, relative to the repo root. The key can't also be a contributor's folder, since both are addresses.
   // `items` says the folder holds files the app opens as items, so each file type lists them (globs.ts):
-  // "prototypes" for a folder of prototype-shaped folders, one per id (src/examples/<id>/), and "handbook"
+  // "prototypes" for a folder of prototype-shaped folders, one per id (src/tools/<id>/), and "handbook"
   // for the Handbook's fixed shape. Leave it out when the module reads its own files.
   // `policy` says who may change the section's files from the app (src/platform/core/permissions.ts): "maintainers"
   // (the people listed in an item's meta.json) or "open" (anyone running the app; a pull request reviews
   // it). Without one, nobody can: the module's files are changed in the repo.
   // `standalone` is for a section of prototype-shaped folders whose items open on their own, filling the
-  // window with no rail or navigation, on the deployed site (a standalone section item is an app).
+  // window with no rail or navigation, on the deployed site (a published tool is an app).
   // `byPerson` is for the one section whose folders are grouped by the person who owns them
   // (src/prototypes/<person>/<id>/, opening at /prototypes/<person>/<id>), where the others have one folder per id.
   section?: { key: string; folder?: string; items?: 'prototypes' | 'handbook'; policy?: 'maintainers' | 'open'; standalone?: boolean; byPerson?: boolean };
   // Prototypes may import the module's lib/index.ts as `@module/<id>`, the one way a prototype can reach into a
   // module (the import guard allows exactly that). Removing the module while a prototype imports it is refused.
   lib?: true;
-  // Handbook files the module brings (rules, skills), as paths inside src/handbook/ ("rules/examples.md"; a trailing
+  // Handbook files the module brings (rules, skills), as paths inside src/handbook/ ("rules/tools.md"; a trailing
   // slash is a whole folder, like a skill's). `when` finishes the sentence "When the person ..." in AGENTS.md,
   // which routes agents to the rule; pnpm studio sync writes those lines for the modules that are on.
   handbook?: { path: string; when?: string }[];
@@ -103,14 +103,14 @@ export function moduleProblems(spec: unknown, folder: string): string[] {
   if (m.section !== undefined) {
     const { key, folder: dir } = m.section as Partial<NonNullable<ModuleSpec['section']>>;
     if (typeof key !== 'string' || !KEY.test(key)) problems.push(`${where}: section.key should be lowercase letters, numbers, and dashes.`);
-    if (dir !== undefined && (typeof dir !== 'string' || !dir || dir.startsWith('/') || dir.split('/').includes('..'))) problems.push(`${where}: section.folder should be a folder inside the repo, like src/examples.`);
+    if (dir !== undefined && (typeof dir !== 'string' || !dir || dir.startsWith('/') || dir.split('/').includes('..'))) problems.push(`${where}: section.folder should be a folder inside the repo, like src/tools.`);
     const policy = (m.section as { policy?: unknown }).policy;
     if (policy !== undefined && policy !== 'maintainers' && policy !== 'open') problems.push(`${where}: section.policy should be "maintainers" or "open", or left out.`);
     const items = (m.section as { items?: unknown }).items;
     if (items !== undefined && items !== 'prototypes' && items !== 'handbook') problems.push(`${where}: section.items should be "prototypes" or "handbook".`);
-    else if (items !== undefined && dir === undefined) problems.push(`${where}: a section with items needs a folder to keep them in, like src/examples.`);
-    else if (items !== undefined && !(typeof dir === 'string' && /^src\/[a-z0-9][a-z0-9-]*$/.test(dir))) problems.push(`${where}: a section with items keeps them in a folder directly under src/, like src/examples.`);
-    else if (items === 'prototypes' && dir !== `src/${(m.section as { key?: string }).key}`) problems.push(`${where}: a section of prototype-shaped folders keeps them in src/ under its own key, like src/examples for "examples".`);
+    else if (items !== undefined && dir === undefined) problems.push(`${where}: a section with items needs a folder to keep them in, like src/tools.`);
+    else if (items !== undefined && !(typeof dir === 'string' && /^src\/[a-z0-9][a-z0-9-]*$/.test(dir))) problems.push(`${where}: a section with items keeps them in a folder directly under src/, like src/tools.`);
+    else if (items === 'prototypes' && dir !== `src/${(m.section as { key?: string }).key}`) problems.push(`${where}: a section of prototype-shaped folders keeps them in src/ under its own key, like src/tools for "tools".`);
     const byPerson = (m.section as { byPerson?: unknown }).byPerson;
     if (byPerson !== undefined && (byPerson !== true || items !== 'prototypes')) problems.push(`${where}: section.byPerson is true, and only for a section with items: "prototypes".`);
     const standalone = (m.section as { standalone?: unknown }).standalone;

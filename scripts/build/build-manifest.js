@@ -106,8 +106,8 @@ function archivedLinkWarnings(kept, archived) {
   return warnings;
 }
 
-// Reads one prototype's folder (a person's in src/prototypes/, or an item of a module's section, with one folder per item
-// in src/examples/) into its manifest entry, or null when it can't be used. Problems are printed; `errors` counts
+// Reads one prototype's folder (a person's in src/prototypes/, or an item of a module's section, like a tool
+// in src/tools/) into its manifest entry, or null when it can't be used. Problems are printed; `errors` counts
 // them. A section whose policy is "maintainers" lists them in each item's meta.json.
 function readPrototype(dir, contributorKey, id, out, contributors, policy = 'owner') {
   const maintained = policy === 'maintainers';
@@ -238,7 +238,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   const contributors = loadContributors();
 
   const prototypes = [];
-  // Items of the modules' sections of prototype-shaped folders, by section key.
+  // Items of the modules' sections of prototype-shaped folders, by section key (tools).
   const sections = Object.fromEntries(PROTOTYPE_SECTIONS.map((s) => [s.key, []]));
   let errors = 0;
   const people = contributorsSignature();
@@ -270,7 +270,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
       if (entry) prototypes.push(entry);
     }
   }
-  // A module's section of prototype-shaped folders (src/examples/<id>/, items provided by a module): shaped
+  // A module's section of prototype-shaped folders (src/tools/<id>/, the tools the team has published): shaped
   // the same, one folder per id, with maintainers where the section's policy says so.
   for (const section of PROTOTYPE_SECTIONS) {
     for (const id of dirs(section.dir)) {

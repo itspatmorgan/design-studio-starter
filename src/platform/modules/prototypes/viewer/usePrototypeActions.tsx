@@ -1,4 +1,4 @@
-// What you can do to a prototype or section item from a menu: the prototype's "…" menu in its navigation
+// What you can do to a prototype (or tool) from a menu: the prototype's "…" menu in its navigation
 // (PrototypeHeader.tsx) and the "…" on its card (PrototypeCardMenu.tsx) share this, so they offer the same
 // things. Reaching it (copy its link; locally, open it in your editor) is open to everyone. Changing it
 // (edit, archive, delete, and whatever a module adds, like publish) is only for its owner, or the maintainers

@@ -6,13 +6,13 @@ order: 18
 toc: true
 ---
 
-A module is one part of Design Studio that you can add or take away: the Guide you're reading, the Handbook, and the design systems are all modules. Each one is a folder in the repo. Because they follow the same rules, a team can turn parts off, and other people can build modules that you add without anyone changing the platform.
+A module is one part of Design Studio that you can add or take away: the Guide you're reading, Tools, the Handbook, and the design systems are all modules. Each one is a folder in the repo. Because they follow the same rules, a team can turn parts off, and other people can build modules that you add without anyone changing the platform.
 
 You don't run commands for this. Ask your agent, and it follows the steps in `src/handbook/rules/modules.md`.
 
 ## See what you have
 
-Ask your agent to list the modules. Each one is **on**, **off**, or **required**. Required ones (Prototypes, the Handbook and the design systems) can't be turned off, because the rest of the app is built on them. The Guide is optional, and so are the kinds of file a prototype holds: views, documents, canvases, and plain text files each come as a module you can turn off or remove.
+Ask your agent to list the modules. Each one is **on**, **off**, or **required**. Required ones (Prototypes, the Handbook and the design systems) can't be turned off, because the rest of the app is built on them. The Guide and Tools are optional, and so are the kinds of file a prototype holds: views, documents, canvases, and plain text files each come as a module you can turn off or remove.
 
 ## Turn one off, or on
 
@@ -34,7 +34,7 @@ Nothing changes until you say yes. A module is code that will run in your app, s
 
 ## Remove a module
 
-"Remove the Quote wall module" deletes its folder and the rules it brought. Anything it kept for you, like its prototype folders, stays unless you ask to delete that too. If prototypes use a library the module provides, your agent tells you which, and you decide.
+"Remove the Quote wall module" deletes its folder and the rules it brought. Anything it kept for you, like the tools in `src/tools/`, stays unless you ask to delete that too. If prototypes use a library the module provides, your agent tells you which, and you decide.
 
 ## Design systems work the same way
 

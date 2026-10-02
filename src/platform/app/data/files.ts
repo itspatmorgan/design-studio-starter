@@ -90,7 +90,7 @@ export const useMe = () => useWho().key;
 // Your name, as contributors.json has it; undefined until the dev server has answered.
 export const useMyName = () => useWho().name;
 
-// Whether you own a prototype (so you may archive or delete it): your own, or a section item you maintain. The
+// Whether you own a prototype (so you may archive or delete it): your own, or a tool you maintain. The
 // policy of its section decides (src/platform/core/permissions.ts); the dev server checks again on every change.
 const subject = (p: PrototypeInfo, me: string | null) => ({ me, key: p.contributorKey, maintainers: p.maintainers });
 const policyOf = (p: PrototypeInfo) => policyFor(p.contributorKey, MODULES);

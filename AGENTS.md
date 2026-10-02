@@ -22,7 +22,7 @@ When the person asks to add or change a Guide page, read [src/handbook/rules/gui
 
 Find out who you're working with by running `node scripts/cli/resolve-contributor.js`.
 Create prototypes with `pnpm new "Prototype Name"`.
-You can change only your own folder in src/prototypes/.
+You can change only your own folder in src/prototypes/, and the tools in src/tools/ that you maintain.
 A prototype can depend only on its own folder, its design system (src/systems/product/ by default; `defaultSystem` in studio.config.ts changes that), and src/lib/.
 Write views as `.tsx` (plain `.jsx` works too). `pnpm build` runs the type check (`pnpm typecheck`).
 The human docs are the Guide, in `src/platform/modules/guide/pages/` (open it at `/guide`). Point people there rather than repeating it.

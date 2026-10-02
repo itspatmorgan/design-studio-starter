@@ -64,9 +64,17 @@ Your agent can build and change all of this: "add a due date to feedback," "make
 
 Archive a prototype from its **…** menu to keep it but leave it out of the deployed site. To tidy files inside a prototype, put them in a folder.
 
-## 11. Reuse without coupling
+## 11. Tools, and how things relate
 
-A prototype never imports from another prototype. To reuse something, link to it, ask your agent to copy it into your folder, or share a reusable piece through the design system or `src/lib/`. Each prototype stays safe to change, rename, or delete.
+A tool is a small app your team maintains. The optional Tools module is disabled in this starter's initial beta. Open a feedback's [Detail](app/detail) and choose **Share as card**: it makes a card like the included Quote card example does, without leaving the prototype.
+
+That is on purpose. The prototype has its own copy of the tool's drawing code (`app/_components/quoteCard.ts`), because a prototype never imports from a tool or another prototype. Everything in the codebase is open to you, and there are three ways to use it:
+
+- **Link** to it. Navigating is always fine.
+- **Copy** it in. Ask your agent to copy what you want into your folder; from then on it's yours.
+- **Share** through the design system or `src/lib/`, which every prototype can use.
+
+Not allowed: importing from another prototype or tool. That keeps each one safe to change, rename, or delete.
 
 ## Make it yours
 

@@ -28,7 +28,7 @@ export type ModuleApp = {
   rail: 'top' | 'bottom';
   order: number;
   // Routes it adds under the root route. Their addresses start with the module's section key, so
-  // /examples opens an optional module. Links to them are written loosely, since the router's types
+  // /tools opens the Tools module. Links to them are written loosely, since the router's types
   // are made from the app's own routes.
   routes?: (root: AnyRoute) => AnyRoute[];
   // Entries it adds to a prototype's "…" menu, among the ones that change it (Edit, Archive). `editable` is
@@ -66,8 +66,8 @@ export const homeApps = (local: boolean): InstalledModule[] =>
     .filter(({ app }) => app.overview)
     .sort((a, b) => (a.app.homeOrder?.[local ? 'local' : 'deployed'] ?? a.app.order) - (b.app.homeOrder?.[local ? 'local' : 'deployed'] ?? b.app.order));
 
-// The address a module's section opens at, like "/examples".
+// The address a module's section opens at, like "/tools".
 export const sectionPath = (spec: ModuleSpec) => `/${spec.section!.key}`;
-// Whether a pathname is inside the module's section: /examples and /examples/sample.
+// Whether a pathname is inside the module's section: /tools and /tools/quote-card.
 export const inSection = (spec: ModuleSpec, pathname: string) =>
   Boolean(spec.section) && (pathname === sectionPath(spec) || pathname.startsWith(`${sectionPath(spec)}/`));

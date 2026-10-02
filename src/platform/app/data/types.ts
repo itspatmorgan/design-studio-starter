@@ -24,7 +24,7 @@ export type PrototypeInfo = {
   system: string;         // meta.json "system", or the default (studio.config.ts defaultSystem, else the first in src/systems/)
   start: string | null;   // meta.json "start", as an item path: the item it opens on
   status?: 'archived';    // meta.json "status", when archived; absent means active
-  maintainers?: string[]; // meta.json "maintainers" (contributors.json keys), where a section's policy is maintainers; prototypes don't have them
+  maintainers?: string[]; // meta.json "maintainers" (contributors.json keys), where a section's policy is maintainers (tools); prototypes don't have them
 };
 
 // A prototype with its items loaded, which everything that shows a prototype's files needs.
@@ -52,7 +52,7 @@ export type GuidePage = {
 };
 
 // `sections` holds the items of the modules' sections of prototype-shaped folders, by section key: the
-// module section items (src/examples/, as `sections.examples`), shaped like prototypes.
+// published tools (src/tools/, as `sections.tools`), shaped like prototypes.
 // `handbook` holds the Handbook's sections (src/handbook/, see src/platform/core/roots.ts), shaped like
 // prototypes.
 // `handbookMap` is how an agent reads the Handbook, worked out from the files (modules/handbook/map.ts).

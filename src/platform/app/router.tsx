@@ -6,11 +6,11 @@
 //   /prototypes/$contributor/$prototype/$    an item, by its path without the extension, at any depth:
 //                                            /prototypes/patrick/hello-world/lofi/main
 //                                            (?mode=source shows its text, in dev: SourcePane)
-//   /$contributor/$prototype[/$]             the same for a section's items: /examples/sample, /handbook/docs.
+//   /$contributor/$prototype[/$]             the same for a section's items: /tools/quote-card, /handbook/docs.
 //                                            An address from before prototypes moved, /patrick/hello-world, is
 //                                            sent on to /prototypes/patrick/hello-world.
 //
-// The modules add their own: /prototypes (the gallery), /examples, /systems/$system, /handbook, /guide/$page
+// The modules add their own: /prototypes (the gallery), /tools, /systems/$system, /handbook, /guide/$page
 // (src/platform/modules/<id>/app.tsx). Everything that opens in the viewer does so through the routes above.
 import { lazy, Suspense } from 'react';
 import { createRootRoute, createRoute, createRouter, notFound, redirect, useNavigate, useRouter } from '@tanstack/react-router';
@@ -92,7 +92,7 @@ function ItemPage({ data }: { data: ItemData | undefined }) {
 }
 
 // The routes that open an item in the viewer: one set for a prototype (/prototypes/<person>/<id>) and one for an item
-// of a section (/examples/<id>, /handbook/<section>). They do the same thing and are written twice, not made by a
+// of a section (/tools/<id>, /handbook/<section>). They do the same thing and are written twice, not made by a
 // function, because the router's types need each path written out to check links to it.
 const loadProto = async ({ contributor, prototype }: { contributor: string; prototype: string }) => {
   const proto = await loadPrototype(contributor, prototype);
@@ -164,7 +164,7 @@ const sectionItemSplatRoute = createRoute({
   notFoundComponent: NotFound,
 });
 
-// The app's own routes are typed, so links to them are checked. The modules' routes (Systems, the
+// The app's own routes are typed, so links to them are checked. The modules' routes (Tools, Systems, the
 // Handbook, the Guide, in src/platform/modules/<id>/app.tsx) are added at run time, and the types leave
 // them out: a link to one is written loosely.
 const coreRoutes = [homeRoute, prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]), sectionItemRoute.addChildren([sectionItemIndexRoute, sectionItemSplatRoute])] as const;

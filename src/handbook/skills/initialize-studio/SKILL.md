@@ -15,7 +15,7 @@ Collect only unresolved choices: personal or team use (team is the starter defau
 
 ## Configure and register
 
-Use `pnpm studio configure --name "…" --usage personal|team --tagline "…" --system <installed-id>` to preview, then `--yes` to apply the person's choices. Omit unchanged fields. For modules, read [modules.md](../../rules/modules.md) and use the existing studio commands.
+Use `pnpm studio configure --name "…" --usage personal|team --tagline "…" --system <installed-id>` to preview, then `--yes` to apply the person's choices. Omit unchanged fields. For modules, read [modules.md](../../rules/modules.md) and use the existing studio commands. The beta ships with Tools off; enabling it is optional.
 
 Follow [setup-contributor](../setup-contributor/SKILL.md) for the first person's identity and registration. A personal studio accepts a personal email and needs no GitHub account to run locally. A shared studio needs each contributor's own identity; inspect Git remotes and explain the GitHub repository prerequisite for sharing clones. Do not create a remote, push, or host anything without a request.
 
@@ -25,7 +25,7 @@ Ask for actual team/product context for the Handbook's principles and personas. 
 
 Follow [setup-design-system](../setup-design-system/SKILL.md). Keep Product available while the replacement is incomplete. Report what still needs human input. The placeholder is not the person's finished system merely because it builds.
 
-The starter's `patrick` entry and sample prototype belong to the kit author. Explain cleanup before doing it; do not remove another contributor's work just because they joined. For authorized starter cleanup, inspect links and all content, including disabled modules. Transfer, archive outside active source, or remove those samples according to the person's choice before retiring their dependencies. Preserve recoverable copies when replacing content. Do not leave orphaned maintainers or broken imports behind.
+The starter's `patrick` entry, prototype and disabled tool belong to the kit author. Explain cleanup before doing it; do not remove another contributor's work just because they joined. For authorized starter cleanup, inspect links and all content, including disabled modules: the sample tool also depends on Product and lists `patrick` as maintainer. Transfer, archive outside active source, or remove those samples according to the person's choice before retiring their dependencies. Preserve recoverable copies when replacing content. Do not leave orphaned maintainers or broken imports behind.
 
 ## Verify and hand off
 

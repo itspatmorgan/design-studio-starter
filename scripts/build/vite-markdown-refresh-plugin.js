@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_DIRS } from '../lib/modules.js';
 
 const SRC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src');
-// Prototypes, and the modules' prototype-shaped folders (src/examples/).
+// Prototypes, and the modules' prototype-shaped folders (src/tools/).
 const FOLDERS = [path.join(SRC, 'prototypes'), ...PROTOTYPE_DIRS].map((dir) => dir + path.sep);
 
 export default function markdownRefresh() {

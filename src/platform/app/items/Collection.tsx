@@ -6,7 +6,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/platform/components/toggle-group
 import { ItemGroup } from '@/platform/components/item';
 import { ItemGrid } from './ItemGrid';
 
-// A collection's index (/prototypes, /examples, ...) can be read as cards or as a plain list. Which one is saved in this
+// A collection's index (/prototypes, /tools, ...) can be read as cards or as a plain list. Which one is saved in this
 // browser and shared by every index, so you choose once. Cards are the default.
 const KEY = 'design-studio:collection-view';
 export type CollectionView = 'cards' | 'list';

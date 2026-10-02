@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { gzipSync } from 'node:zlib';
-import { personAddress, moveWithLinks } from './prototype-links.js';
+import { addressPattern, personAddress, moveWithLinks } from './prototype-links.js';
 import { archiveEntries, extractArchive, boundedDownload } from './source-archive.js';
 import importGuard from '../build/vite-import-guard-plugin.js';
 
@@ -33,6 +33,7 @@ test('rename migrates canonical and legacy links without changing external URLs 
     assert.equal(fs.existsSync(from), false);
     assert.match(fs.readFileSync(path.join(to, 'flow.excalidraw'), 'utf8'), /\/prototypes\/sam\/new\/view/);
     assert.equal(fs.readFileSync(path.join(to, 'notes.md'), 'utf8'), '[/prototypes/sam/new/view](/prototypes/sam/new/view) https://other.test/sam/old/view /sam/older/view');
+    assert.equal('/tools/quote-card/main'.replace(addressPattern('/tools/quote-card'), '/prototypes/sam/quote-card'), '/prototypes/sam/quote-card/main');
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
 
@@ -62,12 +63,12 @@ test('prototype import allowlist includes its system and rejects unrelated local
   const root = path.resolve('src/prototypes/patrick/import-fixture');
   for (const [target, allowed] of [['src/systems/product/components/button/index.ts', true], ['src/lib/store.ts', true], ['src/prototypes/patrick/import-fixture/_components/text.ts', true], ['scripts/lib/random.js', false], ['src/platform/app/router.tsx', false], ['src/prototypes/patrick/feedback-inbox/main.tsx', false]]) {
     const context = { resolve: async () => ({ id: path.resolve(target) }), error: (message) => { throw new Error(message); } };
-    const request = guard.resolveId.call(context, './thing', path.join(root, 'main.tsx'), {});
+    const request = guard.resolveId.call(context, './thing', path.join(root, 'quote-card.tsx'), {});
     if (allowed) await request; else await assert.rejects(request, /Prototype scope/);
   }
 });
 
-test('create and rename preserve addresses, file errors recover, and system removal protects prototypes', async () => {
+test('create, rename, publish and unpublish preserve addresses and maintainer permissions', { skip: !fs.existsSync(path.resolve('src/platform/modules/tools/module.ts')) }, async () => {
   const { execFileSync } = await import('node:child_process');
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-journey-'));
   const root = path.resolve('.');
@@ -81,6 +82,7 @@ test('create and rename preserve addresses, file errors recover, and system remo
       import { pathToFileURL } from 'node:url';
       const load = (file) => import(pathToFileURL(path.resolve(file)).href);
       const { createPrototype, renamePrototype } = await load('src/platform/modules/' + 'prototypes/node/create.js');
+      const tools = (await load('src/platform/modules/' + 'tools/server.ts')).default;
       const { slug } = createPrototype({ title: 'Beta Journey', key: 'patrick' });
       const original = path.resolve('src/prototypes/patrick', slug);
       fs.writeFileSync(path.join(original, 'notes.md'), '[View](/prototypes/patrick/beta-journey/main)');
@@ -90,6 +92,12 @@ test('create and rename preserve addresses, file errors recover, and system remo
       const moved = path.resolve('src/prototypes/patrick', renamed.id);
       assert.match(fs.readFileSync(path.join(moved, 'notes.md'), 'utf8'), /beta-roundtrip/);
       assert.throws(() => renamePrototype({key:'patrick',id:renamed.id,title:'Feedback Inbox'}), /already/);
+      const published = tools.publish({ me: 'patrick', body: { prototype: renamed.id } });
+      assert.equal(published.body.contributor, 'tools');
+      assert.match(fs.readFileSync(path.resolve('src/tools', renamed.id, 'notes.md'), 'utf8'), /\\/tools\\/beta-roundtrip/);
+      assert.throws(() => tools.unpublish({ me: 'other', body: { prototype: renamed.id } }), /maintainer/);
+      assert.equal(tools.unpublish({ me: 'patrick', body: { prototype: renamed.id } }).body.contributor, 'patrick');
+      assert.match(fs.readFileSync(path.join(moved, 'notes.md'), 'utf8'), /\\/prototypes\\/patrick\\/beta-roundtrip/);
       const { buildManifest } = await load('scripts/build/build-manifest.js');
       assert.equal(buildManifest().errors, 0);
       const plugin = (await load('scripts/build/vite-files-plugin.js')).default();
@@ -105,15 +113,16 @@ test('create and rename preserve addresses, file errors recover, and system remo
       assert.equal(failed.statusCode, 500);
       const recovered = response(); await handler(request, recovered, () => assert.fail('Unexpected fallback'));
       assert.equal(recovered.statusCode, 200);
+      const tool = tools.publish({ me: 'patrick', body: { prototype: renamed.id } });
       fs.mkdirSync('src/systems/z-beta-fixture');
       fs.copyFileSync('src/systems/product/system.ts', 'src/systems/z-beta-fixture/system.ts');
-      const metaPath = path.join(moved, 'meta.json');
+      const metaPath = path.resolve('src/tools', tool.body.id, 'meta.json');
       const meta = JSON.parse(fs.readFileSync(metaPath)); meta.system = 'z-beta-fixture';
       fs.writeFileSync(metaPath, JSON.stringify(meta));
       const { spawnSync } = await import('node:child_process');
       const removal = spawnSync(process.execPath, ['scripts/cli/studio.js', 'remove', 'z-beta-fixture'], { encoding: 'utf8' });
       assert.equal(removal.status, 1);
-      assert.equal((removal.stderr + removal.stdout).includes('patrick/beta-roundtrip'), true, removal.stderr + removal.stdout);
+      assert.equal((removal.stderr + removal.stdout).includes('tools/beta-roundtrip'), true, removal.stderr + removal.stdout);
       assert.equal(fs.existsSync('src/systems/z-beta-fixture/system.ts'), true);
 
     `;

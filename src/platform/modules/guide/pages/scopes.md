@@ -24,13 +24,15 @@ The scope check sorts every changed file into one of two buckets: your folder, o
 
 The studio maintainer should protect `main`, require pull requests and the Checks jobs, and require maintainer review for shared code. The starter does not configure GitHub branch protection for you.
 
+A [tool](/guide/tools) is a team asset, so it doesn't live in anyone's folder. It's in scope for the people listed as its `maintainers`, and only for them. The scope check uses the list from before the change, so a change can't make its author a maintainer.
+
 Adding or editing your own entry in `contributors.json` or `contributors/<key>.json` counts as in scope. Before each commit, you'll also get a warning if your Git name or email doesn't match your entry, so your commits trace back to you.
 
 ## Prototype scope
 
 > A prototype can depend only on its own folder, its design system, and shared utilities.
 
-A prototype can import from its own folder, its design system (`src/systems/product/` unless it picks another), and `src/lib/`. It can't import from another prototype, so nobody's change breaks your work, or from `src/platform/`, so the app can change freely. To reuse something from one, link to it or ask your agent to copy it into your folder.
+A prototype can import from its own folder, its design system (`src/systems/product/` unless it picks another), and `src/lib/`. It can't import from another prototype or a [tool](/guide/tools), so nobody's change breaks your work, or from `src/platform/`, so the app can change freely. To reuse something from one, link to it or ask your agent to copy it into your folder.
 
 It also can't import from a different design system than the one it picks in `meta.json`, so its look stays consistent.
 

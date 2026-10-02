@@ -15,7 +15,7 @@ export default function App() {
   // offers its hide/show toggle exactly when there is one.
   const [navs, setNavs] = useState(0);
   const registerNav = useCallback((present: boolean) => setNavs((n) => n + (present ? 1 : -1)), []);
-  // A standalone item (a standalone section item, /examples/<id>) on the deployed site fills the window like an app: no rail,
+  // A standalone item (a published tool, /tools/<id>) on the deployed site fills the window like an app: no rail,
   // no navigation. (Locally it keeps them, so you can still edit it.)
   const standaloneApp = useRouterState({ select: (s) => !import.meta.env.DEV && MODULES.some((m) => m.section?.standalone && s.location.pathname.startsWith(`/${m.section.key}/`)) });
 
