@@ -41,7 +41,8 @@ export function docTemplates({ system, source, exportName, required = [] }: Scaf
   return {
     examples: {
       file: `${dir}${stem}.examples.tsx`,
-      content: `import { ${name} } from '@/systems/${system}/components/${dir}${stem}';
+      // The studio's own components are in src/platform/components/, not src/systems/.
+      content: `import { ${name} } from '${system === 'studio' ? '@/platform/components' : `@/systems/${system}/components`}/${dir}${stem}';
 
 // Each export named with a capital is one example on the component's page, shown live with its code.
 // Add one per variant, size, or state worth seeing.${note}

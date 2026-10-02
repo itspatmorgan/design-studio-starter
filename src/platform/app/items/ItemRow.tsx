@@ -1,26 +1,29 @@
 import type { ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
 import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/react';
+import { Item, ItemContent, ItemMedia, ItemTitle } from '@/platform/components/item';
 import { cn } from '@/lib/utils';
 
-// The row for anything in a section: on the front page (HomeSection.tsx) and in a collection's list view (Collection.tsx). `link` is a link from manifest.ts (prototypeLink,
-// itemLink). Every row is one line high and starts with a 28px neutral tile holding the module's rail icon, so all of a
-// section's rows look alike. The row is inset from the panel's edge and rounded, so its hover is a pill and not a stripe.
-// `menu` is drawn beside the link (PrototypeCardMenu, inline), so the row sits in a "card-wrap" group.
+// The row for anything in a section: on the front page (HomeSection.tsx) and in a collection's list view (Collection.tsx). It is
+// the design system's Item, rendered as a link, with a neutral tile holding the module's rail icon, so all of a section's
+// rows look alike. `link` is a link from manifest.ts (prototypeLink, itemLink). `menu` is drawn beside the link
+// (PrototypeCardMenu, inline), so the row sits in a "card-wrap" group.
 export function ItemRow({ link, icon, title, meta, archived, menu }: { link: object; icon: IconSvgElement; title: string; meta?: ReactNode; archived?: boolean; menu?: ReactNode }) {
   return (
     <li className={cn('group/card-wrap relative', archived && 'opacity-60')}>
-      <Link {...(link as { to: never })} className="flex items-center gap-3 rounded-lg px-2 py-1.5 outline-none transition-colors hover:bg-muted/60 focus-visible:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring">
-        <span className="grid size-7 shrink-0 place-items-center rounded-md bg-muted text-foreground/70" aria-hidden>
+      <Item size="xs" className="pr-10" render={<Link {...(link as { to: never })} />}>
+        <ItemMedia variant="icon" className="size-7 rounded-md bg-muted text-foreground/70">
           <HugeiconsIcon icon={icon} size={15} strokeWidth={1.75} />
-        </span>
-        <span className="flex min-w-0 flex-1 items-baseline gap-1.5 pr-7">
-          <span className="truncate text-sm text-foreground">{title}</span>
-          {meta && <span className="shrink-0 text-xs text-muted-foreground">{meta}</span>}
-        </span>
-      </Link>
-      {/* Centred on the row's height, with the row's own padding from the pill's edge. */}
-      {menu && <div className="absolute top-1/2 right-2 -translate-y-1/2">{menu}</div>}
+        </ItemMedia>
+        <ItemContent>
+          <ItemTitle className="min-w-0">
+            <span className="truncate">{title}</span>
+            {meta && <span className="shrink-0 text-xs font-normal text-muted-foreground">{meta}</span>}
+          </ItemTitle>
+        </ItemContent>
+      </Item>
+      {/* Centred on the row's height, the row's padding from its edge. */}
+      {menu && <div className="absolute top-1/2 right-2.5 -translate-y-1/2">{menu}</div>}
     </li>
   );
 }

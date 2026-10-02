@@ -8,6 +8,9 @@
 import { getRouteApi } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Search01Icon } from '@hugeicons/core-free-icons';
+import { Button } from '@/platform/components/button';
+import { Card } from '@/platform/components/card';
+import { Kbd } from '@/platform/components/kbd';
 import { APP_NAME, TAGLINE } from '@/platform/app/data/config';
 import { homeApps } from '@/platform/app/modules';
 import { useMyName } from '@/platform/app/data/files';
@@ -29,19 +32,17 @@ export default function Home() {
         <h1 className="text-center text-2xl font-semibold tracking-tight text-foreground">{heading}</h1>
         {!local && TAGLINE && <p className="mt-1.5 text-center text-sm text-muted-foreground">{TAGLINE}</p>}
       </header>
-      <div className="overflow-hidden rounded-xl border border-border bg-card pb-1">
+      <Card className="gap-0 py-2">
         {/* The panel's first row opens the ⌘K palette: the search every page has, put where a first-time visitor will see it. */}
-        <button
-          type="button"
-          onClick={openPalette}
-          className="flex h-11 w-full items-center gap-2.5 border-b border-border px-4 text-left text-sm text-muted-foreground transition-colors outline-none hover:bg-muted/50 focus-visible:bg-muted/50"
-        >
-          <HugeiconsIcon icon={Search01Icon} size={16} />
-          <span className="flex-1">Search prototypes, tools, docs</span>
-          <kbd className="rounded border border-border px-1.5 py-0.5 font-sans text-[11px] leading-none">⌘K</kbd>
-        </button>
+        <div className="px-2 pb-1">
+          <Button variant="outline" className="h-9 w-full justify-start font-normal text-muted-foreground" onClick={openPalette}>
+            <HugeiconsIcon icon={Search01Icon} data-icon="inline-start" />
+            <span className="flex-1 text-left">Search prototypes, tools, docs</span>
+            <Kbd>⌘K</Kbd>
+          </Button>
+        </div>
         {homeApps(local).map(({ spec, app }) => app.overview && <app.overview key={spec.id} manifest={manifest} />)}
-      </div>
+      </Card>
     </main>
   );
 }

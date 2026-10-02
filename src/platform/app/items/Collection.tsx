@@ -1,7 +1,9 @@
 import { Fragment, useSyncExternalStore, type ReactNode } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { GridViewIcon, LeftToRightListBulletIcon } from '@hugeicons/core-free-icons';
-import { cn } from '@/lib/utils';
+import { Card } from '@/platform/components/card';
+import { ToggleGroup, ToggleGroupItem } from '@/platform/components/toggle-group';
+import { ItemGroup } from '@/platform/components/item';
 import { ItemGrid } from './ItemGrid';
 
 // A collection's index (/prototypes, /tools, ...) can be read as cards or as a plain list. Which one is saved in this
@@ -25,29 +27,24 @@ export function useCollectionView() {
 // The two-button switch for the header of an index.
 export function ViewToggle() {
   const [view, setView] = useCollectionView();
-  const choices = [['cards', 'Cards', GridViewIcon], ['list', 'List', LeftToRightListBulletIcon]] as const;
   return (
-    <div role="group" aria-label="View as" className="inline-flex h-8 shrink-0 items-center rounded-lg border border-input p-0.5">
-      {choices.map(([value, label, icon]) => (
-        <button
-          key={value}
-          type="button"
-          aria-pressed={view === value}
-          aria-label={label}
-          title={label}
-          onClick={() => setView(value)}
-          className={cn('grid size-6 place-items-center rounded-md text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring', view === value && 'bg-muted text-foreground')}
-        >
-          <HugeiconsIcon icon={icon} size={14} />
-        </button>
-      ))}
-    </div>
+    <ToggleGroup
+      variant="outline"
+      spacing={0}
+      aria-label="View as"
+      value={[view]}
+      // Pressing the choice that is already on turns it off; the view stays as it is.
+      onValueChange={(next) => { const choice = next[0]; if (choice === 'cards' || choice === 'list') setView(choice); }}
+    >
+      <ToggleGroupItem value="cards" aria-label="Cards" title="Cards"><HugeiconsIcon icon={GridViewIcon} /></ToggleGroupItem>
+      <ToggleGroupItem value="list" aria-label="List" title="List"><HugeiconsIcon icon={LeftToRightListBulletIcon} /></ToggleGroupItem>
+    </ToggleGroup>
   );
 }
 
 // The items as a grid of cards (each in an <li>) or a list of rows (ItemRow draws its own <li>), as the reader chose.
 export function Collection<T>({ items, keyOf, card, row }: { items: T[]; keyOf: (item: T) => string; card: (item: T) => ReactNode; row: (item: T) => ReactNode }) {
   const [view] = useCollectionView();
-  if (view === 'list') return <ul className="rounded-xl border border-border bg-card p-2">{items.map((item) => <Fragment key={keyOf(item)}>{row(item)}</Fragment>)}</ul>;
+  if (view === 'list') return <Card className="gap-0 p-2"><ItemGroup className="gap-0">{items.map((item) => <Fragment key={keyOf(item)}>{row(item)}</Fragment>)}</ItemGroup></Card>;
   return <ItemGrid>{items.map((item) => <li key={keyOf(item)}>{card(item)}</li>)}</ItemGrid>;
 }
