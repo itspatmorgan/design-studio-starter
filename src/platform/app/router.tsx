@@ -63,7 +63,7 @@ async function itemLoader({ contributor, prototype, _splat }: { contributor: str
   // No path in the URL: the prototype's start item, or its first.
   const item = proto && (_splat ? findItem(proto, _splat) : firstItem(proto));
   const type = item && fileTypeModules[item.fileType];
-  const title = proto && item && [proto.title, itemLabel(item.path), APP_NAME].join(' — ');
+  const title = proto && item && [proto.title, itemLabel(item.path, proto), APP_NAME].join(' — ');
   // Source view: just the text, so a file that doesn't compile can still be read and fixed.
   if (import.meta.env.DEV && mode === 'source' && proto && item && title && FILE_TYPES[item.fileType]?.language) {
     return { fileType: item.fileType, props: null, source: { proto, item }, title };

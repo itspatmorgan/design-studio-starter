@@ -1,6 +1,6 @@
 import { linkOptions } from '@tanstack/react-router';
 import { itemSlug } from '@/platform/core/fileTypes';
-import { isSectionKey } from '@/platform/core/roots';
+import { HANDBOOK_KEY, isSectionKey } from '@/platform/core/roots';
 import type { Item, Manifest, Prototype, PrototypeInfo, PrototypeRef } from '@/platform/app/data/types';
 
 // Fetched once, then shared by every route loader. In dev, replaced whenever it changes.
@@ -59,8 +59,12 @@ export function firstItem(p: Prototype): Item | undefined {
 export const findItem = (p: Prototype, slug: string) => p.items.find((i) => itemSlug(i.path) === slug);
 
 // "checkout/session-done.tsx" → "Session Done": an item's name, without its folder.
-export const itemLabel = (path: string) =>
-  itemSlug(path).split('/').pop()!.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+export const itemLabel = (path: string, proto?: Pick<PrototypeInfo, 'contributorKey' | 'id'>) => {
+  // The entry file keeps its required name on disk; people see the skill it opens.
+  const skill = proto?.contributorKey === HANDBOOK_KEY && proto.id === 'skills' && /^([^/]+)\/SKILL\.md$/.exec(path);
+  const name = skill ? skill[1] : itemSlug(path).split('/').pop()!;
+  return name.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+};
 
 // "checkout/steps/done.tsx" → "checkout/steps": the folder it's in, or "".
 export const itemFolder = (path: string) => (path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : '');

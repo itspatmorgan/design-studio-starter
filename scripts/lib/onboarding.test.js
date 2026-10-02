@@ -27,9 +27,23 @@ test('local personal setup resumes, then a second clone joins a team without cha
   const git = (cwd, ...args) => execFileSync('git', args, { cwd, stdio: 'pipe' });
   try {
     copy(root, dir);
+    // Own the fixture data: a team's real contributors, systems and prototypes are arbitrary.
+    fs.rmSync(path.join(dir, 'contributors'), { recursive: true, force: true });
+    fs.writeFileSync(path.join(dir, 'contributors.json'), JSON.stringify({ patrick: { name: 'Patrick Morgan', email: '', github: '' } }));
+    for (const folder of ['src/prototypes', 'src/tools', 'src/systems']) {
+      fs.rmSync(path.join(dir, folder), { recursive: true, force: true });
+      fs.mkdirSync(path.join(dir, folder), { recursive: true });
+    }
+    fs.writeFileSync(path.join(dir, 'studio.config.ts'), "import type { StudioConfig } from './src/platform/core/config.ts';\nexport default { name: 'Fixture Studio', usage: 'team', tagline: 'Fixture', modules: { tools: false }, defaultSystem: 'product' } satisfies StudioConfig;\n");
+    run(dir, 'scripts/cli/studio.js', 'create-system', 'product', '--label', 'Product', '--yes');
     git(dir, 'init', '-q');
     git(dir, 'config', 'user.name', 'Patrick Morgan'); git(dir, 'config', 'user.email', 'legacy@example.test');
     assert.equal(run(dir, 'scripts/cli/resolve-contributor.js').trim(), 'patrick');
+    run(dir, 'src/platform/modules/prototypes/node/create.js', 'Sample');
+    const tool = path.join(dir, 'src/tools/quote-card');
+    fs.mkdirSync(tool, { recursive: true });
+    fs.writeFileSync(path.join(tool, 'meta.json'), JSON.stringify({ title: 'Sample Tool', system: 'product', maintainers: ['patrick'] }));
+    fs.writeFileSync(path.join(tool, 'prototype.tsx'), "export { default } from '@/lib/emptyView';\n");
     git(dir, 'config', 'user.name', 'Sam Solo'); git(dir, 'config', 'user.email', 'sam@gmail.com');
     assert.equal(spawnSync(process.execPath, ['scripts/cli/resolve-contributor.js'], {cwd:dir,encoding:'utf8'}).status, 1);
     const config = path.join(dir, 'studio.config.ts'); const before = fs.readFileSync(config, 'utf8');

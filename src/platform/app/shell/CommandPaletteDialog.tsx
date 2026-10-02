@@ -44,12 +44,12 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
                   {current.items.map((item) => (
                     <CommandItem
                       key={item.path}
-                      value={`${itemLabel(item.path)} ${item.path}`}
+                      value={`${itemLabel(item.path, current)} ${item.path}`}
                       disabled={isOpen(item)}
                       onSelect={() => go(itemLink(current, item))}
                     >
                       {itemFolder(item.path) && <span className="shrink-0 text-xs text-muted-foreground">{itemFolder(item.path)}</span>}
-                      <span className="truncate">{itemLabel(item.path)}</span>
+                      <span className="truncate">{itemLabel(item.path, current)}</span>
                     </CommandItem>
                   ))}
                 </CommandGroup>

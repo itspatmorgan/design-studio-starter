@@ -471,7 +471,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
       // rest of the app; the file name is in the tooltip and the rename field. Other files, shown
       // with Show all files (in the header's … menu), keep their real names, since they open in your editor.
       const label = item
-        ? <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{itemLabel(node.name)}</span>
+        ? <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{itemLabel(node.path, proto)}</span>
         : <FileName name={node.name} />;
       // Items open in the app.
       if (item) {

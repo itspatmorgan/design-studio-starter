@@ -6,6 +6,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Add01Icon } from '@hugeicons/core-free-icons';
 import { createPrototype, useMe } from '@/platform/app/data/files';
 import { prototypeLink, setManifest } from '@/platform/app/data/manifest';
+import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
 import { Button } from '@/platform/components/button';
 import { Input } from '@/platform/components/input';
 import { Textarea } from '@/platform/components/textarea';
@@ -53,7 +54,10 @@ function NewPrototype() {
           <form key={String(open)} action={create} className="grid gap-4">
             <DialogHeader>
               <DialogTitle>New prototype</DialogTitle>
-              <DialogDescription>Created in src/prototypes/{me}/.</DialogDescription>
+              <DialogDescription>
+                Created in src/prototypes/{me}/.
+                {PROTOTYPE_SYSTEMS[DEFAULT_SYSTEM] && <> Uses the {PROTOTYPE_SYSTEMS[DEFAULT_SYSTEM].label} design system.</>}
+              </DialogDescription>
             </DialogHeader>
             <label className="grid gap-1.5 text-sm font-medium">
               Title

@@ -27,12 +27,12 @@ function HandbookPalette({ manifest, current, isOpen, go }: PaletteContext) {
         {manifest.handbook.flatMap((section) => section.items.map((item) => (
           <CommandItem
             key={`${section.id}/${item.path}`}
-            value={`handbook ${section.title} ${itemLabel(item.path)} ${item.path}`}
+            value={`handbook ${section.title} ${itemLabel(item.path, section)} ${item.path}`}
             disabled={section === current && isOpen(item)}
             onSelect={() => go(itemLink(section, item))}
           >
             <span className="shrink-0 text-xs text-muted-foreground">{[section.title, itemFolder(item.path)].filter(Boolean).join(' · ')}</span>
-            <span className="truncate">{itemLabel(item.path)}</span>
+            <span className="truncate">{itemLabel(item.path, section)}</span>
           </CommandItem>
         )))}
       </CommandGroup>
