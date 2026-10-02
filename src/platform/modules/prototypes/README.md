@@ -17,7 +17,11 @@ The app finds prototypes automatically. Your agent creates them with `pnpm new "
 
 Ask your agent for a prototype and describe the outcome you want. You can also select **New prototype** on the Prototypes page.
 
-The agent builds with the prototype's assigned design system. Ask it to include the states and questions you need to review.
+Use the assigned design system for screens that match your product. You can also start from scratch or build local components and interactions.
+
+Mix system components with experiments when useful. The prototype's boundaries contain those experiments; they do not require every component to belong to the shared system.
+
+Tell your agent which approach you want. Ask it to include the states and questions you need to review.
 
 ## Find your files
 

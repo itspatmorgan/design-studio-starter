@@ -8,6 +8,18 @@ toc: true
 
 Each prototype should remain safe to change, move, or remove. Dependency boundaries keep its code separate from other prototypes and private platform code.
 
+## Explore freely inside the prototype
+
+A prototype can start from scratch. Its assigned design system provides a toolkit, not a limit on what you can create.
+
+Use system components for screens that match your product. Build local components, styles, and interactions when you need to explore something new.
+
+You can combine both approaches in one prototype. For example, keep the product's navigation while trying a new editor built entirely from local components.
+
+Keep experimental components in the prototype's own folder, such as `_components/`. Contain their styles so the experiment does not affect other prototypes or the studio.
+
+You do not need to add an idea to the shared design system before testing it. If it becomes useful across prototypes, propose that shared change for maintainer review.
+
 ## Use permitted dependencies
 
 A prototype can use these sources:

@@ -20,7 +20,9 @@ Browse available systems on the **Systems** pages.
 | Platform | Studio navigation, menus, editors, and documentation pages. |
 | A prototype's assigned system | Its views and live view previews. |
 
-Prototypes cannot import the platform UI. Each prototype uses one assigned system, with separate runtime components and a scoped theme.
+Prototypes cannot import the platform UI. Each prototype has one assigned system, with separate runtime components and a scoped theme.
+
+The system is a toolkit, not a requirement to use its components everywhere. Prototypes can build local alternatives or combine them with system components.
 
 The starter includes **Product**, an example prototype system. Replace it with your product's components and tokens when they are available.
 
