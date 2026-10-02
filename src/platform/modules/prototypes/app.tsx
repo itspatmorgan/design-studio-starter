@@ -56,7 +56,7 @@ function Overview({ manifest }: { manifest: Manifest }) {
     <>
       {me && (
         <HomeSection title="Your prototypes" to="/prototypes">
-          {mine.length ? rows(mine.slice(0, SHOWN), false) : <div className="px-4 py-2"><NewPrototypeButton /></div>}
+          {mine.length ? rows(mine.slice(0, SHOWN), false) : <div className="py-[7px] pl-[11px]"><NewPrototypeButton /></div>}
         </HomeSection>
       )}
       {latest.length > 0 && <HomeSection title={me ? 'Latest from the team' : 'Latest prototypes'} to="/prototypes">{rows(latest, true)}</HomeSection>}
