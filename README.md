@@ -25,7 +25,7 @@ The Guide is available in the running app at `/guide`, and its pages are also in
 
 ## Project status
 
-Early beta, focused on local workflows: prototypes, canvases, documents, design systems, and the Handbook. Tools is included but disabled by default.
+Early beta, focused on local workflows: prototypes, canvases, documents, design systems, and the Handbook.
 
 For bugs, ideas, and pull requests, see [Contributing](CONTRIBUTING.md). For the intended environment and private vulnerability reporting, see [Security](SECURITY.md).
 

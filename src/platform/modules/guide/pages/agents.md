@@ -20,7 +20,7 @@ Rules in `src/handbook/rules/` are standing knowledge the agent reads every sess
 - `prototype-workflow.md`: what a prototype is, and how to build one
 - `contributor-scope.md`: working out who you are, and staying in your folder
 
-Others are read when the task comes up: `documents.md`, `canvases.md`, `tools.md`, and `handbook.md`.
+Others are read when the task comes up: `documents.md`, `canvases.md`, and `handbook.md`.
 
 Keep them short. A rule that says too much gets followed into situations it wasn't written for.
 

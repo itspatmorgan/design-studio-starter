@@ -1,6 +1,6 @@
 # Modules
 
-A module is a part of Design Studio you can add or remove: the Guide, Tools, the Handbook, Systems, and anything a team or the community
+A module is a part of Design Studio you can add or remove: the Guide, the Handbook, Systems, and anything a team or the community
 builds. Each is a folder here with a `module.ts` that says what it is and what it adds. The build, the dev server, and the app read that
 one list, so no list of sections is kept anywhere else, and a module needs no change to the code around it.
 
@@ -25,7 +25,7 @@ src/platform/
     <id>/module.ts, app.tsx, server.ts, check.ts, lib/    the files above
     <id>/type.ts, open.tsx, loader.ts    a file type (view, document, canvas, text: what a prototype can hold), which is a module too
     <id>/pages/    its pages (browser)          <id>/node/    its helpers that run in Node (build and commands)
-src/systems/ prototypes/ tools/ handbook/ lib/      your content, not the platform
+src/systems/ prototypes/ handbook/ lib/      your content, not the platform
 scripts/         build/ (build and dev server)   check/ (pnpm check)   cli/ (commands people and agents run)   lib/ (shared by those)
 ```
 
@@ -37,7 +37,7 @@ so the platform may import it, but all its code still lives in its one folder.
 
 | File in the module's folder | What it gives the platform |
 |---|---|
-| `module.ts` | Who it is, and its **section**: an address (`/tools`), optionally a content folder, and if that folder holds prototype-shaped folders (`items: "prototypes"`, one per id like `src/tools/<id>/`, or grouped by person like `src/prototypes/<person>/<id>/` with `byPerson`), who may change them (`policy`) and whether they open as full-window apps on the deployed site (`standalone`). Also: `optional` (may be turned off), `requires` (oldest platform version), `lib`, `handbook`, `dependencies`, `upstream`. |
+| `module.ts` | Who it is, and its **section**: an address (`/examples`), optionally a content folder, and if that folder holds prototype-shaped folders (`items: "prototypes"`, one per id like `src/examples/<id>/`, or grouped by person like `src/prototypes/<person>/<id>/` with `byPerson`), who may change them (`policy`) and whether they open as full-window apps on the deployed site (`standalone`). Also: `optional` (may be turned off), `requires` (oldest platform version), `lib`, `handbook`, `dependencies`, `upstream`. |
 | `app.tsx` | Its **rail button**, **routes**, a block on the app's front page (`overview`: a few of its items with a link to all of them, drawn with `HomeSection`; leave it out if the rail already says enough), entries in the ⌘K palette (`places`, `palette`), and entries in every prototype's "…" menu (`useActions`). |
 | `type.ts`, `open.tsx`, `loader.ts` | A **file type**: a kind of file a prototype holds, found by its extension. `type.ts` is what the build and the app need to know (extensions, a template for new files, checks), `open.tsx` is how the app opens it (icon, load, page, an optional live embed), and `loader.ts` lists its files for the deployed site. See `src/platform/core/fileTypes.md`. |
 | `server.ts` | **Routes it adds to the dev server**, at `POST /__studio/<module>/<route>`. Dev only. |

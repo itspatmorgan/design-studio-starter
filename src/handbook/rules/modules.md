@@ -1,6 +1,6 @@
 # Modules
 
-Modules are the parts of Design Studio that can be turned off, added, or removed: the Guide, Tools, and anything built by the team or the community. Design systems (`src/systems/<id>/`) are added the same way. The person doesn't run commands: you do, and tell them what happened in plain words. The reference is `src/platform/modules/README.md`.
+Modules are the parts of Design Studio that can be turned off, added, or removed: the Guide and anything built by the team or the community. Design systems (`src/systems/<id>/`) are added the same way. The person doesn't run commands: you do, and tell them what happened in plain words. The reference is `src/platform/modules/README.md`.
 
 ## Commands
 

@@ -86,7 +86,7 @@ test('turning a module off and on edits the one list in studio.config.ts', () =>
   const config = "export default {\n  name: 'X',\n  modules: {},\n} satisfies StudioConfig;\n";
   const off = editModulesFlag(config, 'guide', false)!;
   assert.match(off, /modules: \{ guide: false \},/);
-  assert.match(editModulesFlag(off, 'tools', false)!, /modules: \{ guide: false, tools: false \},/);
+  assert.match(editModulesFlag(off, 'examples', false)!, /modules: \{ guide: false, examples: false \},/);
   assert.equal(editModulesFlag(off, 'guide', true), config);
   assert.equal(editModulesFlag('export default {}', 'guide', false), null);
   assert.equal(editModulesFlag("modules: { guide: maybe },", 'guide', false), null);

@@ -1,6 +1,6 @@
-// The "…" on a prototype's (or tool's) card: the same actions as its menu in the navigation
+// The "…" on a prototype or section item's card: the same actions as its menu in the navigation
 // (usePrototypeActions.ts). It shows when the pointer is over the card or focus is in it. Only what you
-// may do is offered: everyone can copy the link, and the owner (or a tool's maintainers) can also change it.
+// may do is offered: everyone can copy the link, and the owner (or the section item's maintainers) can also change it.
 // Place it beside the card's link, in a wrapper with the group class "card-wrap", not inside the link.
 import { Fragment } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';

@@ -1,6 +1,6 @@
 // Keeps the manifest live during `pnpm dev`, without reloading the page.
 //
-// Vite already watches every file. When something under src/prototypes/, src/tools/, src/handbook/, src/systems/, src/platform/modules/guide/pages/, or a README that is a Guide page
+// Vite already watches every file. When something under src/prototypes/, a module's content folder, src/handbook/, src/systems/, src/platform/modules/guide/pages/, or a README that is a Guide page
 // changes (from the app, an agent, or your editor), this rebuilds the manifest in-process
 // and pushes it to the app over Vite's dev connection. The app swaps it in and refreshes
 // only the routes that use it (see router.tsx), so the open view and scroll position stay.

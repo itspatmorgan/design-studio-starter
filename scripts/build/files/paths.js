@@ -30,7 +30,7 @@ export function prototypeDir(contributor, prototype) {
     const dir = typeof prototype === 'string' && Object.hasOwn(SYSTEM_SOURCES, prototype) ? path.join(ROOT, SYSTEM_SOURCES[prototype].components) : null;
     return dir && fs.existsSync(dir) ? dir : null;
   }
-  // An item of a module's section of prototype-shaped folders (a tool, src/tools/<id>/): found by its folder name.
+  // An item of a module's section of prototype-shaped folders (a section item, src/examples/<id>/): found by its folder name.
   const section = PROTOTYPE_SECTIONS.find((s) => s.key === contributor);
   if (section) {
     if (!NAME.test(prototype ?? '')) return null;

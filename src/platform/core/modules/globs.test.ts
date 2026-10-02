@@ -10,36 +10,36 @@ const types = FILE_TYPES;
 const needs = (...ids: string[]) => ({ skip: ids.some((id) => !types[id]) && 'needs a file type that is not installed' });
 // Modules as fixtures, so the test still runs when one is removed.
 const module = (id: string, section?: ModuleSpec['section']): ModuleSpec => ({ id, label: id, version: '0.1.0', section });
-const tools = module('tools', { key: 'tools', folder: 'src/tools', items: 'prototypes' });
+const examples = module('examples', { key: 'examples', folder: 'src/examples', items: 'prototypes' });
 const modules = [
   module('prototypes', { key: 'prototypes', folder: 'src/prototypes', items: 'prototypes', byPerson: true }),
   module('guide', { key: 'guide', folder: 'src/platform/modules/guide/pages' }),
   module('handbook', { key: 'handbook', folder: 'src/handbook', items: 'handbook' }),
   module('systems', { key: 'systems', folder: 'src/systems' }),
-  tools,
+  examples,
 ];
 
 // These are the lists the loaders were written with by hand, before they were worked out from the modules.
 const sorted = (list: string[]) => [...list].sort();
 
-test('views are listed in prototypes and tools, skipping helpers', needs('view'), () => {
+test('views are listed in prototypes and examples, skipping helpers', needs('view'), () => {
   assert.deepEqual(sorted(globsFor('view', types, modules)), sorted([
     '/prototypes/**/*.{tsx,jsx}', '!/prototypes/**/_*/**', '!/prototypes/**/_*',
-    '/tools/**/*.{tsx,jsx}', '!/tools/**/_*/**', '!/tools/**/_*',
+    '/examples/**/*.{tsx,jsx}', '!/examples/**/_*/**', '!/examples/**/_*',
   ]));
 });
 
-test('canvases are listed in prototypes and tools, skipping helpers', needs('canvas'), () => {
+test('canvases are listed in prototypes and examples, skipping helpers', needs('canvas'), () => {
   assert.deepEqual(sorted(globsFor('canvas', types, modules)), sorted([
     '/prototypes/**/*.excalidraw', '!/prototypes/**/_*/**', '!/prototypes/**/_*',
-    '/tools/**/*.excalidraw', '!/tools/**/_*/**', '!/tools/**/_*',
+    '/examples/**/*.excalidraw', '!/examples/**/_*/**', '!/examples/**/_*',
   ]));
 });
 
 test('documents are also listed in the Handbook', needs('document'), () => {
   assert.deepEqual(sorted(globsFor('document', types, modules)), sorted([
     '/prototypes/**/*.md', '!/prototypes/**/_*/**', '!/prototypes/**/_*',
-    '/tools/**/*.md', '!/tools/**/_*/**', '!/tools/**/_*',
+    '/examples/**/*.md', '!/examples/**/_*/**', '!/examples/**/_*',
     '/handbook/**/*.md',
   ]));
 });
@@ -48,9 +48,9 @@ test('the fallback type lists the Handbook files no other type opens', needs('te
   assert.deepEqual(globsFor('text', types, modules), ['/handbook/**/*', '!/handbook/**/*.md']);
 });
 
-test('without the tools module, nothing looks in /tools', () => {
-  const without = modules.filter((m) => m !== tools);
-  for (const id of Object.keys(types)) assert.ok(!globsFor(id, types, without).some((g) => g.includes('/tools/')));
+test('without the examples module, nothing looks in /examples', () => {
+  const without = modules.filter((m) => m !== examples);
+  for (const id of Object.keys(types)) assert.ok(!globsFor(id, types, without).some((g) => g.includes('/examples/')));
 });
 
 test('a new section that holds prototypes is listed by every type that opens prototype files', needs('view', 'document', 'text'), () => {

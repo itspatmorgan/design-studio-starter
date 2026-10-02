@@ -8,7 +8,7 @@ export type StudioConfig = {
   // Onboarding guidance only; contributor ownership is identical in both modes. Left out, team.
   usage?: 'personal' | 'team';
   // One line on the front page of the deployed site, under the name, that tells a visitor what this is: "Our team's
-  // prototypes, tools and design systems." Left out, there's no line.
+  // prototypes and design systems." Left out, there's no line.
   tagline?: string;
   // Modules to turn off, by id: { guide: false }. A module left out is on. Turning one off keeps its
   // files, so turning it on again is one line; to remove it for good, delete its folder.

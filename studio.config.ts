@@ -7,6 +7,6 @@ export default {
   name: 'Design Studio',
   usage: 'team',
   tagline: 'Prototypes and design systems for our team.',
-  modules: { tools: false },
+  modules: {},
   defaultSystem: 'product',   // the design system a prototype uses when its meta.json doesn't name one
 } satisfies StudioConfig;

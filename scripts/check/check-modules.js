@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 import { pathToFileURL } from 'node:url';
 import { PLATFORM_VERSION, compatible, listProblems } from '../../src/platform/core/modules/index.ts';
 import { configProblems } from '../../src/platform/core/config.ts';
-import { CONFIG, MODULES, SECTION_KEYS, declarationProblems } from '../lib/modules.js';
+import { CONFIG, MODULES, SECTION_KEYS, PROTOTYPE_DIRS, declarationProblems } from '../lib/modules.js';
 import { PROTOTYPE_SYSTEMS, SYSTEM_IDS, systemDeclarationProblems } from '../../src/platform/modules/systems/node/systems.js';
 import { changesFromLock } from '../lib/lock.js';
 import { readContributors } from '../lib/contributors.js';
@@ -60,7 +60,7 @@ function* sources(dir) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     if (e.name === 'node_modules' || e.name.startsWith('.')) continue;
     const full = path.join(dir, e.name);
-    if (full === protoDir || full === path.join(ROOT, 'src', 'tools')) continue; // prototypes and tools have the import guard
+    if (full === protoDir || PROTOTYPE_DIRS.includes(full)) continue; // prototype sections have the import guard
     if (e.isDirectory()) yield* sources(full);
     else if (/\.(ts|tsx|js|jsx)$/.test(e.name)) yield full;
   }

@@ -4,7 +4,7 @@ import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/react';
 import { Card, CardContent } from '@/platform/components/card';
 import { cn } from '@/lib/utils';
 
-// The card for anything in a collection (a prototype, a tool), on each collection's index. Neutral on purpose: a tile with
+// The card for anything in a collection (a prototype, a section item), on each collection's index. Neutral on purpose: a tile with
 // the module's icon, then the title, what it is, and a line of detail, so a team's theme is what gives it colour. `link` is
 // a link from manifest.ts (prototypeLink). `menu` is drawn beside the link, not inside it (PrototypeCardMenu), so the card
 // sits in a "card-wrap" group.

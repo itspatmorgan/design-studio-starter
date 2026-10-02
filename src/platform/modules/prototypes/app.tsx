@@ -71,7 +71,7 @@ export default {
   icon: Layers01Icon,
   rail: 'top',
   order: 0,
-  // Locally your own prototypes come first. On the deployed site the tools do, since that is mostly what colleagues come for.
+  // Locally your own prototypes come first. Modules can set their overview order for local and deployed use.
   homeOrder: { local: 0, deployed: 15 },
   routes: (root) => [
     createRoute({

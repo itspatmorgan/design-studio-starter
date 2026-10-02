@@ -13,8 +13,8 @@ export const HANDBOOK_KEY = 'handbook';
 // files too: changed in the repo and reviewed.
 export const SYSTEMS_KEY = 'systems';
 
-// A module can hold prototype-shaped folders of its own, one per id (a tool is src/tools/<id>/): its section
-// key stands where a contributor's would, so a tool opens at /tools/<id>. The app and the build register the
+// A module can hold prototype-shaped folders of its own, one per id (a section item is src/examples/<id>/): its section
+// key stands where a contributor's would, so an item opens at /examples/<id>. The app and the build register the
 // keys from the module list at startup (src/platform/core/modules/index.ts), and rootOf reads them.
 let sectionKeys: ReadonlySet<string> = new Set();
 export const setSections = (keys: Iterable<string>) => { sectionKeys = new Set(keys); };
@@ -33,12 +33,12 @@ export const isHandbookSection = (id: string): id is keyof typeof HANDBOOK_SECTI
 // The key of the section that holds everyone's prototypes (the Prototypes module): /prototypes.
 export const PROTOTYPES_KEY = 'prototypes';
 
-// Whether a key names a section (tools, handbook, systems) rather than a person. The first part of an item's
+// Whether a key names a section (handbook, systems, or a module section) rather than a person. The first part of an item's
 // address is a section's key, or, for a prototype, "prototypes" and then the person's.
 export const isSectionKey = (key: string) => key === HANDBOOK_KEY || key === SYSTEMS_KEY || sectionKeys.has(key);
 
 // An item's address in the app, up to its id and without a base path: "/prototypes/patrick/hello-world"
-// for a prototype, "/tools/quote-card" for a tool.
+// for a prototype, "/examples/sample" for a section item.
 export const addressOf = (contributor: string, id: string) =>
   isSectionKey(contributor) ? `/${contributor}/${id}` : `/${PROTOTYPES_KEY}/${contributor}/${id}`;
 

@@ -21,7 +21,7 @@ export default function EmptyView({ path }: { path: string | null }) {
           <EmptyContent className="max-w-none flex-row items-center gap-2 rounded-lg bg-muted py-1.5 pr-1.5 pl-3 text-left">
             {/* The full path is copied; the shorter one (prototype/file) fits the frame. */}
             <code className="min-w-0 flex-1 truncate font-mono text-xs text-muted-foreground" title={prompt}>
-              In {path.split('/').slice(path.includes('/tools/') ? 2 : 3).join('/')}, build
+              In {path.split('/').slice(path.startsWith('src/prototypes/') ? 3 : 2).join('/')}, build
             </code>
             <Button
               size="sm"

@@ -1,7 +1,7 @@
 // Who may change what. Every section of the app has one policy, and the dev server, the scope check on
 // pull requests and the app's own buttons all ask here, so they can't disagree:
 //   owner        the contributor whose folder it is (a prototype, src/prototypes/<key>/<id>)
-//   maintainers  the people listed in the item's meta.json "maintainers" (a tool); anyone can use it
+//   maintainers  the people listed in the item's meta.json "maintainers" (a shared section item); anyone can use it
 //   open         whoever runs the app, because the files are the platform's and a pull request reviews
 //                the change (the Handbook, the systems' components)
 //   none         nobody, from the app (the Guide)
