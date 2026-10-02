@@ -3,7 +3,7 @@ name: setup-contributor
 description: "Set up someone joining an existing personal or shared Design Studio: local tools, Git identity, their contributor entry and first prototype. Use for onboarding a contributor; use initialize-studio for configuring a new studio."
 ---
 
-Read `studio.config.ts` and the existing contributor registry before changing anything. Joining preserves the studio's configuration, modules, Handbook, and design system. If this is a new studio instead, follow [initialize-studio](../initialize-studio/SKILL.md).
+Read `studio.config.ts` and the existing contributor registry before changing anything. Joining preserves the studio's configuration, modules, Handbook, and design system. When called by `initialize-studio`, complete registration here and return to that workflow; do not route back or repeat its questions. For a standalone request to configure a new studio instead, follow [initialize-studio](../initialize-studio/SKILL.md).
 
 1. Install missing tools and dependencies: `mise trust`, `mise install`, `pnpm install`. Check Node matches `mise.toml`; use `mise exec --` when mise is not activated. Perform these steps yourself; explain a blocker only when human action is required.
 2. Inspect `git config user.name` and `git config user.email`. Confirm uncertain identity with the person, then set the correct values in this repository when authorized. Personal use accepts a personal email and does not require GitHub. For a shared GitHub studio, inspect `gh` availability/sign-in and ask for the person's GitHub username when it cannot be determined; have the person complete interactive authentication when needed. Never reuse the sample author's or another person's account.

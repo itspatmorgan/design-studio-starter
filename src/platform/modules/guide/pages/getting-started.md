@@ -27,6 +27,8 @@ Use the same email in your Git identity and contributor entry. A personal studio
 
 Product is the placeholder kit. Supply your agent with existing component code or a package, tokens, design files or written guidance. It follows `setup-design-system`, imports and documents the kit, verifies its theme and representative components, then makes it the default. You can review the result on the Systems pages. Keep Product until the replacement works; the agent checks retained prototypes and disabled sample content before retiring it. Missing materials remain explicit next steps.
 
+Changing the default with `pnpm studio configure --system <key>` keeps existing prototypes on their previous system, including content in disabled modules. New prototypes use the new default. To move an existing prototype to the replacement kit, ask your agent to update its component imports and system choice together.
+
 ## Take the tour
 
 The kit comes with a sample prototype, **Feedback Inbox**: a small working app with three screens, a canvas, and two documents. Open it from the Prototypes page and read its **Start here** page. It walks through how a prototype is put together, with the real files to click through. It belongs to the sample contributor, `patrick`. To experiment, ask your agent to create a prototype in your own folder and bring over the parts you want. Only the studio maintainer should remove the shared sample.

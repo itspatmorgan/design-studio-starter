@@ -27,7 +27,7 @@ import { systemProblems } from '../../src/platform/modules/systems/spec.ts';
 import { MODULES, ENABLED_MODULES, CONFIG } from '../lib/modules.js';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from '../../src/platform/modules/systems/node/systems.js';
 import { configProblems } from '../../src/platform/core/config.ts';
-import { editStudioConfig } from '../lib/studio-setup.js';
+import { applySetupChanges, editStudioConfig, pinImplicitSystems } from '../lib/studio-setup.js';
 import { resolveContributor } from './resolve-contributor.js';
 import { fetchSource, walk } from '../lib/fetch-source.js';
 import { loadContributors } from '../lib/contributors.js';
@@ -377,10 +377,13 @@ function configure() {
   const problems = configProblems({ ...CONFIG, ...changes }, Object.values(MODULES), SYSTEM_IDS);
   if (problems.length) fail(problems.join('\n'));
   const file = rel('studio.config.ts');
-  const next = editStudioConfig(fs.readFileSync(file, 'utf8'), changes);
+  const before = fs.readFileSync(file, 'utf8');
+  const next = editStudioConfig(before, changes);
+  const pins = changes.defaultSystem && changes.defaultSystem !== DEFAULT_SYSTEM ? pinImplicitSystems(ROOT, DEFAULT_SYSTEM, Object.values(MODULES)) : [];
   say(JSON.stringify(changes, null, 2));
+  for (const pin of pins) say(`Keep ${path.relative(ROOT, pin.file)} on ${DEFAULT_SYSTEM}.`);
   if (!flags.yes) { say('Nothing written. Apply these choices with --yes.'); return; }
-  fs.writeFileSync(file, next);
+  applySetupChanges([...pins, { file, before, after: next }]);
   say('Updated studio.config.ts. Restart the dev server.');
 }
 

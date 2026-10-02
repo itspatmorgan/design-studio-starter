@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { editStudioConfig } from './studio-setup.js';
+import { applySetupChanges, editStudioConfig, pinImplicitSystems } from './studio-setup.js';
 
 test('configuration edits preserve unrelated customization and validate syntax', () => {
   const original = 'export default { name: "Old", modules: { tools: false }, /* custom */ extra: 7 } satisfies StudioConfig;';
@@ -73,4 +73,35 @@ test('local personal setup resumes, then a second clone joins a team without cha
     const collision = spawnSync(process.execPath, ['scripts/cli/setup-contributor.js', '--key', 'wrong', '--name', 'Wrong', '--email', 'alex@example.test', '--yes'], { cwd: clone, encoding: 'utf8' });
     assert.equal(collision.status, 1); assert.equal(fs.existsSync(path.join(clone, 'contributors/wrong.json')), false);
   } finally { fs.rmSync(dir, { recursive: true, force: true }); fs.rmSync(clone, { recursive: true, force: true }); }
+});
+
+
+test('default-system migration pins implicit content, preserves explicit systems, and rejects stale plans', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-system-switch-'));
+  try {
+    const personal = path.join(root, 'src/prototypes/sam/retained');
+    const tool = path.join(root, 'src/tools/retained');
+    const explicit = path.join(root, 'src/prototypes/sam/explicit');
+    for (const folder of [personal, tool, explicit]) fs.mkdirSync(folder, { recursive: true });
+    const implicitText = '{"title":"Retained","order":["main.tsx"]}';
+    fs.writeFileSync(path.join(personal, 'meta.json'), implicitText);
+    fs.writeFileSync(path.join(tool, 'meta.json'), '{"title":"Disabled tool","maintainers":["sam"]}');
+    const explicitText = '{"title":"Explicit","system":"brand"}';
+    fs.writeFileSync(path.join(explicit, 'meta.json'), explicitText);
+    const modules = [{ section: { items: 'prototypes', folder: 'src/tools' } }];
+    const planned = pinImplicitSystems(root, 'product', modules);
+    assert.equal(planned.length, 2);
+    assert.equal(fs.readFileSync(path.join(personal, 'meta.json'), 'utf8'), implicitText);
+    fs.writeFileSync(path.join(tool, 'meta.json'), '{"title":"Concurrent change"}');
+    assert.throws(() => applySetupChanges(planned), /changed/);
+    assert.equal(fs.readFileSync(path.join(personal, 'meta.json'), 'utf8'), implicitText);
+    applySetupChanges(pinImplicitSystems(root, 'product', modules));
+    assert.equal(JSON.parse(fs.readFileSync(path.join(personal, 'meta.json'))).system, 'product');
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(personal, 'meta.json'))).order, ['main.tsx']);
+    assert.equal(JSON.parse(fs.readFileSync(path.join(tool, 'meta.json'))).system, 'product');
+    assert.equal(fs.readFileSync(path.join(explicit, 'meta.json'), 'utf8'), explicitText);
+    assert.deepEqual(pinImplicitSystems(root, 'product', modules), []);
+    fs.writeFileSync(path.join(tool, 'meta.json'), '{');
+    assert.throws(() => pinImplicitSystems(root, 'product', modules), /invalid JSON/);
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
