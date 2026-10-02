@@ -25,11 +25,11 @@ Colors are grouped by what they are: shadcn/ui's names (surfaces, actions, chart
 
 ## Component pages
 
-Each component gets a page on the [Systems pages](/systems), built from files that sit next to the component, all named after it:
+Each component gets a page on the [Systems pages](/systems), built from the files in the component's folder (`button/`), all named after it:
 
-- **The component itself**, like `button.tsx`. This alone gives it a page listing its props, read straight from the code, so the table can't drift.
-- **Examples**, like `button.examples.tsx`. Each example is shown live in the system's theme, with its code one click away.
-- **A page**, like `button.md`. It holds the title, a short description, and a "When to use" section. Add anything else your team wants to say: usage guidelines, accessibility notes, links to Figma. It's plain Markdown you can edit freely.
+- **The component itself**, like `button/button.tsx`. This alone gives it a page listing its props, read straight from the code, so the table can't drift.
+- **Examples**, like `button/button.examples.tsx`. Each example is shown live in the system's theme, with its code one click away.
+- **A page**, like `button/button.md`. An `index.ts` beside them re-exports the component, so it's imported as `components/button`. It holds the title, a short description, and a "When to use" section. Add anything else your team wants to say: usage guidelines, accessibility notes, links to Figma. It's plain Markdown you can edit freely.
 
 While the app runs on your computer, each component's page has an **Edit** button that opens its files in the editor, one tab each for the page, the examples, and the component itself, and the page updates as you save. If a component is missing its page or examples, the tab offers to create them from a template. Like the Handbook, these are platform files, so a change goes through review before it reaches everyone. On the deployed site the pages are read-only.
 

@@ -36,13 +36,14 @@ A prototype system's foundations pages (Colors, Typography, Radius, Shadows, Spa
 
 ## Component pages
 
-A prototype system's component pages come from its files, not from a spec. Files that share a name make one component, flat or in a folder of their own:
+A prototype system's component pages come from its files, not from a spec. A component is a folder of its own, named for it, holding the files that share its name (`button/`):
 
-- `button.tsx` is the component. Alone, it is listed with its props table, read from the code.
-- `button.examples.tsx` adds live examples. Each export named with a capital is one example, shown with its code.
-- `button.md` adds the page's text. Its frontmatter has a `title` and a `description`, and it has a `## When to use` section. Everything else in it is the team's to write.
+- `button/button.tsx` is the component. Alone, it is listed with its props table, read from the code.
+- `button/index.ts` re-exports it (`export * from './button'`), so it is still imported as `@/systems/<system>/components/button`.
+- `button/button.examples.tsx` adds live examples. Each export named with a capital is one example, shown with its code.
+- `button/button.md` adds the page's text. Its frontmatter has a `title` and a `description`, and it has a `## When to use` section. Everything else in it is the team's to write.
 
-After adding or bringing in a component, run `pnpm component-docs <system> <component>` (or without the component, for every one that lacks its files). It writes the missing files from a template and never touches one that exists. Then fill in the description, the "When to use" section, and the examples. To do all of it, follow the `document-component` skill. While the app runs, the person can edit a component's files from its page (an Edit button), and create the examples and page it is missing. Adding, renaming, moving, and deleting a component aren't offered there; do those in the files.
+After adding or bringing in a component, run `pnpm component-docs <system> <component>` (or without the component, for every one that lacks its files). It first moves a flat component (what `npx shadcn add` writes, `button.tsx`) into its folder with an `index.ts`, then writes the missing files from a template, and never overwrites one that exists. Then fill in the description, the "When to use" section, and the examples. To do all of it, follow the `document-component` skill. While the app runs, the person can edit a component's files from its page (an Edit button), and create the examples and page it is missing. Adding, renaming, moving, and deleting a component aren't offered there; do those in the files.
 
 The build warns about a component without its examples or page, and about a page missing its title, description, or "When to use". A system with `docs: 'strict'` in its `system.ts` fails the build instead. Where a system's components come from is `origin` in its `system.ts`. `origin: 'shadcn'` gives every component page a "shadcn/ui docs" link to that component's page on ui.shadcn.com (from its file name), so people can see exactly where it came from. A page can set its own link with `docs: <https address>` in its frontmatter, for a component that is ported or bespoke. When a team replaces the placeholder with components that aren't shadcn/ui, remove `origin` (or set `docs:` per page) so pages stop linking to shadcn.
 

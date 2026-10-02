@@ -20,8 +20,30 @@ function mainExport(source, stem) {
   return main && { name: main.name, required: main.props.filter((p) => p.required).map(({ name, type }) => ({ name, type })) };
 }
 
-// Returns the files it wrote, relative to the repo. Throws with a message for a bad system or component.
-export function scaffold(system, only) {
+// A flat component (button.tsx) goes into a folder of its own with the files that share its name
+// (button/button.tsx, button.md, button.examples.tsx) and an index.ts that re-exports it, so it's still imported
+// as .../components/button. Does nothing if it's already in a folder or the folder is taken. Returns the
+// component with its files' new paths, and what it moved.
+function tidy(dir, c) {
+  const stem = path.basename(c.files.source).replace(/\.[jt]sx$/, '');
+  if (c.files.source.includes('/') || !/^[A-Za-z0-9_-]+$/.test(stem) || fs.existsSync(path.join(dir, stem))) return { c, moved: [] };
+  fs.mkdirSync(path.join(dir, stem));
+  const files = { ...c.files };
+  const moved = [];
+  for (const kind of ['source', 'examples', 'doc']) {
+    const file = files[kind];
+    if (!file || file.includes('/')) continue; // only the flat files that sit next to the component
+    fs.renameSync(path.join(dir, file), path.join(dir, stem, file));
+    files[kind] = `${stem}/${file}`;
+    moved.push(`${stem}/${file}`);
+  }
+  fs.writeFileSync(path.join(dir, stem, 'index.ts'), `export * from './${stem}';\n`, { flag: 'wx' });
+  moved.push(`${stem}/index.ts`);
+  return { c: { ...c, files }, moved };
+}
+
+// Returns the files it wrote, relative to the repo; the files it moved into folders are added to `moved`. Throws with a message for a bad system or component.
+export function scaffold(system, only, moved = []) {
   const sys = Object.hasOwn(SYSTEM_SOURCES, system) ? SYSTEM_SOURCES[system] : null;
   if (!sys) throw new Error(`"${system}" isn't a system. The systems are: ${Object.keys(SYSTEM_SOURCES).join(', ')}.`);
   const dir = path.join(ROOT, sys.components);
@@ -29,8 +51,11 @@ export function scaffold(system, only) {
   const targets = only ? all.filter((c) => c.slug === only.toLowerCase() || c.name.toLowerCase() === only.toLowerCase()) : all;
   if (only && !targets.length) throw new Error(`No component named "${only}" in ${sys.components}/. It needs a component file first (for example, npx shadcn add ${only}).`);
   const written = [];
-  for (const c of targets) {
-    if (!c.files.source) continue; // docs only (the components come from elsewhere): nothing to base them on
+  for (const target of targets) {
+    if (!target.files.source) continue; // docs only (the components come from elsewhere): nothing to base them on
+    const tidied = tidy(dir, target);
+    const c = tidied.c;
+    for (const file of tidied.moved) moved.push(path.join(sys.components, file));
     const stem = path.basename(c.files.source).replace(/\.[jt]sx$/, '');
     const exported = mainExport(path.join(dir, c.files.source), stem);
     const templates = docTemplates({ system, source: c.files.source, exportName: exported?.name, required: exported?.required });
@@ -51,8 +76,10 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const [system, component] = process.argv.slice(2);
   if (!system) { console.error('Usage: pnpm component-docs <system> [component]   (for example: pnpm component-docs product button)'); process.exit(1); }
   try {
-    const written = scaffold(system, component);
-    if (!written.length) console.log('Nothing to add: every component already has its examples and page.');
+    const moved = [];
+    const written = scaffold(system, component, moved);
+    if (!written.length && !moved.length) console.log('Nothing to add: every component already has its examples and page, in a folder of its own.');
+    for (const file of moved) console.log(`Moved ${file}`);
     for (const file of written) console.log(`Created ${file}`);
     if (written.length) console.log('Fill in each description, "When to use", and example, then run pnpm build.');
   } catch (e) {

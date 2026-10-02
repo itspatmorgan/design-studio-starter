@@ -110,7 +110,7 @@ test('props are read from the code: types from other packages, defaults, native 
   const { extractProps } = await import('./node/extract-props.js');
   const root = path.resolve(import.meta.dirname, '../../../..');
   const dir = path.join(root, 'src/systems/product/components');
-  const files = ['button', 'input', 'dialog'].map((n) => path.join(dir, `${n}.tsx`));
+  const files = ['button', 'input', 'dialog'].map((n) => path.join(dir, n, `${n}.tsx`));
   const result: Record<string, ComponentPropsDoc[]> = extractProps(files, root) as Record<string, ComponentPropsDoc[]>;
   const [button] = result[files[0]];
   assert.equal(button.name, 'Button');
@@ -138,7 +138,7 @@ test('starter docs files sit next to the component and never break the checks', 
   assert.match(flat.examples.content, /import \{ IconButton \} from '@\/systems\/product\/components\/icon-button'/);
   const folder = docTemplates({ system: 'product', source: 'dialog/dialog.tsx', exportName: 'Dialog', required: [{ name: 'label', type: 'string' }, { name: 'open', type: 'boolean' }, { name: 'onSelect', type: '() => void' }] });
   assert.equal(folder.doc.file, 'dialog/dialog.md');
-  assert.match(folder.examples.content, /components\/dialog\/dialog'/);
+  assert.match(folder.examples.content, /components\/dialog'/);
   assert.match(folder.examples.content, /<Dialog label="Label" open onSelect=\{undefined as never\} \/>/);
   assert.match(folder.examples.content, /Replace each "undefined as never"/);
   assert.doesNotMatch(flat.examples.content, /Replace each/);

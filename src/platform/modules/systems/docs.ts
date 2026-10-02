@@ -1,9 +1,10 @@
 // A design system's component docs, worked out from its files. A component is whatever files
-// share a name, flat or in a folder of their own:
+// share a name, in a folder of their own (button/), or flat, which is still found:
 //
-//   button.tsx            the component (listed, with its props)
-//   button.examples.tsx   live examples: each export named with a capital is one example
-//   button.md             front matter (title, description) and a "When to use" section, then
+//   button/button.tsx            the component (listed, with its props)
+//   button/button.examples.tsx   live examples: each export named with a capital is one example
+//   button/index.ts              re-exports it, so it's imported as .../components/button (not a component file)
+//   button/button.md             front matter (title, description) and a "When to use" section, then
 //                         anything else the team wants to write
 //
 // Only the first is needed to appear; the others add to the page. Nothing here reads a disk or

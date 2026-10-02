@@ -31,18 +31,22 @@ function valueOf({ name, type }: { name: string; type: string }) {
 }
 
 // { examples: { file, content }, doc: { file, content } }, with files inside the components folder.
+// A component sits in a folder of its own, button/button.tsx, with button.md, button.examples.tsx and an index.ts that
+// re-exports it, so it is imported as .../components/button (src/platform/modules/systems/node/scaffold-docs.js tidies a flat one into that).
 export function docTemplates({ system, source, exportName, required = [] }: ScaffoldInput) {
   const slash = source.lastIndexOf('/');
   const dir = source.slice(0, slash + 1);
   const stem = source.slice(slash + 1).replace(/\.[jt]sx$/, '');
   const name = exportName ?? exportNameOf(stem);
+  // A component in a folder of its own name is imported from the folder (its index.ts), like button/button.tsx from components/button.
+  const importPath = dir === `${stem}/` ? stem : `${dir}${stem}`;
   const props = required.map(valueOf);
   const note = required.some((p) => valueOf(p).endsWith('undefined as never}')) ? '\n// Replace each "undefined as never" with a real value.' : '';
   return {
     examples: {
       file: `${dir}${stem}.examples.tsx`,
       // The studio's own components are in src/platform/components/, not src/systems/.
-      content: `import { ${name} } from '${system === 'platform' ? '@/platform/components' : `@/systems/${system}/components`}/${dir}${stem}';
+      content: `import { ${name} } from '${system === 'platform' ? '@/platform/components' : `@/systems/${system}/components`}/${importPath}';
 
 // Each export named with a capital is one example on the component's page, shown live with its code.
 // Add one per variant, size, or state worth seeing.${note}
