@@ -8,4 +8,4 @@ The Guide is the human documentation, shown in the app at `/guide`, from Markdow
 - **Plain Markdown only.** No JSX, no expressions, and raw HTML shows as text. Code blocks are highlighted.
 - **Write for designers, product managers, and engineers**: plain words, short sentences, what to do before how it works. The Guide describes what the person can do; the agent's instructions belong in the Handbook's rules.
 - **Link between pages** with `/guide/<page>`. A link to a page that doesn't exist is dead, so check the address.
-- After adding or renaming a page, no other file needs changing: the sidebar and the palette are built from the files.
+- After adding or renaming a page, no other file needs changing: the sidebar and chapter navigation are built from the enabled pages. The command palette searches studio content, not the Guide.

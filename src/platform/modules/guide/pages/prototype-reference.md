@@ -1,12 +1,12 @@
 ---
-title: "Prototype reference"
+title: "Prototype files and boundaries"
 description: "File layout, metadata, and URLs for people who inspect prototype files."
 section: "Reference"
-order: 42
+order: 40
 toc: true
 ---
 
-Use [Prototypes](/guide/prototypes) for everyday tasks. This page describes the files your agent creates and maintains.
+Use [Build a prototype](/guide/prototypes) for everyday tasks. This page describes the files your agent creates and maintains.
 
 ## File layout
 
@@ -71,3 +71,38 @@ Use `pnpm studio configure --system <key>` to preview a default-system change. A
 The command records existing implicit system choices before changing the default, including prototypes in disabled content modules.
 
 New prototypes use the new default. Existing prototypes need an explicit migration of both imports and system choice.
+
+## Dependency boundaries
+
+A prototype can use these sources:
+
+| Source | Example |
+| --- | --- |
+| Its own files | `./_components/header` |
+| Its assigned design system | `@/systems/product/components/button` |
+| Shared utilities | `@/lib/portal` |
+| An enabled module's public library entry | `@module/<id>` |
+| Installed packages | `react` |
+
+It cannot import another prototype, another design system, or private platform files. A module's public library entry is the explicit platform exception.
+
+These boundaries also apply to indirect and type-only dependencies. Shared utilities cannot depend on prototypes, design systems, or platform code.
+
+Invalid dependencies produce errors during local development and fail the build. Ask your agent to correct the dependency rather than bypass the check.
+
+## Reuse without coupling
+
+To reuse another prototype's code, copy it into your folder. Changes to the copy will not affect the original.
+
+A reusable component can also belong in the design system. Moving it there is a shared change that needs maintainer approval.
+
+A canvas embeds only items from its own prototype. Copy another prototype's item before adding it to your canvas.
+
+## Contain styles
+
+Use Tailwind classes or CSS Modules (`*.module.css`) for prototype styles. CSS Modules must use local class selectors and cannot use global selectors.
+
+Plain CSS imports from runtime components fail. Design-system themes load through the platform and must target their unique theme class or its descendants.
+
+
+For review paths, see [Review and share work](/guide/working-with-others).

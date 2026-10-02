@@ -1,7 +1,7 @@
 ---
 title: "Changelog"
 description: "Changes in the starter kit."
-section: "Reference"
+section: "Releases"
 order: 90
 ---
 

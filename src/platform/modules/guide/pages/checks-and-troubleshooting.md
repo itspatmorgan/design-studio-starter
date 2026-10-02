@@ -2,19 +2,23 @@
 title: "Checks and troubleshooting"
 description: "Understand Git warnings, failed checks, and repository protection."
 section: "Reference"
-order: 43
+order: 42
 toc: true
 ---
 
 Checks help keep the shared studio consistent. Give your agent the warning or error so it can identify the cause.
 
-## Before commit and push
+## Where checks run
 
-The scope check reports which changed files are yours and which are platform files. This summary does not block the operation.
+| Stage | Checks and effect |
+| --- | --- |
+| Before commit | Staged asset sizes and module checks can block the commit. Scope and Git identity checks report warnings. |
+| Before push | Scope summary. It does not run the full build or block platform changes. |
+| `pnpm build` | Manifest validation, module checks, tests, type checking, and the production bundle. |
+| GitHub pull request | Scope review, asset sizes, and full build. Platform proposals are flagged for review. |
+| Push to `main` | Scope authorization, asset sizes, full build, and a site artifact. Platform changes require an admin or maintainer role. |
 
-Before commit, an identity check warns if your Git name or email differs from your contributor registration.
-
-Other checks can block a commit or fail a build. These include file size, module dependencies, and type checks.
+See [Review and share work](/guide/working-with-others) for how these checks fit the workflow. Configure branch protection and required checks to enforce the team's merge policy.
 
 ## Respond to a check
 
@@ -27,7 +31,7 @@ Other checks can block a commit or fail a build. These include file size, module
 | File exceeds the size limit | Reduce the asset before committing. |
 | Type check fails | Give your agent the error and ask it to correct the code. |
 
-See [Working with others](/guide/working-with-others) for review paths and [Prototype boundaries](/guide/prototype-boundaries) for permitted dependencies.
+See [Review and share work](/guide/working-with-others) for review paths and [Prototype files and boundaries](/guide/prototype-reference#dependency-boundaries) for permitted dependencies.
 
 ## Keep files small
 

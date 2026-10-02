@@ -1,6 +1,7 @@
 ---
-title: "Getting started"
+title: "Set up or join a studio"
 description: "Set up or join a studio, then create your first prototype."
+section: "Begin"
 order: 2
 toc: true
 ---
@@ -64,26 +65,8 @@ Open **Feedback Inbox** from the **Prototypes** page. Read **Start Here** for a 
 
 The sample belongs to `patrick`. Ask your agent to copy useful parts into a prototype in your own folder. The studio maintainer can remove the shared sample.
 
-## Create your first prototype
+## Continue with your agent
 
-1. Ask: "Make a prototype called Hello World."
-2. Describe the screen or flow you want to try.
-3. Review the result in the app.
-4. Ask for changes to the layout, content, or behavior.
+When setup is complete, you should have your contributor registration, a running local studio, and a first prototype to review. The agent should explain any missing design-system materials or product context.
 
-Your agent creates the prototype in your folder. You can also select **New prototype** on the Prototypes page while running locally.
-
-## Save and share
-
-| Action | Result |
-| --- | --- |
-| Save a file | Updates your local copy. |
-| Commit | Records a version in Git. |
-| Push | Sends commits to the shared repository. |
-| Publish a site | Makes a built version available through a configured host. |
-
-Ask your agent to commit completed work. When you want to share the commits, ask it to push through your team's review process.
-
-A push to `main` runs checks and creates a site artifact. It publishes a site only after the maintainer connects a host.
-
-See [Working with others](/guide/working-with-others) for contributor permissions and [Modules](/guide/modules) for studio configuration.
+Next, learn how to direct the agent's work. The creation chapters then show how to turn an idea into views and supporting context.

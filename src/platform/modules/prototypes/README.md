@@ -1,7 +1,7 @@
 ---
-title: "Prototypes"
+title: "Build a prototype"
 description: "Create screens and context, then review and refine them."
-section: "Working in the studio"
+section: "Create"
 order: 10
 toc: true
 slug: "prototypes"
@@ -9,7 +9,7 @@ slug: "prototypes"
 
 # Prototypes
 
-A prototype contains screens and supporting context for an idea. Its files live together in `src/prototypes/<contributor>/<prototype>/`.
+A prototype holds an idea, its interactive views, and any supporting context. Its files live together in `src/prototypes/<contributor>/<prototype>/`.
 
 The app finds prototypes automatically. Your agent creates them with `pnpm new "Prototype Name"`.
 
@@ -17,15 +17,23 @@ The app finds prototypes automatically. Your agent creates them with `pnpm new "
 
 Ask your agent for a prototype and describe the outcome you want. You can also select **New prototype** on the Prototypes page.
 
-Use the assigned design system for screens that match your product. You can also start from scratch or build local components and interactions.
+For example, ask: "Create a feedback inbox with an empty state, a list, and a form. Use sample data so we can review the flow."
 
-Mix system components with experiments when useful. The prototype's boundaries contain those experiments; they do not require every component to belong to the shared system.
+## Start with a toolkit or a blank view
 
-Tell your agent which approach you want. Ask it to include the states and questions you need to review.
+A prototype can start from scratch. Its assigned design system provides a toolkit, not a limit on what you can create.
+
+Use system components for screens that match your product. Build local components, styles, and interactions when you need to explore something new. You can combine both approaches in one prototype.
+
+For the feedback inbox, keep the product's navigation while trying a new way to group feedback. You do not need to add that experiment to the shared design system before testing it.
+
+Keep experimental components in the prototype's own folder, such as `_components/`. Its dependencies and styles must remain within the prototype's boundaries so changes do not affect other work.
+
+If an experiment becomes useful across prototypes, propose a shared component for maintainer review. See [Prototype files and boundaries](/guide/prototype-reference) for the detailed constraints.
 
 ## Find your files
 
-The navigation lists supported items and folders. Enabled file-type modules determine which items you can open.
+The navigation lists supported items and folders. Views are required. Documents and Canvases are optional modules; your studio may not include them.
 
 | Item | Purpose |
 | --- | --- |
@@ -93,17 +101,19 @@ Changing only the description preserves the URL. Check links after renaming or m
 
 Use **Archive** or **Unarchive** in the prototype's **…** menu. To restore deleted files, use the system Trash or ask your agent about `.trash/`.
 
-## Share a review
+## Prepare the next review
+
+Try the feedback inbox with no entries, several entries, and invalid form input. Tell the agent which states need refinement. Keep open questions visible to reviewers.
 
 Copy the item's URL, or select **Copy link** in its file menu. A local URL works only where that local server is accessible.
 
-Ask your agent to commit and share the work through your team's Git workflow. Pushes do not publish a site without a configured host.
+Ask your agent to commit and share the work through your team's Git workflow. See [Review and share work](/guide/working-with-others) for review, Git hooks, and engineering handoff.
 
 ## When an item fails
 
 A view rendering error shows a message and a **Copy** button. Give the error to your agent.
 
-For file layout, metadata, and URLs, see [Prototype reference](/guide/prototype-reference).
+For file layout, metadata, and URLs, see [Prototype files and boundaries](/guide/prototype-reference).
 
 ## For developers
 

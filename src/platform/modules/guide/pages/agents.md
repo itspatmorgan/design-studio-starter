@@ -1,56 +1,61 @@
 ---
-title: "Agents"
-description: "Give your agent the context and instructions it needs."
-section: "Working in the studio"
-order: 16
+title: "Work with your agent"
+description: "Describe the outcome, supply context, and direct the result."
+section: "Begin"
+order: 3
 toc: true
 ---
 
-Your agent builds and changes the studio from instructions in the repository. Supported tools and integrations depend on the agent you use.
+Once your studio is available locally, use your coding agent to turn an idea into work you can review. The agent works with the repository; Design Studio does not supply a separate hosted agent service.
 
-## Direct the work
+## Start with an outcome
 
-Tell the agent the outcome you want. Include the users, the problem, and any constraints you already know.
+Describe the people, problem, and constraints. Supply references or examples when they help explain the result you want.
 
-For example: "Build a feedback inbox for a product manager. Include an empty state and a form to add feedback."
+For example: "Build a feedback inbox for a product manager. Use our components. Include an empty state, a list, and a form to add feedback. Use sample data."
 
-The agent should ask for missing decisions, do the work it can perform, and verify the result. Review its work and direct changes.
+The agent should ask for unresolved decisions that affect the result. It should carry out the work it can perform and make the result available for review.
 
-## Give it lasting context
+![The human provides direction; the agent reads context, builds, and checks; the human reviews and directs the next change.](/guide/agent-cycle.svg)
 
-Save reusable product context in the [Handbook](/guide/handbook). Keep prototype-specific decisions beside that prototype.
+Review behavior as well as appearance. Try the empty state, submit the form, and inspect the result. Ask for a specific refinement, such as: "Keep the form open after an error and explain how to correct it."
 
-The Handbook has three parts:
+You can also edit files and use the studio UI directly. Give the agent new context when your edits change the direction of the work.
 
-| Part | Purpose |
+## How repository instructions guide the work
+
+`AGENTS.md` is the starting point. It tells compatible agents what to read at the start of a session and which instructions apply to particular tasks.
+
+| Source | How it helps |
 | --- | --- |
-| Docs | Guidance and context for people, agents, or both. |
-| Rules | Standing instructions for agents. |
-| Skills | Procedures for agents to perform specific tasks. |
+| Handbook Docs | Product facts, principles, research, and guidance for people, agents, or both. |
+| Handbook Rules | Standing instructions for agents, such as where to put prototype code. |
+| Handbook Skills | Procedures for tasks such as setting up a contributor or importing a design system. |
+| Repository scripts | Repeatable operations, such as creating a prototype or checking a build. |
 
-Docs can guide people without being written for agents. If a doc also provides useful product or team context, share it with the agent.
+A rule can tell the agent to run a script. A skill can combine scripts, human input, and review into a procedure. Not every task needs a skill.
 
-Rules and Skills are specifically for agents. `AGENTS.md` can reference any Handbook content: Docs, Rules, or Skills.
+For a new prototype, the repository instructions tell the agent to identify your contributor folder and run `pnpm new "Prototype Name"`. It then builds the views, keeps dependencies within their boundaries, and runs `pnpm build` before committing completed work. It should push only when you ask to share.
 
-It tells the agent what to read and when, rather than repeating the content. References can apply every session or only to relevant tasks.
+These instructions guide the agent. Git hooks and build checks provide separate checks on the resulting files; they do not enforce every instruction or design decision.
 
-Ask your agent to add a reference when new context should inform future work. Saving a doc alone does not ensure the agent reads it.
+## Make context available
 
-## Included skills
+An agent does not necessarily read every file in the repository. Ask it to read `AGENTS.md` first if your agent does not load it automatically.
 
-| Skill | Task |
+`AGENTS.md` can reference Docs, Rules, or Skills. References may apply every session or only when a relevant task occurs. Ask the agent to add a reference when shared context should guide future work.
+
+Skills live in `src/handbook/skills/`. Links in `.agents/skills` and `.claude/skills` expose the same files to compatible agents. Discovery and available tools depend on the agent you use.
+
+Keep decisions about the feedback inbox in its prototype. Put product-wide guidance in the Handbook, then ensure the agent knows when to read it.
+
+## Included procedures
+
+| Ask your agent | Procedure |
 | --- | --- |
-| `initialize-studio` | Set up a new personal or team studio. |
-| `setup-contributor` | Join an existing studio. |
-| `setup-design-system` | Add or replace a prototype design system. |
-| `document-component` | Document a component with examples and a props table. |
+| "Set up my studio." | `initialize-studio` |
+| "Get me set up as a contributor." | `setup-contributor` |
+| "Set up our design system." | `setup-design-system` |
+| "Document this component." | `document-component` |
 
-Skills live in `src/handbook/skills/`. Links in `.agents/skills` and `.claude/skills` expose the same files to compatible agents.
-
-An agent that does not read these locations needs another way to load the instructions. Ask it to read `AGENTS.md` first.
-
-## Repeatable tasks
-
-Scripts handle tasks that need a consistent result, such as creating a prototype. Rules and skills tell the agent when to use them.
-
-You direct the work. The agent runs the scripts and explains any input or decision it needs from you.
+Provide source material when the agent needs it. Review assumptions and incomplete work before treating the result as ready.

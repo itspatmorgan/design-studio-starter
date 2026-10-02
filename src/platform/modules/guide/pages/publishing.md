@@ -1,0 +1,55 @@
+---
+title: "Publish a studio"
+description: "Understand the built site and prepare a host when you need one."
+section: "Maintain"
+order: 31
+toc: true
+---
+
+Hosting is optional. You can create prototypes locally and collaborate through Git before publishing a site.
+
+Publish when people need a shared viewing URL. The studio maintainer chooses the host, access requirements, and release process.
+
+## What the build provides
+
+`pnpm build` checks the repository and writes a static site to `dist/`. The site includes active prototypes, design-system pages, the Handbook, and the Guide when enabled.
+
+Archived prototypes and archived views are excluded from the production build. Archive content you want to keep locally without including it in the site.
+
+| Local studio | Published site |
+| --- | --- |
+| Reads and changes repository files through the dev server. | Serves the files produced by the build. |
+| Supports file creation and source editing within the permitted scope. | Does not offer repository file creation or source editing. |
+| Shows local changes during development. | Changes when a new build is published. |
+
+Interactive views still run in the browser. The published site does not provide a shared editing backend or an agent service.
+
+## Connect a host
+
+The starter includes a GitHub workflow for pushes to `main`. It runs repository checks, builds the site, and uploads a `site` artifact. The publish job downloads that artifact.
+
+The workflow has a placeholder for your host's deployment step. A push does not publish the site until the maintainer configures that step or another deployment process.
+
+Ask your agent to help configure the chosen host when you are ready. Supply the destination and access requirements. Keep credentials in the host's or GitHub's secret settings.
+
+## Make direct links work
+
+The app uses browser-history URLs, such as `/prototypes/alex/feedback-inbox`. Configure the host to serve `index.html` for app paths that do not identify an asset.
+
+Test a direct prototype URL and reload it. Opening the front page alone does not verify routing.
+
+The router also contains guidance for hash-based URLs when a host cannot provide these rewrites. This is a code change, not a studio configuration option.
+
+## Review the published content
+
+Review what the build includes before uploading it. Handbook context, prototype data, and bundled source may contain information you do not want to distribute.
+
+The starter does not provide built-in sign-in or access control. Configure access at the hosting layer when your studio contains private work.
+
+Run the development server in a trusted local environment. Its editing features are not intended to be exposed as a hosted service.
+
+## Verify the result
+
+After publication, check a prototype's interactions, direct links, design-system pages, and available context. Confirm that archived work is absent and that the intended audience can access the site.
+
+Review and republish after shared changes. A published build does not update when someone edits their local files.

@@ -1,37 +1,39 @@
 ---
-title: "Introduction"
-description: "Build, review, and refine prototypes with your agent."
+title: "Understand Design Studio"
+description: "Your own environment for design work with an agent."
+section: "Begin"
 order: 1
+toc: true
 ---
 
 Design Studio is a workspace for designers and product managers who build with coding agents. Use it on your own or with a team.
 
-Create interactive prototypes with your product's components. Arrange screens on a canvas. Keep decisions and questions beside the work.
+You direct the work. Your agent builds interactive prototypes, helps organize context, and checks the result. You review, edit, and refine it.
 
-Design Studio Starter is the open source kit for this workspace. You own the code, the context, and the work you create.
+Design Studio Starter is the open source kit for this workspace. You own its code, the context you bring to it, and the designs you create.
 
-## What you can make
+## Understand the parts
 
-| Item | Use it to |
-| --- | --- |
-| View | Try an interactive screen or state. |
-| Document | Describe a problem, decision, or open question. |
-| Canvas | Arrange screens, notes, and arrows to explain a flow. |
+![A studio contains shared design systems and Handbook context, alongside each contributor's independent prototypes.](/guide/studio-parts.svg)
 
-These file types are modules. Your studio owner can choose which ones are available.
+A **prototype** holds an idea and the files that explain or demonstrate it. Code-based **views** are its core. Optional **documents** add written context. Optional **canvases** arrange screens, notes, and arrows together.
 
-## Work with your agent
+A **design system** supplies components and tokens for views that match your product. You can also build local components and explore new ideas within a prototype.
 
-Describe what you want to make. The agent builds it and asks for missing information. Review the result and direct the next change.
+The **Handbook** holds context and instructions that apply across your work. Each contributor has a folder for their own prototypes. Shared platform changes follow the studio maintainer's review process.
 
-You can also edit files, text, and canvases yourself while the studio runs locally.
+## Work locally, share deliberately
 
-Each contributor has a folder for their prototypes. Shared components belong to a design system. Shared context belongs to the Handbook.
+The local app reads repository files. You and your agent can change those files while the studio runs. Git records versions and lets contributors share changes.
 
-[Working with others](/guide/working-with-others) explains contributor permissions. [Prototype boundaries](/guide/prototype-boundaries) explains which code and styles a prototype can use.
+A published studio is a built site for viewing the work. Local setup does not require hosting. Sharing repository changes and publishing a site are separate steps.
 
-## Start here
+## Read this Guide
 
-1. Follow [Getting started](/guide/getting-started) to set up or join a studio.
-2. Create a [prototype](/guide/prototypes).
-3. Ask your agent to build a screen, then review it in the app.
+The chapters follow a path from setup to creation, collaboration, and maintenance. Use **Next** to follow that path, or choose a chapter from the sidebar.
+
+**Begin** explains setup and the agent's role. **Create** shows how views, components, text, and canvases support one idea. **Collaborate** covers shared context, review, and handoff. **Maintain** is for the person who configures and publishes the studio.
+
+The **Reference** pages supply file conventions and detailed checks. **Releases** records changes to the starter.
+
+Throughout the Guide, a feedback inbox provides a simple example: build an interactive flow, record its decisions, and prepare it for review. The starter includes a Feedback Inbox sample you can inspect.

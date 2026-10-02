@@ -1,8 +1,8 @@
 ---
-title: "Systems"
+title: "Use your design system"
 description: "Use your product's components and keep them separate from the studio UI."
-section: "Working in the studio"
-order: 13
+section: "Create"
+order: 11
 toc: true
 slug: "systems"
 ---
@@ -12,6 +12,8 @@ slug: "systems"
 A design system provides components and design tokens. Tokens are named values for colors, typography, spacing, and other design choices.
 
 Browse available systems on the **Systems** pages.
+
+Before building the feedback inbox, review the system's form, button, and list components. Tell the agent which patterns to reuse and where you want to explore an alternative.
 
 ## Platform and prototype systems
 

@@ -1,8 +1,8 @@
 ---
-title: "Handbook"
+title: "Build your Handbook"
 description: "Keep product context and agent instructions in the studio."
-section: "Working in the studio"
-order: 15
+section: "Collaborate"
+order: 20
 toc: true
 slug: "handbook"
 ---
@@ -10,6 +10,8 @@ slug: "handbook"
 # Handbook
 
 The Handbook holds shared context for people and agents. Its files live in `src/handbook/` and appear under **Handbook** in the app.
+
+The feedback inbox may reveal a product-wide convention, such as how forms explain errors. Keep the experiment's decisions in its prototype. Put the agreed convention in the Handbook so future work can use it.
 
 ## Choose the right part
 

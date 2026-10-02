@@ -2,7 +2,7 @@
 title: "Tech stack"
 description: "Find the frameworks and libraries used by the starter."
 section: "Reference"
-order: 41
+order: 43
 toc: true
 ---
 
@@ -44,4 +44,4 @@ The canvas module uses [Excalidraw](https://excalidraw.com). It loads when a can
 
 The production build is a static site in `dist/`. A host must serve `index.html` for app paths that do not identify an asset.
 
-See the repository README for fallback examples. Hosting configuration and access control are the studio maintainer's responsibility.
+See [Publish a studio](/guide/publishing) for routing and publication requirements. Hosting configuration and access control are the studio maintainer's responsibility.

@@ -1,8 +1,8 @@
 ---
-title: "Documents"
+title: "Add written context"
 description: "Keep decisions, questions, and handoff context beside a prototype."
-section: "Working in the studio"
-order: 11
+section: "Create"
+order: 12
 toc: true
 slug: "documents"
 ---
@@ -10,6 +10,10 @@ slug: "documents"
 # Documents
 
 A document is a Markdown file in a prototype. Use it for the problem, decisions, feedback, or questions that explain the work.
+
+For the feedback inbox, record the problem, the decisions made during review, and the questions still open. This context helps another person understand what the views demonstrate.
+
+Documents is optional. If it is disabled, views still work and the Handbook keeps its Markdown support.
 
 Documents use the platform's page style. They do not use the prototype's design-system theme.
 

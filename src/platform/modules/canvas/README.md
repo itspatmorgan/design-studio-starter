@@ -1,8 +1,8 @@
 ---
-title: "Canvases"
+title: "Arrange work on a canvas"
 description: "Arrange screens, notes, and arrows to explain a flow."
-section: "Working in the studio"
-order: 12
+section: "Create"
+order: 13
 toc: true
 slug: "canvases"
 ---
@@ -12,6 +12,10 @@ slug: "canvases"
 A canvas brings a prototype's screens and context together. Use it to compare alternatives, review a flow, or explain a handoff.
 
 Each canvas is an `.excalidraw` file. The canvas module uses Excalidraw for shapes, notes, text, and arrows.
+
+For the feedback inbox, place the empty state, list, and form together. Add arrows to explain the proposed flow and notes where behavior needs a decision.
+
+Canvases is optional. You can build and review views without it.
 
 ## Create a canvas
 

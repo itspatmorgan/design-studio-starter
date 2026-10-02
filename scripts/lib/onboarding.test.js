@@ -17,6 +17,7 @@ test('configuration edits preserve unrelated customization and validate syntax',
 
 test('local personal setup resumes, then a second clone joins a team without changing configuration', () => {
   const root = path.resolve('.');
+  const hasGuide = fs.existsSync(path.join(root, 'src/platform/modules/guide/module.ts'));
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-onboarding-'));
   const clone = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-contributor-'));
   const copy = (from, to) => {
@@ -34,7 +35,7 @@ test('local personal setup resumes, then a second clone joins a team without cha
       fs.rmSync(path.join(dir, folder), { recursive: true, force: true });
       fs.mkdirSync(path.join(dir, folder), { recursive: true });
     }
-    fs.writeFileSync(path.join(dir, 'studio.config.ts'), "import type { StudioConfig } from './src/platform/core/config.ts';\nexport default { name: 'Fixture Studio', usage: 'team', tagline: 'Fixture', modules: { guide: false }, defaultSystem: 'product' } satisfies StudioConfig;\n");
+    fs.writeFileSync(path.join(dir, 'studio.config.ts'), `import type { StudioConfig } from './src/platform/core/config.ts';\nexport default { name: 'Fixture Studio', usage: 'team', tagline: 'Fixture', modules: ${JSON.stringify(hasGuide ? { guide: false } : {})}, defaultSystem: 'product' } satisfies StudioConfig;\n`);
     run(dir, 'scripts/cli/studio.js', 'create-system', 'product', '--label', 'Product', '--yes');
     git(dir, 'init', '-q');
     git(dir, 'config', 'user.name', 'Patrick Morgan'); git(dir, 'config', 'user.email', 'legacy@example.test');
@@ -64,7 +65,7 @@ test('local personal setup resumes, then a second clone joins a team without cha
     run(dir, 'scripts/build/build-manifest.js', '--strict');
     const status = JSON.parse(run(dir, 'scripts/cli/studio.js', 'status', '--json'));
     assert.equal(status.config.defaultSystem, 'acme'); assert.equal(status.contributor, 'sam');
-    assert.ok(status.modules.disabled.includes('guide'));
+    assert.equal(status.modules.disabled.includes('guide'), hasGuide);
     // Retire the sample's dependency in this disposable copy only, before replacing Product.
     fs.rmSync(path.join(dir, 'src/prototypes/patrick'), { recursive: true, force: true });
     run(dir, 'scripts/cli/studio.js', 'remove', 'product', '--yes');

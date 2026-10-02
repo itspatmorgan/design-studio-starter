@@ -1,15 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import type { MDXContent } from 'mdx/types';
 import { DocToc } from '@/platform/app/docs/DocToc';
 import { Prose } from '@/platform/app/docs/Prose';
 
 // scrollKey: what the page is. It scrolls to the top or to a heading when this changes, not when
 // only the content does (a document edited while it's open keeps its place). Defaults to Component.
-type DocLayoutProps = { Component: MDXContent; title?: string; description?: string; toc?: boolean; scrollKey?: string };
+type DocLayoutProps = { Component: MDXContent; title?: string; description?: string; toc?: boolean; scrollKey?: string; footer?: ReactNode };
 
 // A Markdown document: title and description from its frontmatter, the content,
 // and an "On this page" list when the frontmatter says `toc: true`.
-export function DocLayout({ Component, title, description, toc, scrollKey }: DocLayoutProps) {
+export function DocLayout({ Component, title, description, toc, scrollKey, footer }: DocLayoutProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Open at the heading in the URL (/guide/prototypes#groups), or at the top.
@@ -31,6 +31,7 @@ export function DocLayout({ Component, title, description, toc, scrollKey }: Doc
           </header>
         )}
         <Prose><Component /></Prose>
+        {footer}
       </article>
       {toc && <DocToc contentRef={contentRef} watch={Component} />}
     </div>

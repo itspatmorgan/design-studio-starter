@@ -1,8 +1,8 @@
 ---
-title: "Modules"
+title: "Configure and extend your studio"
 description: "Choose the studio's capabilities and manage its configuration."
-section: "Maintaining the studio"
-order: 20
+section: "Maintain"
+order: 30
 toc: true
 ---
 
