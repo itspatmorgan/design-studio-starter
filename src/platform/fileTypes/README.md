@@ -31,7 +31,7 @@ restart `pnpm dev` after adding or removing a folder.
 
 1. Delete its folder, for example `src/platform/fileTypes/document/`. Its files become plain files, which the
    navigation hides unless you choose Show all files in the prototype's … menu.
-2. Delete its Guide page (`src/platform/modules/guide/pages/documents.md`, and the links to it in `src/platform/modules/guide/pages/prototypes.md`) and its
+2. Delete the links to its Guide page in `src/platform/modules/guide/pages/` (the page itself is the type's README, so it went with the folder) and its
    agent rule (`src/handbook/rules/documents.md`, and its line in `AGENTS.md`).
 
 `pnpm build` runs `scripts/check/check-file-types.js`, which fails if core code imports a type's folder or

@@ -41,12 +41,14 @@ export type PrototypeRef = PrototypeInfo & {
   itemsHash?: string;     // changes when the items do, so a changed list is fetched again
 };
 
-// One Guide page (src/platform/modules/guide/pages/<slug>.md), from its frontmatter.
+// One Guide page, from its frontmatter: src/platform/modules/guide/pages/<slug>.md, or the README of a module or file
+// type that opens with Guide frontmatter (`source`, as the app's glob names it).
 export type GuidePage = {
-  slug: string;           // file name without .md, e.g. "getting-started"
+  slug: string;           // its address, /guide/<slug>: the file name without .md, e.g. "getting-started"
   title: string;
   description: string;
   section: string | null; // sidebar heading, e.g. "Core concepts"
+  source?: string;        // where a README page is, like "/platform/fileTypes/canvas/README.md"
 };
 
 // `sections` holds the items of the modules' sections of prototype-shaped folders, by section key: the

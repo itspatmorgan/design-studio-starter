@@ -8,6 +8,7 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkHtmlAsText from './scripts/build/remark-html-as-text.js';
 import remarkTitleFromHeading from './scripts/build/remark-title-from-heading.js';
+import remarkReadmeGuide from './scripts/build/remark-readme-guide.js';
 import rehypeSlug from 'rehype-slug';
 import rehypePrettyCode from 'rehype-pretty-code';
 import tailwindcss from '@tailwindcss/vite';
@@ -56,7 +57,7 @@ export default defineConfig({
       ...mdx({
         format: 'md',
         providerImportSource: '@mdx-js/react',
-        remarkPlugins: [remarkFrontmatter, remarkTitleFromHeading, remarkMdxFrontmatter, remarkGfm, remarkHtmlAsText],
+        remarkPlugins: [remarkFrontmatter, remarkReadmeGuide, remarkTitleFromHeading, remarkMdxFrontmatter, remarkGfm, remarkHtmlAsText],
         rehypePlugins: [rehypeSlug, [rehypePrettyCode, { theme: { light: 'github-light', dark: 'github-dark' }, keepBackground: false }]],
       }),
     },

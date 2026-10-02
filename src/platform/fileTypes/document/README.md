@@ -4,7 +4,10 @@ description: "Written context in a prototype: problem framing, open questions, h
 section: "Core concepts"
 order: 14
 toc: true
+slug: "documents"
 ---
+
+# Documents
 
 A document is a page of Markdown in a prototype, for the context that shouldn't live only in a chat: the problem, open questions, feedback, or notes for whoever builds it. It's a plain `.md` file, so it opens in Obsidian, GitHub, or any Markdown editor, and anywhere in your prototype.
 
@@ -61,8 +64,19 @@ A document shows in the app's own style, not your prototype's design system, so 
 
 ## Where documents belong
 
-The Guide (the pages you're reading) is written the same way, in `src/platform/modules/guide/pages/`. It's the platform's own documentation, kept by whoever maintains it. A document belongs to a prototype and its contributor, and follows the same scope as everything else in your folder.
+The Guide (the pages you're reading) is written the same way, in `src/platform/modules/guide/pages/` and in the READMEs of the modules and file types it describes. It's the platform's own documentation, kept by whoever maintains it. A document belongs to a prototype and its contributor, and follows the same scope as everything else in your folder.
 
 ## Not using them?
 
-Documents are optional for a prototype, and for the platform: delete `src/platform/fileTypes/document/` and the app runs without them. See `src/platform/fileTypes/README.md`.
+Documents are optional for a prototype, and for the platform: ask your agent to remove them, and the app runs without them. This page goes with them.
+
+## For developers
+
+**This folder is a self-contained file type.** Delete it and `.md` files become plain files; the app runs without it. How file types work is in `src/platform/fileTypes/README.md`.
+
+- `type.ts`: what the build reads: the `.md` extension, a template (a title and an empty-document line), and the checks on frontmatter.
+- `module.tsx`: the icon, how a document loads, and its page.
+- `DocumentPage.tsx`: the page a document opens as, in the app's own style (not the prototype's design system).
+- `loader.ts`: the glob of document files for the deployed site.
+
+Agent contract: `src/handbook/rules/documents.md`.

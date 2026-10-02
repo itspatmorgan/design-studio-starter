@@ -15,6 +15,7 @@ import { parseMaintainers } from '../../src/platform/core/permissions.ts';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from '../lib/file-types.js';
 import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from '../lib/modules.js';
 import { frontmatter } from '../lib/frontmatter.js';
+import { readmes } from '../lib/guide-pages.js';
 import { contributorsSignature, loadContributors } from '../lib/contributors.js';
 import { handbookProblems } from '../../src/platform/modules/handbook/node/handbook-check.js';
 import { systemDocs } from '../../src/platform/modules/systems/node/docs.js';
@@ -362,16 +363,27 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     }
   }
 
-  // Guide pages: src/platform/modules/guide/pages/*.md, ordered by `order` in each page's frontmatter. They share
-  // the title, description, and toc fields with prototype documents, and add order and section.
+  // Guide pages: src/platform/modules/guide/pages/*.md, and the README.md of a module or file type that opens with
+  // Guide frontmatter (it keeps its page with its folder: `source` says where it is). Ordered by `order` in each page's
+  // frontmatter. They share the title, description, and toc fields with prototype documents, and add order and section;
+  // a README may also set `slug` (its address, /guide/<slug>), which is its folder's name otherwise.
   const guide = [];
   const guideFiles = GUIDE && fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.md')).sort() : [];
-  for (const file of guideFiles) {
-    const fm = frontmatter(fs.readFileSync(path.join(GUIDE, file), 'utf8'));
-    const where = `src/platform/modules/guide/pages/${file}`;
+  const pages = guideFiles.map((file) => ({ file: path.join(GUIDE, file), where: `src/platform/modules/guide/pages/${file}`, slug: file.replace(/\.md$/, ''), readme: false }));
+  // A README without a title is only a README.
+  if (GUIDE) for (const r of readmes()) pages.push({ file: r.file, where: path.relative(ROOT, r.file), slug: r.folder, readme: true, source: r.source });
+  const taken = new Map();
+  for (const page of pages) {
+    const fm = frontmatter(fs.readFileSync(page.file, 'utf8'));
+    if (page.readme && !fm?.title) continue;
+    const { where } = page;
     if (!fm || typeof fm.title !== 'string' || !fm.title) { out.error(`[manifest] Skipped ${where}: needs frontmatter with a "title"`); errors++; continue; }
     if (typeof fm.order !== 'number') { out.error(`[manifest] Skipped ${where}: needs a numeric "order" in its frontmatter`); errors++; continue; }
-    guide.push({ slug: file.replace(/\.md$/, ''), title: fm.title, description: fm.description ?? '', section: fm.section || null, order: fm.order });
+    const slug = page.readme && typeof fm.slug === 'string' && fm.slug ? fm.slug : page.slug;
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(slug)) { out.error(`[manifest] Skipped ${where}: its address "${slug}" must be lowercase letters, numbers, and hyphens`); errors++; continue; }
+    if (taken.has(slug)) { out.error(`[manifest] Skipped ${where}: ${taken.get(slug)} already has the Guide address /guide/${slug}`); errors++; continue; }
+    taken.set(slug, where);
+    guide.push({ slug, title: fm.title, description: fm.description ?? '', section: fm.section || null, order: fm.order, ...(page.source ? { source: page.source } : {}) });
   }
   guide.sort((a, b) => a.order - b.order);
 

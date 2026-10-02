@@ -4,7 +4,10 @@ description: "Publish a prototype as a small app the whole team can use."
 section: "Core concepts"
 order: 17
 toc: true
+slug: "tools"
 ---
+
+# Tools
 
 A tool is a small app that makes something: a thumbnail, a gradient, a graphic with the right sizes. People use it to get an asset, not to look at a design. It's still a prototype. What changes is that it belongs to the team, has people who keep it working, and opens like an app.
 
@@ -57,3 +60,15 @@ The sample shows the second one. The **Share as card** button on a feedback's De
 - Design the start view as an app: it owns the whole window, so give it its own header and controls.
 - What it makes should be a download or a copy to the clipboard, not a file saved into the repo.
 - A tool is archived, built, and deployed like a prototype. [Archiving](/guide/prototypes#archiving) works the same way.
+
+## For developers
+
+The Tools module: `/tools`, and the prototype-shaped folders in `src/tools/` it lists. Optional: turn it off in `studio.config.ts` or delete this folder. Who may change a tool is its `meta.json` `maintainers` (`src/platform/core/permissions.ts`).
+
+- `module.ts`, `app.tsx`: who it is, its rail button, routes, front-page block, and palette entries.
+- `ToolsPage.tsx`, `ToolCard.tsx`: the Tools page and a tool's card or row.
+- `actions.tsx`: Publish as tool and Unpublish, in a prototype's "…" menu.
+- `server.ts`: what Publish and Unpublish ask of the dev server: it moves the folder and rewrites links to the old address.
+- `staleLinks.ts` (with a test): the sentence shown when other files still link to the address a prototype left.
+
+The folder's rules for agents are `src/handbook/rules/tools.md`.
