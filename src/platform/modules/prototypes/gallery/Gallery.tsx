@@ -5,9 +5,9 @@ import { getRouteApi, Link, useNavigate, useSearch } from '@tanstack/react-route
 import { newestFirst } from '@/platform/app/data/manifest';
 import type { PrototypeInfo } from '@/platform/app/data/types';
 import { cn } from '@/lib/utils';
-import { ItemGrid } from '@/platform/app/items/ItemGrid';
+import { Collection, ViewToggle } from '@/platform/app/items/Collection';
 import NewPrototypeButton from '@/platform/modules/prototypes/gallery/NewPrototypeDialog';
-import PrototypeCard from './PrototypeCard';
+import PrototypeCard, { PrototypeRow } from './PrototypeCard';
 import { EmptyState } from '@/platform/app/shell/EmptyState';
 import { useMe } from '@/platform/app/data/files';
 
@@ -84,11 +84,7 @@ export default function Gallery() {
       .sort(newestFirst);
     // Archived prototypes show here, below the rest. The deployed site leaves them out.
     const list = (ps: PrototypeInfo[]) => (
-      <ItemGrid>
-        {ps.map((p) => (
-          <li key={`${p.contributorKey}/${p.id}`}><PrototypeCard prototype={p} /></li>
-        ))}
-      </ItemGrid>
+      <Collection items={ps} keyOf={(p) => `${p.contributorKey}/${p.id}`} card={(p) => <PrototypeCard prototype={p} />} row={(p) => <PrototypeRow prototype={p} />} />
     );
     const active = prototypes.filter((p) => p.status !== 'archived');
     const archived = prototypes.filter((p) => p.status === 'archived');
@@ -121,6 +117,7 @@ export default function Gallery() {
           <p className="min-w-0 truncate text-sm leading-8 text-muted-foreground">All prototypes, newest first.</p>
           <div className="flex shrink-0 items-center gap-2">
             {!empty && <SearchBox value={search} />}
+            {!empty && <ViewToggle />}
             <NewPrototypeButton />
           </div>
         </div>

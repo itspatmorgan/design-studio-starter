@@ -1,14 +1,15 @@
 import type { ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
 import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/react';
+import { cn } from '@/lib/utils';
 
-// The row on the front page for anything in a section (HomeSection.tsx). `link` is a link from manifest.ts (prototypeLink,
+// The row for anything in a section: on the front page (HomeSection.tsx) and in a collection's list view (Collection.tsx). `link` is a link from manifest.ts (prototypeLink,
 // itemLink). Every row is one line high and starts with a 28px neutral tile holding the module's rail icon, so all of a
 // section's rows look alike. The row is inset from the panel's edge and rounded, so its hover is a pill and not a stripe.
 // `menu` is drawn beside the link (PrototypeCardMenu, inline), so the row sits in a "card-wrap" group.
-export function HomeRow({ link, icon, title, meta, menu }: { link: object; icon: IconSvgElement; title: string; meta?: ReactNode; menu?: ReactNode }) {
+export function ItemRow({ link, icon, title, meta, archived, menu }: { link: object; icon: IconSvgElement; title: string; meta?: ReactNode; archived?: boolean; menu?: ReactNode }) {
   return (
-    <li className="group/card-wrap relative">
+    <li className={cn('group/card-wrap relative', archived && 'opacity-60')}>
       <Link {...(link as { to: never })} className="flex items-center gap-3 rounded-lg px-2 py-1.5 outline-none transition-colors hover:bg-muted/60 focus-visible:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring">
         <span className="grid size-7 shrink-0 place-items-center rounded-md bg-muted text-foreground/70" aria-hidden>
           <HugeiconsIcon icon={icon} size={15} strokeWidth={1.75} />

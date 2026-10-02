@@ -1,21 +1,38 @@
+import { Layers01Icon } from '@hugeicons/core-free-icons';
 import { ContributorAvatar } from '@/platform/app/shell/ContributorAvatar';
 import { CollectionCard } from '@/platform/app/items/CollectionCard';
+import { ItemRow } from '@/platform/app/items/ItemRow';
 import { formatDate, prototypeLink } from '@/platform/app/data/manifest';
 import type { PrototypeInfo } from '@/platform/app/data/types';
 import PrototypeCardMenu from './PrototypeCardMenu';
 
-// A prototype's card, on the gallery and on the front page.
+const nameOf = (p: PrototypeInfo) => p.contributor || p.contributorKey;
+
+// A prototype's card, on the gallery.
 export default function PrototypeCard({ prototype: p }: { prototype: PrototypeInfo }) {
-  const name = p.contributor || p.contributorKey;
   return (
     <CollectionCard
       link={prototypeLink(p)}
-      id={p.id}
+      icon={Layers01Icon}
       title={p.title}
       description={p.description}
       archived={p.status === 'archived'}
-      meta={<><ContributorAvatar name={name} /><span className="truncate">{name.split(' ')[0]}</span>{p.created && <span>· {formatDate(p.created)}</span>}</>}
-      menu={<PrototypeCardMenu proto={p} triggerClassName="bg-background/70 backdrop-blur-sm" />}
+      meta={<><ContributorAvatar name={nameOf(p)} /><span className="truncate">{nameOf(p).split(' ')[0]}</span>{p.created && <span>· {formatDate(p.created)}</span>}</>}
+      menu={<PrototypeCardMenu proto={p} />}
+    />
+  );
+}
+
+// A prototype's row, in the gallery's list view and on the front page. `byline` adds who made it.
+export function PrototypeRow({ prototype: p, byline = true }: { prototype: PrototypeInfo; byline?: boolean }) {
+  return (
+    <ItemRow
+      link={prototypeLink(p)}
+      icon={Layers01Icon}
+      title={p.title}
+      meta={byline ? nameOf(p).split(' ')[0] : undefined}
+      archived={p.status === 'archived'}
+      menu={<PrototypeCardMenu proto={p} inline />}
     />
   );
 }

@@ -10,10 +10,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/platform/components/select';
 import { toast } from '@/platform/components/toast';
 import { EmptyState } from '@/platform/app/shell/EmptyState';
-import { ItemGrid } from '@/platform/app/items/ItemGrid';
+import { Collection, ViewToggle } from '@/platform/app/items/Collection';
 import { useMe } from '@/platform/app/data/files';
 import { prototypeLink, setManifest } from '@/platform/app/data/manifest';
-import ToolCard from './ToolCard';
+import ToolCard, { ToolRow } from './ToolCard';
 import { staleLinksMessage } from './staleLinks';
 import { publishTool } from './actions';
 import type { PrototypeInfo } from '@/platform/app/data/types';
@@ -111,20 +111,21 @@ export default function ToolsPage() {
         {/* The subtitle's line is as tall as the button (32px), so both centre their text on the same line. */}
         <div className="mt-0.5 flex items-center justify-between gap-4">
           <p className="text-sm leading-8 text-muted-foreground">Small apps your team maintains. Open one to use it.</p>
-          {local && (
-            <>
-              <Button variant="outline" onClick={() => setPublishing(true)}>
-                <HugeiconsIcon icon={Wrench01Icon} data-icon="inline-start" /> Publish a prototype
-              </Button>
-              <PublishDialog me={me} prototypes={manifest.prototypes} open={publishing} onOpenChange={setPublishing} />
-            </>
-          )}
+          <div className="flex shrink-0 items-center gap-2">
+            {tools.length > 0 && <ViewToggle />}
+            {local && (
+              <>
+                <Button variant="outline" onClick={() => setPublishing(true)}>
+                  <HugeiconsIcon icon={Wrench01Icon} data-icon="inline-start" /> Publish a prototype
+                </Button>
+                <PublishDialog me={me} prototypes={manifest.prototypes} open={publishing} onOpenChange={setPublishing} />
+              </>
+            )}
+          </div>
         </div>
       </header>
       {tools.length ? (
-        <ItemGrid>
-          {tools.map((t) => <li key={t.id}><ToolCard tool={t} /></li>)}
-        </ItemGrid>
+        <Collection items={tools} keyOf={(t) => t.id} card={(t) => <ToolCard tool={t} />} row={(t) => <ToolRow tool={t} />} />
       ) : (
         <ToolsEmpty local={local} />
       )}

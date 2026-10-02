@@ -5,7 +5,7 @@ import { createRoute, notFound, redirect, useRouterState } from '@tanstack/react
 import { Notebook01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
-import { HomeRow } from '@/platform/app/items/HomeRows';
+import { ItemRow } from '@/platform/app/items/ItemRow';
 import { NotFound } from '@/platform/app/shell/App';
 import { itemFolder, itemLabel, loadManifest } from '@/platform/app/data/manifest';
 import { itemLink } from '@/platform/app/data/manifest';
@@ -47,7 +47,7 @@ function Overview({ manifest }: { manifest: Manifest }) {
   if (!docs || !items.length) return null;
   return (
     <HomeSection title="Docs" to="/handbook/docs">
-      <ul>{items.map((item) => <HomeRow key={item.path} link={itemLink(docs, item)} icon={Notebook01Icon} title={itemLabel(item.path)} />)}</ul>
+      <ul>{items.map((item) => <ItemRow key={item.path} link={itemLink(docs, item)} icon={Notebook01Icon} title={itemLabel(item.path)} />)}</ul>
     </HomeSection>
   );
 }

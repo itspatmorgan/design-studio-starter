@@ -4,7 +4,7 @@ import { createRoute, lazyRouteComponent, redirect, useRouterState } from '@tans
 import { Shapes01Icon } from '@hugeicons/core-free-icons';
 import { CommandItem } from '@/platform/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
-import { HomeRow } from '@/platform/app/items/HomeRows';
+import { ItemRow } from '@/platform/app/items/ItemRow';
 import { PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
 import { APP_NAME } from '@/platform/app/data/config';
 import { itemLabel } from '@/platform/app/data/manifest';
@@ -34,7 +34,7 @@ function Overview() {
   if (!systems.length) return null;
   return (
     <HomeSection title="Design systems" to="/systems">
-      <ul>{systems.map(([id, s]) => <HomeRow key={id} link={{ to: `/systems/${id}` }} icon={Shapes01Icon} title={s.label} />)}</ul>
+      <ul>{systems.map(([id, s]) => <ItemRow key={id} link={{ to: `/systems/${id}` }} icon={Shapes01Icon} title={s.label} />)}</ul>
     </HomeSection>
   );
 }

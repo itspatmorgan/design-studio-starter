@@ -5,7 +5,6 @@ import { createRoute } from '@tanstack/react-router';
 import { Layers01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
-import { HomeRow } from '@/platform/app/items/HomeRows';
 import { useMe } from '@/platform/app/data/files';
 import { APP_NAME } from '@/platform/app/data/config';
 import { newestFirst, prototypeLink } from '@/platform/app/data/manifest';
@@ -13,7 +12,7 @@ import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 import type { Manifest } from '@/platform/app/data/types';
 import Gallery from './gallery/Gallery';
 import NewPrototypeButton from './gallery/NewPrototypeDialog';
-import PrototypeCardMenu from './gallery/PrototypeCardMenu';
+import { PrototypeRow } from './gallery/PrototypeCard';
 
 type GallerySearch = { q?: string };
 
@@ -52,20 +51,7 @@ function Overview({ manifest }: { manifest: Manifest }) {
   const live = manifest.prototypes.filter((p) => p.status !== 'archived').sort(newestFirst);
   const mine = me ? live.filter((p) => p.contributorKey === me) : [];
   const latest = (me ? live.filter((p) => p.contributorKey !== me) : live).slice(0, SHOWN);
-  const rows = (list: typeof live, byline: boolean) => (
-    <ul>
-      {list.map((p) => (
-        <HomeRow
-          key={`${p.contributorKey}/${p.id}`}
-          link={prototypeLink(p)}
-          icon={Layers01Icon}
-          title={p.title}
-          meta={byline ? (p.contributor || p.contributorKey).split(' ')[0] : undefined}
-          menu={<PrototypeCardMenu proto={p} inline />}
-        />
-      ))}
-    </ul>
-  );
+  const rows = (list: typeof live, byline: boolean) => <ul>{list.map((p) => <PrototypeRow key={`${p.contributorKey}/${p.id}`} prototype={p} byline={byline} />)}</ul>;
   return (
     <>
       {me && (
