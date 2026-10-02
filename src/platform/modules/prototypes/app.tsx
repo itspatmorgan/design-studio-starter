@@ -60,7 +60,6 @@ function Overview({ manifest }: { manifest: Manifest }) {
           link={prototypeLink(p)}
           id={p.id}
           title={p.title}
-          description={p.description}
           meta={byline ? (p.contributor || p.contributorKey).split(' ')[0] : undefined}
           menu={<PrototypeCardMenu proto={p} />}
         />

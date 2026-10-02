@@ -4,7 +4,8 @@
 import { createRoute, notFound, redirect, useRouterState } from '@tanstack/react-router';
 import { Notebook01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
-import { HomeLinksSection } from '@/platform/app/items/HomeSection';
+import { HomeSection } from '@/platform/app/items/HomeSection';
+import { HomeLinkRow } from '@/platform/app/items/HomeRows';
 import { NotFound } from '@/platform/app/shell/App';
 import { itemFolder, itemLabel, loadManifest } from '@/platform/app/data/manifest';
 import { itemLink } from '@/platform/app/data/manifest';
@@ -44,7 +45,11 @@ function Overview({ manifest }: { manifest: Manifest }) {
   const docs = manifest.handbook.find((section) => section.id === 'docs');
   const items = docs?.items.slice(0, 3) ?? [];
   if (!docs || !items.length) return null;
-  return <HomeLinksSection title="Docs" to="/handbook/docs" links={items.map((item) => ({ label: itemLabel(item.path), link: itemLink(docs, item) }))} />;
+  return (
+    <HomeSection title="Docs" to="/handbook/docs">
+      <ul>{items.map((item) => <HomeLinkRow key={item.path} link={itemLink(docs, item)} title={itemLabel(item.path)} />)}</ul>
+    </HomeSection>
+  );
 }
 
 export default {
