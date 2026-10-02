@@ -1,6 +1,6 @@
 ---
 title: "Build a prototype"
-description: "Create screens and context, then review and refine them."
+description: "Use a design-system toolkit, a blank view, or both."
 section: "Create"
 order: 10
 toc: true
@@ -9,111 +9,61 @@ slug: "prototypes"
 
 # Prototypes
 
-A prototype holds an idea, its interactive views, and any supporting context. Its files live together in `src/prototypes/<contributor>/<prototype>/`.
+A prototype is an independent space for interactive views and supporting files. It lives in `src/prototypes/<contributor>/<prototype>/`. The app finds it automatically.
 
-The app finds prototypes automatically. Your agent creates them with `pnpm new "Prototype Name"`.
+Ask your agent to create a prototype, or select **New prototype** on the Prototypes page. The agent uses `pnpm new "Prototype Name"`.
 
-## Create a prototype
+## A toolkit with room to explore
 
-Ask your agent for a prototype and describe the outcome you want. You can also select **New prototype** on the Prototypes page.
+Your assigned design system provides components and tokens. It does not limit what you can create.
 
-For example, ask: "Create a feedback inbox with an empty state, a list, and a form. Use sample data so we can review the flow."
+Use those components, build local alternatives, or start with a blank view. Local helpers belong in the prototype, for example in `_components/`. You can explore without changing the shared system first.
 
-## Start with a toolkit or a blank view
+Dependency and style boundaries contain the experiment so it does not affect other prototypes or the platform. See [Prototype files and boundaries](/guide/prototype-reference).
 
-A prototype can start from scratch. Its assigned design system provides a toolkit, not a limit on what you can create.
-
-Use system components for screens that match your product. Build local components, styles, and interactions when you need to explore something new. You can combine both approaches in one prototype.
-
-For the feedback inbox, keep the product's navigation while trying a new way to group feedback. You do not need to add that experiment to the shared design system before testing it.
-
-Keep experimental components in the prototype's own folder, such as `_components/`. Its dependencies and styles must remain within the prototype's boundaries so changes do not affect other work.
-
-If an experiment becomes useful across prototypes, propose a shared component for maintainer review. See [Prototype files and boundaries](/guide/prototype-reference) for the detailed constraints.
-
-## Find your files
-
-The navigation lists supported items and folders. Views are required. Documents and Canvases are optional modules; your studio may not include them.
+## Files and navigation
 
 | Item | Purpose |
 | --- | --- |
-| View (`.tsx` or `.jsx`) | An interactive screen or state. |
-| Document (`.md`) | Written context and decisions. |
-| Canvas (`.excalidraw`) | Screens and notes arranged together. |
+| View (`.tsx` or `.jsx`) | Interactive code-based screen or state. |
+| Document (`.md`, optional) | Written context. |
+| Canvas (`.excalidraw`, optional) | Views, cards, and notes arranged together. |
 | Folder | Organization at any depth. |
 
-Select **Show all files** in the prototype's **…** menu to list helpers and assets while running locally.
+Views and text-file support are required. Documents and Canvases are optional modules.
 
-A name that starts with `_` marks a helper, such as `_components/`. Helpers do not appear as screens.
+Names starting with `_` identify helpers, which are not screens. Select **Show all files** in the prototype's **…** menu to see helpers and assets locally.
 
-## Add and organize items
+## Local editing controls
 
-These actions are available in your own prototypes while the studio runs locally.
+These controls are available in your own prototypes:
 
-| Task | Action |
+| Action | Control |
 | --- | --- |
-| Create an item | Select **New** (+) in the Files row, then select a file type or folder. |
-| Rename | Right-click the item and select **Rename**, or focus its row and press F2. |
-| Move | Drag onto a folder, or into the space below the list for the top level. |
-| Reorder | Drag between rows, or use Option+Up/Down (Alt+Up/Down). |
-| Choose the opening item | Right-click an item and select **Set as start**. |
-| Delete | Right-click the item and select **Delete**. |
+| Add an item or folder | **New** (+) in the Files row. |
+| Rename or delete | Item's right-click menu. F2 also renames. |
+| Move | Drag onto a folder or below the list for the top level. |
+| Reorder | Drag between rows, or Option+Up/Down (Alt+Up/Down). |
+| Choose the opening item | **Set as start** in the item's menu. |
+| Edit source | **Edit source** in the item's menu. |
 
-The default order is files first, then folders, each alphabetical. Custom order is saved in `meta.json` for other contributors to see.
+Save source edits with Command+S or Ctrl+S, then select **Done**. Conflicting external changes prompt you to choose how to proceed. Another contributor's source opens read-only.
 
-The prototype opens on its chosen start item. Otherwise, it opens on the first item in the navigation.
+Without a custom order, files appear before folders, alphabetically. The prototype opens on its start item, or the first item when no start is set.
 
-## Edit source text
+## Appearance and prototype details
 
-1. Right-click a view, document, or canvas.
-2. Select **Edit source**.
-3. Edit the text.
-4. Save with Command+S on macOS or Ctrl+S on other systems.
-5. Select **Done** to return to the rendered item.
+**Make lofi** draws a view in grayscale with handwritten type. **Make hi-fi** restores its normal appearance. Components and behavior stay the same. The mode is stored as `/** @lofi */` in that view; a folder named `lofi` has no special behavior.
 
-For another contributor's prototype, **View source** opens read-only text. Source editing is unavailable on the deployed site.
+Select **Edit** in the prototype's **…** menu to change its title or description. Changing the title also renames the folder and changes its URL. Changing only the description preserves the URL.
 
-If an external change conflicts with unsaved edits, the editor asks you how to proceed.
+## Archive and delete
 
-## Use lofi mode
+**Archive** keeps the prototype available locally and excludes it from the built site. **Unarchive** includes it in the next build.
 
-Lofi mode draws a view in grayscale with handwritten type. Use it to review layout before visual polish.
+**Delete** moves the folder to the system Trash or the repository's `.trash/` fallback. Ask your agent to restore it if needed.
 
-Right-click the view and select **Make lofi**. Select **Make hi-fi** to restore its normal appearance.
-
-The view keeps the same components and behavior. Its file stores the mode with `/** @lofi */`. A folder named `lofi` has no special behavior.
-
-## Change prototype details
-
-Select **Edit** in the prototype's **…** menu to change its title or description. You can also double-click your prototype's title.
-
-Changing the title renames the folder and changes the URL. Previously shared links stop working. A conflicting folder name prevents the rename.
-
-Changing only the description preserves the URL. Check links after renaming or moving files.
-
-## Archive or delete
-
-| Action | Local studio | Built site |
-| --- | --- | --- |
-| Archive | Remains available in the Archived section. | Excluded from the build. |
-| Unarchive | Returns to the active list. | Included in the next build. |
-| Delete | Moves the folder to the Trash or repository `.trash/` fallback. | Removed from the next build. |
-
-Use **Archive** or **Unarchive** in the prototype's **…** menu. To restore deleted files, use the system Trash or ask your agent about `.trash/`.
-
-## Prepare the next review
-
-Try the feedback inbox with no entries, several entries, and invalid form input. Tell the agent which states need refinement. Keep open questions visible to reviewers.
-
-Copy the item's URL, or select **Copy link** in its file menu. A local URL works only where that local server is accessible.
-
-Ask your agent to commit and share the work through your team's Git workflow. See [Review and share work](/guide/working-with-others) for review, Git hooks, and engineering handoff.
-
-## When an item fails
-
-A view rendering error shows a message and a **Copy** button. Give the error to your agent.
-
-For file layout, metadata, and URLs, see [Prototype files and boundaries](/guide/prototype-reference).
+Published prototypes support viewing and interaction, without repository editing. A view that fails to render shows an error and a **Copy** button; give that error to your agent.
 
 ## For developers
 

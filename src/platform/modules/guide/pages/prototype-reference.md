@@ -2,7 +2,7 @@
 title: "Prototype files and boundaries"
 description: "File layout, metadata, and URLs for people who inspect prototype files."
 section: "Reference"
-order: 40
+order: 42
 toc: true
 ---
 
@@ -105,4 +105,4 @@ Use Tailwind classes or CSS Modules (`*.module.css`) for prototype styles. CSS M
 Plain CSS imports from runtime components fail. Design-system themes load through the platform and must target their unique theme class or its descendants.
 
 
-For review paths, see [Review and share work](/guide/working-with-others).
+For review paths, see [Ownership and permissions](/guide/ownership-and-permissions).

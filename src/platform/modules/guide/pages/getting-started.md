@@ -1,72 +1,39 @@
 ---
 title: "Set up or join a studio"
-description: "Set up or join a studio, then create your first prototype."
+description: "Let your agent prepare a local environment for you."
 section: "Begin"
 order: 2
 toc: true
 ---
 
-Your agent handles installation, configuration, and verification. You provide the identity, goals, and source material it needs.
+Your coding agent handles installation, configuration, and verification. You provide the identity, choices, and source material it needs.
 
-## Choose your setup
+## Start or resume setup
 
-| Your situation | Ask your agent |
+Open the repository with your agent and use the request that fits your situation:
+
+| Situation | Ask your agent |
 | --- | --- |
-| You have a new copy of the starter. | "Set up my studio." |
-| You are joining a studio that already exists. | "Get me set up as a contributor." |
-| You stopped partway through setup. | "Resume my studio setup." |
+| New copy of the starter | “Set up my studio.” |
+| Joining an existing studio | “Get me set up as a contributor.” |
+| Setup stopped partway through | “Resume my studio setup.” |
 
-Personal and team studios use the same contributor system. Personal local use does not require GitHub or a hosted site.
+The studio uses Git and mise. Mise supplies the pinned Node and pnpm versions. The agent can help install these tools and the project dependencies.
 
-## Before you start
+Personal and team studios use the same contributor system. Personal local use does not require GitHub or hosting. To join through GitHub, provide the repository address and an account with access.
 
-Open the studio repository with your coding agent. A repository is the folder that Git uses to store and track your work.
+## What the agent sets up
 
-The studio uses Git and [mise](https://mise.jdx.dev). Mise provides the pinned Node and pnpm versions. Your agent can help install these tools.
+For a new studio, the agent helps configure its name, personal or team use, and optional modules. It registers the first contributor and helps establish the design system and Handbook context.
 
-To collaborate through GitHub, you also need an account and access to the studio's repository.
+When you join an existing studio, it creates or reuses your contributor registration. It preserves the studio's shared configuration and content.
 
-## Set up a new studio
+Provide your name and Git commit email when asked. Provide your GitHub username if you will share through GitHub. Use the same email in Git and your contributor entry.
 
-Ask: "Set up my studio."
+## What should be ready
 
-The agent helps you choose the studio name, personal or team use, and enabled modules. It registers you as the first contributor.
+Setup should leave you with a running local studio, your contributor registration, and a working first prototype. The agent verifies the build and reports missing materials or unfinished setup.
 
-Provide these details when the agent asks:
+The starter includes a Feedback Inbox sample owned by `patrick`. You can inspect it or ask the agent to copy useful parts into your own prototype. Removing the shared sample is a maintainer change.
 
-- Your name and the email you use for Git commits.
-- Your GitHub username, if you will share changes through GitHub.
-- Your product's components, design tokens, or other design guidance.
-- Context for the Handbook, such as your product principles and intended users.
-
-The agent verifies the build and a working prototype. If materials are missing, it explains what remains to do.
-
-## Join an existing studio
-
-Ask your agent to clone the team's repository and set you up as a contributor. Provide the repository address and your contributor details.
-
-The agent installs dependencies and creates or reuses your registration. It preserves the studio's configuration, design systems, and Handbook.
-
-Use the same email for Git and your contributor entry. For a team studio, use the identity your team expects.
-
-## Use your product's design system
-
-The starter includes **Product**, an example design system. You can try the studio with it before replacing it.
-
-Give your agent your component code or package, design tokens, and supporting guidance. Ask it to set up your design system.
-
-Review the result on the **Systems** pages. Keep Product until the replacement works and retained prototypes no longer need it.
-
-Changing the default system does not migrate existing prototypes. Ask your agent to update their component imports and system choice together.
-
-## Try the sample
-
-Open **Feedback Inbox** from the **Prototypes** page. Read **Start Here** for a tour of screens, states, documents, and canvases.
-
-The sample belongs to `patrick`. Ask your agent to copy useful parts into a prototype in your own folder. The studio maintainer can remove the shared sample.
-
-## Continue with your agent
-
-When setup is complete, you should have your contributor registration, a running local studio, and a first prototype to review. The agent should explain any missing design-system materials or product context.
-
-Next, learn how to direct the agent's work. The creation chapters then show how to turn an idea into views and supporting context.
+Next, [set up your design system](/guide/setup-design-system), or keep the example system while trying the studio.

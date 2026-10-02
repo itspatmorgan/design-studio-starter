@@ -2,7 +2,7 @@
 title: "Build a module"
 description: "Use the module structure to add features to your own studio."
 section: "Reference"
-order: 41
+order: 43
 toc: true
 ---
 
@@ -64,4 +64,4 @@ A prototype design system is separate content in `src/systems/<id>/`. It contain
 
 Create a starter with `pnpm studio create-system <id>`. You do not need to build a platform module to add a design system.
 
-Use [Systems](/guide/systems) for the user workflow and the system rules in the Handbook for implementation requirements.
+Use [Manage design systems](/guide/systems) for the user workflow and the system rules in the Handbook for implementation requirements.

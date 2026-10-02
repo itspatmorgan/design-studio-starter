@@ -1,82 +1,45 @@
 ---
 title: "Arrange work on a canvas"
-description: "Arrange screens, notes, and arrows to explain a flow."
+description: "Connect prototype items on an optional visual surface."
 section: "Create"
-order: 13
+order: 12
 toc: true
 slug: "canvases"
 ---
 
 # Canvases
 
-A canvas brings a prototype's screens and context together. Use it to compare alternatives, review a flow, or explain a handoff.
+Canvases adds an Excalidraw surface inside a prototype. Each canvas is an `.excalidraw` file with shapes, text, notes, arrows, and linked items.
 
-Each canvas is an `.excalidraw` file. The canvas module uses Excalidraw for shapes, notes, text, and arrows.
+The module is optional. Disabling it preserves canvas files and hides them from normal navigation.
 
-For the feedback inbox, place the empty state, list, and form together. Add arrows to explain the proposed flow and notes where behavior needs a decision.
+## Create and add items
 
-Canvases is optional. You can build and review views without it.
+Ask your agent to create a canvas, or select **New** (+), then **New canvas**, in the Files row.
 
-## Create a canvas
+Drag an item from the prototype's navigation onto the canvas. You can also select **Copy link** in the item's menu, place the pointer over the canvas, and paste.
 
-Ask your agent to create a canvas and describe what it should show. You can also select **New** (+), then **New canvas**, in the Files row.
-
-A new canvas is empty. Add items and notes to explain the relationship between screens.
-
-## Add screens and context
-
-1. Find the item in the prototype's navigation.
-2. Drag it onto the canvas.
-3. Release it where you want the preview or card.
-
-You can also right-click the item and select **Copy link**. Place the pointer over the canvas, then paste the link.
-
-| Linked item | Canvas display |
+| Linked item | Display |
 | --- | --- |
-| View | A live-rendered preview. Open the view to interact with it. |
-| Document | A card with an Open link. |
-| Another canvas | A card with an Open link. |
+| View | Live-rendered preview. Open the view to interact with it. |
+| Document or canvas | Card with an Open link. |
+| Missing item | Placeholder. |
 
-A canvas can embed only items from its own prototype. To reuse another prototype's screen, copy it into this prototype first.
+A canvas embeds only items from its own prototype. An embed from another prototype shows a scope message and fails the build. Copy the item into this prototype to reuse it.
 
-An embed from another prototype shows a scope message and fails the build. A missing item shows a placeholder.
+The canvas cannot store images. View previews provide a connection to the working code.
 
-## Explain a flow
+## Local controls and saving
 
-Arrange the screens in order. Use arrows for transitions and notes for decisions or unresolved questions.
+Use the toolbar for shapes, text, and arrows. Press **N** for a sticky note. The canvas menu includes undo, redo, grid, snapping, and background color. Command+. or Ctrl+. hides or shows controls.
 
-For example:
+Changes save automatically while the studio runs locally. External file changes appear in the open canvas. You can edit only canvases in your own prototypes; other contributors' and published canvases are read-only.
 
-```text
-[Inbox]  →  [New feedback]  →  [Inbox with new item]
-                 ↓
-          Note: What happens
-          if submission fails?
-```
+## Agent access
 
-Use **N** to add a sticky note. Double-click the note to enter text. The text and arrow tools are in the toolbar.
+The agent can edit the saved canvas file. Agents with browser access can also use the live canvas tools, which can report selection and viewport information.
 
-## Work with your agent
-
-Ask: "Arrange the checkout screens in order, with arrows and a note for each open question."
-
-The agent can edit the saved file. Agents with browser access can also use the studio's live canvas tools.
-
-Live tools can report the selection and viewport when the agent reads them. These capabilities depend on the agent's integrations.
-
-Live canvas operations support undo. File edits made outside the live tool are not necessarily individual undo steps.
-
-## Save and review
-
-Your canvas saves automatically while the studio runs locally. Changes made to its file are reflected in the open canvas.
-
-You can edit only canvases in your own prototypes. Other contributors' canvases and deployed canvases are read-only.
-
-Use the canvas menu for undo, redo, grid, snapping, and background color. To hide or show controls, press Command+. or Ctrl+.
-
-The canvas cannot store images. Use a view preview instead of a screenshot.
-
-Canvases are an optional file-type module. Disabling the module preserves the files but hides them from normal navigation.
+Live tool operations support undo. External file edits are not necessarily separate undo steps. Available live integrations depend on your agent.
 
 ## For developers
 

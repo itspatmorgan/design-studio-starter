@@ -1,8 +1,8 @@
 ---
-title: "Publish a studio"
+title: "Publish a Studio"
 description: "Understand the built site and prepare a host when you need one."
-section: "Maintain"
-order: 31
+section: "Collaborate"
+order: 32
 toc: true
 ---
 
@@ -47,9 +47,3 @@ Review what the build includes before uploading it. Handbook context, prototype 
 The starter does not provide built-in sign-in or access control. Configure access at the hosting layer when your studio contains private work.
 
 Run the development server in a trusted local environment. Its editing features are not intended to be exposed as a hosted service.
-
-## Verify the result
-
-After publication, check a prototype's interactions, direct links, design-system pages, and available context. Confirm that archived work is absent and that the intended audience can access the site.
-
-Review and republish after shared changes. A published build does not update when someone edits their local files.

@@ -2,7 +2,7 @@
 title: "Checks and troubleshooting"
 description: "Understand Git warnings, failed checks, and repository protection."
 section: "Reference"
-order: 42
+order: 44
 toc: true
 ---
 
@@ -18,7 +18,7 @@ Checks help keep the shared studio consistent. Give your agent the warning or er
 | GitHub pull request | Scope review, asset sizes, and full build. Platform proposals are flagged for review. |
 | Push to `main` | Scope authorization, asset sizes, full build, and a site artifact. Platform changes require an admin or maintainer role. |
 
-See [Review and share work](/guide/working-with-others) for how these checks fit the workflow. Configure branch protection and required checks to enforce the team's merge policy.
+See [Ownership and permissions](/guide/ownership-and-permissions) for how these checks fit the workflow. Configure branch protection and required checks to enforce the team's merge policy.
 
 ## Respond to a check
 
@@ -31,7 +31,7 @@ See [Review and share work](/guide/working-with-others) for how these checks fit
 | File exceeds the size limit | Reduce the asset before committing. |
 | Type check fails | Give your agent the error and ask it to correct the code. |
 
-See [Review and share work](/guide/working-with-others) for review paths and [Prototype files and boundaries](/guide/prototype-reference#dependency-boundaries) for permitted dependencies.
+See [Ownership and permissions](/guide/ownership-and-permissions) for review paths and [Prototype files and boundaries](/guide/prototype-reference#dependency-boundaries) for permitted dependencies.
 
 ## Keep files small
 

@@ -1,84 +1,56 @@
 ---
 title: "Add written context"
-description: "Keep decisions, questions, and handoff context beside a prototype."
+description: "Keep Markdown files alongside prototype views."
 section: "Create"
-order: 12
+order: 11
 toc: true
 slug: "documents"
 ---
 
 # Documents
 
-A document is a Markdown file in a prototype. Use it for the problem, decisions, feedback, or questions that explain the work.
+Documents adds Markdown pages inside a prototype. It is optional: disabling it hides those pages from normal prototype navigation and preserves their files. The Handbook and Guide retain their own Markdown support.
 
-For the feedback inbox, record the problem, the decisions made during review, and the questions still open. This context helps another person understand what the views demonstrate.
+Documents use the platform's page style, rather than the prototype's design-system theme.
 
-Documents is optional. If it is disabled, views still work and the Handbook keeps its Markdown support.
+## Create and edit
 
-Documents use the platform's page style. They do not use the prototype's design-system theme.
+Ask your agent to create a document, or select **New** (+), then **New document**, in the Files row.
 
-## Create a document
+Select **Edit source** in the document's right-click menu to edit its Markdown. Save with Command+S or Ctrl+S, then select **Done**. Other contributors' documents and published pages are read-only.
 
-Ask your agent to write a document from the context you provide. You can also create one locally:
+A document and another item cannot share a URL, such as `notes.md` and `notes.tsx`.
 
-1. Select **New** (+) in the Files row.
-2. Select **New document**.
-3. Enter the file name.
+## Supported content
 
-The document appears in the navigation. A document and another item cannot share a URL, such as `notes.md` and `notes.tsx`.
+The reader supports headings, lists, links, tables, task lists, strikethrough, and highlighted code blocks. It does not execute JSX or embedded components. Raw HTML appears as text; HTML comments are hidden.
 
-## Edit the text
-
-1. Right-click the document.
-2. Select **Edit source**.
-3. Edit the text.
-4. Save with Command+S on macOS or Ctrl+S on other systems.
-5. Select **Done**.
-
-Other contributors' documents are read-only in your local studio. The deployed site does not offer source editing.
-
-## Supported Markdown
-
-Use headings, lists, links, tables, task lists, strikethrough, and highlighted code blocks.
-
-The app does not execute JSX or embedded components. Raw HTML appears as text, except HTML comments, which are hidden.
-
-Optional frontmatter supplies page details:
+Optional frontmatter controls the page heading, description, and contents list:
 
 ```md
 ---
-title: Problem framing
-description: Why this prototype exists.
+title: Notes
+description: Context for this prototype.
 toc: true
 ---
 ```
 
-| Field | Purpose |
-| --- | --- |
-| `title` | Page heading. Without it, the first level-one heading supplies the title. |
-| `description` | Short text below the title. |
-| `toc` | Set to `true` for an On this page list. |
+Without a frontmatter title, the first level-one heading supplies the title.
 
-## Link to items
+## Links and related context
 
-Use a relative path from the document:
+Link to another item with a relative path:
 
 ```md
-See the [main flow](./lofi/main.tsx).
-Read the [interviews](./research/interviews.md).
+See the [main view](./prototype.tsx).
+Read the [research](./research/notes.md).
 ```
 
-The app accepts paths with or without file extensions. Outside the studio, Markdown tools may handle these links differently.
+The app accepts paths with or without extensions. External links open in a new tab. Moving linked files can break relative links; renaming the prototype folder preserves them.
 
-Renaming the prototype folder preserves relative links. Moving either linked file can break them. Check links after moving files.
+Documents link to views. Canvases can show live view previews alongside document cards.
 
-Links to external sites open in a new tab. To show a live screen beside written context, use a canvas rather than embedding it in a document.
-
-## Shared versus prototype context
-
-Keep decisions about this prototype here. Put context for the whole product in the Handbook.
-
-Documents are an optional file-type module. Disabling the module preserves the files but hides them from normal prototype navigation. The Handbook and Guide keep their Markdown support.
+Keep prototype-specific context here. The [Handbook](/guide/handbook) holds context shared across the studio.
 
 ## For developers
 

@@ -1,47 +1,39 @@
 ---
-title: "Understand Design Studio"
+title: "Introduction"
 description: "Your own environment for design work with an agent."
 section: "Begin"
 order: 1
 toc: true
 ---
 
-Design Studio is a workspace for designers and product managers who build with coding agents. Use it on your own or with a team.
+Design Studio is a workspace for designers and product managers who build with coding agents. Use it on your own or with a team. You own the code, your context, and the designs you create.
 
-You direct the work. Your agent builds interactive prototypes, helps organize context, and checks the result. You review, edit, and refine it.
+You direct the work. Your agent performs setup, builds prototypes, and checks changes. You can also edit files and use the studio's editing surfaces directly.
 
-Design Studio Starter is the open source kit for this workspace. You own its code, the context you bring to it, and the designs you create.
+## What the studio provides
 
-## Understand the parts
+![Shared design systems and Handbook context support each contributor's independent prototypes.](/guide/studio-parts.svg)
 
-![A studio contains shared design systems and Handbook context, alongside each contributor's independent prototypes.](/guide/studio-parts.svg)
+| Part | What it provides |
+| --- | --- |
+| Prototypes | Independent spaces for interactive code-based views and local experiments. |
+| Design systems | Components and tokens that help views match your product. |
+| Documents and canvases | Optional written context and visual arrangements beside views. |
+| Handbook | Shared context for people and instructions for agents. |
+| Modules | Defined places to add, disable, or remove platform capabilities. |
 
-A **prototype** holds an idea and the files that explain or demonstrate it. Code-based **views** are its core. Optional **documents** add written context. Optional **canvases** arrange screens, notes, and arrows together.
+The defaults give you a working toolkit. You can replace them or extend the environment. A prototype can use its design system, start from a blank view, or combine both approaches.
 
-A **design system** supplies components and tokens for views that match your product. You can also build local components and explore new ideas within a prototype.
+## Files are the working environment
 
-The **Handbook** holds context and instructions that apply across your work. Each contributor has a folder for their own prototypes. Shared platform changes follow the studio maintainer's review process.
+The local app reads repository files. Changes made by you or your agent appear while the studio runs. Git records versions and shares changes between local copies.
 
-## Work locally, share deliberately
+A published studio is a built site for viewing the work. Local use does not require hosting. Sharing files through Git and publishing a site are separate operations.
 
-The local app reads repository files. You and your agent can change those files while the studio runs. Git records versions and lets contributors share changes.
+## Read and edit this Guide
 
-A published studio is a built site for viewing the work. Local setup does not require hosting. Sharing repository changes and publishing a site are separate steps.
+Read from setup through creation, maintenance, and collaboration, or select a chapter from the sidebar. Reference pages contain file conventions and implementation details.
 
-## Read this Guide
+While running locally, select **Edit** to change a chapter's Markdown. Save with Command+S on macOS or Ctrl+S on other systems, then select **Done**. A module chapter opens its full README, including the developer section hidden in the Guide.
 
-The chapters follow a path from setup to creation, collaboration, and maintenance. Use **Next** to follow that path, or choose a chapter from the sidebar.
-
-**Begin** explains setup and the agent's role. **Create** shows how views, components, text, and canvases support one idea. **Collaborate** covers shared context, review, and handoff. **Maintain** is for the person who configures and publishes the studio.
-
-The **Reference** pages supply file conventions and detailed checks. **Releases** records changes to the starter.
-
-Throughout the Guide, a feedback inbox provides a simple example: build an interactive flow, record its decisions, and prepare it for review. The starter includes a Feedback Inbox sample you can inspect.
-
-## Edit the Guide
-
-While running locally, select **Edit** on a Guide page. Edit the Markdown, then save with Command+S on macOS or Ctrl+S on other systems. Select **Done** to return to the chapter.
-
-The editor shows the source file path. A module chapter opens its full README, including the developer section that the Guide does not display. Guide changes are shared platform changes; use the maintainer's review process when sharing them.
-
-If the agent changes the same file while you have unsaved edits, the editor asks which version to keep. Published Guide pages are read-only.
+The editor asks how to proceed if external changes conflict with unsaved edits. Guide changes are shared platform changes. Published pages are read-only.

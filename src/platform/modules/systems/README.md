@@ -1,87 +1,52 @@
 ---
-title: "Use your design system"
-description: "Use your product's components and keep them separate from the studio UI."
-section: "Create"
-order: 11
+title: "Manage design systems"
+description: "Maintain components, documentation, and system choices."
+section: "Maintain"
+order: 21
 toc: true
 slug: "systems"
 ---
 
 # Systems
 
-A design system provides components and design tokens. Tokens are named values for colors, typography, spacing, and other design choices.
-
-Browse available systems on the **Systems** pages.
-
-Before building the feedback inbox, review the system's form, button, and list components. Tell the agent which patterns to reuse and where you want to explore an alternative.
-
-## Platform and prototype systems
+**Systems** lists the available systems, their foundations, and their components. For initial import, see [Set up your design system](/guide/setup-design-system).
 
 | System | Used by |
 | --- | --- |
 | Platform | Studio navigation, menus, editors, and documentation pages. |
-| A prototype's assigned system | Its views and live view previews. |
+| Assigned prototype system | A prototype's views and live previews. |
 
-Prototypes cannot import the platform UI. Each prototype has one assigned system, with separate runtime components and a scoped theme.
+Prototypes cannot import platform UI. Each prototype has one assigned system, but can also build local components and styles.
 
-The system is a toolkit, not a requirement to use its components everywhere. Prototypes can build local alternatives or combine them with system components.
+## Foundations and component pages
 
-The starter includes **Product**, an example prototype system. Replace it with your product's components and tokens when they are available.
+Foundation pages read tokens from the system's theme: colors, typography, radius, shadows, spacing, and other values. Typography includes Tailwind defaults where the theme does not override them.
 
-## Review foundations
+Component pages can include descriptions, generated props tables, and live examples with source code. Props tables come from TypeScript. Upstream documentation links depend on the library used by that system.
 
-Foundation pages show tokens read from each system's theme:
+## Maintain the kit
 
-- Colors.
-- Typography.
-- Radius.
-- Shadows.
-- Spacing.
-- Other tokens.
+Ask your agent to add or update components and their documentation. The `document-component` skill provides the component-page procedure.
 
-A page appears when the theme defines relevant values. Typography also includes the Tailwind defaults where the theme does not override them.
+Locally, **Edit** on a component page opens tabs for its Markdown, examples, and component code. Missing page and example files can be created from templates. Published pages are read-only.
 
-Switch the studio's color mode to review light and dark values.
+Missing documentation normally produces build warnings. A system can require complete documentation with `docs: 'strict'`.
 
-## Review components
+System files are shared platform content. Changes require maintainer authorization.
 
-A component page can include a description, a generated props table, and live examples. Props are inputs that configure a component.
+## Add, replace, or remove a system
 
-Use the examples to review behavior and appearance. Open their code when you need an implementation example.
+Ask your agent to preview the change. Another system can support a different product or type of work. Adding it preserves the current default.
 
-Props tables are read from TypeScript. They summarize supported component inputs; they do not replace the component's full API documentation.
+Changing the default through the configuration command preserves existing prototypes' system choices. Migrating a prototype requires changing its imports and assigned system together.
 
-A component can link to upstream documentation. Follow the library used by that system rather than assuming every system uses shadcn/ui.
-
-## Edit component documentation
-
-Component files are shared platform files. Make changes as part of an authorized maintainer task.
-
-While running locally, select **Edit** on a component page. The editor provides tabs for the page, examples, and component code.
-
-Missing page or example files can be created from a template. Ask your agent to complete the text and examples. Deployed pages are read-only.
-
-The build normally warns about missing component documentation. A system can require complete documentation with `docs: 'strict'`.
-
-## Replace Product or add another system
-
-Give your agent the component source, dependencies, tokens, and usage guidance. Ask it to set up the system.
-
-The `setup-design-system` skill guides imports, documentation, theme checks, and review of representative components.
-
-Review the replacement before making it the default. Keep Product until retained prototypes no longer depend on it.
-
-A second system can support another product or a marketing site. Adding one preserves the current default; changing the default does not migrate existing prototypes.
-
-Ask the agent to migrate a prototype's imports and system choice together.
+Keep a system until retained prototypes no longer depend on it. Removal checks identify dependencies that must change first.
 
 ## Theme boundaries
 
-Each prototype system has a unique theme class. Theme rules must target that class or its descendants. Pop-ups must remain inside the system's themed container.
+Each system has a unique theme class. Theme rules must target that class or its descendants, and pop-ups must stay inside its themed container.
 
-The starter uses variables such as `--background` through Tailwind classes such as `bg-background`. Imported systems can use their own token conventions.
-
-Use your assigned system's tokens and component APIs. Review the prototype in both color modes.
+These boundaries keep the system separate from other prototypes and the platform. Imported systems can use their own token conventions and component APIs.
 
 ## For developers
 
