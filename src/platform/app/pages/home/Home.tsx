@@ -29,7 +29,7 @@ export default function Home() {
         <h1 className="text-center text-2xl font-semibold tracking-tight text-foreground">{heading}</h1>
         {!local && TAGLINE && <p className="mt-1.5 text-center text-sm text-muted-foreground">{TAGLINE}</p>}
       </header>
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <div className="overflow-hidden rounded-xl border border-border bg-card pb-1">
         {/* The panel's first row opens the ⌘K palette: the search every page has, put where a first-time visitor will see it. */}
         <button
           type="button"

@@ -58,7 +58,8 @@ function Overview({ manifest }: { manifest: Manifest }) {
         <HomeRow
           key={`${p.contributorKey}/${p.id}`}
           link={prototypeLink(p)}
-          id={p.id}
+          tint="prototypes"
+          icon={Layers01Icon}
           title={p.title}
           meta={byline ? (p.contributor || p.contributorKey).split(' ')[0] : undefined}
           menu={<PrototypeCardMenu proto={p} />}

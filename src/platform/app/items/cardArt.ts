@@ -23,7 +23,7 @@ export function cardArt(id: string): { backgroundColor: string; backgroundImage:
   };
 }
 
-// A flat, quiet tint for a small tile (a row's monogram), in the same hue as the item's picture.
+// A flat, quiet tint for a small tile (a row's icon tile), in the same hue cardArt gives the id.
 export function cardTint(id: string): { backgroundColor: string } {
   const [a] = cardHues(id);
   return { backgroundColor: `color-mix(in oklch, oklch(0.74 0.12 ${a}) 38%, var(--card))` };
