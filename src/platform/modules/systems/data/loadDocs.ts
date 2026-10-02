@@ -21,7 +21,7 @@ const globs = {
 // (like loadGuide.ts).
 const state: { globs: typeof globs; listeners: Set<() => void> } = import.meta.hot?.data.state ?? { globs, listeners: new Set() };
 
-const at = (system: string, file: string) => `${system === STUDIO_ID ? '/studio' : `/systems/${system}`}/components/${file}`;
+const at = (system: string, file: string) => `${system === STUDIO_ID ? '/platform' : `/systems/${system}`}/components/${file}`;
 
 // The examples an examples file exports: each export named with a capital that is a component,
 // in the order the file lists them (a module's exports come alphabetically).
