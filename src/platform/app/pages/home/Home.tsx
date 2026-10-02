@@ -43,7 +43,10 @@ export default function Home() {
           <span className="flex-1">Search prototypes, tools, docs</span>
           <kbd className="rounded border border-border px-1.5 py-0.5 font-sans text-[11px] leading-none">⌘K</kbd>
         </button>
-        {homeApps(local).map(({ spec, app }) => app.overview && <app.overview key={spec.id} manifest={manifest} />)}
+        {/* A little more space under the search than between sections, so the top of the list is as far from the line as the bottom is from the edge. */}
+        <div className="pt-1.5">
+          {homeApps(local).map(({ spec, app }) => app.overview && <app.overview key={spec.id} manifest={manifest} />)}
+        </div>
       </Card>
     </main>
   );
