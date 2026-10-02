@@ -24,13 +24,17 @@ The Handbook has three parts:
 
 | Part | Purpose |
 | --- | --- |
-| Docs | Product context, such as principles and intended users. |
-| Rules | Instructions that apply across tasks. |
-| Skills | Procedures for a specific task. |
+| Docs | Guidance and context for people, agents, or both. |
+| Rules | Standing instructions for agents. |
+| Skills | Procedures for agents to perform specific tasks. |
 
-`AGENTS.md` tells the agent which files to read. It points to the Handbook rather than repeating its content.
+Docs can guide people without being written for agents. If a doc also provides useful product or team context, share it with the agent.
 
-Some rules apply every session. Others apply only to a particular task, such as editing a canvas or adding a module.
+Rules and Skills are specifically for agents. `AGENTS.md` can reference any Handbook content: Docs, Rules, or Skills.
+
+It tells the agent what to read and when, rather than repeating the content. References can apply every session or only to relevant tasks.
+
+Ask your agent to add a reference when new context should inform future work. Saving a doc alone does not ensure the agent reads it.
 
 ## Included skills
 
