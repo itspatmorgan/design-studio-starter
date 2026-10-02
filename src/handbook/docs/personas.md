@@ -1,10 +1,10 @@
 ---
 title: Design Studio personas
-description: The intended users of Design Studio, the support they need, and the team contexts the starter kit should serve.
+description: Design Studio's intended users and engineering partners, the support they need, and the team contexts the starter kit should serve.
 toc: true
 ---
 
-These describe Design Studio's intended users, based on the creator's product direction. They are working audience profiles, not validated research personas. Goals and support needs below should be refined through use and conversations with real users.
+These describe Design Studio's intended users and engineering partners, based on the creator's product direction. They are working audience profiles, not validated research personas. Goals and support needs below should be refined through use and conversations with real users.
 
 They also demonstrate how a studio owner can give their agent useful product context. When adapting this kit, revise or replace this document with the people your own product serves. An agent building a team's product should not assume that its users are Design Studio's users.
 
@@ -32,17 +32,27 @@ This person understands product goals, customer problems, and team priorities, a
 
 **A successful first session:** the product manager turns an idea into a prototype they can use to communicate with the team, discuss the flow, and gather feedback on a tangible asset.
 
-## Tertiary: the engineer collaborating with the team
+## Engineering partner: the design-system provider and handoff recipient
 
-This person contributes engineering knowledge to the product team's work. Engineers may inspect, extend, or help maintain the studio, but they are not the primary audience for its first release. Their potential use may expand as the platform develops.
+Engineers are important to Design Studio even when they do not use it directly. They connect the studio to production engineering at two points: the design-system code it ingests during setup, and the prototype a designer or product manager hands off afterward.
 
-**Goals:** understand the intended behavior, assess feasibility, connect prototypes to existing components and code, and help the team adapt or maintain its environment.
+### During setup: provide the design-system code
 
-**Support to provide:** readable code, clear module and dependency boundaries, reproducible local setup, and visible context behind design decisions. Make it possible to inspect and change the implementation using familiar development tools.
+The engineer is responsible for the actual design-system code the studio uses. Designers and product managers need to prototype with those components and tokens, so the results reflect the team's real product.
 
-**Friction to investigate:** unclear ownership, prototypes that hide assumptions, and tightly coupled customization that makes the studio difficult to maintain.
+**Support to provide:** a clear path for bringing existing components, tokens, and dependencies into the studio. Keep any adaptations understandable and preserve the connection to the source system so the team can maintain it as the product changes.
 
-**Success looks like:** the engineer can understand and contribute to the work without having to reconstruct its context or repair the environment first.
+**Success looks like:** the team can build prototypes with its actual design system, and the engineer can understand how that code is incorporated and maintained.
+
+### During handoff: understand and use the prototype
+
+The engineer receives the prototype from a designer or product manager. Both the engineer and the engineer's agent need to understand its behavior, design intent, and supporting context, then use that material in the production engineering process.
+
+**Support to provide:** readable prototype code, identifiable design-system components, and accessible context describing flows, states, decisions, assumptions, and unresolved questions. Make it clear which behavior is demonstrated, which is simulated, and which still needs a production decision.
+
+**Friction to investigate:** missing intent, hidden assumptions, unclear component provenance, and a handoff that requires the engineer or their agent to reconstruct the work from screenshots or conversations.
+
+**Success looks like:** the engineer and their agent can inspect the prototype, understand the intended experience, identify what needs adaptation, and use it to inform production implementation. Handoff should not depend on the engineer becoming a regular Design Studio user.
 
 ## The team and the studio owner
 
@@ -58,8 +68,9 @@ Company environments vary widely. A team needs to bring the studio into its own 
 - How much implementation and design experience do users bring, and which explanations help them act confidently?
 - Who usually takes responsibility for initialization, the design system, and ongoing studio maintenance?
 - Which parts of the workflow require direct human editing, and which can the agent carry through reliably?
+- What code and context do engineers and their agents need to incorporate the design system and use a prototype in production engineering?
 - What changes when a personal studio becomes shared, or when a small team's studio grows?
 
 ## Using these personas
 
-Evaluate the core workflow first for designers and product managers, with engineers as supporting collaborators. Use the [principles](principles.md) to judge the quality of the experience. Refer to a person's actual goals and experience when available; these profiles should guide questions, not replace what the person tells you.
+Evaluate the creation workflow first for designers and product managers. Evaluate setup and handoff for the engineers who provide the design system and receive the work, including whether their agents can understand and use it. Use the [principles](principles.md) to judge the quality of the experience. Refer to a person's actual goals and experience when available; these profiles should guide questions, not replace what the person tells you.
