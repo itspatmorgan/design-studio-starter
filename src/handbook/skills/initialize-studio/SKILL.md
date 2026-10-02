@@ -1,6 +1,6 @@
 ---
 name: initialize-studio
-description: "Initialize or resume a personal or shared Design Studio, including local tooling, studio configuration, the first contributor, Handbook context and a design-system setup path. Use for a new studio or first-time kit setup; use setup-contributor for someone joining an existing studio."
+description: "Set up or resume a personal or shared Design Studio, including local tooling, studio configuration, the first contributor, Handbook context and a design-system setup path. Use for requests such as 'Set up my studio', a new studio or first-time kit setup; use setup-contributor for someone joining an existing studio."
 ---
 
 The agent executes setup and verifies the result. Ask for missing intent or materials, not for the person to run commands you can run. Existing authorization applies; do not repeatedly confirm the same choices. Hosting and publishing are separate requests.

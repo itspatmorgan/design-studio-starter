@@ -11,9 +11,9 @@ Ask your coding agent to set you up. It performs installation, configuration and
 
 You need Git, [mise](https://mise.jdx.dev) for the pinned Node and pnpm versions, and a coding agent. The agent can install and configure the local tools. A shared GitHub repository and your own GitHub account are needed when collaborating through GitHub, but personal local use needs neither a remote nor hosting.
 
-## Initialize a studio
+## Set up a studio
 
-For a new copy of the starter, ask: "Initialize my studio." The agent follows `initialize-studio`, establishes personal or team use, configures the studio's name and active modules, registers you, and helps set up your design system and Handbook. Tools is disabled in the beta starter; its code stays available to enable later.
+For a new copy of the starter, ask: "Set up my studio." The agent follows `initialize-studio`, establishes personal or team use, configures the studio's name and active modules, registers you, and helps set up your design system and Handbook. Tools is disabled in the beta starter; its code stays available to enable later.
 
 `studio.config.ts` holds the lasting choices. Under the hood, `pnpm studio configure` previews changes to name, tagline, usage and default system; `--yes` applies them. `pnpm -s studio status --json` reports current configuration, contributor identity, modules, systems and remaining Handbook placeholders. It does not declare setup complete: the agent verifies the build and a first working prototype.
 
