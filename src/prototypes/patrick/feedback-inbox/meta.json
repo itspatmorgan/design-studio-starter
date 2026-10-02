@@ -2,5 +2,24 @@
   "title": "Feedback Inbox",
   "description": "A sample prototype: a small feedback tracker with three screens, two canvases, and two documents. Start with the tour.",
   "created": "2026-09-30",
-  "start": "start-here"
+  "start": "start-here",
+  "order": [
+    "states/detail-delete.tsx",
+    "states/detail-edit.tsx",
+    "states/feedback-empty.tsx",
+    "states/feedback-new-error.tsx",
+    "states/feedback-new-panel.tsx",
+    "states/feedback-no-matches.tsx",
+    "states/feedback-open-issues.tsx",
+    "states/feedback-row-menu.tsx",
+    "start-here.md",
+    "eng-handoff.excalidraw",
+    "breadboard.excalidraw",
+    "project-context.md",
+    "meta.json",
+    "app",
+    "states",
+    "lofi",
+    "app/overview.tsx"
+  ]
 }

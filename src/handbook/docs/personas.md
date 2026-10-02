@@ -62,15 +62,6 @@ The studio owner is a responsibility that one of these people may take on, rathe
 
 Company environments vary widely. A team needs to bring the studio into its own stack and customize it around its codebase and practices. Individual users need the same creative capabilities and ownership, with a simpler collaboration setup.
 
-## Questions to validate
-
-- Which tasks bring designers and product managers into the studio first, and where do their support needs differ most?
-- How much implementation and design experience do users bring, and which explanations help them act confidently?
-- Who usually takes responsibility for initialization, the design system, and ongoing studio maintenance?
-- Which parts of the workflow require direct human editing, and which can the agent carry through reliably?
-- What code and context do engineers and their agents need to incorporate the design system and use a prototype in production engineering?
-- What changes when a personal studio becomes shared, or when a small team's studio grows?
-
 ## Using these personas
 
 Evaluate the creation workflow first for designers and product managers. Evaluate setup and handoff for the engineers who provide the design system and receive the work, including whether their agents can understand and use it. Use the [principles](principles.md) to judge the quality of the experience. Refer to a person's actual goals and experience when available; these profiles should guide questions, not replace what the person tells you.

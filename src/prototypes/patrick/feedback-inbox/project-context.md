@@ -1,5 +1,5 @@
 ---
-title: Project context
+title: Project Context
 description: What this project is for, who it serves, and what we've decided so far.
 toc: true
 ---

@@ -42,12 +42,6 @@ A studio should be useful to one person and dependable when others join. Persona
 
 **In practice:** make initialization and contributor onboarding distinct, resumable workflows. Give each person their own identity and work area, and preserve the team's existing design systems and context when someone joins.
 
-## Finish the core workflow
-
-A good experience carries people from intent to a working, reviewable prototype with few loose ends. Reliability, clarity, and polish matter throughout that journey. Release scope should reflect what works well from beginning to end.
-
-**In practice:** verify setup through a real first prototype, including its design system and supporting context. Surface failures with a clear next action. Keep incomplete or optional capabilities out of the core release until their workflow is ready.
-
 ## Using these principles
 
 Use these principles with the [personas](personas.md) when proposing features, reviewing designs, or changing the platform. Explain how a decision supports them and where it creates a tradeoff. When principles conflict, make that tradeoff visible to the human rather than treating the list as an automatic verdict.

@@ -1,8 +1,10 @@
 # Design Studio Starter
 
-The starter kit behind Design Studio, the prototype sandbox I built at Sublime Security: one repo where designers and their coding agents build React prototypes side by side. It's the scaffold described in [How I Set Up a Prototyping Sandbox](https://www.unknownarts.com/p/TODO).
+An open-source starter kit for your own design environment. Designers and product managers work with coding agents to build interactive prototypes, arrange views and sketches on canvases, and curate the context that guides their work. Use it personally or with a team, bring your own design system, and own the code and the work you create.
 
 The full docs live in the app itself: run it and open the Guide (`/guide`), or read the pages in [`src/platform/modules/guide/pages/`](src/platform/modules/guide/pages/). This is a beta (0.1.0), so expect changes.
+
+The initial beta focuses on local setup, contributor onboarding, prototypes and their file types, design systems, and the Handbook. Tools is included but disabled by default. Hosted deployment and stronger scope enforcement remain areas of ongoing work. The development server is for a trusted local environment; prototype code runs in the same application, and its scope checks are architectural guardrails rather than a security sandbox.
 
 ## Core ideas
 
@@ -45,7 +47,7 @@ pnpm dev        # starts the app at localhost:5173
 pnpm dev                     # rebuild the manifest and start the dev server
 pnpm build                   # rebuild the manifest, type-check, and build the static site to dist/
 pnpm typecheck               # type-check only (tsc -b)
-pnpm test                    # the canvas tools' tests
+pnpm test                    # platform, module, canvas, and onboarding tests
 pnpm canvas <file> <tool> '<json>'   # run a canvas tool on a canvas file (for agents; pnpm canvas help)
 pnpm preview                 # serve dist/ locally
 pnpm new "Prototype Name"    # create a prototype in your folder
@@ -89,6 +91,10 @@ MIT. See [LICENSE](LICENSE).
 The Source view's syntax colors are [Flexoki](https://stephango.com/flexoki) by Steph Ango (MIT).
 
 Dragging in the file navigation uses [Pragmatic drag and drop](https://atlassian.design/components/pragmatic-drag-and-drop/) by Atlassian (Apache-2.0).
+
+## Contributing and reporting issues
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for local checks and pull requests. Use [GitHub issues](https://github.com/itspatmorgan/design-studio-starter/issues) for bugs and feature requests. Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
 
 ### Preparing your studio for a team
 

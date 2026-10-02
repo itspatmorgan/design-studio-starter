@@ -13,7 +13,7 @@ Welcome. This is a working prototype, small enough to read in one sitting. It ex
 The navigation shows the prototype's folder as it is on disk. Choose **Reveal in Finder** in the **…** menu to see for yourself: what you see here is what's in the folder.
 
 - A **view** is a screen: a `.tsx` file, like [Feedback inbox](app/feedback-inbox). This prototype has three screens in the `app` folder, and a view for each state in the `states` folder.
-- A **document** is a page of writing: a `.md` file, like this one and [Project context](context).
+- A **document** is a page of writing: a `.md` file, like this one and [Project context](project-context).
 - A **canvas** is a page to arrange things on: an `.excalidraw` file, like [Breadboard](breadboard) and [Eng handoff](eng-handoff).
 - A **folder** only organizes. Move files between folders, and nothing about them changes.
 
@@ -54,7 +54,7 @@ A screen has more states than the one you land on: filtered, empty, a panel open
 
 ## 8. Write down the why
 
-[Project context](context) is the document this prototype's agent should read first: the problem, who it's for, and what you've decided. A few honest paragraphs beat a long spec.
+[Project context](project-context) is the document this prototype's agent should read first: the problem, who it's for, and what you've decided. A few honest paragraphs beat a long spec.
 
 ## 9. Work with your agent
 
@@ -66,7 +66,7 @@ Archive a prototype from its **…** menu to keep it but leave it out of the dep
 
 ## 11. Tools, and how things relate
 
-A tool is a small app your team maintains, on the **Tools** page in the rail. Open a feedback's [Detail](app/detail) and choose **Share as card**: it makes a card like the Quote card tool does, without leaving the prototype.
+A tool is a small app your team maintains. The optional Tools module is disabled in this starter's initial beta. Open a feedback's [Detail](app/detail) and choose **Share as card**: it makes a card like the included Quote card example does, without leaving the prototype.
 
 That is on purpose. The prototype has its own copy of the tool's drawing code (`app/_components/quoteCard.ts`), because a prototype never imports from a tool or another prototype. Everything in the codebase is open to you, and there are three ways to use it:
 
