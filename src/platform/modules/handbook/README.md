@@ -15,9 +15,13 @@ The Handbook holds shared context for people and agents. Its files live in `src/
 
 | Part | What belongs here | Example |
 | --- | --- | --- |
-| Docs | Product context. | Principles, intended users, or research summaries. |
-| Rules | Standing instructions. | Contributor boundaries or component conventions. |
-| Skills | Procedures for specific tasks. | Setting up a contributor. |
+| Docs | Guidance and context for people, agents, or both. | Principles, intended users, or research summaries. |
+| Rules | Standing instructions for agents. | Contributor boundaries or component conventions. |
+| Skills | Procedures for agents to perform specific tasks. | Setting up a contributor. |
+
+Docs do not need to be written for agents. Use them for guidance people need when working in the studio.
+
+If a doc also helps the agent understand your product or team, provide it as context. Rules and Skills are specifically for agents.
 
 The starter's Principles and Personas describe Design Studio. They demonstrate useful context; adapt or replace them for your product.
 
@@ -42,7 +46,9 @@ To edit text, right-click the file and select **Edit source**. Save your changes
 
 ## Make context available to agents
 
-`AGENTS.md` points to rules and skills. Ask your agent to update the routing when a new rule needs to apply to future work.
+`AGENTS.md` can point to any Handbook content: Docs, Rules, or Skills. It tells the agent what to read and when.
+
+Ask your agent to add a reference when a doc provides useful context for future work. References can apply every session or only to relevant tasks.
 
 A document's presence does not guarantee an agent reads it. Relevant session and task instructions must point to the context it needs.
 
