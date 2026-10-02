@@ -86,4 +86,4 @@ Ask your agent to commit completed work. When you want to share the commits, ask
 
 A push to `main` runs checks and creates a site artifact. It publishes a site only after the maintainer connects a host.
 
-See [Scopes](/guide/scopes) for contributor permissions and [Modules](/guide/modules) for studio configuration.
+See [Working with others](/guide/working-with-others) for contributor permissions and [Modules](/guide/modules) for studio configuration.

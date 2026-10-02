@@ -28,7 +28,7 @@ You can also edit files, text, and canvases yourself while the studio runs local
 
 Each contributor has a folder for their prototypes. Shared components belong to a design system. Shared context belongs to the Handbook.
 
-[Scopes](/guide/scopes) explains the boundaries between these parts.
+[Working with others](/guide/working-with-others) explains contributor permissions. [Prototype boundaries](/guide/prototype-boundaries) explains which code and styles a prototype can use.
 
 ## Start here
 
