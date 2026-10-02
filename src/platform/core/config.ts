@@ -5,6 +5,9 @@
 export type StudioConfig = {
   // What the app calls itself: the rail's tooltip and every page's title.
   name: string;
+  // One line on the front page of the deployed site, under the name, that tells a visitor what this is: "Our team's
+  // prototypes, tools and design systems." Left out, there's no line.
+  tagline?: string;
   // Modules to turn off, by id: { guide: false }. A module left out is on. Turning one off keeps its
   // files, so turning it on again is one line; to remove it for good, delete its folder.
   modules?: Record<string, boolean>;
@@ -21,6 +24,7 @@ export function configProblems(config: unknown, modules: readonly { id: string; 
   const c = config as Partial<StudioConfig>;
   const problems: string[] = [];
   if (typeof c.name !== 'string' || !c.name.trim()) problems.push(`${where}: add a name, what the app calls itself.`);
+  if (c.tagline !== undefined && (typeof c.tagline !== 'string' || c.tagline.length > 140)) problems.push(`${where}: tagline should be one short line of text, under 140 characters.`);
   if (c.defaultSystem !== undefined && systems && !systems.includes(c.defaultSystem)) {
     problems.push(`${where}: defaultSystem is "${c.defaultSystem}", but no system has that id. Installed: ${systems.join(', ') || 'none'}.`);
   }

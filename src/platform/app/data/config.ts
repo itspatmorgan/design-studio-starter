@@ -4,4 +4,5 @@ import { isEnabled as enabled, type StudioConfig } from '@/platform/core/config'
 
 export const CONFIG: StudioConfig = config;
 export const APP_NAME = config.name;
+export const TAGLINE = config.tagline;
 export const isEnabled = (id: string) => enabled(config, id);

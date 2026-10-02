@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
-import { HugeiconsIcon } from '@hugeicons/react';
+import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/react';
 import { File01Icon } from '@hugeicons/core-free-icons';
 import { cardTint, monogram } from './cardArt';
 
@@ -26,12 +26,12 @@ export function HomeRow({ link, id, title, description, meta, menu }: { link: ob
   );
 }
 
-// A doc, or anything that is just a title: no tile, only a small page icon.
-export function HomeLinkRow({ link, title }: { link: object; title: string }) {
+// A doc, or anything that is just a title: no tile, only a small icon (a page unless told otherwise).
+export function HomeLinkRow({ link, title, icon = File01Icon }: { link: object; title: string; icon?: IconSvgElement }) {
   return (
     <li>
       <Link {...(link as { to: never })} className="flex items-center gap-3 px-4 py-2 text-sm text-foreground outline-none transition-colors hover:bg-muted/50 focus-visible:bg-muted/50">
-        <HugeiconsIcon icon={File01Icon} size={16} className="shrink-0 text-muted-foreground" />
+        <HugeiconsIcon icon={icon} size={16} className="shrink-0 text-muted-foreground" />
         <span className="truncate">{title}</span>
       </Link>
     </li>

@@ -83,6 +83,8 @@ export default {
   icon: Layers01Icon,
   rail: 'top',
   order: 0,
+  // Locally your own prototypes come first. On the deployed site the tools do, since that is mostly what colleagues come for.
+  homeOrder: { local: 0, deployed: 15 },
   routes: (root) => [
     createRoute({
       getParentRoute: () => root,

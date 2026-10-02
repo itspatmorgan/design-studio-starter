@@ -10,6 +10,12 @@ test('a name alone is a complete config', () => {
   assert.deepEqual(configProblems({ name: 'Acme Studio', modules: {} }, modules), []);
 });
 
+test('a tagline is one short line of text', () => {
+  assert.deepEqual(configProblems({ name: 'A', tagline: 'Prototypes for our team.' }, modules), []);
+  assert.match(configProblems({ name: 'A', tagline: 42 as unknown as string }, modules)[0], /tagline/);
+  assert.match(configProblems({ name: 'A', tagline: 'x'.repeat(141) }, modules)[0], /tagline/);
+});
+
 test('the name is required', () => {
   assert.match(configProblems({ name: ' ' }, modules)[0], /add a name/);
   assert.match(configProblems({}, modules)[0], /add a name/);

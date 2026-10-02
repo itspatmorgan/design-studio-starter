@@ -39,6 +39,9 @@ export type ModuleApp = {
   // all of them (draw it with HomeSection, src/platform/app/items/HomeSection.tsx). It decides what is useful to show and
   // may draw nothing. Leave it out for a module whose page the rail already reaches and has nothing to add.
   overview?: ComponentType<{ manifest: Manifest }>;
+  // Where its overview sits on the front page, low first, when that differs from `order`: while you run the app locally
+  // (where your own work comes first) and on the deployed site (where what colleagues come for does).
+  homeOrder?: { local?: number; deployed?: number };
   // CommandItems it adds to the palette's Places group, and groups of its own.
   places?: ComponentType<PaletteContext>;
   palette?: ComponentType<PaletteContext>;
@@ -56,6 +59,12 @@ export const moduleApps: InstalledModule[] = Object.entries(apps)
     return spec && isEnabled(spec.id) && compatible(spec) ? [{ spec, app }] : [];
   })
   .sort((a, b) => a.app.order - b.app.order);
+
+// The modules that have something for the front page, in the order they show there.
+export const homeApps = (local: boolean): InstalledModule[] =>
+  moduleApps
+    .filter(({ app }) => app.overview)
+    .sort((a, b) => (a.app.homeOrder?.[local ? 'local' : 'deployed'] ?? a.app.order) - (b.app.homeOrder?.[local ? 'local' : 'deployed'] ?? b.app.order));
 
 // The address a module's section opens at, like "/tools".
 export const sectionPath = (spec: ModuleSpec) => `/${spec.section!.key}`;
