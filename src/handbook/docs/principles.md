@@ -1,34 +1,53 @@
 ---
-title: Design principles
-description: What your team believes good design is, so people and agents can judge work the same way.
+title: Design Studio principles
+description: The beliefs that guide Design Studio's product, architecture, and collaboration between people and agents.
 toc: true
 ---
 
-> **Placeholder.** Replace this page with your team's real principles. Delete this note when you do.
+These are the principles behind Design Studio. They guide decisions about the starter kit and demonstrate the kind of context a studio owner can curate for their agent. When adapting the kit for your own product, revise or replace this document with your own principles. These beliefs are a starting point for discussion, not a substitute for your team's context.
 
-Principles are the beliefs behind your design decisions. Written down, they let a new designer, a reviewer, or an agent judge a screen the way your team would. Keep them few (four to seven) and specific enough that a reasonable person could disagree with them.
+## Give people ownership
 
-## How to write one
+People and teams should own their design work and the environment they use to create it. Design Studio is open source so they can run it, understand it, change it, and build their own versions. It should fit into their codebase and workflow, with their components, conventions, and context.
 
-For each principle, give:
+**In practice:** keep work and context in readable repository files. Make customization possible through ordinary code and configuration, and make local use a complete, useful experience.
 
-- **A short name**, in the imperative or as a claim: "Show the evidence", "Earn every click".
-- **What it means**, in a sentence or two.
-- **What it looks like in practice**, with a concrete case from your product.
-- **What it rules out**, the tempting thing you won't do because of it.
+## Curate a strong starting point
 
-## Example
+Design Studio takes an omakase approach: choose a coherent set of primitives and smart defaults so people can begin with confidence. The mise en place is ready; they can focus on what they want to make. Curation should reduce the decisions required to get started while leaving room to tailor the environment.
 
-The principle below is made up, to show the shape. Replace it.
+**In practice:** provide a working path through setup and the first prototype. Offer a useful default design system, explain what it is, and support replacing it with the team's own kit. Add options when they serve a concrete need.
 
-### Show the evidence
+## Build with parts that compose and grow
 
-People trust a conclusion when they can see what it rests on.
+Modularity, composability, extensibility, and scalability are product qualities as well as engineering qualities. Teams should be able to add capabilities, replace parts, and grow their studio without having to rebuild the whole environment. Clear boundaries help both people and agents understand what a change affects.
 
-**In practice:** a verdict always comes with the signals behind it, one click away, and never as a bare label.
+**In practice:** keep the platform, prototype design systems, prototypes, file types, and shared context in understandable scopes. Connect working code, canvases, wireframes, and documents so they support the same exploration. Keep performance usable as the number of prototypes and contributors grows.
 
-**Rules out:** a score or status with no way to see why.
+## Let the human direct and the agent execute
 
-## Where these are used
+The human should be able to work primarily as a creative director: set intent, judge the result, make edits, and guide refinement. The agent should perform the work it can do across the environment, including setup, implementation, organization, documentation, and verification. People should also be able to contribute directly on the surfaces where that is clearest or quickest for them.
 
-Your agent reads this page when you ask it to critique a design or explore directions, so the more specific it is, the better the feedback. The [Handbook](/handbook) is maintained by whoever owns the platform, and changes to it are reviewed like code.
+**In practice:** ask for missing intent, decisions, or materials in clear language. Use text or the studio UI to exchange that context as appropriate. Carry out the work, make results reviewable, and keep the human able to supervise and fine-tune them.
+
+## Make context part of the working environment
+
+Good work depends on knowing the product, the people it serves, and the team's standards. That context should be deliberately curated, available to the agent, and maintained alongside the work. Principles, personas, references, rules, and skills help the agent make decisions that fit the team.
+
+**In practice:** save supplied context in readable files that can be reviewed and updated. Distinguish known facts, working assumptions, and missing input. Ask for what is missing instead of inventing research, brand decisions, or requirements.
+
+## Support an individual and a team
+
+A studio should be useful to one person and dependable when others join. Personal use should be straightforward. Team use should preserve shared conventions while giving each contributor a clear place to work. Collaboration should remain understandable as the studio grows.
+
+**In practice:** make initialization and contributor onboarding distinct, resumable workflows. Give each person their own identity and work area, and preserve the team's existing design systems and context when someone joins.
+
+## Finish the core workflow
+
+A good experience carries people from intent to a working, reviewable prototype with few loose ends. Reliability, clarity, and polish matter throughout that journey. Release scope should reflect what works well from beginning to end.
+
+**In practice:** verify setup through a real first prototype, including its design system and supporting context. Surface failures with a clear next action. Keep incomplete or optional capabilities out of the core release until their workflow is ready.
+
+## Using these principles
+
+Use these principles with the [personas](personas.md) when proposing features, reviewing designs, or changing the platform. Explain how a decision supports them and where it creates a tradeoff. When principles conflict, make that tradeoff visible to the human rather than treating the list as an automatic verdict.
