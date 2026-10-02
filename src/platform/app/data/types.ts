@@ -7,7 +7,7 @@ import type { DocsMode } from '@/platform/modules/systems/sources';
 
 // public/prototypes/manifest.json, written by scripts/build/build-manifest.js, with each prototype's items
 // in public/prototypes/items/<contributor>/<prototype>.json.
-// One thing in a prototype the app can open (see src/platform/fileTypes/).
+// One thing in a prototype the app can open (see src/platform/core/fileTypes.md).
 export type Item = {
   path: string;   // file path in the prototype, e.g. "prototype.tsx" or "checkout/step-1.tsx"
   fileType: string; // the id of the file type that owns it, from its extension ("view", "document")
@@ -48,7 +48,7 @@ export type GuidePage = {
   title: string;
   description: string;
   section: string | null; // sidebar heading, e.g. "Core concepts"
-  source?: string;        // where a README page is, like "/platform/fileTypes/canvas/README.md"
+  source?: string;        // where a README page is, like "/platform/modules/canvas/README.md"
 };
 
 // `sections` holds the items of the modules' sections of prototype-shaped folders, by section key: the

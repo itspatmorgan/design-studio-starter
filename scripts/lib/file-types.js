@@ -1,12 +1,12 @@
-// The file types installed in src/platform/fileTypes/ (one folder each, with a type.ts), for the build
+// The file types installed in src/platform/modules/ (the modules that have a type.ts), for the build
 // and the dev server. Delete a folder and its type is gone from here too. The app finds the
-// same folders with a glob (src/platform/app/fileTypes.ts).
+// same folders with a glob (src/platform/app/data/fileTypes.ts).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { assertUniqueExtensions, handbookType, matchFileType } from '../../src/platform/fileTypes/index.ts';
+import { assertUniqueExtensions, handbookType, matchFileType } from '../../src/platform/core/fileTypes.ts';
 
-const DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src/platform/fileTypes');
+const DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src/platform/modules');
 
 const ids = fs.readdirSync(DIR, { withFileTypes: true })
   .filter((d) => d.isDirectory() && fs.existsSync(path.join(DIR, d.name, 'type.ts')))

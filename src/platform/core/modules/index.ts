@@ -1,7 +1,7 @@
 // Modules: the parts of Design Studio you can add or remove. A module is a folder in
 // src/platform/modules/<id>/ with a module.ts that says what it is and what it adds, so the build,
 // the dev server and the app all read one list instead of each knowing about every module.
-// File types (src/platform/fileTypes/) are modules of their own kind and keep their own folders for now.
+// A file type is a module that has a type.ts and an open.tsx (src/platform/core/fileTypes.md).
 // This file has no imports, so Node scripts can load it directly.
 
 // The version of the module contract this copy of the platform offers: what a module's module.ts, app.tsx and

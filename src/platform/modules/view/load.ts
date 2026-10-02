@@ -1,4 +1,4 @@
-// Loads a view for its page (module.tsx) and for embeds (ViewEmbed.tsx).
+// Loads a view for its page (open.tsx) and for embeds (ViewEmbed.tsx).
 import type { ItemContext } from '@/platform/app/data/fileTypeModule';
 import { itemSlug } from '@/platform/app/data/manifest';
 import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';

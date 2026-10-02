@@ -22,10 +22,10 @@ const MODULES = {
   tools: { paths: ['src/tools', 'src/platform/modules/tools'], pattern: "TOOLS_KEY|src/tools|'tools'|/tools" },
   handbook: { paths: ['src/handbook', 'src/platform/modules/handbook/map.ts', 'src/platform/modules/handbook/rules.ts', 'src/platform/modules/handbook/handbook.test.ts', 'src/platform/modules/handbook/pages'], pattern: 'handbook' },
   systems: { paths: ['src/systems', 'src/platform/modules/systems/pages', 'src/platform/modules/systems/data/loadDocs.ts'], pattern: 'systems' },
-  canvas: { paths: ['src/platform/fileTypes/canvas'], pattern: 'excalidraw|canvas' },
-  document: { paths: ['src/platform/fileTypes/document'], pattern: 'fileTypes/document' },
-  view: { paths: ['src/platform/fileTypes/view'], pattern: 'fileTypes/view' },
-  text: { paths: ['src/platform/fileTypes/text'], pattern: 'fileTypes/text' },
+  canvas: { paths: ['src/platform/modules/canvas'], pattern: 'excalidraw|canvas' },
+  document: { paths: ['src/platform/modules/document'], pattern: 'modules/document' },
+  view: { paths: ['src/platform/modules/view'], pattern: 'modules/view' },
+  text: { paths: ['src/platform/modules/text'], pattern: 'modules/text' },
 };
 
 // Tools run straight from node_modules: pnpm would stop to re-check dependencies in a scratch copy.

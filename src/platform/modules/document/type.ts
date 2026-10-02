@@ -1,6 +1,6 @@
 // A document: written context in a Markdown file (.md), opened as a page in the prototype. Its frontmatter is optional:
 //   title, description, toc (true shows an "On this page" list)
-import { defineFileType } from '../index.ts';
+import { defineFileType } from '../../core/fileTypes.ts';
 
 // "problem-framing.md" → "Problem Framing"
 const titleOf = (name: string) => name.replace(/\.md$/, '').split(/[-_]/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');

@@ -1,9 +1,9 @@
-// The glob patterns a file type's loader (src/platform/fileTypes/<type>/loader.ts) lists its files with,
+// The glob patterns a file type's loader (src/platform/modules/<type>/loader.ts) lists its files with,
 // worked out from the type's extensions and the modules' sections, so a new section needs no change
 // to any loader. Vite needs globs written out literally, so scripts/build/vite-globs-plugin.js puts the
 // result in place of the ['/__studio_globs__/*'] placeholder when it reads a loader. Patterns are relative to src/.
 // Has no imports but types, so Node scripts and tests can load it.
-import type { FileTypeSpec } from '../../fileTypes/index.ts';
+import type { FileTypeSpec } from '../fileTypes.ts';
 import { itemFolders, type ModuleSpec } from './index.ts';
 
 const rootOf = (folder: string) => folder.replace(/^src/, ''); // "src/tools" → "/tools"

@@ -2,7 +2,7 @@
 // resolves through the manifest to a prototype and an item, so it survives a change of host or
 // base path, and one that points at nothing (the file was renamed or deleted) is reported as
 // missing rather than breaking the page.
-import { itemSlug } from '@/platform/fileTypes';
+import { itemSlug } from '@/platform/core/fileTypes';
 import { addressOf, canonicalPath, parseAddress } from '@/platform/core/roots';
 import type { Item, Manifest, Prototype } from '@/platform/app/data/types';
 import { allPrototypes } from '@/platform/app/data/manifest';

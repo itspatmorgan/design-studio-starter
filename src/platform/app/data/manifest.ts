@@ -1,5 +1,5 @@
 import { linkOptions } from '@tanstack/react-router';
-import { itemSlug } from '@/platform/fileTypes';
+import { itemSlug } from '@/platform/core/fileTypes';
 import { isSectionKey } from '@/platform/core/roots';
 import type { Item, Manifest, Prototype, PrototypeInfo, PrototypeRef } from '@/platform/app/data/types';
 

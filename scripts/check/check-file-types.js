@@ -1,8 +1,8 @@
-// Checks that file types stay removable (src/platform/fileTypes/README.md):
+// Checks that file types (the modules that have a type.ts, src/platform/core/fileTypes.md) stay removable:
 //   - nothing outside a type's folder imports from it, and types don't import each other, so
 //     deleting a folder leaves nothing broken. Core reads types through the registries
 //     (src/platform/app/data/fileTypes.ts, scripts/lib/file-types.js).
-//   - a type's type.ts imports only ../index.ts, because the build loads it in Node.
+//   - a type's type.ts imports only ../../core/fileTypes.ts, because the build loads it in Node.
 //   - a type's loader.ts lists its files with the ['/__studio_globs__/*'] placeholder, so a new section and archived files reach it
 //     (scripts/build/vite-globs-plugin.js).
 // Usage: node scripts/check/check-file-types.js
@@ -11,8 +11,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const TYPES = path.join(ROOT, 'src', 'platform', 'fileTypes');
-const ids = fs.readdirSync(TYPES, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name);
+const TYPES = path.join(ROOT, 'src', 'platform', 'modules');
+const ids = fs.readdirSync(TYPES, { withFileTypes: true }).filter((d) => d.isDirectory() && fs.existsSync(path.join(TYPES, d.name, 'type.ts'))).map((d) => d.name);
 
 // Source files, not prototypes (those are checked by the import guard) or dependencies.
 function* files(dir) {
@@ -47,13 +47,13 @@ for (const file of [...files(path.join(ROOT, 'src')), ...files(path.join(ROOT, '
     if (target && target !== own) {
       problems.push(own && ids.includes(own)
         ? `${rel} imports the ${target} file type. File types can't depend on each other: ${target}/ has to be removable.`
-        : `${rel} imports the ${target} file type ("${specifier}"). Core code can't depend on a file type, or the app wouldn't run without it. Read types through src/platform/app/data/fileTypes.ts instead.`);
+        : `${rel} imports the ${target} file type ("${specifier}"). Code outside a file type (core, or another module) can't depend on it, or the app wouldn't run without it. Read types through src/platform/app/data/fileTypes.ts instead.`);
     }
   }
   // Real import lines only: a type.ts can hold import text inside a template, like a new view's.
   if (path.basename(file) === 'type.ts' && ids.includes(own)) {
     for (const [, specifier] of code.matchAll(/^import\b[^\n]*?\bfrom\s*['"]([^'"]+)['"]/gm)) {
-      if (specifier !== '../index.ts') problems.push(`${rel} imports "${specifier}". A type.ts can import only ../index.ts, because the build loads it directly in Node.`);
+      if (specifier !== '../../core/fileTypes.ts') problems.push(`${rel} imports "${specifier}". A type.ts can import only ../../core/fileTypes.ts, because the build loads it directly in Node.`);
     }
   }
 }

@@ -1,4 +1,4 @@
-// Gives each file type's loader (src/platform/fileTypes/<type>/loader.ts) the list of files it opens, and
+// Gives each file type's loader (src/platform/modules/<type>/loader.ts) the list of files it opens, and
 // leaves archived prototypes and views out of the production build (src/platform/core/archive.ts).
 //
 // Vite needs a glob written out literally, so a loader says import.meta.glob(['/__studio_globs__/*']), a placeholder
@@ -19,7 +19,7 @@ function literal(glob) {
   return glob.endsWith('/**') ? `${escape(glob.slice(0, -3))}/**` : escape(glob);
 }
 
-const LOADER = /[\\/]fileTypes[\\/]([^\\/]+)[\\/]loader\.ts$/;
+const LOADER = /[\\/]modules[\\/]([^\\/]+)[\\/]loader\.ts$/;
 const MACRO = /\['\/__studio_globs__\/\*'\]/g;
 
 export default function globs() {
@@ -46,7 +46,7 @@ export default function globs() {
     // Archived files that no loader was told about would ship in the build, so stop instead.
     buildEnd() {
       if (negations.length && replaced === 0) {
-        this.error("Archived views and prototypes could not be left out of the build: no file type loader (src/platform/fileTypes/<type>/loader.ts) lists its files with the ['/__studio_globs__/*'] placeholder.");
+        this.error("Archived views and prototypes could not be left out of the build: no file type loader (src/platform/modules/<type>/loader.ts) lists its files with the ['/__studio_globs__/*'] placeholder.");
       }
     },
   };

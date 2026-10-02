@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 import type { MDXComponents } from 'mdx/types';
 import { DocBase } from '@/platform/app/docs/DocBase';
 import { fileTypeOf } from '@/platform/app/data/fileTypes';
-import { itemSlug } from '@/platform/fileTypes';
+import { itemSlug } from '@/platform/core/fileTypes';
 
 // Styling for Markdown comes from Tailwind Typography's `prose` classes (see Prose).
 // This map covers only what CSS can't: app links navigate without a reload, and

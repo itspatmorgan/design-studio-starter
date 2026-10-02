@@ -78,7 +78,7 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an item.
 - **Items are embeds.** A view or document on a canvas is an Excalidraw `embeddable` element whose
   `link` is the item's address in the app (`/prototypes/patrick/hello-world/lofi/main`; one saved in the older form, without `/prototypes`, still resolves and is written back in the new form when the canvas is saved). The link resolves through
   the manifest (`src/platform/app/items/itemLinks.ts`) to a prototype and an item, and the item's file type
-  decides how it looks: a type with an `Embed` in its `module.tsx` (views) shows live, any other
+  decides how it looks: a type with an `Embed` in its `open.tsx` (views) shows live, any other
   type shows a card (`src/platform/app/items/ItemCard.tsx`), and a link to nothing shows "Not found".
 - **Views are pictures.** A view is laid out at 1440 px wide and scaled down to the element's width,
   cropped at the bottom. Resizing the element changes the crop. Nothing in it takes clicks.
@@ -91,7 +91,7 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an item.
 | File | What it does |
 | --- | --- |
 | `type.ts` | The spec the build reads: extension, template (an empty scene), and `check` (valid JSON, no images) |
-| `module.tsx` | Icon, and `load`: the file's text (from the file layer in dev, bundled in production). Loads `Canvas` lazily, so Excalidraw isn't in the main bundle |
+| `open.tsx` | Icon, and `load`: the file's text (from the file layer in dev, bundled in production). Loads `Canvas` lazily, so Excalidraw isn't in the main bundle |
 | `loader.ts` | The glob of canvas files for the deployed site |
 | `Canvas.tsx` | Wires the pieces into `<Excalidraw>` |
 | `canvas.css` | The app's theme for Excalidraw's UI, from the app's tokens, and how its top row compacts when the canvas is narrow |
@@ -113,6 +113,6 @@ Excalidraw's CDN.
 ### Remove it
 
 Delete this folder. Canvas files become plain files, and the navigation hides them unless you choose Show
-all files. Then remove what only canvas used: `@excalidraw/excalidraw` and the `canvas` script from `package.json`, `src/platform/fileTypes/canvas/cli.ts` from `tsconfig.node.json` and `tsconfig.app.json`,
+all files. Then remove what only canvas used: `@excalidraw/excalidraw` and the `canvas` script from `package.json`, `src/platform/modules/canvas/cli.ts` from `tsconfig.node.json` and `tsconfig.app.json`,
 `patches/`, `pnpm-workspace.yaml`, the links to its Guide page (this README is that page, so it goes with the folder),
 and its agent rule (`src/handbook/rules/canvases.md` and its line in `AGENTS.md`).

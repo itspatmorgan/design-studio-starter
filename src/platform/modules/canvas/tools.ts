@@ -8,7 +8,7 @@
 // own vocabulary (colors, stroke, fill), and the shortcuts (notes, items, sections) are just
 // conveniences on top of it.
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { itemSlug } from '../index.ts';
+import { itemSlug } from '../../core/fileTypes.ts';
 import {
   NOTE_COLORS, NOTE_SIZE, NOTE_TEXT_COLOR, ToolError, arrowEnds, boundsOf, bump, centerLabel, color, labelFor, make, measureText,
   labelRoom, textElement, textHeight, unionBounds, wrapText, type El,

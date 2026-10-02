@@ -1,14 +1,14 @@
-// The file types installed in src/platform/fileTypes/: one folder each, found with a glob, so the app
+// The file types installed in src/platform/modules/ (the modules that have a type.ts): one folder each, found with a glob, so the app
 // runs with any of them removed. (scripts/lib/file-types.js finds the same folders for the
 // build.) Core code reads types here and never imports a type's folder (scripts/check/check-file-types.js).
-import { assertUniqueExtensions, matchFileType, type FileTypeSpec } from '@/platform/fileTypes';
+import { assertUniqueExtensions, matchFileType, type FileTypeSpec } from '@/platform/core/fileTypes';
 import type { FileTypeModule } from '@/platform/app/data/fileTypeModule';
 
-// The folder name is the type's id: /platform/fileTypes/view/type.ts → "view".
+// The folder name is the type's id: /platform/modules/view/type.ts → "view".
 const idOf = (path: string) => path.split('/').at(-2)!;
 
-const specs = import.meta.glob<FileTypeSpec>('/platform/fileTypes/*/type.ts', { eager: true, import: 'default' });
-const modules = import.meta.glob<FileTypeModule>('/platform/fileTypes/*/module.tsx', { eager: true, import: 'default' });
+const specs = import.meta.glob<FileTypeSpec>('/platform/modules/*/type.ts', { eager: true, import: 'default' });
+const modules = import.meta.glob<FileTypeModule>('/platform/modules/*/open.tsx', { eager: true, import: 'default' });
 
 export const FILE_TYPES: Record<string, FileTypeSpec> = Object.fromEntries(Object.entries(specs).map(([path, spec]) => [idOf(path), spec]));
 export const fileTypeModules: Record<string, FileTypeModule> = Object.fromEntries(Object.entries(modules).map(([path, module]) => [idOf(path), module]));

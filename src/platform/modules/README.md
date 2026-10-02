@@ -21,9 +21,9 @@ src/platform/
     modules/     the machinery that reads the folders below: the contract (index.ts), globs.ts, and pack.ts (what pnpm studio add runs)
   app/           the app's own shell: router, rail, ⌘K palette, and the prototype pages
   components/    the studio's own UI kit (not what prototypes use: that is a design system)
-  fileTypes/     what a prototype can hold: view, document, canvas, text
   modules/       one folder per module, with everything it needs:
     <id>/module.ts, app.tsx, server.ts, check.ts, lib/    the files above
+    <id>/type.ts, open.tsx, loader.ts    a file type (view, document, canvas, text: what a prototype can hold), which is a module too
     <id>/pages/    its pages (browser)          <id>/node/    its helpers that run in Node (build and commands)
 src/systems/ prototypes/ tools/ handbook/ lib/      your content, not the platform
 scripts/         build/ (build and dev server)   check/ (pnpm check)   cli/ (commands people and agents run)   lib/ (shared by those)
@@ -90,4 +90,4 @@ comments are filled in by `scripts/build/vite-css-plugin.js`.
 `pnpm check` confirms every declaration is well formed, no two modules claim the same address, no contributor uses a module's address, modules don't
 import each other, and code outside a module reads only its `module.ts`.
 
-File types (`src/platform/fileTypes/`) are modules of their own kind and keep their folders; see their README.
+File types are modules that have a `type.ts`; see `src/platform/core/fileTypes.md`.

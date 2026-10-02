@@ -46,7 +46,7 @@ const homeRoute = createRoute({
 type ItemSearch = { mode?: 'source' };
 
 // Loads an item before the route renders, so the current one stays on screen until the next
-// one is ready. Its file type (src/platform/fileTypes/) loads the file. An unknown address, or a type
+// one is ready. Its file type (src/platform/modules/<type>/) loads the file. An unknown address, or a type
 // that isn't installed, shows the not-found page.
 async function itemLoader({ contributor, prototype, _splat }: { contributor: string; prototype: string; _splat?: string }, mode?: ItemSearch['mode']): Promise<ItemData> {
   const proto = await loadPrototype(contributor, prototype).catch(() => undefined);

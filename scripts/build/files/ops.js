@@ -13,7 +13,7 @@ import { opProblem } from '../../../src/platform/modules/handbook/rules.ts';
 import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/platform/modules/handbook/skills.ts';
 import { ROOT, TRASH, readOrder, readTree, resolveInside, validName, viewKey } from './paths.js';
 
-// The contents of a new file: its file type's template, by extension (src/platform/fileTypes/<type>/type.ts).
+// The contents of a new file: its file type's template, by extension (src/platform/modules/<type>/type.ts).
 // Files of no type start empty.
 export const templateFor = (name) => FILE_TYPES[fileTypeOf(name)]?.template?.(name) ?? '';
 

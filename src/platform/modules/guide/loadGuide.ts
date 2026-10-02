@@ -5,7 +5,7 @@ export type GuideModule = { default: MDXContent; frontmatter?: DocFrontmatter };
 
 // Every Guide page: the Guide's own, and the READMEs of modules and file types, which are pages when they open with
 // Guide frontmatter (the manifest says which). Vite only loads one when it is asked for.
-const glob = import.meta.glob<GuideModule>(['/platform/modules/guide/pages/*.md', '/platform/modules/*/README.md', '/platform/fileTypes/*/README.md']);
+const glob = import.meta.glob<GuideModule>(['/platform/modules/guide/pages/*.md', '/platform/modules/*/README.md']);
 
 // In dev, adding or removing a page makes Vite run this file again with a new list. The app
 // keeps calling the function from the first run, so the list lives in state Vite keeps

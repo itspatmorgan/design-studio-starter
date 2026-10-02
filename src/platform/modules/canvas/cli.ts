@@ -9,7 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { itemSlug } from '../index.ts';
+import { itemSlug } from '../../core/fileTypes.ts';
 import { addressOf, canonicalPath, parseAddress } from '../../core/roots.ts';
 import { FORMAT_VERSION, stringifyScene } from './slim.ts';
 import { help, run, ToolError, type Ctx, type El, type ItemInfo } from './tools.ts';

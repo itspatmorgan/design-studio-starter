@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from '../../src/platform/modules/systems/node/systems.js';
 import { PLATFORM_ID } from '../../src/platform/modules/systems/sources.ts';
-import { isHelper, itemSlug } from '../../src/platform/fileTypes/index.ts';
+import { isHelper, itemSlug } from '../../src/platform/core/fileTypes.ts';
 import { HANDBOOK_KEY, HANDBOOK_SECTIONS, rootOf } from '../../src/platform/core/roots.ts';
 import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../../src/platform/core/archive.ts';
 import { byOrder, parseOrder } from '../../src/platform/core/order.ts';
@@ -41,7 +41,7 @@ const dirs = (p) => fs.existsSync(p)
   ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort()
   : [];
 
-// A prototype's items (see src/platform/fileTypes/), in the order the file tree shows them: at each
+// A prototype's items (see src/platform/core/fileTypes.md), in the order the file tree shows them: at each
 // level, files first, then folders, each alphabetical, unless meta.json "order" says otherwise
 // (src/platform/core/order.ts). Hidden files and helpers (names starting with an underscore) are skipped.
 // `typeOf` says which type opens a file (or null for a plain file), and `skip` which folders are
@@ -67,7 +67,7 @@ const inHandbook = {
 };
 
 // Problems with a folder's items: two sharing a URL, or a file its type rejects (a view needs a
-// default export, and so on: src/platform/fileTypes/<type>/type.ts). Printed; returns how many.
+// default export, and so on: src/platform/modules/<type>/type.ts). Printed; returns how many.
 function checkItems(dir, items, out = console, prototype) {
   let errors = 0;
   const seen = new Set();

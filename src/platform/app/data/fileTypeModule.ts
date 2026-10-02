@@ -2,7 +2,7 @@ import type { ComponentType } from 'react';
 import type { CodeIcon } from '@hugeicons/core-free-icons';
 import type { Item, Prototype } from '@/platform/app/data/types';
 
-// How the app opens a file type (src/platform/fileTypes/<type>/module.tsx). What the build needs to know
+// How the app opens a file type (src/platform/modules/<type>/open.tsx). What the build needs to know
 // about the type is in its type.ts.
 export type ItemContext = { proto: Prototype; item: Item };
 

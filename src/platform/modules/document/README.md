@@ -72,10 +72,10 @@ Documents are optional for a prototype, and for the platform: ask your agent to 
 
 ## For developers
 
-**This folder is a self-contained file type.** Delete it and `.md` files become plain files; the app runs without it. How file types work is in `src/platform/fileTypes/README.md`.
+**This folder is a self-contained file type.** Delete it and `.md` files become plain files; the app runs without it. How file types work is in `src/platform/core/fileTypes.md`.
 
 - `type.ts`: what the build reads: the `.md` extension, a template (a title and an empty-document line), and the checks on frontmatter.
-- `module.tsx`: the icon, how a document loads, and its page.
+- `open.tsx`: the icon, how a document loads, and its page.
 - `DocumentPage.tsx`: the page a document opens as, in the app's own style (not the prototype's design system).
 - `loader.ts`: the glob of document files for the deployed site.
 

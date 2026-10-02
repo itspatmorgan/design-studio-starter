@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from '../../lib/file-types.js';
-import { isHelper } from '../../../src/platform/fileTypes/index.ts';
+import { isHelper } from '../../../src/platform/core/fileTypes.ts';
 import { byOrder, parseOrder } from '../../../src/platform/core/order.ts';
 import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../../../src/platform/core/roots.ts';
 import { PROTOTYPE_SECTIONS } from '../../lib/modules.js';

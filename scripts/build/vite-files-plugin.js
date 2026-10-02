@@ -57,7 +57,7 @@ export default function filesPlugin() {
     apply: 'serve',
     // When a prototype file is moved, created, or deleted, Vite would try to hot-reload it
     // (at its old path, or at a path the page loaded before), fail, and reload the page. The
-    // manifest and the item lists (src/platform/fileTypes/<type>/loader.ts) already handle these, so drop Vite's copy of
+    // manifest and the item lists (src/platform/modules/<type>/loader.ts) already handle these, so drop Vite's copy of
     // the file itself and let its importers, like those lists, update as usual. Edits to a
     // file are left to Vite's normal hot reload.
     hotUpdate({ type, file, modules }) {
