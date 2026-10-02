@@ -35,6 +35,16 @@ export default defineConfig({
   root: 'src',
   publicDir: '../public',
   build: { outDir: '../dist', emptyOutDir: true },
+  // The Source view's editor (SourcePane.tsx) loads its languages on demand, so Vite would find these packages
+  // only when you first open it, re-bundle them, and end up with two copies of @codemirror/state: the editor
+  // then fails with "Unrecognized extension value". Listing them bundles them together at start.
+  optimizeDeps: {
+    include: [
+      '@codemirror/state', '@codemirror/view', '@codemirror/commands', '@codemirror/autocomplete', '@codemirror/language',
+      '@codemirror/search', '@codemirror/lang-javascript', '@codemirror/lang-markdown', '@codemirror/lang-yaml',
+      '@lezer/common', '@lezer/highlight', '@lezer/markdown',
+    ],
+  },
   resolve: {
     alias: [{ find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) }, ...moduleLibs],
   },
