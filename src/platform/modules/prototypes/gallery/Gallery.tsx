@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { Collection, ViewToggle } from '@/platform/app/items/Collection';
 import NewPrototypeButton from '@/platform/modules/prototypes/gallery/NewPrototypeDialog';
 import PrototypeCard, { PrototypeRow } from './PrototypeCard';
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/platform/components/empty';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/platform/components/empty';
 import { useMe } from '@/platform/app/data/files';
 
 const rootApi = getRouteApi('__root__');
@@ -69,13 +69,6 @@ export default function Gallery() {
         <EmptyTitle>No prototypes yet</EmptyTitle>
         <EmptyDescription>A working sketch of an idea: real screens you can click through.</EmptyDescription>
       </EmptyHeader>
-      <EmptyContent>
-        <ol className="w-full list-decimal space-y-1.5 pl-5 text-left text-muted-foreground">
-          <li><span className="font-medium text-foreground">Start one.</span> Use New prototype above, or ask your agent.</li>
-          <li><span className="font-medium text-foreground">Describe it.</span> Tell your agent what it is and who it is for.</li>
-          <li><span className="font-medium text-foreground">Share it.</span> Each one has a link of its own.</li>
-        </ol>
-      </EmptyContent>
     </Empty>
   ) : (
     <Empty className="border border-dashed py-16">

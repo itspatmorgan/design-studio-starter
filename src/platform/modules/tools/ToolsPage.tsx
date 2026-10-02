@@ -9,7 +9,7 @@ import { Button } from '@/platform/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/platform/components/select';
 import { toast } from '@/platform/components/toast';
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/platform/components/empty';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/platform/components/empty';
 import { Collection, ViewToggle } from '@/platform/app/items/Collection';
 import { useMe } from '@/platform/app/data/files';
 import { prototypeLink, setManifest } from '@/platform/app/data/manifest';
@@ -87,13 +87,6 @@ function ToolsEmpty({ local }: { local: boolean }) {
         <EmptyTitle>No tools yet</EmptyTitle>
         <EmptyDescription>A small app your team uses to make something, like a thumbnail or graphic. Build it as a prototype, then publish it here.</EmptyDescription>
       </EmptyHeader>
-      <EmptyContent>
-        <ol className="w-full list-decimal space-y-1.5 pl-5 text-left text-muted-foreground">
-          <li><span className="font-medium text-foreground">Start a prototype.</span> Use New prototype on the Prototypes page.</li>
-          <li><span className="font-medium text-foreground">Build it.</span> Tell your agent what it makes and who uses it.</li>
-          <li><span className="font-medium text-foreground">Publish it.</span> Choose Publish as tool from its menu.</li>
-        </ol>
-      </EmptyContent>
     </Empty>
   ) : (
     <Empty className="border border-dashed py-16">
