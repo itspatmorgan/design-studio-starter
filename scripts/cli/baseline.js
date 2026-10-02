@@ -115,7 +115,6 @@ function build(dir) {
 // The steps a healthy app passes, in order. The first to fail is what still depends on the removed module.
 const STEPS = [
   ['manifest', 'node', ['scripts/build/build-manifest.js', '--strict', '--deploy']],
-  ['file types', 'node', ['scripts/check/check-file-types.js']],
   ['modules', 'node', ['scripts/check/check-modules.js']],
   ['typecheck', 'node', ['node_modules/typescript/bin/tsc', '-b']],
   ['tests', 'node', TESTS],
@@ -138,7 +137,7 @@ function removal(id) {
       const r = run(dir, cmd, args);
       if (!r.ok) { console.log(`${id}: FAILS at ${name}\n${r.tail}`); return false; }
     }
-    console.log(`${id}: removable (manifest, file types, typecheck, tests and bundle all pass)`);
+    console.log(`${id}: removable (manifest, modules, typecheck, tests and bundle all pass)`);
     return true;
   } finally {
     discard(dir);

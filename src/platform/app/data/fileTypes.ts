@@ -1,8 +1,10 @@
 // The file types installed in src/platform/modules/ (the modules that have a type.ts): one folder each, found with a glob, so the app
 // runs with any of them removed. (scripts/lib/file-types.js finds the same folders for the
-// build.) Core code reads types here and never imports a type's folder (scripts/check/check-file-types.js).
+// build.) Core code reads types here and never imports a type's folder (scripts/check/check-modules.js).
 import { assertUniqueExtensions, matchFileType, type FileTypeSpec } from '@/platform/core/fileTypes';
 import type { FileTypeModule } from '@/platform/app/data/fileTypeModule';
+import { MODULES } from '@/platform/app/data/modules';
+import { isEnabled } from '@/platform/app/data/config';
 
 // The folder name is the type's id: /platform/modules/view/type.ts → "view".
 const idOf = (path: string) => path.split('/').at(-2)!;
@@ -10,8 +12,11 @@ const idOf = (path: string) => path.split('/').at(-2)!;
 const specs = import.meta.glob<FileTypeSpec>('/platform/modules/*/type.ts', { eager: true, import: 'default' });
 const modules = import.meta.glob<FileTypeModule>('/platform/modules/*/open.tsx', { eager: true, import: 'default' });
 
-export const FILE_TYPES: Record<string, FileTypeSpec> = Object.fromEntries(Object.entries(specs).map(([path, spec]) => [idOf(path), spec]));
-export const fileTypeModules: Record<string, FileTypeModule> = Object.fromEntries(Object.entries(modules).map(([path, module]) => [idOf(path), module]));
+// A type is on when its module is installed and studio.config.ts leaves it on (the same rule the build uses).
+const on = (path: string) => MODULES.some((m) => m.id === idOf(path)) && isEnabled(idOf(path));
+
+export const FILE_TYPES: Record<string, FileTypeSpec> = Object.fromEntries(Object.entries(specs).filter(([path]) => on(path)).map(([path, spec]) => [idOf(path), spec]));
+export const fileTypeModules: Record<string, FileTypeModule> = Object.fromEntries(Object.entries(modules).filter(([path]) => on(path)).map(([path, module]) => [idOf(path), module]));
 assertUniqueExtensions(FILE_TYPES);
 
 // The id of the type that owns a file, by its extension, or null for a plain file.

@@ -7,12 +7,12 @@ At the start of every session, read:
 - [src/handbook/rules/prototype-workflow.md](src/handbook/rules/prototype-workflow.md)
 - [src/handbook/rules/contributor-scope.md](src/handbook/rules/contributor-scope.md)
 
-When the person asks for a document (written context in a prototype), read [src/handbook/rules/documents.md](src/handbook/rules/documents.md).
-When the person asks for a canvas (a page of views, documents, and notes arranged together), read [src/handbook/rules/canvases.md](src/handbook/rules/canvases.md).
 When the person wants to set a prototype or view aside, or keep it out of the deployed site, read [src/handbook/rules/archiving.md](src/handbook/rules/archiving.md).
 When the person asks to add or change a team doc, rule, or skill (the Handbook), read [src/handbook/rules/handbook.md](src/handbook/rules/handbook.md).
 When the person wants to turn off, add, remove, or build a module or a design system, read [src/handbook/rules/modules.md](src/handbook/rules/modules.md).
 <!-- studio:modules -->
+When the person asks for a canvas (a page of views, documents, and notes arranged together), read [src/handbook/rules/canvases.md](src/handbook/rules/canvases.md).
+When the person asks for a document (written context in a prototype), read [src/handbook/rules/documents.md](src/handbook/rules/documents.md).
 When the person asks to add or change a Guide page, read [src/handbook/rules/guide.md](src/handbook/rules/guide.md).
 When the person wants to build a tool (a prototype the team uses as an app), or publish a prototype as one, read [src/handbook/rules/tools.md](src/handbook/rules/tools.md).
 <!-- /studio:modules -->

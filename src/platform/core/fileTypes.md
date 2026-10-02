@@ -29,19 +29,25 @@ folders on their own. Nothing else lists them: the navigation, the **+** menu, r
 manifest, and the file layer all read the types they find. The dev server looks for types when it starts, so
 restart `pnpm dev` after adding or removing a folder.
 
-## Remove a type
+## Turn off or remove a type
 
-1. Delete its folder, for example `src/platform/modules/document/`. Its files become plain files, which the
-   navigation hides unless you choose Show all files in the prototype's … menu.
-2. Delete the links to its Guide page in `src/platform/modules/guide/pages/` (the page itself is the type's README, so it went with the folder) and its
-   agent rule (`src/handbook/rules/documents.md`, and its line in `AGENTS.md`).
+A file type is an optional module, so it works like the others (`src/platform/modules/README.md`):
 
-`pnpm build` runs `scripts/check/check-file-types.js`, which fails if core code imports a type's folder or
+- **Turn it off** with `modules: { canvas: false }` in `studio.config.ts`. Its folder stays. Its files become plain files, which the
+  navigation hides unless you choose Show all files in the prototype's … menu, and its Guide page goes. Its code is still in the build.
+- **Remove it** with `pnpm studio remove canvas`. That deletes the folder and the agent rule the module lists (`rules/canvases.md`),
+  and says which npm packages it leaves installed. Run `pnpm studio sync` afterwards so `AGENTS.md` stops routing to the rule.
+  Then delete the links to its Guide page from other Guide pages (the page itself was the type's README).
+
+A prototype whose `start` names a file of a type you turned off or removed (the sample's `start-here.md`, a document) is skipped by
+the manifest until its `meta.json` names a file that still opens.
+
+`pnpm check` (and `pnpm build`) runs `scripts/check/check-modules.js`, which fails if core code imports a type's folder or
 one type imports another, so a folder that passes stays removable.
 
 ## Add a type
 
-1. Make `src/platform/modules/<name>/` with a `module.ts`, `type.ts`, `open.tsx`, and `loader.ts`. Copy `document/`
+1. Make `src/platform/modules/<name>/` with a `module.ts` (`optional: true`; list its agent rule in `handbook`), `type.ts`, `open.tsx`, and `loader.ts`. Copy `document/`
    as a starting point: it's the smaller one.
 2. Two types can't share an extension; the build says so if they do.
 3. Types don't import each other. To show another item, a type asks the registry: `src/platform/app/items/itemLinks.ts` turns a link into an item, and the item's type provides its `Embed`.

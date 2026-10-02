@@ -8,6 +8,9 @@
 //   - nothing outside an optional module imports its files other than its module.ts, and no module imports an
 //     optional one, so deleting its folder leaves nothing broken (a required module is part of the platform,
 //     so the platform and the other modules may import it)
+//   - a file type (a module with a type.ts, src/platform/core/fileTypes.md) has an open.tsx, its type.ts imports
+//     only ../../core/fileTypes.ts (the build loads it directly in Node), and its loader.ts lists its files with the
+//     ['/__studio_globs__/*'] placeholder, so a new section and archived files reach it (scripts/build/vite-globs-plugin.js)
 // Usage: node scripts/check/check-modules.js
 import fs from 'node:fs';
 import path from 'node:path';
@@ -80,6 +83,22 @@ for (const file of [...sources(path.join(ROOT, 'src')), ...sources(path.join(ROO
   }
 }
 
+// File types: modules with a type.ts.
+const typeIds = ids.filter((id) => fs.existsSync(path.join(MODULES_DIR, id, 'type.ts')));
+for (const id of typeIds) {
+  const dir = path.join(MODULES_DIR, id);
+  const where = path.relative(ROOT, dir);
+  if (!fs.existsSync(path.join(dir, 'open.tsx'))) problems.push(`${where}/ has a type.ts, so it is a file type, but no open.tsx saying how the app opens it.`);
+  // Real import lines only: a type.ts can hold import text inside a template, like a new view's.
+  for (const [, specifier] of fs.readFileSync(path.join(dir, 'type.ts'), 'utf8').matchAll(/^import\b[^\n]*?\bfrom\s*['"]([^'"]+)['"]/gm)) {
+    if (specifier !== '../../core/fileTypes.ts') problems.push(`${where}/type.ts imports "${specifier}". A type.ts can import only ../../core/fileTypes.ts, because the build loads it directly in Node.`);
+  }
+  const loader = path.join(dir, 'loader.ts');
+  if (fs.existsSync(loader) && !fs.readFileSync(loader, 'utf8').includes("'/__studio_globs__/*'")) {
+    problems.push(`${where}/loader.ts should list its files with import.meta.glob(['/__studio_globs__/*']), not a glob written out by hand: a new section and archived files would never reach it.`);
+  }
+}
+
 // Each module's own check (check.ts), for the modules that are on.
 for (const m of specs) {
   const file = path.join(ROOT, 'src', 'platform', 'modules', m.id, 'check.ts');
@@ -107,4 +126,4 @@ if (problems.length) {
   console.error(problems.map((p) => `[modules] ${p}`).join('\n'));
   process.exit(1);
 }
-console.log(`[modules] ${specs.length} module(s) (${Object.keys(MODULES).join(', ')}) and ${SYSTEM_IDS.length} design system(s) (${SYSTEM_IDS.join(', ')}), all well formed`);
+console.log(`[modules] ${specs.length} module(s) (${Object.keys(MODULES).join(', ')}), ${typeIds.length} of them file types, and ${SYSTEM_IDS.length} design system(s) (${SYSTEM_IDS.join(', ')}), all well formed`);

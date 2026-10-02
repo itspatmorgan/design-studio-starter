@@ -67,7 +67,7 @@ notes, text, and arrows. It's [Excalidraw](https://github.com/excalidraw/excalid
 look, and its design comes from Design Studio's canvas. Agent contract: `src/handbook/rules/canvases.md`.
 Human docs: the Guide's Canvases page.
 
-**This folder is a self-contained file type.** Core never imports it (`scripts/check/check-file-types.js`),
+**This folder is a self-contained file type.** Core never imports it (`scripts/check/check-modules.js`),
 so the app runs with or without it. Canvas doesn't import another file type either: it asks the
 registry (`src/platform/app/data/fileTypes.ts`) how to show an item.
 
@@ -112,7 +112,8 @@ Excalidraw's CDN.
 
 ### Remove it
 
-Delete this folder. Canvas files become plain files, and the navigation hides them unless you choose Show
-all files. Then remove what only canvas used: `@excalidraw/excalidraw` and the `canvas` script from `package.json`, `src/platform/modules/canvas/cli.ts` from `tsconfig.node.json` and `tsconfig.app.json`,
-`patches/`, `pnpm-workspace.yaml`, the links to its Guide page (this README is that page, so it goes with the folder),
-and its agent rule (`src/handbook/rules/canvases.md` and its line in `AGENTS.md`).
+Turn it off with `modules: { canvas: false }` in `studio.config.ts`, or run `pnpm studio remove canvas` to delete this folder and its agent
+rule (`src/handbook/rules/canvases.md`; then `pnpm studio sync` for `AGENTS.md`). Canvas files become plain files, and the navigation hides
+them unless you choose Show all files. Then remove what only canvas used: `@excalidraw/excalidraw` and the `canvas` script from `package.json`,
+`src/platform/modules/canvas/cli.ts` from `tsconfig.node.json` and `tsconfig.app.json`, `patches/`, `pnpm-workspace.yaml`, and the links to its
+Guide page (this README is that page, so it goes with the folder).
