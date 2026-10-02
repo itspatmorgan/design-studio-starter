@@ -8,7 +8,7 @@ The design rules behind it:
 
 - **One kind of module.** Parts that came with the kit and parts someone else built follow the same contract. There is no plugin framework and
   nothing is loaded at run time: a module's files are copied into your repo, where you can read and change them (the shadcn idea, for design tooling).
-- **Plain words, a small config.** `studio.config.ts` holds only what nearly every team changes: the app's name, which optional modules are on, and
+- **Plain words, a small config.** `studio.config.ts` holds only what nearly every team changes: the app's name, a one-line tagline, which optional modules are on, and
   the default design system. Everything else is code you own.
 - **An optional module can be removed.** Delete its folder, or turn it off in the config, and the app still builds. `pnpm baseline removal <module>` proves it.
   Prototypes, the Handbook and Systems are required, because everything else is built on them, but each keeps all its code in its own folder.

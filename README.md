@@ -71,7 +71,7 @@ scripts/               manifest, create, scope check, Vite plugins (plain Node .
 .github/workflows/     scope check and build on push to main, build for deploy
 src/platform/            the app: routes (app/router.tsx), components, the Guide's pages (guide/, Markdown),
                        and the kinds of file a prototype holds (fileTypes/: views, documents, canvases), one removable folder each
-studio.config.ts       the few things nearly every team changes: the app's name, which modules are off, the default system
+studio.config.ts       the few things nearly every team changes: the app's name, a one-line tagline for the deployed front page, which modules are off, the default system
 studio.lock.json       what pnpm studio added from a source, and its checksums (only when something was)
 src/platform/modules/    the modules: one folder each, with a module.ts (the Guide, Tools, the Handbook, Systems)
 src/systems/           the design systems prototypes build with, one folder each (system.ts, components/, styles/theme.css)

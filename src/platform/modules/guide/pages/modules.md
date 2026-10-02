@@ -42,6 +42,6 @@ A design system is a folder in `src/systems/`. Adding one from a source, or star
 
 ## What you can change in the config
 
-`studio.config.ts` is deliberately small: the app's name, which optional modules are off, and the default design system. It's meant for the few things nearly every team changes. Everything else is code you own, and you can change anything in the repo.
+`studio.config.ts` is deliberately small: the app's name, a one-line tagline for the deployed site's front page, which optional modules are off, and the default design system. It's meant for the few things nearly every team changes. Everything else is code you own, and you can change anything in the repo.
 
 To build a module of your own, see [Build a module](/guide/build-a-module).
