@@ -17,7 +17,7 @@ export type FileTypeSpec = {
   // out for a type with no source to show.
   language?: 'tsx' | 'markdown' | 'json' | 'text';
   // True if the type shows itself live where another item includes it (on a canvas), and false or
-  // absent for a card. Its module.tsx provides the Embed; this is for code that can't load that
+  // absent for a card. Its open.tsx provides the Embed; this is for code that can't load that
   // (the command line), to size things.
   preview?: boolean;
   // True if the type opens in the Handbook (src/handbook/), where every other file opens as plain
