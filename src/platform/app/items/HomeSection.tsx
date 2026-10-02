@@ -30,8 +30,9 @@ export function HomeSection({ title, to, children }: { title: string; to: string
 // "Docs ›  Personas · Principles".
 export function HomeLinksSection({ title, to, links }: { title: string; to: string; links: { label: string; link: object }[] }) {
   return (
-    <section className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-border px-4 py-3 last:border-b-0">
-      <Heading title={title} to={to} />
+    <section className="flex flex-wrap items-baseline gap-x-2 gap-y-1 border-b border-border px-4 py-3 last:border-b-0">
+      {/* The same width for every heading, so the links of one block start where the next block's do. */}
+      <div className="w-28"><Heading title={title} to={to} /></div>
       <ul className="flex flex-wrap items-baseline gap-x-2 text-sm">
         {links.map((l, i) => (
           <li key={l.label} className="flex items-baseline gap-2">
