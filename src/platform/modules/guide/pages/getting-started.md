@@ -20,13 +20,13 @@ Open the repository with your agent and use the request that fits your situation
 
 The studio uses Git and mise. Mise supplies the pinned Node and pnpm versions. The agent can help install these tools and the project dependencies.
 
-Personal and team studios use the same contributor system. Personal local use does not require GitHub or hosting. To join through GitHub, provide the repository address and an account with access.
+Personal and team studios use the same contributor system. Personal local use does not require GitHub or hosting. To join a Studio on GitHub, provide the repository address and an account with access.
 
 ## What the agent sets up
 
 For a new studio, the agent helps configure its name, personal or team use, and optional modules. It registers the first contributor and helps establish the design system and Handbook context.
 
-When you join an existing studio, it creates or reuses your contributor registration. It preserves the studio's shared configuration and content.
+When you join an existing Studio, it creates or reuses your contributor registration. It preserves the Studio's shared configuration and content.
 
 Provide your name and Git commit email when asked. Provide your GitHub username if you will share through GitHub. Use the same email in Git and your contributor entry.
 

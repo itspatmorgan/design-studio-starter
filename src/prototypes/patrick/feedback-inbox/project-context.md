@@ -12,9 +12,9 @@ Customer feedback arrives in five places: email, chat, interviews, surveys, and 
 
 ## Who it's for
 
-- **Maya, a product designer.** Reads feedback to decide what to explore next. Wants to see patterns, not a pile.
 - **Luis, a support lead.** Captures feedback all day and needs it to take seconds, not minutes.
 - **Priya, a product manager.** Triages weekly and needs to know what's new, what's urgent, and what has already been planned.
+- **Maya, a product designer.** Reads feedback to decide what to explore next. Wants to see patterns, not a pile.
 
 ## What we're making
 
@@ -22,11 +22,9 @@ A small tool for collecting feedback. You land on an overview with the key numbe
 
 ## Decisions so far
 
-- **One list, not a board.** We looked at a board in the early [breadboard](breadboard) and the [lofi feedback inbox](lofi/feedback-inbox); the list scales better once there are more than a dozen items.
-- **Four statuses**: New, Triaged, Planned, Resolved. Anything finer can wait until the team asks for it.
+- **Four statuses**: New, Triaged, Planned, Resolved.
 - **Land on the overview, and drill down from it.** The key numbers (open issues, new, high priority, resolved) are at the top, and each is a link to the feedback behind it. The table itself has no numbers, so it stays about the work.
 - **Notes live on the item.** A separate thread would split the story across two places.
-- **No assignees yet.** The team is small enough to talk. Revisit if triage becomes a bottleneck.
 
 ## Open questions
 
