@@ -23,14 +23,16 @@ import { sourceTheme } from '@/platform/modules/prototypes/viewer/sourceTheme';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
 
 // The file type's syntax, loaded when it's needed.
-async function languageExtension(language: 'tsx' | 'markdown' | 'json' | 'text', path: string): Promise<Extension> {
+async function languageExtension(language: 'tsx' | 'markdown' | 'json' | 'mermaid' | 'text', path: string): Promise<Extension> {
   // A text file's syntax comes from its extension; one we don't have is shown plainly.
   if (language === 'text') {
     const ext = path.split('.').at(-1)?.toLowerCase() ?? '';
     if (['js', 'jsx', 'mjs', 'cjs', 'ts', 'tsx', 'json'].includes(ext)) language = ext === 'json' ? 'json' : 'tsx';
+    else if (ext === 'mermaid' || ext === 'mmd') language = 'mermaid';
     else if (ext === 'md') language = 'markdown';
     else return [];
   }
+  if (language === 'mermaid') return (await import('@/platform/modules/prototypes/viewer/mermaidSource')).mermaidSource();
   if (language === 'markdown') return (await import('@/platform/modules/prototypes/viewer/markdownSource')).markdownSource();
   const { javascript } = await import('@codemirror/lang-javascript');
   return language === 'json' ? javascript() : javascript({ jsx: true, typescript: true });

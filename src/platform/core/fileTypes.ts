@@ -15,7 +15,7 @@ export type FileTypeSpec = {
   extensions: readonly string[];        // ".tsx", ".md"
   // The syntax the Source view highlights (src/platform/modules/prototypes/viewer/SourcePane.tsx). Leave it
   // out for a type with no source to show.
-  language?: 'tsx' | 'markdown' | 'json' | 'text';
+  language?: 'tsx' | 'markdown' | 'json' | 'mermaid' | 'text';
   // True if the type shows itself live where another artifact includes it (on a canvas), and false or
   // absent for a card. Its open.tsx provides the Embed; this is for code that can't load that
   // (the command line), to size things.

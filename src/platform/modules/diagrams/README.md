@@ -30,6 +30,8 @@ Include an accessible title and description where the selected diagram type supp
 
 Right-click the file and select **Edit source** to edit it. Save with Command+S on macOS or Ctrl+S elsewhere, then select **Done**. Edits made by your agent or external editor also update the open diagram locally. Invalid syntax displays an error. Use the file menu’s **Edit source** action to inspect and repair it. Standalone diagrams have no separate source toggle.
 
+The source editor highlights `.mermaid` and `.mmd` files with the same Flexoki colors as code. Mermaid fences in Markdown source use this highlighting too. Highlighting covers common diagram types; unsupported syntax remains editable and does not limit rendering.
+
 Published diagrams and other contributors’ files are read-only. Source access on local files uses the file menu.
 
 ## Share the same visual language

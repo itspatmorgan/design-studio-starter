@@ -34,7 +34,7 @@ Other prototype files remain plain files. Underscore helpers are excluded from n
 
 `inPrototype` defaults to true. `inHandbook` enables Handbook use. A `fallback` type opens other Handbook text files without claiming extensions.
 
-Supported editor languages are `tsx`, `markdown`, `json`, and `text`. The template supplies new-file content. The check reports invalid content.
+Supported editor languages are `tsx`, `markdown`, `json`, `mermaid`, and `text`. The template supplies new-file content. The check reports invalid content.
 
 The app record is `Artifact`, and a loaded `Prototype` holds an `artifacts` collection. Manifest lookup and navigation use `findArtifact`, `firstArtifact`, `artifactLink`, and `artifactSlug`. Shared readers such as the Handbook reuse the same record and file-type machinery while keeping their own user-facing document terms.
 

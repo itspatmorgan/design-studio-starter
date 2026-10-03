@@ -3,7 +3,7 @@ import { defineFileType } from '../../core/fileTypes.ts';
 export default defineFileType({
   label: 'Diagram',
   extensions: ['.mermaid', '.mmd'],
-  language: 'text',
+  language: 'mermaid',
   preview: true,
   template: () => `flowchart LR
   accTitle: A new diagram
