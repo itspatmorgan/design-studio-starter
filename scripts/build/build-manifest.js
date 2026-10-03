@@ -21,7 +21,7 @@ import { contributorsSignature, loadContributors } from '../lib/contributors.js'
 import { handbookProblems } from '../../src/platform/modules/handbook/node/handbook-check.js';
 import { systemDocs } from '../../src/platform/modules/systems/node/docs.js';
 import { themeTokens } from '../../src/platform/modules/systems/themeTokens.ts';
-import { platformReferences } from '../../src/platform/modules/handbook/node/references.js';
+import { platformReferences } from '../lib/platform-references.js';
 import { handbookMap } from '../../src/platform/modules/handbook/map.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');

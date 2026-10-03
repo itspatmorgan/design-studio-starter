@@ -1,7 +1,7 @@
 ---
 title: "Build a module"
 description: "Use the module structure to add features to your own studio."
-section: "Reference"
+section: "Learn more"
 order: 43
 toc: true
 ---

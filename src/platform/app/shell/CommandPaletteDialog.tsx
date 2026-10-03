@@ -5,6 +5,7 @@ import { getRouteApi, useMatchRoute, useNavigate, useParams, type NavigateOption
 import {
   Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
 } from '@/platform/components/command';
+import { referenceHref } from '@/platform/app/docs/References';
 import { findItem, findPrototype, firstItem, itemFolder, itemLabel, itemLink } from '@/platform/app/data/manifest';
 import { moduleApps, type PaletteContext } from '@/platform/app/modules';
 import type { Item, Prototype } from '@/platform/app/data/types';
@@ -58,11 +59,16 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
             )}
   
             <CommandGroup heading="Places">
+              <CommandItem value="documentation reference contracts" onSelect={() => go({ to: '/reference' })}>Reference</CommandItem>
               <CommandItem value="home overview" disabled={onHome} onSelect={() => go({ to: '/' })}>Home</CommandItem>
               {moduleApps.map(({ spec, app }) => app.places && <app.places key={spec.id} {...context} />)}
             </CommandGroup>
 
             {moduleApps.map(({ spec, app }) => app.palette && <Fragment key={spec.id}><app.palette {...context} /></Fragment>)}
+            <CommandSeparator />
+            <CommandGroup heading="Documentation">
+              {manifest.platformReferences.flatMap((group) => group.references.map((ref) => <CommandItem key={ref.source} value={`reference ${group.label} ${ref.title} ${ref.source}`} onSelect={() => go({ to: referenceHref(ref.source) as never })}><span className="shrink-0 text-xs text-muted-foreground">{group.label}</span><span className="truncate">{ref.title}</span></CommandItem>))}
+            </CommandGroup>
 
           </CommandList>
         </Command>

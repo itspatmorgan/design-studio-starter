@@ -1,5 +1,6 @@
 import { Link, Outlet, getRouteApi } from '@tanstack/react-router';
-import { NavGroup, NavHeader, NavList, NavTitle, SectionNav, navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
+import { NavGroup, NavList, SectionNav, navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
+import DocumentationHeader from '@/platform/app/docs/DocumentationHeader';
 import type { GuidePage } from '@/platform/app/data/types';
 
 const rootApi = getRouteApi('__root__');
@@ -21,10 +22,8 @@ export default function GuideLayout() {
   const { guide } = rootApi.useLoaderData();
   return (
     <div className="flex h-full min-h-0">
-      <SectionNav label="Guide">
-        <NavHeader>
-          <NavTitle>Guide</NavTitle>
-        </NavHeader>
+      <SectionNav label="Documentation">
+        <DocumentationHeader />
         <NavList>
           {groupBySection(guide).map((g, i) => (
             <NavGroup key={g.section ?? i} heading={g.section ?? undefined}>

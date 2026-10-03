@@ -27,6 +27,7 @@ import { moduleApps } from '@/platform/app/modules';
 import { APP_NAME } from '@/platform/app/data/config';
 import { loadReference } from '@/platform/app/docs/loadReference';
 import MarkdownPage from '@/platform/app/docs/MarkdownPage';
+import { ReferenceLayout, ReferenceIndex, AboutReference } from '@/platform/app/docs/References';
 
 
 function LoadError({ error, reset }: { error: unknown; reset: () => void }) {
@@ -54,23 +55,24 @@ const homeRoute = createRoute({
   component: Home,
 });
 
-// Read-only repository references; the loader accepts only bundled Markdown entries.
+// References remain available when the optional Documentation module is off.
+const referencesRoute = createRoute({ getParentRoute: () => rootRoute, path: 'reference', component: ReferenceLayout });
+const referenceIndexRoute = createRoute({ getParentRoute: () => referencesRoute, path: '/', head: () => ({ meta: [{ title: 'Reference — ' + APP_NAME }] }), component: ReferenceIndex });
 const referenceRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: 'reference/$',
-  loader: async ({ params, location }) => {
-    const path = `/${params._splat ?? ''}`;
-    if ((await loadManifest()).platformReferences.some((group) => group.references.some((ref) => ref.source === path))) {
-      throw redirect({ to: `/handbook/platform${path}` as never, hash: location.hash, replace: true });
-    }
+  getParentRoute: () => referencesRoute,
+  path: '$',
+  loader: async ({ params }) => {
+    const path = '/' + (params._splat ?? '');
     const mod = await loadReference(path);
     if (!mod) throw notFound();
-    return { Component: mod.default, frontmatter: mod.frontmatter ?? {}, path };
+    const group = (await loadManifest()).platformReferences.find((g) => g.references.some((ref) => ref.source === path));
+    const title = mod.frontmatter?.title ?? group?.references.find((ref) => ref.source === path)?.title;
+    return { Component: mod.default, frontmatter: mod.frontmatter ?? {}, path, group, title };
   },
-  head: ({ loaderData }) => ({ meta: [{ title: [loaderData?.frontmatter.title, APP_NAME].filter(Boolean).join(' — ') }] }),
+  head: ({ loaderData }) => ({ meta: [{ title: [loaderData?.title, 'Reference', APP_NAME].filter(Boolean).join(' — ') }] }),
   component: () => {
-    const { path, ...props } = referenceRoute.useLoaderData();
-    return <MarkdownPage {...props} docKey={path} base={`/reference${path.slice(0, path.lastIndexOf('/'))}`} />;
+    const { path, group, title: _title, ...props } = referenceRoute.useLoaderData();
+    return <div className="flex min-h-0 flex-1 flex-col [&>div]:min-h-0"><MarkdownPage {...props} docKey={path} base={'/reference' + path.slice(0, path.lastIndexOf('/'))} footer={<AboutReference source={path} group={group} />} /></div>;
   },
   notFoundComponent: NotFound,
 });
@@ -190,7 +192,7 @@ const sectionItemSplatRoute = createRoute({
 // The app's own routes are typed, so links to them are checked. The modules' routes (Systems, the
 // Handbook, the Guide, in src/platform/modules/<id>/app.tsx) are added at run time, and the types leave
 // them out: a link to one is written loosely.
-const coreRoutes = [homeRoute, referenceRoute, prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]), sectionItemRoute.addChildren([sectionItemIndexRoute, sectionItemSplatRoute])] as const;
+const coreRoutes = [homeRoute, referencesRoute.addChildren([referenceIndexRoute, referenceRoute]), prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]), sectionItemRoute.addChildren([sectionItemIndexRoute, sectionItemSplatRoute])] as const;
 const routeTree = rootRoute.addChildren([...coreRoutes, ...moduleApps.flatMap(({ app }) => app.routes?.(rootRoute) ?? [])] as unknown as typeof coreRoutes);
 
 export const router = createRouter({

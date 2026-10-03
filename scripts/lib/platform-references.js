@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { frontmatter } from '../../../../../scripts/lib/frontmatter.js';
-import { skillTitle } from '../skills.ts';
+import { frontmatter } from './frontmatter.js';
+import { skillTitle } from '../../src/platform/modules/handbook/skills.ts';
 
 // Match the shared reader's deliberately limited top-level Markdown set.
 export function platformReferences({ root, modules, enabled, handbook }) {

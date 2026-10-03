@@ -1,7 +1,7 @@
 ---
 title: "Diagrams and code"
 description: "A shared visual language for diagrams, document code, and the source editor."
-section: "Reference"
+section: "Learn more"
 order: 41
 toc: true
 ---

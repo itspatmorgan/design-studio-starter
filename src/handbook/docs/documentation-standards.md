@@ -18,7 +18,7 @@ Documentation is part of the platform. Keep it accurate as behavior changes. Thi
 | Handbook Skills | Describe a task-specific procedure and when it applies. |
 | `AGENTS.md` | Provide essential project instructions and route agents to relevant context. |
 
-The Handbook’s Platform reference area exposes core contracts and module documentation from their original files. Use it to discover detailed references. The Guide remains the curated introduction for people.
+Documentation has two reading modes: Guide provides a curated introduction, and Reference exposes full module documentation and core contracts from their original files. The Handbook holds studio context and agent instructions. Reference access remains available when the optional Documentation module is disabled.
 
 Give each contract one authoritative location. Other documents can summarize its purpose, then link to it. Do not copy requirements, schemas, or procedures into multiple locations.
 

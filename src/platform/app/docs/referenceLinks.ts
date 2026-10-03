@@ -2,6 +2,6 @@
 export function markdownPath(path: string): string {
   const prefix = path.startsWith('/handbook/platform/') ? '/handbook/platform' : '/reference';
   const source = path.startsWith(`${prefix}/`) ? path.slice(prefix.length) : path;
-  if (/^\/platform\/(?:modules|core)\/.*\.md$/.test(source)) return `${prefix}${source}`;
+  if (/^\/platform\/(?:modules|core)\/.*\.md$/.test(source)) return `/reference${source}`;
   return source;
 }

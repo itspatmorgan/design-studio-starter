@@ -1,7 +1,7 @@
 ---
 title: "Tech stack"
 description: "Find the frameworks and libraries used by the starter."
-section: "Reference"
+section: "Learn more"
 order: 40
 toc: true
 ---

@@ -161,6 +161,10 @@ test('Guide source access edits chapters and module READMEs without opening arbi
   try {
     fs.cpSync(root, dir, { recursive: true, filter: file => !['.git', 'node_modules', 'dist'].includes(path.basename(file)) });
     fs.symlinkSync(path.join(root, 'node_modules'), path.join(dir, 'node_modules'));
+    // This fixture exercises the enabled editor even when the parent verifies
+    // a disabled Documentation module.
+    const config = path.join(dir, 'studio.config.ts');
+    fs.writeFileSync(config, fs.readFileSync(config, 'utf8').replace(/\bguide:\s*false/g, 'guide: true'));
     execFileSync(process.execPath, ['--input-type=module', '--eval', `
       import fs from 'node:fs'; import path from 'node:path'; import assert from 'node:assert/strict';
       const {default:routes}=await import('./src/platform/modules/'+'guide/server.ts');

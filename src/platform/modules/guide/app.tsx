@@ -2,6 +2,7 @@
 // src/platform/modules/guide/pages/ and in the READMEs of modules and file types, listed in the manifest. It adds nothing to the ⌘K palette: that searches the team's own content.
 import { createRoute, lazyRouteComponent, notFound, redirect } from '@tanstack/react-router';
 import { BookOpen01Icon } from '@hugeicons/core-free-icons';
+import { CommandItem } from '@/platform/components/command';
 import { APP_NAME } from '@/platform/app/data/config';
 import type { ModuleApp } from '@/platform/core/api';
 import { loadManifest } from '@/platform/app/data/manifest';
@@ -29,6 +30,7 @@ async function guideLoader(slug: string, mode?: 'source') {
 
 export default {
   icon: BookOpen01Icon,
+  places: ({ go }) => <CommandItem value="documentation guide" onSelect={() => go({ to: '/guide' } as never)}>Documentation</CommandItem>,
   rail: 'bottom',
   order: 90,
   routes: (root) => {

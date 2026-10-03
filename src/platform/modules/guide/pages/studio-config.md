@@ -1,7 +1,7 @@
 ---
 title: "Studio config"
 description: "The shared settings and defaults in studio.config.ts."
-section: "Reference"
+section: "Learn more"
 order: 41
 toc: true
 ---

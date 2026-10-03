@@ -14,7 +14,7 @@ You own the code and can change any part. For new platform features, we recommen
 
 Prototypes, Views, Text files, Handbook, and Systems are required. Code-based views are the core of the environment.
 
-Documents and Canvases are optional prototype file types. The Guide is also optional. Ask your agent to list installed modules or configure the optional capabilities.
+Documents and Canvases are optional prototype file types. The Documentation module (ID `guide`) is also optional. Reference access remains available when it is disabled. Ask your agent to list installed modules or configure the optional capabilities.
 
 Design systems are separate content in `src/systems/`, supported by the Systems module.
 

@@ -153,7 +153,7 @@ test('Handbook creation uses its own Markdown template', () => {
 });
 
 test('platform reference discovery preserves ownership and excludes unavailable module content', async () => {
-  const { platformReferences } = await import('./node/references.js');
+  const { platformReferences } = await import('../../../../scripts/lib/platform-references.js');
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-references-'));
   const write = (file: string, text: string) => { fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true }); fs.writeFileSync(path.join(root, file), text); };
   try {

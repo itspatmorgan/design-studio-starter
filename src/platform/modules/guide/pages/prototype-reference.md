@@ -1,7 +1,7 @@
 ---
 title: "Prototype files and boundaries"
 description: "File layout, metadata, and URLs for people who inspect prototype files."
-section: "Reference"
+section: "Learn more"
 order: 42
 toc: true
 ---

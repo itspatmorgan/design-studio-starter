@@ -1,7 +1,7 @@
 ---
 title: "Checks and troubleshooting"
 description: "Understand Git warnings, failed checks, and repository protection."
-section: "Reference"
+section: "Learn more"
 order: 44
 toc: true
 ---
