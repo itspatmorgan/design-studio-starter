@@ -3,7 +3,8 @@
 // them); without one the page says so. Kept short on purpose: it shows how the product look differs from the app
 // UI. Its component pages come from the files in src/systems/product/components/ (button.tsx, button.examples.tsx,
 // button.md), and its foundations pages from styles/theme.css.
-import { Code, Prose } from '@/platform/modules/systems/pages/foundations';
+import { Code, ColorModeSupport, Prose } from '@/platform/modules/systems/pages/foundations';
+import system from './system';
 import type { SystemIntro } from '@/platform/app/data/types';
 
 export default {
@@ -25,6 +26,7 @@ export default {
       </div>
       <h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2>
       <Prose>
+        <ColorModeSupport modes={system.colorModes} />
         <p>The placeholder is shadcn/ui components on a theme of its own, in <Code>src/systems/product/styles/theme.css</Code>: warm stone neutrals with an emerald accent, square corners, and Space Grotesk. In shadcn/ui's terms: base color stone, accent emerald, radius none. It is different from the app UI's neutral gray, rounded corners, and Inter on purpose, so you can tell at a glance which system a screen is in.</p>
         <p>Prototypes use <Code>lucide-react</Code> for icons until your system brings its own.</p>
       </Prose>

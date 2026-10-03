@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from '@tanstack/react-router';
 import { NavGroup, NavHeader, NavList, NavTitle, SectionNav, navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/platform/components/select';
 import { NotFound } from '@/platform/app/shell/App';
-import { Code, ColorTokens, IconsPage, PageHeader, Prose } from '@/platform/modules/systems/pages/foundations';
+import { Code, ColorModeSupport, ColorTokens, IconsPage, PageHeader, Prose } from '@/platform/modules/systems/pages/foundations';
 import { OtherTokens, RadiusTokens, ShadowTokens, SpacingTokens, TypographyTokens } from '@/platform/modules/systems/pages/tokens';
 import { ComponentDocPage } from '@/platform/modules/systems/pages/ComponentDocPage';
 import { useManifest } from '@/platform/app/data/useManifest';
@@ -25,7 +25,7 @@ const ComponentEditor = import.meta.env.DEV ? lazy(() => import('./ComponentEdit
 // defines (src/platform/modules/systems/themeTokens.ts). Prototype systems appear in the selector, followed by Platform.
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
 const introOf = (id: string): SystemIntro => intros[`/systems/${id}/intro.tsx`]?.default ?? {
-  intro: <Prose><p>This system has no introduction yet. Add one in <Code>src/systems/{id}/intro.tsx</Code>.</p></Prose>,
+  intro: <><Prose><p>This system has no introduction yet. Add one in <Code>src/systems/{id}/intro.tsx</Code>.</p></Prose><h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2><Prose><ColorModeSupport modes={PROTOTYPE_SYSTEMS[id]?.colorModes} /></Prose></>,
 };
 const PROTOTYPE_SPECS: Record<string, DesignSystem> = Object.fromEntries(Object.entries(PROTOTYPE_SYSTEMS).map(([id, spec]) => [id, {
   label: spec.label, dir: `${spec.dir}components/`, scopeClass: spec.themeClass, ...introOf(id),
@@ -118,17 +118,10 @@ function SystemNav({ system, components, tokens }: { system: SystemId; component
 function SystemPage({ system, sys, components, tokens, origin, page, onEdit }: {
   system: SystemId; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[]; origin: 'shadcn' | null; page?: string; onEdit?: () => void;
 }) {
-  const modes = PROTOTYPE_SYSTEMS[system]?.colorModes ?? ['light', 'dark'];
-  const colorModes = modes.length === 1
-    ? `${modes[0] === 'light' ? 'Light' : 'Dark'} only`
-    : 'Light and dark';
-  const modeBehavior = modes.length === 1
-    ? `This system stays in ${modes[0]} mode while Studio follows its global color mode.`
-    : "This system follows Studio's global color mode.";
   const has = (group: TokenGroup) => tokens.some((t) => t.group === group);
   switch (page) {
     case undefined:
-      return <><PageHeader title={`${sys.label} system`} description={<><span className="font-medium text-foreground">Color modes: {colorModes}</span><span className="mt-1 block">{modeBehavior}</span></>} />{sys.intro}</>;
+      return <><PageHeader title={`${sys.label} system`} />{sys.intro}</>;
     case 'colors':
       return has('colors') ? <><PageHeader title="Colors" description="Every color token in the theme. Values reflect this system's active mode." /><ColorTokens tokens={tokens} /></> : null;
     case 'typography':

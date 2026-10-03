@@ -7,7 +7,7 @@ import {
 // Platform system: the app UI's own components, stock shadcn/ui vendored into src/platform/components/.
 // Like every system, its component and foundations pages come from its files; this is what only
 // its people can write: the introduction (which covers the theme), and the icons.
-import { Code, CodeBlock, IconGrid, Prose } from '@/platform/modules/systems/pages/foundations';
+import { Code, CodeBlock, ColorModeSupport, IconGrid, Prose } from '@/platform/modules/systems/pages/foundations';
 import type { DesignSystem } from '@/platform/app/data/types';
 
 const ICONS = {
@@ -29,9 +29,9 @@ export const platform: DesignSystem = {
       </Prose>
       <h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2>
       <Prose>
+        <ColorModeSupport />
         <p>shadcn/ui's default theme with the neutral base color, in <Code>src/platform/styles/index.css</Code>. Light values are on <Code>:root</Code>, dark values on <Code>.dark</Code>.</p>
         <p>To restyle the app for your team, change the values in those two blocks, or paste a theme from the shadcn/ui theme builder. Keep the variable names.</p>
-        <p>The dark mode toggle in the rail puts <Code>.dark</Code> on the page. Both systems follow it.</p>
       </Prose>
     </>
   ),
