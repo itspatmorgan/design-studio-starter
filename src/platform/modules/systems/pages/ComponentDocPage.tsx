@@ -161,7 +161,7 @@ export function ComponentDocPage({ system, sys, component, origin, onEdit }: { s
               {loaded.examples.map(({ name, Component }) => (
                 <div key={name}>
                   <h3 className="mb-2 text-xs font-medium text-muted-foreground">{sentence(name)}</h3>
-                  <SystemFrame themeClass={sys.scopeClass}>
+                  <SystemFrame>
                     <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-background p-6"><ErrorBoundary resetKeys={[Component, retry]} FallbackComponent={ViewError}><Component /></ErrorBoundary></div>
                   </SystemFrame>
                 </div>

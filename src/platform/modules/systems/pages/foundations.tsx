@@ -1,4 +1,3 @@
-import { ThemeScope } from '../ThemeScope';
 import { PortalContext } from '@/lib/portal';
 import type { DesignSystem } from '@/platform/app/data/types';
 import { useEffect, useRef, useState, type ReactNode, type Ref } from 'react';
@@ -95,11 +94,10 @@ function colorGroups(tokens: Pick<ThemeToken, 'name' | 'subgroup'>[]) {
   return [...groups].sort(([a], [b]) => rank(a) - rank(b));
 }
 
-// scopeClass puts the rows inside the system's theme (e.g. .product-theme); `tokens` are the ones
-// its theme defines.
-export function ColorTokens({ scopeClass, tokens }: { scopeClass: string; tokens: ThemeToken[] }) {
+// Token rows inherit the selected system's page boundary.
+export function ColorTokens({ tokens }: { tokens: ThemeToken[] }) {
   return (
-    <ThemeScope themeClass={scopeClass} className="space-y-10 rounded-lg border border-border bg-background p-6 text-foreground">
+    <div className="space-y-10 text-foreground">
       {colorGroups(tokens.filter((t) => t.group === 'colors')).map(([heading, names]) => (
         <div key={heading}>
           <h3 className="mb-3 text-[16px] font-semibold leading-6 tracking-tight text-foreground">{heading}</h3>
@@ -110,7 +108,7 @@ export function ColorTokens({ scopeClass, tokens }: { scopeClass: string; tokens
           </div>
         </div>
       ))}
-    </ThemeScope>
+    </div>
   );
 }
 
@@ -134,14 +132,14 @@ function BaseRadius() {
   return <p ref={ref} className="mb-4 text-sm text-muted-foreground">Base <Code>--radius</Code> is <Code>{value}</Code>. The scale is calculated from it.</p>;
 }
 
-export function RadiusScale({ scopeClass }: { scopeClass: string }) {
+export function RadiusScale() {
   return (
-    <ThemeScope themeClass={scopeClass} className={cn("text-foreground", scopeClass && "rounded-lg border border-border bg-background p-6")}>
+    <div className="text-foreground">
       <BaseRadius />
       <div className="flex flex-wrap gap-6 rounded-lg border border-border p-6">
         {RADII.map((c) => <RadiusBox key={c} cls={c} />)}
       </div>
-    </ThemeScope>
+    </div>
   );
 }
 
@@ -163,7 +161,7 @@ export function IconGrid({ icons }: { icons: { name: string; node: ReactNode }[]
 // --- Components -------------------------------------------------------------
 
 // The Icons page: how to use the system's icon library, and a sample.
-export function IconsPage({ icons, scopeClass }: { icons: NonNullable<DesignSystem['icons']>; scopeClass: string }) {
+export function IconsPage({ icons }: { icons: NonNullable<DesignSystem['icons']> }) {
   return (
     <>
       <div className="mb-4"><CodeBlock>{icons.snippet}</CodeBlock></div>
@@ -172,20 +170,18 @@ export function IconsPage({ icons, scopeClass }: { icons: NonNullable<DesignSyst
           Browse all icons
         </a>
       </p>
-      <ThemeScope themeClass={scopeClass} className={cn("text-foreground", scopeClass && "rounded-lg border border-border bg-background p-6")}>{icons.grid}</ThemeScope>
+      <div className="text-foreground">{icons.grid}</div>
     </>
   );
 }
 
-// A prototype system's theme class and portal container, like ViewFrame gives each view,
-// so demos and their pop-ups keep the system's look. The platform system has no class.
-export function SystemFrame({ themeClass, children }: { themeClass: string; children: ReactNode }) {
+// Pop-ups mount within the example and inherit the selected system's page boundary.
+export function SystemFrame({ children }: { children: ReactNode }) {
   const [portal, setPortal] = useState<HTMLElement | null>(null);
-  if (!themeClass) return <>{children}</>;
   return (
-    <ThemeScope themeClass={themeClass} className="text-foreground">
+    <div className="text-foreground">
       <PortalContext.Provider value={portal}>{children}</PortalContext.Provider>
       <div ref={setPortal} />
-    </ThemeScope>
+    </div>
   );
 }

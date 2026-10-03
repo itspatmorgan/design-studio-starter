@@ -9,6 +9,7 @@ import { useManifest } from '@/platform/app/data/useManifest';
 import type { DesignSystem, SystemIntro } from '@/platform/app/data/types';
 import type { SystemComponentDoc } from '@/platform/modules/systems/docs';
 import type { ThemeToken, TokenGroup } from '@/platform/modules/systems/themeTokens';
+import { ThemeScope } from '@/platform/modules/systems/ThemeScope';
 import { PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
 import { platform } from '@/platform/modules/systems/pages/platformSystem';
 
@@ -100,32 +101,31 @@ function SystemNav({ system, components, tokens }: { system: SystemId; component
 function SystemPage({ system, sys, components, tokens, origin, page, onEdit }: {
   system: SystemId; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[]; origin: 'shadcn' | null; page?: string; onEdit?: () => void;
 }) {
-  const { scopeClass } = sys;
   const modes = PROTOTYPE_SYSTEMS[system]?.colorModes ?? ['light', 'dark'];
-  const previewMode = scopeClass
-    ? modes.length === 1
-      ? `Previews stay in ${modes[0]} mode; Studio keeps its global mode.`
-      : "Previews follow Studio's global color mode."
-    : "Previews use Studio's global color mode.";
-  const description = (text: string) => <>{text}<span className="mt-2 block">{previewMode}</span></>;
+  const colorModes = modes.length === 1
+    ? `${modes[0] === 'light' ? 'Light' : 'Dark'} only`
+    : 'Light and dark';
+  const modeBehavior = modes.length === 1
+    ? `This system stays in ${modes[0]} mode while Studio follows its global color mode.`
+    : "This system follows Studio's global color mode.";
   const has = (group: TokenGroup) => tokens.some((t) => t.group === group);
   switch (page) {
     case undefined:
-      return <><PageHeader title={`${sys.label} system`} />{sys.intro}</>;
+      return <><PageHeader title={`${sys.label} system`} description={<><span className="font-medium text-foreground">Color modes: {colorModes}</span><span className="mt-1 block">{modeBehavior}</span></>} />{sys.intro}</>;
     case 'colors':
-      return has('colors') ? <><PageHeader title="Colors" description={description("Every color token in the theme. Values reflect the preview mode.")} /><ColorTokens scopeClass={scopeClass} tokens={tokens} /></> : null;
+      return has('colors') ? <><PageHeader title="Colors" description="Every color token in the theme. Values reflect this system's active mode." /><ColorTokens tokens={tokens} /></> : null;
     case 'typography':
-      return <><PageHeader title="Typography" description={description("The fonts, sizes, and weights.")} /><TypographyTokens tokens={tokens} scopeClass={scopeClass} /></>;
+      return <><PageHeader title="Typography" description="The fonts, sizes, and weights." /><TypographyTokens tokens={tokens} /></>;
     case 'radius':
-      return has('radius') ? <><PageHeader title="Radius" description={description("How rounded the corners are.")} /><RadiusTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
+      return has('radius') ? <><PageHeader title="Radius" description="How rounded the corners are." /><RadiusTokens tokens={tokens} /></> : null;
     case 'shadows':
-      return has('shadows') ? <><PageHeader title="Shadows" description={description("The shadows the theme defines.")} /><ShadowTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
+      return has('shadows') ? <><PageHeader title="Shadows" description="The shadows the theme defines." /><ShadowTokens tokens={tokens} /></> : null;
     case 'spacing':
-      return has('spacing') ? <><PageHeader title="Spacing" description={description("The spacing values the theme defines.")} /><SpacingTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
+      return has('spacing') ? <><PageHeader title="Spacing" description="The spacing values the theme defines." /><SpacingTokens tokens={tokens} /></> : null;
     case 'tokens':
-      return has('other') ? <><PageHeader title="Other tokens" description={description("Everything else the theme defines.")} /><OtherTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
+      return has('other') ? <><PageHeader title="Other tokens" description="Everything else the theme defines." /><OtherTokens tokens={tokens} /></> : null;
     case 'icons':
-      return sys.icons ? <><PageHeader title="Icons" description={description(`This system uses ${sys.icons.library}.`)} /><IconsPage icons={sys.icons} scopeClass={scopeClass} /></> : null;
+      return sys.icons ? <><PageHeader title="Icons" description={`This system uses ${sys.icons.library}.`} /><IconsPage icons={sys.icons} /></> : null;
   }
   const found = components.find((c) => c.slug === page);
   return found ? <ComponentDocPage system={system} sys={sys} component={found} origin={origin} onEdit={onEdit} /> : null;
@@ -155,7 +155,9 @@ export default function SystemsPage() {
         <main className="flex min-h-0 min-w-0 flex-1 flex-col"><Suspense fallback={<p className="p-4 text-sm">Loading editor…</p>}><ComponentEditor system={system} component={editable} onDone={() => setEditing(false)} /></Suspense></main>
       ) : (
         <main ref={mainRef} className="min-w-0 flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-3xl px-8 py-10" data-testid={`${system}-set`}>{content}</div>
+          <ThemeScope themeClass={sys.scopeClass} className="min-h-full bg-background text-foreground">
+            <div className="mx-auto w-full max-w-3xl px-8 py-10" data-testid={`${system}-set`}>{content}</div>
+          </ThemeScope>
         </main>
       )}
     </div>

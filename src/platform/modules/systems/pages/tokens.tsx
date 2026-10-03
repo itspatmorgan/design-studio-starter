@@ -2,13 +2,12 @@
 // defines (src/platform/modules/systems/themeTokens.ts): typography, radius, shadows, spacing, and everything else.
 // Each token is drawn with its own value (`var(--name)`), inside the system's theme class, and its
 // value is read live, so the pages follow the color mode and the theme file.
-import { ThemeScope } from '../ThemeScope';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { RadiusScale, useComputed } from '@/platform/modules/systems/pages/foundations';
 import type { ThemeToken, TokenGroup } from '@/platform/modules/systems/themeTokens';
 
-type Props = { tokens: ThemeToken[]; scopeClass: string };
+type Props = { tokens: ThemeToken[] };
 
 const inGroup = (tokens: ThemeToken[], group: TokenGroup) => tokens.filter((t) => t.group === group);
 // A token as a style value. Names come from our own parsed theme (themeTokens.ts checks them); this
@@ -71,7 +70,7 @@ function ScaleLine({ className, read }: { className: string; read: (s: CSSStyleD
   );
 }
 
-export function TypographyTokens({ tokens, scopeClass }: Props) {
+export function TypographyTokens({ tokens }: Props) {
   const all = inGroup(tokens, 'typography');
   const weights = all.filter((t) => t.name.startsWith('--font-weight-'));
   const families = all.filter((t) => t.name.startsWith('--font-') && !weights.includes(t) && !t.name.startsWith('--font-size'));
@@ -79,7 +78,7 @@ export function TypographyTokens({ tokens, scopeClass }: Props) {
   const sizes = all.filter((t) => /^--text-[^-]+(-[^-]+)*$/.test(t.name) && !t.name.includes('--', 2));
   const rest = all.filter((t) => ![...weights, ...families, ...sizes].includes(t));
   return (
-    <ThemeScope themeClass={scopeClass} className="space-y-10 rounded-lg border border-border bg-background p-6 text-foreground">
+    <div className="space-y-10 text-foreground">
       {families.length > 0 && <Section title="Font families"><div className="space-y-3">{families.map((t) => <FontFamily key={t.name} token={t} />)}</div></Section>}
       <Section title="Sizes">
         <Lines>
@@ -98,49 +97,49 @@ export function TypographyTokens({ tokens, scopeClass }: Props) {
         {weights.length === 0 && <p className="mt-2 text-xs text-muted-foreground">Tailwind's font weights. This theme doesn't set its own.</p>}
       </Section>
       {rest.length > 0 && <Section title="Other"><Lines>{rest.map((t) => <TokenLine key={t.name} token={t} />)}</Lines></Section>}
-    </ThemeScope>
+    </div>
   );
 }
 
 // shadcn/ui's radius is one value (--radius) that the rounded-* scale is calculated from, so that
 // scale is shown; any other radius token the theme defines is drawn as it is.
-export function RadiusTokens({ tokens, scopeClass }: Props) {
+export function RadiusTokens({ tokens }: Props) {
   const all = inGroup(tokens, 'radius');
   const hasBase = all.some((t) => t.name === '--radius');
   // With the base, the scale above already shows --radius-sm to --radius-4xl (Tailwind's names).
   const extra = all.filter((t) => t.name !== '--radius' && !(hasBase && /^--radius-(sm|md|lg|xl|2xl|3xl|4xl)$/.test(t.name)));
   return (
-    <ThemeScope themeClass={scopeClass} className="space-y-10 rounded-lg border border-border bg-background p-6 text-foreground">
-      {hasBase && <RadiusScale scopeClass="" />}
+    <div className="space-y-10 text-foreground">
+      {hasBase && <RadiusScale />}
       {extra.length > 0 && (
         <Section title={hasBase ? 'Other radii' : 'Radii'}>
           <Lines>{extra.map((t) => <TokenLine key={t.name} token={t} sample={<div className="size-12 border-2 border-primary/60 bg-primary/10" style={{ borderRadius: ref(t) }} />} />)}</Lines>
         </Section>
       )}
-    </ThemeScope>
+    </div>
   );
 }
 
-export function ShadowTokens({ tokens, scopeClass }: Props) {
+export function ShadowTokens({ tokens }: Props) {
   return (
-    <ThemeScope themeClass={scopeClass} className={cn("text-foreground", scopeClass && "rounded-lg border border-border bg-background p-6")}>
+    <div className="text-foreground">
       <Lines>{inGroup(tokens, 'shadows').map((t) => <TokenLine key={t.name} token={t} sample={<div className="h-12 w-24 rounded-md border border-border bg-background" style={{ boxShadow: ref(t) }} />} />)}</Lines>
-    </ThemeScope>
+    </div>
   );
 }
 
-export function SpacingTokens({ tokens, scopeClass }: Props) {
+export function SpacingTokens({ tokens }: Props) {
   return (
-    <ThemeScope themeClass={scopeClass} className={cn("text-foreground", scopeClass && "rounded-lg border border-border bg-background p-6")}>
+    <div className="text-foreground">
       <Lines>{inGroup(tokens, 'spacing').map((t) => <TokenLine key={t.name} token={t} sample={<div className="h-3 rounded-sm bg-primary/60" style={{ width: ref(t), maxWidth: '100%', minWidth: 1 }} />} />)}</Lines>
-    </ThemeScope>
+    </div>
   );
 }
 
-export function OtherTokens({ tokens, scopeClass }: Props) {
+export function OtherTokens({ tokens }: Props) {
   return (
-    <ThemeScope themeClass={scopeClass} className={cn("text-foreground", scopeClass && "rounded-lg border border-border bg-background p-6")}>
+    <div className="text-foreground">
       <Lines>{inGroup(tokens, 'other').map((t) => <TokenLine key={t.name} token={t} />)}</Lines>
-    </ThemeScope>
+    </div>
   );
 }
