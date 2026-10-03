@@ -14,14 +14,14 @@ import { documentationFile } from './files/documentation.js';
 //        move     { path, to: folder }           "" is the prototype's top level
 //        delete   { path }                        to the Trash (or .trash/ at the repo root)
 //        reorder  { path, to?, before? }         put a file or folder before another in its folder ("before" empty: last), moving it to folder "to" first if given; saved in meta.json "order"
-//        meta     { title?, description?, start?, status? }  edit meta.json (start "" opens the first item; status is "active" or "archived")
+//        meta     { title?, status? }  edit meta.json (status is "active" or "archived")
 //        create-skill { name, description }       Handbook skills only: skills/<name>/SKILL.md, in the Agent Skills format
 //      (In the Handbook, anyone can change files, but only in its fixed shape: src/platform/modules/handbook/rules.ts.)
 //      (contributor "systems" opens a prototype system's components, src/systems/<id>/components/. Anyone can
 //      read and save its text files, and it has one operation of its own:
 //        add-docs { component }                    the examples and page a component is missing)
-//   POST /__studio/prototype { title, description }   a new prototype in your folder, like pnpm new
-//   POST /__studio/prototype-rename { contributor, prototype, title, description? }   retitle a prototype you own; a new title renames its folder too
+//   POST /__studio/prototype { title }   a new prototype in your folder, like pnpm new
+//   POST /__studio/prototype-rename { contributor, prototype, title }   retitle a prototype you own; a new title renames its folder too
 //   POST /__studio/prototype-delete { contributor, prototype }   move a prototype you own to the Trash
 //     It replies with the new path and the updated manifest, so the app can follow a renamed view.
 //
@@ -131,9 +131,9 @@ export default function filesPlugin() {
             }
           }
           if (req.method === 'POST' && url.pathname === '/prototype') {
-            const { title, description } = await readJson(req);
+            const { title } = await readJson(req);
             try {
-              const { slug, manifest } = createPrototype({ title, description, key: me() });
+              const { slug, manifest } = createPrototype({ title, key: me() });
               publishManifest(server, manifest, req.headers['x-studio-tab']);
               return send(res, 200, { contributor: me(), prototype: slug, manifest });
             } catch (e) {
@@ -153,13 +153,13 @@ export default function filesPlugin() {
             }
           }
           if (req.method === 'POST' && url.pathname === '/prototype-rename') {
-            const { contributor, prototype, title, description } = await readJson(req);
+            const { contributor, prototype, title } = await readJson(req);
             const dir = prototypeDir(contributor, prototype);
             if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
             if (contributor === HANDBOOK_KEY) return send(res, 403, { error: HANDBOOK_NOTE });
             if (!owns(contributor, me(), dir)) return send(res, 403, { error: ownerError(contributor, me()) });
             try {
-              const { id, manifest } = renamePrototype({ key: contributor, id: prototype, title, description });
+              const { id, manifest } = renamePrototype({ key: contributor, id: prototype, title });
               publishManifest(server, manifest, req.headers['x-studio-tab']);
               return send(res, 200, { prototype: id, manifest });
             } catch (e) {

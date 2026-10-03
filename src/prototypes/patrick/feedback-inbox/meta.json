@@ -1,8 +1,6 @@
 {
   "title": "Feedback Inbox",
-  "description": "Explore a working sample of the studio: context, diagrams, sketches, interactive screens, and handoff.",
   "created": "2026-09-30",
-  "start": "start-here",
   "order": [
     "start-here.md",
     "explore",

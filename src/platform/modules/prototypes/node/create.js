@@ -16,7 +16,7 @@ export const slugify = (title) => title.toLowerCase().normalize('NFKD').replace(
 
 // Copies scripts/templates/prototype/ into src/prototypes/<key>/<slug>/,
 // fills in meta.json, and rebuilds the manifest. Returns { slug, manifest }, or throws a message.
-export function createPrototype({ title, description = '', key }) {
+export function createPrototype({ title, key }) {
   title = (title ?? '').trim();
   if (!title) throw new Error('Add a title.');
   const slug = slugify(title);
@@ -31,15 +31,15 @@ export function createPrototype({ title, description = '', key }) {
   const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
   const d = new Date();
   const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  Object.assign(meta, { title, description: description.trim(), created: today });
+  Object.assign(meta, { title, created: today });
   fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2) + '\n');
   return { slug, manifest: buildManifest().manifest };
 }
 
-// Changes a prototype's title (and description), and renames its folder to match when the title
+// Changes a prototype's title, and renames its folder to match when the title
 // changed ("Checkout Flow" → checkout-flow), so its link follows. Nothing changes if that folder
 // name is taken. Returns { id, manifest }, where id is the folder name now, or throws a message.
-export function renamePrototype({ key, id, title, description }) {
+export function renamePrototype({ key, id, title }) {
   title = (title ?? '').trim();
   if (!title) throw new Error('Add a title.');
   const slug = slugify(title);
@@ -49,13 +49,11 @@ export function renamePrototype({ key, id, title, description }) {
   const from = path.join(ROOT, 'src', rootOf(key, id));
   const metaFile = path.join(from, 'meta.json');
   const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
-  // Only a new title renames the folder: a description edit leaves it alone, and so does a folder
-  // that was named on purpose to be different from its title.
+  // Only a new title renames a folder named differently from its title.
   const rename = !sectionItem && title !== meta.title && slug !== id;
   const to = path.join(ROOT, 'src', 'prototypes', key, slug);
   if (rename && fs.existsSync(to)) throw new Error(`You already have a prototype in a folder called “${slug}”. Choose a different title.`);
   meta.title = title;
-  if (description !== undefined) meta.description = String(description).trim();
   if (rename) moveWithLinks(from, to, meta, personAddress(key, id), `/prototypes/${key}/${slug}`);
   else fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
   return { id: rename ? slug : id, manifest: buildManifest().manifest };

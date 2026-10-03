@@ -32,10 +32,8 @@ File-type modules determine which extensions become artifacts. Two files cannot 
 ```json
 {
   "title": "Hello World",
-  "description": "A first prototype.",
   "created": "2026-09-28",
   "system": "product",
-  "start": "prototype",
   "order": ["prototype.tsx", "notes.md", "flow.excalidraw"]
 }
 ```
@@ -43,12 +41,12 @@ File-type modules determine which extensions become artifacts. Two files cannot 
 | Field | Meaning |
 | --- | --- |
 | `title` | Required prototype title. |
-| `description` | Optional description. |
 | `created` | Date filled by the creation command. |
 | `system` | Assigned prototype system. If omitted, uses the studio default. |
-| `start` | Opening artifact path without its extension. If omitted, uses the first artifact. |
 | `order` | File and folder paths to place first, in sequence. |
 | `status` | `archived` excludes the prototype from the published site. Omit it or use `active` for active work. |
+
+The first available artifact in navigation order opens by default, including artifacts inside folders. Helpers and disabled file types are excluded. An empty prototype shows an empty state.
 
 Contributor details come from `contributors.json` or `contributors/<key>.json`.
 
@@ -58,7 +56,7 @@ Missing or invalid metadata causes a local warning and fails the build. Ask the 
 
 | URL | Opens |
 | --- | --- |
-| `/prototypes/<contributor>/hello-world` | The start artifact, or first artifact. |
+| `/prototypes/<contributor>/hello-world` | The first available artifact in navigation order. |
 | `/prototypes/<contributor>/hello-world/prototype` | The prototype view. |
 | `/prototypes/<contributor>/hello-world/notes` | The document. |
 | `/prototypes/<contributor>/hello-world/flow` | The canvas. |

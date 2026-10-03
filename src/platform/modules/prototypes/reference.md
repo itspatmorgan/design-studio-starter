@@ -22,24 +22,24 @@ Two artifacts cannot share a URL, such as `main.tsx` and `main.md` in one folder
 | Field | Contract |
 | --- | --- |
 | `title` | Required display title. |
-| `description` | Optional description. |
 | `created` | Optional `YYYY-MM-DD` date. Creation fills it in. |
 | `system` | Installed system ID. If omitted, uses `defaultSystem`, or the first installed system by name. |
-| `start` | Artifact path without extension. If omitted, opens the first artifact. |
 | `order` | Relative file and folder paths placed first within their folder, in sequence. |
 | `status` | `active` or `archived`. Omission means active. |
 
 Remaining artifacts sort alphabetically, files before folders. Use `order` to reorder, rather than renaming files.
 
-Moving, renaming, or deleting an artifact must update its `start` and `order` entries. The app performs these updates for its own operations.
+Moving, renaming, or deleting an artifact must update its `order` entries. The app performs these updates for its own operations.
 
-Invalid metadata skips the prototype with a local warning and fails the production build. A start artifact hidden by a disabled file type must be replaced.
+Invalid metadata skips the prototype with a local warning and fails the production build.
+
+The first available artifact in navigation order opens by default, including artifacts inside folders. Helpers and disabled file types are excluded. An empty prototype shows an empty state.
 
 Contributor details come from `contributors.json` and `contributors/<key>.json`.
 
 ## Links and renaming
 
-`/prototypes/<contributor>/<id>` opens the start artifact. Appending an artifact path without extension opens that artifact.
+`/prototypes/<contributor>/<id>` opens the first available artifact in navigation order. Appending an artifact path without extension opens that artifact.
 
 Nested folders become URL segments. Legacy addresses without `/prototypes` redirect to the canonical address.
 

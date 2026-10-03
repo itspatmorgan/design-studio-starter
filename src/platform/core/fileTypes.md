@@ -52,7 +52,7 @@ Follow the [module contract](../modules/README.md) for installation, disabling, 
 
 Disabling a prototype file type preserves its files as plain files. Normal navigation hides them unless Show all files is selected.
 
-If `meta.json.start` names an unavailable artifact, update it to a supported artifact. Invalid start metadata skips the prototype and fails a strict build.
+The first available artifact in navigation order opens by default. Disabling a file type removes its artifacts from that order.
 
 Required types cannot be disabled or removed with studio commands. Required types may be imported by the platform and other modules.
 

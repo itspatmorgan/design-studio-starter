@@ -46,7 +46,7 @@ These controls are available in your own prototypes:
 | Rename or delete | Artifact's right-click menu. F2 also renames. |
 | Move | Drag onto a folder or below the list for the top level. |
 | Reorder | Drag between rows, or Option+Up/Down (Alt+Up/Down). |
-| Choose the opening artifact | **Set as start** in the artifact's menu. |
+| Choose the opening artifact | Move it to the top of the navigation. |
 | Edit source | **Edit source** in the artifact's menu. |
 
 To edit source:
@@ -58,13 +58,13 @@ To edit source:
 
 Conflicting external changes prompt you to choose how to proceed. Another contributor's source opens read-only.
 
-Without a custom order, files appear before folders, alphabetically. The prototype opens on its start artifact, or the first artifact when no start is set.
+Without a custom order, files appear before folders, alphabetically. The prototype opens on the first available artifact in navigation order, including artifacts inside folders.
 
 ## Appearance and prototype details
 
 **Make lofi** draws a view in grayscale with handwritten type. **Make hi-fi** restores its normal appearance. Components and behavior stay the same. The mode is stored as `/** @lofi */` in that view. A folder named `lofi` has no special behavior.
 
-Select **Edit** in the prototype's **…** menu to change its title or description. Changing the title also renames the folder and changes its URL. Changing only the description preserves the URL.
+Select **Edit** in the prototype's **…** menu to change its title. Changing the title also renames the folder and changes its URL. Contributor and creation date are read-only details in this dialog. Use document artifacts for project context.
 
 ## Archive and delete
 

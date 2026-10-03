@@ -42,7 +42,7 @@ Excalidraw’s Mermaid import can turn copied source into editable canvas shapes
 
 ## Optional capability
 
-Disabling or removing Diagrams preserves prototype source files as plain files and hides them from normal artifact navigation. Canvas links become unavailable until the module is enabled again. If a diagram is the prototype’s start artifact, choose an available start artifact before disabling the module.
+Disabling or removing Diagrams preserves prototype source files as plain files and hides them from normal artifact navigation. Canvas links become unavailable until the module is enabled again. The prototype opens on the next available artifact in navigation order.
 
 Mermaid fences in the Handbook, Documentation, and prototype Documents keep working without Diagrams. Documents and Canvases are separate optional modules.
 

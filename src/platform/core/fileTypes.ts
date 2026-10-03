@@ -85,7 +85,7 @@ export function assertUniqueExtensions(specs: Record<string, FileTypeSpec>) {
   }
 }
 
-// An artifact's path in URLs and meta.json "start": its file path without the extension
+// An artifact's path in URLs: its file path without the extension
 // ("checkout/step-1.tsx" → "checkout/step-1").
 export const artifactSlug = (path: string) => path.replace(/\.[^./]+$/, '');
 

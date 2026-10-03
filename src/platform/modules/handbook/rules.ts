@@ -31,7 +31,7 @@ export type HandbookOp = { op: string; path?: string; name?: string; to?: string
 // `isDir` is whether the file or folder the change is about (`path`) is a folder.
 export function opProblem(section: string, c: HandbookOp, isDir: boolean): string | null {
   const path = c.path ?? '';
-  if (c.op === 'meta') return 'The Handbook has no start item to set.';
+  if (c.op === 'meta') return 'Handbook sections do not use prototype metadata.';
   if (c.op === 'create') {
     if (!creatableIn(section, path).includes(c.dir ? 'folder' : isMarkdown(section) ? 'document' : 'file')) {
       return section === 'skills' && path === '' ? 'A skill is made with New skill. It has to be a folder with a SKILL.md.' : 'That can\'t be made here.';

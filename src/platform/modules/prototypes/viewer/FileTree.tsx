@@ -8,7 +8,7 @@ import { FileActionItems } from '@/platform/app/shell/FileActionItems';
 // edits; _helpers; images and other files) is hidden until you choose Show all
 // files (in the header's … menu), and then opens in your editor. In your own prototypes you can also create, rename (F2), move
 // (drag and drop), arrange (drag, or Move up and down), and delete (to the Trash) files and folders, like a file browser, and
-// choose which item the prototype opens on (Set as start; it shows a star). Every change
+// arrange artifacts to determine the opening artifact. Every change
 // is a plain file change, so agents see the same thing. On the deployed site, it lists the
 // prototype's items, from the manifest.
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
@@ -18,9 +18,9 @@ import { extractInstruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/lis
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Add01Icon, ArrowDown01Icon, Cancel01Icon, CodeIcon, Delete02Icon, File01Icon,
-  StarIcon, PencilEdit02Icon, PaintBoardIcon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
+  PencilEdit02Icon, PaintBoardIcon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
-import { allPrototypes, firstArtifact, artifactLabel, artifactLink, artifactSlug, prototypeLink, setManifest } from '@/platform/app/data/manifest';
+import { allPrototypes, artifactLabel, artifactLink, prototypeLink, setManifest } from '@/platform/app/data/manifest';
 import {
   canChangePrototype, fileOp, openInEditor, repoPath, revealInFinder, setArtifactLofi, useFileTree, useMe, type FileNode, type FileOp,
 } from '@/platform/app/data/files';
@@ -187,10 +187,6 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   // Switched in the header's "…" menu, and remembered for every prototype.
   const [showAll] = useShowAllFiles();
   const nodes = !files ? itemsAsNodes(proto) : showAll ? files : visibleNodes(files, items);
-  // The item the prototype opens on: its start, or its first item. It gets a star. (A Handbook
-  // section has no start to mark.)
-  const opensOn = proto.contributorKey === HANDBOOK_KEY ? undefined : firstArtifact(proto);
-
   const [filterOpen, setFilterOpen] = useState(false);
   const [filter, setFilter] = useState('');
   const [closed, setClosed] = useState(() => new Set<string>());
@@ -382,11 +378,6 @@ export default function FileTree({ proto, current }: FileTreeProps) {
                 reveal={() => revealInFinder(proto, node.path)} />,
             ],
             [
-              editable && !isHandbook && items.has(node.path) && (
-                proto.start === node.path
-                  ? <ContextMenuItem key="start" onClick={() => setTimeout(() => run({ op: 'meta', start: '' }))}><HugeiconsIcon icon={StarIcon} /> Remove as start</ContextMenuItem>
-                  : opensOn?.path !== node.path && <ContextMenuItem key="start" onClick={() => setTimeout(() => run({ op: 'meta', start: artifactSlug(node.path) }))}><HugeiconsIcon icon={StarIcon} /> Set as start</ContextMenuItem>
-              ),
               editable && !isHandbook && FILE_TYPES[items.get(node.path)?.fileType ?? '']?.fidelity && (
                 <ContextMenuItem key="lofi" onClick={() => setTimeout(() => setLofi(items.get(node.path)!, !items.get(node.path)!.lofi))}>
                   <HugeiconsIcon icon={PaintBoardIcon} /> {items.get(node.path)?.lofi ? 'Make hi-fi' : 'Make lofi'}
@@ -487,11 +478,6 @@ export default function FileTree({ proto, current }: FileTreeProps) {
             >
               <HugeiconsIcon icon={fileTypeModules[item.fileType]?.icon ?? CodeIcon} size={14} className="shrink-0 text-muted-foreground" />
               {label}
-              {item === opensOn && (
-                <span title="The prototype opens on this" className="shrink-0 text-muted-foreground">
-                  <HugeiconsIcon icon={StarIcon} size={12} aria-label="Opens first" />
-                </span>
-              )}
             </Link>
           ))}
           </DragRow>

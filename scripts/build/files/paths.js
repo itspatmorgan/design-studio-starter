@@ -83,7 +83,7 @@ export function readTree(dir, base = '', order = readOrder(dir)) {
 // A file or folder name you can create or rename to: no slashes, not hidden, not "." or "..".
 export const validName = (name) => typeof name === 'string' && /^[^/\\\0]+$/.test(name) && !name.startsWith('.') && name.trim() === name;
 
-// An item's name in meta.json "start" and URLs: its path without the extension ("lofi/main").
+// An artifact's name in URLs: its path without the extension ("lofi/main").
 export const viewKey = (rel) => rel.replace(/\.[^./]+$/, '');
 
 // An existing item file (a view or document, not a helper: a name starting with an underscore) in the prototype,

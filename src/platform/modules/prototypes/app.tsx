@@ -30,7 +30,7 @@ function PrototypesPalette({ manifest, current, go }: PaletteContext) {
         {prototypes.map((p) => (
           <CommandItem
             key={`${p.contributorKey}/${p.id}`}
-            value={`${p.title} ${p.description ?? ''} ${p.contributor ?? ''} ${p.contributorKey}/${p.id}`}
+            value={`${p.title} ${p.contributor ?? ''} ${p.contributorKey}/${p.id}`}
             disabled={p === current}
             onSelect={() => go(prototypeLink(p))}
           >

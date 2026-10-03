@@ -133,12 +133,6 @@ function removal(id) {
     } else {
       for (const p of m.paths) fs.rmSync(path.join(dir, p), { recursive: true, force: true });
     }
-    // The sample prototype starts on a document, which is no longer an item once documents are gone: that is
-    // its own data, not something the removal broke, so the test points its start at nothing.
-    if (id === 'document') {
-      const meta = path.join(dir, 'src/prototypes/patrick/feedback-inbox/meta.json');
-      if (fs.existsSync(meta)) { const data = JSON.parse(fs.readFileSync(meta, 'utf8')); delete data.start; fs.writeFileSync(meta, JSON.stringify(data, null, 2)); }
-    }
     for (const [name, cmd, args] of STEPS) {
       const r = run(dir, cmd, args);
       if (!r.ok) { console.log(`${id}: FAILS at ${name}\n${r.tail}`); return false; }
@@ -161,7 +155,7 @@ function fixture(count) {
     const who = `person${i % people}`;
     const proto = path.join(dir, 'src', 'prototypes', who, `proto-${i}`);
     fs.mkdirSync(proto, { recursive: true });
-    fs.writeFileSync(path.join(proto, 'meta.json'), JSON.stringify({ title: `Prototype ${i}`, description: 'Synthetic prototype for benchmarking.', created: '2026-01-01' }));
+    fs.writeFileSync(path.join(proto, 'meta.json'), JSON.stringify({ title: `Prototype ${i}`, created: '2026-01-01' }));
     fs.writeFileSync(path.join(proto, 'screen.tsx'), `export default function Screen() {\n  return <div className="p-4">Prototype ${i}</div>;\n}\n`);
     fs.writeFileSync(path.join(proto, 'notes.md'), `# Notes ${i}\n\nSynthetic.\n`);
   }

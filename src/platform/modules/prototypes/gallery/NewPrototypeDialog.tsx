@@ -9,7 +9,6 @@ import { prototypeLink, setManifest } from '@/platform/app/data/manifest';
 import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
 import { Button } from '@/platform/components/button';
 import { Input } from '@/platform/components/input';
-import { Textarea } from '@/platform/components/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
 
 export default function NewPrototypeButton() {
@@ -32,7 +31,7 @@ function NewPrototype() {
     setSaving(true);
     setError(null);
     try {
-      const result = await createPrototype(String(form.get('title') ?? ''), String(form.get('description') ?? ''));
+      const result = await createPrototype(String(form.get('title') ?? ''));
       setManifest(result.manifest);
       await router.invalidate();
       setOpen(false);
@@ -62,10 +61,6 @@ function NewPrototype() {
             <label className="grid gap-1.5 text-sm font-medium">
               Title
               <Input name="title" required autoFocus placeholder="Agent Config" />
-            </label>
-            <label className="grid gap-1.5 text-sm font-medium">
-              Description
-              <Textarea name="description" rows={3} placeholder="What is it exploring?" />
             </label>
             {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
             <DialogFooter>

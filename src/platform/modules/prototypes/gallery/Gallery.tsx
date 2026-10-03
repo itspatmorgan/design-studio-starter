@@ -13,7 +13,7 @@ import { useMe } from '@/platform/app/data/files';
 
 const rootApi = getRouteApi('__root__');
 
-// Search box: filters by title, description, and contributor. The text lives in ?q=. It's short until
+// Search box: filters by title and contributor. The text lives in ?q=. It's short until
 // you use it, then widens: while it's focused, and while it holds a search.
 function SearchBox({ value }: { value: string }) {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ function SearchBox({ value }: { value: string }) {
 }
 
 const matches = (p: PrototypeInfo, q: string) =>
-  [p.title, p.description, p.contributor, p.contributorKey, p.id].some((f) => f?.toLowerCase().includes(q));
+  [p.title, p.contributor, p.contributorKey, p.id].some((f) => f?.toLowerCase().includes(q));
 
 export default function Gallery() {
   const manifest = rootApi.useLoaderData();

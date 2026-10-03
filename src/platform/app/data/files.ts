@@ -105,7 +105,7 @@ export type FileOp =
   | { op: 'delete'; path: string }
   // Put a file or folder before another in its folder (`before` empty: last), moving it to folder `to` first if that's elsewhere.
   | { op: 'reorder'; path: string; to?: string; before?: string }
-  | { op: 'meta'; title?: string; description?: string; start?: string; status?: Status }
+  | { op: 'meta'; title?: string; status?: Status }
   // A Handbook skill: skills/<name>/SKILL.md, in the Agent Skills format.
   | { op: 'create-skill'; name: string; description: string }
   // A prototype system's components: the examples and page one is missing.
@@ -116,7 +116,7 @@ export type FileOpResult = { path?: string; trashedTo?: string; manifest: Manife
 // A prototype system's components folder, in the shape the file layer takes for a prototype
 // (src/platform/core/roots.ts): what the Source view and the operations above are given.
 export const systemFiles = (system: string): Prototype => ({
-  id: system, contributorKey: SYSTEMS_KEY, title: system, description: '', contributor: '', created: null, system, start: null, artifacts: [],
+  id: system, contributorKey: SYSTEMS_KEY, title: system, description: '', contributor: '', created: null, system, artifacts: [],
 });
 
 // Changes a file in your prototype (scripts/build/vite-files-plugin.js). Throws the server's message.
@@ -168,20 +168,20 @@ export async function writeSource(p: PrototypeInfo, path: string, content: strin
 }
 
 // Creates a prototype in your folder, like pnpm new. Returns its URL parts and the new manifest.
-export async function createPrototype(title: string, description: string) {
+export async function createPrototype(title: string) {
   const res = await fetch('/__studio/prototype', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },
-    body: JSON.stringify({ title, description }),
+    body: JSON.stringify({ title }),
   });
   const body = await res.json();
   if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');
   return body as { contributor: string; prototype: string; manifest: Manifest };
 }
 
-// Changes a prototype's title (and description). A new title renames its folder too, so its link
+// Changes a prototype's title. A new title renames its folder too, so its link
 // changes: `prototype` in the reply is the folder name now. Throws the server's message.
-export async function renamePrototype(p: PrototypeInfo, change: { title: string; description?: string }) {
+export async function renamePrototype(p: PrototypeInfo, change: { title: string }) {
   const res = await fetch('/__studio/prototype-rename', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },

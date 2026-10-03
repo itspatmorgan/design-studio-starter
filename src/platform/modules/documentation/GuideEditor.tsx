@@ -13,7 +13,7 @@ export default function GuideEditor({ slug, path }: { slug: string; path: string
     write: (content, base) => writeGuideSource(slug, content, base),
   }), [slug, path]);
   // The shared editor uses the required Handbook Markdown language. Access belongs to Guide.
-  const proto: Prototype = { contributorKey: 'documentation', id: slug, title: slug, description: '', contributor: '', created: null, system: '', start: null, artifacts: [] };
+  const proto: Prototype = { contributorKey: 'documentation', id: slug, title: slug, description: '', contributor: '', created: null, system: '', artifacts: [] };
   const done = <Button size="sm" variant="outline" onClick={() => navigate({ to: '.', search: ((previous: object) => ({ ...previous, mode: undefined })) as never })}>Done</Button>;
   return (
     <div className="flex h-full min-h-0 flex-col">

@@ -49,10 +49,9 @@ export async function loadPrototype(contributor: string, prototype: string): Pro
 
 export { artifactSlug };
 
-// A prototype opens on its meta.json "start" artifact, or else its first artifact (the top of its
-// file tree).
+// The first available artifact in navigation order opens by default.
 export function firstArtifact(p: Prototype): Artifact | undefined {
-  return (p.start && p.artifacts.find((i) => i.path === p.start)) || p.artifacts[0];
+  return p.artifacts[0];
 }
 
 // The artifact at a URL path ("lofi/main"), or undefined.

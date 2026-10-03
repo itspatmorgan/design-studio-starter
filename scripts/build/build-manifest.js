@@ -140,13 +140,6 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
   const artifacts = artifactsIn(dir, '', { ...inPrototype, order });
   // Two artifacts can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
   errors += checkArtifacts(dir, artifacts, out, { contributor: contributorKey, id });
-  // "start" (optional) is the item the prototype opens on, as in its URL: "checkout/step-1".
-  // Without it, the prototype opens on its first item.
-  let start = null;
-  if (meta.start !== undefined) {
-    start = artifacts.find((i) => artifactSlug(i.path) === meta.start)?.path ?? null;
-    if (!start) return skip(`has "start": "${meta.start}", which isn't an item in this prototype`);
-  }
   // "system" (optional) is the design system it builds with, one of the folders in src/systems/.
   const system = meta.system ?? DEFAULT_SYSTEM;
   if (!(system in PROTOTYPE_SYSTEMS)) return skip(`has "system": "${system}", which isn't a folder in src/systems/ (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`);
@@ -159,9 +152,9 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
   return {
     errors,
     entry: {
-      id, contributorKey, title: meta.title, description: meta.description ?? '',
+      id, contributorKey, title: meta.title, ...(SECTION_KEYS.has(contributorKey) && { description: meta.description ?? '' }),
       contributor: maintained ? maintainers.map((k) => contributors[k]?.name ?? k).join(', ') : contributors[contributorKey]?.name ?? '',
-      created: meta.created ?? null, system, start, artifacts,
+      created: meta.created ?? null, system, artifacts,
       ...(maintained && { maintainers }),
       ...(status === 'archived' && { status }),
     },
@@ -294,7 +287,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
       if (!fs.existsSync(dir)) continue;
       const artifacts = artifactsIn(dir, '', inHandbook);
       errors += checkArtifacts(dir, artifacts, out);
-      handbook.push({ id, contributorKey: HANDBOOK_KEY, title, description, contributor: '', created: null, system: DEFAULT_SYSTEM, start: null, artifacts });
+      handbook.push({ id, contributorKey: HANDBOOK_KEY, title, description, contributor: '', created: null, system: DEFAULT_SYSTEM, artifacts });
     }
   }
 

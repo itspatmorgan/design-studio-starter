@@ -3,15 +3,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
-import { buildManifest } from '../build-manifest.js';
 import { FILE_TYPES, fileTypeOf, handbookTypeOf } from '../../lib/file-types.js';
 import { STATUSES, parseStatus } from '../../../src/platform/core/archive.ts';
 import { afterChange, parentOf, parseOrder, place, withFolderOrder } from '../../../src/platform/core/order.ts';
-import { rootOf } from '../../../src/platform/core/roots.ts';
 import { scaffold } from '../../../src/platform/modules/systems/node/scaffold-docs.js';
 import { opProblem } from '../../../src/platform/modules/handbook/rules.ts';
 import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/platform/modules/handbook/skills.ts';
-import { ROOT, TRASH, readOrder, readTree, resolveInside, validName, viewKey } from './paths.js';
+import { TRASH, readOrder, readTree, resolveInside, validName } from './paths.js';
 
 // The contents of a new file: its file type's template, by extension (src/platform/modules/<type>/type.ts).
 // Files of no type start empty.
@@ -47,22 +45,6 @@ export function trash(file) {
   return '.trash/';
 }
 
-// Keeps meta.json "start" pointing at a real item when that item moves or is deleted.
-export function fixStart(dir, fromRel, toRel) {
-  const metaFile = path.join(dir, 'meta.json');
-  let meta;
-  try { meta = JSON.parse(fs.readFileSync(metaFile, 'utf8')); } catch { return; }
-  if (typeof meta.start !== 'string') return;
-  const from = viewKey(fromRel);
-  // A moved folder takes the items inside it along.
-  let next;
-  if (meta.start === from) next = toRel ? viewKey(toRel) : undefined;
-  else if (meta.start.startsWith(`${from}/`)) next = toRel ? `${toRel}${meta.start.slice(from.length)}` : undefined;
-  else return;
-  if (next === undefined) delete meta.start; else meta.start = next;
-  fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
-}
-
 // Keeps meta.json "order" in step when a file or folder is renamed (toRel is its new path), or moves
 // or is deleted (toRel is null: a moved file lands after the arranged ones in its new folder).
 export function fixOrder(dir, fromRel, toRel) {
@@ -91,7 +73,7 @@ export function renameSkillInFile(file, name) {
 
 // One file operation. Returns { path } (the new path, for create, rename, and move) or throws a message.
 // `section` is the Handbook section the folder is (docs, rules, skills), or null for a prototype.
-export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, title, description, start, status }, section = null) {
+export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, title, description, status }, section = null) {
   const inside = (r) => resolveInside(dir, r);
   const relOf = (abs) => path.relative(fs.realpathSync(dir), abs).split(path.sep).join('/');
   // The Handbook has a fixed shape: check the change against it first (src/platform/modules/handbook/rules.ts).
@@ -131,20 +113,11 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
       if (typeof title !== 'string' || !title.trim()) throw new Error('The prototype needs a title.');
       meta.title = title.trim();
     }
-    if (typeof description === 'string') meta.description = description.trim();
     // status: active (the default, so it's not written) or archived.
     if (status !== undefined) {
       const next = parseStatus(status);
       if (!next) throw new Error(`A status is one of: ${STATUSES.join(', ')}.`);
       if (next === 'active') delete meta.status; else meta.status = next;
-    }
-    // start: an item's path without its extension, or "" to open on the first item.
-    if (start === '') delete meta.start;
-    else if (start !== undefined) {
-      const made = buildManifest().manifest;
-      const items = [...made.prototypes, ...Object.values(made.sections).flat()].find((p) => path.join(ROOT, 'src', rootOf(p.contributorKey, p.id)) === dir)?.artifacts ?? [];
-      if (!items.some((i) => viewKey(i.path) === start)) throw new Error(`“${start}” isn't a view in this prototype.`);
-      meta.start = start;
     }
     fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
     return {};
@@ -170,7 +143,7 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
   }
   const source = inside(rel);
   if (!source || source === fs.realpathSync(dir)) throw new Error('That file was moved or deleted.');
-  if (rel === 'meta.json') throw new Error('meta.json holds the prototype\'s info, so it stays put. To change the title or description, choose Edit.');
+  if (rel === 'meta.json') throw new Error('meta.json holds the prototype\'s info, so it stays put. To change the title, choose Edit.');
   if (op === 'rename' || op === 'move') {
     let target;
     if (op === 'rename') {
@@ -188,13 +161,11 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     const next = relOf(target);
     // A skill's name is its folder's name: keep the two together.
     if (section === 'skills' && op === 'rename' && !rel.includes('/')) renameSkillInFile(path.join(target, SKILL_FILE), path.basename(target));
-    fixStart(dir, rel, next);
     fixOrder(dir, rel, op === 'rename' ? next : null);
     return { path: next };
   }
   if (op === 'delete') {
     const where = trash(source);
-    fixStart(dir, rel, null);
     fixOrder(dir, rel, null);
     return { trashedTo: where };
   }

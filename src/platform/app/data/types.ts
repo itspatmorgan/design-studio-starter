@@ -18,11 +18,10 @@ export type PrototypeInfo = {
   id: string;             // folder name, e.g. "hello-world"
   contributorKey: string; // contributors.json key, e.g. "patrick"
   title: string;
-  description: string;
+  description?: string;   // shared section descriptions; prototypes use artifacts for context
   contributor: string;    // display name, from contributors.json
   created: string | null;
   system: string;         // meta.json "system", or the default (studio.config.ts defaultSystem, else the first in src/systems/)
-  start: string | null;   // meta.json "start", the artifact file path it opens on
   status?: 'archived';    // meta.json "status", when archived; absent means active
   maintainers?: string[]; // meta.json "maintainers" (contributors.json keys), where a section's policy is maintainers; prototypes don't have them
 };

@@ -5,12 +5,12 @@ import { setManifest } from '@/platform/app/data/manifest';
 import { addressOf } from '@/platform/core/roots';
 import type { PrototypeInfo } from '@/platform/app/data/types';
 
-// Saves a prototype's new title (and description). A new title renames its folder, so its link
+// Saves a prototype's new title. A new title renames its folder, so its link
 // changes; this follows it, staying on the same item, so the old address is never reloaded.
 // Throws the server's message.
 export function useRenamePrototype(proto: PrototypeInfo) {
   const router = useRouter();
-  return async (change: { title: string; description?: string }) => {
+  return async (change: { title: string }) => {
     const result = await renamePrototype(proto, change);
     setManifest(result.manifest);
     const { pathname, search, hash } = router.state.location;

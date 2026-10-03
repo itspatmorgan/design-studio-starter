@@ -234,12 +234,20 @@ test('standalone diagrams are discovered by both extensions and disabling preser
       fs.writeFileSync(folder+'/test-sequence.mmd','sequenceDiagram\\n  Alice->>Bob: Hello');
       fs.writeFileSync(folder+'/_helper.mermaid','flowchart LR\\n  a --> b');
       fs.writeFileSync(folder+'/test-invalid.mermaid','this is intentionally invalid');
+      fs.mkdirSync(folder+'/test-folder');
+      fs.writeFileSync(folder+'/test-folder/entry.mermaid','flowchart LR\\n  a --> b');
+      const meta=JSON.parse(fs.readFileSync(folder+'/meta.json','utf8'));
+      meta.order=['_helper.mermaid','test-folder','start-here.md'];
+      fs.writeFileSync(folder+'/meta.json',JSON.stringify(meta));
       const { buildManifest } = await import('./scripts/build/build-manifest.js');
       const { manifest, errors } = buildManifest({write:false,quiet:true});
       assert.equal(errors,0);
       const prototype=manifest.prototypes.find(p=>p.contributorKey==='patrick'&&p.id==='feedback-inbox');
       for(const name of ['test-flow.mermaid','test-sequence.mmd','test-invalid.mermaid']) assert.equal(prototype.artifacts.find(i=>i.path===name)?.fileType,'diagrams');
       assert.equal(prototype.artifacts.some(i=>i.path==='_helper.mermaid'),false);
+      assert.equal(prototype.artifacts[0].path,'test-folder/entry.mermaid');
+      assert.equal('start' in prototype,false);
+      assert.equal('description' in prototype,false);
       assert.ok(prototype.artifacts.some(i=>i.fileType==='document'));
       assert.ok(manifest.platformReferences.find(g=>g.id==='diagrams')?.references.length);
       fs.writeFileSync(config,editModulesFlag(fs.readFileSync(config,'utf8'),'diagrams',false));
@@ -251,6 +259,7 @@ test('standalone diagrams are discovered by both extensions and disabling preser
       const {manifest,errors}=buildManifest({write:false,quiet:true}); assert.equal(errors,0);
       const prototype=manifest.prototypes.find(p=>p.contributorKey==='patrick'&&p.id==='feedback-inbox');
       assert.equal(prototype.artifacts.some(i=>i.fileType==='diagrams'),false);
+      assert.equal(prototype.artifacts[0].path,'start-here.md');
       assert.ok(prototype.artifacts.some(i=>i.fileType==='document'));
       assert.ok(fs.existsSync('src/prototypes/patrick/feedback-inbox/test-flow.mermaid'));
       assert.equal(manifest.platformReferences.find(g=>g.id==='diagrams')?.references.length,0);

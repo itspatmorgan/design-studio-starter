@@ -1,18 +1,11 @@
 // The top of the prototype navigation: everything about the prototype, in one place.
 // Its title and a "…" menu (also on right-click). Making new things is in the file tree below.
-// Who made it, when, and its description are occasional reference, so they stay hidden until
-// you choose Show details.
-//
-// In dev, on your own prototypes, the "…" menu can edit its
-// info or delete it, and double-clicking the title renames it in place. Everywhere else, the
-// "…" menu copies its link and shows details.
+// In dev, the menu edits or deletes your prototypes; double-click the title to rename.
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Archive02Icon, InformationCircleIcon, MoreHorizontalIcon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
+import { Archive02Icon, MoreHorizontalIcon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
 import { useShowAllFiles } from '@/platform/app/shell/appPrefs';
-import { formatDate } from '@/platform/app/data/manifest';
 import type { Prototype } from '@/platform/app/data/types';
-import { ContributorAvatar } from '@/platform/app/shell/ContributorAvatar';
 import { Input } from '@/platform/components/input';
 import { toast } from '@/platform/components/toast';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/platform/components/tooltip';
@@ -22,9 +15,6 @@ import { useRenamePrototype } from '@/platform/modules/prototypes/viewer/useRena
 import { usePrototypeActions, type Action } from '@/platform/modules/prototypes/viewer/usePrototypeActions';
 import { NavHeader } from '@/platform/app/shell/nav';
 import { menuGroups } from '@/platform/app/shell/menuGroups';
-import { cn } from '@/lib/utils';
-
-const INFO_KEY = 'design-studio:prototype-info'; // "shown" | "hidden"
 
 // The title, renamed in place: Enter or leaving the field saves, Escape cancels.
 function TitleInput({ initial, onDone }: { initial: string; onDone: (title: string | null) => void }) {
@@ -52,10 +42,6 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
   const actions = usePrototypeActions(proto);
   const { local, editable } = actions;
   const [renaming, setRenaming] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  // Shown or hidden for every prototype, and remembered.
-  const [showInfo, setShowInfo] = useState(() => localStorage.getItem(INFO_KEY) === 'shown');
-  const toggleInfo = () => setShowInfo((v) => { localStorage.setItem(INFO_KEY, v ? 'hidden' : 'shown'); return !v; });
   const [showAll, toggleShowAll] = useShowAllFiles();
 
   async function rename(title: string | null) {
@@ -75,7 +61,6 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
   const [reach, change, remove] = actions.groups;
   const groups = menuGroups<Action>([
     [
-      { label: showInfo ? 'Hide details' : 'Show details', icon: InformationCircleIcon, onSelect: toggleInfo },
       local && { label: showAll ? 'Hide other files' : 'Show all files', icon: showAll ? ViewOffSlashIcon : ViewIcon, onSelect: toggleShowAll },
     ],
     reach,
@@ -100,7 +85,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
   ));
 
   return (
-    <NavHeader className={showInfo ? 'border-b border-sidebar-border pb-3' : 'pb-0'}>
+    <NavHeader className="pb-0">
       {withContextMenu(
         <div className="pl-3 pr-2.5">
           <div className="-mr-2 flex min-h-8 items-center gap-0.5">
@@ -134,22 +119,6 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
             <p className="mt-1 flex items-center gap-1.5 text-[12px] text-muted-foreground" title="The deployed site leaves this prototype out">
               <HugeiconsIcon icon={Archive02Icon} size={12} /> Archived
             </p>
-          )}
-          {showInfo && (proto.contributor || proto.created) && (
-            <p className="mt-1 flex min-w-0 items-center gap-1.5 text-[12px] text-muted-foreground">
-              {proto.contributor && <ContributorAvatar name={proto.contributor} />}
-              <span className="truncate" title={proto.contributor}>{[proto.contributor.split(' ')[0], formatDate(proto.created)].filter(Boolean).join(' · ')}</span>
-            </p>
-          )}
-          {showInfo && proto.description && (
-            <button
-              type="button"
-              aria-expanded={expanded}
-              onClick={() => setExpanded((x) => !x)}
-              className={cn('mt-2 block w-full rounded-sm text-left text-[12px] leading-relaxed text-muted-foreground outline-none hover:text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring', !expanded && 'line-clamp-2')}
-            >
-              {proto.description}
-            </button>
           )}
         </div>,
       )}

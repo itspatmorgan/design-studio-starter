@@ -1,14 +1,12 @@
-// Edits a prototype's title and description from the app, in dev. (Which item it opens on is set
-// from the file tree: right-click, Set as start.) Saving writes meta.json (scripts/build/vite-files-plugin.js),
-// the same file an agent would edit, and a new title renames the folder to match. The app updates live.
+// Edits the title; saving also renames an owned prototype's folder and URL.
 import { useState } from 'react';
 import { useRenamePrototype } from '@/platform/modules/prototypes/viewer/useRenamePrototype';
+import { formatDate } from '@/platform/app/data/manifest';
 import type { PrototypeInfo } from '@/platform/app/data/types';
 import { MODULES } from '@/platform/app/data/modules';
 import { policyFor } from '@/platform/core/permissions';
 import { Button } from '@/platform/components/button';
 import { Input } from '@/platform/components/input';
-import { Textarea } from '@/platform/components/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
 
 type Props = { proto: PrototypeInfo; open: boolean; onOpenChange: (open: boolean) => void };
@@ -22,7 +20,7 @@ export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props
     setSaving(true);
     setError(null);
     try {
-      await applyRename({ title: String(form.get('title') ?? ''), description: String(form.get('description') ?? '') });
+      await applyRename({ title: String(form.get('title') ?? '') });
       onOpenChange(false);
     } catch (e) {
       setError((e as Error).message);
@@ -44,10 +42,12 @@ export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props
             Title
             <Input name="title" defaultValue={proto.title} required autoFocus />
           </label>
-          <label className="grid gap-1.5 text-sm font-medium">
-            Description
-            <Textarea name="description" defaultValue={proto.description} rows={3} placeholder="What is it exploring?" />
-          </label>
+          {(proto.contributor || proto.created) && (
+            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              {proto.contributor && <><dt>Contributor</dt><dd>{proto.contributor}</dd></>}
+              {proto.created && <><dt>Created</dt><dd>{formatDate(proto.created)}</dd></>}
+            </dl>
+          )}
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
