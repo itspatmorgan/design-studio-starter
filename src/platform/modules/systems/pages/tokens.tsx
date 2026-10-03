@@ -79,7 +79,7 @@ export function TypographyTokens({ tokens, scopeClass }: Props) {
   const sizes = all.filter((t) => /^--text-[^-]+(-[^-]+)*$/.test(t.name) && !t.name.includes('--', 2));
   const rest = all.filter((t) => ![...weights, ...families, ...sizes].includes(t));
   return (
-    <ThemeScope themeClass={scopeClass} className="space-y-10 text-foreground">
+    <ThemeScope themeClass={scopeClass} className="space-y-10 rounded-lg border border-border bg-background p-6 text-foreground">
       {families.length > 0 && <Section title="Font families"><div className="space-y-3">{families.map((t) => <FontFamily key={t.name} token={t} />)}</div></Section>}
       <Section title="Sizes">
         <Lines>
@@ -110,7 +110,7 @@ export function RadiusTokens({ tokens, scopeClass }: Props) {
   // With the base, the scale above already shows --radius-sm to --radius-4xl (Tailwind's names).
   const extra = all.filter((t) => t.name !== '--radius' && !(hasBase && /^--radius-(sm|md|lg|xl|2xl|3xl|4xl)$/.test(t.name)));
   return (
-    <ThemeScope themeClass={scopeClass} className="space-y-10 text-foreground">
+    <ThemeScope themeClass={scopeClass} className="space-y-10 rounded-lg border border-border bg-background p-6 text-foreground">
       {hasBase && <RadiusScale scopeClass="" />}
       {extra.length > 0 && (
         <Section title={hasBase ? 'Other radii' : 'Radii'}>
@@ -123,7 +123,7 @@ export function RadiusTokens({ tokens, scopeClass }: Props) {
 
 export function ShadowTokens({ tokens, scopeClass }: Props) {
   return (
-    <ThemeScope themeClass={scopeClass} className="text-foreground">
+    <ThemeScope themeClass={scopeClass} className={cn("text-foreground", scopeClass && "rounded-lg border border-border bg-background p-6")}>
       <Lines>{inGroup(tokens, 'shadows').map((t) => <TokenLine key={t.name} token={t} sample={<div className="h-12 w-24 rounded-md border border-border bg-background" style={{ boxShadow: ref(t) }} />} />)}</Lines>
     </ThemeScope>
   );
@@ -131,7 +131,7 @@ export function ShadowTokens({ tokens, scopeClass }: Props) {
 
 export function SpacingTokens({ tokens, scopeClass }: Props) {
   return (
-    <ThemeScope themeClass={scopeClass} className="text-foreground">
+    <ThemeScope themeClass={scopeClass} className={cn("text-foreground", scopeClass && "rounded-lg border border-border bg-background p-6")}>
       <Lines>{inGroup(tokens, 'spacing').map((t) => <TokenLine key={t.name} token={t} sample={<div className="h-3 rounded-sm bg-primary/60" style={{ width: ref(t), maxWidth: '100%', minWidth: 1 }} />} />)}</Lines>
     </ThemeScope>
   );
@@ -139,7 +139,7 @@ export function SpacingTokens({ tokens, scopeClass }: Props) {
 
 export function OtherTokens({ tokens, scopeClass }: Props) {
   return (
-    <ThemeScope themeClass={scopeClass} className="text-foreground">
+    <ThemeScope themeClass={scopeClass} className={cn("text-foreground", scopeClass && "rounded-lg border border-border bg-background p-6")}>
       <Lines>{inGroup(tokens, 'other').map((t) => <TokenLine key={t.name} token={t} />)}</Lines>
     </ThemeScope>
   );

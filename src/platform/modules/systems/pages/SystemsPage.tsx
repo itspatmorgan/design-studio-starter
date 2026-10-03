@@ -101,24 +101,31 @@ function SystemPage({ system, sys, components, tokens, origin, page, onEdit }: {
   system: SystemId; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[]; origin: 'shadcn' | null; page?: string; onEdit?: () => void;
 }) {
   const { scopeClass } = sys;
+  const modes = PROTOTYPE_SYSTEMS[system]?.colorModes ?? ['light', 'dark'];
+  const previewMode = scopeClass
+    ? modes.length === 1
+      ? `Previews stay in ${modes[0]} mode; Studio keeps its global mode.`
+      : "Previews follow Studio's global color mode."
+    : "Previews use Studio's global color mode.";
+  const description = (text: string) => <>{text}<span className="mt-2 block">{previewMode}</span></>;
   const has = (group: TokenGroup) => tokens.some((t) => t.group === group);
   switch (page) {
     case undefined:
       return <><PageHeader title={`${sys.label} system`} />{sys.intro}</>;
     case 'colors':
-      return has('colors') ? <><PageHeader title="Colors" description="Every color token in the theme. Values follow the current mode." /><ColorTokens scopeClass={scopeClass} tokens={tokens} /></> : null;
+      return has('colors') ? <><PageHeader title="Colors" description={description("Every color token in the theme. Values reflect the preview mode.")} /><ColorTokens scopeClass={scopeClass} tokens={tokens} /></> : null;
     case 'typography':
-      return <><PageHeader title="Typography" description="The fonts, sizes, and weights." /><TypographyTokens tokens={tokens} scopeClass={scopeClass} /></>;
+      return <><PageHeader title="Typography" description={description("The fonts, sizes, and weights.")} /><TypographyTokens tokens={tokens} scopeClass={scopeClass} /></>;
     case 'radius':
-      return has('radius') ? <><PageHeader title="Radius" description="How rounded the corners are." /><RadiusTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
+      return has('radius') ? <><PageHeader title="Radius" description={description("How rounded the corners are.")} /><RadiusTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
     case 'shadows':
-      return has('shadows') ? <><PageHeader title="Shadows" description="The shadows the theme defines." /><ShadowTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
+      return has('shadows') ? <><PageHeader title="Shadows" description={description("The shadows the theme defines.")} /><ShadowTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
     case 'spacing':
-      return has('spacing') ? <><PageHeader title="Spacing" description="The spacing values the theme defines." /><SpacingTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
+      return has('spacing') ? <><PageHeader title="Spacing" description={description("The spacing values the theme defines.")} /><SpacingTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
     case 'tokens':
-      return has('other') ? <><PageHeader title="Other tokens" description="Everything else the theme defines." /><OtherTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
+      return has('other') ? <><PageHeader title="Other tokens" description={description("Everything else the theme defines.")} /><OtherTokens tokens={tokens} scopeClass={scopeClass} /></> : null;
     case 'icons':
-      return sys.icons ? <><PageHeader title="Icons" description={`This system uses ${sys.icons.library}.`} /><IconsPage icons={sys.icons} scopeClass={scopeClass} /></> : null;
+      return sys.icons ? <><PageHeader title="Icons" description={description(`This system uses ${sys.icons.library}.`)} /><IconsPage icons={sys.icons} scopeClass={scopeClass} /></> : null;
   }
   const found = components.find((c) => c.slug === page);
   return found ? <ComponentDocPage system={system} sys={sys} component={found} origin={origin} onEdit={onEdit} /> : null;

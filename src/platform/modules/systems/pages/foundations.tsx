@@ -99,7 +99,7 @@ function colorGroups(tokens: Pick<ThemeToken, 'name' | 'subgroup'>[]) {
 // its theme defines.
 export function ColorTokens({ scopeClass, tokens }: { scopeClass: string; tokens: ThemeToken[] }) {
   return (
-    <ThemeScope themeClass={scopeClass} className="space-y-10 text-foreground">
+    <ThemeScope themeClass={scopeClass} className="space-y-10 rounded-lg border border-border bg-background p-6 text-foreground">
       {colorGroups(tokens.filter((t) => t.group === 'colors')).map(([heading, names]) => (
         <div key={heading}>
           <h3 className="mb-3 text-[16px] font-semibold leading-6 tracking-tight text-foreground">{heading}</h3>
@@ -136,7 +136,7 @@ function BaseRadius() {
 
 export function RadiusScale({ scopeClass }: { scopeClass: string }) {
   return (
-    <ThemeScope themeClass={scopeClass} className="text-foreground">
+    <ThemeScope themeClass={scopeClass} className={cn("text-foreground", scopeClass && "rounded-lg border border-border bg-background p-6")}>
       <BaseRadius />
       <div className="flex flex-wrap gap-6 rounded-lg border border-border p-6">
         {RADII.map((c) => <RadiusBox key={c} cls={c} />)}
@@ -172,7 +172,7 @@ export function IconsPage({ icons, scopeClass }: { icons: NonNullable<DesignSyst
           Browse all icons
         </a>
       </p>
-      <ThemeScope themeClass={scopeClass} className="text-foreground">{icons.grid}</ThemeScope>
+      <ThemeScope themeClass={scopeClass} className={cn("text-foreground", scopeClass && "rounded-lg border border-border bg-background p-6")}>{icons.grid}</ThemeScope>
     </>
   );
 }

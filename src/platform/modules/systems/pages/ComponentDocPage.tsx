@@ -157,16 +157,16 @@ export function ComponentDocPage({ system, sys, component, origin, onEdit }: { s
           <Note>No examples yet. Add <code>{stem}.examples.tsx</code> next to the component: each export named with a capital is one example.</Note>
         ) : loaded.examples && (
           <>
-            <SystemFrame themeClass={sys.scopeClass}>
-              <div className="space-y-5">
-                {loaded.examples.map(({ name, Component }) => (
-                  <div key={name}>
-                    <h3 className="mb-2 text-xs font-medium text-muted-foreground">{sentence(name)}</h3>
+            <div className="space-y-5">
+              {loaded.examples.map(({ name, Component }) => (
+                <div key={name}>
+                  <h3 className="mb-2 text-xs font-medium text-muted-foreground">{sentence(name)}</h3>
+                  <SystemFrame themeClass={sys.scopeClass}>
                     <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-background p-6"><ErrorBoundary resetKeys={[Component, retry]} FallbackComponent={ViewError}><Component /></ErrorBoundary></div>
-                  </div>
-                ))}
-              </div>
-            </SystemFrame>
+                  </SystemFrame>
+                </div>
+              ))}
+            </div>
             {loaded.source && (
               <Collapsible className="mt-4">
                 <CollapsibleTrigger className="group flex cursor-pointer items-center gap-1.5 rounded-sm text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50">

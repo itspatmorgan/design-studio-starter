@@ -17,7 +17,7 @@ export default {
           <ol className="list-decimal space-y-1 pl-5">
             <li>It lives in <Code>src/systems/product/</Code>.</li>
             <li>Prototypes import from <Code>@/systems/product/...</Code>.</li>
-            <li>Its styles are scoped under <Code>.product-theme</Code>, with a <Code>.dark .product-theme</Code> block if your product has dark mode.</li>
+            <li>Its styles are scoped under <Code>.product-theme</Code>, with a <Code>.product-theme[data-color-mode="dark"]</Code> block if your product has dark mode.</li>
             <li>Pop-ups render into the portal container from <Code>portal.tsx</Code>, so they keep the product look.</li>
           </ol>
           <p>The component pages link to shadcn/ui's docs, because these components come from it. If yours don't, remove <Code>origin</Code> from <Code>src/systems/product/system.ts</Code>.</p>
