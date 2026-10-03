@@ -42,6 +42,18 @@ toc: true
 
 Without a frontmatter title, an opening level-one heading (`# Title`) supplies the title.
 
+### Embed a diagram file
+
+When Diagrams is enabled, embed a standalone diagram from the same prototype using Markdown image syntax on its own line:
+
+```md
+![Feedback flow](feedback-flow.mermaid)
+```
+
+This renders the existing file with an **Open diagram** link. It uses the same live preview as a canvas, so editing the source file updates both. Nested documents can use relative paths such as `../feedback-flow.mermaid`; `.mmd` files also work. Missing files and disabled Diagrams show an unavailable message. References outside the current prototype are not embedded. Inline image syntax within a sentence becomes a link.
+
+This is a diagram file reference, so no source is copied into the document. Mermaid fences below remain useful for diagrams owned by the document itself.
+
 ### Mermaid diagrams
 
 See [Diagrams and code](/documentation/guide/diagrams) for examples, the shared theme, and customization.

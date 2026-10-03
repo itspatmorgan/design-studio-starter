@@ -35,3 +35,11 @@ A small tool for collecting feedback. You land on an overview with the key numbe
 ## Where to look
 
 The three screens are the [overview](app/overview), which is where you land, the [feedback inbox](app/feedback-inbox), and an item's [detail](app/detail). Every state of them has its own view in `states`. The [breadboard](breadboard) is the early flow sketch, the [handoff canvas](eng-handoff) is what engineering gets, and the [tour](start-here) explains how this prototype is put together.
+
+[Feedback flow](feedback-flow.mermaid)
+
+## Feedback review flow
+
+This diagram models the feedback review cycle. It shares its source with the standalone diagram and any canvas previews.
+
+![Feedback review flow](feedback-flow.mermaid)

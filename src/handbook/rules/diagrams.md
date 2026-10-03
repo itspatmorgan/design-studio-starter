@@ -8,7 +8,7 @@ This rule applies to standalone prototype diagrams when Diagrams is enabled. Rea
 - Include `accTitle` and `accDescr` where the diagram type supports them.
 - Keep prototype diagrams inside that prototype, outside underscore helpers. No registration is needed.
 - Use Mermaid fences inside documents when a diagram belongs with an explanation. Use a standalone file when it needs its own navigation entry or canvas preview.
-- Link to standalone diagrams using relative paths with their file extensions.
+- Link to standalone diagrams using relative paths with their file extensions. In a prototype document, use `![Description](flow.mermaid)` on its own line for a live embed with an Open diagram link. Keep the referenced file in the same prototype.
 - Reuse platform theme defaults. Apply explicit diagram colors only when they carry meaning, and check both light and dark modes.
 - To transfer a diagram to Excalidraw, use its existing Mermaid import. The imported canvas is a separate artifact; later source edits do not synchronize it.
 - Apply the [contributor scope rule](contributor-scope.md) before editing prototype files.

@@ -36,7 +36,7 @@ Published diagrams and other contributors’ files are read-only. Source access 
 
 Standalone diagrams and Mermaid fences in Markdown share the same renderer, accessibility behavior, and platform theme. They use platform neutrals and Flexoki accents rather than the prototype design-system theme. See [Diagrams and code](/documentation/guide/diagrams) for examples and customization.
 
-Use a document fence when a diagram belongs inside written context. Use a standalone diagram when it should be independently navigable or arranged on a canvas. Link to it from documents with a relative path, such as `[Feedback flow](feedback-flow.mermaid)`.
+Use a document fence when a diagram belongs inside written context. Use a standalone diagram when it should be independently navigable or arranged on a canvas. Link to it from documents with a relative path, such as `[Feedback flow](feedback-flow.mermaid)`. To render the same source inside a prototype document, place `![Feedback flow](feedback-flow.mermaid)` on its own line. The embed uses the canvas preview and provides an **Open diagram** link; changes to the source update both presentations. File embeds stay within the current prototype.
 
 Excalidraw’s Mermaid import can turn copied source into editable canvas shapes. That creates a separate artifact; changes do not synchronize between Mermaid source and the imported shapes.
 
