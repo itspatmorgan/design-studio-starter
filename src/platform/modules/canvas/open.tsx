@@ -9,6 +9,7 @@ import { rootOf } from '@/platform/core/roots';
 
 const preload = () => import('./Canvas');
 const Canvas = lazy(preload);
+const CanvasEmbed = lazy(() => import('./CanvasEmbed'));
 
 export default {
   icon: CanvasIcon,
@@ -24,4 +25,6 @@ export default {
   },
 
   Page: Canvas,
+  Embed: CanvasEmbed,
+  embedSurfaces: ['document'],
 } satisfies FileTypeModule<{ proto: Prototype; item: Item; text: string; version: string }>;

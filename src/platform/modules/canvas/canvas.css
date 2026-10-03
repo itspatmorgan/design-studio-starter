@@ -388,3 +388,6 @@
     --lg-button-size: 1.75rem;
   }
 }
+
+/* Document previews expose only their outer Open link. */
+.canvas-preview .layer-ui__wrapper { display: none !important; }

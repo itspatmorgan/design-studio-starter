@@ -32,6 +32,10 @@ The canvas cannot store images. View and diagram previews provide a connection t
 
 To explore a Mermaid flowchart as editable shapes, open **More tools → Mermaid to Excalidraw**, paste its source, and select **Insert**. The converted shapes are an independent sketch; editing them does not update the Mermaid file. The sample prototype's Breadboard canvas demonstrates both approaches.
 
+## Embed a canvas in a document
+
+Use `![Exploration](breadboard.excalidraw)` on its own line in a document from the same prototype. The preview fits the canvas contents and updates when the source changes locally. Open the canvas to edit or explore it. Views and diagrams inside it remain previews; documents and other canvases remain cards.
+
 ## Local controls and saving
 
 Use the toolbar for shapes, text, and arrows. Press **N** for a sticky note. The canvas menu includes undo, redo, grid, snapping, and background color. Command+. or Ctrl+. hides or shows controls.
@@ -62,7 +66,7 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an item.
 - **Items are embeds.** A view, diagram, or document on a canvas is an Excalidraw `embeddable` element whose
   `link` is the item's address in the app (`/prototypes/patrick/hello-world/lofi/main`; one saved in the older form, without `/prototypes`, still resolves and is written back in the new form when the canvas is saved). The link resolves through
   the manifest (`src/platform/app/items/itemLinks.ts`) to a prototype and an item, and the item's file type
-  decides how it looks: a type with an `Embed` in its `open.tsx` (views and diagrams) shows live, any other
+  decides how it looks: a type with an `Embed` in its `open.tsx` (views and diagrams on canvases) shows live, any other
   type shows a card (`src/platform/app/items/ItemCard.tsx`), and a link to nothing shows "Not found".
 - **Views are pictures.** A view is laid out at 1440 px wide and scaled down to the element's width,
   cropped at the bottom. Resizing the element changes the crop. Nothing in it takes clicks.
@@ -77,6 +81,7 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an item.
 | `type.ts` | The spec the build reads: extension, template (an empty scene), and `check` (valid JSON, no images) |
 | `open.tsx` | Icon, and `load`: the file's text (from the file layer in dev, bundled in production). Loads `Canvas` lazily, so Excalidraw isn't in the main bundle |
 | `loader.ts` | The glob of canvas files for the deployed site |
+| `CanvasEmbed.tsx` | Read-only, fitted document preview; no saving or editor tools |
 | `Canvas.tsx` | Wires the pieces into `<Excalidraw>` |
 | `canvas.css` | The app's theme for Excalidraw's UI, from the app's tokens, and how its top row compacts when the canvas is narrow |
 | `format.ts` | The file format: slim and stable so canvases diff cleanly. No deleted elements, no images, defaults dropped, numbers rounded, keys sorted, links stored as app paths |

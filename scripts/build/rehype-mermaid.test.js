@@ -31,25 +31,36 @@ test('Only Mermaid code fences are replaced, including inside nested content', (
   assert.equal(tree.children[0].children[1], ordinary);
 });
 
-test('diagram file images compile into block embeds while inline references stay links', async () => {
-  const { default: diagramFiles } = await import('./rehype-diagram-files.js');
+test('prototype file images compile into block embeds while inline references stay links', async () => {
+  const { default: diagramFiles } = await import('./rehype-file-embeds.js');
   const plugin = mdx({ format: 'md', providerImportSource: '@mdx-js/react', rehypePlugins: [diagramFiles] });
-  const markdown = '![Feedback flow](../feedback-flow.mermaid)\n\n![Sequence](sequence.mmd)\n\nSee ![Flow](flow.mermaid) for context.\n\n![Photo](photo.png)';
+  const markdown = '![View](app/main.tsx)\n\n![Canvas](board.excalidraw)\n\n![Document](context.md)\n\n![Feedback flow](../feedback-flow.mermaid)\n\n![Sequence](sequence.mmd)\n\nSee ![Flow](flow.mermaid) for context.\n\n![Photo](photo.png)';
   const compiled = (await plugin.transform.call({}, markdown, '/example.md')).code;
-  assert.ok(compiled.includes('"diagram-file"'));
+  assert.ok(compiled.includes('"prototype-file"'));
   assert.ok(compiled.includes('"../feedback-flow.mermaid"'));
   assert.ok(compiled.includes('"sequence.mmd"'));
+  for (const path of ['app/main.tsx', 'board.excalidraw', 'context.md']) assert.ok(compiled.includes(`source: "${path}"`));
   assert.ok(compiled.includes('href: "flow.mermaid"'));
   assert.ok(compiled.includes('src: "photo.png"'));
   assert.ok(!compiled.includes('src: "flow.mermaid"'));
 });
 
-test('diagram references resolve nested files and remain within the document prototype', async () => {
-  const { diagramReference } = await import('../../src/platform/app/diagrams/diagramReference.ts');
+test('file references resolve nested files and remain within the document prototype', async () => {
+  const { fileReference } = await import('../../src/platform/app/items/fileReference.ts');
   const base='/prototypes/patrick/feedback-inbox/research';
-  assert.deepEqual(diagramReference('../feedback-flow.mermaid',base), {contributor:'patrick',prototype:'feedback-inbox',path:'feedback-flow.mermaid'});
-  assert.deepEqual(diagramReference('sequence.mmd',base), {contributor:'patrick',prototype:'feedback-inbox',path:'research/sequence.mmd'});
-  for(const source of ['../../other/flow.mermaid','https://example.com/flow.mermaid','//example.com/flow.mmd','../_helpers/flow.mermaid','../../../alex/private/flow.mermaid','../../feedback-inbox%2F..%2Fother/flow.mermaid','flow.tsx']) assert.equal(diagramReference(source,base),null,source);
-  assert.equal(diagramReference('flow.mermaid','/handbook/context'),null);
-  assert.equal(diagramReference('flow.mermaid',null),null);
+  assert.deepEqual(fileReference('../feedback-flow.mermaid',base), {contributor:'patrick',prototype:'feedback-inbox',path:'feedback-flow.mermaid'});
+  assert.deepEqual(fileReference('sequence.mmd',base), {contributor:'patrick',prototype:'feedback-inbox',path:'research/sequence.mmd'});
+  for(const source of ['../../other/flow.mermaid','https://example.com/flow.mermaid','//example.com/flow.mmd','../_helpers/flow.mermaid','../../../alex/private/flow.mermaid','../../feedback-inbox%2F..%2Fother/flow.mermaid']) assert.equal(fileReference(source,base),null,source);
+  assert.equal(fileReference('flow.mermaid','/handbook/context'),null);
+  assert.equal(fileReference('flow.mermaid',null),null);
+  for (const path of ['app/main.tsx', 'board.excalidraw', 'context.md', 'notes.txt']) assert.equal(fileReference(path, base)?.path, `research/${path}`);
+});
+
+test('file previews respect surface restrictions to bound canvas nesting', async () => {
+  const { embedFor } = await import('../../src/platform/app/data/fileTypeModule.ts');
+  const Embed = () => null;
+  assert.equal(embedFor({ Embed }, 'canvas'), Embed);
+  assert.equal(embedFor({ Embed, embedSurfaces: ['document'] }, 'document'), Embed);
+  assert.equal(embedFor({ Embed, embedSurfaces: ['document'] }, 'canvas'), undefined);
+  assert.equal(embedFor(undefined, 'document'), undefined);
 });

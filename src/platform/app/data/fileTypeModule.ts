@@ -6,7 +6,7 @@ import type { Item, Prototype } from '@/platform/app/data/types';
 // about the type is in its type.ts.
 export type ItemContext = { proto: Prototype; item: Item };
 
-// What a type shows where another item includes it (on a canvas): a live preview, in a box of
+// What a type shows where another item includes it (in documents or on canvases): a live preview, in a box of
 // this size. A type without one is shown as a card.
 export type EmbedProps = { proto: Prototype; item: Item; width: number; height: number };
 
@@ -18,4 +18,12 @@ export type FileTypeModule<Props extends object = any> = { // eslint-disable-lin
   load(context: ItemContext): Promise<Props | undefined>;
   Page: ComponentType<Props>;
   Embed?: ComponentType<EmbedProps>;
+  embedSurfaces?: EmbedSurface[];
 };
+
+export type EmbedSurface = "document" | "canvas";
+
+// Omitting the list makes a preview available on both surfaces.
+export function embedFor(module: FileTypeModule | undefined, surface: EmbedSurface) {
+  return module?.embedSurfaces && !module.embedSurfaces.includes(surface) ? undefined : module?.Embed;
+}

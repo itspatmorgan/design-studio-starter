@@ -4,6 +4,7 @@
 // the item's file type has an Embed), or a card (if it doesn't), or a "not found" card (if the
 // link points at nothing). This file knows nothing about any file type: it asks the registry.
 import { memo } from 'react';
+import { embedFor } from '@/platform/app/data/fileTypeModule';
 import { Link } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { SquareArrowExpand01Icon } from '@hugeicons/core-free-icons';
@@ -37,7 +38,7 @@ const elsewhere = (link: string | null, current: Prototype) => {
 };
 const embedOf = (manifest: Manifest, link: string | null, current: Prototype) => {
   const target = resolve(manifest, link, current);
-  return target ? fileTypeModules[target.item.fileType]?.Embed : undefined;
+  return target ? embedFor(fileTypeModules[target.item.fileType], 'canvas') : undefined;
 };
 
 // The size of a new embed: a preview is a screen, a card is a compact row.
@@ -106,7 +107,7 @@ type ItemProps = {
 function CanvasItemInner({ element, manifest, current, offscreen, overview, mounted }: ItemProps) {
   const link = element.type === 'embeddable' ? element.link : null;
   const target = resolve(manifest, link, current);
-  const Embed = target && fileTypeModules[target.item.fileType]?.Embed;
+  const Embed = target && embedFor(fileTypeModules[target.item.fileType], 'canvas');
   // A card fills the element. A missing one is a card too, and so is one from another prototype.
   if (!target || !Embed) return <div data-canvas-frame="" className="h-full w-full"><ItemCard proto={target?.proto} item={target?.item} elsewhere={elsewhere(link, current)} /></div>;
   const { proto, item } = target;

@@ -8,8 +8,9 @@ This rule applies to prototype Markdown when Documents is enabled. Format and re
 - Give the page a frontmatter title or an opening level-one heading.
 - Link to prototype items with relative paths. Include file extensions for links intended to work in ordinary Markdown readers.
 - Studio links accept omitted extensions, but other readers may not resolve them.
-- With Diagrams enabled, embed an existing diagram from the same prototype using `![Description](flow.mermaid)` on its own line. `.mmd` is also supported. Use a relative path; do not copy its source into a Mermaid fence.
-- Link to views instead of embedding them. Ordinary image files remain outside the prototype document convention.
+- Embed a file from the same prototype using Markdown image syntax on its own line: `![Description](flow.mermaid)`, `![Screen](app/main.tsx)`, or `![Exploration](breadboard.excalidraw)`. The corresponding module must be enabled. Use relative paths with extensions.
+- File embeds show read-only previews and an Open link; files without previews, including documents, show cards. Canvas previews keep documents and other canvases as cards to bound nesting.
+- Reference the original file instead of copying diagram source or screen code into the document. Ordinary image files remain outside the prototype document convention.
 - Put shared product context in the Handbook instead.
 - Apply the [contributor scope rule](contributor-scope.md) before editing.
 

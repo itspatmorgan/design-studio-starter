@@ -5,7 +5,7 @@ import { DocBase } from '@/platform/app/docs/DocBase';
 import { fileTypeOf } from '@/platform/app/data/fileTypes';
 import { itemSlug } from '@/platform/core/fileTypes';
 import { markdownPath } from './referenceLinks';
-import DiagramFileEmbed from '@/platform/app/diagrams/DiagramFileEmbed';
+import FileEmbed from '@/platform/app/items/FileEmbed';
 import { MermaidDiagram } from '@/platform/app/diagrams/MermaidDiagram';
 
 // Styling for Markdown comes from Tailwind Typography's `prose` classes (see Prose).
@@ -29,4 +29,4 @@ function MarkdownLink({ href = '', ...props }: ComponentProps<'a'>) {
   return <a href={href} target="_blank" rel="noopener noreferrer" {...props} />;
 }
 
-export const markdownComponents: MDXComponents = { a: MarkdownLink, 'mermaid-diagram': MermaidDiagram, 'diagram-file': DiagramFileEmbed };
+export const markdownComponents: MDXComponents = { a: MarkdownLink, 'mermaid-diagram': MermaidDiagram, 'prototype-file': FileEmbed };

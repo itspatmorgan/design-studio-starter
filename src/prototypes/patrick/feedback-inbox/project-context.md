@@ -43,3 +43,13 @@ The three screens are the [overview](app/overview), which is where you land, the
 This diagram models the feedback review cycle. It shares its source with the standalone diagram and any canvas previews.
 
 ![Feedback review flow](feedback-flow.mermaid)
+
+## Explore the design
+
+The inbox brings the review work into one screen. Open it to try the interactions.
+
+![Feedback inbox](app/feedback-inbox.tsx)
+
+The Breadboard canvas explores the same flow as a live diagram and an editable sketch. Open it to rearrange the sketch or add notes.
+
+![Breadboard exploration](breadboard.excalidraw)

@@ -1,5 +1,5 @@
-// Resolve a document's diagram reference without allowing it outside its prototype.
-export function diagramReference(source: string, base: string | null) {
+// Resolve a document's file reference without allowing it outside its prototype.
+export function fileReference(source: string, base: string | null) {
   if (!base || !base.startsWith('/prototypes/') || /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(source)) return null;
   try {
     const document = base.split('/').filter(Boolean).slice(0, 3);
@@ -8,7 +8,7 @@ export function diagramReference(source: string, base: string | null) {
     if (parts.some((part) => part === '.' || part === '..' || /[\\/]/.test(part))) return null;
     if (!document.every((part, index) => decodeURIComponent(part) === parts[index]) || parts.length < 4) return null;
     const path = parts.slice(3).join('/');
-    if (!/\.(mermaid|mmd)$/i.test(path) || parts.slice(3).some((part) => part.startsWith('_'))) return null;
+    if (!/\.[a-z0-9]+$/i.test(path) || parts.slice(3).some((part) => part.startsWith('_'))) return null;
     return { contributor: parts[1], prototype: parts[2], path };
   } catch { return null; }
 }

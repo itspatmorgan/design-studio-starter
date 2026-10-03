@@ -42,17 +42,25 @@ toc: true
 
 Without a frontmatter title, an opening level-one heading (`# Title`) supplies the title.
 
-### Embed a diagram file
+### Embed a prototype file
 
-When Diagrams is enabled, embed a standalone diagram from the same prototype using Markdown image syntax on its own line:
+Embed a file from the same prototype using Markdown image syntax on its own line:
 
 ```md
 ![Feedback flow](feedback-flow.mermaid)
+
+![Feedback inbox](app/feedback-inbox.tsx)
+
+![Breadboard](breadboard.excalidraw)
 ```
 
-This renders the existing file with an **Open diagram** link. It uses the same live preview as a canvas, so editing the source file updates both. Nested documents can use relative paths such as `../feedback-flow.mermaid`; `.mmd` files also work. Missing files and disabled Diagrams show an unavailable message. References outside the current prototype are not embedded. Inline image syntax within a sentence becomes a link.
+Each file type supplies its preview, with an **Open** link to the original file. Views show a screen preview; diagrams render their source; canvases show a read-only preview fitted to their contents. Open the original to interact or edit. Documents and types without a preview appear as link cards.
 
-This is a diagram file reference, so no source is copied into the document. Mermaid fences below remain useful for diagrams owned by the document itself.
+The corresponding module must be enabled. Nested documents can use relative paths such as `../feedback-flow.mermaid`; `.mmd` files also work. Missing files and disabled modules show an unavailable message. References outside the current prototype are not embedded. Inline image syntax within a sentence becomes a link.
+
+Canvas previews retain live views and diagrams, but documents and other canvases inside them stay cards. This keeps nesting bounded.
+
+These references share their original files; no source is copied into the document. Mermaid fences below remain useful for diagrams owned by the document itself.
 
 ### Mermaid diagrams
 

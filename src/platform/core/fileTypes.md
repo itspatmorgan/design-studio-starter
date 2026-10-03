@@ -34,7 +34,9 @@ Other prototype files remain plain files. Underscore helpers are excluded from n
 
 Supported editor languages are `tsx`, `markdown`, `json`, and `text`. The template supplies new-file content. The check reports invalid content.
 
-An `Embed` supplies a live preview. Without it, embedded items appear as cards.
+An `Embed` in `open.tsx` supplies a read-only preview for documents and canvases. Core resolves references and uses this contract without importing individual modules. `embedSurfaces` can restrict the preview to `document` or `canvas`; omitting it enables both. Types without a preview on that surface appear as cards. Canvas restricts its preview to documents, keeping canvas nesting bounded.
+
+Prototype documents use `![Description](relative/file.ext)` on its own line. The shared Markdown reader resolves the exact file within the same prototype, renders the registered preview or card, and provides an Open link. Inline references stay links. Missing or disabled types show an unavailable message. Ordinary image formats retain Markdown image behavior.
 
 A loader uses `import.meta.glob(['/__studio_globs__/*'])`. Vite replaces the placeholder with extensions and content roots, excluding archived prototypes in production.
 
