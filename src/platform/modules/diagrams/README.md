@@ -9,7 +9,7 @@ slug: "diagram-files"
 
 # Diagrams
 
-Diagrams adds standalone Mermaid files to prototypes. Use them to explain a flow, responsibility, dependency, or other relationship that helps someone understand the prototype. Each diagram has its own navigation entry and can appear as a live preview on a canvas.
+Diagrams adds standalone Mermaid files to prototypes. Use them to explain a flow, responsibility, dependency, or other relationship that helps someone understand the prototype. Each diagram has its own navigation entry and can appear as a live preview on a canvas. Standalone diagrams fill the prototype viewer and scale to fit its available space while preserving their proportions.
 
 ## Create and edit
 

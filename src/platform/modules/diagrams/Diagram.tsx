@@ -27,7 +27,7 @@ export default function Diagram({ proto, item, source: initial, compact = false 
     return () => { active = false; import.meta.hot?.off('studio:file', changed); };
   }, [proto.contributorKey, proto.id, item.path, initial]);
 
-  return <div className={compact ? 'h-full min-h-0 overflow-hidden bg-card' : 'h-full min-h-0 overflow-auto bg-background p-6'}>
-    {error ? <p role="alert" className="p-4 text-sm">{error}</p> : <MermaidDiagram source={source} compact={compact} />}
+  return <div className={compact ? 'flex h-full min-h-0 min-w-0 w-full flex-col overflow-hidden bg-card' : 'flex h-full min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden bg-background'}>
+    {error ? <p role="alert" className="p-4 text-sm">{error}</p> : <MermaidDiagram source={source} compact={compact} fit />}
   </div>;
 }
