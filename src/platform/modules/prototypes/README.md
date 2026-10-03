@@ -58,6 +58,8 @@ To edit source:
 
 Conflicting external changes prompt you to choose how to proceed. Another contributor's source opens read-only.
 
+When creating an artifact, enter its name without a file extension. The selected artifact type adds the correct extension automatically.
+
 Without a custom order, files appear before folders, alphabetically. The prototype opens on the first available artifact in navigation order, including artifacts inside folders.
 
 ## Appearance and prototype details

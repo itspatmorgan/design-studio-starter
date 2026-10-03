@@ -397,14 +397,14 @@ export default function FileTree({ proto, current }: FileTreeProps) {
     );
   }
 
-  // The new-file or new-folder field, at the top of the folder it's being created in. A new
-  // file starts with its type's extension, and gets it back if you delete it from the name.
+  // The creation field accepts a name; the selected artifact type owns its extension.
+  // Plain files and folders keep their names as entered.
   const createField = (parent: string, depth: number) => {
     if (editing?.kind !== 'create' || editing.parent !== parent) return null;
     const { target } = editing;
     const dir = target === 'folder';
     const extension = FILE_TYPES[target]?.extensions[0] ?? '';
-    const initial = dir ? 'new-folder' : target === 'file' ? 'new-file' : `untitled${extension}`;
+    const initial = dir ? 'new-folder' : target === 'file' ? 'new-file' : 'untitled';
     return (
       <NameInput
         initial={initial}
@@ -412,7 +412,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
         onDone={(name) => {
           setEditing(null);
           if (!name) return;
-          const fileName = dir || name.lastIndexOf('.') > 0 ? name : name + extension;
+          const fileName = name + extension;
           run({ op: 'create', path: parent, name: fileName, dir }).then((r) => {
             // A new item opens right away.
             const item = r?.path && itemsOf(r.manifest, proto).find((i) => i.path === r.path);
