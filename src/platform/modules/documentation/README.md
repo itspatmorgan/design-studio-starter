@@ -4,7 +4,9 @@ Documentation opens at `/documentation` and combines a curated **Guide** at `/do
 
 Follow the [Documentation standards](../../../handbook/rules/documentation-standards.md) when changing Guide or Reference content.
 
-Use the two sidebar tabs to switch reading modes. Reference lists only areas with supplied documentation. Its overview explains how contracts join the agent’s working context and when to consult or change them. Separate contracts appear as child links. Each document has a collapsed **About this reference** section with its source path and related Handbook context and instructions. Visibility does not mean an agent automatically reads a reference.
+Use the two sidebar tabs to switch reading modes. Reference groups shared contracts under **Platform foundations** and enabled capabilities under **Modules**. Each module opens its README; additional contracts appear beneath their owning module. Modules with no supplied documentation are omitted. Navigation labels match the page titles: module names in Reference, action-oriented chapter titles in the Guide. Both presentations use the same source file.
+
+The Reference overview explains how contracts join the agent’s working context and when to consult or change them. Each document has a collapsed **About this reference** section with its source path and related Handbook context and instructions. Visibility does not mean an agent automatically reads a reference.
 
 The optional module uses `documentation` for its folder, declaration ID, configuration key, and public section key. Disable it through studio commands to hide the Guide and its rail entry. Reference discovery and direct access belong to the shared platform and remain available when this module is disabled or removed. Guide and Reference, including their section links and individual pages, are excluded from the command palette. Prototype Documents is independent of both reading modes.
 

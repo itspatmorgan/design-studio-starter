@@ -80,8 +80,8 @@ const referenceRoute = createRoute({
     }
     const mod = await loadReference(path);
     if (!mod) throw notFound();
-    const title = mod.frontmatter?.title ?? group?.references.find((ref) => ref.source === path)?.title;
-    return { editing: false as const, Component: mod.default, frontmatter: mod.frontmatter ?? {}, path, group, title };
+    const title = group?.references.find((ref) => ref.source === path)?.title ?? mod.frontmatter?.title;
+    return { editing: false as const, Component: mod.default, frontmatter: { ...mod.frontmatter, title }, path, group, title };
   },
   head: ({ loaderData }) => ({ meta: [{ title: [loaderData?.title, 'Reference', APP_NAME].filter(Boolean).join(' — ') }] }),
   component: () => {

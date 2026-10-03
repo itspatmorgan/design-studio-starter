@@ -1,6 +1,6 @@
 import DocumentationNavItem from './DocumentationNavItem';
 import { Link, Outlet, getRouteApi } from '@tanstack/react-router';
-import { SectionNav, NavList, navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
+import { SectionNav, NavList, NavGroup, navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
 import type { PlatformReferenceGroup } from '@/platform/app/data/types';
 import DocumentationHeader from './DocumentationHeader';
 
@@ -9,14 +9,26 @@ export const referenceHref = (source: string) => `/documentation/reference${sour
 
 export function ReferenceLayout() {
   const { platformReferences } = rootApi.useLoaderData();
+  const foundations = platformReferences.filter((group) => group.id === 'core' || group.id === 'modules');
+  const modules = platformReferences.filter((group) => group.id !== 'core' && group.id !== 'modules' && group.references.length);
   return <div className="flex h-full min-h-0">
     <SectionNav label="Documentation">
       <DocumentationHeader reference />
       <NavList>
         <Link to="/documentation/reference" activeOptions={{ exact: true }} style={navLinkStyle} className={navLinkClass}>Overview</Link>
-        {platformReferences.filter((group) => group.references.length).map((group) => <div key={group.id}>
-          {group.references.map((ref, index) => <DocumentationNavItem key={ref.source} href={referenceHref(ref.source)} path={'src' + ref.source} label={index === 0 ? group.label : ref.title} nested={index > 0} />)}
-        </div>)}
+        <NavGroup heading="Platform foundations">
+          {foundations.flatMap((group) => group.references).map((ref) => <DocumentationNavItem key={ref.source} href={referenceHref(ref.source)} path={'src' + ref.source} label={ref.title} />)}
+        </NavGroup>
+        {modules.length > 0 && <NavGroup heading="Modules">
+          {modules.map((group) => {
+            const readme = group.references.find((ref) => ref.source.endsWith('/README.md'));
+            const contracts = group.references.filter((ref) => ref !== readme);
+            return <div key={group.id}>
+              {readme ? <DocumentationNavItem href={referenceHref(readme.source)} path={'src' + readme.source} label={readme.title} /> : <p className="px-2 pt-2 text-sm font-medium">{group.label}</p>}
+              {contracts.map((ref) => <DocumentationNavItem key={ref.source} href={referenceHref(ref.source)} path={'src' + ref.source} label={ref.title} nested />)}
+            </div>;
+          })}
+        </NavGroup>}
       </NavList>
     </SectionNav>
     <main className="flex min-w-0 flex-1 flex-col overflow-hidden"><Outlet /></main>
@@ -36,7 +48,7 @@ export function ReferenceIndex() {
   const { platformReferences, guide } = rootApi.useLoaderData();
   const disabled = platformReferences.filter((group) => !group.enabled);
   return <div className="mx-auto h-full w-full max-w-4xl overflow-y-auto px-8 py-12">
-    <h1 className="text-3xl font-semibold tracking-tight">Reference</h1>
+    <h1 className="text-3xl font-semibold tracking-tight">Overview</h1>
     <p className="mt-4 max-w-[65ch] text-muted-foreground">The complete documentation supplied with the platform: capabilities, boundaries, and file contracts. People and agents can consult it when needed. You do not need to read or customize these files to begin creating.</p>
     {guide.length > 0 && <p className="mt-4 text-sm">For a guided introduction, start with the <Link to={'/documentation/guide' as never} className="underline underline-offset-4">Guide</Link>.</p>}
     <p className="mt-4 text-sm">The <Link to={'/handbook/rules/documentation-standards' as never} className="underline underline-offset-4">Documentation standards</Link> define where context belongs and how to keep it accurate.</p>

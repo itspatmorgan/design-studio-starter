@@ -18,7 +18,9 @@ export function platformReferences({ root, modules, enabled, handbook }) {
     const references = on && fs.existsSync(dir) ? fs.readdirSync(dir, { withFileTypes: true }).filter((entry) => entry.isFile() && entry.name.endsWith('.md')).sort((a,b) => a.name === 'README.md' ? -1 : b.name === 'README.md' ? 1 : a.name.localeCompare(b.name)).map((entry) => {
       const source = `${folder}/${entry.name}`;
       const text = fs.readFileSync(path.join(dir, entry.name), 'utf8');
-      return { source, title: frontmatter(text)?.title ?? text.match(/^#\s+(.+)$/m)?.[1] ?? entry.name };
+      // Module READMEs also supply action-oriented Guide chapters. Reference names
+      // the module itself; other documents retain their own canonical titles.
+      return { source, title: entry.name === 'README.md' && id !== 'core' ? label : frontmatter(text)?.title ?? text.match(/^#\s+(.+)$/m)?.[1] ?? entry.name };
     }) : [];
     const links = related.filter((item) => item.targets.some((target) => references.some((ref) => target === ref.source)) || declared.some((d) => item.source === `/handbook/${d.path}` || item.source.startsWith(`/handbook/${d.path.endsWith('/') ? d.path : d.path + '/'}`)));
     return { id, label, enabled: on, references, related: links.map(({ title, href }) => ({ title, href })) };
