@@ -44,6 +44,8 @@ Without a frontmatter title, an opening level-one heading (`# Title`) supplies t
 
 ### Mermaid diagrams
 
+See [Diagrams and code](/guide/diagrams) for examples, the shared theme, and customization.
+
 Use a fenced code block with the language `mermaid` to show a diagram:
 
 ```mermaid

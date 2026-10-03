@@ -23,6 +23,8 @@ The starter's Principles and Personas describe Design Studio. They are examples 
 
 ## Add and edit content
 
+See [Diagrams and code](/guide/diagrams) for examples, the shared theme, and customization.
+
 Ask your agent to add or update content from the material you supply. Locally, you can also open **Docs**, **Rules**, or **Skills** and select **New** (+) or **New skill**.
 
 Docs and Rules support Markdown files and folders. Each skill needs its own folder and a `SKILL.md`. Supporting files can live beside it.

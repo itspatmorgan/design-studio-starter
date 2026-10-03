@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from 'react';
+import { mermaidTheme } from './mermaidTheme';
 
 // Mermaid has global configuration. Serialize initialization and rendering so diagrams
 // in different pages/color modes cannot overwrite each other's configuration mid-render.
@@ -9,7 +10,9 @@ function render(source: string, id: string, dark: boolean) {
     mermaid.initialize({
       startOnLoad: false,
       securityLevel: 'strict',
-      theme: dark ? 'dark' : 'default',
+      theme: 'base',
+      look: 'classic',
+      themeVariables: mermaidTheme(dark),
       fontFamily: 'Inter, sans-serif',
       suppressErrorRendering: true,
       secure: ['secure', 'securityLevel', 'startOnLoad', 'maxTextSize', 'maxEdges', 'suppressErrorRendering', 'theme', 'themeVariables', 'fontFamily'],
@@ -43,7 +46,7 @@ export function MermaidDiagram({ source }: { source: string }) {
 
   return (
     <figure className="not-prose my-6 min-w-0 rounded-lg border border-border bg-card p-4">
-      {result.svg ? <div className="overflow-x-auto [&_svg]:mx-auto" dangerouslySetInnerHTML={{ __html: result.svg }} />
+      {result.svg ? <div className="overflow-x-auto [&_svg]:mx-auto [&_svg]:h-auto [&_svg]:max-w-full" dangerouslySetInnerHTML={{ __html: result.svg }} />
         : result.error ? <div role="alert"><p className="text-sm font-medium">Unable to render Mermaid diagram.</p><pre className="mt-2 overflow-x-auto whitespace-pre-wrap text-xs text-muted-foreground">{result.error}</pre></div>
           : <p role="status" className="text-sm text-muted-foreground">Rendering diagram…</p>}
       <details className="mt-3 text-sm">

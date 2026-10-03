@@ -40,9 +40,9 @@ Starter components use Base UI's `render` prop for composition. Replacement desi
 
 ## Documents and canvases
 
-[MDX](https://mdxjs.com) compiles plain Markdown. [Shiki](https://shiki.style) highlights code. [Tailwind Typography](https://github.com/tailwindlabs/tailwindcss-typography) styles document pages.
+[MDX](https://mdxjs.com) compiles plain Markdown. [Shiki](https://shiki.style) highlights code with the shared [Flexoki](https://stephango.com/flexoki) accent palette. [Tailwind Typography](https://github.com/tailwindlabs/tailwindcss-typography) styles document pages.
 
-[Mermaid](https://mermaid.js.org) renders fenced `mermaid` blocks as diagrams in the shared Markdown reader. It loads on demand for the Guide, Handbook, reference pages, and prototype Documents. Diagram source stays in the Markdown file.
+[Mermaid](https://mermaid.js.org) renders fenced `mermaid` blocks as diagrams in the shared Markdown reader. It loads on demand for the Guide, Handbook, reference pages, and prototype Documents. Diagram source stays in the Markdown file. A minimal platform theme coordinates diagrams with the editor and document code. See [Diagrams and code](/guide/diagrams) for examples and customization.
 
 The canvas module uses [Excalidraw](https://excalidraw.com). It loads when a canvas opens.
 

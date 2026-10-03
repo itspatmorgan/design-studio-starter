@@ -9,25 +9,15 @@ import { EditorView } from '@codemirror/view';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { tags as t } from '@lezer/highlight';
 
-const flexoki = (mode: 'light' | 'dark') => Object.fromEntries(Object.entries({
-  red: ['#AF3029', '#D14D41'],
-  orange: ['#BC5215', '#DA702C'],
-  yellow: ['#AD8301', '#D0A215'],
-  green: ['#66800B', '#879A39'],
-  cyan: ['#24837B', '#3AA99F'],
-  blue: ['#205EA6', '#4385BE'],
-  purple: ['#5E409D', '#8B7EC8'],
-  magenta: ['#A02F6F', '#CE5D97'],
-  comment: ['#878580', '#878580'],
-}).map(([name, [light, dark]]) => [`--fx-${name}`, mode === 'light' ? light : dark]));
+import { editorPalette } from '@/platform/styles/contentPalette';
 
 // The two panels share their styles: a selector for each, ending in `rest`.
 const panels = (rest: string) => `.cm-panel.cm-search${rest}, .cm-panel.cm-goto-line${rest}`;
 
 const layout = EditorView.theme({
-  '&': { ...flexoki('light'), height: '100%', backgroundColor: 'var(--background)', color: 'var(--foreground)', fontSize: '13px' },
+  '&': { ...editorPalette('light'), height: '100%', backgroundColor: 'var(--background)', color: 'var(--foreground)', fontSize: '13px' },
   // colorScheme makes native controls (the search panel's checkboxes) follow dark mode.
-  '.dark &': { ...flexoki('dark'), colorScheme: 'dark' },
+  '.dark &': { ...editorPalette('dark'), colorScheme: 'dark' },
   '&.cm-focused': { outline: 'none' },
   '.cm-scroller': { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', lineHeight: '1.65' },
   '.cm-content': { caretColor: 'var(--foreground)', padding: '12px 0' },
