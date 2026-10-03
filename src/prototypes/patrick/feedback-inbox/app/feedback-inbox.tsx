@@ -37,7 +37,7 @@ export function FeedbackInboxScreen({ filter: startFilter, query: startQuery = '
   const navigate = useNavigate();
   const screen = useScreenPath();
 
-  const open = (id: string) => { select(id); navigate({ to: screen('app/detail') as never }); };
+  const open = (id: string) => { select(id); navigate({ to: screen('app/feedback-detail') as never }); };
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
     return items.filter((f) => matchesFilter(f, filter) && (!q || `${f.title} ${f.customer} ${f.tags.join(' ')}`.toLowerCase().includes(q)));

@@ -5,7 +5,7 @@ import { Link, useLocation, useParams } from '@tanstack/react-router';
 
 export function useScreenPath() {
   const { contributor, prototype } = useParams({ strict: false }) as { contributor?: string; prototype?: string };
-  return (screen: string) => `/${contributor}/${prototype}/${screen}`;
+  return (screen: string) => `/prototypes/${contributor}/${prototype}/${screen}`;
 }
 
 export function ScreenLink({ to, className, onClick, children }: { to: string; className?: string; onClick?: () => void; children: ReactNode }) {

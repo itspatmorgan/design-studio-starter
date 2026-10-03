@@ -77,7 +77,7 @@ export default function Overview() {
             <ul className="divide-y divide-border">
               {newest.map((f) => (
                 <li key={f.id}>
-                  <button type="button" className="flex w-full items-center gap-3 py-2.5 text-left text-sm hover:text-primary" onClick={() => { select(f.id); navigate({ to: screen('app/detail') as never }); }}>
+                  <button type="button" className="flex w-full items-center gap-3 py-2.5 text-left text-sm hover:text-primary" onClick={() => { select(f.id); navigate({ to: screen('app/feedback-detail') as never }); }}>
                     <span className="flex-1 truncate font-medium">{f.title}</span>
                     <PriorityBadge priority={f.priority} />
                     <StatusBadge status={f.status} />
