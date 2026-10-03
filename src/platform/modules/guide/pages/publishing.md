@@ -26,7 +26,7 @@ Interactive views still run in the browser. The published site does not provide 
 
 ## Choose a deployment process
 
-The starter provides a portable build, without a deployment workflow. Pushing to GitHub runs repository checks; it does not publish the site.
+The starter provides a portable build, without a deployment workflow. Pushing to GitHub runs repository checks. It does not publish the site.
 
 Choose a host that can serve the static files in `dist/`. Your team configures how that host receives a build, who can access the site, and when updates are published.
 

@@ -31,6 +31,6 @@ The local UI limits prototype editing to your contributor identity. That identit
 
 Agent rules guide editing scope. Git hooks report scope and identity. Build checks enforce dependency and style boundaries. GitHub checks flag platform proposals and check the pushing account's role for platform changes on `main`.
 
-The maintainer must configure branch protection and required reviews to enforce the team's merge policy. These mechanisms serve different purposes; no single check enforces every ownership rule.
+The maintainer must configure branch protection and required reviews to enforce the team's merge policy. These mechanisms serve different purposes. No single check enforces every ownership rule.
 
 See [Checks and troubleshooting](/guide/checks-and-troubleshooting) for the checks and failure messages.

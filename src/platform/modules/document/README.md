@@ -17,15 +17,20 @@ Documents use the platform's page style, rather than the prototype's design-syst
 
 Ask your agent to create a document, or select **New** (+), then **New document**, in the Files row.
 
-Select **Edit source** in the document's right-click menu to edit its Markdown. Save with Command+S or Ctrl+S, then select **Done**. Other contributors' documents and published pages are read-only.
+1. Right-click the document and select **Edit source**.
+2. Edit the Markdown text.
+3. Save with Command+S on macOS or Ctrl+S on other systems.
+4. Select **Done** to return to the page.
+
+Other contributors' documents and published pages are read-only.
 
 A document and another item cannot share a URL, such as `notes.md` and `notes.tsx`.
 
 ## Supported content
 
-The reader supports headings, lists, links, tables, task lists, strikethrough, and highlighted code blocks. It does not execute JSX or embedded components. Raw HTML appears as text; HTML comments are hidden.
+The reader supports headings, lists, links, tables, task lists, strikethrough, and highlighted code blocks. It does not execute JSX or embedded components. Raw HTML appears as text. HTML comments are hidden.
 
-Optional frontmatter controls the page heading, description, and contents list:
+Frontmatter is an optional settings block at the start of a Markdown file. It controls the heading, description, and contents list:
 
 ```md
 ---
@@ -35,7 +40,7 @@ toc: true
 ---
 ```
 
-Without a frontmatter title, the first level-one heading supplies the title.
+Without a frontmatter title, an opening level-one heading (`# Title`) supplies the title.
 
 ## Links and related context
 
@@ -46,7 +51,7 @@ See the [main view](./prototype.tsx).
 Read the [research](./research/notes.md).
 ```
 
-The app accepts paths with or without extensions. External links open in a new tab. Moving linked files can break relative links; renaming the prototype folder preserves them.
+The app accepts paths with or without extensions. External links open in a new tab. Moving linked files can break relative links. Renaming the prototype folder preserves them.
 
 Documents link to views. Canvases can show live view previews alongside document cards.
 

@@ -32,6 +32,6 @@ Restart the dev server after module changes.
 
 Ask your agent to build a module or preview installation from a prepared folder. Review its capabilities, dependencies, license, agent instructions, and proposed file changes.
 
-Installation can run the module's checks as code on your computer. Use code you trust. Packages install with lifecycle scripts disabled. If a check fails, project files are restored; downloaded packages can remain in `node_modules`.
+Installation can run the module's checks as code on your computer. Use code you trust. See [Installation details](/guide/build-a-module#installation-details) for package handling and recovery.
 
 Module changes are shared platform changes. Configuration choices are documented in [Studio config](/guide/studio-config).

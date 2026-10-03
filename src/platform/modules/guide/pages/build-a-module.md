@@ -58,6 +58,16 @@ When adapting an open source library, retain its license and record its source. 
 
 When updating the platform, review changes to the extension points your module uses. Run the checks and review your feature again.
 
+## Installation details
+
+A prepared module folder is read as data during the installation preview. Applying installation can run its checks as trusted code.
+
+Packages install with lifecycle scripts disabled. These are scripts a package would normally run automatically during installation.
+
+If a check fails, project files are restored. Downloaded packages can remain in `node_modules`.
+
+Module skills live in `src/handbook/skills/` after installation. Links in `.agents/skills` and `.claude/skills` expose those files to compatible agents.
+
 ## Design systems
 
 A prototype design system is separate content in `src/systems/<id>/`. It contains `system.ts`, `components/`, and `styles/theme.css`.

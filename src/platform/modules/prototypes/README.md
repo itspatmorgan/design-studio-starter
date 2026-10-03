@@ -47,23 +47,30 @@ These controls are available in your own prototypes:
 | Choose the opening item | **Set as start** in the item's menu. |
 | Edit source | **Edit source** in the item's menu. |
 
-Save source edits with Command+S or Ctrl+S, then select **Done**. Conflicting external changes prompt you to choose how to proceed. Another contributor's source opens read-only.
+To edit source:
+
+1. Select **Edit source** in the item's right-click menu.
+2. Edit the text.
+3. Save with Command+S on macOS or Ctrl+S on other systems.
+4. Select **Done** to return to the item.
+
+Conflicting external changes prompt you to choose how to proceed. Another contributor's source opens read-only.
 
 Without a custom order, files appear before folders, alphabetically. The prototype opens on its start item, or the first item when no start is set.
 
 ## Appearance and prototype details
 
-**Make lofi** draws a view in grayscale with handwritten type. **Make hi-fi** restores its normal appearance. Components and behavior stay the same. The mode is stored as `/** @lofi */` in that view; a folder named `lofi` has no special behavior.
+**Make lofi** draws a view in grayscale with handwritten type. **Make hi-fi** restores its normal appearance. Components and behavior stay the same. The mode is stored as `/** @lofi */` in that view. A folder named `lofi` has no special behavior.
 
 Select **Edit** in the prototype's **…** menu to change its title or description. Changing the title also renames the folder and changes its URL. Changing only the description preserves the URL.
 
 ## Archive and delete
 
-**Archive** keeps the prototype available locally and excludes it from the built site. **Unarchive** includes it in the next build.
+**Archive** keeps the prototype available locally and excludes it from the published site. **Unarchive** includes it in the next build.
 
 **Delete** moves the folder to the system Trash or the repository's `.trash/` fallback. Ask your agent to restore it if needed.
 
-Published prototypes support viewing and interaction, without repository editing. A view that fails to render shows an error and a **Copy** button; give that error to your agent.
+Published prototypes support viewing and interaction, without repository editing. A view that fails to render shows an error and a **Copy** button. Give that error to your agent.
 
 ## For developers
 

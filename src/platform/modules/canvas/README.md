@@ -33,7 +33,7 @@ The canvas cannot store images. View previews provide a connection to the workin
 
 Use the toolbar for shapes, text, and arrows. Press **N** for a sticky note. The canvas menu includes undo, redo, grid, snapping, and background color. Command+. or Ctrl+. hides or shows controls.
 
-Changes save automatically while the studio runs locally. External file changes appear in the open canvas. You can edit only canvases in your own prototypes; other contributors' and published canvases are read-only.
+Changes save automatically while the studio runs locally. External file changes appear in the open canvas. You can edit only canvases in your own prototypes. Other contributors' and published canvases are read-only.
 
 ## Agent access
 

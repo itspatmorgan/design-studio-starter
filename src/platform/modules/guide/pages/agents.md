@@ -10,7 +10,7 @@ Use your coding agent alongside the local studio. Design Studio does not supply 
 
 Describe the outcome and provide relevant context. The agent should perform the work it can do, ask for missing decisions or materials, and make the result available for review. You can direct changes in conversation or edit the result yourself.
 
-![You provide direction; the agent reads context, builds, and checks; you review and direct changes.](/guide/agent-cycle.svg)
+![You provide direction. The agent reads context, builds, and checks. You review and direct changes.](/guide/agent-cycle.svg)
 
 ## How instructions reach the agent
 
@@ -25,13 +25,13 @@ Describe the outcome and provide relevant context. The agent should perform the 
 
 A file's presence does not guarantee the agent reads it. `AGENTS.md` can point to any of these documents. Ask the agent to add a reference when context should guide future work.
 
-Skills live in `src/handbook/skills/`. Links in `.agents/skills` and `.claude/skills` expose the same files to compatible agents. Skill discovery varies by agent.
+Skill discovery varies by agent. The Handbook holds the skill files for you and your agent to inspect.
 
 ## What happens by default
 
 For prototype work, repository instructions tell the agent to identify your contributor folder, create prototypes with `pnpm new`, and keep code within its boundaries. It should run `pnpm build` before committing completed work and push only when you ask to share.
 
-Instructions guide the agent. Hooks and build checks separately inspect files. They do not enforce every instruction or judge the design.
+Instructions guide the agent. Git hooks are scripts that run during operations such as a commit. Hooks and build checks inspect the resulting files. They do not enforce every instruction or judge the design.
 
 ## Included skills
 

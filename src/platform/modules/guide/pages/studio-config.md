@@ -11,7 +11,7 @@ toc: true
 | Setting | Purpose and default |
 | --- | --- |
 | `name` | Required studio name, used by the app. |
-| `usage` | `personal` or `team`; defaults to `team`. Guides onboarding, without changing contributor ownership. |
+| `usage` | `personal` or `team`. Defaults to `team`. Guides onboarding, without changing contributor ownership. |
 | `tagline` | Optional line on the published front page, up to 140 characters. |
 | `modules` | Installed module IDs set to `true` or `false`. Omitted modules are enabled. Required modules cannot be disabled. |
 | `defaultSystem` | System for prototypes without an explicit system choice. Defaults to the first installed system by name. |
@@ -20,11 +20,11 @@ toc: true
 
 Ask your agent to configure the studio. The configuration command previews changes before applying them.
 
-Use `pnpm studio configure --system <id>` to preview a default-system change. Apply with `--yes` after reviewing the preview. The command records existing implicit system choices before changing the default, so existing prototypes retain their systems.
+Use `pnpm studio configure --system <id>` to preview a default-system change. Apply with `--yes` after reviewing the preview. For prototypes without an explicit system choice, the command records their current system before changing the default. Existing prototypes retain their systems.
 
 Directly editing `defaultSystem` does not perform that preservation step. Prototypes without an explicit choice then follow the new default. Migrating component imports remains a separate task.
 
-Restart the dev server after module changes. Shared configuration changes require maintainer authorization.
+Restart the dev server after configuration changes. Shared configuration changes require maintainer authorization.
 
 ## Inspect setup
 

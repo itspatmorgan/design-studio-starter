@@ -25,15 +25,33 @@ The starter's Principles and Personas describe Design Studio. They are examples 
 
 Ask your agent to add or update content from the material you supply. Locally, you can also open **Docs**, **Rules**, or **Skills** and select **New** (+) or **New skill**.
 
-Docs and Rules support Markdown files and folders. Each skill needs its own folder and a `SKILL.md`; supporting files can live beside it.
+Docs and Rules support Markdown files and folders. Each skill needs its own folder and a `SKILL.md`. Supporting files can live beside it.
 
-Select **Edit source** in a file's menu to edit its text. Save, then select **Done**. Published Handbook pages are read-only.
+To edit text:
+
+1. Select **Edit source** in the file's right-click menu.
+2. Edit the text.
+3. Save with Command+S on macOS or Ctrl+S on other systems.
+4. Select **Done** to return to the page.
+
+Published Handbook pages are read-only.
 
 ## Connect content to agents
 
 `AGENTS.md` can point to any Handbook document. References can apply every session or only to relevant tasks. Presence in the Handbook does not guarantee that an agent reads the file.
 
 Ask your agent to add the appropriate reference when context should guide future work. See [Work with your agent](/guide/agents) for how instructions and skills are used.
+
+## Edit the Guide
+
+The Guide is shared platform documentation. Its pages can be edited locally:
+
+1. Open the Guide chapter and select **Edit**.
+2. Edit its Markdown.
+3. Save with Command+S on macOS or Ctrl+S on other systems.
+4. Select **Done** to return to the chapter.
+
+A module chapter opens its full README, including the developer section hidden in the Guide. The editor prompts you if external changes conflict with unsaved edits. Published Guide pages are read-only.
 
 ## Shared scope
 

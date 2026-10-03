@@ -18,7 +18,7 @@ Design Studio keeps work in repository files. Each contributor can run a local c
 | Commit | Records a version in Git. |
 | Push | Sends commits to the shared repository. |
 | Pull | Receives repository changes into your copy. |
-| Publish | Makes a built site available through a configured host. |
+| Publish | Makes the build available through a configured host. |
 
 The agent should check and commit completed work. Ask it to push when you want to share those commits. Saving or committing alone does not change another contributor's copy.
 

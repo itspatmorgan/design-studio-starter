@@ -47,7 +47,7 @@ File-type modules determine which extensions become items. Two files cannot prod
 | `system` | Assigned prototype system. If omitted, uses the studio default. |
 | `start` | Opening item path without its extension. If omitted, uses the first item. |
 | `order` | File and folder paths to place first, in sequence. |
-| `status` | `archived` excludes the prototype from the built site. Omit it or use `active` for active work. |
+| `status` | `archived` excludes the prototype from the published site. Omit it or use `active` for active work. |
 
 Contributor details come from `contributors.json` or `contributors/<key>.json`.
 
@@ -66,11 +66,9 @@ Nested folders become URL segments. Renaming a prototype folder or item changes 
 
 ## Default system changes
 
-Use `pnpm studio configure --system <key>` to preview a default-system change. Apply it with `--yes` after review.
+Changing the default through the configuration command preserves existing prototypes' systems. Migrating a prototype requires changing its imports and assigned system together.
 
-The command records existing implicit system choices before changing the default, including prototypes in disabled content modules.
-
-New prototypes use the new default. Existing prototypes need an explicit migration of both imports and system choice.
+See [Studio config](/guide/studio-config#change-configuration) for the command and the effect of direct configuration edits.
 
 ## Dependency boundaries
 

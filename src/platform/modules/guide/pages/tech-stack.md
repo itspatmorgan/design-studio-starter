@@ -8,6 +8,16 @@ toc: true
 
 This reference is for maintainers and people who want to inspect or extend the code. Your agent can use these projects' documentation.
 
+## Core stack and replaceable defaults
+
+The platform uses React, TypeScript, Vite, TanStack Router, and Tailwind CSS. Replacing these requires platform work rather than a configuration change.
+
+The starter design systems use shadcn/ui and Base UI. Your prototype design system can use another component library with its own APIs.
+
+GitHub Actions supplies the included repository checks. Another Git host needs equivalent checks configured separately. Hosting is independent of these choices.
+
+Documents and Canvases are optional modules. The Handbook and Guide keep their own Markdown support when prototype Documents is disabled.
+
 ## App and build
 
 | Project | Purpose |
