@@ -1,3 +1,4 @@
+import { ThemeScope } from '../ThemeScope';
 import { PortalContext } from '@/lib/portal';
 import type { DesignSystem } from '@/platform/app/data/types';
 import { useEffect, useRef, useState, type ReactNode, type Ref } from 'react';
@@ -98,7 +99,7 @@ function colorGroups(tokens: Pick<ThemeToken, 'name' | 'subgroup'>[]) {
 // its theme defines.
 export function ColorTokens({ scopeClass, tokens }: { scopeClass: string; tokens: ThemeToken[] }) {
   return (
-    <div className={cn(scopeClass, 'space-y-10 text-foreground')}>
+    <ThemeScope themeClass={scopeClass} className="space-y-10 text-foreground">
       {colorGroups(tokens.filter((t) => t.group === 'colors')).map(([heading, names]) => (
         <div key={heading}>
           <h3 className="mb-3 text-[16px] font-semibold leading-6 tracking-tight text-foreground">{heading}</h3>
@@ -109,7 +110,7 @@ export function ColorTokens({ scopeClass, tokens }: { scopeClass: string; tokens
           </div>
         </div>
       ))}
-    </div>
+    </ThemeScope>
   );
 }
 
@@ -135,12 +136,12 @@ function BaseRadius() {
 
 export function RadiusScale({ scopeClass }: { scopeClass: string }) {
   return (
-    <div className={cn(scopeClass, 'text-foreground')}>
+    <ThemeScope themeClass={scopeClass} className="text-foreground">
       <BaseRadius />
       <div className="flex flex-wrap gap-6 rounded-lg border border-border p-6">
         {RADII.map((c) => <RadiusBox key={c} cls={c} />)}
       </div>
-    </div>
+    </ThemeScope>
   );
 }
 
@@ -171,7 +172,7 @@ export function IconsPage({ icons, scopeClass }: { icons: NonNullable<DesignSyst
           Browse all icons
         </a>
       </p>
-      <div className={cn(scopeClass, 'text-foreground')}>{icons.grid}</div>
+      <ThemeScope themeClass={scopeClass} className="text-foreground">{icons.grid}</ThemeScope>
     </>
   );
 }
@@ -182,9 +183,9 @@ export function SystemFrame({ themeClass, children }: { themeClass: string; chil
   const [portal, setPortal] = useState<HTMLElement | null>(null);
   if (!themeClass) return <>{children}</>;
   return (
-    <div className={cn(themeClass, 'text-foreground')}>
+    <ThemeScope themeClass={themeClass} className="text-foreground">
       <PortalContext.Provider value={portal}>{children}</PortalContext.Provider>
       <div ref={setPortal} />
-    </div>
+    </ThemeScope>
   );
 }

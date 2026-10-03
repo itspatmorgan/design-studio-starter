@@ -1,7 +1,7 @@
 // A prototype system's tokens, worked out from its theme.css so the Systems pages can list
 // whatever the theme defines without anyone writing a spec: colors, fonts, radii, shadows,
 // spacing, and the rest. It reads the custom properties set under the system's class
-// (`.product-theme`, and `.dark .product-theme` for dark mode) and in any `@theme` block, and
+// (`.product-theme`, and `.product-theme[data-color-mode="dark"]` for dark mode) and in any `@theme` block, and
 // sorts each into a group by its name and value. The pages read the values live, so they follow the
 // color mode and can't go stale; the declared value is kept for a token the browser doesn't hold.
 // Nothing here reads a disk or imports anything, so Node scripts and the app can both load it.
@@ -123,7 +123,7 @@ function groupOf(name: string, value: string, values: Map<string, string>): Toke
 // "product-theme", or the selectors that hold its light and dark values (":root" and ".dark", for
 // a theme set on the page itself).
 export function themeTokens(css: string, scope: string | { light: string; dark: string }): ThemeToken[] {
-  const where = typeof scope === 'string' ? { light: `.${scope}`, dark: `.dark .${scope}` } : scope;
+  const where = typeof scope === 'string' ? { light: `.${scope}`, dark: `.${scope}[data-color-mode="dark"]` } : scope;
   const light = new Map<string, string>();
   const dark = new Set<string>();
   const darkValues = new Map<string, string>();

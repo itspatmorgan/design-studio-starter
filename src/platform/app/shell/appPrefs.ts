@@ -9,7 +9,7 @@ const SHOW_ALL_FILES_KEY = 'design-studio:show-all-files'; // "shown" | "hidden"
 
 const systemMode = () => (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
-// Light or dark for the whole app. Prototypes follow it through the .dark block in theme.css.
+// Studio follows the global mode. Rendered systems resolve it within their ThemeScope.
 // Follows the system until you pick a mode with the toggle.
 export function useColorMode() {
   const [colorMode, setColorMode] = useState(() => localStorage.getItem(COLOR_MODE_KEY) ?? systemMode());

@@ -3,7 +3,7 @@
 /* Product look, scoped to prototypes: warm stone neutrals with an emerald accent, square corners, and
    Space Grotesk, so it can't be mistaken for the app UI (the platform is neutral gray with Inter and
    rounded corners). In shadcn/ui's theme terms: base color stone, accent emerald, radius none.
-   Swap in your product's colors, radius, and type here. The .dark block follows the app's color mode. */
+   Swap in your product's colors, radius, and type here. The local dark block follows the resolved system mode. */
 .product-theme {
   --font-sans: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
   font-family: var(--font-sans);
@@ -41,7 +41,7 @@
   --sidebar-ring: oklch(0.696 0.17 162.48);
 }
 
-.dark .product-theme {
+.product-theme[data-color-mode="dark"] {
   --background: oklch(0.147 0.004 49.25);
   --foreground: oklch(0.985 0.001 106.423);
   --card: oklch(0.216 0.006 56.043);

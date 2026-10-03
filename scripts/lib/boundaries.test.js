@@ -67,7 +67,9 @@ test('CSS validation contains exact selector targets, nested rules and imported 
     const file = path.join(root, 'theme.css');
     const check = (code, mode = 'theme') => cssProblems(code, { file, themeClass: 'product-theme', mode });
     for (const code of ['body {color:red}', 'body:has(.product-theme) {color:red}', '.product-theme-other {color:red}', '.product-theme + body {color:red}', '.product-theme { & ~ body {color:red} }', '@import "https://example.test/global.css";', '@keyframes pulse {from {opacity:0} to {opacity:1}}']) assert.ok(check(code).length, code);
-    for (const code of ['.product-theme {color:red}', '.dark .product-theme button {color:red}', '.product-theme { &:hover {color:red} .child {color:blue} }', '@media (width > 1px) {.product-theme {color:red}}', '@font-face {font-family:Example;src:url(example.woff2)}']) assert.deepEqual(check(code), [], code);
+    assert.match(check('.dark .product-theme {color:red}').join(' '), /global color-mode/);
+    assert.match(check('.product-theme { .dark & {color:red} }').join(' '), /global color-mode/);
+    for (const code of ['.product-theme {color:red}', '.product-theme[data-color-mode="dark"] button {color:red}', '.product-theme { &:hover {color:red} .child {color:blue} }', '@media (width > 1px) {.product-theme {color:red}}', '@font-face {font-family:Example;src:url(example.woff2)}']) assert.deepEqual(check(code), [], code);
     for (const code of [':global(body) {color:red}', ':global .local {color:red}', 'body {color:red}', '.local + body {color:red}']) assert.ok(check(code, 'module').length, code);
     assert.deepEqual(check('.local {color:red} .local:hover > span {color:blue}', 'module'), []);
     write(root, 'imported.css', 'body {color:red}');

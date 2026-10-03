@@ -25,7 +25,7 @@ export const sourceOf = (id: string, spec: SystemSpec): SystemSource => ({
   dir: `src/systems/${id}/`,
   components: `src/systems/${id}/components`,
   theme: `src/systems/${id}/styles/theme.css`,
-  scope: { light: `.${spec.themeClass}`, dark: `.dark .${spec.themeClass}` },
+  scope: { light: `.${spec.themeClass}`, dark: `.${spec.themeClass}[data-color-mode="dark"]` },
   docs: spec.docs ?? 'warn',
   origin: spec.origin ?? null,
 });

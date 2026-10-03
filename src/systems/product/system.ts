@@ -6,6 +6,7 @@ import type { SystemSpec } from '../../platform/modules/systems/spec.ts';
 export default {
   label: 'Product',
   themeClass: 'product-theme',
+  colorModes: ['light', 'dark'],
   docs: 'warn',
   origin: 'shadcn',
 } satisfies SystemSpec;

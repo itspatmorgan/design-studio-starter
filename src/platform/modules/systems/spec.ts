@@ -4,6 +4,14 @@
 // The app's own system (Platform, src/platform/) is documented the same way but isn't one of these: prototypes
 // never use it (src/platform/modules/systems/sources.ts). This file has no imports, so Node scripts and the app can load it.
 
+export type ColorMode = 'light' | 'dark';
+
+// Missing capability declarations safely use light mode.
+export function systemColorMode(supported: readonly ColorMode[] | undefined, global: ColorMode): ColorMode {
+  const modes = supported ?? ['light'];
+  return modes.includes(global) ? global : modes[0] ?? 'light';
+}
+
 // How the build treats a component without examples or a description (systemDocs.ts): 'warn' says
 // so, 'strict' fails the build, and 'off' says nothing.
 export type DocsMode = 'warn' | 'strict' | 'off';
@@ -13,6 +21,7 @@ export type SystemSpec = {
   // The class its theme is set under, like "product-theme". Its styles/theme.css may set values only under
   // this class, so it can't leak into the app UI or another system.
   themeClass: string;
+  colorModes?: readonly ColorMode[]; // supported modes; default ['light']
   docs?: DocsMode;             // default 'warn'
   // Where its components come from. 'shadcn' gives each component page a link to that component's
   // shadcn/ui docs; a page can set its own link with `docs:` in its frontmatter. Leave it out for a
@@ -34,6 +43,7 @@ export function systemProblems(spec: unknown, folder: string): string[] {
   const problems: string[] = [];
   if (typeof s.label !== 'string' || !s.label.trim()) problems.push(`${where}: add a label, the name people see.`);
   if (typeof s.themeClass !== 'string' || !CLASS.test(s.themeClass)) problems.push(`${where}: themeClass should be a CSS class name like "${folder}-theme".`);
+  if (s.colorModes !== undefined && (!Array.isArray(s.colorModes) || !s.colorModes.length || s.colorModes.some((mode) => !['light', 'dark'].includes(mode)) || new Set(s.colorModes).size !== s.colorModes.length)) problems.push(`${where}: colorModes must be a nonempty list of unique 'light' or 'dark' modes.`);
   if (s.docs !== undefined && !['warn', 'strict', 'off'].includes(s.docs)) problems.push(`${where}: docs should be 'warn', 'strict', or 'off'.`);
   if (s.origin !== undefined && s.origin !== 'shadcn') problems.push(`${where}: origin should be 'shadcn', or left out.`);
   return problems;

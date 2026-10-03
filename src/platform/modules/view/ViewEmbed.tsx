@@ -1,6 +1,7 @@
 // A view shown live inside another item (on a canvas): the page at a fixed desktop width,
 // scaled down to fit the box it's given, and cropped at the bottom. It's a picture: nothing in
 // it takes clicks. Same theme, portal and error handling as the view's own page.
+import { ThemeScope } from '@/platform/modules/systems/ThemeScope';
 import { useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { PortalContext } from '@/lib/portal';
@@ -33,8 +34,8 @@ export default function ViewEmbed({ proto, item, width, height }: EmbedProps) {
   const scale = width / EMBED_VIEWPORT_WIDTH;
   return (
     <div aria-hidden className="relative overflow-hidden bg-background" style={{ width, height }}>
-      <div
-        className={`${themeClass}${lofi ? ' lofi-view' : ''} bg-background text-foreground absolute top-0 left-0 origin-top-left overflow-hidden [contain:layout]`}
+      <ThemeScope themeClass={themeClass}
+        className={`${lofi ? ' lofi-view' : ''} bg-background text-foreground absolute top-0 left-0 origin-top-left overflow-hidden [contain:layout]`}
         style={{ width: EMBED_VIEWPORT_WIDTH, height: height / scale, transform: `scale(${scale})` }}
       >
         <ErrorBoundary resetKeys={[viewKey, Component]} fallbackRender={() => <Unavailable>This view has an error. Open it to see what's wrong.</Unavailable>}>
@@ -43,7 +44,7 @@ export default function ViewEmbed({ proto, item, width, height }: EmbedProps) {
           </PortalContext.Provider>
         </ErrorBoundary>
         <div ref={setPortal} />
-      </div>
+      </ThemeScope>
     </div>
   );
 }

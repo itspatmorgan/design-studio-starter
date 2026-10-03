@@ -19,7 +19,13 @@ The platform system lives in `src/platform/components/` and `src/platform/styles
 
 The starter Product system uses shadcn/ui on Base UI. `components.json` controls the CLI destination. A replacement system may use another library.
 
-Dark mode uses `.dark` on the document root. Starter themes define dark values under `.dark .<theme-class>`.
+`colorModes` declares supported modes: `['light']`, `['dark']`, or `['light', 'dark']`. Omission defaults to light-only. Empty, duplicate, and unknown modes fail validation.
+
+Studio follows the global mode. Rendered views, their document/canvas embeds, and Systems examples resolve that mode against their system's capabilities. Unsupported global modes use the first supported mode. Documents, diagrams, canvas chrome, and source editors keep Studio's mode.
+
+The shared `ThemeScope` sets `data-color-mode` and CSS `color-scheme` on the system boundary. Pop-ups stay inside it. Dark tokens use `.<theme-class>[data-color-mode="dark"]`; never use an ancestor `.dark` selector for system styles. Tailwind `dark:` utilities respect a local light boundary. System tokens override scoped Studio fallback tokens.
+
+The starter Product system declares both modes. New system scaffolds declare light-only; add dark tokens and declare both modes when the system supports them.
 
 ## Component pages
 

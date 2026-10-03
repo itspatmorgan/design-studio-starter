@@ -1,5 +1,6 @@
 // One view, in its prototype system's theme, inside an error boundary. contain:layout plus its
 // own portal container keep overlays inside the prototype frame.
+import { ThemeScope } from '@/platform/modules/systems/ThemeScope';
 import { useState, type ComponentType } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { PortalContext } from '@/lib/portal';
@@ -22,14 +23,14 @@ export default function ViewFrame({ Component, viewKey, themeClass, empty, lofi 
         {/* contain: layout makes this box the frame for fixed-position overlays, so dialogs
             and their backdrops center and dim within the prototype, not the whole app.
             The box itself doesn't scroll; the inner div does, so overlays stay put. */}
-        <div className={`${themeClass}${lofi ? ' lofi-view' : ''} bg-background text-foreground relative h-full [contain:layout]`}>
+        <ThemeScope themeClass={themeClass} className={`${lofi ? ' lofi-view' : ''} bg-background text-foreground relative h-full [contain:layout]`}>
           <div className="h-full overflow-auto">
             <PortalContext.Provider value={portal}>
               <Component />
             </PortalContext.Provider>
           </div>
           <div ref={setPortal} />
-        </div>
+        </ThemeScope>
       </ErrorBoundary>
     </div>
   );

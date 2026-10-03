@@ -56,6 +56,11 @@ export function cssProblems(code, { file, themeClass, mode = 'theme', seen = new
           if (keyframes) continue;
           const selectors = expand(node.selector, parents);
           if (!selectors.every((s) => scoped(s, themeClass, mode))) fail(`"${node.selector}" escapes ${mode === 'module' ? 'its local CSS Module class' : `.${themeClass}`}. Scope the target and avoid global or sibling selectors.`);
+          if (mode === 'theme' && selectors.some((selector) => {
+            let globalMode = false;
+            selectorParser((tree) => tree.walkClasses((node) => { if (node.value === 'dark' || node.value === 'light') globalMode = true; })).processSync(selector);
+            return globalMode;
+          })) fail(`"${node.selector}" uses a global color-mode class. Use .${themeClass}[data-color-mode="dark"] or [data-color-mode="light"] on the system boundary.`);
           walk(node, selectors);
         } else if (node.type === 'atrule') {
           const name = node.name.toLowerCase();

@@ -1,7 +1,7 @@
 // What a design system's system.ts may say (systems.ts). Run with `pnpm test`.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { systemProblems, type SystemSpec } from './spec.ts';
+import { systemProblems, systemColorMode, type SystemSpec } from './spec.ts';
 
 const product: SystemSpec = { label: 'Product', themeClass: 'product-theme', docs: 'warn', origin: 'shadcn' };
 
@@ -27,4 +27,17 @@ test('the folder is the id: lowercase, and not the app\'s own', () => {
 
 test('anything that is not an object is not a system', () => {
   assert.match(systemProblems(undefined, 'product')[0], /must export a system/);
+});
+
+
+test('systems declare supported modes and safely resolve a global mode', () => {
+  assert.equal(systemColorMode(undefined, 'dark'), 'light');
+  assert.equal(systemColorMode(['light'], 'dark'), 'light');
+  assert.equal(systemColorMode(['dark'], 'light'), 'dark');
+  assert.equal(systemColorMode(['light', 'dark'], 'dark'), 'dark');
+  assert.equal(systemColorMode(['light', 'dark'], 'light'), 'light');
+  for (const colorModes of [[], ['light', 'light'], ['automatic'], 'light']) {
+    assert.match(systemProblems({ ...product, colorModes }, 'product').join(' '), /colorModes must/);
+  }
+  assert.deepEqual(systemProblems({ ...product, colorModes: ['dark'] }, 'product'), []);
 });

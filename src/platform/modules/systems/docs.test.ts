@@ -210,7 +210,7 @@ test('a theme\'s tokens: scoped light and dark values, sorted into groups', asyn
       --ease-out: cubic-bezier(0, 0, 0.2, 1);
       --outside: var(--defined-elsewhere);
     }
-    .dark .brand-theme { --background: oklch(0.1 0 0); --primary: #abcdef; }
+    .brand-theme[data-color-mode="dark"] { --background: oklch(0.1 0 0); --primary: #abcdef; }
     .other-theme { --nope: red; }
     @media (min-width: 40rem) { .brand-theme { --wide-gap: 2rem; } }
     @theme { --color-accent: var(--primary); --color-primary: var(--primary); --color-teal-600: #008080; }

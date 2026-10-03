@@ -48,6 +48,8 @@ Each system has a unique theme class. Theme rules must target that class or its 
 
 These boundaries keep the system separate from other prototypes and the platform. Imported systems can use their own token conventions and component APIs.
 
+Systems declare the color modes they support. A light-only or dark-only system keeps that mode in views, embeds, and component examples while Studio follows its global toggle. New systems default to light-only. See the [system contract](reference.md) for declarations and scoped theme selectors.
+
 ## For developers
 
 Read the [module contract](reference.md) for file structure and implementation details.

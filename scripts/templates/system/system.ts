@@ -4,5 +4,6 @@ import type { SystemSpec } from '../../platform/modules/systems/spec.ts';
 export default {
   label: '__LABEL__',
   themeClass: '__ID__-theme',
+  colorModes: ['light'],
   docs: 'warn',
 } satisfies SystemSpec;
