@@ -2,6 +2,8 @@
 
 Read the [Handbook README](../../platform/modules/handbook/README.md) for the human-facing content model.
 
+When creating or changing documentation, follow the [documentation standard](../docs/documentation-standards.md) and [Maintain documentation skill](../skills/maintain-documentation/SKILL.md).
+
 - Keep shared knowledge in Docs, standing agent requirements in Rules, and task-specific procedures in Skills.
 - Give each contract one authoritative location. Link to it instead of maintaining a second procedure or requirement.
 - Keep module implementation contracts with their modules.
@@ -12,7 +14,7 @@ Read the [Handbook README](../../platform/modules/handbook/README.md) for the hu
 - Use lowercase letters, digits, and single hyphens in skill names, up to 64 characters. Match the folder name.
 - Include `name` and `description` in skill frontmatter. Describe the capability and its trigger concisely.
 - Keep skill instructions focused. Link directly to substantial references needed for the task.
-- Use short sentences, consistent terms, conditions first, and numbered steps when order matters.
+- When platform behavior changes, update affected guidance in the same change.
 - Add appropriate `AGENTS.md` routing for context the agent needs. Retain essential project instructions there without repeating detailed rules.
 - Use relative Markdown links between Handbook files. Do not add images under the starter Handbook convention.
 

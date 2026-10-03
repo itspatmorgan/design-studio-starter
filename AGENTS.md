@@ -12,6 +12,7 @@ At the start of every session, read:
 
 When the person wants to set a prototype or view aside, or keep it out of the deployed site, read [src/handbook/rules/archiving.md](src/handbook/rules/archiving.md).
 When the person asks to add or change a team doc, rule, or skill (the Handbook), read [src/handbook/rules/handbook.md](src/handbook/rules/handbook.md).
+For documentation creation, revision, or audits, follow [src/handbook/skills/maintain-documentation/SKILL.md](src/handbook/skills/maintain-documentation/SKILL.md). When platform behavior changes, update affected guidance in the same change.
 When the person wants to turn off, add, remove, or build a module or a design system, read [src/handbook/rules/modules.md](src/handbook/rules/modules.md).
 <!-- studio:modules -->
 When the person asks for a canvas (a page of views, documents, and notes arranged together), read [src/handbook/rules/canvases.md](src/handbook/rules/canvases.md).
