@@ -1,15 +1,12 @@
 // The ⌘K command palette (Ctrl+K on Windows): jump to any prototype, a view of the
 // open prototype, or an app page. Arrow keys move, Enter opens, Esc closes.
-import { createContext, lazy, Suspense, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { PaletteContext } from './paletteContext';
 import { isTyping } from '@/platform/app/shell/appPrefs';
 
 // The dialog and its list live in their own file, loaded a moment after the app starts.
 const loadDialog = () => import('@/platform/app/shell/CommandPaletteDialog');
 const CommandPaletteDialog = lazy(loadDialog);
-
-const PaletteContext = createContext(() => {});
-// Opens the palette from anywhere, like the search button on the rail.
-export const useOpenPalette = () => useContext(PaletteContext);
 
 export function CommandPaletteProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);

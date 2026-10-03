@@ -12,7 +12,7 @@ import { Card } from '@/platform/components/card';
 import { APP_NAME, TAGLINE } from '@/platform/app/data/config';
 import { homeApps } from '@/platform/app/modules';
 import { useMyName } from '@/platform/app/data/files';
-import { useOpenPalette } from '@/platform/app/shell/CommandPalette';
+import { useOpenPalette } from '@/platform/app/shell/paletteContext';
 
 const rootApi = getRouteApi('__root__');
 

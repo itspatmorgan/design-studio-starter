@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/platform/components/t
 import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 import { Link, useRouterState, type LinkProps } from '@tanstack/react-router';
-import { useOpenPalette } from '@/platform/app/shell/CommandPalette';
+import { useOpenPalette } from '@/platform/app/shell/paletteContext';
 import { Logo } from '@/platform/app/shell/Logo';
 import { inSection, moduleApps, sectionPath } from '@/platform/app/modules';
 import { APP_NAME } from '@/platform/app/data/config';
