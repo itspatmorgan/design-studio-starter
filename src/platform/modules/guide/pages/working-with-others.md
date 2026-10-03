@@ -10,7 +10,7 @@ Design Studio keeps work in repository files. Each contributor can run a local c
 
 ## Save, commit, push, and publish
 
-![Save local files, commit a version, push to the shared repository, and publish through a configured host.](/guide/save-and-share.svg)
+![Save and commit local files, push commits to the repository, and pull them into another local copy.](/guide/save-and-share.svg)
 
 | Action | Result |
 | --- | --- |
@@ -30,4 +30,4 @@ Copy an item's URL or select **Copy link** in its file menu. A local URL works o
 
 Renaming an item or prototype changes its URL. Check links after renaming or moving content.
 
-Sharing files through Git does not require hosting. To provide a viewing site, see [Publish a Studio](/guide/publishing). For changes outside your prototypes, see [Ownership and permissions](/guide/ownership-and-permissions).
+Pushing commits does not publish a site. Sharing files through Git does not require hosting. To provide a viewing site, see [Publish a Studio](/guide/publishing). For changes outside your prototypes, see [Ownership and permissions](/guide/ownership-and-permissions).

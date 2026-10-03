@@ -49,7 +49,7 @@ src/prototypes/<contributor>/<prototype>/
 ## Saving and sharing
 
 - Commit when a piece of work is done, with a short message like "Add Settings Page" or "Settings Page: add save state".
-- Don't push until the person asks to share. Pushing to main checks scope and builds a site artifact. It publishes for the team once the studio maintainer connects the deployment workflow to a host.
+- Don't push until the person asks to share. Pushing to main runs repository checks and a build. It does not publish a site. Deployment is configured separately by the studio maintainer.
 
 ## Shared dependency boundaries
 

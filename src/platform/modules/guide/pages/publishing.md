@@ -24,13 +24,13 @@ Archived prototypes and archived views are excluded from the production build. A
 
 Interactive views still run in the browser. The published site does not provide a shared editing backend or an agent service.
 
-## Connect a host
+## Choose a deployment process
 
-The starter includes a GitHub workflow for pushes to `main`. It runs repository checks, builds the site, and uploads a `site` artifact. The publish job downloads that artifact.
+The starter provides a portable build, without a deployment workflow. Pushing to GitHub runs repository checks; it does not publish the site.
 
-The workflow has a placeholder for your host's deployment step. A push does not publish the site until the maintainer configures that step or another deployment process.
+Choose a host that can serve the static files in `dist/`. Your team configures how that host receives a build, who can access the site, and when updates are published.
 
-Ask your agent to help configure the chosen host when you are ready. Supply the destination and access requirements. Keep credentials in the host's or GitHub's secret settings.
+Ask your agent to help configure the chosen host when you are ready. Supply the destination and access requirements. Keep credentials in the host's or CI service's secret settings.
 
 ## Make direct links work
 
