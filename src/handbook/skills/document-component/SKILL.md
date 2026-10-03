@@ -1,17 +1,33 @@
 ---
 name: document-component
-description: Add a component to a prototype system, or bring its page up to date, so it gets a Systems page with a props table, live examples, and a description. Use when someone adds, imports, or ports a component, asks to document one, or the build warns that a component has no examples or page.
+description: "Import or document a prototype-system component with a page and live examples."
 ---
 
-A component's page comes from files that share its name, in `src/systems/<system>/components/` (see `src/handbook/rules/systems.md`, "Component pages").
+## Scope and input
 
-1. **Get the component in.** For a shadcn/ui component, run `npx shadcn add <name>`, adding `--path src/systems/<system>/components` for any system but `product`. If the new file imports `cn` from `"cn"`, change it to `@/lib/utils`. A component that renders a pop-up passes `usePortalContainer()` to its Portal. Ported components are already in the folder.
-2. **Write the missing files.** Run `pnpm component-docs <system> <component>`. It moves a flat component (what shadcn adds) into a folder of its own with an `index.ts`, so imports don't change, then creates `<name>.examples.tsx` and `<name>.md` beside it, and skips any that exist. Without a component name it does every component that lacks them.
-3. **Fill in the page** (`<name>.md`):
-   - `description`: one or two sentences on what it is, for someone choosing a component.
-   - `## When to use`: when this is the right component and when another is. Keep the heading; write it in plain language.
-   - Anything else the team would want (usage guidelines, accessibility, links to Figma or the source). Nothing else is required. Delete the HTML comments once they've served.
-4. **Fill in the examples** (`<name>.examples.tsx`). Each export named with a capital is one example. Add one per variant, size, and state worth seeing, and replace any `undefined as never` the template left for a required prop. Wrap nothing: the page frames each example in the system's theme.
-5. **Check it.** Run `pnpm build`: it warns about a missing description or "When to use", and fails on a type error. Open the component's page in the app (`/systems/<system>/<component>`) and look at the examples in light and dark mode.
+Read the [systems rule](../../rules/systems.md) and [component contract](../../../platform/modules/systems/reference.md#component-pages).
 
-A component that is still flat (`dialog.tsx`, `dialog.md` next to each other) is found the same way; step 2 puts it in a folder.
+Identify the target system and component. Preserve existing source, examples, and documentation. Follow the user's library rather than assuming every system uses shadcn.
+
+## Import when needed
+
+For starter shadcn components, inspect `components.json` before running `npx shadcn add <name>`.
+
+For another destination, use `--path src/systems/<system>/components`. Adapt a generated `cn` import to `@/lib/utils` when required.
+
+Apply the system's theme and portal requirements. Skip import when documenting an existing component.
+
+## Create and complete documentation
+
+1. Run `pnpm component-docs <system> <component>`. The command creates missing files and preserves existing files.
+2. Fill the page's title, description, and `## When to use` section. Add other guidance only when useful.
+3. Add representative examples covering meaningful variants and states. Replace unfinished required-prop placeholders.
+4. Keep examples unwrapped. The platform supplies the theme frame.
+
+The system contract defines file names, exports, and documentation validation. Do not maintain a second schema here.
+
+## Completion
+
+Run `pnpm build`. Inspect `/systems/<system>/<component>` and the examples in supported color modes.
+
+Report completed files and any missing component behavior or source material. Do not claim completion while examples contain placeholders.

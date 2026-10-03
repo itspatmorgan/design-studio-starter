@@ -93,8 +93,6 @@ Excalidraw's CDN.
 
 ### Remove it
 
-Turn it off with `modules: { canvas: false }` in `studio.config.ts`, or run `pnpm studio remove canvas` to delete this folder and its agent
-rule (`src/handbook/rules/canvases.md`; then `pnpm studio sync` for `AGENTS.md`). Canvas files become plain files, and the navigation hides
-them unless you choose Show all files. Then remove what only canvas used: `@excalidraw/excalidraw` and the `canvas` script from `package.json`,
-`src/platform/modules/canvas/cli.ts` from `tsconfig.node.json` and `tsconfig.app.json`, `patches/`, `pnpm-workspace.yaml`, and the links to its
-Guide page (this README is that page, so it goes with the folder).
+Follow the [module rule](../../../handbook/rules/modules.md) and use the removal preview. It identifies consumers and retained dependencies.
+
+The module owns the canvas CLI and agent rule. Its npm package and any unused patch configuration need separate cleanup after removal.

@@ -59,7 +59,7 @@ Keep prototype-specific context here. The [Handbook](/guide/handbook) holds cont
 
 ## For developers
 
-**This folder is a self-contained file type.** Delete it and `.md` files become plain files; the app runs without it. How file types work is in `src/platform/core/fileTypes.md`.
+This optional module owns prototype Markdown. Follow the [module rule](../../../handbook/rules/modules.md) for removal. See the [file-type contract](../../core/fileTypes.md) for extension behavior.
 
 - `type.ts`: what the build reads: the `.md` extension, a template (a title and an empty-document line), and the checks on frontmatter.
 - `open.tsx`: the icon, how a document loads, and its page.

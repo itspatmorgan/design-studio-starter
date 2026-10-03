@@ -1,12 +1,14 @@
 # Documents
 
-A document is written context in a prototype: problem framing, open questions, feedback, or handoff notes. Read this when the person asks for one. Human docs: the Guide's Documents page (`src/platform/modules/guide/pages/documents.md`).
+This rule applies to prototype Markdown when Documents is enabled. Format and rendering are described in the [module README](../../platform/modules/document/README.md).
 
-- A document is any `.md` file in the prototype, at any depth, outside helpers (names starting with `_`). There's nothing to register. Its URL is its path without the extension.
-- Frontmatter is optional: `title`, `description`, and `toc: true` (an "On this page" list). Give it a `title`; without one, a first `# Heading` is used as the title. Write standard Markdown (CommonMark plus GitHub's tables, task lists, and strikethrough). No JSX, components, or raw HTML: they aren't rendered. A stray `{` or `<` is fine.
-- Keep it portable: the file should read the same in Obsidian, GitHub, or any Markdown editor.
-- Link to views and other documents with relative paths: `[the flow](./lofi/main)`, `[notes](../research/interviews)`. Extensions are optional. Don't use absolute paths (`/patrick/...`), which break if the prototype is renamed.
-- A document renders in the app's own style, not the prototype's design system. It can't embed a view, so link instead. Don't import from views or `@/systems/product/`.
-- Don't add images; describe them or link to the live view instead.
-- Keep it short enough to read. The interactive truth lives in the views.
-- To create one for the person, write the file. The app shows it and updates as you edit.
+- Write prototype-specific context in a `.md` file outside underscore helpers. No registration is required.
+- Use plain Markdown. Do not add JSX or embedded components.
+- Give the page a frontmatter title or an opening level-one heading.
+- Link to prototype items with relative paths. Include file extensions for links intended to work in ordinary Markdown readers.
+- Studio links accept omitted extensions, but other readers may not resolve them.
+- Link to views instead of embedding them. Do not add images to prototype documents under the starter convention.
+- Put shared product context in the Handbook instead.
+- Apply the [contributor scope rule](contributor-scope.md) before editing.
+
+Write the file directly for the person. The local app discovers it and reflects edits.

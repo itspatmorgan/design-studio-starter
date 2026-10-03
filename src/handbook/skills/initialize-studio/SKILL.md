@@ -1,34 +1,41 @@
 ---
 name: initialize-studio
-description: "Set up or resume a personal or shared Design Studio, including local tooling, studio configuration, the first contributor, Handbook context and a design-system setup path. Use for requests such as 'Set up my studio', a new studio or first-time kit setup; use setup-contributor for someone joining an existing studio."
+description: "Set up or resume a new personal or team studio. For someone joining an existing studio, use setup-contributor."
 ---
 
-The agent executes setup and verifies the result. Ask for missing intent or materials, not for the person to run commands you can run. Existing authorization applies; do not repeatedly confirm the same choices. Hosting and publishing are separate requests.
+## Scope and input
 
-## Inspect and choose the path
+Use this skill for studio initialization, not routine dependency installation. Preserve existing work and confirmed choices.
 
-Read `studio.config.ts`, the contributor registry (`contributors.json` and `contributors/`), Git identity/remotes, `src/systems/`, and the Handbook. Preserve existing work. Do not interpret a stock name, a missing dependency folder, or one contributor as proof this is a new studio. If intent is unclear, ask whether this is a new studio or joining an existing one; route joining to `setup-contributor`.
+Read the [scope rule](../../rules/contributor-scope.md), [module rule](../../rules/modules.md), and current studio configuration.
 
-Install the pinned tools and packages as needed (`mise trust`, `mise install`, `pnpm install`; use `mise exec --` if shell activation is missing). Read `pnpm -s studio status --json` when dependencies are available. Resume from the actual state; there is no setup-complete flag.
+Inspect contributors, Git identity and remotes, installed systems, and Handbook context. Missing dependencies or a stock name do not establish initialization intent.
 
-Collect only unresolved choices: personal or team use (team is the starter default), studio name/tagline, the first person's identity, and whether their design system exists as code, tokens/design documentation, or needs to be started. Explain which materials you need and why. Batch related questions with suggested defaults. Continue independent setup while waiting; do not invent answers or brand tokens.
+Collect unresolved studio name, personal or team use, contributor identity, design-system materials, and product context. Explain missing input without inventing decisions.
 
-## Configure and register
+## Prepare and configure
 
-Use `pnpm studio configure --name "…" --usage personal|team --tagline "…" --system <installed-id>` to preview, then `--yes` to apply the person's choices. Omit unchanged fields. For modules, read [modules.md](../../rules/modules.md) and use the existing studio commands.
+1. Install missing pinned tools and dependencies with mise and pnpm. Use `mise exec --` when shell activation is missing.
+2. Inspect `pnpm -s studio status --json`. Resume from actual state rather than restarting completed setup.
+3. Preview studio choices with `pnpm studio configure`. Apply confirmed choices with `--yes` and restart the server when needed.
+4. Follow [setup-contributor](../setup-contributor/SKILL.md) in **registration-only mode**. Return here after identity and registration verification.
+5. Follow [setup-design-system](../setup-design-system/SKILL.md) for the chosen kit. Reuse its representative prototype for final verification.
+6. Use the [Handbook rule](../../rules/handbook.md) to curate supplied context. Keep unresolved materials explicit.
 
-Follow [setup-contributor](../setup-contributor/SKILL.md) for the first person's identity and registration. A personal studio accepts a personal email and needs no GitHub account to run locally. A shared studio needs each contributor's own identity; inspect Git remotes and explain the GitHub repository prerequisite for sharing clones. Do not create a remote, push, or host anything without a request.
+The setup-design-system skill owns system migration and starter cleanup. Do not perform a second cleanup here.
 
-Ask for actual team/product context for the Handbook's principles and personas. Draft from supplied material, let the person review in text or `/handbook`, and preserve unresolved placeholders explicitly rather than inventing research. A personal studio uses the same Handbook and ownership model.
+Do not create a remote, push, or configure hosting without a request. Personal local use needs no GitHub account.
 
-## Establish the design system
+## Verify completion
 
-Follow [setup-design-system](../setup-design-system/SKILL.md). Keep Product available while the replacement is incomplete. Report what still needs human input. The placeholder is not the person's finished system merely because it builds.
+Create a first prototype only if one was not already created for setup. Use `pnpm new` in the person's folder.
 
-The starter's `patrick` entry and sample prototype belong to the kit author. Explain cleanup before doing it; do not remove another contributor's work just because they joined. For authorized starter cleanup, inspect links and all content, including disabled modules. Transfer, archive outside active source, or remove those samples according to the person's choice before retiring their dependencies. Preserve recoverable copies when replacing content. Do not leave orphaned maintainers or broken imports behind.
+Inspect a view with the chosen system. If Documents is enabled, exercise a document using the [Documents rule](../../rules/documents.md).
 
-## Verify and hand off
+If Canvases is enabled, exercise a canvas using the [Canvases rule](../../rules/canvases.md). Skip disabled capabilities.
 
-Create the person's first prototype with `pnpm new "…"`. Exercise a view using the chosen system, a Markdown document, and a canvas if that module is enabled; use the relevant Handbook rules. Run `pnpm build`, start `pnpm dev`, and inspect the local app and Systems pages. Verify the person's key, prototype URL, and active module navigation. Use the running UI for component/theme review or context exchange when clearer than chat; keep text available and do not create a questionnaire without a concrete need. Any UI-collected context must be saved in readable repository files for the agent to resume.
+Run `pnpm build`. Inspect the local prototype and Systems pages. Check identity, URLs, and enabled navigation.
 
-Report completed choices, verification, exact local links, and remaining input. Stop short of claiming initialization is complete if the user's system or required context is still missing. Keep the dev server available for them; do not push or deploy.
+Use the UI for review when helpful. Save any context collected there in repository files.
+
+Report completed choices, verified local links, and unresolved input. Leave the local app available. Missing required context or system materials mean setup remains incomplete.

@@ -1,16 +1,19 @@
 # Handbook
 
-The Handbook (`src/handbook/`) is the team's context and instructions: docs, rules, and skills. The app shows it under Handbook. Read this before adding or changing anything in it. Human docs: the Guide's Handbook page (`src/platform/modules/guide/pages/handbook.md`).
+Read the [Handbook README](../../platform/modules/handbook/README.md) for the human-facing content model.
 
-- **It's platform.** Describe the change and obtain authorization when the current request does not already include it. Anyone can make it on a branch and open a pull request; the maintainer decides what merges.
-- **Its shape is fixed; what's inside is open.** Only `docs/`, `rules/`, and `skills/` sit at the top. `pnpm dev` warns, and `pnpm build` fails, on a file or folder out of place.
-- **`docs/`** is Markdown pages for people and agents: principles, personas, research notes. Folders are fine. Give each page a `title` in its frontmatter.
-- **`rules/`** is Markdown files of standing instructions, each short and about one thing. If a rule should be read every session, or when a certain task comes up, add one line to `AGENTS.md` saying so. `AGENTS.md` only routes: keep the detail in the rule. The build warns about a rule nothing links to, since no agent would read it, and fails on a link in `AGENTS.md` to a file that isn't there.
-- **`skills/<name>/SKILL.md`** is one folder per skill, in the [Agent Skills format](https://agentskills.io/specification). The frontmatter has two required fields:
-  - `name`: the same as the folder's name. Lowercase letters, numbers, and single hyphens, up to 64 characters.
-  - `description`: what the skill does and when to use it, up to 1024 characters. Agents read only this to decide whether to use the skill, so include the words a person would use to ask for it.
-- **A skill needs no title heading.** The app shows its `name` as the page title (`document-component` → "Document component") and the `description` under it, so start `SKILL.md` with the steps. A `# Heading` at the top still works, and is used as the title instead.
-- **Inside a skill** the structure is free. Put steps in `SKILL.md` (under about 500 lines) and the detail in files beside it, like `scripts/`, `references/`, and `assets/`, linked with relative paths from `SKILL.md`. Nothing sits loose in `skills/`.
-- **Renaming a skill** means renaming its folder and its `name` together. The app does both when you rename the folder there.
-- **Links** between Handbook pages are relative: `[the scope rule](contributor-scope.md)`.
-- **No images.** Describe them, or link to the live view.
+- Keep shared knowledge in Docs, standing agent requirements in Rules, and task-specific procedures in Skills.
+- Give each contract one authoritative location. Link to it instead of maintaining a second procedure or requirement.
+- Keep module implementation contracts with their modules.
+- Apply the [contributor scope rule](contributor-scope.md). Handbook content is shared.
+- Keep only `docs/`, `rules/`, and `skills/` at the Handbook root.
+- Give Docs a frontmatter title. Docs and Rules may contain folders.
+- Keep each skill in `skills/<name>/SKILL.md`. Supporting files stay inside that skill's folder.
+- Use lowercase letters, digits, and single hyphens in skill names, up to 64 characters. Match the folder name.
+- Include `name` and `description` in skill frontmatter. Describe the capability and its trigger concisely.
+- Keep skill instructions focused. Link directly to substantial references needed for the task.
+- Use short sentences, consistent terms, conditions first, and numbered steps when order matters.
+- Add appropriate `AGENTS.md` routing for context the agent needs. Retain essential project instructions there without repeating detailed rules.
+- Use relative Markdown links between Handbook files. Do not add images under the starter Handbook convention.
+
+The build validates structure and agent links. It does not assess factual accuracy or skill behavior.

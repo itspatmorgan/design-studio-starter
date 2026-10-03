@@ -74,6 +74,8 @@ Published prototypes support viewing and interaction, without repository editing
 
 ## For developers
 
+Read the [module contract](reference.md) for file structure and implementation details.
+
 The Prototypes module: the gallery at `/prototypes`, and the viewer every prototype, module item and Handbook section opens in. Required. The prototypes themselves are in `src/prototypes/<person>/<id>/`, which are your content.
 
 - `module.ts`, `app.tsx`: who it is, its rail button, the `/prototypes` route, its front-page block, and its palette entries. A prototype opens through the platform's item routes (`src/platform/app/router.tsx`).

@@ -1,94 +1,87 @@
-# Modules
+# Module contract
 
-A module is a part of Design Studio you can add or remove: the Guide, the Handbook, Systems, and anything a team or the community
-builds. Each is a folder here with a `module.ts` that says what it is and what it adds. The build, the dev server, and the app read that
-one list, so no list of sections is kept anywhere else, and a module needs no change to the code around it.
+A module is a folder in `src/platform/modules/<id>/` with a `module.ts` declaration. The platform discovers declarations without a separate registry.
 
-The design rules behind it:
+Modules are copied into the repository. They are not downloaded or loaded as plugins at runtime.
 
-- **One kind of module.** Parts that came with the kit and parts someone else built follow the same contract. There is no plugin framework and
-  nothing is loaded at run time: a module's files are copied into your repo, where you can read and change them (the shadcn idea, for design tooling).
-- **Plain words, a small config.** `studio.config.ts` holds only what nearly every team changes: the app's name, a one-line tagline, which optional modules are on, and
-  the default design system. Everything else is code you own.
-- **An optional module can be removed.** Delete its folder, or turn it off in the config, and the app still builds. `pnpm baseline removal <module>` proves it.
-  Prototypes, the Handbook and Systems are required, because everything else is built on them, but each keeps all its code in its own folder.
+## Ownership and dependencies
 
-## Where things are
+Keep a feature's implementation inside its module. Optional modules must support disabling and removal.
 
-```
-src/platform/
-  core/          the rules every module may rely on: the config, permissions, where files live, archive, order, and the types in api.ts
-    modules/     the machinery that reads the folders below: the contract (index.ts), globs.ts, and pack.ts (what pnpm studio add runs)
-  app/           the app's own shell: router, rail, ⌘K palette, and the prototype pages
-  components/    the studio's own UI kit (not what prototypes use: that is a design system)
-  modules/       one folder per module, with everything it needs:
-    <id>/module.ts, app.tsx, server.ts, check.ts, lib/    the files above
-    <id>/type.ts, open.tsx, loader.ts    a file type (view, document, canvas, text: what a prototype can hold), which is a module too
-    <id>/pages/    its pages (browser)          <id>/node/    its helpers that run in Node (build and commands)
-src/systems/ prototypes/ handbook/ lib/      your content, not the platform
-scripts/         build/ (build and dev server)   check/ (pnpm check)   cli/ (commands people and agents run)   lib/ (shared by those)
-```
+Prototypes, Views, Text files, Handbook, and Systems are required. Platform code and modules may depend on required modules.
 
-Apart from this file, modules/ holds only modules. A module that can be turned off
-(`optional`) is fully contained: only its `module.ts` is read from outside. A required module (Prototypes, Views, Text files, Handbook, Systems) is part of the platform,
-so the platform may import it, but all its code still lives in its one folder.
+A module cannot import another optional module's implementation. Outside code can read an optional module's declaration or its enabled public library entry.
 
-## What a module can provide
+Prototypes access public libraries through `@module/<id>`. They cannot import private platform paths. Runtime library code has its own dependency checks.
 
-| File in the module's folder | What it gives the platform |
-|---|---|
-| `module.ts` | Who it is, and its **section**: an address (`/examples`), optionally a content folder, and if that folder holds prototype-shaped folders (`items: "prototypes"`, one per id like `src/examples/<id>/`, or grouped by person like `src/prototypes/<person>/<id>/` with `byPerson`), who may change them (`policy`) and whether they open as full-window apps on the deployed site (`standalone`). Also: `optional` (may be turned off), `requires` (oldest platform version), `lib`, `handbook`, `dependencies`, `upstream`. |
-| `app.tsx` | Its **rail button**, **routes**, a block on the app's front page (`overview`: a few of its items with a link to all of them, drawn with `HomeSection`; leave it out if the rail already says enough), entries in the ⌘K palette (`places`, `palette`), and entries in every prototype's "…" menu (`useActions`). |
-| `type.ts`, `open.tsx`, `loader.ts` | A **file type**: a kind of file a prototype holds, found by its extension. `type.ts` is what the build and the app need to know (extensions, a template for new files, checks), `open.tsx` is how the app opens it (icon, load, page, an optional live embed), and `loader.ts` lists its files for the deployed site. See `src/platform/core/fileTypes.md`. |
-| `server.ts` | **Routes it adds to the dev server**, at `POST /__studio/<module>/<route>`. Dev only. |
-| `check.ts` | A **check** that runs in `pnpm check` while the module is on. |
-| `lib/index.ts(x)` | A **library** prototypes import as `@module/<id>`: the one door a prototype has into a module (`lib: true`). |
-| `handbook/…` in a pack | **Rules and skills** for agents, installed into `src/handbook/`. The module lists them in `handbook`; `pnpm studio sync` keeps AGENTS.md routing to the ones whose module is on. |
-| `vendor/` (convention) | Third-party code copied in. Give it its own `tsconfig.json` and start its files with `// @ts-nocheck`, so the build compiles it on its terms and the app's type check stays about the app's own code. |
+`src/platform/core/modules/index.ts` defines declarations and compatibility. `src/platform/core/api.ts` identifies shared extension types.
 
-A design system is its own kind of folder, `src/systems/<id>/`, with `system.ts`, `components/` and `styles/theme.css`; see `src/handbook/rules/systems.md`.
+`requires` declares the minimum platform version. An incompatible module is disabled and reported by checks. The contract is currently 0.x and may change.
 
-The contract is **0.x** (`PLATFORM_VERSION` in `core/modules/index.ts`), so it can still change. A module says the oldest version it works with in `requires`; one that needs a
-newer platform is turned off, and `pnpm check` says why. The types a module is written against are listed in `src/platform/core/api.ts`.
+## Capability files
 
-## Using them
+| Path | Purpose |
+| --- | --- |
+| `module.ts` | Identity, compatibility, optional status, section, dependencies, library, and Handbook declarations. |
+| `app.tsx` | Navigation, routes, overview blocks, palette entries, and prototype actions. |
+| `type.ts`, `open.tsx`, `loader.ts` | File-type declaration, rendering, and production loading. |
+| `server.ts` | Local routes at `POST /__studio/<module>/<route>`. |
+| `check.ts` | Module validation while enabled. |
+| `lib/index.ts(x)` | Public entry exposed when `lib: true`. |
+| `handbook/` in a pack | Declared agent files installed into `src/handbook/`. |
+
+A section can declare a content folder, prototype-shaped items, contributor grouping, editing policy, and standalone published views.
+
+Use the TypeScript declaration for exact fields. See the [file-type contract](../core/fileTypes.md) for file capabilities.
+
+Design systems are content in `src/systems/`, not platform modules. Their [contract](systems/reference.md) defines system structure.
+
+## Configuration and commands
+
+`studio.config.ts` holds identity, personal or team use, enabled modules, and the default system. Other customization happens in code.
 
 ```sh
-pnpm studio list                      # what's installed and what's on
-pnpm studio disable guide             # off in studio.config.ts (its files stay); enable puts it back
-pnpm studio add <source>              # a folder, a git address (https or ssh, #branch/tag/commit), or an https .tar.gz
-pnpm studio remove <module|system>    # delete it (--content also deletes the content it keeps)
-pnpm studio create-module <id>        # start one (--out <folder> makes a pack to publish)
+pnpm studio list
+pnpm studio disable <id>
+pnpm studio enable <id>
+pnpm studio add <source>
+pnpm studio remove <module-or-system>
+pnpm studio create-module <id>
 pnpm studio create-system <id>
-pnpm studio sync                      # AGENTS.md's module lines
-pnpm check                            # includes the modules, and what you changed in ones you added
+pnpm studio sync
+pnpm check
 ```
 
-Designers don't run these: they ask their agent, which runs them (`src/handbook/rules/modules.md`). `add`, `remove` and `create-*` show what they
-would do and change nothing until run again with `--yes`. Restart the dev server after any of them; the build scripts read the module list once at start.
+Add, remove, and create commands preview changes. Applying them requires `--yes`. Use CLI help for source formats and optional flags.
 
-### What `add` guards against
+Studio commands manage config module flags, `studio.lock.json`, and module-owned routing in `AGENTS.md`. The [module rule](../../handbook/rules/modules.md) governs agent execution.
 
-A source is code that will run in your app, so adding one is a decision for a person. The command only helps make it an informed one:
+Disabling retains files. Removal deletes the module and its declared Handbook files. External content remains unless removal includes `--content`.
 
-- **Preview reads data.** The pack's `module.ts` is read as plain data (no calls, names, or templates). With `--yes`, installation trusts that code: packages are installed with lifecycle scripts disabled, then the installed module's declaration and `check.ts` run on your computer. Project files are restored if checks fail; downloaded packages in `node_modules` may remain.
-- **Files are checked before any is written:** no links, no paths that climb out of the folder, at most 500 files, 2 MB each, 20 MB in all, and a file never
-  overwrites another. Handbook files go only where the module lists them.
-- **Sources:** https or ssh git, https tarballs, or a folder. Not http, `file://`, or `git://`.
-- **A library's license:** a module built around an open source library must carry its LICENSE file and a permissive license (`--allow-license` to override).
-- **It puts things back** if a check fails after copying, and `studio.lock.json` records where each file came from, so `pnpm check` can say which you changed.
+Packages remain installed after removal. Remove them only when no retained code uses them.
 
-This is review, not a sandbox: a module you add has the same power as any code in your repo. Read what you add.
+## Installation contract
 
-## How the app reads it
+Preview reads declarations as data. Applying installation trusts the module's code. It can execute the installed declaration and checks.
 
-`scripts/lib/modules.js` (the build and dev server) and `src/platform/app/data/modules.ts` (the app) both find the `module.ts` files by folder. From that list:
-`scripts/build/vite-globs-plugin.js` gives each file type its file lists; `scripts/build/build-manifest.js` scans each section of prototype-shaped folders into
-`manifest.sections.<key>`; `src/platform/core/permissions.ts` answers who may change what; `src/platform/app/modules.ts` draws the rail, the routes and the palette.
-Design systems are found the same way from `src/systems/*/system.ts` (`src/platform/modules/systems/node/systems.js`, `src/platform/modules/systems/data/systems.ts`), and the stylesheet's marker
-comments are filled in by `scripts/build/vite-css-plugin.js`.
+Packages install with lifecycle scripts disabled. Failed checks restore project files, but downloaded packages may remain in `node_modules`.
 
-`pnpm check` confirms every declaration is well formed, no two modules claim the same address, no contributor uses a module's address, modules don't
-import each other, and code outside a module reads only its `module.ts`.
+Sources can be local folders, HTTPS or SSH Git addresses, or HTTPS tarballs. HTTP, `file://`, and `git://` sources are rejected.
 
-File types are modules that have a `type.ts`; see `src/platform/core/fileTypes.md`.
+Packs cannot contain symlinks, escaping paths, or file collisions. Limits are 500 files, 2 MB per file, and 20 MB total.
+
+Upstream libraries require their license and provenance. The license override is an explicit user decision, governed by the module rule.
+
+Installation is not a sandbox. Installed code has the privileges of repository code.
+
+## Discovery and verification
+
+Node tooling discovers modules through `scripts/lib/modules.js`. Browser discovery uses `src/platform/app/data/modules.ts`.
+
+The manifest scans declared content sections. Vite supplies file globs and themes. The shell combines module navigation and routes.
+
+`pnpm check` validates declarations, configuration, section collisions, dependency boundaries, file-type contracts, and enabled module checks.
+
+`pnpm baseline removal <id>` checks physical removal. Optional-module verification should also cover disabling and retained content.
+
+A module's README owns its human Guide chapter and developer orientation. Rules state agent requirements. Skills sequence tasks. Link to contracts instead of copying them.

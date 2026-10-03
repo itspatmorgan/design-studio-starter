@@ -7,7 +7,6 @@ At the start of every session, read:
 
 - [src/handbook/docs/principles.md](src/handbook/docs/principles.md)
 - [src/handbook/docs/personas.md](src/handbook/docs/personas.md)
-- [src/handbook/rules/systems.md](src/handbook/rules/systems.md)
 - [src/handbook/rules/prototype-workflow.md](src/handbook/rules/prototype-workflow.md)
 - [src/handbook/rules/contributor-scope.md](src/handbook/rules/contributor-scope.md)
 
@@ -20,10 +19,7 @@ When the person asks for a document (written context in a prototype), read [src/
 When the person asks to add or change a Guide page, read [src/handbook/rules/guide.md](src/handbook/rules/guide.md).
 <!-- /studio:modules -->
 
-Find out who you're working with by running `node scripts/cli/resolve-contributor.js`.
-Create prototypes with `pnpm new "Prototype Name"`.
-You can change only your own folder in src/prototypes/.
-A prototype can depend only on its own folder, its design system (src/systems/product/ by default; `defaultSystem` in studio.config.ts changes that), and src/lib/.
-Write views as `.tsx` (plain `.jsx` works too). `pnpm build` runs the type check (`pnpm typecheck`).
-The human docs are the Guide, in `src/platform/modules/guide/pages/` (open it at `/guide`). Point people there rather than repeating it.
-The app routes with TanStack Router (code-based routes in [src/platform/app/router.tsx](src/platform/app/router.tsx)). For routing questions, use TanStack Router's docs: https://tanstack.com/router/latest/docs/framework/react/overview
+Use pnpm for project commands. Resolve the contributor before editing prototypes. Follow the scope and prototype rules above.
+The human documentation is the Guide at `/guide`. Module chapters live in module READMEs.
+For component, theme, or pop-up changes, read [src/handbook/rules/systems.md](src/handbook/rules/systems.md).
+The app uses TanStack Router. For routing work, use its [official documentation](https://tanstack.com/router/latest/docs/framework/react/overview).

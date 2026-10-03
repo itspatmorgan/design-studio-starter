@@ -50,6 +50,8 @@ These boundaries keep the system separate from other prototypes and the platform
 
 ## For developers
 
+Read the [module contract](reference.md) for file structure and implementation details.
+
 The design systems pages, at `/systems`: what each system has, its tokens, and a page per component. Required. The systems themselves are
 folders in `src/systems/<id>/`, which are your content.
 
