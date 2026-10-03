@@ -10,7 +10,14 @@ Use your coding agent alongside the local studio. Design Studio does not supply 
 
 Describe the outcome and provide relevant context. The agent should perform the work it can do, ask for missing decisions or materials, and make the result available for review. You can direct changes in conversation or edit the result yourself.
 
-![You provide direction. The agent reads context, builds, and checks. You review and direct changes.](/guide/agent-cycle.svg)
+```mermaid
+flowchart LR
+  accTitle: Direct, build, and review
+  accDescr: You give the goal and context. The agent reads, builds, and checks. You review the result and behavior, then direct the next change.
+  direction[You direct] --> execution[Agent reads, builds, and checks]
+  execution --> review[You review]
+  review -->|Direct the next change| direction
+```
 
 ## How instructions reach the agent
 

@@ -24,7 +24,24 @@ See [Tech stack](/guide/tech-stack) for the dependencies and replaceable default
 
 ## What the studio provides
 
-![Shared design systems and Handbook context support each contributor's independent prototypes.](/guide/studio-parts.svg)
+```mermaid
+flowchart TB
+  accTitle: Parts of a studio
+  accDescr: Shared design systems and Handbook context support separate contributor prototypes. Views are core; documents and canvases are optional.
+  subgraph shared[Shared studio foundations]
+    direction LR
+    systems[Design systems: components and tokens]
+    handbook[Handbook: context, rules, and skills]
+    systems ~~~ handbook
+  end
+  subgraph prototypes[Views with optional documents and canvases]
+    direction LR
+    yours[Your prototypes]
+    others[Other contributors' prototypes]
+    yours ~~~ others
+  end
+  shared --> prototypes
+```
 
 | Part | What it provides |
 | --- | --- |

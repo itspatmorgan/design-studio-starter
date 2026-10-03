@@ -1,26 +1,13 @@
-import { lazy, Suspense, type ComponentProps } from 'react';
-import { MDXProvider } from '@mdx-js/react';
+import { lazy, Suspense } from 'react';
 import { Link, getRouteApi, useNavigate } from '@tanstack/react-router';
 import { DocLayout } from '@/platform/app/docs/DocLayout';
 import { DocBase } from '@/platform/app/docs/DocBase';
 import type { GuideModule } from './loadGuide';
 import { Button } from '@/platform/components/button';
-import studioParts from './assets/studio-parts.svg';
-import agentCycle from './assets/agent-cycle.svg';
-import saveAndShare from './assets/save-and-share.svg';
 
 const GuideEditor = import.meta.env.DEV ? lazy(() => import('./GuideEditor')) : null;
 
 const rootApi = getRouteApi('__root__');
-// Markdown uses readable image addresses; Vite owns the module's actual asset URLs.
-const diagrams: Record<string, string> = {
-  '/guide/studio-parts.svg': studioParts,
-  '/guide/agent-cycle.svg': agentCycle,
-  '/guide/save-and-share.svg': saveAndShare,
-};
-const components = {
-  img: ({ src, ...props }: ComponentProps<'img'>) => <img {...props} src={typeof src === 'string' ? diagrams[src] ?? src : src} />,
-};
 
 type Props = { slug: string; Component?: GuideModule['default']; source?: { path: string }; title?: string; description?: string; toc?: boolean };
 
@@ -52,5 +39,5 @@ export default function GuidePage({ slug, source, ...props }: Props) {
   if (source && GuideEditor) return <Suspense fallback={<p className="p-4 text-sm text-muted-foreground">Opening source…</p>}><GuideEditor slug={slug} path={source.path} /></Suspense>;
   if (!props.Component) return null;
   const edit = import.meta.env.DEV && <Button size="sm" variant="outline" className="shrink-0" onClick={() => navigate({ to: '.', search: ((previous: object) => ({ ...previous, mode: 'source' })) as never })}>Edit</Button>;
-  return <DocBase.Provider value={file.slice(0, file.lastIndexOf('/'))}><MDXProvider components={components}><DocLayout {...props} Component={props.Component} actions={edit} scrollKey={slug} footer={footer} /></MDXProvider></DocBase.Provider>;
+  return <DocBase.Provider value={file.slice(0, file.lastIndexOf('/'))}><DocLayout {...props} Component={props.Component} actions={edit} scrollKey={slug} footer={footer} /></DocBase.Provider>;
 }

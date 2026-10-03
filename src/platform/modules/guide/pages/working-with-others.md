@@ -10,7 +10,13 @@ Design Studio keeps work in repository files. Each contributor can run a local c
 
 ## Save, commit, push, and publish
 
-![Save and commit local files, push commits to the repository, and pull them into another local copy.](/guide/save-and-share.svg)
+```mermaid
+flowchart LR
+  accTitle: Share repository files
+  accDescr: Save and commit files locally. Push commits to the shared repository. Pull them into another local copy.
+  local[Local files: save, then commit] -->|Push| repository[Shared repository]
+  repository -->|Pull| copy[Another local copy]
+```
 
 | Action | Result |
 | --- | --- |
