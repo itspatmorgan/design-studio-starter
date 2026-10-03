@@ -1,6 +1,6 @@
 // The ⌘K palette's dialog. It loads shortly after the app starts (CommandPalette.tsx), so cmdk
 // isn't in the main bundle.
-import { Fragment } from 'react';
+import { Fragment, type RefObject } from 'react';
 import { getRouteApi, useMatchRoute, useNavigate, useParams, type NavigateOptions } from '@tanstack/react-router';
 import {
   Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
@@ -12,13 +12,14 @@ import type { Artifact, Prototype } from '@/platform/app/data/types';
 
 const rootApi = getRouteApi('__root__');
 
-export default function CommandPaletteDialog({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
+export default function CommandPaletteDialog({ open, setOpen, returnFocus }: { open: boolean; setOpen: (open: boolean) => void; returnFocus: RefObject<HTMLElement | null> }) {
   const manifest = rootApi.useLoaderData();
   const params = useParams({ strict: false });
   const matchRoute = useMatchRoute();
   const navigate = useNavigate();
 
   const go = (to: NavigateOptions) => {
+    returnFocus.current = null;
     setOpen(false);
     navigate(to);
   };
@@ -33,7 +34,19 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
 
   return (
     <>
-      <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandDialog open={open} onOpenChange={setOpen} finalFocus={() => {
+        const target = returnFocus.current;
+        // Restore this opening's origin after the modal releases focus containment.
+        // Never fall back to the dialog library's older focus history.
+        queueMicrotask(() => {
+          const active = document.activeElement;
+          // A pointer dismissal that already focused another control keeps that focus.
+          if (target?.isConnected && (active === document.body || active?.closest('[data-slot="dialog-content"]'))) {
+            target.focus({ preventScroll: true });
+          }
+        });
+        return false;
+      }}>
         <Command>
           <CommandInput placeholder="Search the studio" />
           <CommandList>
