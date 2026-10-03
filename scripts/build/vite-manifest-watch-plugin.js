@@ -45,7 +45,8 @@ function relevant(file, kind) {
   if (GUIDE && inside(GUIDE, file)) return file.endsWith('.md');
   // A README that is a Guide page: its frontmatter and title are in the manifest.
   if (GUIDE && path.basename(file) === 'README.md' && README_FILES().includes(file)) return true;
-  if (inside(HANDBOOK, file)) return kind !== 'change';
+  if (inside(HANDBOOK, file)) return kind !== 'change' || file.endsWith('.md');
+  if (file.endsWith('.md') && /src[\\/]platform[\\/](core|modules)[\\/]/.test(file)) return true;
   // A system's component docs: files coming and going, and edits to the ones that describe a component
   // and to its theme (the tokens it lists).
   if (file === PLATFORM_THEME) return kind === 'change';

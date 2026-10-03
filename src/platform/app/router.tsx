@@ -58,8 +58,11 @@ const homeRoute = createRoute({
 const referenceRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: 'reference/$',
-  loader: async ({ params }) => {
+  loader: async ({ params, location }) => {
     const path = `/${params._splat ?? ''}`;
+    if ((await loadManifest()).platformReferences.some((group) => group.references.some((ref) => ref.source === path))) {
+      throw redirect({ to: `/handbook/platform${path}` as never, hash: location.hash, replace: true });
+    }
     const mod = await loadReference(path);
     if (!mod) throw notFound();
     return { Component: mod.default, frontmatter: mod.frontmatter ?? {}, path };

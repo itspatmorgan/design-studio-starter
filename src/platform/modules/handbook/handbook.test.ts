@@ -151,3 +151,30 @@ test('Handbook creation uses its own Markdown template', () => {
   assert.match(templateFor('team-context.md', true), /title: Team Context/);
   assert.equal(templateFor('support.js', true), '');
 });
+
+test('platform reference discovery preserves ownership and excludes unavailable module content', async () => {
+  const { platformReferences } = await import('./node/references.js');
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-references-'));
+  const write = (file: string, text: string) => { fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true }); fs.writeFileSync(path.join(root, file), text); };
+  try {
+    write('src/platform/core/fileTypes.md', '# File-type contract');
+    write('src/platform/modules/README.md', '# Module contract');
+    write('src/platform/modules/example/README.md', '---\ntitle: "Example capability"\n---\n# Example');
+    write('src/platform/modules/example/reference.md', '# Example contract');
+    write('src/platform/modules/example/internal/notes.md', '# Internal notes');
+    write('src/platform/modules/off/README.md', '# Unavailable capability');
+    write('src/handbook/rules/example.md', '# Example rule\nRead [contract](../../platform/modules/example/reference.md#details).');
+    write('src/handbook/skills/example/SKILL.md', '---\nname: example\ndescription: Example task\n---\nRead [reference](../../../platform/modules/example/README.md).');
+    const modules = [{id:'example',label:'Example'}, {id:'off',label:'Off'}];
+    const handbook = [{id:'rules',title:'Rules',items:[{path:'example.md'}]}, {id:'skills',title:'Skills',items:[{path:'example/SKILL.md'}]}];
+    const groups = platformReferences({root,modules,enabled:['example'],handbook});
+    const example = groups.find((g) => g.id === 'example');
+    assert.deepEqual(example.references.map((r: { source: string }) => r.source), ['/platform/modules/example/README.md','/platform/modules/example/reference.md']);
+    assert.equal(example.references[0].title, 'Example capability');
+    assert.deepEqual(example.related.map((r: { href: string }) => r.href), ['/handbook/rules/example','/handbook/skills/example/SKILL']);
+    assert.equal(example.related[1].title, 'Skills · Example');
+    assert.deepEqual(groups.find((g) => g.id === 'off').references, []);
+    assert.equal(groups.find((g) => g.id === 'off').enabled, false);
+    assert.ok(!platformReferences({root,modules:modules.slice(0,1),enabled:['example'],handbook}).some((g)=>g.id==='off'));
+  } finally { fs.rmSync(root, {recursive:true,force:true}); }
+});

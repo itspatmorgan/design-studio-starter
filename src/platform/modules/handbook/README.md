@@ -16,6 +16,7 @@ The Handbook holds shared content in `src/handbook/`. It appears under **Handboo
 | Docs | Context and guidance for people, agents, or both. |
 | Rules | Standing instructions for agents. |
 | Skills | Procedures for agents to perform specific tasks. |
+| Platform reference | Module documentation and core contracts, read from their original files. |
 
 Docs do not need to be written for agents. If a doc also provides useful agent context, reference it in `AGENTS.md`. Rules and Skills are specifically for agents.
 
@@ -57,6 +58,16 @@ The Guide is shared platform documentation. Its pages can be edited locally:
 
 A module chapter opens its full README, including the developer section hidden in the Guide. The editor prompts you if external changes conflict with unsaved edits. Published Guide pages are read-only.
 
+## Browse platform references
+
+Open **Platform reference** in the Handbook to browse core contracts and module documentation by capability. References show their source path and related Handbook context, rules, and skills. They also appear in search.
+
+The references remain with their code in `src/platform/core/` and `src/platform/modules/`. They are read-only in this area. The Guide provides a curated introduction; Platform reference retains the full module documentation, including developer sections.
+
+Installed disabled modules are labelled **Disabled**. Their reference content is unavailable until enabled. Removed modules leave the index. A module without supplied references is listed without document links.
+
+This area works independently of the optional Guide and prototype Documents modules. It adds navigation, not another content folder under `src/handbook/`. Making a reference visible does not automatically cause an agent to read it; keep relevant routing in `AGENTS.md`, Rules, and Skills.
+
 ## Shared scope
 
 The Handbook is shared platform content. Changes follow the maintainer's review process. Local edits reach other contributors when shared through Git.
@@ -65,7 +76,7 @@ Build checks validate the Handbook's structure and linked agent instructions. Th
 
 ## For developers
 
-Repository links to module READMEs and contracts open the platform's read-only reference reader at `/reference/<source-path>`. It retains developer sections and resolves relative links back to Handbook content. Only core references and enabled modules' Markdown are bundled. This reader does not depend on the Guide or prototype Documents.
+Repository links to module READMEs and contracts use `/reference/<source-path>`. Indexed references open in the Handbook at `/handbook/platform/<source-path>`, preserving heading links. It retains developer sections and resolves relative links back to Handbook content. Only core references and enabled modules' Markdown are bundled. This reader does not depend on the Guide or prototype Documents.
 
 The Handbook: the docs, rules and skills in `src/handbook/` that people and agents read, at `/handbook`. Required.
 
@@ -74,5 +85,6 @@ The Handbook: the docs, rules and skills in `src/handbook/` that people and agen
 - `type.ts`, `open.tsx`, `loader.ts`: the Handbook's Markdown file type. It uses the shared platform reader and does not depend on prototype Documents.
 - `rules.ts`: what may change in the Handbook (its fixed shape), checked on every change.
 - `skills.ts`: how a skill's folder and SKILL.md are read and written.
-- `pages/`: the Handbook header and the dialogs for new files (browser).
+- `pages/`: the Handbook header, Platform reference browser, and dialogs for new files (browser).
+- `node/references.js`: builds the reference index from the same top-level core and enabled-module Markdown set as the shared reader. Related guidance comes from Handbook links and module Handbook declarations.
 - `node/handbook-check.js`: the shape check the build runs (Node).

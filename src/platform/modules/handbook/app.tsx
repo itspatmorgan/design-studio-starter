@@ -2,6 +2,10 @@
 // sections open as /handbook/<section> through the prototype routes, because they're listed in the
 // manifest like prototypes; /handbook itself opens the first section.
 import { createRoute, notFound, redirect, useRouterState } from '@tanstack/react-router';
+import { APP_NAME } from '@/platform/app/data/config';
+import { loadReference } from '@/platform/app/docs/loadReference';
+import MarkdownPage from '@/platform/app/docs/MarkdownPage';
+import { PlatformReferenceLayout, PlatformReferenceIndex, RelatedGuidance, referenceHref } from './pages/PlatformReference';
 import { Notebook01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
 import { HomeHint, HomeSection } from '@/platform/app/items/HomeSection';
@@ -15,11 +19,11 @@ import type { Manifest } from '@/platform/app/data/types';
 
 function HandbookPlaces({ go }: PaletteContext) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  return <CommandItem value="handbook docs rules skills" disabled={pathname === '/handbook'} onSelect={() => go({ to: '/handbook' } as never)}>Handbook</CommandItem>;
+  return <> <CommandItem value="handbook docs rules skills" disabled={pathname === '/handbook'} onSelect={() => go({ to: '/handbook' } as never)}>Handbook</CommandItem><CommandItem value="platform reference modules contracts" onSelect={() => go({ to: '/handbook/platform' } as never)}>Platform reference</CommandItem></>;
 }
 
 function HandbookPalette({ manifest, current, isOpen, go }: PaletteContext) {
-  if (!manifest.handbook.some((section) => section.items.length > 0)) return null;
+  if (!manifest.handbook.some((section) => section.items.length > 0) && !manifest.platformReferences.some((group) => group.references.length)) return null;
   return (
     <>
       <CommandSeparator />
@@ -35,6 +39,7 @@ function HandbookPalette({ manifest, current, isOpen, go }: PaletteContext) {
             <span className="truncate">{itemLabel(item.path, section)}</span>
           </CommandItem>
         )))}
+        {manifest.platformReferences.flatMap((group) => group.references.map((ref) => <CommandItem key={ref.source} value={`platform reference ${group.label} ${ref.title} ${ref.source}`} onSelect={() => go({ to: referenceHref(ref.source) } as never)}><span className="shrink-0 text-xs text-muted-foreground">{group.label}</span><span className="truncate">{ref.title}</span></CommandItem>))}
       </CommandGroup>
     </>
   );
@@ -58,18 +63,44 @@ export default {
   icon: Notebook01Icon,
   rail: 'top',
   order: 30,
-  routes: (root) => [
-    createRoute({
-      getParentRoute: () => root,
-      path: 'handbook',
+  routes: (root) => {
+    const reference = createRoute({ getParentRoute: () => root, path: 'handbook/platform', component: PlatformReferenceLayout });
+    const index = createRoute({ getParentRoute: () => reference, path: '/', head: () => ({ meta: [{ title: 'Platform reference — ' + APP_NAME }] }), component: PlatformReferenceIndex });
+    const page = createRoute({
+      getParentRoute: () => reference, path: '$',
+      loader: async ({ params }) => {
+        const source = '/' + (params._splat ?? '');
+        const manifest = await loadManifest();
+        const group = manifest.platformReferences.find((g) => g.references.some((r) => r.source === source));
+        if (!group) throw notFound();
+        const mod = await loadReference(source);
+        if (!mod) throw notFound();
+        return { source, group, Component: mod.default, title: group.references.find((r) => r.source === source)!.title, frontmatter: mod.frontmatter ?? {} };
+      },
+      head: ({ loaderData }) => ({ meta: [{ title: [loaderData?.title, 'Handbook', APP_NAME].filter(Boolean).join(' — ') }] }),
+      component: () => {
+        const { source, group, Component, frontmatter } = page.useLoaderData();
+        return <>
+          <div className="shrink-0 border-b border-border px-8 py-4">
+            <p className="break-words font-mono text-xs text-muted-foreground">src{source} · Read-only reference</p>
+            <RelatedGuidance group={group} />
+          </div>
+          <div className="flex min-h-0 flex-1 flex-col [&>div]:min-h-0"><MarkdownPage Component={Component} frontmatter={frontmatter} docKey={source} base={'/handbook/platform' + String(source).slice(0, String(source).lastIndexOf('/'))} /></div>
+        </>;
+      },
+      notFoundComponent: NotFound,
+    });
+    const handbook = createRoute({
+      getParentRoute: () => root, path: 'handbook',
       beforeLoad: async () => {
         const first = (await loadManifest()).handbook[0];
         if (!first) throw notFound();
         throw redirect({ to: '/$contributor/$prototype', params: { contributor: first.contributorKey, prototype: first.id }, replace: true });
       },
       notFoundComponent: NotFound,
-    }),
-  ],
+    });
+    return [handbook, reference.addChildren([index, page])];
+  },
   overview: Overview,
   places: HandbookPlaces,
   palette: HandbookPalette,

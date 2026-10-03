@@ -21,6 +21,7 @@ import { contributorsSignature, loadContributors } from '../lib/contributors.js'
 import { handbookProblems } from '../../src/platform/modules/handbook/node/handbook-check.js';
 import { systemDocs } from '../../src/platform/modules/systems/node/docs.js';
 import { themeTokens } from '../../src/platform/modules/systems/themeTokens.ts';
+import { platformReferences } from '../../src/platform/modules/handbook/node/references.js';
 import { handbookMap } from '../../src/platform/modules/handbook/map.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -394,7 +395,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     if (links.length > DOC_WARNINGS) out.warn(`[manifest] and ${links.length - DOC_WARNINGS} more file(s) that link to an archived prototype.`);
   }
 
-  const manifest = { prototypes: deploy ? keptPrototypes : prototypes, sections: deploy ? keptSections : sections, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map, systems };
+  const manifest = { prototypes: deploy ? keptPrototypes : prototypes, sections: deploy ? keptSections : sections, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map, platformReferences: platformReferences({ root: ROOT, modules: Object.values(MODULES).filter(Boolean), enabled: ENABLED_MODULES.map((m) => m.id), handbook }), systems };
   if (write) writeManifest(manifest);
   out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${Object.entries(manifest.sections).map(([key, items]) => `${items.length} in ${key}`).join(', ') || 'no sections'}, ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
   if (deploy && archived.length) out.log(`[manifest] Left out of the deployed site: ${archived.length} archived prototype(s)`);

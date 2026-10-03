@@ -22,8 +22,8 @@ export function NavTitle({ children, actions }: { children: ReactNode; actions?:
   );
 }
 
-export function NavTabs({ label, children }: { label: string; children: ReactNode }) {
-  return <nav aria-label={label} className="mt-1 flex gap-1 px-1">{children}</nav>;
+export function NavTabs({ label, children, wrap = false }: { label: string; children: ReactNode; wrap?: boolean }) {
+  return <nav aria-label={label} className={cn("mt-1 flex gap-1 px-1", wrap && "flex-wrap [&>a]:shrink-0")}>{children}</nav>;
 }
 
 // How a tab looks: small text, the open one raised.

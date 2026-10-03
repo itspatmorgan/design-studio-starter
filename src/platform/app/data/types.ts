@@ -59,8 +59,10 @@ export type GuidePage = {
 // `systems` holds each system's components and their docs (systemDocs.ts), the tokens its theme
 // defines (themeTokens.ts), and where its components come from (systemSources.ts). The app's own
 // system is one of them.
+export type PlatformReferenceGroup = { id: string; label: string; enabled: boolean; references: { source: string; title: string }[]; related: { title: string; href: string }[] };
+
 export type Manifest = {
-  prototypes: PrototypeRef[]; sections: Record<string, PrototypeRef[]>; guide: GuidePage[]; handbook: Prototype[]; handbookMap: HandbookMap | null;
+  prototypes: PrototypeRef[]; sections: Record<string, PrototypeRef[]>; guide: GuidePage[]; handbook: Prototype[]; handbookMap: HandbookMap | null; platformReferences: PlatformReferenceGroup[];
   systems: Record<string, { docs: DocsMode; origin: 'shadcn' | null; components: SystemComponentDoc[]; tokens: ThemeToken[] }>;
 };
 

@@ -22,7 +22,7 @@ function MarkdownLink({ href = '', ...props }: ComponentProps<'a'>) {
   if (base !== null && !href.startsWith('?') && !/^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) {
     const url = new URL(href, `http://doc${base}/`);
     const path = markdownPath(url.pathname);
-    const to = path.startsWith('/reference/') ? path : fileTypeOf(path) ? itemSlug(path) : path;
+    const to = path.startsWith('/reference/') || path.startsWith('/handbook/platform/') ? path : fileTypeOf(path) ? itemSlug(path) : path;
     return <Link to={to as never} search={Object.fromEntries(url.searchParams) as never} hash={url.hash.slice(1) || undefined} {...props} />;
   }
   return <a href={href} target="_blank" rel="noopener noreferrer" {...props} />;

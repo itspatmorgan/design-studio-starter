@@ -8,22 +8,23 @@ import { NavHeader, NavTabs, NavTitle, navTabClass } from '@/platform/app/shell/
 
 const rootApi = getRouteApi('__root__');
 
-export default function HandbookHeader({ proto }: { proto: Prototype }) {
+export default function HandbookHeader({ proto }: { proto?: Prototype }) {
   const { handbook } = rootApi.useLoaderData();
   return (
     <NavHeader>
       <NavTitle>Handbook</NavTitle>
-      <NavTabs label="Handbook sections">
+      <NavTabs label="Handbook sections" wrap>
         {handbook.map((section) => (
           <Link
             key={section.id}
             {...prototypeLink(section)}
-            aria-current={section.id === proto.id ? 'page' : undefined}
-            className={navTabClass(section.id === proto.id)}
+            aria-current={section.id === proto?.id ? 'page' : undefined}
+            className={navTabClass(section.id === proto?.id)}
           >
             {section.title}
           </Link>
         ))}
+        <Link to={'/handbook/platform' as never} aria-current={!proto ? 'page' : undefined} className={navTabClass(!proto)}>Platform reference</Link>
       </NavTabs>
     </NavHeader>
   );

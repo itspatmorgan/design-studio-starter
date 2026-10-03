@@ -30,3 +30,10 @@ test('full README rendering retains developer content without repeating its titl
   readme()(tree, { basename: 'README.md' });
   assert.deepEqual(tree.children, []);
 });
+
+test('Handbook reference links stay in Handbook and resolve back to its instructions', () => {
+  const resolve = (href, base) => markdownPath(new URL(href, `http://doc${base}/`).pathname);
+  assert.equal(resolve('reference.md', '/handbook/platform/platform/modules/systems'), '/handbook/platform/platform/modules/systems/reference.md');
+  assert.equal(resolve('../../../handbook/rules/systems.md', '/handbook/platform/platform/modules/systems'), '/handbook/rules/systems.md');
+  assert.equal(resolve('../../core/fileTypes.md', '/handbook/platform/platform/modules/systems'), '/handbook/platform/platform/core/fileTypes.md');
+});
