@@ -17,7 +17,7 @@ export default function GuideEditor({ slug, path }: { slug: string; path: string
   const done = <Button size="sm" variant="outline" onClick={() => navigate({ to: '.', search: ((previous: object) => ({ ...previous, mode: undefined })) as never })}>Done</Button>;
   return (
     <div className="flex h-full min-h-0 flex-col">
-      {path.endsWith('/README.md') && <p className="border-b border-border bg-muted px-4 py-2 text-xs text-muted-foreground">This chapter comes from a module README. You are editing the full file, including its developer documentation.</p>}
+      <p className="border-b border-border bg-muted px-4 py-2 text-xs text-muted-foreground">Shared platform documentation. You are editing the complete file; module README changes also affect Reference and developer documentation.</p>
       <SourcePane key={path} proto={proto} item={{ path, fileType: 'handbook' }} source={source} actions={done} />
     </div>
   );

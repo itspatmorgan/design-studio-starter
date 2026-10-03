@@ -1,3 +1,4 @@
+import DocumentationNavItem from './DocumentationNavItem';
 import { Link, Outlet, getRouteApi } from '@tanstack/react-router';
 import { SectionNav, NavList, navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
 import type { PlatformReferenceGroup } from '@/platform/app/data/types';
@@ -14,7 +15,7 @@ export function ReferenceLayout() {
       <NavList>
         <Link to="/reference" activeOptions={{ exact: true }} style={navLinkStyle} className={navLinkClass}>Overview</Link>
         {platformReferences.filter((group) => group.references.length).map((group) => <div key={group.id}>
-          {group.references.map((ref, index) => <Link key={ref.source} to={referenceHref(ref.source) as never} style={{ ...navLinkStyle, ...(index > 0 ? { paddingLeft: '1.75rem' } : {}) }} className={navLinkClass}>{index === 0 ? group.label : ref.title}</Link>)}
+          {group.references.map((ref, index) => <DocumentationNavItem key={ref.source} href={referenceHref(ref.source)} path={'src' + ref.source} label={index === 0 ? group.label : ref.title} nested={index > 0} />)}
         </div>)}
       </NavList>
     </SectionNav>
@@ -38,9 +39,27 @@ export function ReferenceIndex() {
     <h1 className="text-3xl font-semibold tracking-tight">Reference</h1>
     <p className="mt-4 max-w-[65ch] text-muted-foreground">The complete documentation supplied with the platform: capabilities, boundaries, and file contracts. People and agents can consult it when needed. You do not need to read or customize these files to begin creating.</p>
     {guide.length > 0 && <p className="mt-4 text-sm">For a guided introduction, start with the <Link to={'/guide' as never} className="underline underline-offset-4">Guide</Link>.</p>}
-    <ul className="mt-8 divide-y divide-border">{platformReferences.filter((group) => group.references.length).map((group) => <li key={group.id} className="py-4">
-      {group.references.map((ref, index) => <div key={ref.source} className={index > 0 ? 'mt-2 pl-4 text-sm' : 'font-medium'}><Link to={referenceHref(ref.source) as never} className="underline underline-offset-4">{index === 0 ? group.label : ref.title}</Link></div>)}
-    </li>)}</ul>
+    <section className="mt-10 max-w-[65ch] space-y-4">
+      <h2 className="text-xl font-semibold">What this documentation contributes</h2>
+      <p>Reference describes the environment an agent is operating: what a prototype may depend on, how files are structured, and what each capability provides. It helps the agent make changes that fit the platform.</p>
+      <p>The Guide explains how to use the studio. Reference supplies the detailed contracts behind that guidance, including developer sections omitted from Guide chapters. Both can present the same module README.</p>
+    </section>
+    <section className="mt-10 max-w-[65ch] space-y-4">
+      <h2 className="text-xl font-semibold">How it joins the working context</h2>
+      <ol className="list-decimal space-y-3 pl-5">
+        <li>Your request establishes the outcome and scope.</li>
+        <li>Repository instructions, Rules, and Skills lead the agent to relevant contracts and procedures.</li>
+        <li>Handbook Docs supply the team's product context. Prototype documents supply the local intent and decisions.</li>
+        <li>The agent reads the relevant files, applies their guidance, and checks the resulting work.</li>
+      </ol>
+      <p className="text-muted-foreground">This is context available to the agent, not a record of what it read. Listing a file here does not automatically load it into a conversation.</p>
+    </section>
+    <section className="mt-10 max-w-[65ch] space-y-4">
+      <h2 className="text-xl font-semibold">When to consult or change a reference</h2>
+      <p>Consult a contract when you or your agent need to understand a boundary, troubleshoot behavior, or extend a capability. Routine prototype work should not require changing platform documentation.</p>
+      <p>References live beside the code they describe. Local file menus let you inspect and edit the complete source. These are shared changes: coordinate them with the maintainer and keep guidance aligned with the implementation.</p>
+      <p>Guide and Reference can share a source file. Editing a module README changes both presentations. Published documentation supports reading and copying; local editing preserves checks for external file changes.</p>
+    </section>
     {disabled.length > 0 && <p className="mt-8 text-sm text-muted-foreground">Disabled modules: {disabled.map((group) => group.label).join(', ')}. Their references become available when enabled.</p>}
     <p className="mt-8 text-sm text-muted-foreground">The <Link to={'/handbook' as never} className="underline underline-offset-4">Handbook</Link> holds the studio's curated context, rules, and skills. References remain with the code they describe.</p>
   </div>;

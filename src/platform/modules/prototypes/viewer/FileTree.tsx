@@ -1,3 +1,4 @@
+import { FileActionItems } from '@/platform/app/shell/FileActionItems';
 // The prototype's files, in its navigation: a filterable tree with expand/collapse all, and a
 // "Edit source" in a file's menu, which opens its text in place of its page (SourcePane.tsx).
 //
@@ -16,8 +17,8 @@ import { dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-d
 import { extractInstruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  Add01Icon, ArrowDown01Icon, Cancel01Icon, CodeIcon, Copy01Icon, Delete02Icon, File01Icon, FileEditIcon, Link01Icon,
-  Folder01Icon, StarIcon, SourceCodeIcon, PencilEdit02Icon, PaintBoardIcon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
+  Add01Icon, ArrowDown01Icon, Cancel01Icon, CodeIcon, Delete02Icon, File01Icon,
+  StarIcon, PencilEdit02Icon, PaintBoardIcon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
 import { allPrototypes, firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/platform/app/data/manifest';
 import {
@@ -373,15 +374,12 @@ export default function FileTree({ proto, current }: FileTreeProps) {
               <ContextMenuItem key={o.target} onClick={() => setTimeout(() => startCreate(node.path, o.target))}><HugeiconsIcon icon={o.icon} /> {o.label}</ContextMenuItem>
             )) : [],
             [
-              items.has(node.path) && FILE_TYPES[items.get(node.path)!.fileType]?.language && (
-                <ContextMenuItem key="source" onClick={() => setTimeout(() => navigate({ ...itemLink(proto, items.get(node.path)!), search: { mode: 'source' } } as never))}>
-                  <HugeiconsIcon icon={SourceCodeIcon} /> {editable ? 'Edit source' : 'View source'}
-                </ContextMenuItem>
-              ),
-              !node.dir && <ContextMenuItem key="editor" onClick={() => setTimeout(() => openInEditor(proto, node.path))}><HugeiconsIcon icon={FileEditIcon} /> Open in editor</ContextMenuItem>,
-              <ContextMenuItem key="reveal" onClick={() => setTimeout(() => revealInFinder(proto, node.path))}><HugeiconsIcon icon={Folder01Icon} /> Reveal in Finder</ContextMenuItem>,
-              items.has(node.path) && <ContextMenuItem key="link" onClick={() => setTimeout(() => { navigator.clipboard.writeText(itemUrl(proto, proto.items.find((i) => i.path === node.path)!)); toast.add({ title: 'Link copied' }); })}><HugeiconsIcon icon={Link01Icon} /> Copy link</ContextMenuItem>,
-              <ContextMenuItem key="path" onClick={() => setTimeout(() => { navigator.clipboard.writeText(repoPath(proto, node.path)); toast.add({ title: 'Path copied' }); })}><HugeiconsIcon icon={Copy01Icon} /> Copy path</ContextMenuItem>,
+              <FileActionItems key="file-actions" path={repoPath(proto, node.path)}
+                href={items.has(node.path) ? itemUrl(proto, items.get(node.path)!) : undefined}
+                edit={items.has(node.path) && FILE_TYPES[items.get(node.path)!.fileType]?.language ? () => { void navigate({ ...itemLink(proto, items.get(node.path)!), search: { mode: 'source' } } as never); } : undefined}
+                sourceLabel={editable ? 'Edit source' : 'View source'}
+                open={!node.dir ? () => openInEditor(proto, node.path) : undefined}
+                reveal={() => revealInFinder(proto, node.path)} />,
             ],
             [
               editable && !isHandbook && items.has(node.path) && (

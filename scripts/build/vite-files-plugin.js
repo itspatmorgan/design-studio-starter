@@ -1,3 +1,4 @@
+import { documentationFile } from './files/documentation.js';
 // The file layer behind the prototype navigation's file tree, during `pnpm dev` only.
 // (The deployed site is static, so this doesn't exist there.)
 //
@@ -175,6 +176,13 @@ export default function filesPlugin() {
             const { manifest } = buildManifest();
             publishManifest(server, manifest, req.headers['x-studio-tab']);
             return send(res, 200, { trashedTo, manifest });
+          }
+          if (req.method === 'POST' && url.pathname === '/documentation') {
+            const manifest = buildManifest({ write: false, quiet: true }).manifest;
+            const allowed = [...manifest.platformReferences.flatMap((group) => group.references.map((ref) => 'src' + ref.source)), ...manifest.guide.map((page) => 'src' + (page.source ?? '/platform/modules/guide/pages/' + page.slug + '.md'))];
+            const result = documentationFile(ROOT, allowed, await readJson(req));
+            if (result.reveal) reveal(result.reveal);
+            return send(res, result.status ?? 200, result.body);
           }
           if (req.method === 'POST' && url.pathname === '/reveal') {
             const { contributor, prototype, path: rel } = await readJson(req);

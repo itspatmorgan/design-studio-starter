@@ -189,3 +189,30 @@ test('Guide source access edits chapters and module READMEs without opening arbi
     `], { cwd: dir, encoding: 'utf8', stdio: 'pipe', env: { ...process.env, MISE_TRUSTED_CONFIG_PATHS: dir } });
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('documentation source operations allow indexed files and protect against stale writes and symlinks', async () => {
+  const { documentationFile } = await import('../build/files/documentation.js');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-documentation-'));
+  try {
+    const relative = 'src/platform/core/contract.md';
+    const file = path.join(dir, relative);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, '# Contract');
+    const call = (request, allowed = [relative]) => documentationFile(dir, allowed, request);
+    const before = call({ action: 'read', path: relative });
+    assert.equal(before.body.content, '# Contract');
+    assert.equal(call({ action: 'read', path: '../../README.md' }).status, 404);
+    assert.equal(call({ action: 'read', path: relative }, []).status, 404);
+    assert.equal(call({ action: 'delete', path: relative }).status, 400);
+    assert.equal(call({ action: 'reveal', path: relative }).reveal, file);
+    fs.writeFileSync(file, '# External edit');
+    assert.equal(call({ action: 'write', path: relative, content: '# Overwrite', base: before.body.version }).status, 409);
+    assert.equal(fs.readFileSync(file, 'utf8'), '# External edit');
+    const current = call({ action: 'read', path: relative });
+    assert.equal(call({ action: 'write', path: relative, content: '# Accepted', base: current.body.version }).status, undefined);
+    assert.equal(fs.readFileSync(file, 'utf8'), '# Accepted');
+    assert.equal(call({ action: 'write', path: relative, content: 'x'.repeat(750 * 1024 + 1) }).status, 413);
+    fs.unlinkSync(file); fs.symlinkSync(path.join(dir, 'other.md'), file);
+    assert.equal(call({ action: 'read', path: relative }).status, 404);
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});

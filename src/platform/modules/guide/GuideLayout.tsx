@@ -1,5 +1,6 @@
-import { Link, Outlet, getRouteApi } from '@tanstack/react-router';
-import { NavGroup, NavList, SectionNav, navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
+import DocumentationNavItem from '@/platform/app/docs/DocumentationNavItem';
+import { Outlet, getRouteApi } from '@tanstack/react-router';
+import { NavGroup, NavList, SectionNav } from '@/platform/app/shell/nav';
 import DocumentationHeader from '@/platform/app/docs/DocumentationHeader';
 import type { GuidePage } from '@/platform/app/data/types';
 
@@ -28,16 +29,7 @@ export default function GuideLayout() {
           {groupBySection(guide).map((g, i) => (
             <NavGroup key={g.section ?? i} heading={g.section ?? undefined}>
               {g.pages.map((page) => (
-                <Link
-                  key={page.slug}
-                  to={(page.slug === 'index' ? '/guide' : '/guide/$page') as never}
-                  params={{ page: page.slug } as never}
-                  activeOptions={{ exact: true }}
-                  style={navLinkStyle}
-                  className={navLinkClass}
-                >
-                  {page.title}
-                </Link>
+                <DocumentationNavItem key={page.slug} href={page.slug === 'index' ? '/guide' : '/guide/' + page.slug} path={'src' + (page.source ?? '/platform/modules/guide/pages/' + page.slug + '.md')} label={page.title} />
               ))}
             </NavGroup>
           ))}

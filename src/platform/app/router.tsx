@@ -55,24 +55,32 @@ const homeRoute = createRoute({
   component: Home,
 });
 
-// References remain available when the optional Documentation module is off.
-const referencesRoute = createRoute({ getParentRoute: () => rootRoute, path: 'reference', component: ReferenceLayout });
+// References and their local file actions remain available without the optional Guide.
+const DocumentationEditor = import.meta.env.DEV ? lazy(() => import('@/platform/app/docs/DocumentationEditor')) : null;
+const referencesRoute = createRoute({ getParentRoute: () => rootRoute, path: 'reference', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }), component: ReferenceLayout });
 const referenceIndexRoute = createRoute({ getParentRoute: () => referencesRoute, path: '/', head: () => ({ meta: [{ title: 'Reference — ' + APP_NAME }] }), component: ReferenceIndex });
 const referenceRoute = createRoute({
   getParentRoute: () => referencesRoute,
   path: '$',
-  loader: async ({ params }) => {
+  loaderDeps: ({ search }) => ({ mode: search.mode }),
+  loader: async ({ params, deps }) => {
     const path = '/' + (params._splat ?? '');
+    const manifest = await loadManifest();
+    const group = manifest.platformReferences.find((g) => g.references.some((ref) => ref.source === path));
+    if (import.meta.env.DEV && deps.mode === 'source') {
+      if (!group) throw notFound();
+      return { editing: true as const, path, title: 'Source' };
+    }
     const mod = await loadReference(path);
     if (!mod) throw notFound();
-    const group = (await loadManifest()).platformReferences.find((g) => g.references.some((ref) => ref.source === path));
     const title = mod.frontmatter?.title ?? group?.references.find((ref) => ref.source === path)?.title;
-    return { Component: mod.default, frontmatter: mod.frontmatter ?? {}, path, group, title };
+    return { editing: false as const, Component: mod.default, frontmatter: mod.frontmatter ?? {}, path, group, title };
   },
   head: ({ loaderData }) => ({ meta: [{ title: [loaderData?.title, 'Reference', APP_NAME].filter(Boolean).join(' — ') }] }),
   component: () => {
-    const { path, group, title: _title, ...props } = referenceRoute.useLoaderData();
-    return <div className="flex min-h-0 flex-1 flex-col [&>div]:min-h-0"><MarkdownPage {...props} docKey={path} base={'/reference' + path.slice(0, path.lastIndexOf('/'))} footer={<AboutReference source={path} group={group} />} /></div>;
+    const data = referenceRoute.useLoaderData();
+    if (data.editing) return DocumentationEditor && <Suspense fallback={null}><DocumentationEditor path={'src' + data.path} /></Suspense>;
+    return <div className="flex min-h-0 flex-1 flex-col [&>div]:min-h-0"><MarkdownPage Component={data.Component} frontmatter={data.frontmatter} docKey={data.path} base={'/reference' + data.path.slice(0, data.path.lastIndexOf('/'))} footer={<AboutReference source={data.path} group={data.group} />} /></div>;
   },
   notFoundComponent: NotFound,
 });

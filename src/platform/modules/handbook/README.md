@@ -48,7 +48,9 @@ Ask your agent to add the appropriate reference when context should guide future
 
 ## Edit the Guide
 
-The Guide is shared platform documentation. Its pages can be edited locally:
+Documentation navigation uses the same file-menu actions as the Handbook. Right-click a Guide or Reference file to edit its source, open it in your editor, reveal it in Finder, or copy its link or repository path. Platform files have no rename or delete actions in these menus.
+
+The Guide is shared platform documentation. Its pages can also be edited locally:
 
 1. Open the Guide chapter and select **Edit**.
 2. Edit its Markdown.
