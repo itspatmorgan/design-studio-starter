@@ -10,7 +10,7 @@ This sample is a small feedback tracker and an introduction to the studio. Every
 
 ### 1. Explore the idea
 
-Start with [Project context](explore/project-context.md): the problem, the people it serves, decisions, and open questions. It embeds the [Feedback flow](explore/feedback-flow.mermaid), a working screen, and the Breadboard canvas from their original files.
+Start with [Project context](explore/project-context.md): the problem, the people it serves, decisions, and open questions. It embeds the [Feedback flow](explore/feedback-flow.mermaid), a low-fidelity screen, and the Breadboard canvas from their original files.
 
 Open [Breadboard](explore/breadboard.excalidraw) to compare a live diagram with the same flow converted into editable Excalidraw shapes. The live embed follows the Mermaid source; the converted sketch is independent. Try moving a shape or adding a note.
 
