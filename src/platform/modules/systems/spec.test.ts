@@ -31,7 +31,8 @@ test('anything that is not an object is not a system', () => {
 
 
 test('systems declare supported modes and safely resolve a global mode', () => {
-  assert.equal(systemColorMode(undefined, 'dark'), 'light');
+  assert.equal(systemColorMode(undefined, 'dark'), 'dark');
+  assert.equal(systemColorMode(undefined, 'light'), 'light');
   assert.equal(systemColorMode(['light'], 'dark'), 'light');
   assert.equal(systemColorMode(['dark'], 'light'), 'dark');
   assert.equal(systemColorMode(['light', 'dark'], 'dark'), 'dark');

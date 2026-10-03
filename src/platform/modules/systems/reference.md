@@ -19,13 +19,13 @@ The platform system lives in `src/platform/components/` and `src/platform/styles
 
 The starter Product system uses shadcn/ui on Base UI. `components.json` controls the CLI destination. A replacement system may use another library.
 
-`colorModes` declares supported modes: `['light']`, `['dark']`, or `['light', 'dark']`. Omission defaults to light-only. Empty, duplicate, and unknown modes fail validation.
+`colorModes` declares supported modes: `['light']`, `['dark']`, or `['light', 'dark']`. Omission supports both modes and follows Studio. Declare a single mode explicitly to protect a system that supports only that mode. Empty, duplicate, and unknown modes fail validation.
 
 Studio follows the global mode. Rendered views, their document/canvas embeds, and Systems examples resolve that mode against their system's capabilities. Unsupported global modes use the first supported mode. Documents, diagrams, canvas chrome, and source editors keep Studio's mode.
 
 The shared `ThemeScope` sets `data-color-mode` and CSS `color-scheme` on the system boundary. Pop-ups stay inside it. Dark tokens use `.<theme-class>[data-color-mode="dark"]`; never use an ancestor `.dark` selector for system styles. Tailwind `dark:` utilities respect a local light boundary. System tokens override scoped Studio fallback tokens.
 
-The starter Product system declares both modes. New system scaffolds declare light-only; add dark tokens and declare both modes when the system supports them.
+The starter Product system and new system scaffolds declare both modes and include light and dark tokens. For a light-only system such as Sublime, declare `colorModes: ['light']`; for a dark-only system, declare `colorModes: ['dark']`. Its rendered content then keeps that mode regardless of Studio's toggle.
 
 ## Component pages
 

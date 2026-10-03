@@ -6,9 +6,9 @@
 
 export type ColorMode = 'light' | 'dark';
 
-// Missing capability declarations safely use light mode.
+// Missing capability declarations support both modes and follow Studio.
 export function systemColorMode(supported: readonly ColorMode[] | undefined, global: ColorMode): ColorMode {
-  const modes = supported ?? ['light'];
+  const modes = supported ?? ['light', 'dark'];
   return modes.includes(global) ? global : modes[0] ?? 'light';
 }
 
@@ -21,7 +21,7 @@ export type SystemSpec = {
   // The class its theme is set under, like "product-theme". Its styles/theme.css may set values only under
   // this class, so it can't leak into the app UI or another system.
   themeClass: string;
-  colorModes?: readonly ColorMode[]; // supported modes; default ['light']
+  colorModes?: readonly ColorMode[]; // supported modes; default ['light', 'dark']
   docs?: DocsMode;             // default 'warn'
   // Where its components come from. 'shadcn' gives each component page a link to that component's
   // shadcn/ui docs; a page can set its own link with `docs:` in its frontmatter. Leave it out for a

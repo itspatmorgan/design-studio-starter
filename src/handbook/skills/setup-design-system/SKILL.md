@@ -37,7 +37,7 @@ Do not remove another person's work merely because a contributor joined. Explain
 
 ## Completion
 
-Declare the imported system's supported `colorModes` in `system.ts`; omitted modes default to light-only. Scope dark tokens to `.<theme-class>[data-color-mode="dark"]`, and keep pop-ups within the system boundary. Verify that a single-mode system keeps its mode when Studio toggles.
+Declare the imported system's supported `colorModes` in `system.ts`; omitted modes support both. Declare `['light']` or `['dark']` explicitly for a single-mode system. Scope dark tokens to `.<theme-class>[data-color-mode="dark"]`, and keep pop-ups within the system boundary. Verify that a single-mode system keeps its mode when Studio toggles.
 
 Run `pnpm build` after migration. Review representative components, pop-ups, and supported color modes in the local app.
 
