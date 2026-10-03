@@ -57,12 +57,15 @@ export function useSectionNav() {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== ';' || !(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey || e.repeat || isTyping(e.target)) return;
+      const inSourceEditor = e.target instanceof HTMLElement && Boolean(e.target.closest('.cm-editor'));
+      if (e.key !== ';' || !(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey || e.repeat || e.isComposing || (isTyping(e.target) && !inSourceEditor)) return;
       e.preventDefault();
+      e.stopPropagation();
       toggle();
     };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    // Handle the reserved navigation shortcut before the editor's own key handling.
+    window.addEventListener('keydown', onKeyDown, true);
+    return () => window.removeEventListener('keydown', onKeyDown, true);
   }, [toggle]);
 
   return { open, toggle };
