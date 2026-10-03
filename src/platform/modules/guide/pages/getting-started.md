@@ -36,4 +36,4 @@ Setup should leave you with a running local studio, your contributor registratio
 
 The starter includes a Feedback Inbox sample owned by `patrick`. You can inspect it or ask the agent to copy useful parts into your own prototype. Removing the shared sample is a maintainer change.
 
-Next, [set up your design system](/guide/setup-design-system), or keep the example system while trying the studio.
+Next, [set up your design system](/documentation/guide/setup-design-system), or keep the example system while trying the studio.

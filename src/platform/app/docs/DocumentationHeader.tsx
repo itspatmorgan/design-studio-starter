@@ -7,8 +7,8 @@ export default function DocumentationHeader({ reference = false }: { reference?:
   return <NavHeader>
     <NavTitle>Documentation</NavTitle>
     <NavTabs label="Documentation sections">
-      {guide.length > 0 && <Link to={'/guide' as never} aria-current={!reference ? 'page' : undefined} className={navTabClass(!reference)}>Guide</Link>}
-      <Link to="/reference" aria-current={reference ? 'page' : undefined} className={navTabClass(reference)}>Reference</Link>
+      {guide.length > 0 && <Link to={'/documentation/guide' as never} aria-current={!reference ? 'page' : undefined} className={navTabClass(!reference)}>Guide</Link>}
+      <Link to="/documentation/reference" aria-current={reference ? 'page' : undefined} className={navTabClass(reference)}>Reference</Link>
     </NavTabs>
   </NavHeader>;
 }

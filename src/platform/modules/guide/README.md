@@ -1,10 +1,12 @@
 # Documentation module
 
-Documentation combines a curated **Guide** at `/guide` with complete **Reference** at `/reference`. Guide chapters introduce the studio to people. References describe capabilities, boundaries, and implementation contracts available to people and agents. You do not need to read or change them to begin creating.
+Documentation opens at `/documentation` and combines a curated **Guide** at `/documentation/guide` with complete **Reference** at `/documentation/reference`. Guide chapters introduce the studio to people. References describe capabilities, boundaries, and implementation contracts available to people and agents. You do not need to read or change them to begin creating.
+
+Follow the [Documentation standards](../../../handbook/rules/documentation-standards.md) when changing Guide or Reference content.
 
 Use the two sidebar tabs to switch reading modes. Reference lists only areas with supplied documentation. Its overview explains how contracts join the agent’s working context and when to consult or change them. Separate contracts appear as child links. Each document has a collapsed **About this reference** section with its source path and related Handbook context and instructions. Visibility does not mean an agent automatically reads a reference.
 
-The optional module retains the ID `guide` and existing Guide URLs. Disable it through studio commands to hide the Guide and its rail entry. Reference discovery, search, and direct access belong to the shared platform and remain available when this module is disabled or removed. Prototype Documents is independent of both reading modes.
+The optional module retains the configuration ID `guide`; its public section key is `documentation`. Disable it through studio commands to hide the Guide and its rail entry. Reference discovery, search, and direct access belong to the shared platform and remain available when this module is disabled or removed. Prototype Documents is independent of both reading modes.
 
 Right-click a file in either reading mode for **Edit source**, **Open in editor**, **Reveal in Finder**, **Copy link**, and **Copy path**. Local edits use the shared source editor and detect external changes before saving. Guide chapter edits preserve the complete underlying README. Platform documentation has no rename or delete actions in these menus. Published pages support copying links and paths; local editing and operating-system actions are unavailable.
 

@@ -15,7 +15,7 @@ import type { Manifest } from '@/platform/app/data/types';
 
 function HandbookPlaces({ go }: PaletteContext) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  return <CommandItem value="handbook docs rules skills" disabled={pathname === '/handbook'} onSelect={() => go({ to: '/handbook' } as never)}>Handbook</CommandItem>;
+  return <CommandItem value="handbook context rules skills" disabled={pathname === '/handbook'} onSelect={() => go({ to: '/handbook' } as never)}>Handbook</CommandItem>;
 }
 
 function HandbookPalette({ manifest, current, isOpen, go }: PaletteContext) {
@@ -46,9 +46,9 @@ function Overview({ manifest }: { manifest: Manifest }) {
   const me = useMe();
   const docs = manifest.handbook.find((section) => section.id === 'docs');
   const items = docs?.items.slice(0, 3) ?? [];
-  if (!docs || !items.length) return import.meta.env.DEV && me ? <HomeSection title="Docs" to="/handbook/docs"><HomeHint>None yet. Ask your agent to write one.</HomeHint></HomeSection> : null;
+  if (!docs || !items.length) return import.meta.env.DEV && me ? <HomeSection title="Context" to="/handbook/context"><HomeHint>None yet. Ask your agent to write one.</HomeHint></HomeSection> : null;
   return (
-    <HomeSection title="Docs" to="/handbook/docs">
+    <HomeSection title="Context" to="/handbook/context">
       <ul>{items.map((item) => <ItemRow key={item.path} link={itemLink(docs, item)} icon={Notebook01Icon} title={itemLabel(item.path)} />)}</ul>
     </HomeSection>
   );
@@ -59,19 +59,16 @@ export default {
   rail: 'top',
   order: 30,
   routes: (root) => {
-    // Preserve links from the first reference browser.
-    const reference = createRoute({ getParentRoute: () => root, path: 'handbook/platform', beforeLoad: () => { throw redirect({ to: '/reference', replace: true }); } });
-    const referencePage = createRoute({ getParentRoute: () => root, path: 'handbook/platform/$', beforeLoad: ({ params, location }) => { throw redirect({ to: ('/reference/' + params._splat) as never, hash: location.hash, replace: true }); } });
     const handbook = createRoute({
       getParentRoute: () => root, path: 'handbook',
       beforeLoad: async () => {
         const first = (await loadManifest()).handbook[0];
         if (!first) throw notFound();
-        throw redirect({ to: '/$contributor/$prototype', params: { contributor: first.contributorKey, prototype: first.id }, replace: true });
+        throw redirect({ to: '/$contributor/$prototype', params: { contributor: first.contributorKey, prototype: first.id === 'docs' ? 'context' : first.id }, replace: true });
       },
       notFoundComponent: NotFound,
     });
-    return [handbook, reference, referencePage];
+    return [handbook];
   },
   overview: Overview,
   places: HandbookPlaces,

@@ -7,11 +7,11 @@ import readme from '../build/remark-readme-guide.js';
 
 test('repository links resolve from Handbook and between references', () => {
   const resolve = (href, base) => markdownPath(new URL(href, `http://doc${base}/`).pathname);
-  assert.equal(resolve('../../platform/modules/handbook/README.md', '/handbook/rules'), '/reference/platform/modules/handbook/README.md');
-  assert.equal(resolve('reference.md', '/reference/platform/modules/systems'), '/reference/platform/modules/systems/reference.md');
-  assert.equal(resolve('../../../handbook/rules/systems.md', '/reference/platform/modules/systems'), '/handbook/rules/systems.md');
+  assert.equal(resolve('../../platform/modules/handbook/README.md', '/handbook/rules'), '/documentation/reference/platform/modules/handbook/README.md');
+  assert.equal(resolve('reference.md', '/documentation/reference/platform/modules/systems'), '/documentation/reference/platform/modules/systems/reference.md');
+  assert.equal(resolve('../../../handbook/rules/systems.md', '/documentation/reference/platform/modules/systems'), '/handbook/rules/systems.md');
   assert.equal(resolve('./main.tsx', '/prototypes/patrick/example'), '/prototypes/patrick/example/main.tsx');
-  assert.equal(markdownPath('/guide/handbook'), '/guide/handbook');
+  assert.equal(markdownPath('/documentation/guide/handbook'), '/documentation/guide/handbook');
 });
 
 test('reference glob is limited to platform Markdown and enabled modules', () => {
@@ -31,9 +31,7 @@ test('full README rendering retains developer content without repeating its titl
   assert.deepEqual(tree.children, []);
 });
 
-test('legacy Handbook reference bases resolve to Documentation and its instructions', () => {
-  const resolve = (href, base) => markdownPath(new URL(href, `http://doc${base}/`).pathname);
-  assert.equal(resolve('reference.md', '/handbook/platform/platform/modules/systems'), '/reference/platform/modules/systems/reference.md');
-  assert.equal(resolve('../../../handbook/rules/systems.md', '/handbook/platform/platform/modules/systems'), '/handbook/rules/systems.md');
-  assert.equal(resolve('../../core/fileTypes.md', '/handbook/platform/platform/modules/systems'), '/reference/platform/core/fileTypes.md');
+test('repository Context links resolve to the Context reader', () => {
+  assert.equal(markdownPath('/handbook/docs/personas.md'), '/handbook/context/personas.md');
+  assert.equal(markdownPath('/handbook/rules/documentation-standards.md'), '/handbook/rules/documentation-standards.md');
 });

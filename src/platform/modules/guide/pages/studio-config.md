@@ -30,4 +30,4 @@ Restart the dev server after configuration changes. Shared configuration changes
 
 The agent can run `pnpm -s studio status --json` to inspect configuration and setup state. This report does not replace a build and review of a working prototype.
 
-For capabilities and removal behavior, see [Extend your Studio](/guide/modules).
+For capabilities and removal behavior, see [Extend your Studio](/documentation/guide/modules).

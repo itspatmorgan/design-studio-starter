@@ -137,18 +137,18 @@ flowchart TB
 
 **Who this helps:** Designers and product managers supplying product context; studio owners curating shared guidance.
 
-**What they should understand:** Docs explain the product and people; Rules set standing requirements; Skills describe task procedures. References help the agent find relevant material.
+**What they should understand:** Context explain the product and people; Rules set standing requirements; Skills describe task procedures. References help the agent find relevant material.
 
 **Question:** How does shared knowledge become relevant to an agent's task?
 
-This models references and selection rather than automatic execution. Docs, Rules, and Skills serve different purposes.
+This models references and selection rather than automatic execution. Context, Rules, and Skills serve different purposes.
 
 ```mermaid
 flowchart TB
   accTitle: How an agent finds relevant context
-  accDescr: The person's request defines the task. AGENTS.md references shared context and instructions. The agent reads relevant Docs, Rules, and Skills and applies them to the work. Available skill discovery depends on the agent.
+  accDescr: The person's request defines the task. AGENTS.md references shared context and instructions. The agent reads relevant Context, Rules, and Skills and applies them to the work. Available skill discovery depends on the agent.
   request[Person's request] -->|Defines| task[Current task]
-  entry[AGENTS.md] -->|References| docs[Docs: shared context]
+  entry[AGENTS.md] -->|References| docs[Context: shared context]
   entry -->|References| rules[Rules: standing instructions]
   entry -->|Routes relevant tasks to| skills[Skills: task procedures]
   task -->|Guides selection| reading[Agent reads relevant material]
@@ -206,4 +206,4 @@ For agents and engineering partners: public module libraries are accessed throug
 3. Refine node names, arrow labels, and explanatory text together.
 4. Check light and dark appearance, long labels, and document-width layouts.
 5. Move accepted diagrams to their authoritative pages. Remove the corresponding draft sections to avoid a second contract.
-6. Promote only useful conventions into [Documentation standards](documentation-standards.md).
+6. Promote only useful conventions into [Documentation standards](../rules/documentation-standards.md).

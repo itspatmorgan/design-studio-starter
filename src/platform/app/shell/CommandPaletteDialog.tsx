@@ -59,7 +59,7 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
             )}
   
             <CommandGroup heading="Places">
-              <CommandItem value="documentation reference contracts" onSelect={() => go({ to: '/reference' })}>Reference</CommandItem>
+              <CommandItem value="documentation reference contracts" onSelect={() => go({ to: '/documentation/reference' })}>Reference</CommandItem>
               <CommandItem value="home overview" disabled={onHome} onSelect={() => go({ to: '/' })}>Home</CommandItem>
               {moduleApps.map(({ spec, app }) => app.places && <app.places key={spec.id} {...context} />)}
             </CommandGroup>

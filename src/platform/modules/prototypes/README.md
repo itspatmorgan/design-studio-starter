@@ -19,7 +19,7 @@ Your assigned design system provides components and tokens. It does not limit wh
 
 Use those components, build local alternatives, or start with a blank view. Local helpers belong in the prototype, for example in `_components/`. You can explore without changing the shared system first.
 
-Dependency and style boundaries contain the experiment so it does not affect other prototypes or the platform. See [Prototype files and boundaries](/guide/prototype-reference).
+Dependency and style boundaries contain the experiment so it does not affect other prototypes or the platform. See [Prototype files and boundaries](/documentation/guide/prototype-reference).
 
 ## Files and navigation
 

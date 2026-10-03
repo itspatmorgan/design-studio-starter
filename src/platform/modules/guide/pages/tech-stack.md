@@ -42,7 +42,7 @@ Starter components use Base UI's `render` prop for composition. Replacement desi
 
 [MDX](https://mdxjs.com) compiles plain Markdown. [Shiki](https://shiki.style) highlights code with the shared [Flexoki](https://stephango.com/flexoki) accent palette. [Tailwind Typography](https://github.com/tailwindlabs/tailwindcss-typography) styles document pages.
 
-[Mermaid](https://mermaid.js.org) renders fenced `mermaid` blocks as diagrams in the shared Markdown reader. It loads on demand for the Guide, Handbook, reference pages, and prototype Documents. Diagram source stays in the Markdown file. A minimal platform theme coordinates diagrams with the editor and document code. See [Diagrams and code](/guide/diagrams) for examples and customization.
+[Mermaid](https://mermaid.js.org) renders fenced `mermaid` blocks as diagrams in the shared Markdown reader. It loads on demand for the Guide, Handbook, reference pages, and prototype Documents. Diagram source stays in the Markdown file. A minimal platform theme coordinates diagrams with the editor and document code. See [Diagrams and code](/documentation/guide/diagrams) for examples and customization.
 
 The canvas module uses [Excalidraw](https://excalidraw.com). It loads when a canvas opens.
 
@@ -56,4 +56,4 @@ The canvas module uses [Excalidraw](https://excalidraw.com). It loads when a can
 
 The production build is a static site in `dist/`. A host must serve `index.html` for app paths that do not identify an asset.
 
-See [Publish a studio](/guide/publishing) for routing and publication requirements. Hosting configuration and access control are the studio maintainer's responsibility.
+See [Publish a studio](/documentation/guide/publishing) for routing and publication requirements. Hosting configuration and access control are the studio maintainer's responsibility.

@@ -6,7 +6,7 @@ order: 42
 toc: true
 ---
 
-Use [Build a prototype](/guide/prototypes) for everyday tasks. This page describes the files your agent creates and maintains.
+Use [Build a prototype](/documentation/guide/prototypes) for everyday tasks. This page describes the files your agent creates and maintains.
 
 ## File layout
 
@@ -68,7 +68,7 @@ Nested folders become URL segments. Renaming a prototype folder or item changes 
 
 Changing the default through the configuration command preserves existing prototypes' systems. Migrating a prototype requires changing its imports and assigned system together.
 
-See [Studio config](/guide/studio-config#change-configuration) for the command and the effect of direct configuration edits.
+See [Studio config](/documentation/guide/studio-config#change-configuration) for the command and the effect of direct configuration edits.
 
 ## Dependency boundaries
 
@@ -103,4 +103,4 @@ Use Tailwind classes or CSS Modules (`*.module.css`) for prototype styles. CSS M
 Plain CSS imports from runtime components fail. Design-system themes load through the platform and must target their unique theme class or its descendants.
 
 
-For review paths, see [Ownership and permissions](/guide/ownership-and-permissions).
+For review paths, see [Ownership and permissions](/documentation/guide/ownership-and-permissions).

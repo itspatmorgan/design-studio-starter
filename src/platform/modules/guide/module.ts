@@ -1,6 +1,6 @@
 import type { ModuleSpec } from '../../core/modules/index.ts';
 
-// The Guide: how to use Design Studio itself (/guide), pages in src/platform/modules/guide/pages/ and in the READMEs of modules and file types.
+// The Guide: how to use Design Studio itself (/documentation/guide), pages in src/platform/modules/guide/pages/ and in the READMEs of modules and file types.
 export default {
   id: 'guide',
   label: 'Documentation',
@@ -8,5 +8,5 @@ export default {
   description: 'Documentation: a curated Guide and complete platform Reference.',
   optional: true,
   handbook: [{ path: 'rules/guide.md', when: 'asks to add or change a Guide page' }],
-  section: { key: 'guide', folder: 'src/platform/modules/guide/pages' },
+  section: { key: 'documentation', folder: 'src/platform/modules/guide/pages' },
 } satisfies ModuleSpec;

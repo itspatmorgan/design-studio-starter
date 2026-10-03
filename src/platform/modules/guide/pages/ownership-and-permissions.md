@@ -33,4 +33,4 @@ Agent rules guide editing scope. Git hooks report scope and identity. Build chec
 
 The maintainer must configure branch protection and required reviews to enforce the team's merge policy. These mechanisms serve different purposes. No single check enforces every ownership rule.
 
-See [Checks and troubleshooting](/guide/checks-and-troubleshooting) for the checks and failure messages.
+See [Checks and troubleshooting](/documentation/guide/checks-and-troubleshooting) for the checks and failure messages.

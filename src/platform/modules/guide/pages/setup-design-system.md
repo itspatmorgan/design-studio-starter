@@ -26,4 +26,4 @@ Keep Product until the replacement works and retained prototypes no longer depen
 
 Changing the default does not migrate existing prototypes. Their imports and system choice must change together.
 
-For ongoing component documentation and additional systems, see [Manage design systems](/guide/systems).
+For ongoing component documentation and additional systems, see [Manage design systems](/documentation/guide/systems).

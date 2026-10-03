@@ -20,7 +20,7 @@ export function loadManifest(): Promise<Manifest> {
 export const allPrototypes = (m: Manifest): PrototypeRef[] => [...m.prototypes, ...Object.values(m.sections).flat(), ...m.handbook];
 
 export const findPrototype = (m: Manifest, contributor: string, prototype: string): PrototypeRef | undefined =>
-  allPrototypes(m).find((p) => p.contributorKey === contributor && p.id === prototype);
+  allPrototypes(m).find((p) => p.contributorKey === contributor && p.id === (contributor === HANDBOOK_KEY && prototype === 'context' ? 'docs' : prototype) && !(contributor === HANDBOOK_KEY && prototype === 'docs'));
 
 // A prototype's items, fetched the first time they're needed (the deployed manifest leaves them out:
 // scripts/build/build-manifest.js) and then kept on the manifest's entry for it. One fetch per prototype,
@@ -81,10 +81,10 @@ export const newestFirst = (a: PrototypeInfo, b: PrototypeInfo) => (b.created ??
 // Where a prototype's links go. The prototype's own URL opens its default view: /prototypes/<person>/<id>, or
 // /examples/<id> for an item of a section.
 export const prototypeLink = (p: Pick<PrototypeInfo, 'contributorKey' | 'id'>) => isSectionKey(p.contributorKey)
-  ? linkOptions({ to: '/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.id } })
+  ? linkOptions({ to: '/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.contributorKey === HANDBOOK_KEY && p.id === 'docs' ? 'context' : p.id } })
   : linkOptions({ to: '/prototypes/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.id } });
 
 // An item's URL: the prototype's, plus the item's path without its extension.
 export const itemLink = (p: PrototypeInfo, item: Item) => isSectionKey(p.contributorKey)
-  ? linkOptions({ to: '/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: itemSlug(item.path) } })
+  ? linkOptions({ to: '/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.contributorKey === HANDBOOK_KEY && p.id === 'docs' ? 'context' : p.id, _splat: itemSlug(item.path) } })
   : linkOptions({ to: '/prototypes/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: itemSlug(item.path) } });

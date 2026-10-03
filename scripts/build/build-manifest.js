@@ -361,7 +361,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   // Guide pages: src/platform/modules/guide/pages/*.md, and the README.md of a module or file type that opens with
   // Guide frontmatter (it keeps its page with its folder: `source` says where it is). Ordered by `order` in each page's
   // frontmatter. They share the title, description, and toc fields with prototype documents, and add order and section;
-  // a README may also set `slug` (its address, /guide/<slug>), which is its folder's name otherwise.
+  // a README may also set `slug` (its address, /documentation/guide/<slug>), which is its folder's name otherwise.
   const guide = [];
   const guideFiles = GUIDE && fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.md')).sort() : [];
   const pages = guideFiles.map((file) => ({ file: path.join(GUIDE, file), where: `src/platform/modules/guide/pages/${file}`, slug: file.replace(/\.md$/, ''), readme: false }));
@@ -376,7 +376,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     if (typeof fm.order !== 'number') { out.error(`[manifest] Skipped ${where}: needs a numeric "order" in its frontmatter`); errors++; continue; }
     const slug = page.readme && typeof fm.slug === 'string' && fm.slug ? fm.slug : page.slug;
     if (!/^[a-z0-9][a-z0-9-]*$/.test(slug)) { out.error(`[manifest] Skipped ${where}: its address "${slug}" must be lowercase letters, numbers, and hyphens`); errors++; continue; }
-    if (taken.has(slug)) { out.error(`[manifest] Skipped ${where}: ${taken.get(slug)} already has the Guide address /guide/${slug}`); errors++; continue; }
+    if (taken.has(slug)) { out.error(`[manifest] Skipped ${where}: ${taken.get(slug)} already has the Guide address /documentation/guide/${slug}`); errors++; continue; }
     taken.set(slug, where);
     guide.push({ slug, title: fm.title, description: fm.description ?? '', section: fm.section || null, order: fm.order, ...(page.source ? { source: page.source } : {}) });
   }

@@ -1,7 +1,7 @@
-// Repository Markdown links keep working in Git and in the app's reference reader.
+// Repository Markdown links resolve to the reader for their authoritative source.
 export function markdownPath(path: string): string {
-  const prefix = path.startsWith('/handbook/platform/') ? '/handbook/platform' : '/reference';
+  const prefix = '/documentation/reference';
   const source = path.startsWith(`${prefix}/`) ? path.slice(prefix.length) : path;
-  if (/^\/platform\/(?:modules|core)\/.*\.md$/.test(source)) return `/reference${source}`;
-  return source;
+  if (/^\/platform\/(?:modules|core)\/.*\.md$/.test(source)) return `${prefix}${source}`;
+  return source.replace(/^\/handbook\/docs(?=\/|$)/, '/handbook/context');
 }

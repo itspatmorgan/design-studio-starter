@@ -5,7 +5,7 @@ description: "Create, revise, or audit platform guides, module documentation, an
 
 ## Establish scope
 
-Read the [documentation standard](../../docs/documentation-standards.md) and [Handbook rule](../../rules/handbook.md).
+Read the [documentation standard](../../rules/documentation-standards.md) and [Handbook rule](../../rules/handbook.md).
 
 For Guide chapters or module READMEs, also read the [Guide rule](../../rules/guide.md). For component pages, use [document-component](../document-component/SKILL.md).
 

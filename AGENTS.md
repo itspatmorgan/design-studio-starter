@@ -21,6 +21,6 @@ When the person asks to add or change a Guide page, read [src/handbook/rules/gui
 <!-- /studio:modules -->
 
 Use pnpm for project commands. Resolve the contributor before editing prototypes. Follow the scope and prototype rules above.
-The human documentation is the Guide at `/guide`. Module chapters live in module READMEs.
+The human documentation is the Guide at `/documentation/guide`. Module chapters live in module READMEs.
 For component, theme, or pop-up changes, read [src/handbook/rules/systems.md](src/handbook/rules/systems.md).
 The app uses TanStack Router. For routing work, use its [official documentation](https://tanstack.com/router/latest/docs/framework/react/overview).

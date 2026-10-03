@@ -16,7 +16,7 @@ See the [setup guide](src/platform/modules/guide/pages/getting-started.md) for p
 
 ## Learn more
 
-The Guide is available in the running app at `/guide`, and its pages are also in this repository:
+The Guide is available in the running app at `/documentation/guide`, and its pages are also in this repository:
 
 - [Introduction](src/platform/modules/guide/pages/index.md) — how the studio works.
 - [Working with agents](src/platform/modules/guide/pages/agents.md) — rules, skills, and shared context.

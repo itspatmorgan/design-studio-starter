@@ -20,7 +20,7 @@ Design Studio brings together a selected toolkit so you can begin with fewer set
 
 It's intentionally designed as a starter kit. So while the platform does depend on parts of its core stack, it aims to be as hackable, customizable, and extendable as possible. You just may need to do a bit more legwork the further you diverge from the defaults.
 
-See [Tech stack](/guide/tech-stack) for the dependencies and replaceable defaults.
+See [Tech stack](/documentation/guide/tech-stack) for the dependencies and replaceable defaults.
 
 ## What the studio provides
 

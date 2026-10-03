@@ -13,7 +13,7 @@ Documentation is part of the platform. Keep it accurate as behavior changes. Thi
 | Guide | Explain capabilities, defaults, boundaries, and setup choices to people. |
 | Module README | Own the module's Guide chapter and developer orientation. |
 | Module reference | Define detailed file, API, configuration, and lifecycle contracts. |
-| Handbook Docs | Preserve curated knowledge for people, agents, or both. |
+| Handbook Context | Preserve curated knowledge for people, agents, or both. |
 | Handbook Rules | State standing requirements for agent behavior. |
 | Handbook Skills | Describe a task-specific procedure and when it applies. |
 | `AGENTS.md` | Provide essential project instructions and route agents to relevant context. |
@@ -28,7 +28,7 @@ Keep module details with their module. This lets removal also remove the related
 
 ## Write clearly
 
-Use ASD-STE100-inspired language with flexibility for our [personas](personas.md). This is a writing approach, not a claim of formal compliance.
+Use ASD-STE100-inspired language with flexibility for our [personas](../docs/personas.md). This is a writing approach, not a claim of formal compliance.
 
 - Use familiar words and active voice. Address the reader directly when giving instructions.
 - Keep one main idea in each sentence. Aim for 20 words in instructions and 25 words in descriptions; split longer sentences when useful.

@@ -5,7 +5,7 @@ import type { PlatformReferenceGroup } from '@/platform/app/data/types';
 import DocumentationHeader from './DocumentationHeader';
 
 const rootApi = getRouteApi('__root__');
-export const referenceHref = (source: string) => `/reference${source}`;
+export const referenceHref = (source: string) => `/documentation/reference${source}`;
 
 export function ReferenceLayout() {
   const { platformReferences } = rootApi.useLoaderData();
@@ -13,7 +13,7 @@ export function ReferenceLayout() {
     <SectionNav label="Documentation">
       <DocumentationHeader reference />
       <NavList>
-        <Link to="/reference" activeOptions={{ exact: true }} style={navLinkStyle} className={navLinkClass}>Overview</Link>
+        <Link to="/documentation/reference" activeOptions={{ exact: true }} style={navLinkStyle} className={navLinkClass}>Overview</Link>
         {platformReferences.filter((group) => group.references.length).map((group) => <div key={group.id}>
           {group.references.map((ref, index) => <DocumentationNavItem key={ref.source} href={referenceHref(ref.source)} path={'src' + ref.source} label={index === 0 ? group.label : ref.title} nested={index > 0} />)}
         </div>)}
@@ -38,7 +38,8 @@ export function ReferenceIndex() {
   return <div className="mx-auto h-full w-full max-w-4xl overflow-y-auto px-8 py-12">
     <h1 className="text-3xl font-semibold tracking-tight">Reference</h1>
     <p className="mt-4 max-w-[65ch] text-muted-foreground">The complete documentation supplied with the platform: capabilities, boundaries, and file contracts. People and agents can consult it when needed. You do not need to read or customize these files to begin creating.</p>
-    {guide.length > 0 && <p className="mt-4 text-sm">For a guided introduction, start with the <Link to={'/guide' as never} className="underline underline-offset-4">Guide</Link>.</p>}
+    {guide.length > 0 && <p className="mt-4 text-sm">For a guided introduction, start with the <Link to={'/documentation/guide' as never} className="underline underline-offset-4">Guide</Link>.</p>}
+    <p className="mt-4 text-sm">The <Link to={'/handbook/rules/documentation-standards' as never} className="underline underline-offset-4">Documentation standards</Link> define where context belongs and how to keep it accurate.</p>
     <section className="mt-10 max-w-[65ch] space-y-4">
       <h2 className="text-xl font-semibold">What this documentation contributes</h2>
       <p>Reference describes the environment an agent is operating: what a prototype may depend on, how files are structured, and what each capability provides. It helps the agent make changes that fit the platform.</p>
@@ -49,7 +50,7 @@ export function ReferenceIndex() {
       <ol className="list-decimal space-y-3 pl-5">
         <li>Your request establishes the outcome and scope.</li>
         <li>Repository instructions, Rules, and Skills lead the agent to relevant contracts and procedures.</li>
-        <li>Handbook Docs supply the team's product context. Prototype documents supply the local intent and decisions.</li>
+        <li>Handbook Context supplies the team's product context. Prototype documents supply the local intent and decisions.</li>
         <li>The agent reads the relevant files, applies their guidance, and checks the resulting work.</li>
       </ol>
       <p className="text-muted-foreground">This is context available to the agent, not a record of what it read. Listing a file here does not automatically load it into a conversation.</p>

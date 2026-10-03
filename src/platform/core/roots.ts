@@ -1,6 +1,6 @@
 // Where an item's files live, and where it opens. A prototype is src/prototypes/<contributor>/<id>/, at
 // /prototypes/<contributor>/<id>. The Handbook (src/handbook/) is shown the same way, one section at a time,
-// under the reserved key "handbook": /handbook/docs is src/handbook/docs/. Nobody is the
+// under the reserved key "handbook": /handbook/context is src/handbook/docs/. Nobody is the
 // "handbook" contributor, so the app never offers to change a section as if it were someone's
 // prototype: these are platform files, changed in the repo and reviewed.
 // This file has no imports, so Node scripts can load it directly.
@@ -22,8 +22,8 @@ export const setSections = (keys: Iterable<string>) => { sectionKeys = new Set(k
 // The Handbook's sections: the folders in src/handbook/, in the order they're shown. The shape of
 // each is checked by src/platform/modules/handbook/node/handbook-check.js.
 export const HANDBOOK_SECTIONS = {
-  docs: { title: 'Docs', description: 'Context for people and agents: principles, personas, and anything worth writing down once.' },
-  rules: { title: 'Rules', description: 'What your agent knows and follows every session. AGENTS.md points here.' },
+  docs: { title: 'Context', description: 'Context for people and agents: principles, personas, and anything worth writing down once.' },
+  rules: { title: 'Rules', description: 'Standing constraints for agents. AGENTS.md routes to the applicable rules.' },
   skills: { title: 'Skills', description: 'Procedures your agent follows when you ask, one folder each, in the Agent Skills format.' },
 } as const;
 
@@ -40,7 +40,7 @@ export const isSectionKey = (key: string) => key === HANDBOOK_KEY || key === SYS
 // An item's address in the app, up to its id and without a base path: "/prototypes/patrick/hello-world"
 // for a prototype, "/examples/sample" for a section item.
 export const addressOf = (contributor: string, id: string) =>
-  isSectionKey(contributor) ? `/${contributor}/${id}` : `/${PROTOTYPES_KEY}/${contributor}/${id}`;
+  isSectionKey(contributor) ? `/${contributor}/${contributor === HANDBOOK_KEY && id === 'docs' ? 'context' : id}` : `/${PROTOTYPES_KEY}/${contributor}/${id}`;
 
 // Reads an item's address back: who or what holds it, its id, and the path after it. It also reads the
 // older form of a prototype's address, "/patrick/hello-world/…", so links saved before prototypes moved
@@ -48,7 +48,7 @@ export const addressOf = (contributor: string, id: string) =>
 export function parseAddress(path: string): { contributor: string; id: string; rest: string[] } | null {
   const parts = path.split('/').filter(Boolean);
   const body = parts[0] === PROTOTYPES_KEY ? parts.slice(1) : parts;
-  return body.length >= 2 ? { contributor: body[0], id: body[1], rest: body.slice(2) } : null;
+  return body.length >= 2 ? { contributor: body[0], id: body[0] === HANDBOOK_KEY && body[1] === 'context' ? 'docs' : body[1], rest: body.slice(2) } : null;
 }
 
 // An item path in today's form: the older "/patrick/hello-world/lofi/main" becomes "/prototypes/patrick/hello-world/lofi/main".

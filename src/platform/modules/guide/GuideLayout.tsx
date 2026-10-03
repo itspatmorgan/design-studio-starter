@@ -29,7 +29,7 @@ export default function GuideLayout() {
           {groupBySection(guide).map((g, i) => (
             <NavGroup key={g.section ?? i} heading={g.section ?? undefined}>
               {g.pages.map((page) => (
-                <DocumentationNavItem key={page.slug} href={page.slug === 'index' ? '/guide' : '/guide/' + page.slug} path={'src' + (page.source ?? '/platform/modules/guide/pages/' + page.slug + '.md')} label={page.title} />
+                <DocumentationNavItem key={page.slug} href={page.slug === 'index' ? '/documentation/guide' : '/documentation/guide/' + page.slug} path={'src' + (page.source ?? '/platform/modules/guide/pages/' + page.slug + '.md')} label={page.title} />
               ))}
             </NavGroup>
           ))}

@@ -25,3 +25,9 @@ test('files are still found by contributor and id', () => {
   assert.equal(rootOf('patrick', 'hello-world'), 'prototypes/patrick/hello-world');
   assert.equal(rootOf('examples', 'sample'), 'examples/sample');
 });
+
+test('Handbook Context addresses resolve to the docs folder', () => {
+  assert.equal(addressOf('handbook', 'docs'), '/handbook/context');
+  assert.deepEqual(parseAddress('/handbook/context/personas'), { contributor: 'handbook', id: 'docs', rest: ['personas'] });
+  assert.equal(rootOf('handbook', 'docs'), 'handbook/docs');
+});

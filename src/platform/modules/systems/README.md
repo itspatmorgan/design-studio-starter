@@ -9,7 +9,7 @@ slug: "systems"
 
 # Systems
 
-**Systems** lists the available systems, their foundations, and their components. For initial import, see [Set up your design system](/guide/setup-design-system).
+**Systems** lists the available systems, their foundations, and their components. For initial import, see [Set up your design system](/documentation/guide/setup-design-system).
 
 | System | Used by |
 | --- | --- |

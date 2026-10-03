@@ -8,7 +8,7 @@ toc: true
 
 Design Studio is built from modules. Modules give features defined places for code, content, checks, and agent instructions.
 
-You own the code and can change any part. For new platform features, we recommend modules: their boundaries contain custom changes and make future platform updates easier to review. See [Build a module](/guide/build-a-module) for implementation details.
+You own the code and can change any part. For new platform features, we recommend modules: their boundaries contain custom changes and make future platform updates easier to review. See [Build a module](/documentation/guide/build-a-module) for implementation details.
 
 ## Required and optional parts
 
@@ -32,6 +32,6 @@ Restart the dev server after module changes.
 
 Ask your agent to build a module or preview installation from a prepared folder. Review its capabilities, dependencies, license, agent instructions, and proposed file changes.
 
-Installation can run the module's checks as code on your computer. Use code you trust. See [Installation details](/guide/build-a-module#installation-details) for package handling and recovery.
+Installation can run the module's checks as code on your computer. Use code you trust. See [Installation details](/documentation/guide/build-a-module#installation-details) for package handling and recovery.
 
-Module changes are shared platform changes. Configuration choices are documented in [Studio config](/guide/studio-config).
+Module changes are shared platform changes. Configuration choices are documented in [Studio config](/documentation/guide/studio-config).

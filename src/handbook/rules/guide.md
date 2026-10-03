@@ -2,7 +2,7 @@
 
 The Guide describes capabilities, defaults, and boundaries for people. Keep agent requirements in Rules and task procedures in Skills.
 
-Follow the [documentation standard](../docs/documentation-standards.md) and [Maintain documentation skill](../skills/maintain-documentation/SKILL.md).
+Follow the [documentation standard](documentation-standards.md) and [Maintain documentation skill](../skills/maintain-documentation/SKILL.md).
 
 - Put platform-wide chapters in `src/platform/modules/guide/pages/`.
 - Put a module's human chapter in its README, so removal also removes the chapter.

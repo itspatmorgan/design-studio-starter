@@ -6,11 +6,11 @@
 //   /prototypes/$contributor/$prototype/$    an item, by its path without the extension, at any depth:
 //                                            /prototypes/patrick/hello-world/lofi/main
 //                                            (?mode=source shows its text, in dev: SourcePane)
-//   /$contributor/$prototype[/$]             the same for a section's items: /examples/sample, /handbook/docs.
+//   /$contributor/$prototype[/$]             the same for a section's items: /examples/sample, /handbook/context.
 //                                            An address from before prototypes moved, /patrick/hello-world, is
 //                                            sent on to /prototypes/patrick/hello-world.
 //
-// The modules add their own: /prototypes (the gallery), /examples, /systems/$system, /handbook, /guide/$page
+// The modules add their own: /prototypes (the gallery), /examples, /systems/$system, /handbook, /documentation/guide/$page
 // (src/platform/modules/<id>/app.tsx). Everything that opens in the viewer does so through the routes above.
 import { lazy, Suspense } from 'react';
 import { createRootRoute, createRoute, createRouter, notFound, redirect, useNavigate, useRouter } from '@tanstack/react-router';
@@ -55,9 +55,14 @@ const homeRoute = createRoute({
   component: Home,
 });
 
+const documentationRoute = createRoute({ getParentRoute: () => rootRoute, path: 'documentation', beforeLoad: async () => {
+  const { guide } = await loadManifest();
+  throw redirect({ to: (guide.length ? '/documentation/guide' : '/documentation/reference') as never, replace: true });
+} });
+
 // References and their local file actions remain available without the optional Guide.
 const DocumentationEditor = import.meta.env.DEV ? lazy(() => import('@/platform/app/docs/DocumentationEditor')) : null;
-const referencesRoute = createRoute({ getParentRoute: () => rootRoute, path: 'reference', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }), component: ReferenceLayout });
+const referencesRoute = createRoute({ getParentRoute: () => rootRoute, path: 'documentation/reference', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }), component: ReferenceLayout });
 const referenceIndexRoute = createRoute({ getParentRoute: () => referencesRoute, path: '/', head: () => ({ meta: [{ title: 'Reference — ' + APP_NAME }] }), component: ReferenceIndex });
 const referenceRoute = createRoute({
   getParentRoute: () => referencesRoute,
@@ -80,7 +85,7 @@ const referenceRoute = createRoute({
   component: () => {
     const data = referenceRoute.useLoaderData();
     if (data.editing) return DocumentationEditor && <Suspense fallback={null}><DocumentationEditor path={'src' + data.path} /></Suspense>;
-    return <div className="flex min-h-0 flex-1 flex-col [&>div]:min-h-0"><MarkdownPage Component={data.Component} frontmatter={data.frontmatter} docKey={data.path} base={'/reference' + data.path.slice(0, data.path.lastIndexOf('/'))} footer={<AboutReference source={data.path} group={data.group} />} /></div>;
+    return <div className="flex min-h-0 flex-1 flex-col [&>div]:min-h-0"><MarkdownPage Component={data.Component} frontmatter={data.frontmatter} docKey={data.path} base={'/documentation/reference' + data.path.slice(0, data.path.lastIndexOf('/'))} footer={<AboutReference source={data.path} group={data.group} />} /></div>;
   },
   notFoundComponent: NotFound,
 });
@@ -170,8 +175,12 @@ const itemRoute = createRoute({
 const sectionItemRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '$contributor/$prototype',
-  beforeLoad: ({ params, location }) => {
-    if (!isSectionKey(params.contributor)) throw redirect({ to: `/prototypes${location.pathname}` as never, search: location.search as never, replace: true });
+  beforeLoad: async ({ params, location }) => {
+    if (!isSectionKey(params.contributor)) {
+      const manifest = await loadManifest();
+      if (!manifest.prototypes.some((proto) => proto.contributorKey === params.contributor)) throw notFound();
+      throw redirect({ to: `/prototypes${location.pathname}` as never, search: location.search as never, replace: true });
+    }
   },
   validateSearch: searchOf,
   loader: ({ params }) => loadProto(params),
@@ -200,7 +209,7 @@ const sectionItemSplatRoute = createRoute({
 // The app's own routes are typed, so links to them are checked. The modules' routes (Systems, the
 // Handbook, the Guide, in src/platform/modules/<id>/app.tsx) are added at run time, and the types leave
 // them out: a link to one is written loosely.
-const coreRoutes = [homeRoute, referencesRoute.addChildren([referenceIndexRoute, referenceRoute]), prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]), sectionItemRoute.addChildren([sectionItemIndexRoute, sectionItemSplatRoute])] as const;
+const coreRoutes = [homeRoute, documentationRoute, referencesRoute.addChildren([referenceIndexRoute, referenceRoute]), prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]), sectionItemRoute.addChildren([sectionItemIndexRoute, sectionItemSplatRoute])] as const;
 const routeTree = rootRoute.addChildren([...coreRoutes, ...moduleApps.flatMap(({ app }) => app.routes?.(rootRoute) ?? [])] as unknown as typeof coreRoutes);
 
 export const router = createRouter({

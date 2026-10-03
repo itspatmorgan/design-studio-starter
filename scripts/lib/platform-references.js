@@ -11,7 +11,7 @@ export function platformReferences({ root, modules, enabled, handbook }) {
     const targets = [...text.matchAll(/\]\(([^)\s]+)(?:\s+[^)]*)?\)/g)].map((match) => path.posix.normalize(path.posix.join(path.posix.dirname(source), match[1].split('#')[0])));
     const fm = frontmatter(text);
     const title = fm?.title ?? (fm?.name ? skillTitle(fm.name) : text.match(/^#\s+(.+)$/m)?.[1] ?? item.path);
-    return { title: `${section.title} · ${title}`, href: source.replace(/\.md$/, ''), source, targets };
+    return { title: `${section.title} · ${title}`, href: source.replace(/^\/handbook\/docs\//, '/handbook/context/').replace(/\.md$/, ''), source, targets };
   }));
   const group = (id, label, folder, on, declared = []) => {
     const dir = path.join(root, 'src', folder);

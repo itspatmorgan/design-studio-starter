@@ -28,7 +28,7 @@ export const declarationProblems = () => ids.flatMap((id) => moduleProblems(MODU
 export const ENABLED_MODULES = Object.values(MODULES).filter((m) => m && isEnabled(CONFIG, m.id) && compatible(m));
 export { CONFIG, isEnabled };
 
-// App page addresses (/examples, /guide, ...), so they can't be a contributor's folder.
+// App page addresses (/examples, /documentation, ...), so they can't be a contributor's folder.
 export const SECTION_KEYS = new Set(sectionKeys(Object.values(MODULES).filter(Boolean)));
 
 // Absolute folders of the modules that hold prototype-shaped folders, one per id (src/examples/), and the

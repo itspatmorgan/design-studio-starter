@@ -36,4 +36,4 @@ Copy an item's URL or select **Copy link** in its file menu. A local URL works o
 
 Renaming an item or prototype changes its URL. Check links after renaming or moving content.
 
-Pushing commits does not publish a site. Sharing files through Git does not require hosting. To provide a viewing site, see [Publish a Studio](/guide/publishing). For changes outside your prototypes, see [Ownership and permissions](/guide/ownership-and-permissions).
+Pushing commits does not publish a site. Sharing files through Git does not require hosting. To provide a viewing site, see [Publish a Studio](/documentation/guide/publishing). For changes outside your prototypes, see [Ownership and permissions](/documentation/guide/ownership-and-permissions).

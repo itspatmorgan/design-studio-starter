@@ -25,7 +25,7 @@ flowchart LR
 
 | Source | Role |
 | --- | --- |
-| Handbook Docs | Context for people, agents, or both. |
+| Handbook Context | Context for people, agents, or both. |
 | Handbook Rules | Standing instructions for agents. |
 | Handbook Skills | Procedures for specific agent tasks. |
 | Repository scripts | Repeatable operations and checks. |
@@ -49,4 +49,4 @@ Instructions guide the agent. Git hooks are scripts that run during operations s
 | “Set up our design system.” | `setup-design-system` |
 | “Document this component.” | `document-component` |
 
-You can add your own context, rules, and procedures through the [Handbook](/guide/handbook).
+You can add your own context, rules, and procedures through the [Handbook](/documentation/guide/handbook).

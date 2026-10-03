@@ -44,7 +44,7 @@ Without a frontmatter title, an opening level-one heading (`# Title`) supplies t
 
 ### Mermaid diagrams
 
-See [Diagrams and code](/guide/diagrams) for examples, the shared theme, and customization.
+See [Diagrams and code](/documentation/guide/diagrams) for examples, the shared theme, and customization.
 
 Use a fenced code block with the language `mermaid` to show a diagram:
 
@@ -74,7 +74,7 @@ The app accepts paths with or without extensions. External links open in a new t
 
 Documents link to views. Canvases can show live view previews alongside document cards.
 
-Keep prototype-specific context here. The [Handbook](/guide/handbook) holds context shared across the studio.
+Keep prototype-specific context here. The [Handbook](/documentation/guide/handbook) holds context shared across the studio.
 
 ## For developers
 

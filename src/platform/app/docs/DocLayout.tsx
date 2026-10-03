@@ -12,7 +12,7 @@ type DocLayoutProps = { Component: MDXContent; title?: string; description?: str
 export function DocLayout({ Component, title, description, toc, scrollKey, footer, actions }: DocLayoutProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Open at the heading in the URL (/guide/prototypes#groups), or at the top.
+  // Open at the heading in the URL (/documentation/guide/prototypes#groups), or at the top.
   useEffect(() => {
     const id = decodeURIComponent(location.hash.slice(1));
     const target = id && document.getElementById(id);

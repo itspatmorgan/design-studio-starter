@@ -23,13 +23,13 @@ export default function GuidePage({ slug, source, ...props }: Props) {
   const footer = (previous || next) && (
     <nav aria-label="Guide chapters" className="mt-12 grid grid-cols-2 gap-4 border-t border-border pt-6 text-sm">
       {previous ? (
-        <Link to={(previous.slug === 'index' ? '/guide' : '/guide/$page') as never} params={{ page: previous.slug } as never} className="min-w-0 rounded-md p-2 hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring">
+        <Link to={(previous.slug === 'index' ? '/documentation/guide' : '/documentation/guide/$page') as never} params={{ page: previous.slug } as never} className="min-w-0 rounded-md p-2 hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring">
           <span className="block text-xs text-muted-foreground">Previous</span>
           <span className="mt-1 block font-medium">{previous.title}</span>
         </Link>
       ) : <span />}
       {next && (
-        <Link to={'/guide/$page' as never} params={{ page: next.slug } as never} className="min-w-0 rounded-md p-2 text-right hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring">
+        <Link to={'/documentation/guide/$page' as never} params={{ page: next.slug } as never} className="min-w-0 rounded-md p-2 text-right hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring">
           <span className="block text-xs text-muted-foreground">Next</span>
           <span className="mt-1 block font-medium">{next.title}</span>
         </Link>

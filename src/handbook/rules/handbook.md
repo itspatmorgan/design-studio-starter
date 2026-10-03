@@ -2,14 +2,14 @@
 
 Read the [Handbook README](../../platform/modules/handbook/README.md) for the human-facing content model.
 
-When creating or changing documentation, follow the [documentation standard](../docs/documentation-standards.md) and [Maintain documentation skill](../skills/maintain-documentation/SKILL.md).
+When creating or changing documentation, follow the [documentation standard](documentation-standards.md) and [Maintain documentation skill](../skills/maintain-documentation/SKILL.md).
 
-- Keep shared knowledge in Docs, standing agent requirements in Rules, and task-specific procedures in Skills.
+- Keep shared knowledge in Context, standing agent requirements in Rules, and task-specific procedures in Skills.
 - Give each contract one authoritative location. Link to it instead of maintaining a second procedure or requirement.
 - Keep module implementation contracts with their modules.
 - Apply the [contributor scope rule](contributor-scope.md). Handbook content is shared.
 - Keep only `docs/`, `rules/`, and `skills/` at the Handbook root.
-- Give Docs a frontmatter title. Docs and Rules may contain folders.
+- Give Context a frontmatter title. Context and Rules may contain folders.
 - Keep each skill in `skills/<name>/SKILL.md`. Supporting files stay inside that skill's folder.
 - Use lowercase letters, digits, and single hyphens in skill names, up to 64 characters. Match the folder name.
 - Include `name` and `description` in skill frontmatter. Describe the capability and its trigger concisely.
