@@ -18,6 +18,13 @@ function platformColors() {
 
 export function mermaidTheme(dark: boolean) {
   const n = platformColors();
+  // Diagram boundaries carry meaning. UI divider tokens are too faint for them
+  // in dark mode, so blend toward the readable foreground for diagram strokes.
+  const mix = (a: string, b: string, weight: number) => '#' + [1, 3, 5].map((offset) => Math.round(parseInt(a.slice(offset, offset + 2), 16) * (1 - weight) + parseInt(b.slice(offset, offset + 2), 16) * weight).toString(16).padStart(2, '0')).join('');
+  if (dark) {
+    n.border = mix(n.background, n.text, 0.45);
+    n.line = mix(n.background, n.text, 0.65);
+  }
   const p = contentPalette[dark ? 'dark' : 'light'];
   const accents = [p.blue, p.cyan, p.orange, p.purple, p.green, p.magenta, p.yellow, p.red];
   // Pale category surfaces retain dark/light text contrast while distinguishing groups.

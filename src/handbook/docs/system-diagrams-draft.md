@@ -8,7 +8,9 @@ This is a review workspace, not an authoritative description or a new set of age
 
 ## Working approach
 
-Start with a question the reader needs answered. Model the relationships that answer it, then choose the Mermaid type.
+Start with the [documented personas](personas.md): designers and product managers who build with agents. Engineering partners need clear setup and handoff context. The studio owner is a responsibility one of these people may take on.
+
+Each diagram should help someone understand what they own, where they can work safely, or how work moves through the studio. Model the relationships that answer that question, then choose the Mermaid type. Implementation diagrams belong in developer references when a concrete need emerges. Module lifecycle and canvas saving are deferred from this review.
 
 - Use boundaries for containment or scope, labelled arrows for relationships, sequences for exchanges, and states for lifecycle changes.
 - Keep each diagram focused. Put details in accompanying text or a separate diagram.
@@ -21,45 +23,54 @@ These are candidate conventions to evaluate against the examples below. They are
 
 | Proposal | Reader's question | Type | Intended destination |
 | --- | --- | --- | --- |
-| Studio structure | What belongs where, and how do the parts relate? | Structural flowchart | Guide introduction |
+| Studio structure and ownership | What is mine, what is shared, and where do modules fit? | Structural flowchart | Guide introduction |
 | Agent collaboration | Who does what during an iteration? | Sequence | Work with your agent |
 | Sharing files | Where do changes exist after each action? | Flowchart | Share work |
 | Instruction context | How does the agent find relevant guidance? | Relationship flowchart | Handbook / agent guidance |
-| Prototype dependencies | What can a prototype import? | Dependency flowchart | Prototype boundaries |
-| Optional modules | What changes when a capability is disabled or removed? | State | Module documentation |
-| Canvas saving | How do local and external edits reach the file? | Sequence | Canvas developer documentation |
+| Prototype scope and dependencies | What belongs in my experiment, and what can it reuse? | Dependency flowchart | Prototype boundaries |
 
-## 1. Studio structure
+## 1. Studio structure and ownership
 
-**Question:** What belongs in a prototype, and how do shared resources support it?
+**Who this helps:** Designers and product managers finding their working area; studio owners coordinating shared changes.
 
-The current introduction diagram emphasizes contributor separation. This proposal emphasizes the composition of one workspace. Contributor ownership can be explained on its own page.
+**What they should understand:** Their prototypes are independent working spaces. Shared resources and platform capabilities serve the whole studio and need coordinated changes.
+
+**Question:** What is mine, what is shared, and where do modules fit?
+
+Boundaries show change scope. Labelled arrows show how shared resources and the platform support a prototype.
 
 ```mermaid
-flowchart TB
-  accTitle: How the studio's parts work together
-  accDescr: Design systems provide components and tokens for views. Handbook context informs people and agents. A prototype contains views and optional documents and canvases. Documents explain views; canvases arrange live previews and document cards.
-  systems[Design systems]
-  handbook[Handbook]
-  subgraph prototype[A prototype workspace]
-    views[Interactive views]
-    documents[Documents — optional]
-    canvases[Canvases — optional]
+flowchart LR
+  accTitle: Studio ownership and safe working areas
+  accDescr: Shared platform code contains modules that provide studio capabilities. Shared design systems and Handbook context support contributor-owned prototypes. Your prototypes contain views and optional documents and canvases. Other contributors have separate working areas. Shared changes require authorization; another owner's work needs their review.
+  subgraph shared[Shared scope]
+    platform[Platform code and modules]
+    systems[Design systems]
+    handbook[Handbook context]
   end
-  systems -->|Components and tokens| views
-  handbook -.->|Context for people and agents| prototype
-  documents -->|Explain| views
-  canvases -->|Live previews| views
-  canvases -->|Document cards| documents
+  subgraph yours[Your prototypes]
+    prototype[Views and local experiments]
+    context[Documents and canvases — optional]
+    context -->|Explain and arrange| prototype
+  end
+  platform -->|Provides capabilities| yours
+  systems -->|Components and tokens| prototype
+  handbook -.->|Guides people and agents| yours
 ```
 
-**Reading:** Boxes inside the prototype belong to that workspace. The dashed Handbook relationship represents guidance for people and agents, rather than a runtime import.
+**Reading:** You own the code and can adapt the studio. These boundaries describe collaboration scope, not access controls. Your registered contributor area is the default place for independent work. Platform code, design systems, utilities, configuration, and Handbook content are shared. An explicit request can authorize shared changes; work in another owner's prototype follows their review process.
 
-**Review focus:** Does this communicate the studio's composition without becoming an implementation diagram? Is the distinction between a document link and a live canvas preview clear enough?
+Modules organize platform capabilities. The Systems module supports design systems; the design-system content itself lives separately. Documents and Canvases are optional modules, while views remain core. The dashed Handbook arrow means guidance, not a code dependency.
 
-**Sources:** [Guide introduction](../../platform/modules/guide/pages/index.md), [Prototypes](../../platform/modules/prototypes/README.md), [Documents](../../platform/modules/document/README.md), [Canvases](../../platform/modules/canvas/README.md).
+**Review focus:** Can a new contributor identify their working area and recognize when a change affects the team? Do modules feel like capabilities supporting the workspace?
+
+**Sources:** [Guide introduction](../../platform/modules/guide/pages/index.md), [Extend your Studio](../../platform/modules/guide/pages/modules.md), [Contributor scope](../rules/contributor-scope.md).
 
 ## 2. Agent collaboration
+
+**Who this helps:** Designers and product managers directing work through an agent.
+
+**What they should understand:** They supply intent and judge results; the agent reads context, implements, and checks. Direct edits remain part of the workflow.
 
 **Question:** Who directs, executes, and reviews the work?
 
@@ -93,6 +104,10 @@ sequenceDiagram
 
 ## 3. Sharing files
 
+**Who this helps:** Designers and product managers sharing work with teammates, including engineering handoff recipients.
+
+**What they should understand:** Saving stays local; a commit records a version; push and pull exchange those recorded changes. A viewing site is published separately.
+
 **Question:** What moves when I save, commit, push, or pull?
 
 This separates local files from Git history. Publishing is a distinct activity described below the diagram.
@@ -112,13 +127,17 @@ flowchart TB
   remote -->|Pull and integrate commits| received
 ```
 
-**Reading:** Pulling includes receiving and integrating changes; conflicts may need resolution. The diagram abstracts the team's branching and review process. Publishing builds a viewing site through a configured host; pushing alone does not do that.
+**Reading:** Git history is the record of committed versions. Saving alone does not share work with teammates. Pulling includes receiving and integrating changes; conflicts may need resolution. The diagram abstracts the team's branching and review process. Publishing builds a viewing site through a configured host; pushing alone does not do that.
 
 **Review focus:** Is the distinction between files and history worth the extra nodes? Would publication be clearer as a separate diagram on the publishing page?
 
 **Source:** [Share work](../../platform/modules/guide/pages/working-with-others.md).
 
 ## 4. Instruction context
+
+**Who this helps:** Designers and product managers supplying product context; studio owners curating shared guidance.
+
+**What they should understand:** Docs explain the product and people; Rules set standing requirements; Skills describe task procedures. References help the agent find relevant material.
 
 **Question:** How does shared knowledge become relevant to an agent's task?
 
@@ -145,113 +164,46 @@ flowchart TB
 
 **Sources:** [Handbook](../../platform/modules/handbook/README.md), [Work with your agent](../../platform/modules/guide/pages/agents.md).
 
-## 5. Prototype dependencies
+## 5. Prototype scope and dependencies
 
-**Question:** What is a prototype allowed to import?
+**Who this helps:** Designers and product managers directing a local experiment; engineering partners identifying reusable components and prototype-specific code.
 
-Every arrow means “may import from.” Allowed targets form the diagram; the exclusions stay in prose to avoid a web of warning arrows.
+**What they should understand:** A prototype keeps its views and helpers together. It reuses its assigned design system and allowed shared tools without reaching into another prototype or private platform code.
+
+**Question:** What belongs in my experiment, and what can it reuse?
+
+The boundary shows local work. Arrows leaving it mean “may reuse in code.” Keep detailed import syntax in the linked reference.
 
 ```mermaid
 flowchart LR
-  accTitle: Allowed prototype imports
-  accDescr: A prototype can import its own helpers, its assigned design system, independent shared utilities, installed packages, and public libraries of enabled modules through their module aliases. It cannot import private platform code, other prototypes, or other design systems.
-  prototype[Prototype code]
-  prototype -->|May import| helpers[Own local helpers]
-  prototype -->|May import| system[Assigned design system]
-  prototype -->|May import| utilities[Independent shared utilities]
-  prototype -->|May import| packages[Installed packages]
-  prototype -->|Through module aliases| libraries[Enabled public module libraries]
-```
-
-**Reading:** The same boundaries apply to indirect and type-only dependencies. Private platform code, another prototype, and another design system are excluded. Shared utilities must remain independent of prototypes, systems, and platform code. An enabled module does not automatically expose a public library.
-
-**Review focus:** Is the import direction unmistakable? Does this belong in the detailed boundary reference rather than the introduction?
-
-**Source:** [Prototype workflow](../rules/prototype-workflow.md).
-
-## 6. Optional module lifecycle
-
-**Question:** How does disabling differ from removing a capability?
-
-This applies only to optional modules. Required modules cannot follow these transitions through the studio commands.
-
-```mermaid
-stateDiagram-v2
-  accTitle: Optional module availability
-  accDescr: An optional module can be enabled or disabled while its files remain installed. Removal requires a preview and dependency checks and removes module code and installed guidance.
-  state "Enabled" as Enabled
-  state "Disabled" as Disabled
-  state "Removed" as Removed
-  Enabled --> Disabled: Disable
-  Disabled --> Enabled: Enable
-  Enabled --> Removed: Preview and apply removal
-  Disabled --> Removed: Preview and apply removal
-  note right of Enabled
-    Capability is available
-  end note
-  note right of Disabled
-    Module files remain
-    Capability is unavailable
-  end note
-  note right of Removed
-    Module code and installed guidance removed
-    Content retained unless removal requested
-  end note
-```
-
-**Reading:** Removal can be blocked by dependencies. For optional prototype file types, disabling hides their items from normal navigation and retains their files. Restart the dev server after module changes. Reinstallation is a separate operation and is omitted here to keep the distinction focused.
-
-**Review focus:** Are these three states enough, or would a simpler comparison table explain the choice better? Does the diagram clearly preserve the difference between module code and user content?
-
-**Sources:** [Extend your Studio](../../platform/modules/guide/pages/modules.md), [Module contract](../../platform/modules/README.md).
-
-## 7. Canvas saving
-
-**Question:** What happens when local canvas edits meet an external file change?
-
-This is a developer diagram for the optional Canvases module. It shows one save attempt with simplified recovery branches.
-
-```mermaid
-sequenceDiagram
-  accTitle: Saving a canvas with concurrent file edits
-  accDescr: Canvas edits schedule a version-checked file write. A successful write updates the saved version. If the file changed externally, the reader loads and merges the newer file before retrying. Repeated conflicts pause saving and report an error; other write failures retry with backoff.
-  actor Person
-  participant Canvas as Open canvas
-  participant Saver as Save controller
-  participant File as Canvas file layer
-  Person->>Canvas: Edit scene
-  Canvas->>Saver: Scene changed
-  Note over Saver: Debounce edits. One write at a time
-  Saver->>File: Write with expected file version
-  alt Version matches
-    File-->>Saver: Saved version
-    Saver->>Saver: Record saved version
-  else File changed externally
-    File-->>Saver: Version conflict
-    Saver->>File: Read newer file
-    File-->>Saver: New content and version
-    Saver->>Canvas: Merge remote and local elements
-    alt Conflict retry limit not exceeded
-      Saver->>Saver: Schedule another save attempt
-    else Repeated conflicts
-      Saver-->>Person: Pause saving and report error
-    end
-  else Other write failure
-    File-->>Saver: Write error
-    Saver->>Saver: Retry with backoff
+  accTitle: A prototype's local scope and reusable foundations
+  accDescr: A prototype contains interactive views, local helpers, and optional documents and canvases. Its code can reuse its assigned design system, independent shared utilities, installed packages, and public libraries from enabled modules. Other prototypes, other design systems, and private platform code are outside its dependency boundary.
+  subgraph prototype[One prototype — local experiment]
+    direction TB
+    views[Interactive views]
+    helpers[Local components and helpers]
+    material[Documents and canvases — optional]
+    views -->|Uses| helpers
+    material -.->|Explains and arranges| views
   end
+  prototype -->|Code may reuse| system[Assigned design system]
+  prototype -->|Code may reuse| tools[Shared utilities and packages]
+  prototype -->|Code may reuse| libraries[Public module libraries]
 ```
 
-**Reading:** The successful branch can still have newer unsaved edits waiting for the next write. Independent file updates also appear in the canvas; with no pending edits, the file replaces the scene instead of merging. Published canvases are read-only.
+**Reading:** New components can stay local while an idea develops. Moving an experiment into the shared design system is a coordinated shared change. Other prototypes, other design systems, and private platform code remain outside the allowed code dependencies. Documents and canvases provide context alongside views; the dashed arrow represents that relationship.
 
-**Review focus:** Is this enough detail to explain concurrency, or should conflict recovery become a separate diagram? Keep the main human-facing canvas chapter simpler.
+For agents and engineering partners: public module libraries are accessed through `@module/<id>`. An enabled module does not automatically expose a library. Shared utilities remain independent of prototypes, systems, and platform code. Indirect and type-only dependencies follow the same boundaries.
 
-**Sources:** [Canvases](../../platform/modules/canvas/README.md), implementation in `src/platform/modules/canvas/useCanvasFile.ts` and `mergeRemote.ts`.
+**Review focus:** Can someone distinguish local experimentation from changing a shared foundation? Does the diagram help an engineer recognize what can be reused during handoff?
+
+**Sources:** [Prototype workflow](../rules/prototype-workflow.md), [Prototypes](../../platform/modules/prototypes/README.md), [Contributor scope](../rules/contributor-scope.md).
 
 ## Decisions to make after review
 
-1. Choose the smallest model that answers each question accurately.
-2. Refine node names, arrow labels, and explanatory text together.
-3. Check light and dark appearance, long labels, and document-width layouts.
-4. Move accepted diagrams to their authoritative pages. Remove or replace the corresponding draft sections so this does not become a second contract.
-5. Promote only the conventions that proved useful into [Documentation standards](documentation-standards.md).
+1. Check whether each intended reader can explain the diagram in their own words.
+2. Choose the smallest accurate model of ownership, safe scope, or collaboration.
+3. Refine node names, arrow labels, and explanatory text together.
+4. Check light and dark appearance, long labels, and document-width layouts.
+5. Move accepted diagrams to their authoritative pages. Remove the corresponding draft sections to avoid a second contract.
+6. Promote only useful conventions into [Documentation standards](documentation-standards.md).
