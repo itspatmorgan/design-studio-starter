@@ -5,19 +5,16 @@
 // link points at nothing). This file knows nothing about any file type: it asks the registry.
 import { memo } from 'react';
 import { embedFor } from '@/platform/app/data/fileTypeModule';
-import { Link } from '@tanstack/react-router';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { SquareArrowExpand01Icon } from '@hugeicons/core-free-icons';
 import { CaptureUpdateAction, newElementWith } from '@excalidraw/excalidraw';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { AppState, ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import { fileTypeModules } from '@/platform/app/data/fileTypes';
-import { itemLabel, itemLink } from '@/platform/app/data/manifest';
+import { itemLabel } from '@/platform/app/data/manifest';
 import type { Manifest, Prototype } from '@/platform/app/data/types';
 import ItemCard, { ITEM_CARD_HEIGHT } from '@/platform/app/items/ItemCard';
 import { appPathOf, isInPrototype, resolveItemPath } from '@/platform/app/items/itemLinks';
 
-const HEADER_HEIGHT = 36;
+import EmbedFrame, { EMBED_HEADER_HEIGHT as HEADER_HEIGHT } from '@/platform/app/items/EmbedFrame';
 const BORDER = 2; // 1px each side
 const DEFAULT_WIDTH = 480;
 const DEFAULT_BODY_HEIGHT = Math.round(DEFAULT_WIDTH * 900 / 1440); // a 1440 x 900 screen, scaled
@@ -50,7 +47,7 @@ const isItem = (el: ExcalidrawElement) => el.type === 'embeddable' && !el.isDele
 
 // Rules for items on a canvas (they're `embeddable` elements, but act like frames, not shapes):
 // sized like a screen (or a card) when first inserted instead of Excalidraw's video-box default,
-// square corners (rounding clipped the preview), no outline (the frame draws its own border), and
+// no Excalidraw outline (the shared rounded frame draws its own border), and
 // no link icon (the title bar is the link).
 // Kept out of undo history: undo must reverse only what the person did.
 export function normalizeEmbeds(api: ExcalidrawImperativeAPI, elements: readonly ExcalidrawElement[], manifest: Manifest, current: Prototype) {
@@ -113,31 +110,16 @@ function CanvasItemInner({ element, manifest, current, offscreen, overview, moun
   const { proto, item } = target;
   const hidden = offscreen || overview;
   return (
-    <div data-canvas-frame="" className="relative flex h-full w-full flex-col overflow-hidden border border-border bg-background">
-      {/* The whole title bar is the link that opens the item: gray so it reads as a control, an icon that
-          turns to the primary color on hover, and the word "Open" that appears with it. */}
-      <Link
-        {...itemLink(proto, item)}
-        data-open
-        aria-label={`Open ${itemLabel(item.path)}`}
-        className="group/open flex shrink-0 items-center justify-between gap-2 border-b border-border bg-muted/60 px-3 text-xs text-foreground no-underline transition-colors hover:bg-muted hover:no-underline"
-        style={{ height: HEADER_HEIGHT }}
-      >
-        <span className="truncate font-semibold">{itemLabel(item.path)}</span>
-        <span className="inline-flex shrink-0 items-center gap-1.5 font-medium">
-          <span className="opacity-0 transition-opacity group-hover/open:text-primary group-hover/open:opacity-100">Open</span>
-          <HugeiconsIcon icon={SquareArrowExpand01Icon} size={16} className="text-muted-foreground transition-colors group-hover/open:text-primary" />
-        </span>
-      </Link>
+    <EmbedFrame proto={proto} item={item} className="h-full w-full">
       {/* Hidden means mounted but skipped for layout and paint (far off screen, or too small to
           read), so the live preview never reloads or jumps. */}
-      <div className="min-h-0 flex-1" style={hidden ? { visibility: 'hidden', contentVisibility: 'hidden' } : undefined}>
+      <div inert className="min-h-0 flex-1" style={hidden ? { visibility: 'hidden', contentVisibility: 'hidden' } : undefined}>
         {mounted
           ? <Embed proto={proto} item={item} width={element.width - BORDER} height={element.height - HEADER_HEIGHT - BORDER} />
           : <div className="h-full bg-muted/50" />}
       </div>
       {overview && !offscreen && <div className="canvas-overview"><span>{itemLabel(item.path)}</span></div>}
-    </div>
+    </EmbedFrame>
   );
 }
 

@@ -38,6 +38,8 @@ An `Embed` in `open.tsx` supplies a read-only preview for documents and canvases
 
 Prototype documents use `![Description](relative/file.ext)` on its own line. The shared Markdown reader resolves the exact file within the same prototype, renders the registered preview or card, and provides an Open link. Inline references stay links. Missing or disabled types show an unavailable message. Ordinary image formats retain Markdown image behavior.
 
+Preview surfaces use the shared `EmbedFrame`: rounded corners and a full-width gray header link that darkens and reveals Open on hover or keyboard focus. Header text is never underlined. Preview contents are inert; interaction happens after opening the file.
+
 A loader uses `import.meta.glob(['/__studio_globs__/*'])`. Vite replaces the placeholder with extensions and content roots, excluding archived prototypes in production.
 
 ## Lifecycle
