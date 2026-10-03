@@ -42,6 +42,23 @@ toc: true
 
 Without a frontmatter title, an opening level-one heading (`# Title`) supplies the title.
 
+### Mermaid diagrams
+
+Use a fenced code block with the language `mermaid` to show a diagram:
+
+```mermaid
+flowchart LR
+  accTitle: Feedback review
+  accDescr: Collected feedback goes to review, then becomes a task.
+  A[Collect feedback] --> B[Review] --> C[Create task]
+```
+
+In the Markdown source, put three backticks followed by `mermaid` before the diagram, and three backticks after it.
+
+Diagrams follow the platform's light or dark mode. Expand **Mermaid source** below a diagram to read or copy its text. Invalid syntax shows an error with the source still available. Add `accTitle` and `accDescr` to describe the diagram for assistive technology.
+
+This shared reader also supports Mermaid in the Handbook, Guide, and repository reference pages. It loads Mermaid only when a diagram appears. The Markdown text remains the saved source; no image file is required. Diagram scripts and click actions are disabled.
+
 ## Links and related context
 
 Link to another item with a relative path:
@@ -64,6 +81,7 @@ This optional module owns prototype Markdown. Follow the [module rule](../../../
 - `type.ts`: what the build reads: the `.md` extension, a template (a title and an empty-document line), and the checks on frontmatter.
 - `open.tsx`: the icon, how a document loads, and its page.
 - `src/platform/app/docs/`: the shared Markdown reader and page style. The Handbook uses this reader independently.
+- `scripts/build/rehype-mermaid.js`: preserves Mermaid fences before code highlighting. The shared reader maps them to `MermaidDiagram.tsx` for lazy SVG rendering.
 - `loader.ts`: the glob of document files for the deployed site.
 
 Agent contract: `src/handbook/rules/documents.md`.

@@ -12,6 +12,7 @@ import remarkTitleFromHeading from './scripts/build/remark-title-from-heading.js
 import remarkReadmeGuide from './scripts/build/remark-readme-guide.js';
 import rehypeSlug from 'rehype-slug';
 import rehypePrettyCode from 'rehype-pretty-code';
+import rehypeMermaid from './scripts/build/rehype-mermaid.js';
 import tailwindcss from '@tailwindcss/vite';
 import importGuard from './scripts/build/vite-import-guard-plugin.js';
 import manifestWatch from './scripts/build/vite-manifest-watch-plugin.js';
@@ -34,7 +35,7 @@ function markdown(reference = false) {
     format: 'md',
     providerImportSource: '@mdx-js/react',
     remarkPlugins: [remarkFrontmatter, ...(reference ? [remarkTitleFromHeading, () => remarkReadmeGuide({ full: true })] : [remarkReadmeGuide, remarkTitleFromHeading]), remarkMdxFrontmatter, remarkGfm, remarkHtmlAsText],
-    rehypePlugins: [rehypeSlug, [rehypePrettyCode, { theme: { light: 'github-light', dark: 'github-dark' }, keepBackground: false }]],
+    rehypePlugins: [rehypeSlug, rehypeMermaid, [rehypePrettyCode, { theme: { light: 'github-light', dark: 'github-dark' }, keepBackground: false }]],
   });
   const transform = plugin.transform;
   return {

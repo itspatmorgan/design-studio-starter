@@ -44,6 +44,8 @@ Agent instructions should be direct and task-specific. Keep skill descriptions p
 
 Use a table for comparisons or mappings. Use a diagram when relationships or sequence are difficult to explain in text.
 
+Use fenced `mermaid` blocks for diagrams in platform Markdown. The shared reader renders them in the Guide, Handbook, reference pages, and prototype Documents. Include `accTitle` and `accDescr` for accessible descriptions. Keep the text in the document so people and agents can review and revise it.
+
 Use screenshots only when the interface itself matters and the document location supports them. Include useful text descriptions and keep visuals current.
 
 Follow the [Handbook rule](../rules/handbook.md) for its image convention. A visual aid should clarify the content, not repeat it.

@@ -27,6 +27,8 @@ Ask your agent to add or update content from the material you supply. Locally, y
 
 Docs and Rules support Markdown files and folders. Each skill needs its own folder and a `SKILL.md`. Supporting files can live beside it.
 
+The Handbook, Guide, and reference pages render fenced `mermaid` blocks as diagrams through the shared platform Markdown reader. This remains available when prototype Documents is disabled. Keep diagrams as text in the Markdown file and include `accTitle` and `accDescr` for accessible descriptions.
+
 To edit text:
 
 1. Select **Edit source** in the file's right-click menu.

@@ -1,0 +1,55 @@
+import { useEffect, useId, useState } from 'react';
+
+// Mermaid has global configuration. Serialize initialization and rendering so diagrams
+// in different pages/color modes cannot overwrite each other's configuration mid-render.
+let pending: Promise<unknown> = Promise.resolve();
+function render(source: string, id: string, dark: boolean) {
+  const job = pending.catch(() => undefined).then(async () => {
+    const { default: mermaid } = await import('mermaid');
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'strict',
+      theme: dark ? 'dark' : 'default',
+      fontFamily: 'Inter, sans-serif',
+      suppressErrorRendering: true,
+      secure: ['secure', 'securityLevel', 'startOnLoad', 'maxTextSize', 'maxEdges', 'suppressErrorRendering', 'theme', 'themeVariables', 'fontFamily'],
+    });
+    return (await mermaid.render(id, source)).svg;
+  });
+  pending = job;
+  return job;
+}
+
+export function MermaidDiagram({ source }: { source: string }) {
+  const id = `mermaid-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
+  const [result, setResult] = useState<{ svg?: string; error?: string }>({});
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => setDark(document.documentElement.classList.contains('dark')));
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    setResult({});
+    render(source, id, dark).then(
+      (svg) => { if (active) setResult({ svg }); },
+      (error: unknown) => { if (active) setResult({ error: error instanceof Error ? error.message : String(error) }); },
+    );
+    return () => { active = false; };
+  }, [source, id, dark]);
+
+  return (
+    <figure className="not-prose my-6 min-w-0 rounded-lg border border-border bg-card p-4">
+      {result.svg ? <div className="overflow-x-auto [&_svg]:mx-auto" dangerouslySetInnerHTML={{ __html: result.svg }} />
+        : result.error ? <div role="alert"><p className="text-sm font-medium">Unable to render Mermaid diagram.</p><pre className="mt-2 overflow-x-auto whitespace-pre-wrap text-xs text-muted-foreground">{result.error}</pre></div>
+          : <p role="status" className="text-sm text-muted-foreground">Rendering diagram…</p>}
+      <details className="mt-3 text-sm">
+        <summary className="cursor-pointer text-muted-foreground">Mermaid source</summary>
+        <pre className="mt-2 overflow-x-auto text-xs"><code>{source}</code></pre>
+      </details>
+    </figure>
+  );
+}

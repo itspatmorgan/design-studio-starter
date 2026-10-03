@@ -5,6 +5,7 @@ import { DocBase } from '@/platform/app/docs/DocBase';
 import { fileTypeOf } from '@/platform/app/data/fileTypes';
 import { itemSlug } from '@/platform/core/fileTypes';
 import { markdownPath } from './referenceLinks';
+import { MermaidDiagram } from './MermaidDiagram';
 
 // Styling for Markdown comes from Tailwind Typography's `prose` classes (see Prose).
 // This map covers only what CSS can't: app links navigate without a reload, and
@@ -27,4 +28,4 @@ function MarkdownLink({ href = '', ...props }: ComponentProps<'a'>) {
   return <a href={href} target="_blank" rel="noopener noreferrer" {...props} />;
 }
 
-export const markdownComponents: MDXComponents = { a: MarkdownLink };
+export const markdownComponents: MDXComponents = { a: MarkdownLink, 'mermaid-diagram': MermaidDiagram };
