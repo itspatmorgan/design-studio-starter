@@ -26,6 +26,8 @@ Code defines implemented behavior. Documentation explains that behavior and the 
 
 Keep module details with their module. This lets removal also remove the related documentation. Keep shared standards in the Handbook.
 
+File-backed navigation follows the [shared source workflow](../../platform/core/source.md). Expose source editing through navigation and the common keyboard toggle. Keep source-file mappings explicit for generated pages or pages backed by several files.
+
 ## Write clearly
 
 Use ASD-STE100-inspired language with flexibility for our [personas](../docs/personas.md). This is a writing approach, not a claim of formal compliance.

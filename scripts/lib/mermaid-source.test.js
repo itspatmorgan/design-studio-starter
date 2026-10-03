@@ -3,8 +3,8 @@ import test from 'node:test';
 import { EditorState } from '@codemirror/state';
 import { ensureSyntaxTree } from '@codemirror/language';
 import { classHighlighter, highlightTree } from '@lezer/highlight';
-import { mermaidSource } from '../../src/platform/modules/prototypes/viewer/mermaidSource.ts';
-import { markdownSource } from '../../src/platform/modules/prototypes/viewer/markdownSource.ts';
+import { mermaidSource } from '../../src/platform/core/source/mermaidSource.ts';
+import { markdownSource } from '../../src/platform/core/source/markdownSource.ts';
 
 const diagram = 'flowchart LR\n  %% Review path\n  feedback[Feedback] --> review{Review}\n';
 function tokens(doc, extensions) {

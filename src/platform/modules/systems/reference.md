@@ -71,6 +71,14 @@ Foundation pages come from custom properties in the theme. No separate foundatio
 
 Typography includes Tailwind defaults where tokens do not override them. Pages appear when relevant tokens exist, with typography always available.
 
+## Source editing
+
+Systems uses the [shared platform source workflow](../../core/source.md). Right-click a navigation item for file actions, or use **⌘' / Ctrl+'** to toggle source. **⌘S / Ctrl+S** saves; the toggle or **Done** returns to rendering with unsaved-change protection. Source editors remain in Studio's color mode.
+
+Component pages open their Page, Examples, and Component file tabs. Introduction and Icons open the system's introduction source (`intro.tsx`, or the platform's `platformSystem.tsx`). A missing introduction opens `system.ts`. Generated foundation pages open the system's theme CSS. There is no separate editable file for each token-family page.
+
+Only these system source files and discovered component files are accessible through the local Systems source endpoint. Menus provide edit, external editor, reveal, and copying actions without rename or delete.
+
 ## System choice
 
 The Systems navigation uses a grouped selector: Prototype systems contains installed prototype systems, with the configured default first; Platform contains Studio’s own system. Entering /systems opens the default prototype system; switching systems opens its introduction. Explicit system URLs keep their selected system.

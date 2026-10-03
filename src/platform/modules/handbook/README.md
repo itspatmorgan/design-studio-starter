@@ -33,6 +33,8 @@ Context and Rules support Markdown files and folders. Each skill needs its own f
 
 The Handbook, Guide, and reference pages render fenced `mermaid` blocks as diagrams through the shared platform Markdown reader. This remains available when prototype Documents is disabled. Keep diagrams as text in the Markdown file and include `accTitle` and `accDescr` for accessible descriptions.
 
+The Handbook uses the [shared platform source workflow](../../core/source.md): **⌘' / Ctrl+'** toggles source and rendering; **⌘S / Ctrl+S** saves.
+
 To edit text:
 
 1. Select **Edit source** in the file's right-click menu.
@@ -54,7 +56,7 @@ Documentation navigation uses the same file-menu actions as the Handbook. Right-
 
 The Guide is shared platform documentation. Its pages can also be edited locally:
 
-1. Open the Guide chapter and select **Edit**.
+1. Right-click the Guide chapter in navigation and select **Edit source**.
 2. Edit its Markdown.
 3. Save with Command+S on macOS or Ctrl+S on other systems.
 4. Select **Done** to return to the chapter.

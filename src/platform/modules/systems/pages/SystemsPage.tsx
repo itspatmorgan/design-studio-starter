@@ -1,6 +1,6 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from '@tanstack/react-router';
-import { NavGroup, NavHeader, NavList, NavTitle, SectionNav, navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
+import { lazy, Suspense, useEffect, useRef } from 'react';
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
+import { NavGroup, NavHeader, NavList, NavTitle, SectionNav } from '@/platform/app/shell/nav';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/platform/components/select';
 import { NotFound } from '@/platform/app/shell/App';
 import { Code, ColorModeSupport, ColorTokens, IconsPage, PageHeader, Prose } from '@/platform/modules/systems/pages/foundations';
@@ -12,9 +12,15 @@ import type { SystemComponentDoc } from '@/platform/modules/systems/docs';
 import type { ThemeToken, TokenGroup } from '@/platform/modules/systems/themeTokens';
 import { ThemeScope } from '@/platform/modules/systems/ThemeScope';
 import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
+import { useSourceView } from '@/platform/core/source/useSourceView';
+import FileNavItem from '@/platform/app/shell/FileNavItem';
+import { PLATFORM_SOURCE, sourceOf } from '../sources';
+import { systemSourceRequest } from './systemSource';
 import { platform } from '@/platform/modules/systems/pages/platformSystem';
 
 const ComponentEditor = import.meta.env.DEV ? lazy(() => import('./ComponentEditor').then((module) => ({ default: module.ComponentEditor }))) : null;
+
+const SystemSourceEditor = import.meta.env.DEV ? lazy(() => import('./SystemSourceEditor')) : null;
 
 // Systems: a selector for design systems, and one page per foundation and component,
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
@@ -38,8 +44,17 @@ const SYSTEM_CHOICES = [
 type SystemId = string;
 type NavGroup = { heading?: string; items: [id: string | null, label: string][] };
 
-// Components can be edited in the app while it runs locally.
-const canEdit = () => import.meta.env.DEV;
+// Map a rendered Systems page to its actual source files.
+function sourcePath(system: string, page: string | undefined, components: SystemComponentDoc[]) {
+  const source = system === 'platform' ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
+  if (!page || page === 'icons') return system === 'platform' ? 'src/platform/modules/systems/pages/platformSystem.tsx' : intros['/systems/' + system + '/intro.tsx'] ? source.dir + 'intro.tsx' : source.dir + 'system.ts';
+  const component = components.find((c) => c.slug === page);
+  if (component) {
+    const file = component.files.doc ?? component.files.examples ?? component.files.source;
+    return file ? source.components + '/' + file : null;
+  }
+  return source.theme;
+}
 
 // The foundations pages: page id and name, for each kind of token a theme can define.
 const TOKEN_PAGES: { id: string; label: string; group: TokenGroup }[] = [
@@ -101,16 +116,7 @@ function SystemNav({ system, components, tokens }: { system: SystemId; component
         {navGroups(SYSTEMS[system], components, tokens).map((g, i) => (
           <NavGroup key={g.heading ?? i} heading={g.heading}>
             {g.items.map(([id, label]) => (
-              <Link
-                key={id ?? 'intro'}
-                to={(id ? '/systems/$system/$page' : '/systems/$system') as never}
-                params={(id ? { system, page: id } : { system }) as never}
-                activeOptions={{ exact: true }}
-                style={navLinkStyle}
-                className={navLinkClass}
-              >
-                {label}
-              </Link>
+              <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={sourcePath(system, id ?? undefined, components)!} label={label} reveal={() => systemSourceRequest('reveal', sourcePath(system, id ?? undefined, components)!)} />
             ))}
           </NavGroup>
         ))}
@@ -120,8 +126,8 @@ function SystemNav({ system, components, tokens }: { system: SystemId; component
 }
 
 // One page of a system, or null if the system doesn't have it.
-function SystemPage({ system, sys, components, tokens, origin, page, onEdit }: {
-  system: SystemId; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[]; origin: 'shadcn' | null; page?: string; onEdit?: () => void;
+function SystemPage({ system, sys, components, tokens, origin, page }: {
+  system: SystemId; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[]; origin: 'shadcn' | null; page?: string;
 }) {
   const has = (group: TokenGroup) => tokens.some((t) => t.group === group);
   switch (page) {
@@ -143,7 +149,7 @@ function SystemPage({ system, sys, components, tokens, origin, page, onEdit }: {
       return sys.icons ? <><PageHeader title="Icons" description={`This system uses ${sys.icons.library}.`} /><IconsPage icons={sys.icons} /></> : null;
   }
   const found = components.find((c) => c.slug === page);
-  return found ? <ComponentDocPage system={system} sys={sys} component={found} origin={origin} onEdit={onEdit} /> : null;
+  return found ? <ComponentDocPage system={system} sys={sys} component={found} origin={origin} /> : null;
 }
 
 export default function SystemsPage() {
@@ -157,21 +163,22 @@ export default function SystemsPage() {
   const manifestSystem = useManifest().systems[system];
   const components = manifestSystem?.components ?? [];
   const tokens = manifestSystem?.tokens ?? [];
-  // Editing a component's files: the editor takes the page's place.
-  const [editing, setEditing] = useState(false);
-  useEffect(() => { setEditing(false); }, [system, params.page]);
-  const editable = canEdit() ? components.find((c) => c.slug === params.page) : undefined;
-  const content = sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page, onEdit: editable ? () => setEditing(true) : undefined }) : null;
+  const search = useSearch({ strict: false }) as { mode?: 'source' };
+  const editing = import.meta.env.DEV && search.mode === 'source';
+  const path = sys ? sourcePath(system, params.page, components) : null;
+  const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(path), editing);
+  const editable = components.find((c) => c.slug === params.page);
+  const content = sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page }) : null;
   if (!sys || !content) return <NotFound />;
   return (
     <div className="flex min-h-0 flex-1">
       <SystemNav system={system} components={components} tokens={tokens} />
-      {editing && editable && ComponentEditor ? (
-        <main className="flex min-h-0 min-w-0 flex-1 flex-col"><Suspense fallback={<p className="p-4 text-sm">Loading editor…</p>}><ComponentEditor system={system} component={editable} onDone={() => setEditing(false)} /></Suspense></main>
+      {editing && path ? (
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col"><Suspense fallback={<p className="p-4 text-sm">Loading editor…</p>}>{editable && ComponentEditor ? <ComponentEditor key={system + '/' + editable.slug} system={system} component={editable} onDone={toggle} /> : SystemSourceEditor && <SystemSourceEditor path={path} onDone={toggle} />}</Suspense></main>
       ) : (
         <main ref={mainRef} className="min-w-0 flex-1 overflow-y-auto">
           <ThemeScope themeClass={sys.scopeClass} className="min-h-full bg-background text-foreground">
-            <div className="mx-auto w-full max-w-3xl px-8 py-10" data-testid={`${system}-set`}>{content}</div>
+            <div ref={rendered} tabIndex={-1} className="mx-auto w-full max-w-3xl px-8 py-10 outline-none" data-testid={`${system}-set`}>{content}</div>
           </ThemeScope>
         </main>
       )}

@@ -10,7 +10,7 @@ The Reference overview explains how contracts join the agent’s working context
 
 The optional module uses `documentation` for its folder, declaration ID, configuration key, and public section key. Disable it through studio commands to hide the Guide and its rail entry. Reference discovery and direct access belong to the shared platform and remain available when this module is disabled or removed. Guide and Reference, including their section links and individual pages, are excluded from the command palette. Prototype Documents is independent of both reading modes.
 
-Right-click a file in either reading mode for **Edit source**, **Open in editor**, **Reveal in Finder**, **Copy link**, and **Copy path**. Local edits use the shared source editor and detect external changes before saving. Guide chapter edits preserve the complete underlying README. Platform documentation has no rename or delete actions in these menus. Published pages support copying links and paths; local editing and operating-system actions are unavailable.
+Right-click a file in either reading mode for **Edit source**, **Open in editor**, **Reveal in Finder**, **Copy link**, and **Copy path**. Use **⌘' / Ctrl+'** to toggle the selected file between its rendered view and source; **⌘S / Ctrl+S** saves. Returning with unsaved changes requires confirmation. Source editing opens from navigation, with no separate Edit button on the page. Local edits use the [shared platform editor](../../core/source.md) and detect external changes before saving. Guide chapter edits preserve the complete underlying README. Platform documentation has no rename or delete actions in these menus. Published pages support copying links and paths; local editing and operating-system actions are unavailable.
 
 - `module.ts`: who it is and its section.
 - `app.tsx`: its rail button and routes.
@@ -22,5 +22,5 @@ Right-click a file in either reading mode for **Edit source**, **Open in editor*
 - Diagrams are fenced `mermaid` blocks in the Markdown pages, rendered by the shared platform reader.
 
 - `src/platform/app/docs/DocumentationNavItem.tsx`, `src/platform/app/shell/FileActionItems.tsx`: shared file-menu actions, also used by Handbook and prototype navigation.
-- `src/platform/app/docs/DocumentationEditor.tsx`, `documentationSource.ts`, `scripts/build/files/documentation.js`: local reference source access, limited to indexed documentation, with version and size checks.
-- `GuideEditor.tsx`, `source.ts`, `server.ts`: local Markdown editing through the shared source editor, with source allowlisting and version checks. Published builds omit the editor.
+- `src/platform/app/docs/DocumentationEditor.tsx`, `documentationSource.ts`, `scripts/build/files/source.js`: local reference source access, limited to indexed documentation, with version and size checks.
+- Guide and Reference share `DocumentationEditor.tsx` and the documentation source endpoint. Standalone chapters remain repairable when their metadata is invalid. Published builds omit the editor.

@@ -30,7 +30,7 @@ Component pages can include descriptions, generated props tables, and live examp
 
 Ask your agent to add or update components and their documentation. The `document-component` skill provides the component-page procedure.
 
-Locally, **Edit** on a component page opens tabs for its Markdown, examples, and component code. Missing page and example files can be created from templates. Published pages are read-only.
+Locally, right-click a navigation item and select **Edit source**, or use **⌘' / Ctrl+'** to toggle source and rendering. Component pages expose Markdown, examples, and component code in file tabs. Foundation pages open their theme CSS; Introduction and Icons open their introduction source. Missing component page and example files can be created from templates. **⌘S / Ctrl+S** saves. Published pages are read-only. See the [shared source workflow](../../core/source.md).
 
 Missing documentation normally produces build warnings. A system can require complete documentation with `docs: 'strict'`.
 

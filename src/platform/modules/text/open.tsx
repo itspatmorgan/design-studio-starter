@@ -7,12 +7,12 @@ import type { Artifact, Prototype } from '@/platform/app/data/types';
 import { rootOf } from '@/platform/core/roots';
 import { textFiles } from './loader';
 
-const SourcePane = import.meta.env.DEV ? lazy(() => import('@/platform/modules/prototypes/viewer/SourcePane')) : null;
+const ArtifactSource = import.meta.env.DEV ? lazy(() => import('@/platform/app/source/ArtifactSource')) : null;
 
 type Props = { proto: Prototype; item: Artifact; text: string | null };
 
 function TextPage({ proto, item, text }: Props) {
-  if (text === null) return SourcePane && <SourcePane proto={proto} item={item} />;
+  if (text === null) return ArtifactSource && <ArtifactSource proto={proto} item={item} />;
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-background text-foreground">
       <div className="flex h-[57px] shrink-0 items-center border-b border-border px-4 font-mono text-[12px] text-muted-foreground">{item.path}</div>

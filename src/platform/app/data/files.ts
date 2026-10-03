@@ -1,3 +1,4 @@
+import { SourceChanged } from '@/platform/core/source/access';
 // A prototype's files, from the dev server (scripts/build/vite-files-plugin.js). Dev only: on the
 // deployed site these return null, and the prototype navigation lists views from the manifest.
 import { useEffect, useState } from 'react';
@@ -150,7 +151,7 @@ export async function setArtifactLofi(p: PrototypeInfo, path: string, on: boolea
 }
 
 // The file changed on disk since it was read (its version isn't `base` any more).
-export class SourceChanged extends Error {}
+
 
 // Saves an item file in your prototype. `base` is the version you read or last saved.
 export async function writeSource(p: PrototypeInfo, path: string, content: string, base: string) {

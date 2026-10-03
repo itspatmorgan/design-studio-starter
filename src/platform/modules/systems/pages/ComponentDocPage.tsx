@@ -101,10 +101,10 @@ function webLink(url: string | null) {
   try { const u = new URL(url ?? ''); return u.protocol === 'https:' || u.protocol === 'http:' ? u : null; } catch { return null; }
 }
 
-// `onEdit` shows an Edit button that opens the component's files in the editor (dev only). `origin`
+// `origin`
 // is where the system's components come from: 'shadcn' links the page to that component's shadcn/ui
 // docs, unless its frontmatter gives a link of its own.
-export function ComponentDocPage({ system, sys, component, origin, onEdit }: { system: string; sys: DesignSystem; component: SystemComponentDoc; origin: 'shadcn' | null; onEdit?: () => void }) {
+export function ComponentDocPage({ system, sys, component, origin }: { system: string; sys: DesignSystem; component: SystemComponentDoc; origin: 'shadcn' | null }) {
   const { source, examples, doc } = component.files;
   const [loaded, setLoaded] = useState<Loaded>({});
   const [errors, setErrors] = useState<string[]>([]);
@@ -147,7 +147,6 @@ export function ComponentDocPage({ system, sys, component, origin, onEdit }: { s
             </>
           ) : undefined}
         />
-        {onEdit && <Button variant="outline" size="sm" onClick={onEdit} className="absolute top-1 right-0">Edit</Button>}
       </div>
       {errors.length > 0 && <div role="alert" className="space-y-2 rounded-md border border-border p-3 text-sm"><p>Some component files couldn't load.</p>{errors.map((error) => <p key={error} className="text-muted-foreground">{error}</p>)}<Button variant="outline" size="sm" onClick={() => setRetry((value) => value + 1)}>Try again</Button></div>}
       {Doc ? <ErrorBoundary resetKeys={[Doc, retry]} FallbackComponent={ViewError}><Prose className={PAGE_PROSE}><Doc /></Prose></ErrorBoundary> : !doc && <Note>No page yet. Add <code>{stem}.md</code> next to the component to describe it and say when to use it.</Note>}

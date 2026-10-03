@@ -1,10 +1,14 @@
 // A component's files in the Source editor, one tab each: its page (Markdown), its examples, and
-// the component itself. Shown in place of the component's page while you edit (ComponentDocPage's
-// Edit button); the page updates as you save. A file the component doesn't have yet is offered as
+// the component itself. Shown in place of the component's page through navigation's Edit source action; the page updates as you save. A file the component doesn't have yet is offered as
 // a template. Dev only: it reads and saves through the file layer (scripts/build/vite-files-plugin.js).
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from '@tanstack/react-router';
-import SourcePane from '@/platform/modules/prototypes/viewer/SourcePane';
+import SourceEditor from '@/platform/core/source/SourceEditor';
+import type { SourceAccess } from '@/platform/core/source/access';
+import { PLATFORM_SOURCE, sourceOf } from '../sources';
+import { PROTOTYPE_SYSTEMS } from '../data/systems';
+import { systemSourceRequest } from './systemSource';
+import { shortcutLabel } from '@/platform/app/shell/artifactShortcuts';
 import { fileOp, systemFiles } from '@/platform/app/data/files';
 import { setManifest } from '@/platform/app/data/manifest';
 import { Button } from '@/platform/components/button';
@@ -16,10 +20,10 @@ import type { SystemComponentDoc } from '@/platform/modules/systems/docs';
 type Kind = keyof SystemComponentDoc['files'];
 
 // What each tab holds, in order, and how the editor opens its file (Markdown as a document; the rest as text).
-const TABS: { kind: Kind; label: string; fileType: 'handbook' | 'text'; missing: string }[] = [
-  { kind: 'doc', label: 'Page', fileType: 'handbook', missing: 'This component has no page yet.' },
-  { kind: 'examples', label: 'Examples', fileType: 'text', missing: 'This component has no examples yet.' },
-  { kind: 'source', label: 'Component', fileType: 'text', missing: 'This component has no file yet.' },
+const TABS: { kind: Kind; label: string; missing: string }[] = [
+  { kind: 'doc', label: 'Page', missing: 'This component has no page yet.' },
+  { kind: 'examples', label: 'Examples', missing: 'This component has no examples yet.' },
+  { kind: 'source', label: 'Component', missing: 'This component has no file yet.' },
 ];
 
 const headerClass = 'flex h-[57px] shrink-0 items-center gap-3 border-b border-border px-4 text-[12px]';
@@ -28,7 +32,7 @@ export function ComponentEditor({ system, component, onDone }: { system: string;
   const router = useRouter();
   const proto = systemFiles(system);
   const tabs = TABS.filter((t) => t.kind !== 'source' || component.files.source);
-  const [kind, setKind] = useState<Kind>('doc');
+  const [kind, setKind] = useState<Kind>(() => tabs.find((tab) => component.files[tab.kind])?.kind ?? 'doc');
   const [dirty, setDirty] = useState(false);
   const [adding, setAdding] = useState(false);
   // What the person asked to do while there are unsaved edits, until they decide.
@@ -37,6 +41,9 @@ export function ComponentEditor({ system, component, onDone }: { system: string;
 
   const tab = tabs.find((t) => t.kind === kind) ?? tabs[0];
   const path = component.files[tab.kind];
+  const spec = system === 'platform' ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
+  const fullPath = path ? spec.components + '/' + path : null;
+  const access = useMemo<SourceAccess | null>(() => fullPath ? ({ path: fullPath, editable: true, read: () => systemSourceRequest('read', fullPath), write: (content, base) => systemSourceRequest('write', fullPath, { content, base }) }) : null, [fullPath]);
 
   const switcher = (
     <Tabs value={tab.kind} onValueChange={(next) => ifSaved(() => setKind(next as Kind))}>
@@ -45,7 +52,7 @@ export function ComponentEditor({ system, component, onDone }: { system: string;
       </TabsList>
     </Tabs>
   );
-  const done = <Button size="sm" variant="outline" onClick={() => ifSaved(onDone)}>Done</Button>;
+  const done = <Button size="sm" variant="outline" onClick={onDone} title={`Return to rendered view (${shortcutLabel('source')})`}>Done</Button>;
 
   // Adds whichever of the examples and page are missing, from the templates (like pnpm component-docs).
   async function addFiles() {
@@ -63,8 +70,8 @@ export function ComponentEditor({ system, component, onDone }: { system: string;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      {path ? (
-        <SourcePane key={path} proto={proto} item={{ path, fileType: tab.fileType }} label={switcher} actions={done} onDirty={setDirty} />
+      {path && access ? (
+        <SourceEditor key={fullPath} source={access} language={tab.kind === 'doc' ? 'markdown' : 'text'} label={switcher} actions={done} onDirty={setDirty} />
       ) : (
         <>
           <div className={headerClass}>

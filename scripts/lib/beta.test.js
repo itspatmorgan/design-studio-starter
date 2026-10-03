@@ -154,51 +154,41 @@ test('CI accepts reviewed platform proposals and maintainer pushes, rejecting ot
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('Guide source access edits chapters and module READMEs without opening arbitrary files', { skip: !fs.existsSync('src/platform/modules/documentation/server.ts') }, async () => {
-  const { execFileSync } = await import('node:child_process');
-  const root = path.resolve('.');
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-documentation-source-'));
+test('shared documentation catalog covers Guide and Reference and keeps damaged chapters repairable', async () => {
+  const { documentationSources, sourceFile } = await import('../build/files/source.js');
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-documentation-catalog-'));
   try {
-    fs.cpSync(root, dir, { recursive: true, filter: file => !['.git', 'node_modules', 'dist'].includes(path.basename(file)) });
-    fs.symlinkSync(path.join(root, 'node_modules'), path.join(dir, 'node_modules'));
-    // This fixture exercises the enabled editor even when the parent verifies
-    // a disabled Documentation module.
-    const config = path.join(dir, 'studio.config.ts');
-    fs.writeFileSync(config, fs.readFileSync(config, 'utf8').replace(/\bdocumentation:\s*false/g, 'documentation: true'));
-    execFileSync(process.execPath, ['--input-type=module', '--eval', `
-      import fs from 'node:fs'; import path from 'node:path'; import assert from 'node:assert/strict';
-      const {default:routes}=await import('./src/platform/modules/'+'documentation/server.ts');
-      const read=slug=>routes.read({me:null,body:{slug}});
-      const write=(slug,content,base)=>routes.write({me:null,body:{slug,content,base}});
-      for(const slug of ['index','prototypes']) {
-        const before=read(slug); assert.equal(before.status,undefined);
-        assert.match(before.body.path, slug==='index' ? /documentation\\/pages\\/index.md$/ : /prototypes\\/README.md$/);
-        const content=before.body.content+'\\nGuide editor check.\\n';
-        assert.equal(write(slug,content,before.body.version).status,undefined);
-        assert.equal(read(slug).body.content,content);
-        assert.equal(write(slug,'stale',before.body.version).status,409);
-        assert.equal(write(slug,'x'.repeat(750*1024+1),read(slug).body.version).status,413);
-      }
-      for(const slug of ['../index','../../README','/etc/passwd','index.md','missing']) assert.equal(read(slug).status,404);
-      assert.equal(routes.read({me:null,body:null}).status,400);
-      const index='src/platform/modules/documentation/pages/index.md';
-      fs.unlinkSync(index); fs.symlinkSync(path.resolve('README.md'),index);
-      assert.equal(read('index').status,404);
-      fs.unlinkSync(index); fs.writeFileSync(index,'---\\ntitle: broken');
-      assert.equal(read('index').body.content,'---\\ntitle: broken');
-    `], { cwd: dir, encoding: 'utf8', stdio: 'pipe', env: { ...process.env, MISE_TRUSTED_CONFIG_PATHS: dir } });
-  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+    const chapter = 'src/platform/modules/documentation/pages/index.md';
+    const readme = 'src/platform/modules/prototypes/README.md';
+    for (const file of [chapter, readme]) {
+      fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
+      fs.writeFileSync(path.join(root, file), '# Source');
+    }
+    const manifest = { guide: [{ slug: 'prototypes', source: '/platform/modules/prototypes/README.md' }], platformReferences: [{ id: 'documentation', enabled: true, references: [] }, { id: 'prototypes', enabled: true, references: [{ source: '/platform/modules/prototypes/README.md' }] }] };
+    const allowed = documentationSources(root, manifest);
+    assert.ok(allowed.includes(chapter));
+    assert.equal(allowed.filter((file) => file === readme).length, 1);
+    for (const file of [chapter, readme]) {
+      const before = sourceFile(root, allowed, { action: 'read', path: file });
+      assert.equal(sourceFile(root, allowed, { action: 'write', path: file, content: '# Edited', base: before.body.version }).status, undefined);
+    }
+    fs.writeFileSync(path.join(root, chapter), '---\ntitle: broken');
+    assert.equal(sourceFile(root, documentationSources(root, manifest), { action: 'read', path: chapter }).body.content, '---\ntitle: broken');
+    manifest.platformReferences[0].enabled = false;
+    assert.ok(!documentationSources(root, manifest).includes(chapter));
+    assert.equal(sourceFile(root, allowed, { action: 'read', path: '../../README.md' }).status, 404);
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
 
-test('documentation source operations allow indexed files and protect against stale writes and symlinks', async () => {
-  const { documentationFile } = await import('../build/files/documentation.js');
+test('shared source operations allow cataloged Markdown and system code with stale-write and symlink protection', async () => {
+  const { sourceFile } = await import('../build/files/source.js');
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-documentation-'));
   try {
     const relative = 'src/platform/core/contract.md';
     const file = path.join(dir, relative);
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, '# Contract');
-    const call = (request, allowed = [relative]) => documentationFile(dir, allowed, request);
+    const call = (request, allowed = [relative]) => sourceFile(dir, allowed, request);
     const before = call({ action: 'read', path: relative });
     assert.equal(before.body.content, '# Contract');
     assert.equal(call({ action: 'read', path: '../../README.md' }).status, 404);
@@ -212,6 +202,13 @@ test('documentation source operations allow indexed files and protect against st
     assert.equal(call({ action: 'write', path: relative, content: '# Accepted', base: current.body.version }).status, undefined);
     assert.equal(fs.readFileSync(file, 'utf8'), '# Accepted');
     assert.equal(call({ action: 'write', path: relative, content: 'x'.repeat(750 * 1024 + 1) }).status, 413);
+    const theme = 'src/systems/product/styles/theme.css';
+    fs.mkdirSync(path.dirname(path.join(dir, theme)), { recursive: true });
+    fs.writeFileSync(path.join(dir, theme), '.product-theme { --background: white; }');
+    assert.equal(call({ action: 'read', path: theme }).status, 404);
+    const themeSource = call({ action: 'read', path: theme }, [theme]);
+    assert.equal(themeSource.body.content, '.product-theme { --background: white; }');
+    assert.equal(call({ action: 'write', path: theme, content: '.product-theme { --background: black; }', base: themeSource.body.version }, [theme]).status, undefined);
     fs.unlinkSync(file); fs.symlinkSync(path.join(dir, 'other.md'), file);
     assert.equal(call({ action: 'read', path: relative }).status, 404);
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }

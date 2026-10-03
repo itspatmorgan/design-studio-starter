@@ -1,6 +1,6 @@
 import { FileActionItems } from '@/platform/app/shell/FileActionItems';
 // The prototype's files, in its navigation: a filterable tree with expand/collapse all, and a
-// "Edit source" in a file's menu, which opens its text in place of its page (SourcePane.tsx).
+// "Edit source" in a file's menu, which opens its text in place of its page (the shared platform SourceEditor).
 //
 // In `pnpm dev`, it's the prototype's real files and folders, live from the dev server
 // (data/files.ts). It shows what you open and organize: items (views, at any depth; see

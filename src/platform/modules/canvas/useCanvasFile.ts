@@ -1,3 +1,4 @@
+import { SourceChanged } from '@/platform/core/source/access';
 // A canvas's file while it's open: saves edits, and takes in changes made to the file from
 // outside (your agent editing it, or another tab). The file is the source of truth.
 //
@@ -14,7 +15,7 @@ import { useBlocker } from '@tanstack/react-router';
 import { CaptureUpdateAction, getSceneVersion, restoreElements } from '@excalidraw/excalidraw';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { AppState, ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
-import { readSource, SourceChanged, writeSource } from '@/platform/app/data/files';
+import { readSource, writeSource } from '@/platform/app/data/files';
 import type { Artifact, Prototype } from '@/platform/app/data/types';
 import { toast } from '@/platform/components/toast';
 import { parseCanvas, serializeCanvas } from './format';

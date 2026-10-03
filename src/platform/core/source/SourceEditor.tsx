@@ -1,11 +1,3 @@
-// The Source view of an item (?mode=source): the file's text in a code editor, in the space the
-// item's page normally fills. Dev only: it reads and saves through the file layer
-// (scripts/build/vite-files-plugin.js), and isn't in the deployed site.
-//
-// In your own prototypes you can edit and save it (⌘S), like your agent editing the same file.
-// In other people's it is read-only. The Handbook's files are platform files: you can edit them, and
-// the change goes through review like any change to the platform; so do the components' files in a prototype system. If the file changes on disk while it's open, an unedited
-// editor updates to match (you can watch an agent write), and an edited one asks first.
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useBlocker } from '@tanstack/react-router';
 import { EditorState, type Extension } from '@codemirror/state';
@@ -14,13 +6,11 @@ import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete';
 import { bracketMatching, foldGutter, foldKeymap, indentOnInput } from '@codemirror/language';
 import { highlightSelectionMatches, search, searchKeymap } from '@codemirror/search';
-import { FILE_TYPES } from '@/platform/app/data/fileTypes';
-import { canChangePrototype, readSource, repoPath, SourceChanged, useMe, writeSource } from '@/platform/app/data/files';
-import type { Artifact, Prototype } from '@/platform/app/data/types';
+import { SourceChanged, type SourceAccess } from './access';
 import { Button } from '@/platform/components/button';
 import { toast } from '@/platform/components/toast';
 import { shortcutLabel } from '@/platform/app/shell/artifactShortcuts';
-import { sourceTheme } from '@/platform/modules/prototypes/viewer/sourceTheme';
+import { sourceTheme } from '@/platform/core/source/sourceTheme';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
 
 // The file type's syntax, loaded when it's needed.
@@ -31,34 +21,22 @@ async function languageExtension(language: 'tsx' | 'markdown' | 'json' | 'mermai
     if (['js', 'jsx', 'mjs', 'cjs', 'ts', 'tsx', 'json'].includes(ext)) language = ext === 'json' ? 'json' : 'tsx';
     else if (ext === 'mermaid' || ext === 'mmd') language = 'mermaid';
     else if (ext === 'md') language = 'markdown';
+    else if (ext === 'css') return (await import('@codemirror/lang-css')).css();
     else return [];
   }
-  if (language === 'mermaid') return (await import('@/platform/modules/prototypes/viewer/mermaidSource')).mermaidSource();
-  if (language === 'markdown') return (await import('@/platform/modules/prototypes/viewer/markdownSource')).markdownSource();
+  if (language === 'mermaid') return (await import('@/platform/core/source/mermaidSource')).mermaidSource();
+  if (language === 'markdown') return (await import('@/platform/core/source/markdownSource')).markdownSource();
   const { javascript } = await import('@codemirror/lang-javascript');
   return language === 'json' ? javascript() : javascript({ jsx: true, typescript: true });
 }
 
 type Disk = { content: string; version: string };
+export type SourceLanguage = 'tsx' | 'markdown' | 'json' | 'mermaid' | 'text';
+type SourceEditorProps = { source: SourceAccess; language: SourceLanguage; label?: ReactNode; actions?: ReactNode; onDirty?: (dirty: boolean) => void };
 
-// Other platform editors can reuse the source UI without borrowing prototype file access.
-export type SourceAccess = {
-  path: string;
-  editable: boolean;
-  read: () => Promise<Disk>;
-  write: (content: string, base: string) => Promise<{ version: string; warnings?: string[] }>;
-};
-
-// `label` replaces the file's path at the left of the header, and `actions` follow Save (the
-// component editor puts its file tabs and Done there). `onDirty` reports unsaved edits.
-type SourcePaneProps = { proto: Prototype; item: Artifact; label?: ReactNode; actions?: ReactNode; onDirty?: (dirty: boolean) => void; source?: SourceAccess };
-
-export default function SourcePane({ proto, item, label, actions, onDirty, source }: SourcePaneProps) {
-  const me = useMe();
-  // Your own prototypes, and the platform's files (the Handbook's, and a prototype system's components; in dev, for review like any change).
-  const editable = import.meta.env.DEV && (source?.editable ?? canChangePrototype(proto, me));
-  const read = () => source ? source.read() : readSource(proto, item.path);
-  const write = (content: string, base: string) => source ? source.write(content, base) : writeSource(proto, item.path, content, base);
+export default function SourceEditor({ label, actions, onDirty, source, language: syntax }: SourceEditorProps) {
+  const editable = import.meta.env.DEV && source.editable;
+  const { read, write, path } = source;
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
   // What's on disk as far as this pane knows: the text and version it last read or saved.
@@ -96,7 +74,7 @@ export default function SourcePane({ proto, item, label, actions, onDirty, sourc
     (async () => {
       const loaded = await Promise.all([
         read(),
-        languageExtension(FILE_TYPES[item.fileType].language!, item.path),
+        languageExtension(syntax, path),
       ]).catch((e: Error) => { if (!cancelled) setError(e.message); return null; });
       if (cancelled || !loaded || !host.current) return;
       const [first, language] = loaded;
@@ -109,12 +87,12 @@ export default function SourcePane({ proto, item, label, actions, onDirty, sourc
             lineNumbers(), highlightActiveLine(), highlightActiveLineGutter(), drawSelection(),
             history(), bracketMatching(), closeBrackets(), indentOnInput(), foldGutter(), highlightSelectionMatches(), search({ top: true }),
             sourceTheme, language,
-            ...(FILE_TYPES[item.fileType].language === 'markdown' ? [EditorView.lineWrapping] : []),
+            ...(syntax === 'markdown' ? [EditorView.lineWrapping] : []),
             EditorState.readOnly.of(!editable),
             EditorView.editable.of(editable),
             // Named for screen readers. A read-only editor isn't focusable by default, which would leave
             // it without ⌘F, go to line, and keyboard selection, so it gets a tab stop.
-            EditorView.contentAttributes.of({ 'aria-label': `Source of ${item.path}`, ...(editable ? {} : { tabindex: '0' }) }),
+            EditorView.contentAttributes.of({ 'aria-label': `Source of ${path}`, ...(editable ? {} : { tabindex: '0' }) }),
             keymap.of([{ key: 'Mod-s', preventDefault: true, run: () => { save.current(); return true; } }, ...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, ...foldKeymap, ...searchKeymap]),
             EditorView.updateListener.of((update) => {
               if (!update.docChanged) return;
@@ -128,7 +106,7 @@ export default function SourcePane({ proto, item, label, actions, onDirty, sourc
     })();
     return () => { cancelled = true; view.current?.destroy(); view.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proto.contributorKey, proto.id, item.path, editable, source]);
+  }, [path, syntax, editable, source]);
 
   // The file changed on disk. Our own saves come back here too, and are recognized by version.
   useEffect(() => {
@@ -139,18 +117,11 @@ export default function SourcePane({ proto, item, label, actions, onDirty, sourc
       if (!next || !disk.current || next.version === disk.current.version) return;
       if (dirty.current) setConflict(next); else takeDisk(next);
     };
-    if (source) {
-      const onSource = (change: { path: string }) => { if (change.path === source.path) void refresh(); };
-      hot.on('studio:source', onSource);
-      return () => hot.off?.('studio:source', onSource);
-    }
-    const onFile = (change: { contributor: string; prototype: string; path: string }) => {
-      if (change.contributor === proto.contributorKey && change.prototype === proto.id && change.path === item.path) void refresh();
-    };
-    hot.on('studio:file', onFile);
-    return () => hot.off?.('studio:file', onFile);
+    const onSource = (change: { path: string }) => { if (change.path === path) void refresh(); };
+    hot.on('studio:source', onSource);
+    return () => hot.off?.('studio:source', onSource);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proto.contributorKey, proto.id, item.path, source]);
+  }, [path, source]);
 
   save.current = async () => {
     const v = view.current;
@@ -179,7 +150,7 @@ export default function SourcePane({ proto, item, label, actions, onDirty, sourc
       {/* 56px of content plus the 1px border puts the text and Save at the same height as the
           navigation's title row and its buttons */}
       <div className="flex h-[57px] shrink-0 items-center gap-3 border-b border-border px-4 text-[12px]">
-        {label ?? <span className="min-w-0 truncate font-mono text-muted-foreground" title={source?.path ?? repoPath(proto, item.path)}>{item.path}</span>}
+        {label ?? <span className="min-w-0 truncate font-mono text-muted-foreground" title={path}>{path}</span>}
         <span className="ml-auto shrink-0 text-muted-foreground">{!editable ? 'Read-only' : isDirty ? 'Unsaved changes' : ''}</span>
         {/* Save and the buttons after it sit closer together than the header's other items. */}
         <div className="flex shrink-0 items-center gap-1.5">
@@ -201,7 +172,7 @@ export default function SourcePane({ proto, item, label, actions, onDirty, sourc
         <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>Discard your changes?</DialogTitle>
-            <DialogDescription>You have unsaved changes to {item.path}. They'll be lost if you leave.</DialogDescription>
+            <DialogDescription>You have unsaved changes to {path}. They'll be lost if you leave.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => blocker.reset?.()}>Keep editing</Button>

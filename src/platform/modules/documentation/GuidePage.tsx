@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react';
-import { Link, getRouteApi, useNavigate } from '@tanstack/react-router';
+import { Link, getRouteApi } from '@tanstack/react-router';
 import { DocLayout } from '@/platform/app/docs/DocLayout';
 import { DocBase } from '@/platform/app/docs/DocBase';
 import type { GuideModule } from './loadGuide';
-import { Button } from '@/platform/components/button';
+import { useSourceView } from '@/platform/core/source/useSourceView';
 
-const GuideEditor = import.meta.env.DEV ? lazy(() => import('./GuideEditor')) : null;
+const DocumentationEditor = import.meta.env.DEV ? lazy(() => import('@/platform/app/docs/DocumentationEditor')) : null;
 
 const rootApi = getRouteApi('__root__');
 
@@ -14,7 +14,7 @@ type Props = { slug: string; Component?: GuideModule['default']; source?: { path
 export default function GuidePage({ slug, source, ...props }: Props) {
   const { guide } = rootApi.useLoaderData();
   const file = guide.find((page) => page.slug === slug)?.source ?? `/platform/modules/documentation/pages/${slug}.md`;
-  const navigate = useNavigate();
+  const { rendered } = useSourceView(import.meta.env.DEV, Boolean(source));
   // Only enabled pages participate. Release history is separate from the reading sequence.
   const chapters = guide.filter((page) => page.section !== 'Releases');
   const current = chapters.findIndex((page) => page.slug === slug);
@@ -36,8 +36,7 @@ export default function GuidePage({ slug, source, ...props }: Props) {
       )}
     </nav>
   );
-  if (source && GuideEditor) return <Suspense fallback={<p className="p-4 text-sm text-muted-foreground">Opening source…</p>}><GuideEditor slug={slug} path={source.path} /></Suspense>;
+  if (source && DocumentationEditor) return <Suspense fallback={<p className="p-4 text-sm text-muted-foreground">Opening source…</p>}><DocumentationEditor path={source.path} /></Suspense>;
   if (!props.Component) return null;
-  const edit = import.meta.env.DEV && <Button size="sm" variant="outline" className="shrink-0" onClick={() => navigate({ to: '.', search: ((previous: object) => ({ ...previous, mode: 'source' })) as never })}>Edit</Button>;
-  return <DocBase.Provider value={file.slice(0, file.lastIndexOf('/'))}><DocLayout {...props} Component={props.Component} actions={edit} scrollKey={slug} footer={footer} /></DocBase.Provider>;
+  return <div ref={rendered} tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none"><DocBase.Provider value={file.slice(0, file.lastIndexOf('/'))}><DocLayout {...props} Component={props.Component} scrollKey={slug} footer={footer} /></DocBase.Provider></div>;
 }

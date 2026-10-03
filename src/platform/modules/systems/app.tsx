@@ -1,6 +1,7 @@
+import { lazy, Suspense } from 'react';
 // Systems in the app: its rail button, its routes (/systems, /systems/<system>, /systems/<system>/<page>),
 // and prototype systems in the ⌘K palette. The pages are in src/platform/modules/systems/pages/.
-import { createRoute, lazyRouteComponent, redirect, useRouterState } from '@tanstack/react-router';
+import { createRoute, redirect, useRouterState } from '@tanstack/react-router';
 import { Shapes01Icon } from '@hugeicons/core-free-icons';
 import { CommandItem } from '@/platform/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
@@ -12,7 +13,7 @@ import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 
 // Loaded on first visit, so it isn't in the main bundle:
 // https://tanstack.com/router/latest/docs/framework/react/guide/code-splitting
-const SystemsPage = lazyRouteComponent(() => import('@/platform/modules/systems/pages/SystemsPage'));
+const SystemsPage = lazy(() => import('@/platform/modules/systems/pages/SystemsPage'));
 const systemsTitle = (...parts: (string | undefined)[]) =>
   [...parts.filter(Boolean).map((p) => artifactLabel(p!)), 'Systems', APP_NAME].join(' — ');
 
@@ -47,7 +48,7 @@ export default {
   rail: 'top',
   order: 20,
   routes: (root) => {
-    const systemsRoute = createRoute({ getParentRoute: () => root, path: 'systems' });
+    const systemsRoute = createRoute({ getParentRoute: () => root, path: 'systems', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }) });
     return [systemsRoute.addChildren([
       createRoute({
         getParentRoute: () => systemsRoute,
@@ -58,13 +59,13 @@ export default {
         getParentRoute: () => systemsRoute,
         path: '$system',
         head: ({ params }) => ({ meta: [{ title: systemsTitle(params.system) }] }),
-        component: SystemsPage,
+        component: () => <Suspense fallback={null}><SystemsPage /></Suspense>,
       }),
       createRoute({
         getParentRoute: () => systemsRoute,
         path: '$system/$page',
         head: ({ params }) => ({ meta: [{ title: systemsTitle(params.page, params.system) }] }),
-        component: SystemsPage,
+        component: () => <Suspense fallback={null}><SystemsPage /></Suspense>,
       }),
     ])];
   },

@@ -1,4 +1,5 @@
-import { documentationFile } from './files/documentation.js';
+import { SYSTEM_SOURCES } from '../../src/platform/modules/systems/node/systems.js';
+import { documentationSources, sourceFile } from './files/source.js';
 // The file layer behind the prototype navigation's file tree, during `pnpm dev` only.
 // (The deployed site is static, so this doesn't exist there.)
 //
@@ -177,10 +178,22 @@ export default function filesPlugin() {
             publishManifest(server, manifest, req.headers['x-studio-tab']);
             return send(res, 200, { trashedTo, manifest });
           }
+          if (req.method === 'POST' && url.pathname === '/system-source') {
+            const manifest = buildManifest({ write: false, quiet: true }).manifest;
+            const allowed = Object.entries(SYSTEM_SOURCES).flatMap(([id, source]) => [
+              source.theme,
+              ...(id === 'platform' ? [] : [source.dir + 'system.ts']),
+              id === 'platform' ? 'src/platform/modules/systems/pages/platformSystem.tsx' : source.dir + 'intro.tsx',
+              ...(manifest.systems[id]?.components ?? []).flatMap((component) => Object.values(component.files).filter(Boolean).map((file) => source.components + '/' + file)),
+            ]);
+            const result = sourceFile(ROOT, allowed, await readJson(req));
+            if (result.reveal) reveal(result.reveal);
+            return send(res, result.status ?? 200, result.body);
+          }
           if (req.method === 'POST' && url.pathname === '/documentation') {
             const manifest = buildManifest({ write: false, quiet: true }).manifest;
-            const allowed = [...manifest.platformReferences.flatMap((group) => group.references.map((ref) => 'src' + ref.source)), ...manifest.guide.map((page) => 'src' + (page.source ?? '/platform/modules/documentation/pages/' + page.slug + '.md'))];
-            const result = documentationFile(ROOT, allowed, await readJson(req));
+            const allowed = documentationSources(ROOT, manifest);
+            const result = sourceFile(ROOT, allowed, await readJson(req));
             if (result.reveal) reveal(result.reveal);
             return send(res, result.status ?? 200, result.body);
           }
@@ -236,7 +249,7 @@ export default function filesPlugin() {
       // an open Source view for it reloads or asks. Not batched: it is one file at a time.
       server.watcher.on('change', (file) => {
         const relative = path.relative(ROOT, file).split(path.sep).join('/');
-        if (relative.endsWith('.md') && !relative.startsWith('..') && !path.isAbsolute(relative)) {
+        if (!relative.startsWith('..') && !path.isAbsolute(relative)) {
           server.ws.send({ type: 'custom', event: 'studio:source', data: { path: relative } });
         }
         const at = locate(file);

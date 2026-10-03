@@ -5,16 +5,16 @@
 //   /prototypes/$contributor/$prototype      a prototype, on its start item (or its first)
 //   /prototypes/$contributor/$prototype/$    an item, by its path without the extension, at any depth:
 //                                            /prototypes/patrick/hello-world/lofi/main
-//                                            (?mode=source shows its text, in dev: SourcePane)
+//                                            (?mode=source shows its text, in dev: ArtifactSource)
 //   /$contributor/$prototype[/$]             the same for a section's items: /examples/sample, /handbook/context.
 //                                            An address from before prototypes moved, /patrick/hello-world, is
 //                                            sent on to /prototypes/patrick/hello-world.
 //
 // The modules add their own: /prototypes (the gallery), /examples, /systems/$system, /handbook, /documentation/guide/$page
 // (src/platform/modules/<id>/app.tsx). Everything that opens in the viewer does so through the routes above.
-import { lazy, Suspense, useEffect, useRef } from 'react';
-import { createRootRoute, createRoute, createRouter, notFound, redirect, useNavigate, useRouter } from '@tanstack/react-router';
-import { useSourceShortcut } from '@/platform/modules/prototypes/viewer/useSourceShortcut';
+import { lazy, Suspense } from 'react';
+import { createRootRoute, createRoute, createRouter, notFound, redirect, useRouter } from '@tanstack/react-router';
+import { useSourceView } from '@/platform/core/source/useSourceView';
 import { shortcutLabel } from '@/platform/app/shell/artifactShortcuts';
 import { Button } from '@/platform/components/button';
 import App, { NotFound } from '@/platform/app/shell/App';
@@ -86,8 +86,9 @@ const referenceRoute = createRoute({
   head: ({ loaderData }) => ({ meta: [{ title: [loaderData?.title, 'Reference', APP_NAME].filter(Boolean).join(' — ') }] }),
   component: () => {
     const data = referenceRoute.useLoaderData();
+    const { rendered } = useSourceView(import.meta.env.DEV, data.editing);
     if (data.editing) return DocumentationEditor && <Suspense fallback={null}><DocumentationEditor path={'src' + data.path} /></Suspense>;
-    return <div className="flex min-h-0 flex-1 flex-col [&>div]:min-h-0"><MarkdownPage Component={data.Component} frontmatter={data.frontmatter} docKey={data.path} base={'/documentation/reference' + data.path.slice(0, data.path.lastIndexOf('/'))} footer={<AboutReference source={data.path} group={data.group} />} /></div>;
+    return <div ref={rendered} tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none [&>div]:min-h-0"><MarkdownPage Component={data.Component} frontmatter={data.frontmatter} docKey={data.path} base={'/documentation/reference' + data.path.slice(0, data.path.lastIndexOf('/'))} footer={<AboutReference source={data.path} group={data.group} />} /></div>;
   },
   notFoundComponent: NotFound,
 });
@@ -117,25 +118,17 @@ async function itemLoader({ contributor, prototype, _splat }: { contributor: str
 type ItemData = { fileType: string; props: object | null; source?: { proto: Prototype; item: Artifact }; title: string };
 
 // Dev only: import.meta.env.DEV is false in the build, so the editor isn't in the deployed site.
-const SourcePane = import.meta.env.DEV ? lazy(() => import('@/platform/modules/prototypes/viewer/SourcePane')) : null;
+const ArtifactSource = import.meta.env.DEV ? lazy(() => import('@/platform/app/source/ArtifactSource')) : null;
 
 // The open item, in its file type's page. It shows its own not-found page, inside the
 // prototype's navigation, and never renders without its loader's data.
 function ItemPage({ data }: { data: ItemData | undefined }) {
-  const navigate = useNavigate();
-  const rendered = useRef<HTMLDivElement>(null);
-  const wasSource = useRef(Boolean(data?.source));
   const source = Boolean(data?.source);
-  const toggle = () => { void navigate({ to: '.', search: ((prev: object) => ({ ...prev, mode: source ? undefined : 'source' })) as never }); };
-  useSourceShortcut(import.meta.env.DEV && Boolean(data && FILE_TYPES[data.fileType]?.language), source, toggle);
-  useEffect(() => {
-    if (wasSource.current && !source) rendered.current?.focus();
-    wasSource.current = source;
-  }, [source]);
+  const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(data && FILE_TYPES[data.fileType]?.language), source);
   if (!data) return null;
-  // Done goes back to the item's page; unsaved edits ask first (SourcePane.tsx).
+  // Done goes back to the item's page; unsaved edits ask first (the shared SourceEditor).
   const done = <Button size="sm" variant="outline" onClick={toggle} title={`Return to rendered view (${shortcutLabel('source')})`}>Done</Button>;
-  if (data.source) return SourcePane && <Suspense fallback={null}><SourcePane key={data.source.item.path} {...data.source} actions={done} /></Suspense>;
+  if (data.source) return ArtifactSource && <Suspense fallback={null}><ArtifactSource key={data.source.item.path} {...data.source} actions={done} /></Suspense>;
   const { Page } = fileTypeModules[data.fileType];
   return <div ref={rendered} tabIndex={-1} className="flex min-h-0 min-w-0 flex-1 outline-none"><Suspense fallback={null}><Page {...data.props!} /></Suspense></div>;
 }
