@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from '@tanstack/react-router';
 import { NavGroup, NavHeader, NavList, NavTitle, SectionNav, navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
-import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/platform/components/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/platform/components/select';
 import { NotFound } from '@/platform/app/shell/App';
 import { Code, ColorModeSupport, ColorTokens, IconsPage, PageHeader, Prose } from '@/platform/modules/systems/pages/foundations';
 import { OtherTokens, RadiusTokens, ShadowTokens, SpacingTokens, TypographyTokens } from '@/platform/modules/systems/pages/tokens';
@@ -83,11 +83,16 @@ function SystemNav({ system, components, tokens }: { system: SystemId; component
               <SelectValue className="min-w-0 truncate" />
             </SelectTrigger>
             <SelectContent align="start">
-              {SYSTEM_CHOICES.filter((choice) => choice.value !== 'platform').map((choice) => (
-                <SelectItem key={choice.value} value={choice.value}>{choice.label}</SelectItem>
-              ))}
-              <SelectSeparator />
-              <SelectItem value="platform">{platform.label}</SelectItem>
+              <SelectGroup>
+                <SelectLabel>Prototype systems</SelectLabel>
+                {SYSTEM_CHOICES.filter((choice) => choice.value !== 'platform').map((choice) => (
+                  <SelectItem key={choice.value} value={choice.value}>{choice.label}</SelectItem>
+                ))}
+              </SelectGroup>
+              <SelectGroup>
+                <SelectLabel>Platform</SelectLabel>
+                <SelectItem value="platform">{platform.label}</SelectItem>
+              </SelectGroup>
             </SelectContent>
           </Select>
         </div>
