@@ -21,3 +21,9 @@ Ask your agent to import images into views and reference font files from the sco
 Use the repository's `public/` directory for fixed URLs, such as the favicon. Public files are served across the site and retain their filenames.
 
 These are supporting files, rather than prototype artifacts. In a prototype, **Show all files** exposes them locally.
+
+## Asset Guard
+
+The pre-commit Asset Guard blocks oversized files before they enter the repository. If it flags an asset, ask your agent to resize or compress it, then stage the smaller version.
+
+See [Asset Guard](../../../core/assets.md#asset-guard) for the limit, hook, and CI behavior.

@@ -33,3 +33,13 @@ Asset imports follow the same boundaries as code: a prototype can import its own
 Define system font usage in its scoped theme or components. When systems ship different fonts, use distinct font-family names; font-face registration is global even when the theme's use of it is scoped.
 
 Assets support artifacts; they do not become navigable artifacts themselves. Follow the repository's [prototype workflow](../../handbook/rules/prototype-workflow.md) for asset-size checks and the [system contract](../modules/systems/reference.md) for theme scoping.
+
+## Asset Guard
+
+Asset Guard prevents oversized files from entering Git history. The pre-commit hook in `.husky/pre-commit` runs `scripts/check/check-asset-size.js --staged`. It checks added and modified files using their staged contents and blocks the commit when a file exceeds 750 KB, unless explicitly allowlisted. CI runs the same guard against committed changes.
+
+The guard applies to all files, including assets in `public/`. Existing oversized files are checked when modified.
+
+Resize or compress a flagged asset, then stage the smaller version and commit again. For images, use WebP or compressed JPEG at the display size. Reserve allowlist exceptions for files that cannot be reduced.
+
+Git retains committed versions, so deleting a large asset later does not remove its earlier versions from history. Catching it before commit keeps the repository and future clones smaller.

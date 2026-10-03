@@ -35,7 +35,7 @@ See [Ownership and permissions](/documentation/guide/ownership-and-permissions) 
 
 ## Keep files small
 
-The file size check blocks new or changed files over 750 KB, unless they have an explicit exception. It runs before commit and in CI.
+The [Asset Guard](../../../core/assets.md#asset-guard) blocks oversized files before commit and in CI. Its convention defines the size limit and exception handling.
 
 Use WebP or compressed JPEG for images. Export them at the size needed. Ask your agent to reduce an oversized asset.
 
