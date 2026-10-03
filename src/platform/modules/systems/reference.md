@@ -10,12 +10,15 @@ A prototype system lives in `src/systems/<id>/` and contains:
 | --- | --- |
 | `system.ts` | Label, unique theme class, documentation mode, component sources, and origin. |
 | `components/` | Runtime components and their documentation files. |
+| `assets/` | Optional system-owned fonts, logos, and images. |
 | `styles/theme.css` | Scoped tokens and styles, loaded by the platform. |
 | `intro.tsx` | Optional Systems introduction page. |
 
 `system.ts`, introductions, examples, and Markdown are documentation adapters. Runtime components and prototypes cannot import these adapters.
 
 The platform system lives in `src/platform/components/` and `src/platform/styles/`. Its documentation mode is `off`.
+
+Follow the [static asset convention](../../core/assets.md) for system assets and font loading.
 
 The starter Product system uses shadcn/ui on Base UI. `components.json` controls the CLI destination. A replacement system may use another library.
 

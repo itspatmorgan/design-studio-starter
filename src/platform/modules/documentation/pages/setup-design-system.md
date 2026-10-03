@@ -12,7 +12,7 @@ A design system supplies reusable components and tokens: named values for colors
 
 ## Give the agent your source material
 
-Ask: “Set up our design system.” Provide the component source or package, its dependencies, design tokens, and any usage guidance you have.
+Ask: “Set up our design system.” Provide the component source or package, its dependencies, design tokens, brand fonts and images, and any usage guidance you have. See [Static assets](/documentation/guide/assets) for where these files belong.
 
 The `setup-design-system` skill guides the agent through importing the kit, scoping its theme and pop-ups, documenting components, and checking the result. It should ask for missing materials or decisions.
 

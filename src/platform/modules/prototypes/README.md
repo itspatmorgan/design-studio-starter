@@ -32,6 +32,8 @@ Dependency and style boundaries contain the experiment so it does not affect oth
 
 Folders organize artifacts at any depth; they are not artifacts themselves. Helper code, assets, and metadata support the work but stay out of normal artifact navigation.
 
+For fonts, logos, and images, see [Static assets](/documentation/guide/assets).
+
 Views and text-file support are required. Documents, Canvases, and Diagrams are optional modules.
 
 Names starting with `_` identify helpers, which are not screens. Select **Show all files** in the prototype's **…** menu to see helpers and assets locally.

@@ -4,6 +4,7 @@ Read the [system contract](../../platform/modules/systems/reference.md) when add
 
 - Keep the platform system separate from prototype systems. Prototypes cannot import platform UI.
 - Use the prototype's assigned system. Do not import another system or its documentation adapters into runtime code.
+- Place fonts, logos, and imagery according to the [static asset convention](../../platform/core/assets.md).
 - Runtime system code may use its own system, shared utilities, packages, and enabled public module libraries.
 - Declare supported `colorModes` in `system.ts`. Omission supports both modes. Declare `['light']` or `['dark']` explicitly for a single-mode system. Use the local `data-color-mode` boundary for mode-specific system CSS, not Studio's ancestor `.dark`.
 - Scope theme selectors to the system's unique theme class or its descendants. Imported stylesheets follow the same constraint.

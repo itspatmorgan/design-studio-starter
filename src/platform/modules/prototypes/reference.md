@@ -13,7 +13,7 @@ Views are `.tsx` or `.jsx` files with a default-exported React component. New vi
 
 Folders organize files at any depth. A file or folder starting with `_` is a helper. Helper contents do not become navigation artifacts.
 
-Enabled file types determine other artifacts. Documents and canvases require their respective modules. Assets remain ordinary files.
+Enabled file types determine other artifacts. Documents and canvases require their respective modules. Assets remain ordinary files. Follow the [static asset convention](../../core/assets.md) for their ownership, locations, and imports.
 
 Two artifacts cannot share a URL, such as `main.tsx` and `main.md` in one folder.
 

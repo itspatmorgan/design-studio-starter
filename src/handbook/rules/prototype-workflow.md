@@ -15,6 +15,8 @@ Read the [prototype contract](../../platform/modules/prototypes/reference.md) wh
 
 ## Dependencies and styles
 
+Follow the [static asset convention](../../platform/core/assets.md) when adding images, logos, fonts, or shared static files.
+
 A prototype may use its own files, its assigned system, shared utilities, installed packages, and enabled public module libraries.
 
 Access a public module library through `@module/<id>` only. Do not import private platform files, another prototype, or another system.

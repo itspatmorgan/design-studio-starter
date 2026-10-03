@@ -18,6 +18,8 @@ slug: "systems"
 
 Prototypes cannot import platform UI. Each prototype has one assigned system, but can also build local components and styles.
 
+Shared brand fonts, logos, and images can live with the system. See [Static assets](/documentation/guide/assets) for ownership and locations.
+
 ## Foundations and component pages
 
 Foundation pages read tokens from the system's theme: colors, typography, radius, shadows, spacing, and other values. Typography includes Tailwind defaults where the theme does not override them.
