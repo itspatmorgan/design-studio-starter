@@ -15,7 +15,7 @@ import { CaptureUpdateAction, getSceneVersion, restoreElements } from '@excalidr
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { AppState, ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import { readSource, SourceChanged, writeSource } from '@/platform/app/data/files';
-import type { Item, Prototype } from '@/platform/app/data/types';
+import type { Artifact, Prototype } from '@/platform/app/data/types';
 import { toast } from '@/platform/components/toast';
 import { parseCanvas, serializeCanvas } from './format';
 import { mergeRemote } from './mergeRemote';
@@ -34,7 +34,7 @@ const idsOf = (elements: readonly { id: string; isDeleted?: boolean }[]) => new 
 
 export function useCanvasFile({ proto, item, api, initial, editable }: {
   proto: Prototype;
-  item: Item;
+  item: Artifact;
   api: ExcalidrawImperativeAPI | null;
   // The file as loaded: its text, version, the elements Excalidraw starts with, and their scene version.
   initial: { text: string; version: string; elements: readonly ExcalidrawElement[]; sceneVersion: number };

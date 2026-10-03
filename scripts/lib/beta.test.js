@@ -238,9 +238,9 @@ test('standalone diagrams are discovered by both extensions and disabling preser
       const { manifest, errors } = buildManifest({write:false,quiet:true});
       assert.equal(errors,0);
       const prototype=manifest.prototypes.find(p=>p.contributorKey==='patrick'&&p.id==='feedback-inbox');
-      for(const name of ['test-flow.mermaid','test-sequence.mmd','test-invalid.mermaid']) assert.equal(prototype.items.find(i=>i.path===name)?.fileType,'diagrams');
-      assert.equal(prototype.items.some(i=>i.path==='_helper.mermaid'),false);
-      assert.ok(prototype.items.some(i=>i.fileType==='document'));
+      for(const name of ['test-flow.mermaid','test-sequence.mmd','test-invalid.mermaid']) assert.equal(prototype.artifacts.find(i=>i.path===name)?.fileType,'diagrams');
+      assert.equal(prototype.artifacts.some(i=>i.path==='_helper.mermaid'),false);
+      assert.ok(prototype.artifacts.some(i=>i.fileType==='document'));
       assert.ok(manifest.platformReferences.find(g=>g.id==='diagrams')?.references.length);
       fs.writeFileSync(config,editModulesFlag(fs.readFileSync(config,'utf8'),'diagrams',false));
     `], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
@@ -250,8 +250,8 @@ test('standalone diagrams are discovered by both extensions and disabling preser
       import {buildManifest} from './scripts/build/build-manifest.js';
       const {manifest,errors}=buildManifest({write:false,quiet:true}); assert.equal(errors,0);
       const prototype=manifest.prototypes.find(p=>p.contributorKey==='patrick'&&p.id==='feedback-inbox');
-      assert.equal(prototype.items.some(i=>i.fileType==='diagrams'),false);
-      assert.ok(prototype.items.some(i=>i.fileType==='document'));
+      assert.equal(prototype.artifacts.some(i=>i.fileType==='diagrams'),false);
+      assert.ok(prototype.artifacts.some(i=>i.fileType==='document'));
       assert.ok(fs.existsSync('src/prototypes/patrick/feedback-inbox/test-flow.mermaid'));
       assert.equal(manifest.platformReferences.find(g=>g.id==='diagrams')?.references.length,0);
     `], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });

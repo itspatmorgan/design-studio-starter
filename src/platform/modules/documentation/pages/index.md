@@ -27,14 +27,14 @@ See [Tech stack](/documentation/guide/tech-stack) for the dependencies and repla
 ```mermaid
 flowchart TB
   accTitle: Parts of a studio
-  accDescr: Shared design systems and Handbook context support separate contributor prototypes. Views are core; documents and canvases are optional.
+  accDescr: Shared design systems and Handbook context support separate contributor prototypes. Prototypes hold artifacts: views are core; documents, diagrams, and canvases are optional.
   subgraph shared[Shared studio foundations]
     direction LR
     systems[Design systems: components and tokens]
     handbook[Handbook: context, rules, and skills]
     systems ~~~ handbook
   end
-  subgraph prototypes[Views with optional documents and canvases]
+  subgraph prototypes[Prototype artifacts: views, documents, diagrams, canvases]
     direction LR
     yours[Your prototypes]
     others[Other contributors' prototypes]
@@ -47,11 +47,13 @@ flowchart TB
 | --- | --- |
 | Prototypes | Independent spaces for interactive code-based views and local experiments. |
 | Design systems | Components and tokens that help views match your product. |
-| Documents and canvases | Optional written context and visual arrangements beside views. |
+| Artifact types | Views, documents, diagrams, and canvases that work together inside a prototype. |
 | Handbook | Shared context for people and instructions for agents. |
 | Modules | Defined places to add, disable, or remove platform capabilities. |
 
 The defaults give you a working toolkit. You can replace them or extend the environment. A prototype can use its design system, start from a blank view, or combine both approaches.
+
+A prototype's navigable pieces of work are its **artifacts**. Each is a file whose type provides its view and preview. Helpers and assets support those artifacts; folders organize them.
 
 ## Files are the working environment
 

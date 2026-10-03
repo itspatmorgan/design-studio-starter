@@ -10,7 +10,7 @@ import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { AppState, ExcalidrawImperativeAPI, ExcalidrawProps, LibraryItems } from '@excalidraw/excalidraw/types';
 import { ownsPrototype, useMe } from '@/platform/app/data/files';
 import { useManifest } from '@/platform/app/data/useManifest';
-import type { Item, Prototype } from '@/platform/app/data/types';
+import type { Artifact, Prototype } from '@/platform/app/data/types';
 import './canvas.css';
 import { cameraKey, initialCamera, useRememberCamera } from './camera';
 import { ControlTooltip } from './ControlTooltip';
@@ -25,7 +25,7 @@ import { useCanvasFile } from './useCanvasFile';
 import { Button } from '@/platform/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
 
-type Props = { proto: Prototype; item: Item; text: string; version: string };
+type Props = { proto: Prototype; item: Artifact; text: string; version: string };
 
 // The app's light or dark mode, which is a class on <html>.
 function useDark() {

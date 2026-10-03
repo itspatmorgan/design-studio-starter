@@ -16,7 +16,7 @@ import { bracketMatching, foldGutter, foldKeymap, indentOnInput } from '@codemir
 import { highlightSelectionMatches, search, searchKeymap } from '@codemirror/search';
 import { FILE_TYPES } from '@/platform/app/data/fileTypes';
 import { canChangePrototype, readSource, repoPath, SourceChanged, useMe, writeSource } from '@/platform/app/data/files';
-import type { Item, Prototype } from '@/platform/app/data/types';
+import type { Artifact, Prototype } from '@/platform/app/data/types';
 import { Button } from '@/platform/components/button';
 import { toast } from '@/platform/components/toast';
 import { sourceTheme } from '@/platform/modules/prototypes/viewer/sourceTheme';
@@ -48,7 +48,7 @@ export type SourceAccess = {
 
 // `label` replaces the file's path at the left of the header, and `actions` follow Save (the
 // component editor puts its file tabs and Done there). `onDirty` reports unsaved edits.
-type SourcePaneProps = { proto: Prototype; item: Item; label?: ReactNode; actions?: ReactNode; onDirty?: (dirty: boolean) => void; source?: SourceAccess };
+type SourcePaneProps = { proto: Prototype; item: Artifact; label?: ReactNode; actions?: ReactNode; onDirty?: (dirty: boolean) => void; source?: SourceAccess };
 
 export default function SourcePane({ proto, item, label, actions, onDirty, source }: SourcePaneProps) {
   const me = useMe();

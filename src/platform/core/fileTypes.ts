@@ -1,6 +1,6 @@
 // File types: the kinds of file a prototype holds that the app can open. A file's type comes
 // from its extension, and folders are only for organizing, at any depth. The one exception:
-// a file or folder whose name starts with an underscore (_components/, _data.ts) is a helper, not an item. Every other file (images,
+// a file or folder whose name starts with an underscore (_components/, _data.ts) is a helper, not an artifact. Every other file (images,
 // meta.json) is a plain file: the nav hides it unless you choose Show all files in the prototype's … menu.
 //
 // Each type belongs to a module folder, src/platform/modules/<type>/ (view/, document/).
@@ -16,7 +16,7 @@ export type FileTypeSpec = {
   // The syntax the Source view highlights (src/platform/modules/prototypes/viewer/SourcePane.tsx). Leave it
   // out for a type with no source to show.
   language?: 'tsx' | 'markdown' | 'json' | 'text';
-  // True if the type shows itself live where another item includes it (on a canvas), and false or
+  // True if the type shows itself live where another artifact includes it (on a canvas), and false or
   // absent for a card. Its open.tsx provides the Embed; this is for code that can't load that
   // (the command line), to size things.
   preview?: boolean;
@@ -85,11 +85,11 @@ export function assertUniqueExtensions(specs: Record<string, FileTypeSpec>) {
   }
 }
 
-// An item's path in URLs and meta.json "start": its file path without the extension
+// An artifact's path in URLs and meta.json "start": its file path without the extension
 // ("checkout/step-1.tsx" → "checkout/step-1").
-export const itemSlug = (path: string) => path.replace(/\.[^./]+$/, '');
+export const artifactSlug = (path: string) => path.replace(/\.[^./]+$/, '');
 
-// Helpers, not items: a file or folder named with a leading underscore, at any depth. Everything inside
+// Helpers, not artifacts: a file or folder named with a leading underscore, at any depth. Everything inside
 // a helper folder is a helper too.
 export const isHelper = (name: string) => name.startsWith('_');
 

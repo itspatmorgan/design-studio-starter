@@ -8,7 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from '../../src/platform/modules/systems/node/systems.js';
 import { PLATFORM_ID } from '../../src/platform/modules/systems/sources.ts';
-import { isHelper, itemSlug } from '../../src/platform/core/fileTypes.ts';
+import { isHelper, artifactSlug } from '../../src/platform/core/fileTypes.ts';
 import { HANDBOOK_KEY, HANDBOOK_SECTIONS, rootOf } from '../../src/platform/core/roots.ts';
 import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../../src/platform/core/archive.ts';
 import { byOrder, parseOrder } from '../../src/platform/core/order.ts';
@@ -32,10 +32,10 @@ const documentationModule = ENABLED_MODULES.find((m) => m.id === 'documentation'
 const GUIDE = documentationModule?.section?.folder ? path.join(ROOT, documentationModule.section.folder) : null;
 const OUT_DIR = path.join(ROOT, 'public', 'prototypes');
 const OUT = path.join(OUT_DIR, 'manifest.json');
-// Each prototype's items, one file each: items/<contributor>/<prototype>.json. The app fetches a
+// Each prototype's artifacts, one file each: artifacts/<contributor>/<prototype>.json. The app fetches a
 // prototype's when it opens it, so the manifest every visitor downloads stays small however many
 // files prototypes hold.
-const ITEMS_DIR = path.join(OUT_DIR, 'items');
+const ARTIFACTS_DIR = path.join(OUT_DIR, 'artifacts');
 // How many component doc gaps the build lists before summarizing the rest.
 const DOC_WARNINGS = 5;
 
@@ -43,13 +43,13 @@ const dirs = (p) => fs.existsSync(p)
   ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort()
   : [];
 
-// A prototype's items (see src/platform/core/fileTypes.md), in the order the file tree shows them: at each
+// A prototype's artifacts (see src/platform/core/fileTypes.md), in the order the file tree shows them: at each
 // level, files first, then folders, each alphabetical, unless meta.json "order" says otherwise
 // (src/platform/core/order.ts). Hidden files and helpers (names starting with an underscore) are skipped.
 // `typeOf` says which type opens a file (or null for a plain file), and `skip` which folders are
 // left out. Links are never followed: a symlink is neither a file nor a folder here.
 const inPrototype = { typeOf: (name) => (isHelper(name) ? null : fileTypeOf(name)), skip: isHelper };
-function itemsIn(dir, base = '', { typeOf, skip, order } = inPrototype) {
+function artifactsIn(dir, base = '', { typeOf, skip, order } = inPrototype) {
   const entries = fs.readdirSync(dir, { withFileTypes: true }).filter((e) => !e.name.startsWith('.'));
   const files = entries.filter((e) => e.isFile()).flatMap((e) => {
     const fileType = typeOf(e.name, path.join(dir, e.name));
@@ -57,7 +57,7 @@ function itemsIn(dir, base = '', { typeOf, skip, order } = inPrototype) {
   });
   const folders = entries.filter((e) => e.isDirectory() && !skip(e.name)).map((e) => ({ name: e.name, path: base + e.name, dir: true }));
   return byOrder([...files, ...folders], order).flatMap((e) => (e.dir
-    ? itemsIn(path.join(dir, e.name), `${e.path}/`, { typeOf, skip, order })
+    ? artifactsIn(path.join(dir, e.name), `${e.path}/`, { typeOf, skip, order })
     : [{ path: e.path, fileType: e.fileType }]));
 }
 
@@ -68,15 +68,15 @@ const inHandbook = {
   skip: (name) => name === 'node_modules',
 };
 
-// Problems with a folder's items: two sharing a URL, or a file its type rejects (a view needs a
+// Problems with a folder's artifacts: two sharing a URL, or a file its type rejects (a view needs a
 // default export, and so on: src/platform/modules/<type>/type.ts). Printed; returns how many.
-function checkItems(dir, items, out = console, prototype) {
+function checkArtifacts(dir, artifacts, out = console, prototype) {
   let errors = 0;
   const seen = new Set();
-  for (const item of items) {
+  for (const item of artifacts) {
     const file = path.relative(ROOT, path.join(dir, item.path));
-    if (seen.has(itemSlug(item.path))) { out.error(`[manifest] ${file}: another file here has the same name. Rename one; they'd share a URL.`); errors++; }
-    seen.add(itemSlug(item.path));
+    if (seen.has(artifactSlug(item.path))) { out.error(`[manifest] ${file}: another file here has the same name. Rename one; they'd share a URL.`); errors++; }
+    seen.add(artifactSlug(item.path));
     const { check, fidelity } = FILE_TYPES[item.fileType];
     if (!check && !fidelity) continue;
     const source = fs.readFileSync(path.join(ROOT, file), 'utf8');
@@ -95,7 +95,7 @@ function archivedLinkWarnings(kept, archived) {
   const prototypes = archived.map((g) => g.replace(/^\/prototypes/, '').slice(0, -3).split('/').map(encodeURIComponent).join('/'));
   const warnings = [];
   for (const proto of kept) {
-    for (const item of proto.items) {
+    for (const item of proto.artifacts) {
       // Views are code: a link in one is the author's own business.
       if (FILE_TYPES[item.fileType].language === 'tsx') continue;
       const file = path.join(ROOT, 'src', rootOf(proto.contributorKey, proto.id), item.path);
@@ -137,14 +137,14 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
     order = parseOrder(meta.order);
     if (!order) return skip('has an "order" that isn\'t a list of paths');
   }
-  const items = itemsIn(dir, '', { ...inPrototype, order });
-  // Two items can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
-  errors += checkItems(dir, items, out, { contributor: contributorKey, id });
+  const artifacts = artifactsIn(dir, '', { ...inPrototype, order });
+  // Two artifacts can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
+  errors += checkArtifacts(dir, artifacts, out, { contributor: contributorKey, id });
   // "start" (optional) is the item the prototype opens on, as in its URL: "checkout/step-1".
   // Without it, the prototype opens on its first item.
   let start = null;
   if (meta.start !== undefined) {
-    start = items.find((i) => itemSlug(i.path) === meta.start)?.path ?? null;
+    start = artifacts.find((i) => artifactSlug(i.path) === meta.start)?.path ?? null;
     if (!start) return skip(`has "start": "${meta.start}", which isn't an item in this prototype`);
   }
   // "system" (optional) is the design system it builds with, one of the folders in src/systems/.
@@ -161,7 +161,7 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
     entry: {
       id, contributorKey, title: meta.title, description: meta.description ?? '',
       contributor: maintained ? maintainers.map((k) => contributors[k]?.name ?? k).join(', ') : contributors[contributorKey]?.name ?? '',
-      created: meta.created ?? null, system, start, items,
+      created: meta.created ?? null, system, start, artifacts,
       ...(maintained && { maintainers }),
       ...(status === 'archived' && { status }),
     },
@@ -199,31 +199,31 @@ function signatureOf(dir) {
   return parts.join('\n');
 }
 
-// Writes the manifest the app fetches: prototypes without their items (with how many, and a hash
-// of them so a changed list is fetched again), and each prototype's items in its own file. The
+// Writes the manifest the app fetches: prototypes without their artifacts (with how many, and a hash
+// of them so a changed list is fetched again), and each prototype's artifacts in its own file. The
 // Handbook's sections are few, so theirs stay in the manifest. Files for prototypes that are gone are removed.
 function writeManifest(manifest) {
   const wanted = new Set();
-  const split = ({ items, ...info }) => {
-    const text = JSON.stringify(items);
-    const file = path.join(ITEMS_DIR, info.contributorKey, `${info.id}.json`);
+  const split = ({ artifacts, ...info }) => {
+    const text = JSON.stringify(artifacts);
+    const file = path.join(ARTIFACTS_DIR, info.contributorKey, `${info.id}.json`);
     wanted.add(file);
     writeIfChanged(file, text);
-    return { ...info, itemCount: items.length, itemsHash: crypto.createHash('sha1').update(text).digest('hex').slice(0, 8) };
+    return { ...info, artifactCount: artifacts.length, artifactsHash: crypto.createHash('sha1').update(text).digest('hex').slice(0, 8) };
   };
   const prototypes = manifest.prototypes.map(split);
-  const sections = Object.fromEntries(Object.entries(manifest.sections).map(([key, items]) => [key, items.map(split)]));
-  for (const dir of fs.existsSync(ITEMS_DIR) ? fs.readdirSync(ITEMS_DIR, { withFileTypes: true }) : []) {
+  const sections = Object.fromEntries(Object.entries(manifest.sections).map(([key, artifacts]) => [key, artifacts.map(split)]));
+  for (const dir of fs.existsSync(ARTIFACTS_DIR) ? fs.readdirSync(ARTIFACTS_DIR, { withFileTypes: true }) : []) {
     if (!dir.isDirectory()) continue;
-    for (const f of fs.readdirSync(path.join(ITEMS_DIR, dir.name))) {
-      if (!wanted.has(path.join(ITEMS_DIR, dir.name, f))) fs.rmSync(path.join(ITEMS_DIR, dir.name, f), { force: true });
+    for (const f of fs.readdirSync(path.join(ARTIFACTS_DIR, dir.name))) {
+      if (!wanted.has(path.join(ARTIFACTS_DIR, dir.name, f))) fs.rmSync(path.join(ARTIFACTS_DIR, dir.name, f), { force: true });
     }
-    if (!fs.readdirSync(path.join(ITEMS_DIR, dir.name)).length) fs.rmdirSync(path.join(ITEMS_DIR, dir.name));
+    if (!fs.readdirSync(path.join(ARTIFACTS_DIR, dir.name)).length) fs.rmdirSync(path.join(ARTIFACTS_DIR, dir.name));
   }
   writeIfChanged(OUT, JSON.stringify({ ...manifest, prototypes, sections }) + '\n');
 }
 
-// Scans src/prototypes/, src/handbook/, and src/platform/modules/documentation/pages/, writes public/prototypes/ (manifest.json, and items/), and returns the whole manifest.
+// Scans src/prototypes/, src/handbook/, and src/platform/modules/documentation/pages/, writes public/prototypes/ (manifest.json, and artifacts/), and returns the whole manifest.
 // Problems are printed; errors counts them. The dev server calls this on every change
 // (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
 // Options: `deploy` leaves archived prototypes and views out (see src/platform/core/archive.ts), `write: false`
@@ -272,7 +272,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
       if (entry) prototypes.push(entry);
     }
   }
-  // A module's section of prototype-shaped folders (src/examples/<id>/, items provided by a module): shaped
+  // A module's section of prototype-shaped folders (src/examples/<id>/, artifacts provided by a module): shaped
   // the same, one folder per id, with maintainers where the section's policy says so.
   for (const section of PROTOTYPE_SECTIONS) {
     for (const id of dirs(section.dir)) {
@@ -292,9 +292,9 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     for (const [id, { title, description }] of Object.entries(HANDBOOK_SECTIONS)) {
       const dir = path.join(HANDBOOK, id);
       if (!fs.existsSync(dir)) continue;
-      const items = itemsIn(dir, '', inHandbook);
-      errors += checkItems(dir, items, out);
-      handbook.push({ id, contributorKey: HANDBOOK_KEY, title, description, contributor: '', created: null, system: DEFAULT_SYSTEM, start: null, items });
+      const artifacts = artifactsIn(dir, '', inHandbook);
+      errors += checkArtifacts(dir, artifacts, out);
+      handbook.push({ id, contributorKey: HANDBOOK_KEY, title, description, contributor: '', created: null, system: DEFAULT_SYSTEM, start: null, artifacts });
     }
   }
 
@@ -397,7 +397,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
 
   const manifest = { prototypes: deploy ? keptPrototypes : prototypes, sections: deploy ? keptSections : sections, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map, platformReferences: platformReferences({ root: ROOT, modules: Object.values(MODULES).filter(Boolean), enabled: ENABLED_MODULES.map((m) => m.id), handbook }), systems };
   if (write) writeManifest(manifest);
-  out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${Object.entries(manifest.sections).map(([key, items]) => `${items.length} in ${key}`).join(', ') || 'no sections'}, ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
+  out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${Object.entries(manifest.sections).map(([key, artifacts]) => `${artifacts.length} in ${key}`).join(', ') || 'no sections'}, ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
   if (deploy && archived.length) out.log(`[manifest] Left out of the deployed site: ${archived.length} archived prototype(s)`);
   return { manifest, errors, archived: deploy ? archived : [] };
 }

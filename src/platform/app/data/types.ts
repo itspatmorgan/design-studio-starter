@@ -5,10 +5,10 @@ import type { ThemeToken } from '@/platform/modules/systems/themeTokens';
 import type { DocsMode } from '@/platform/modules/systems/sources';
 
 
-// public/prototypes/manifest.json, written by scripts/build/build-manifest.js, with each prototype's items
-// in public/prototypes/items/<contributor>/<prototype>.json.
-// One thing in a prototype the app can open (see src/platform/core/fileTypes.md).
-export type Item = {
+// public/prototypes/manifest.json, written by scripts/build/build-manifest.js, with each prototype's artifacts
+// in public/prototypes/artifacts/<contributor>/<prototype>.json.
+// A navigable artifact backed by a file. Shared readers use the same record shape (see src/platform/core/fileTypes.md).
+export type Artifact = {
   path: string;   // file path in the prototype, e.g. "prototype.tsx" or "checkout/step-1.tsx"
   fileType: string; // the id of the file type that owns it, from its extension ("view", "document")
   lofi?: true;      // set when the file says it's lofi (a view starting with /** @lofi */)
@@ -22,23 +22,23 @@ export type PrototypeInfo = {
   contributor: string;    // display name, from contributors.json
   created: string | null;
   system: string;         // meta.json "system", or the default (studio.config.ts defaultSystem, else the first in src/systems/)
-  start: string | null;   // meta.json "start", as an item path: the item it opens on
+  start: string | null;   // meta.json "start", the artifact file path it opens on
   status?: 'archived';    // meta.json "status", when archived; absent means active
   maintainers?: string[]; // meta.json "maintainers" (contributors.json keys), where a section's policy is maintainers; prototypes don't have them
 };
 
-// A prototype with its items loaded, which everything that shows a prototype's files needs.
+// A prototype with its artifacts loaded, which everything that shows a prototype's files needs.
 export type Prototype = PrototypeInfo & {
-  items: Item[];          // in file-tree order
+  artifacts: Artifact[];          // in file-tree order
 };
 
-// A prototype in the manifest. The deployed site's manifest leaves out items, so the file list that
+// A prototype in the manifest. The deployed site's manifest leaves out artifacts, so the file list that
 // every visitor downloads stays small; they're fetched when a prototype opens (loadPrototype in
 // manifest.ts). The dev server sends them all.
 export type PrototypeRef = PrototypeInfo & {
-  items?: Item[];
-  itemCount?: number;
-  itemsHash?: string;     // changes when the items do, so a changed list is fetched again
+  artifacts?: Artifact[];
+  artifactCount?: number;
+  artifactsHash?: string;     // changes when the items do, so a changed list is fetched again
 };
 
 // One Guide page, from its frontmatter: src/platform/modules/documentation/pages/<slug>.md, or the README of a module or file
@@ -51,8 +51,8 @@ export type GuidePage = {
   source?: string;        // where a README page is, like "/platform/modules/canvas/README.md"
 };
 
-// `sections` holds the items of the modules' sections of prototype-shaped folders, by section key: the
-// module section items (src/examples/, as `sections.examples`), shaped like prototypes.
+// `sections` holds the artifacts of the modules' sections of prototype-shaped folders, by section key: the
+// module section artifacts (src/examples/, as `sections.examples`), shaped like prototypes.
 // `handbook` holds the Handbook's sections (src/handbook/, see src/platform/core/roots.ts), shaped like
 // prototypes.
 // `handbookMap` is how an agent reads the Handbook, worked out from the files (modules/handbook/map.ts).

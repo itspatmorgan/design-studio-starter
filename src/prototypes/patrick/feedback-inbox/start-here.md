@@ -4,7 +4,7 @@ description: Explore how context, diagrams, screens, and canvases work together 
 toc: true
 ---
 
-This sample is a small feedback tracker and an introduction to the studio. Everything in the navigation is a file you can open, edit, or ask your agent to change. The folders tell the story of this example; they don't enforce a workflow.
+This sample is a small feedback tracker and an introduction to the studio. The views, documents, diagrams, and canvases in the navigation are **artifacts**: pieces of work backed by files that you or your agent can change. The folders tell the story of this example; they don't enforce a workflow.
 
 ## Take a short tour
 
@@ -36,14 +36,16 @@ Try dragging a view or diagram from the navigation onto a canvas. Documents appe
 
 ## How this example works
 
-| File type | What it contributes |
+| Artifact | What it contributes |
 | --- | --- |
 | Document (`.md`) | Written context, decisions, and references, with file previews alongside the writing. |
 | Diagram (`.mermaid`) | A portable system model that documents and canvases can preview. |
 | View (`.tsx`) | An interactive screen or a specific state of one. |
 | Canvas (`.excalidraw`) | A place to arrange previews, sketches, and notes together. |
 
-Previews reference the original files. Their headers open those files for interaction or editing. Documents can preview views, diagrams, and canvases; other documents appear as cards. Canvases preview views and diagrams, with documents and other canvases shown as cards.
+The Artifacts navigation shows this prototype's work. Folders organize it; **Show all files** also reveals helpers, assets, and metadata.
+
+Previews reference the original artifact files. Their headers open those files for interaction or editing. Documents can preview views, diagrams, and canvases; other documents appear as cards. Canvases preview views and diagrams, with documents and other canvases shown as cards.
 
 Right-click a file and choose **Edit source** to see its text. While running locally, save edits with Command+S on macOS or Ctrl+S elsewhere, then select **Done**. Try changing a heading in the inbox, or a label in the diagram, and check its previews.
 

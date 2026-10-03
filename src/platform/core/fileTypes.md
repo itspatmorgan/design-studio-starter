@@ -1,6 +1,8 @@
 # File-type contract
 
-A file type is a module capability declared by `type.ts`. Enabled types determine how items are discovered, created, opened, and embedded.
+An artifact is a navigable piece of prototype work backed by a file, such as a view, document, diagram, or canvas. Folders organize artifacts; helpers, metadata, and other assets remain supporting files.
+
+A file type is the module capability declared by `type.ts` that recognizes and renders those files. Enabled types determine how artifacts are discovered, created, opened, and embedded.
 
 ## Scopes
 
@@ -15,11 +17,11 @@ A file type is a module capability declared by `type.ts`. Enabled types determin
 
 Extension ownership is unique within each scope. Documents and Handbook can both claim `.md` because their scopes differ.
 
-Other prototype files remain plain files. Underscore helpers are excluded from normal item discovery.
+Other prototype files remain plain files. Underscore helpers are excluded from normal artifact discovery.
 
 ## Files and fields
 
-`src/platform/core/fileTypes.ts` defines `FileTypeSpec`, `defineFileType`, and item slug handling.
+`src/platform/core/fileTypes.ts` defines `FileTypeSpec`, `defineFileType`, and artifact slug handling.
 
 | File | Contract |
 | --- | --- |
@@ -33,6 +35,8 @@ Other prototype files remain plain files. Underscore helpers are excluded from n
 `inPrototype` defaults to true. `inHandbook` enables Handbook use. A `fallback` type opens other Handbook text files without claiming extensions.
 
 Supported editor languages are `tsx`, `markdown`, `json`, and `text`. The template supplies new-file content. The check reports invalid content.
+
+The app record is `Artifact`, and a loaded `Prototype` holds an `artifacts` collection. Manifest lookup and navigation use `findArtifact`, `firstArtifact`, `artifactLink`, and `artifactSlug`. Shared readers such as the Handbook reuse the same record and file-type machinery while keeping their own user-facing document terms.
 
 An `Embed` in `open.tsx` supplies a read-only preview for documents and canvases. Core resolves references and uses this contract without importing individual modules. `embedSurfaces` can restrict the preview to `document` or `canvas`; omitting it enables both. Types without a preview on that surface appear as cards. Canvas restricts its preview to documents, keeping canvas nesting bounded.
 
@@ -48,7 +52,7 @@ Follow the [module contract](../modules/README.md) for installation, disabling, 
 
 Disabling a prototype file type preserves its files as plain files. Normal navigation hides them unless Show all files is selected.
 
-If `meta.json.start` names an unavailable item, update it to a supported item. Invalid start metadata skips the prototype and fails a strict build.
+If `meta.json.start` names an unavailable artifact, update it to a supported artifact. Invalid start metadata skips the prototype and fails a strict build.
 
 Required types cannot be disabled or removed with studio commands. Required types may be imported by the platform and other modules.
 
@@ -59,5 +63,5 @@ Restart the dev server after capability changes. Ordinary content edits are refl
 1. Create a module declaration with the appropriate optional status and Handbook routing.
 2. Add `type.ts` and `open.tsx`. Use Documents as a small reference implementation.
 3. Add `loader.ts` if published content needs bundled file loading.
-4. Use the item registry to resolve other items rather than importing optional file types.
+4. Use the artifact registry to resolve other artifacts rather than importing optional file types.
 5. Run module checks and a build. Verify disabling and removal for optional types.

@@ -1,7 +1,7 @@
 node_modules/
 dist/
 public/prototypes/manifest.json
-public/prototypes/items/
+public/prototypes/artifacts/
 .trash/
 .DS_Store
 .env

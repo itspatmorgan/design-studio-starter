@@ -6,7 +6,7 @@ This rule applies to prototype Markdown when Documents is enabled. Format and re
 - Use plain Markdown. Do not add JSX or embedded components.
 - Use fenced `mermaid` code blocks for diagrams. Include `accTitle` and `accDescr` for accessible descriptions. The platform renders the diagram from its text; no image file is needed.
 - Give the page a frontmatter title or an opening level-one heading.
-- Link to prototype items with relative paths. Include file extensions for links intended to work in ordinary Markdown readers.
+- Link to prototype artifacts with relative paths. Include file extensions for links intended to work in ordinary Markdown readers.
 - Studio links accept omitted extensions, but other readers may not resolve them.
 - Embed a file from the same prototype using Markdown image syntax on its own line: `![Description](flow.mermaid)`, `![Screen](app/main.tsx)`, or `![Exploration](breadboard.excalidraw)`. The corresponding module must be enabled. Use relative paths with extensions.
 - File embeds show read-only previews and an Open link; files without previews, including documents, show cards. Canvas previews keep documents and other canvases as cards to bound nesting.

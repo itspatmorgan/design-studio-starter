@@ -1,12 +1,12 @@
 // Loads a view for its page (open.tsx) and for embeds (ViewEmbed.tsx).
-import type { ItemContext } from '@/platform/app/data/fileTypeModule';
-import { itemSlug } from '@/platform/app/data/manifest';
+import type { ArtifactContext } from '@/platform/app/data/fileTypeModule';
+import { artifactSlug } from '@/platform/app/data/manifest';
 import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
 import { repoPath } from '@/platform/app/data/files';
 import { emptyView } from '@/lib/emptyView';
 import { views } from './loader';
 
-export async function loadView({ proto, item }: ItemContext) {
+export async function loadView({ proto, item }: ArtifactContext) {
   const file = { contributor: proto.contributorKey, prototype: proto.id, path: item.path };
   const mod = await views.load(file, { inManifest: true });
   if (!mod) return undefined;
@@ -22,7 +22,7 @@ export async function loadView({ proto, item }: ItemContext) {
     Component: valid
       ? mod.default
       : () => { throw new Error(`${repoFile} has no default export. A view needs one: export default function MyView() { ... }`); },
-    viewKey: `${file.contributor}/${file.prototype}/${itemSlug(item.path)}`,
+    viewKey: `${file.contributor}/${file.prototype}/${artifactSlug(item.path)}`,
     empty,
     lofi: item.lofi === true,
     themeClass: PROTOTYPE_SYSTEMS[proto.system]?.themeClass ?? PROTOTYPE_SYSTEMS[DEFAULT_SYSTEM]?.themeClass ?? '',

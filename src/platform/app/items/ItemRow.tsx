@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 // The row for anything in a section: on the front page (HomeSection.tsx) and in a collection's list view (Collection.tsx). It is
 // the design system's Item, rendered as a link, with a neutral tile holding the module's rail icon, so all of a section's
-// rows look alike. `link` is a link from manifest.ts (prototypeLink, itemLink). `menu` is drawn beside the link
+// rows look alike. `link` is a link from manifest.ts (prototypeLink, artifactLink). `menu` is drawn beside the link
 // (PrototypeCardMenu, inline), so the row sits in a "card-wrap" group.
 export function ItemRow({ link, icon, title, meta, archived, menu }: { link: object; icon: IconSvgElement; title: string; meta?: ReactNode; archived?: boolean; menu?: ReactNode }) {
   return (

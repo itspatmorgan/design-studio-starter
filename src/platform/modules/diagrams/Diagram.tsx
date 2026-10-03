@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { MermaidDiagram } from '@/platform/app/diagrams/MermaidDiagram';
 import { readSource } from '@/platform/app/data/files';
-import type { Item, Prototype } from '@/platform/app/data/types';
+import type { Artifact, Prototype } from '@/platform/app/data/types';
 
-export type DiagramProps = { proto: Prototype; item: Item; source: string; compact?: boolean };
+export type DiagramProps = { proto: Prototype; item: Artifact; source: string; compact?: boolean };
 
 export default function Diagram({ proto, item, source: initial, compact = false }: DiagramProps) {
   const [source, setSource] = useState(initial);

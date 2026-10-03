@@ -142,7 +142,7 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     if (start === '') delete meta.start;
     else if (start !== undefined) {
       const made = buildManifest().manifest;
-      const items = [...made.prototypes, ...Object.values(made.sections).flat()].find((p) => path.join(ROOT, 'src', rootOf(p.contributorKey, p.id)) === dir)?.items ?? [];
+      const items = [...made.prototypes, ...Object.values(made.sections).flat()].find((p) => path.join(ROOT, 'src', rootOf(p.contributorKey, p.id)) === dir)?.artifacts ?? [];
       if (!items.some((i) => viewKey(i.path) === start)) throw new Error(`“${start}” isn't a view in this prototype.`);
       meta.start = start;
     }

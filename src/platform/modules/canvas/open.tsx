@@ -2,7 +2,7 @@
 import { lazy } from 'react';
 import { CanvasIcon } from '@hugeicons/core-free-icons';
 import type { FileTypeModule } from '@/platform/app/data/fileTypeModule';
-import type { Item, Prototype } from '@/platform/app/data/types';
+import type { Artifact, Prototype } from '@/platform/app/data/types';
 import { readSource } from '@/platform/app/data/files';
 import { canvasFiles } from './loader';
 import { rootOf } from '@/platform/core/roots';
@@ -27,4 +27,4 @@ export default {
   Page: Canvas,
   Embed: CanvasEmbed,
   embedSurfaces: ['document'],
-} satisfies FileTypeModule<{ proto: Prototype; item: Item; text: string; version: string }>;
+} satisfies FileTypeModule<{ proto: Prototype; item: Artifact; text: string; version: string }>;

@@ -1,6 +1,6 @@
 ---
 title: "Arrange work on a canvas"
-description: "Connect prototype items on an optional visual surface."
+description: "Connect prototype artifacts on an optional visual surface."
 section: "Create"
 order: 12
 toc: true
@@ -9,24 +9,24 @@ slug: "canvases"
 
 # Canvases
 
-Canvases adds an Excalidraw surface inside a prototype. Each canvas is an `.excalidraw` file with shapes, text, notes, arrows, and linked items.
+Canvases adds an Excalidraw surface inside a prototype. Each canvas is an `.excalidraw` file with shapes, text, notes, arrows, and linked artifacts.
 
 The module is optional. Disabling it preserves canvas files and hides them from normal navigation.
 
-## Create and add items
+## Create and add artifacts
 
-Ask your agent to create a canvas, or select **New** (+), then **New canvas**, in the Files row.
+Ask your agent to create a canvas, or select **New** (+), then **New canvas**, in the Artifacts row.
 
-Drag an item from the prototype's navigation onto the canvas. You can also select **Copy link** in the item's menu, place the pointer over the canvas, and paste.
+Drag an artifact from the prototype's navigation onto the canvas. You can also select **Copy link** in the artifact's menu, place the pointer over the canvas, and paste.
 
-| Linked item | Display |
+| Linked artifact | Display |
 | --- | --- |
 | View | Live-rendered preview. Open the view to interact with it. |
 | Diagram | Live preview of the Mermaid source, with an Open link. Requires the Diagrams module. |
 | Document or canvas | Card with an Open link. |
-| Missing item | Placeholder. |
+| Missing artifact | Placeholder. |
 
-A canvas embeds only items from its own prototype. An embed from another prototype shows a scope message and fails the build. Copy the item into this prototype to reuse it.
+A canvas embeds only artifacts from its own prototype. An embed from another prototype shows a scope message and fails the build. Copy the artifact into this prototype to reuse it.
 
 The canvas cannot store images. View and diagram previews provide a connection to their source files.
 
@@ -48,6 +48,8 @@ The agent can edit the saved canvas file. Agents with browser access can also us
 
 Live tool operations support undo. External file edits are not necessarily separate undo steps. Available live integrations depend on your agent.
 
+The agent tool `artifacts` lists the prototype's available artifacts. To embed one, use `create` with `{ "type": "artifact", "artifact": "explore/feedback-flow" }`. Tool help describes current arguments.
+
 ## For developers
 
 A page to arrange things on: live views and diagrams, and cards for documents from its own prototype, beside sticky
@@ -57,17 +59,17 @@ Human docs: the Guide's Canvases page.
 
 **This folder is a self-contained file type.** Core never imports it (`scripts/check/check-modules.js`),
 so the app runs with or without it. Canvas doesn't import another file type either: it asks the
-registry (`src/platform/app/data/fileTypes.ts`) how to show an item.
+registry (`src/platform/app/data/fileTypes.ts`) how to show an artifact.
 
 ### The model
 
 - **One file per canvas:** `<name>.excalidraw`, anywhere in a prototype. An Excalidraw scene as JSON.
   The name in the navigation comes from the file name.
 - **Items are embeds.** A view, diagram, or document on a canvas is an Excalidraw `embeddable` element whose
-  `link` is the item's address in the app (`/prototypes/patrick/hello-world/lofi/main`; one saved in the older form, without `/prototypes`, still resolves and is written back in the new form when the canvas is saved). The link resolves through
-  the manifest (`src/platform/app/items/itemLinks.ts`) to a prototype and an item, and the item's file type
+  `link` is the artifact's address in the app (`/prototypes/patrick/hello-world/lofi/main`; one saved in the older form, without `/prototypes`, still resolves and is written back in the new form when the canvas is saved). The link resolves through
+  the manifest (`src/platform/app/artifacts/artifactLinks.ts`) to a prototype and an artifact, and the artifact's file type
   decides how it looks: a type with an `Embed` in its `open.tsx` (views and diagrams on canvases) shows live, any other
-  type shows a card (`src/platform/app/items/ItemCard.tsx`), and a link to nothing shows "Not found".
+  type shows a card (`src/platform/app/artifacts/ArtifactCard.tsx`), and a link to nothing shows "Not found".
 - **Views are pictures.** A view is laid out at 1440 px wide and scaled down to the element's width,
   cropped at the bottom. Resizing the element changes the crop. Nothing in it takes clicks.
 - **Agents** use the tools in tools.ts, live in the open canvas or on the file (src/handbook/rules/canvases.md).
@@ -87,7 +89,7 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an item.
 | `format.ts` | The file format: slim and stable so canvases diff cleanly. No deleted elements, no images, defaults dropped, numbers rounded, keys sorted, links stored as app paths |
 | `useCanvasFile.ts` | Saving and taking in changes: debounce, one save at a time, base version and conflict merge, retry with backoff, flush on leaving |
 | `mergeRemote.ts` | Merging a changed file into unsaved edits |
-| `embeds.tsx` | How an item renders on a canvas; sizing rules for new ones; culling off-screen ones |
+| `embeds.tsx` | How an artifact renders on a canvas; sizing rules for new ones; culling off-screen ones |
 | `liveViews.ts` | Which previews stay mounted (30 at most; one new every 150 ms) |
 | `camera.ts` | Where a canvas opens: where you left it, or fitted to its content |
 | `tools.ts` | The agent tools, defined once: what each does and takes (`help`), and running them on a list of elements. Pure |

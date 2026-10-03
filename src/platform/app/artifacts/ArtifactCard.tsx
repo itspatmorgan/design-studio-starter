@@ -5,13 +5,13 @@ import { Link } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { FileNotFoundIcon } from '@hugeicons/core-free-icons';
 import { FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
-import { itemLabel, itemLink } from '@/platform/app/data/manifest';
-import type { Item, Prototype } from '@/platform/app/data/types';
+import { artifactLabel, artifactLink } from '@/platform/app/data/manifest';
+import type { Artifact, Prototype } from '@/platform/app/data/types';
 import { cn } from '@/lib/utils';
 
 export const ITEM_CARD_HEIGHT = 88;
 
-export default function ItemCard({ proto, item, elsewhere = false, className }: { proto?: Prototype; item?: Item; elsewhere?: boolean; className?: string }) {
+export default function ArtifactCard({ proto, item, elsewhere = false, className }: { proto?: Prototype; item?: Artifact; elsewhere?: boolean; className?: string }) {
   const icon = item && fileTypeModules[item.fileType]?.icon;
   const found = proto && item;
   return (
@@ -20,7 +20,7 @@ export default function ItemCard({ proto, item, elsewhere = false, className }: 
         <HugeiconsIcon icon={found && icon ? icon : FileNotFoundIcon} size={20} />
       </span>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-sm font-semibold text-foreground">{found ? itemLabel(item.path) : elsewhere ? 'Another prototype' : 'Not found'}</div>
+        <div className="truncate text-sm font-semibold text-foreground">{found ? artifactLabel(item.path) : elsewhere ? 'Another prototype' : 'Not found'}</div>
         <div className="truncate text-xs text-muted-foreground" title={elsewhere ? 'A canvas shows only its own prototype. Copy the view into this prototype, then link that.' : undefined}>
           {found
             ? FILE_TYPES[item.fileType]?.label ?? 'File'
@@ -30,7 +30,7 @@ export default function ItemCard({ proto, item, elsewhere = false, className }: 
         </div>
       </div>
       {found && (
-        <Link {...itemLink(proto, item)} data-open className="shrink-0 rounded-md px-2 py-1 text-xs font-medium text-foreground hover:bg-muted">
+        <Link {...artifactLink(proto, item)} data-open className="shrink-0 rounded-md px-2 py-1 text-xs font-medium text-foreground hover:bg-muted">
           Open
         </Link>
       )}

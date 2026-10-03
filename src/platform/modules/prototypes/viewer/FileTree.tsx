@@ -20,18 +20,18 @@ import {
   Add01Icon, ArrowDown01Icon, Cancel01Icon, CodeIcon, Delete02Icon, File01Icon,
   StarIcon, PencilEdit02Icon, PaintBoardIcon, Search01Icon, UnfoldLessIcon, UnfoldMoreIcon,
 } from '@hugeicons/core-free-icons';
-import { allPrototypes, firstItem, itemLabel, itemLink, itemSlug, prototypeLink, setManifest } from '@/platform/app/data/manifest';
+import { allPrototypes, firstArtifact, artifactLabel, artifactLink, artifactSlug, prototypeLink, setManifest } from '@/platform/app/data/manifest';
 import {
-  canChangePrototype, fileOp, openInEditor, repoPath, revealInFinder, setItemLofi, useFileTree, useMe, type FileNode, type FileOp,
+  canChangePrototype, fileOp, openInEditor, repoPath, revealInFinder, setArtifactLofi, useFileTree, useMe, type FileNode, type FileOp,
 } from '@/platform/app/data/files';
-import type { Item, Manifest, Prototype } from '@/platform/app/data/types';
+import type { Artifact, Manifest, Prototype } from '@/platform/app/data/types';
 import { isHelper } from '@/platform/core/fileTypes';
 import { navIndent, navRow, navRowState } from '@/platform/app/shell/nav';
 import { HANDBOOK_KEY } from '@/platform/core/roots';
 import { creatableIn, isSkillFile, isSkillFolder, opProblem } from '@/platform/modules/handbook/rules';
 import { NEW_KINDS } from '@/platform/modules/handbook/pages/newKinds';
 import NewSkillDialog from '@/platform/modules/handbook/pages/NewSkillDialog';
-import { itemUrl } from '@/platform/app/items/itemLinks';
+import { artifactUrl } from '@/platform/app/artifacts/artifactLinks';
 import { place } from '@/platform/core/order';
 import { DRAG_KIND, DragRow, type Dropped, type Operations } from '@/platform/modules/prototypes/viewer/DragRow';
 import { creatableTypes, FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
@@ -56,7 +56,7 @@ const within = (p: string, dir: string) => p === dir || p.startsWith(`${dir}/`);
 // manifest, with their folders.
 function itemsAsNodes(proto: Prototype): FileNode[] {
   const root: FileNode[] = [];
-  for (const item of proto.items) {
+  for (const item of proto.artifacts) {
     const parts = item.path.split('/');
     let level = root;
     parts.slice(0, -1).forEach((name, i) => {
@@ -72,12 +72,12 @@ function itemsAsNodes(proto: Prototype): FileNode[] {
 }
 
 // The items of a prototype in a manifest.
-const itemsOf = (m: Manifest, p: Prototype) => allPrototypes(m).find((x) => x.contributorKey === p.contributorKey && x.id === p.id)?.items ?? [];
+const itemsOf = (m: Manifest, p: Prototype) => allPrototypes(m).find((x) => x.contributorKey === p.contributorKey && x.id === p.id)?.artifacts ?? [];
 
 // While filtering, keep files whose name matches, and folders with a match inside.
 function filterNodes(nodes: FileNode[], q: string): FileNode[] {
   return nodes.flatMap((n) => {
-    if (!n.dir) return n.name.toLowerCase().includes(q) || itemLabel(n.name).toLowerCase().includes(q) ? [n] : [];
+    if (!n.dir) return n.name.toLowerCase().includes(q) || artifactLabel(n.name).toLowerCase().includes(q) ? [n] : [];
     const children = filterNodes(n.children ?? [], q);
     return children.length || n.name.toLowerCase().includes(q) ? [{ ...n, children }] : [];
   });
@@ -85,7 +85,7 @@ function filterNodes(nodes: FileNode[], q: string): FileNode[] {
 
 // What the nav shows by default: items, folders with an item inside, and empty folders (you
 // made those to organize, so they stay). Helpers, meta.json, and assets are hidden.
-function visibleNodes(nodes: FileNode[], items: Map<string, Item>): FileNode[] {
+function visibleNodes(nodes: FileNode[], items: Map<string, Artifact>): FileNode[] {
   return nodes.flatMap((n) => {
     if (!n.dir) return items.has(n.path) ? [n] : [];
     if (isHelper(n.name)) return [];
@@ -95,7 +95,7 @@ function visibleNodes(nodes: FileNode[], items: Map<string, Item>): FileNode[] {
 }
 
 // The files inside a folder the nav isn't showing, for the delete confirmation.
-function hiddenInside(node: FileNode, items: Map<string, Item>): string[] {
+function hiddenInside(node: FileNode, items: Map<string, Artifact>): string[] {
   const all = (n: FileNode): string[] => (n.dir ? (n.children ?? []).flatMap(all) : [n.path]);
   return all(node).filter((p) => !items.has(p)).map((p) => p.slice(node.path.length + 1));
 }
@@ -164,7 +164,7 @@ function IconButton({ label, onClick, pressed, children }: { label: string; onCl
   );
 }
 
-type FileTreeProps = { proto: Prototype; current: Item | undefined };
+type FileTreeProps = { proto: Prototype; current: Artifact | undefined };
 
 export default function FileTree({ proto, current }: FileTreeProps) {
   const { files, reload } = useFileTree(proto);
@@ -183,13 +183,13 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   const newOptions = (folder: string) => (isHandbook
     ? creatableIn(proto.id, folder).map((kind) => ({ target: kind === 'document' ? 'handbook' : kind, ...NEW_KINDS[kind] }))
     : [...creatableTypes.map((t) => ({ target: t.id, label: `New ${t.label.toLowerCase()}`, icon: t.icon })), { target: 'folder', ...NEW_KINDS.folder }]);
-  const items = new Map(proto.items.map((i) => [i.path, i]));
+  const items = new Map(proto.artifacts.map((i) => [i.path, i]));
   // Switched in the header's "…" menu, and remembered for every prototype.
   const [showAll] = useShowAllFiles();
   const nodes = !files ? itemsAsNodes(proto) : showAll ? files : visibleNodes(files, items);
   // The item the prototype opens on: its start, or its first item. It gets a star. (A Handbook
   // section has no start to mark.)
-  const opensOn = proto.contributorKey === HANDBOOK_KEY ? undefined : firstItem(proto);
+  const opensOn = proto.contributorKey === HANDBOOK_KEY ? undefined : firstArtifact(proto);
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [filter, setFilter] = useState('');
@@ -212,15 +212,15 @@ export default function FileTree({ proto, current }: FileTreeProps) {
     if (open) next.delete(d); else next.add(d);
     return next;
   });
-  // It says "Files" on the deployed site too, so the name is the same everywhere.
-  const noun = 'files';
+  // Show all files exposes helpers and assets as well as artifacts.
+  const noun = showAll || proto.contributorKey === HANDBOOK_KEY ? 'files' : 'artifacts';
 
   // Runs a change, then takes the new manifest. If it moved or removed the open view, go to
   // its new place (or the prototype's first view) first, so the old address is never reloaded.
   async function run(op: FileOp) {
     // What a delete removed, named the way the tree shows it, for the message after.
     const base = 'path' in op ? op.path.split('/').pop() ?? '' : '';
-    const deleted = op.op === 'delete' ? (findNode(files ?? [], op.path)?.dir || items.has(op.path) ? itemLabel(base) : base) : '';
+    const deleted = op.op === 'delete' ? (findNode(files ?? [], op.path)?.dir || items.has(op.path) ? artifactLabel(base) : base) : '';
     try {
       const result = await fileOp(proto, op);
       setManifest(result.manifest);
@@ -228,7 +228,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
       if (open && (op.op === 'rename' || op.op === 'move' || op.op === 'delete' || (op.op === 'reorder' && result.path !== op.path)) && within(open, op.path)) {
         const moved = result.path && `${result.path}${open.slice(op.path.length)}`;
         const next = moved && itemsOf(result.manifest, proto).find((i) => i.path === moved);
-        await navigate(next ? itemLink(proto, next) : prototypeLink(proto));
+        await navigate(next ? artifactLink(proto, next) : prototypeLink(proto));
       }
       await router.invalidate();
       reload();
@@ -247,9 +247,9 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   }
 
   // Switches a view to lofi or back (for a type with `fidelity`): its file carries the marker.
-  async function setLofi(item: Item, on: boolean) {
+  async function setLofi(item: Artifact, on: boolean) {
     try {
-      await setItemLofi(proto, item.path, on, FILE_TYPES[item.fileType].fidelity!);
+      await setArtifactLofi(proto, item.path, on, FILE_TYPES[item.fileType].fidelity!);
     } catch (e) {
       toast.add({ type: 'error', title: (e as Error).message });
     }
@@ -269,7 +269,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
     reload();
     setNewSkillOpen(false);
     const item = result.path && itemsOf(result.manifest, proto).find((i) => i.path === result.path);
-    if (item) navigate(itemLink(proto, item));
+    if (item) navigate(artifactLink(proto, item));
   }
 
   // Drag and drop (DragRow.tsx): drag a row before or after another, or into a folder. Order is saved
@@ -375,8 +375,8 @@ export default function FileTree({ proto, current }: FileTreeProps) {
             )) : [],
             [
               <FileActionItems key="file-actions" path={repoPath(proto, node.path)}
-                href={items.has(node.path) ? itemUrl(proto, items.get(node.path)!) : undefined}
-                edit={items.has(node.path) && FILE_TYPES[items.get(node.path)!.fileType]?.language ? () => { void navigate({ ...itemLink(proto, items.get(node.path)!), search: { mode: 'source' } } as never); } : undefined}
+                href={items.has(node.path) ? artifactUrl(proto, items.get(node.path)!) : undefined}
+                edit={items.has(node.path) && FILE_TYPES[items.get(node.path)!.fileType]?.language ? () => { void navigate({ ...artifactLink(proto, items.get(node.path)!), search: { mode: 'source' } } as never); } : undefined}
                 sourceLabel={editable ? 'Edit source' : 'View source'}
                 open={!node.dir ? () => openInEditor(proto, node.path) : undefined}
                 reveal={() => revealInFinder(proto, node.path)} />,
@@ -385,7 +385,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
               editable && !isHandbook && items.has(node.path) && (
                 proto.start === node.path
                   ? <ContextMenuItem key="start" onClick={() => setTimeout(() => run({ op: 'meta', start: '' }))}><HugeiconsIcon icon={StarIcon} /> Remove as start</ContextMenuItem>
-                  : opensOn?.path !== node.path && <ContextMenuItem key="start" onClick={() => setTimeout(() => run({ op: 'meta', start: itemSlug(node.path) }))}><HugeiconsIcon icon={StarIcon} /> Set as start</ContextMenuItem>
+                  : opensOn?.path !== node.path && <ContextMenuItem key="start" onClick={() => setTimeout(() => run({ op: 'meta', start: artifactSlug(node.path) }))}><HugeiconsIcon icon={StarIcon} /> Set as start</ContextMenuItem>
               ),
               editable && !isHandbook && FILE_TYPES[items.get(node.path)?.fileType ?? '']?.fidelity && (
                 <ContextMenuItem key="lofi" onClick={() => setTimeout(() => setLofi(items.get(node.path)!, !items.get(node.path)!.lofi))}>
@@ -425,7 +425,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
           run({ op: 'create', path: parent, name: fileName, dir }).then((r) => {
             // A new item opens right away.
             const item = r?.path && itemsOf(r.manifest, proto).find((i) => i.path === r.path);
-            if (item) navigate(itemLink(proto, item));
+            if (item) navigate(artifactLink(proto, item));
           });
         }}
       />
@@ -452,7 +452,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
                   <CollapsibleTrigger draggable={false} {...keyProps(node)} style={indent(depth)}
                     className={cn(row, 'text-left font-medium text-sidebar-foreground hover:bg-sidebar-foreground/5')}>
                     <HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !open && '-rotate-90')} />
-                    <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{itemLabel(node.name)}</span>
+                    <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{artifactLabel(node.name)}</span>
                   </CollapsibleTrigger>
                 ))}
               </DragRow>
@@ -469,16 +469,16 @@ export default function FileTree({ proto, current }: FileTreeProps) {
       // rest of the app; the file name is in the tooltip and the rename field. Other files, shown
       // with Show all files (in the header's … menu), keep their real names, since they open in your editor.
       const label = item
-        ? <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{itemLabel(node.path, proto)}</span>
+        ? <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{artifactLabel(node.path, proto)}</span>
         : <FileName name={node.name} />;
       // Items open in the app.
       if (item) {
         const active = item === current;
         return (
-          <DragRow key={node.path} path={node.path} dir={false} canDrag={movable(node)} url={itemUrl(proto, item)} operationsFor={operationsFor(node, false)}>
+          <DragRow key={node.path} path={node.path} dir={false} canDrag={movable(node)} url={artifactUrl(proto, item)} operationsFor={operationsFor(node, false)}>
           {rowMenu(node.path, node, (
             <Link
-              {...itemLink(proto, item)}
+              {...artifactLink(proto, item)}
               draggable={false} // the row is what drags (DragRow.tsx), not the link
               {...keyProps(node)}
               aria-current={active ? 'page' : undefined}
@@ -516,7 +516,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   return (
     <nav className="group/tree flex min-h-0 flex-1 flex-col space-y-1.5 overflow-y-auto px-2 pt-3 pb-3">
       <div className="flex h-7 shrink-0 items-center justify-between gap-1 px-2.5 pr-0.5">
-        <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">Files</p>
+        <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{showAll || proto.contributorKey === HANDBOOK_KEY ? 'Files' : 'Artifacts'}</p>
         {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
         <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
           <IconButton label="Filter" pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
@@ -590,7 +590,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
       <Dialog open={confirmDelete !== null} onOpenChange={(o) => { if (!o) setConfirmDelete(null); }}>
         <DialogContent showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle>Delete “{confirmDelete && (confirmDelete.dir || items.has(confirmDelete.path) ? itemLabel(confirmDelete.name) : confirmDelete.name)}”?</DialogTitle>
+            <DialogTitle>Delete “{confirmDelete && (confirmDelete.dir || items.has(confirmDelete.path) ? artifactLabel(confirmDelete.name) : confirmDelete.name)}”?</DialogTitle>
             <DialogDescription>
               {confirmDelete?.dir ? 'The folder and everything in it move' : 'It moves'} to the Trash, where you can restore it.
               {confirmDelete?.dir && !showAll && (() => {

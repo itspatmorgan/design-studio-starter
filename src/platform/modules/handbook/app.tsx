@@ -8,8 +8,8 @@ import { HomeHint, HomeSection } from '@/platform/app/items/HomeSection';
 import { useMe } from '@/platform/app/data/files';
 import { ItemRow } from '@/platform/app/items/ItemRow';
 import { NotFound } from '@/platform/app/shell/App';
-import { itemFolder, itemLabel, loadManifest } from '@/platform/app/data/manifest';
-import { itemLink } from '@/platform/app/data/manifest';
+import { artifactFolder, artifactLabel, loadManifest } from '@/platform/app/data/manifest';
+import { artifactLink } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 import type { Manifest } from '@/platform/app/data/types';
 
@@ -19,20 +19,20 @@ function HandbookPlaces({ go }: PaletteContext) {
 }
 
 function HandbookPalette({ manifest, current, isOpen, go }: PaletteContext) {
-  if (!manifest.handbook.some((section) => section.items.length > 0)) return null;
+  if (!manifest.handbook.some((section) => section.artifacts.length > 0)) return null;
   return (
     <>
       <CommandSeparator />
       <CommandGroup heading="Handbook">
-        {manifest.handbook.flatMap((section) => section.items.map((item) => (
+        {manifest.handbook.flatMap((section) => section.artifacts.map((item) => (
           <CommandItem
             key={`${section.id}/${item.path}`}
-            value={`handbook ${section.title} ${itemLabel(item.path, section)} ${item.path}`}
+            value={`handbook ${section.title} ${artifactLabel(item.path, section)} ${item.path}`}
             disabled={section === current && isOpen(item)}
-            onSelect={() => go(itemLink(section, item))}
+            onSelect={() => go(artifactLink(section, item))}
           >
-            <span className="shrink-0 text-xs text-muted-foreground">{[section.title, itemFolder(item.path)].filter(Boolean).join(' · ')}</span>
-            <span className="truncate">{itemLabel(item.path, section)}</span>
+            <span className="shrink-0 text-xs text-muted-foreground">{[section.title, artifactFolder(item.path)].filter(Boolean).join(' · ')}</span>
+            <span className="truncate">{artifactLabel(item.path, section)}</span>
           </CommandItem>
         )))}
       </CommandGroup>
@@ -45,11 +45,11 @@ function HandbookPalette({ manifest, current, isOpen, go }: PaletteContext) {
 function Overview({ manifest }: { manifest: Manifest }) {
   const me = useMe();
   const docs = manifest.handbook.find((section) => section.id === 'docs');
-  const items = docs?.items.slice(0, 3) ?? [];
+  const items = docs?.artifacts.slice(0, 3) ?? [];
   if (!docs || !items.length) return import.meta.env.DEV && me ? <HomeSection title="Context" to="/handbook/context"><HomeHint>None yet. Ask your agent to write one.</HomeHint></HomeSection> : null;
   return (
     <HomeSection title="Context" to="/handbook/context">
-      <ul>{items.map((item) => <ItemRow key={item.path} link={itemLink(docs, item)} icon={Notebook01Icon} title={itemLabel(item.path)} />)}</ul>
+      <ul>{items.map((item) => <ItemRow key={item.path} link={artifactLink(docs, item)} icon={Notebook01Icon} title={artifactLabel(item.path)} />)}</ul>
     </HomeSection>
   );
 }

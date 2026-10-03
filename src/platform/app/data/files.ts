@@ -116,7 +116,7 @@ export type FileOpResult = { path?: string; trashedTo?: string; manifest: Manife
 // A prototype system's components folder, in the shape the file layer takes for a prototype
 // (src/platform/core/roots.ts): what the Source view and the operations above are given.
 export const systemFiles = (system: string): Prototype => ({
-  id: system, contributorKey: SYSTEMS_KEY, title: system, description: '', contributor: '', created: null, system, start: null, items: [],
+  id: system, contributorKey: SYSTEMS_KEY, title: system, description: '', contributor: '', created: null, system, start: null, artifacts: [],
 });
 
 // Changes a file in your prototype (scripts/build/vite-files-plugin.js). Throws the server's message.
@@ -143,7 +143,7 @@ export async function readSource(p: PrototypeInfo, path: string) {
 
 // Switches an item in your prototype to lofi or back, by changing the marker in its file the way its
 // type says (fidelity in its type.ts). The manifest follows from the file changing, like any edit.
-export async function setItemLofi(p: PrototypeInfo, path: string, on: boolean, fidelity: { setLofi(source: string, on: boolean): string }) {
+export async function setArtifactLofi(p: PrototypeInfo, path: string, on: boolean, fidelity: { setLofi(source: string, on: boolean): string }) {
   const { content, version } = await readSource(p, path);
   const next = fidelity.setLofi(content, on);
   if (next !== content) await writeSource(p, path, next, version);

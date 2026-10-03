@@ -1,3 +1,4 @@
+import { embedFor } from '@/platform/app/data/fileTypeModule';
 // The canvas tools in the open canvas: `window.__studioCanvas`, for an agent that has a browser. Dev
 // only. They are the tools in tools.ts (the command line runs the same ones on the file), applied to
 // the scene on screen, so the person sees each change as it is made and can undo it with ⌘Z: one
@@ -13,17 +14,17 @@ import { CaptureUpdateAction, exportToBlob, restoreElements } from '@excalidraw/
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import { FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
-import { itemLabel } from '@/platform/app/data/manifest';
-import type { Item, Manifest, Prototype } from '@/platform/app/data/types';
-import { appPathOf, isInPrototype, resolveItemPath } from '@/platform/app/items/itemLinks';
+import { artifactLabel } from '@/platform/app/data/manifest';
+import type { Artifact, Manifest, Prototype } from '@/platform/app/data/types';
+import { appPathOf, isInPrototype, resolveArtifactPath } from '@/platform/app/artifacts/artifactLinks';
 import { addressOf, canonicalPath } from '@/platform/core/roots';
 import { boundsOf } from './elements';
-import { help, run, ToolError, type Ctx, type El, type ItemInfo } from './tools';
+import { help, run, ToolError, type Ctx, type El, type ArtifactInfo } from './tools';
 
 export type CanvasAgentOptions = {
   api: ExcalidrawImperativeAPI;
   proto: Prototype;
-  item: Item;
+  item: Artifact;
   // The manifest as it is now (it changes as files do).
   manifest: () => Manifest;
   // Whether this canvas can be changed: not in someone else's prototype.
@@ -39,18 +40,18 @@ export function createCanvasAgent({ api, proto, item, manifest, editable, persis
 
   const ctx: Ctx = {
     base: addressOf(proto.contributorKey, proto.id),
-    item(path) {
+    artifact(path) {
       // A canvas shows only its own prototype's items.
       if (!isInPrototype(path, proto)) return null;
-      const found = resolveItemPath(manifest(), path);
+      const found = resolveArtifactPath(manifest(), path);
       if (!found) return null;
       const type = found.item.fileType;
-      return { path, title: itemLabel(found.item.path), type, typeLabel: FILE_TYPES[type]?.label ?? 'File', preview: Boolean(fileTypeModules[type]?.Embed) };
+      return { path, title: artifactLabel(found.item.path), type, typeLabel: FILE_TYPES[type]?.label ?? 'File', preview: Boolean(embedFor(fileTypeModules[type], 'canvas')) };
     },
-    items() {
+    artifacts() {
       const own = [...manifest().prototypes, ...Object.values(manifest().sections).flat()].find((p) => p.contributorKey === proto.contributorKey && p.id === proto.id);
-      return (own?.items ?? proto.items)
-        .map((i) => ctx.item(`${addressOf(proto.contributorKey, proto.id)}/${i.path.replace(/\.[^./]+$/, '')}`) as ItemInfo)
+      return (own?.artifacts ?? proto.artifacts)
+        .map((i) => ctx.artifact(`${addressOf(proto.contributorKey, proto.id)}/${i.path.replace(/\.[^./]+$/, '')}`) as ArtifactInfo)
         .filter(Boolean);
     },
     linkPath: (link) => appPathOf(link) ?? (link.startsWith('/') && !link.startsWith('//') ? canonicalPath(link) : null),
@@ -75,7 +76,7 @@ export function createCanvasAgent({ api, proto, item, manifest, editable, persis
   const selected = () => Object.keys(api.getAppState().selectedElementIds);
 
   function call(tool: string, args: unknown) {
-    if (!['describe', 'help', 'items'].includes(tool) && !editable()) {
+    if (!['describe', 'help', 'artifacts'].includes(tool) && !editable()) {
       throw new ToolError('This canvas is read-only here: it is in someone else\'s prototype, or the app is not running in dev. Ask the person to make a canvas of your own.');
     }
     let input = args as Record<string, unknown> | undefined;
@@ -121,7 +122,7 @@ export function createCanvasAgent({ api, proto, item, manifest, editable, persis
     },
 
     describe: (args?: unknown) => call('describe', args),
-    items: (args?: unknown) => call('items', args),
+    artifacts: (args?: unknown) => call('artifacts', args),
     create: (args: unknown) => call('create', args),
     update: (args: unknown) => call('update', args),
     move: (args: unknown) => call('move', args),

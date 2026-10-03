@@ -23,9 +23,9 @@ src/prototypes/<contributor>/hello-world/
 
 A view is a `.tsx` or `.jsx` file that default-exports a React component. Use `.tsx` for new views.
 
-Helpers start with `_` and do not become navigable items. A helper folder hides its contents from normal item navigation.
+Helpers start with `_` and do not become navigable artifacts. A helper folder hides its contents from normal artifact navigation.
 
-File-type modules determine which extensions become items. Two files cannot produce the same item URL.
+File-type modules determine which extensions become artifacts. Two files cannot produce the same artifact URL.
 
 ## Metadata
 
@@ -46,7 +46,7 @@ File-type modules determine which extensions become items. Two files cannot prod
 | `description` | Optional description. |
 | `created` | Date filled by the creation command. |
 | `system` | Assigned prototype system. If omitted, uses the studio default. |
-| `start` | Opening item path without its extension. If omitted, uses the first item. |
+| `start` | Opening artifact path without its extension. If omitted, uses the first artifact. |
 | `order` | File and folder paths to place first, in sequence. |
 | `status` | `archived` excludes the prototype from the published site. Omit it or use `active` for active work. |
 
@@ -54,16 +54,16 @@ Contributor details come from `contributors.json` or `contributors/<key>.json`.
 
 Missing or invalid metadata causes a local warning and fails the build. Ask the agent to repair it.
 
-## Item URLs
+## Artifact URLs
 
 | URL | Opens |
 | --- | --- |
-| `/prototypes/<contributor>/hello-world` | The start item, or first item. |
+| `/prototypes/<contributor>/hello-world` | The start artifact, or first artifact. |
 | `/prototypes/<contributor>/hello-world/prototype` | The prototype view. |
 | `/prototypes/<contributor>/hello-world/notes` | The document. |
 | `/prototypes/<contributor>/hello-world/flow` | The canvas. |
 
-Nested folders become URL segments. Renaming a prototype folder or item changes its URL.
+Nested folders become URL segments. Renaming a prototype folder or artifact changes its URL.
 
 ## Default system changes
 
@@ -95,7 +95,7 @@ To reuse another prototype's code, copy it into your folder. Changes to the copy
 
 A reusable component can also belong in the design system. Moving it there is a shared change that needs maintainer approval.
 
-A canvas embeds only items from its own prototype. Copy another prototype's item before adding it to your canvas.
+A canvas embeds only artifacts from its own prototype. Copy another prototype's artifact before adding it to your canvas.
 
 ## Contain styles
 

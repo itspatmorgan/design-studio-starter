@@ -6,7 +6,7 @@ import type { ComponentType } from 'react';
 import type { IconSvgElement } from '@hugeicons/react';
 import type { AnyRoute, NavigateOptions } from '@tanstack/react-router';
 import { compatible, type ModuleSpec } from '@/platform/core/modules';
-import type { Item, Manifest, Prototype, PrototypeInfo } from '@/platform/app/data/types';
+import type { Artifact, Manifest, Prototype, PrototypeInfo } from '@/platform/app/data/types';
 import { MODULES } from '@/platform/app/data/modules';
 import { isEnabled } from '@/platform/app/data/config';
 
@@ -15,7 +15,7 @@ import { isEnabled } from '@/platform/app/data/config';
 export type PaletteContext = {
   manifest: Manifest;
   current: Prototype | undefined;
-  isOpen: (item: Item) => boolean;
+  isOpen: (item: Artifact) => boolean;
   go: (to: NavigateOptions) => void;
 };
 

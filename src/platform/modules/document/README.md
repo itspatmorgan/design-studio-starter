@@ -15,7 +15,7 @@ Documents use the platform's page style, rather than the prototype's design-syst
 
 ## Create and edit
 
-Ask your agent to create a document, or select **New** (+), then **New document**, in the Files row.
+Ask your agent to create a document, or select **New** (+), then **New document**, in the Artifacts row.
 
 1. Right-click the document and select **Edit source**.
 2. Edit the Markdown text.
@@ -24,7 +24,7 @@ Ask your agent to create a document, or select **New** (+), then **New document*
 
 Other contributors' documents and published pages are read-only.
 
-A document and another item cannot share a URL, such as `notes.md` and `notes.tsx`.
+A document and another artifact cannot share a URL, such as `notes.md` and `notes.tsx`.
 
 ## Supported content
 
@@ -83,7 +83,7 @@ This shared reader also supports Mermaid in the Handbook, Guide, and repository 
 
 ## Links and related context
 
-Link to another item with a relative path:
+Link to another artifact with a relative path:
 
 ```md
 See the [main view](./prototype.tsx).

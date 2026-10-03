@@ -36,7 +36,7 @@ test('prototype file images compile into block embeds while inline references st
   const plugin = mdx({ format: 'md', providerImportSource: '@mdx-js/react', rehypePlugins: [diagramFiles] });
   const markdown = '![View](app/main.tsx)\n\n![Canvas](board.excalidraw)\n\n![Document](context.md)\n\n![Feedback flow](../feedback-flow.mermaid)\n\n![Sequence](sequence.mmd)\n\nSee ![Flow](flow.mermaid) for context.\n\n![Photo](photo.png)';
   const compiled = (await plugin.transform.call({}, markdown, '/example.md')).code;
-  assert.ok(compiled.includes('"prototype-file"'));
+  assert.ok(compiled.includes('"prototype-artifact"'));
   assert.ok(compiled.includes('"../feedback-flow.mermaid"'));
   assert.ok(compiled.includes('"sequence.mmd"'));
   for (const path of ['app/main.tsx', 'board.excalidraw', 'context.md']) assert.ok(compiled.includes(`source: "${path}"`));
@@ -46,14 +46,14 @@ test('prototype file images compile into block embeds while inline references st
 });
 
 test('file references resolve nested files and remain within the document prototype', async () => {
-  const { fileReference } = await import('../../src/platform/app/items/fileReference.ts');
+  const { artifactReference } = await import('../../src/platform/app/artifacts/artifactReference.ts');
   const base='/prototypes/patrick/feedback-inbox/research';
-  assert.deepEqual(fileReference('../feedback-flow.mermaid',base), {contributor:'patrick',prototype:'feedback-inbox',path:'feedback-flow.mermaid'});
-  assert.deepEqual(fileReference('sequence.mmd',base), {contributor:'patrick',prototype:'feedback-inbox',path:'research/sequence.mmd'});
-  for(const source of ['../../other/flow.mermaid','https://example.com/flow.mermaid','//example.com/flow.mmd','../_helpers/flow.mermaid','../../../alex/private/flow.mermaid','../../feedback-inbox%2F..%2Fother/flow.mermaid']) assert.equal(fileReference(source,base),null,source);
-  assert.equal(fileReference('flow.mermaid','/handbook/context'),null);
-  assert.equal(fileReference('flow.mermaid',null),null);
-  for (const path of ['app/main.tsx', 'board.excalidraw', 'context.md', 'notes.txt']) assert.equal(fileReference(path, base)?.path, `research/${path}`);
+  assert.deepEqual(artifactReference('../feedback-flow.mermaid',base), {contributor:'patrick',prototype:'feedback-inbox',path:'feedback-flow.mermaid'});
+  assert.deepEqual(artifactReference('sequence.mmd',base), {contributor:'patrick',prototype:'feedback-inbox',path:'research/sequence.mmd'});
+  for(const source of ['../../other/flow.mermaid','https://example.com/flow.mermaid','//example.com/flow.mmd','../_helpers/flow.mermaid','../../../alex/private/flow.mermaid','../../feedback-inbox%2F..%2Fother/flow.mermaid']) assert.equal(artifactReference(source,base),null,source);
+  assert.equal(artifactReference('flow.mermaid','/handbook/context'),null);
+  assert.equal(artifactReference('flow.mermaid',null),null);
+  for (const path of ['app/main.tsx', 'board.excalidraw', 'context.md', 'notes.txt']) assert.equal(artifactReference(path, base)?.path, `research/${path}`);
 });
 
 test('file previews respect surface restrictions to bound canvas nesting', async () => {

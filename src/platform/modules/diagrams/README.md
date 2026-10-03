@@ -13,7 +13,7 @@ Diagrams adds standalone Mermaid files to prototypes. Use them to explain a flow
 
 ## Create and edit
 
-Ask your agent to create a diagram, or select **New** (+), then **New diagram**, in the prototype’s Files row. New diagrams use `.mermaid`. The module also opens `.mmd` files.
+Ask your agent to create a diagram, or select **New** (+), then **New diagram**, in the prototype’s Artifacts row. New diagrams use `.mermaid`. The module also opens `.mmd` files.
 
 A file contains one diagram in plain Mermaid syntax, without Markdown fences:
 
@@ -42,7 +42,7 @@ Excalidraw’s Mermaid import can turn copied source into editable canvas shapes
 
 ## Optional capability
 
-Disabling or removing Diagrams preserves prototype source files as plain files and hides them from normal item navigation. Canvas links become unavailable until the module is enabled again. If a diagram is the prototype’s start item, choose an available start item before disabling the module.
+Disabling or removing Diagrams preserves prototype source files as plain files and hides them from normal artifact navigation. Canvas links become unavailable until the module is enabled again. If a diagram is the prototype’s start artifact, choose an available start artifact before disabling the module.
 
 Mermaid fences in the Handbook, Documentation, and prototype Documents keep working without Diagrams. Documents and Canvases are separate optional modules.
 

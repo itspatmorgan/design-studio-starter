@@ -2,7 +2,7 @@
 
 This rule applies when Canvases is enabled. The [module README](../../platform/modules/canvas/README.md) describes rendering and storage.
 
-- Keep embedded items within the canvas's own prototype. Copy another prototype's item before embedding it.
+- Keep embedded artifacts within the canvas's own prototype. Copy another prototype's artifact before embedding it.
 - Do not store images in a canvas. Embed the working view instead.
 - Apply the [contributor scope rule](contributor-scope.md) before editing.
 - Inspect the current scene before changing it. Inspect the result afterward.
@@ -24,7 +24,7 @@ For an open local canvas, compatible browser tools can use `window.__studioCanva
 
 Use `describe` before and after changes. For live tools, use `context` when the request refers to the current selection or viewport.
 
-Prefer tools over manual JSON edits. They maintain element bindings and versions. Use `point` to identify an item when live access supports it.
+Prefer tools over manual JSON edits. They maintain element bindings and versions. Use `point` to identify an artifact when live access supports it.
 
 Create a canvas through the file menu or write this empty scene:
 

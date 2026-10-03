@@ -166,7 +166,7 @@ test('platform reference discovery preserves ownership and excludes unavailable 
     write('src/handbook/rules/example.md', '# Example rule\nRead [contract](../../platform/modules/example/reference.md#details).');
     write('src/handbook/skills/example/SKILL.md', '---\nname: example\ndescription: Example task\n---\nRead [reference](../../../platform/modules/example/README.md).');
     const modules = [{id:'example',label:'Example'}, {id:'off',label:'Off'}];
-    const handbook = [{id:'rules',title:'Rules',items:[{path:'example.md'}]}, {id:'skills',title:'Skills',items:[{path:'example/SKILL.md'}]}];
+    const handbook = [{id:'rules',title:'Rules',artifacts:[{path:'example.md'}]}, {id:'skills',title:'Skills',artifacts:[{path:'example/SKILL.md'}]}];
     const groups = platformReferences({root,modules,enabled:['example'],handbook});
     const example = groups.find((g) => g.id === 'example');
     assert.deepEqual(example.references.map((r: { source: string }) => r.source), ['/platform/modules/example/README.md','/platform/modules/example/reference.md']);

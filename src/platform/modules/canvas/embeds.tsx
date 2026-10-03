@@ -9,12 +9,12 @@ import { CaptureUpdateAction, newElementWith } from '@excalidraw/excalidraw';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { AppState, ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import { fileTypeModules } from '@/platform/app/data/fileTypes';
-import { itemLabel } from '@/platform/app/data/manifest';
+import { artifactLabel } from '@/platform/app/data/manifest';
 import type { Manifest, Prototype } from '@/platform/app/data/types';
-import ItemCard, { ITEM_CARD_HEIGHT } from '@/platform/app/items/ItemCard';
-import { appPathOf, isInPrototype, resolveItemPath } from '@/platform/app/items/itemLinks';
+import ArtifactCard, { ITEM_CARD_HEIGHT } from '@/platform/app/artifacts/ArtifactCard';
+import { appPathOf, isInPrototype, resolveArtifactPath } from '@/platform/app/artifacts/artifactLinks';
 
-import EmbedFrame, { EMBED_HEADER_HEIGHT as HEADER_HEIGHT } from '@/platform/app/items/EmbedFrame';
+import EmbedFrame, { EMBED_HEADER_HEIGHT as HEADER_HEIGHT } from '@/platform/app/artifacts/EmbedFrame';
 const BORDER = 2; // 1px each side
 const DEFAULT_WIDTH = 480;
 const DEFAULT_BODY_HEIGHT = Math.round(DEFAULT_WIDTH * 900 / 1440); // a 1440 x 900 screen, scaled
@@ -24,10 +24,10 @@ const DEFAULT_BODY_HEIGHT = Math.round(DEFAULT_WIDTH * 900 / 1440); // a 1440 x 
 export const validateEmbed = (link: string) => appPathOf(link) !== null;
 
 // A canvas shows only items from its own prototype, so a prototype is all of its own: an item from
-// another one doesn't resolve (and its spot says so: ItemCard).
+// another one doesn't resolve (and its spot says so: ArtifactCard).
 const resolve = (manifest: Manifest, link: string | null, current: Prototype) => {
   const path = link && appPathOf(link);
-  return path && isInPrototype(path, current) ? resolveItemPath(manifest, path) : null;
+  return path && isInPrototype(path, current) ? resolveArtifactPath(manifest, path) : null;
 };
 const elsewhere = (link: string | null, current: Prototype) => {
   const path = link && appPathOf(link);
@@ -106,7 +106,7 @@ function CanvasItemInner({ element, manifest, current, offscreen, overview, moun
   const target = resolve(manifest, link, current);
   const Embed = target && embedFor(fileTypeModules[target.item.fileType], 'canvas');
   // A card fills the element. A missing one is a card too, and so is one from another prototype.
-  if (!target || !Embed) return <div data-canvas-frame="" className="h-full w-full"><ItemCard proto={target?.proto} item={target?.item} elsewhere={elsewhere(link, current)} /></div>;
+  if (!target || !Embed) return <div data-canvas-frame="" className="h-full w-full"><ArtifactCard proto={target?.proto} item={target?.item} elsewhere={elsewhere(link, current)} /></div>;
   const { proto, item } = target;
   const hidden = offscreen || overview;
   return (
@@ -118,7 +118,7 @@ function CanvasItemInner({ element, manifest, current, offscreen, overview, moun
           ? <Embed proto={proto} item={item} width={element.width - BORDER} height={element.height - HEADER_HEIGHT - BORDER} />
           : <div className="h-full bg-muted/50" />}
       </div>
-      {overview && !offscreen && <div className="canvas-overview"><span>{itemLabel(item.path)}</span></div>}
+      {overview && !offscreen && <div className="canvas-overview"><span>{artifactLabel(item.path)}</span></div>}
     </EmbedFrame>
   );
 }

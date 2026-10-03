@@ -3,13 +3,13 @@
 import { lazy } from 'react';
 import { CodeIcon } from '@hugeicons/core-free-icons';
 import type { FileTypeModule } from '@/platform/app/data/fileTypeModule';
-import type { Item, Prototype } from '@/platform/app/data/types';
+import type { Artifact, Prototype } from '@/platform/app/data/types';
 import { rootOf } from '@/platform/core/roots';
 import { textFiles } from './loader';
 
 const SourcePane = import.meta.env.DEV ? lazy(() => import('@/platform/modules/prototypes/viewer/SourcePane')) : null;
 
-type Props = { proto: Prototype; item: Item; text: string | null };
+type Props = { proto: Prototype; item: Artifact; text: string | null };
 
 function TextPage({ proto, item, text }: Props) {
   if (text === null) return SourcePane && <SourcePane proto={proto} item={item} />;

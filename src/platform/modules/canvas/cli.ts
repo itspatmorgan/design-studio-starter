@@ -9,10 +9,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { itemSlug } from '../../core/fileTypes.ts';
+import { artifactSlug } from '../../core/fileTypes.ts';
 import { addressOf, canonicalPath, parseAddress } from '../../core/roots.ts';
 import { FORMAT_VERSION, stringifyScene } from './slim.ts';
-import { help, run, ToolError, type Ctx, type El, type ItemInfo } from './tools.ts';
+import { help, run, ToolError, type Ctx, type El, type ArtifactInfo } from './tools.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -30,8 +30,8 @@ const file = path.resolve(process.cwd(), first);
 if (!file.endsWith('.excalidraw')) fail(`${first} isn't a canvas. Canvases are .excalidraw files in a prototype.`);
 if (!fs.existsSync(file)) fail(`${first} doesn't exist. Make a canvas with + → New canvas in the app, or write an empty one (src/handbook/rules/canvases.md).`);
 const real = fs.realpathSync(file);
-// A prototype is src/prototypes/<contributor>/<prototype>/; an item of a module's section of prototype-shaped
-// folders (a section item, src/examples/<id>/) is opened under the section's key (src/platform/core/roots.ts).
+// A prototype is src/prototypes/<contributor>/<prototype>/; an artifact of a module's section of prototype-shaped
+// folders (a section artifact, src/examples/<id>/) is opened under the section's key (src/platform/core/roots.ts).
 const { PROTOTYPE_SECTIONS } = await import(pathToFileURL(path.join(ROOT, 'scripts', 'lib', 'modules.js')).href) as { PROTOTYPE_SECTIONS: { key: string; dir: string }[] };
 const inSection = PROTOTYPE_SECTIONS.map((s) => ({ key: s.key, rel: fs.existsSync(s.dir) ? path.relative(fs.realpathSync(s.dir), real).split(path.sep) : ['..'] }))
   .find((s) => s.rel[0] !== '..' && !path.isAbsolute(s.rel[0]) && s.rel.length >= 2);
@@ -49,37 +49,37 @@ try { scene = JSON.parse(text); } catch (error) { fail(`${first} isn't valid JSO
 if (!Array.isArray(scene!.elements)) fail(`${first} isn't a canvas: it has no list of elements.`);
 if ((scene!.studioVersion ?? 1) > FORMAT_VERSION) fail(`${first} was written by a newer copy of the app. Update before changing it.`);
 
-// What the tools need to know about the app: the items in this canvas's prototype, from the manifest.
+// What the tools need to know about the app: the artifacts in this canvas's prototype, from the manifest.
 const manifestFile = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
 if (!fs.existsSync(manifestFile)) fail('There is no manifest yet. Run: node scripts/build/build-manifest.js');
 const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8')) as { prototypes: { contributorKey: string; id: string }[]; sections?: Record<string, { contributorKey: string; id: string }[]> };
 const everything = [...manifest.prototypes, ...Object.values(manifest.sections ?? {}).flat()];
-// A prototype's items are in a file of their own (scripts/build/build-manifest.js).
+// A prototype's artifacts are in a file of their own (scripts/build/build-manifest.js).
 const itemsOf = (x: { contributorKey: string; id: string }): { path: string; fileType: string }[] => {
-  const file = path.join(ROOT, 'public', 'prototypes', 'items', x.contributorKey, `${x.id}.json`);
+  const file = path.join(ROOT, 'public', 'prototypes', 'artifacts', x.contributorKey, `${x.id}.json`);
   return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : [];
 };
 const { FILE_TYPES } = await import(pathToFileURL(path.join(ROOT, 'scripts', 'lib', 'file-types.js')).href) as { FILE_TYPES: Record<string, { label: string; preview?: boolean }> };
 
-const title = (p: string) => itemSlug(p).split('/').pop()!.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+const title = (p: string) => artifactSlug(p).split('/').pop()!.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 const base = addressOf(contributor, prototype);
 const ctx: Ctx = {
   base,
-  item(appPath) {
-    // A canvas shows only its own prototype's items.
+  artifact(appPath) {
+    // A canvas shows only its own prototype's artifacts.
     if (!appPath.startsWith(`${base}/`)) return null;
     const address = parseAddress(appPath.split('/').map(decodeURIComponent).join('/'));
     const proto = address && everything.find((x) => x.contributorKey === address.contributor && x.id === address.id);
-    const item = proto && itemsOf(proto).find((i) => itemSlug(i.path) === address!.rest.join('/'));
-    if (!item) return null;
-    const type = FILE_TYPES[item.fileType];
-    return { path: appPath, title: title(item.path), type: item.fileType, typeLabel: type?.label ?? 'File', preview: Boolean(type?.preview) };
+    const artifact = proto && itemsOf(proto).find((i) => artifactSlug(i.path) === address!.rest.join('/'));
+    if (!artifact) return null;
+    const type = FILE_TYPES[artifact.fileType];
+    return { path: appPath, title: title(artifact.path), type: artifact.fileType, typeLabel: type?.label ?? 'File', preview: Boolean(type?.preview) };
   },
-  items: () => everything
+  artifacts: () => everything
     .filter((x) => x.contributorKey === contributor && x.id === prototype)
-    .flatMap((x) => itemsOf(x).map((i) => `${addressOf(x.contributorKey, x.id)}/${itemSlug(i.path)}`))
-    .map((p) => ctx.item(p))
-    .filter((i): i is ItemInfo => i !== null),
+    .flatMap((x) => itemsOf(x).map((i) => `${addressOf(x.contributorKey, x.id)}/${artifactSlug(i.path)}`))
+    .map((p) => ctx.artifact(p))
+    .filter((i): i is ArtifactInfo => i !== null),
   linkPath: (link) => (link.startsWith('/') && !link.startsWith('//') ? canonicalPath(link) : null),
 };
 

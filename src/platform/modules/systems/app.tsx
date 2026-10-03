@@ -7,14 +7,14 @@ import { HomeSection } from '@/platform/app/items/HomeSection';
 import { ItemRow } from '@/platform/app/items/ItemRow';
 import { PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
 import { APP_NAME } from '@/platform/app/data/config';
-import { itemLabel } from '@/platform/app/data/manifest';
+import { artifactLabel } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 
 // Loaded on first visit, so it isn't in the main bundle:
 // https://tanstack.com/router/latest/docs/framework/react/guide/code-splitting
 const SystemsPage = lazyRouteComponent(() => import('@/platform/modules/systems/pages/SystemsPage'));
 const systemsTitle = (...parts: (string | undefined)[]) =>
-  [...parts.filter(Boolean).map((p) => itemLabel(p!)), 'Systems', APP_NAME].join(' — ');
+  [...parts.filter(Boolean).map((p) => artifactLabel(p!)), 'Systems', APP_NAME].join(' — ');
 
 function SystemsPlaces({ go }: PaletteContext) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });

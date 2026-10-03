@@ -5,14 +5,14 @@ import { stringifyScene } from './slim.ts';
 import { lineWidth, wrapText } from './elements.ts';
 import { run, ToolError, type Ctx, type El } from './tools.ts';
 
-const items: Record<string, { title: string; type: string; typeLabel: string; preview: boolean }> = {
+const artifacts: Record<string, { title: string; type: string; typeLabel: string; preview: boolean }> = {
   '/pat/demo/main': { title: 'Main', type: 'view', typeLabel: 'View', preview: true },
   '/pat/demo/notes': { title: 'Notes', type: 'document', typeLabel: 'Document', preview: false },
 };
 const ctx: Ctx = {
   base: '/pat/demo',
-  item: (path) => (items[path] ? { path, ...items[path] } : null),
-  items: () => Object.entries(items).map(([path, v]) => ({ path, ...v })),
+  artifact: (path) => (artifacts[path] ? { path, ...artifacts[path] } : null),
+  artifacts: () => Object.entries(artifacts).map(([path, v]) => ({ path, ...v })),
 };
 
 // Runs tools in turn on one scene, as a caller would.
@@ -32,8 +32,8 @@ function session() {
 test('create places things, resolves @refs, and describe reads them back', () => {
   const s = session();
   const { created, refs } = s.call('create', { elements: [
-    { type: 'item', item: 'main', ref: 'main' },
-    { type: 'item', item: 'notes.md', rightOf: '@main' },
+    { type: 'artifact', artifact: 'main', ref: 'main' },
+    { type: 'artifact', artifact: 'notes.md', rightOf: '@main' },
     { type: 'note', text: 'Check the empty state', below: '@main', color: 'pink' },
     { type: 'rectangle', text: 'Payment', color: 'blue', x: 0, y: 900, ref: 'pay' },
   ] });
@@ -41,9 +41,9 @@ test('create places things, resolves @refs, and describe reads them back', () =>
   assert.ok(refs.main && refs.pay);
   const d = s.call('describe', {});
   const kinds = d.elements.map((e: El) => e.kind);
-  assert.deepEqual(kinds, ['item', 'item', 'note', 'shape'], 'a shape colored blue is not mistaken for a blue note');
+  assert.deepEqual(kinds, ['artifact', 'artifact', 'note', 'shape'], 'a shape colored blue is not mistaken for a blue note');
   const [view, card, note] = d.elements;
-  assert.equal(view.item.title, 'Main');
+  assert.equal(view.artifact.title, 'Main');
   assert.equal(view.height, 338, 'a view is a screen');
   assert.equal(card.height, 88, 'a document is a card');
   assert.equal(card.x, view.x + view.width + 80);
@@ -53,7 +53,7 @@ test('create places things, resolves @refs, and describe reads them back', () =>
 
 test('errors say what to do', () => {
   const s = session();
-  assert.throws(() => s.call('create', { type: 'item', item: 'nope' }), (e: Error) => e instanceof ToolError && /no view or document at \/pat\/demo\/nope.*main/.test(e.message));
+  assert.throws(() => s.call('create', { type: 'artifact', artifact: 'nope' }), (e: Error) => e instanceof ToolError && /no artifact at \/pat\/demo\/nope.*main/.test(e.message));
   assert.throws(() => s.call('create', { type: 'rectangle', color: 'chartreuse' }), /isn't a color.*blue/);
   assert.throws(() => s.call('create', { type: 'blob' }), /unknown type.*note/);
   assert.throws(() => s.call('update', { id: 'nope', text: 'x' }), /no element nope/);
@@ -113,7 +113,7 @@ test('sections wrap their children, carry them when moved, and grow to hold what
   assert.ok(frame.width >= 500 + 120 && frame.height >= 200 + 120, 'the frame wraps its children with padding');
   s.call('move', { id: refs.s, dy: 1000 });
   assert.equal(s.live().find((e) => e.id === refs.n1)!.y, 1000, 'children move with the section');
-  const small = s.call('create', { elements: [{ type: 'section', name: 'Small', width: 300, height: 100, x: 0, y: 2000, ref: 'small' }, { type: 'item', item: 'main', section: '@small' }] });
+  const small = s.call('create', { elements: [{ type: 'section', name: 'Small', width: 300, height: 100, x: 0, y: 2000, ref: 'small' }, { type: 'artifact', artifact: 'main', section: '@small' }] });
   const grown = s.live().find((e) => e.id === small.refs.small)!;
   assert.ok(grown.height >= 338 + 120, 'a section grows so nothing is clipped');
   assert.equal(s.live().filter((e) => e.frameId === grown.id).length, 1);
@@ -121,7 +121,7 @@ test('sections wrap their children, carry them when moved, and grow to hold what
 
 test('the stored form is small and stable', () => {
   const s = session();
-  s.call('create', { elements: [{ type: 'item', item: 'main', x: 0.123456, y: 0 }, { type: 'note', text: 'hi', x: 10, y: 10 }] });
+  s.call('create', { elements: [{ type: 'artifact', artifact: 'main', x: 0.123456, y: 0 }, { type: 'note', text: 'hi', x: 10, y: 10 }] });
   const text = stringifyScene(s.scene, { viewBackgroundColor: '#ffffff' });
   const file = JSON.parse(text);
   assert.equal(file.studioVersion, 1);
@@ -135,9 +135,9 @@ test('the stored form is small and stable', () => {
 test('rightOf centers by default so arrows between different heights run straight; align sets it', () => {
   const s = session();
   const { refs } = s.call('create', { elements: [
-    { type: 'item', item: 'main', x: 0, y: 0, ref: 'view' },
-    { type: 'item', item: 'notes', rightOf: '@view', ref: 'card' },
-    { type: 'item', item: 'notes', rightOf: '@view', align: 'start', y: undefined, ref: 'top' },
+    { type: 'artifact', artifact: 'main', x: 0, y: 0, ref: 'view' },
+    { type: 'artifact', artifact: 'notes', rightOf: '@view', ref: 'card' },
+    { type: 'artifact', artifact: 'notes', rightOf: '@view', align: 'start', y: undefined, ref: 'top' },
     { type: 'note', text: 'under', below: '@card', align: 'center', ref: 'under' },
     { type: 'arrow', from: '@view', to: '@card' },
   ] });
@@ -159,13 +159,13 @@ test('create warns when something lands on something else', () => {
   assert.match(second.warnings[0], /overlaps/);
 });
 
-test('items lists what can go on the canvas, and a wrong name points at it', () => {
+test('artifacts lists what can go on the canvas, and a wrong name points at it', () => {
   const s = session();
-  const { items } = s.call('items', {});
-  assert.deepEqual(items.map((i: El) => i.item), ['main', 'notes']);
-  assert.equal(items[0].shownAs, 'live view');
-  assert.equal(items[1].shownAs, 'card');
-  assert.throws(() => s.call('create', { type: 'item', item: 'nope' }), /`items` tool/);
+  const { artifacts } = s.call('artifacts', {});
+  assert.deepEqual(artifacts.map((i: El) => i.artifact), ['main', 'notes']);
+  assert.equal(artifacts[0].shownAs, 'live preview');
+  assert.equal(artifacts[1].shownAs, 'card');
+  assert.throws(() => s.call('create', { type: 'artifact', artifact: 'nope' }), /`artifacts` tool/);
 });
 
 test('describe reports how a shape is drawn', () => {
@@ -177,18 +177,18 @@ test('describe reports how a shape is drawn', () => {
   assert.equal(shape.opacity, 60);
 });
 
-test('a canvas shows only items from its own prototype', () => {
+test('a canvas shows only artifacts from its own prototype', () => {
   const s = session();
-  assert.throws(() => s.call('create', { elements: [{ type: 'item', item: '/pat/other/main' }] }), /another prototype.*\/pat\/demo/);
-  s.call('create', { elements: [{ type: 'item', item: '/pat/demo/main', ref: 'inside' }] });
+  assert.throws(() => s.call('create', { elements: [{ type: 'artifact', artifact: '/pat/other/main' }] }), /another prototype.*\/pat\/demo/);
+  s.call('create', { elements: [{ type: 'artifact', artifact: '/pat/demo/main', ref: 'inside' }] });
   assert.equal(s.live().length, 1, 'the whole app path of its own prototype works');
 });
 
-test('moving an item to another prototype is refused, and items lists only this prototype', () => {
+test('moving an artifact to another prototype is refused, and artifacts lists only this prototype', () => {
   const s = session();
-  const { refs } = s.call('create', { elements: [{ type: 'item', item: 'main', ref: 'main' }] });
-  assert.throws(() => s.call('update', { id: refs.main, item: '/pat/other/main' }), /another prototype/);
-  assert.deepEqual(s.call('items', {}).items.map((i: { item: string }) => i.item), ['main', 'notes']);
+  const { refs } = s.call('create', { elements: [{ type: 'artifact', artifact: 'main', ref: 'main' }] });
+  assert.throws(() => s.call('update', { id: refs.main, artifact: '/pat/other/main' }), /another prototype/);
+  assert.deepEqual(s.call('artifacts', {}).artifacts.map((i: { artifact: string }) => i.artifact), ['main', 'notes']);
 });
 
 const LONG = 'A long note. This one has a lot more to say, because the agent was asked to explain a whole flow in a single sticky note, with reasons, edge cases, and a question at the end that nobody has answered yet. Does it fit?';

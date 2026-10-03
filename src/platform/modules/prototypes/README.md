@@ -9,7 +9,7 @@ slug: "prototypes"
 
 # Prototypes
 
-A prototype is an independent space for interactive views and supporting files. It lives in `src/prototypes/<contributor>/<prototype>/`. The app finds it automatically.
+A prototype is an independent workspace for artifacts: views, documents, diagrams, and canvases. Each artifact is backed by a file. It lives in `src/prototypes/<contributor>/<prototype>/`. The app finds it automatically.
 
 Ask your agent to create a prototype, or select **New prototype** on the Prototypes page. The agent uses `pnpm new "Prototype Name"`.
 
@@ -21,15 +21,16 @@ Use those components, build local alternatives, or start with a blank view. Loca
 
 Dependency and style boundaries contain the experiment so it does not affect other prototypes or the platform. See [Prototype files and boundaries](/documentation/guide/prototype-reference).
 
-## Files and navigation
+## Artifacts and navigation
 
-| Item | Purpose |
+| Artifact | Purpose |
 | --- | --- |
 | View (`.tsx` or `.jsx`) | Interactive code-based screen or state. |
 | Document (`.md`, optional) | Written context. |
 | Diagram (`.mermaid` or `.mmd`, optional) | Mermaid source rendered as a standalone diagram. |
 | Canvas (`.excalidraw`, optional) | Views, cards, and notes arranged together. |
-| Folder | Organization at any depth. |
+
+Folders organize artifacts at any depth; they are not artifacts themselves. Helper code, assets, and metadata support the work but stay out of normal artifact navigation.
 
 Views and text-file support are required. Documents, Canvases, and Diagrams are optional modules.
 
@@ -41,23 +42,23 @@ These controls are available in your own prototypes:
 
 | Action | Control |
 | --- | --- |
-| Add an item or folder | **New** (+) in the Files row. |
-| Rename or delete | Item's right-click menu. F2 also renames. |
+| Add an artifact or folder | **New** (+) in the Artifacts row. |
+| Rename or delete | Artifact's right-click menu. F2 also renames. |
 | Move | Drag onto a folder or below the list for the top level. |
 | Reorder | Drag between rows, or Option+Up/Down (Alt+Up/Down). |
-| Choose the opening item | **Set as start** in the item's menu. |
-| Edit source | **Edit source** in the item's menu. |
+| Choose the opening artifact | **Set as start** in the artifact's menu. |
+| Edit source | **Edit source** in the artifact's menu. |
 
 To edit source:
 
-1. Select **Edit source** in the item's right-click menu.
+1. Select **Edit source** in the artifact's right-click menu.
 2. Edit the text.
 3. Save with Command+S on macOS or Ctrl+S on other systems.
-4. Select **Done** to return to the item.
+4. Select **Done** to return to the artifact.
 
 Conflicting external changes prompt you to choose how to proceed. Another contributor's source opens read-only.
 
-Without a custom order, files appear before folders, alphabetically. The prototype opens on its start item, or the first item when no start is set.
+Without a custom order, files appear before folders, alphabetically. The prototype opens on its start artifact, or the first artifact when no start is set.
 
 ## Appearance and prototype details
 
@@ -77,9 +78,9 @@ Published prototypes support viewing and interaction, without repository editing
 
 Read the [module contract](reference.md) for file structure and implementation details.
 
-The Prototypes module: the gallery at `/prototypes`, and the viewer every prototype, module item and Handbook section opens in. Required. The prototypes themselves are in `src/prototypes/<person>/<id>/`, which are your content.
+The Prototypes module: the gallery at `/prototypes`, and the viewer every prototype, module artifact and Handbook section opens in. Required. The prototypes themselves are in `src/prototypes/<person>/<id>/`, which are your content.
 
-- `module.ts`, `app.tsx`: who it is, its rail button, the `/prototypes` route, its front-page block, and its palette entries. A prototype opens through the platform's item routes (`src/platform/app/router.tsx`).
+- `module.ts`, `app.tsx`: who it is, its rail button, the `/prototypes` route, its front-page block, and its palette entries. A prototype opens through the platform's artifact routes (`src/platform/app/router.tsx`).
 - `gallery/`: the gallery, a prototype's card, and the New prototype dialog (browser).
 - `viewer/`: a prototype's layout, navigation and file tree, its menus and dialogs, and the Source view's editor (browser).
 - `node/create.js`: `pnpm new`, and what the New prototype button runs (Node).

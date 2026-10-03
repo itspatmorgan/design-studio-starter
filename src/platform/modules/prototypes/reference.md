@@ -2,17 +2,20 @@
 
 This reference defines prototype files, metadata, and links. Agent behavior belongs in the [prototype rule](../../../handbook/rules/prototype-workflow.md).
 
-## Files
+## Artifacts and files
+
+An artifact is a navigable piece of prototype work backed by a file: a view, document, diagram, or canvas. Its owning file-type module determines how it opens and previews. This names the existing openable-file model; it adds no registration or separate storage.
+
 
 A prototype lives at `src/prototypes/<contributor>/<id>/` and requires `meta.json`.
 
 Views are `.tsx` or `.jsx` files with a default-exported React component. New views use `.tsx`. Plain `.jsx` is not type-checked.
 
-Folders organize files at any depth. A file or folder starting with `_` is a helper. Helper contents do not become navigation items.
+Folders organize files at any depth. A file or folder starting with `_` is a helper. Helper contents do not become navigation artifacts.
 
-Enabled file types determine other items. Documents and canvases require their respective modules. Assets remain ordinary files.
+Enabled file types determine other artifacts. Documents and canvases require their respective modules. Assets remain ordinary files.
 
-Two items cannot share a URL, such as `main.tsx` and `main.md` in one folder.
+Two artifacts cannot share a URL, such as `main.tsx` and `main.md` in one folder.
 
 ## Metadata
 
@@ -22,21 +25,21 @@ Two items cannot share a URL, such as `main.tsx` and `main.md` in one folder.
 | `description` | Optional description. |
 | `created` | Optional `YYYY-MM-DD` date. Creation fills it in. |
 | `system` | Installed system ID. If omitted, uses `defaultSystem`, or the first installed system by name. |
-| `start` | Item path without extension. If omitted, opens the first item. |
+| `start` | Artifact path without extension. If omitted, opens the first artifact. |
 | `order` | Relative file and folder paths placed first within their folder, in sequence. |
 | `status` | `active` or `archived`. Omission means active. |
 
-Remaining items sort alphabetically, files before folders. Use `order` to reorder, rather than renaming files.
+Remaining artifacts sort alphabetically, files before folders. Use `order` to reorder, rather than renaming files.
 
-Moving, renaming, or deleting an item must update its `start` and `order` entries. The app performs these updates for its own operations.
+Moving, renaming, or deleting an artifact must update its `start` and `order` entries. The app performs these updates for its own operations.
 
-Invalid metadata skips the prototype with a local warning and fails the production build. A start item hidden by a disabled file type must be replaced.
+Invalid metadata skips the prototype with a local warning and fails the production build. A start artifact hidden by a disabled file type must be replaced.
 
 Contributor details come from `contributors.json` and `contributors/<key>.json`.
 
 ## Links and renaming
 
-`/prototypes/<contributor>/<id>` opens the start item. Appending an item path without extension opens that item.
+`/prototypes/<contributor>/<id>` opens the start artifact. Appending an artifact path without extension opens that artifact.
 
 Nested folders become URL segments. Legacy addresses without `/prototypes` redirect to the canonical address.
 

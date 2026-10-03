@@ -1,5 +1,5 @@
 // Resolve a document's file reference without allowing it outside its prototype.
-export function fileReference(source: string, base: string | null) {
+export function artifactReference(source: string, base: string | null) {
   if (!base || !base.startsWith('/prototypes/') || /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(source)) return null;
   try {
     const document = base.split('/').filter(Boolean).slice(0, 3);

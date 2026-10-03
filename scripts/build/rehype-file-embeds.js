@@ -6,10 +6,10 @@ export default function fileEmbeds() {
     node.children = node.children.map((child) => {
       if (child.tagName === 'p' && child.children?.length === 1 && isFile(child.children[0])) {
         const image = child.children[0];
-        return { type: 'element', tagName: 'prototype-file', properties: { source: image.properties.src, label: image.properties.alt || 'File' }, children: [] };
+        return { type: 'element', tagName: 'prototype-artifact', properties: { source: image.properties.src, label: image.properties.alt || 'Artifact' }, children: [] };
       }
       // Inline file references stay links, so block previews never nest inside paragraphs.
-      if (isFile(child)) return { type: 'element', tagName: 'a', properties: { href: child.properties.src }, children: [{ type: 'text', value: child.properties.alt || 'File' }] };
+      if (isFile(child)) return { type: 'element', tagName: 'a', properties: { href: child.properties.src }, children: [{ type: 'text', value: child.properties.alt || 'Artifact' }] };
       walk(child);
       return child;
     });

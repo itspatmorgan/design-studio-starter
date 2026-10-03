@@ -3,9 +3,9 @@ import { Link } from '@tanstack/react-router';
 import type { MDXComponents } from 'mdx/types';
 import { DocBase } from '@/platform/app/docs/DocBase';
 import { fileTypeOf } from '@/platform/app/data/fileTypes';
-import { itemSlug } from '@/platform/core/fileTypes';
+import { artifactSlug } from '@/platform/core/fileTypes';
 import { markdownPath } from './referenceLinks';
-import FileEmbed from '@/platform/app/items/FileEmbed';
+import ArtifactEmbed from '@/platform/app/artifacts/ArtifactEmbed';
 import { MermaidDiagram } from '@/platform/app/diagrams/MermaidDiagram';
 
 // Styling for Markdown comes from Tailwind Typography's `prose` classes (see Prose).
@@ -23,10 +23,10 @@ function MarkdownLink({ href = '', ...props }: ComponentProps<'a'>) {
   if (base !== null && !href.startsWith('?') && !/^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) {
     const url = new URL(href, `http://doc${base}/`);
     const path = markdownPath(url.pathname);
-    const to = path.startsWith('/documentation/reference/') ? path : fileTypeOf(path) ? itemSlug(path) : path;
+    const to = path.startsWith('/documentation/reference/') ? path : fileTypeOf(path) ? artifactSlug(path) : path;
     return <Link to={to as never} search={Object.fromEntries(url.searchParams) as never} hash={url.hash.slice(1) || undefined} {...props} />;
   }
   return <a href={href} target="_blank" rel="noopener noreferrer" {...props} />;
 }
 
-export const markdownComponents: MDXComponents = { a: MarkdownLink, 'mermaid-diagram': MermaidDiagram, 'prototype-file': FileEmbed };
+export const markdownComponents: MDXComponents = { a: MarkdownLink, 'mermaid-diagram': MermaidDiagram, 'prototype-artifact': ArtifactEmbed };

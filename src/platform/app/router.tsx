@@ -19,9 +19,9 @@ import App, { NotFound } from '@/platform/app/shell/App';
 import Home from '@/platform/app/pages/home/Home';
 import PrototypeLayout from '@/platform/modules/prototypes/viewer/PrototypeLayout';
 import { isSectionKey } from '@/platform/core/roots';
-import { findItem, firstItem, itemLabel, loadManifest, loadPrototype, setManifest } from '@/platform/app/data/manifest';
+import { findArtifact, firstArtifact, artifactLabel, loadManifest, loadPrototype, setManifest } from '@/platform/app/data/manifest';
 import { FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
-import type { Item, Manifest, Prototype } from '@/platform/app/data/types';
+import type { Artifact, Manifest, Prototype } from '@/platform/app/data/types';
 import { TAB_ID } from '@/platform/app/data/files';
 import { moduleApps } from '@/platform/app/modules';
 import { APP_NAME } from '@/platform/app/data/config';
@@ -99,9 +99,9 @@ type ItemSearch = { mode?: 'source' };
 async function itemLoader({ contributor, prototype, _splat }: { contributor: string; prototype: string; _splat?: string }, mode?: ItemSearch['mode']): Promise<ItemData> {
   const proto = await loadPrototype(contributor, prototype);
   // No path in the URL: the prototype's start item, or its first.
-  const item = proto && (_splat ? findItem(proto, _splat) : firstItem(proto));
+  const item = proto && (_splat ? findArtifact(proto, _splat) : firstArtifact(proto));
   const type = item && fileTypeModules[item.fileType];
-  const title = proto && item && [proto.title, itemLabel(item.path, proto), APP_NAME].join(' — ');
+  const title = proto && item && [proto.title, artifactLabel(item.path, proto), APP_NAME].join(' — ');
   // Source view: just the text, so a file that doesn't compile can still be read and fixed.
   if (import.meta.env.DEV && mode === 'source' && proto && item && title && FILE_TYPES[item.fileType]?.language) {
     return { fileType: item.fileType, props: null, source: { proto, item }, title };
@@ -112,7 +112,7 @@ async function itemLoader({ contributor, prototype, _splat }: { contributor: str
 }
 
 // What an item route loads: the item's page props, or the Source view of it.
-type ItemData = { fileType: string; props: object | null; source?: { proto: Prototype; item: Item }; title: string };
+type ItemData = { fileType: string; props: object | null; source?: { proto: Prototype; item: Artifact }; title: string };
 
 // Dev only: import.meta.env.DEV is false in the build, so the editor isn't in the deployed site.
 const SourcePane = import.meta.env.DEV ? lazy(() => import('@/platform/modules/prototypes/viewer/SourcePane')) : null;

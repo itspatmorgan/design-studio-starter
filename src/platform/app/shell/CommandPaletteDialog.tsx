@@ -6,9 +6,9 @@ import {
   Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
 } from '@/platform/components/command';
 import { referenceHref } from '@/platform/app/docs/References';
-import { findItem, findPrototype, firstItem, itemFolder, itemLabel, itemLink } from '@/platform/app/data/manifest';
+import { findArtifact, findPrototype, firstArtifact, artifactFolder, artifactLabel, artifactLink } from '@/platform/app/data/manifest';
 import { moduleApps, type PaletteContext } from '@/platform/app/modules';
-import type { Item, Prototype } from '@/platform/app/data/types';
+import type { Artifact, Prototype } from '@/platform/app/data/types';
 
 const rootApi = getRouteApi('__root__');
 
@@ -25,9 +25,9 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
 
   // The open prototype, once its items have loaded (the route loads them: manifest.ts).
   const openRef = params.contributor && params.prototype ? findPrototype(manifest, params.contributor, params.prototype) : undefined;
-  const current = openRef?.items ? (openRef as Prototype) : undefined;
-  const openItem = current && (params._splat ? findItem(current, params._splat) : firstItem(current));
-  const isOpen = (item: Item) => item === openItem;
+  const current = openRef?.artifacts ? (openRef as Prototype) : undefined;
+  const openItem = current && (params._splat ? findArtifact(current, params._splat) : firstArtifact(current));
+  const isOpen = (item: Artifact) => item === openItem;
   const onHome = Boolean(matchRoute({ to: '/' }));
   const context: PaletteContext = { manifest, current, isOpen, go };
 
@@ -42,15 +42,15 @@ export default function CommandPaletteDialog({ open, setOpen }: { open: boolean;
             {current && (
               <>
                 <CommandGroup heading={`Views · ${current.title}`}>
-                  {current.items.map((item) => (
+                  {current.artifacts.map((item) => (
                     <CommandItem
                       key={item.path}
-                      value={`${itemLabel(item.path, current)} ${item.path}`}
+                      value={`${artifactLabel(item.path, current)} ${item.path}`}
                       disabled={isOpen(item)}
-                      onSelect={() => go(itemLink(current, item))}
+                      onSelect={() => go(artifactLink(current, item))}
                     >
-                      {itemFolder(item.path) && <span className="shrink-0 text-xs text-muted-foreground">{itemFolder(item.path)}</span>}
-                      <span className="truncate">{itemLabel(item.path, current)}</span>
+                      {artifactFolder(item.path) && <span className="shrink-0 text-xs text-muted-foreground">{artifactFolder(item.path)}</span>}
+                      <span className="truncate">{artifactLabel(item.path, current)}</span>
                     </CommandItem>
                   ))}
                 </CommandGroup>

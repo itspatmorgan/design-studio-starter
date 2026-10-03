@@ -5,7 +5,7 @@ import { skillTitle } from '../../src/platform/modules/handbook/skills.ts';
 
 // Match the shared reader's deliberately limited top-level Markdown set.
 export function platformReferences({ root, modules, enabled, handbook }) {
-  const related = handbook.flatMap((section) => section.items.filter((item) => item.path.endsWith('.md')).map((item) => {
+  const related = handbook.flatMap((section) => section.artifacts.filter((item) => item.path.endsWith('.md')).map((item) => {
     const source = `/handbook/${section.id}/${item.path}`;
     const text = fs.readFileSync(path.join(root, 'src', source), 'utf8');
     const targets = [...text.matchAll(/\]\(([^)\s]+)(?:\s+[^)]*)?\)/g)].map((match) => path.posix.normalize(path.posix.join(path.posix.dirname(source), match[1].split('#')[0])));

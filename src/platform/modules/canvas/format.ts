@@ -10,7 +10,7 @@
 // - A link to an item is stored as its address in the app ("/patrick/hello-world/lofi/main"),
 //   so a canvas works on any host and under any base path.
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
-import { appPathOf } from '@/platform/app/items/itemLinks';
+import { appPathOf } from '@/platform/app/artifacts/artifactLinks';
 import { DEFAULT_BACKGROUND, FORMAT_VERSION, stringifyScene, type Stored } from './slim';
 
 export type ParsedCanvas = {
