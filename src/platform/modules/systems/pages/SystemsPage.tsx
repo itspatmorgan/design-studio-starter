@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { Link, useParams } from '@tanstack/react-router';
-import { NavGroup, NavHeader, NavList, NavTabs, NavTitle, SectionNav, navLinkClass, navLinkStyle, navTabClass } from '@/platform/app/shell/nav';
+import { Link, useNavigate, useParams } from '@tanstack/react-router';
+import { NavGroup, NavHeader, NavList, NavTitle, SectionNav, navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
+import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/platform/components/select';
 import { NotFound } from '@/platform/app/shell/App';
 import { Code, ColorTokens, IconsPage, PageHeader, Prose } from '@/platform/modules/systems/pages/foundations';
 import { OtherTokens, RadiusTokens, ShadowTokens, SpacingTokens, TypographyTokens } from '@/platform/modules/systems/pages/tokens';
@@ -10,18 +11,18 @@ import type { DesignSystem, SystemIntro } from '@/platform/app/data/types';
 import type { SystemComponentDoc } from '@/platform/modules/systems/docs';
 import type { ThemeToken, TokenGroup } from '@/platform/modules/systems/themeTokens';
 import { ThemeScope } from '@/platform/modules/systems/ThemeScope';
-import { PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
+import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
 import { platform } from '@/platform/modules/systems/pages/platformSystem';
 
 const ComponentEditor = import.meta.env.DEV ? lazy(() => import('./ComponentEditor').then((module) => ({ default: module.ComponentEditor }))) : null;
 
-// Systems: one tab per design system, and one page per foundation and component,
+// Systems: a selector for design systems, and one page per foundation and component,
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
 // Every system is treated the same, the app's own (Platform) included. What only its people can write
 // comes from its spec (src/systems/<id>/intro.tsx, platformSystem.tsx): the introduction (which covers its
 // theme), and icons. The rest comes from its files: a component page for each component in its components
 // folder (src/platform/modules/systems/docs.ts), and a foundations page for each kind of token its theme
-// defines (src/platform/modules/systems/themeTokens.ts). One tab for each prototype system in src/systems/, then Platform.
+// defines (src/platform/modules/systems/themeTokens.ts). Prototype systems appear in the selector, followed by Platform.
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
 const introOf = (id: string): SystemIntro => intros[`/systems/${id}/intro.tsx`]?.default ?? {
   intro: <Prose><p>This system has no introduction yet. Add one in <Code>src/systems/{id}/intro.tsx</Code>.</p></Prose>,
@@ -30,6 +31,10 @@ const PROTOTYPE_SPECS: Record<string, DesignSystem> = Object.fromEntries(Object.
   label: spec.label, dir: `${spec.dir}components/`, scopeClass: spec.themeClass, ...introOf(id),
 }]));
 const SYSTEMS: Record<string, DesignSystem> = { ...PROTOTYPE_SPECS, platform };
+const SYSTEM_CHOICES = [
+  ...Object.entries(PROTOTYPE_SPECS).sort(([a], [b]) => a === DEFAULT_SYSTEM ? -1 : b === DEFAULT_SYSTEM ? 1 : a.localeCompare(b)),
+  ['platform', platform] as const,
+].map(([value, spec]) => ({ value, label: spec.label }));
 type SystemId = string;
 type NavGroup = { heading?: string; items: [id: string | null, label: string][] };
 
@@ -63,17 +68,29 @@ function navGroups(sys: DesignSystem, components: SystemComponentDoc[], tokens: 
 }
 
 // The Systems navigation, built from the shared pieces (shell/nav/): the section's name, the
-// systems as tabs, then the open system's pages under their headings.
+// system selector, then the open system's pages under their headings.
 function SystemNav({ system, components, tokens }: { system: SystemId; components: SystemComponentDoc[]; tokens: ThemeToken[] }) {
+  const navigate = useNavigate();
   return (
     <SectionNav label="Systems">
       <NavHeader>
         <NavTitle>Systems</NavTitle>
-        <NavTabs label="Design systems">
-          {Object.entries(SYSTEMS).map(([id, s]) => (
-            <Link key={id} to={"/systems/$system" as never} params={{ system: id } as never} aria-current={id === system ? 'page' : undefined} className={navTabClass(id === system)}>{s.label}</Link>
-          ))}
-        </NavTabs>
+        <div className="mt-2 px-1">
+          <Select items={SYSTEM_CHOICES} value={system} onValueChange={(value) => {
+            if (value && value !== system) void navigate({ to: '/systems/$system' as never, params: { system: value } as never });
+          }}>
+            <SelectTrigger aria-label="Design system" className="w-full min-w-0">
+              <SelectValue className="min-w-0 truncate" />
+            </SelectTrigger>
+            <SelectContent align="start">
+              {SYSTEM_CHOICES.filter((choice) => choice.value !== 'platform').map((choice) => (
+                <SelectItem key={choice.value} value={choice.value}>{choice.label}</SelectItem>
+              ))}
+              <SelectSeparator />
+              <SelectItem value="platform">{platform.label}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </NavHeader>
       <NavList>
         {navGroups(SYSTEMS[system], components, tokens).map((g, i) => (

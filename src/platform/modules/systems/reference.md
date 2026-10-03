@@ -70,6 +70,8 @@ Typography includes Tailwind defaults where tokens do not override them. Pages a
 
 ## System choice
 
+The Systems navigation uses a selector populated from installed systems, with the configured default prototype system first and Platform last. Entering /systems opens the default prototype system; switching systems opens its introduction. Explicit system URLs keep their selected system.
+
 `meta.json.system` selects a prototype's system. Otherwise, it uses the studio default.
 
 The configuration command preserves existing prototypes' system choices before changing the default. Migration must update imports and metadata together.

@@ -1,11 +1,11 @@
 // Systems in the app: its rail button, its routes (/systems, /systems/<system>, /systems/<system>/<page>),
-// and the two systems in the ⌘K palette. The pages are in src/platform/modules/systems/pages/.
+// and prototype systems in the ⌘K palette. The pages are in src/platform/modules/systems/pages/.
 import { createRoute, lazyRouteComponent, redirect, useRouterState } from '@tanstack/react-router';
 import { Shapes01Icon } from '@hugeicons/core-free-icons';
 import { CommandItem } from '@/platform/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
 import { ItemRow } from '@/platform/app/items/ItemRow';
-import { PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
+import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
 import { APP_NAME } from '@/platform/app/data/config';
 import { artifactLabel } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
@@ -52,7 +52,7 @@ export default {
       createRoute({
         getParentRoute: () => systemsRoute,
         path: '/',
-        beforeLoad: () => { throw redirect({ to: '/systems/product' as never, replace: true }); },
+        beforeLoad: () => { throw redirect({ to: '/systems/$system' as never, params: { system: DEFAULT_SYSTEM } as never, replace: true }); },
       }),
       createRoute({
         getParentRoute: () => systemsRoute,
