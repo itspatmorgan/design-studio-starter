@@ -1,81 +1,37 @@
 ---
-title: "Build your Handbook"
-description: "Curate shared context and agent instructions."
-section: "Maintain"
-order: 20
+title: "Handbook"
+description: "Give your team and agent shared context."
+section: "Studio"
+order: 13
 toc: true
 slug: "handbook"
 ---
 
 # Handbook
 
-Context opens at `/handbook/context` and keeps its Markdown files in `src/handbook/docs/`. Rules and Skills retain their own folders and routes.
+The Handbook holds shared context for your team and instructions for your agent. Use it for knowledge that should carry across prototypes.
 
-The Handbook holds shared content in `src/handbook/`. It appears under **Handbook** in the app.
-
-| Part | Intended use |
+| Part | What belongs there |
 | --- | --- |
-| Context | Context and guidance for people, agents, or both. |
-| Rules | Standing instructions for agents. |
-| Skills | Procedures for agents to perform specific tasks. |
+| Context | Personas, principles, research, and other shared knowledge. |
+| Rules | Standing constraints the agent should follow. |
+| Skills | Procedures the agent can use for specific tasks. |
 
-Context documents do not need to be written for agents. If a doc also provides useful agent context, reference it in `AGENTS.md`. Rules and Skills are specifically for agents.
+The starter's Personas and Principles describe Design Studio. Adapt or replace them with your own product context. Keep goals and decisions for one exploration inside its prototype.
 
-The starter's Principles and Personas describe Design Studio. They are examples to adapt or replace with your own product context. Keep prototype-specific material in the prototype.
+## Give your agent useful context
 
-## Add and edit content
+Ask your agent to add or update Handbook content from material you supply. You can also use **+** in navigation and the [shared source workflow](/documentation/guide/home#working-with-files).
 
-See [Diagrams and code](/documentation/guide/diagrams) for examples, the shared theme, and customization.
+A file being visible in the Handbook does not guarantee that the agent reads it. Ask the agent to connect relevant context, rules, and skills to the repository's instructions in `AGENTS.md`.
 
-Ask your agent to add or update content from the material you supply. Locally, you can also open **Context**, **Rules**, or **Skills** and select **New** (+) or **New skill**.
+You do not need to author everything up front. Add context when it helps the agent understand your product or improves recurring work.
 
-Context and Rules support Markdown files and folders. Each skill needs its own folder and a `SKILL.md`. Supporting files can live beside it.
+## Keep shared knowledge clear
 
-The Handbook, Guide, and reference pages render fenced `mermaid` blocks as diagrams through the shared platform Markdown reader. This remains available when prototype Documents is disabled. Keep diagrams as text in the Markdown file and include `accTitle` and `accDescr` for accessible descriptions.
+Handbook changes affect the team, so follow your maintainer's review process. Local edits reach other contributors when shared through Git.
 
-The Handbook uses the [shared platform source workflow](../../core/source.md): **⌘' / Ctrl+'** toggles source and rendering; **⌘S / Ctrl+S** saves.
-
-To edit text:
-
-1. Select **Edit source** in the file's right-click menu.
-2. Edit the text.
-3. Save with Command+S on macOS or Ctrl+S on other systems.
-4. Select **Done** to return to the page.
-
-Published Handbook pages are read-only.
-
-## Connect content to agents
-
-`AGENTS.md` can point to any Handbook document. References can apply every session or only to relevant tasks. Presence in the Handbook does not guarantee that an agent reads the file.
-
-Ask your agent to add the appropriate reference when context should guide future work. See [Work with your agent](/documentation/guide/agents) for how instructions and skills are used.
-
-## Edit the Guide
-
-Documentation navigation uses the same file-menu actions as the Handbook. Right-click a Guide or Reference file to edit its source, open it in your editor, reveal it in Finder, or copy its link or repository path. Platform files have no rename or delete actions in these menus.
-
-The Guide is shared platform documentation. Its pages can also be edited locally:
-
-1. Right-click the Guide chapter in navigation and select **Edit source**.
-2. Edit its Markdown.
-3. Save with Command+S on macOS or Ctrl+S on other systems.
-4. Select **Done** to return to the chapter.
-
-A module chapter opens its full README, including the developer section hidden in the Guide. The editor prompts you if external changes conflict with unsaved edits. Published Guide pages are read-only.
-
-## Platform documentation
-
-Open **Documentation** for the curated **Guide** and complete **Reference**. The Handbook holds the studio's curated context and agent instructions. Reference exposes documentation supplied with the platform, from the files beside its code.
-
-References are available to the agent when relevant instructions or the current task lead it there. Visibility alone does not mean a file is read. Keep relevant routing in `AGENTS.md`, Rules, and Skills.
-
-Direct [Reference](/documentation/reference) access remains available when the optional Documentation module is disabled or removed.
-
-## Shared scope
-
-The Handbook is shared platform content. Changes follow the maintainer's review process. Local edits reach other contributors when shared through Git.
-
-Build checks validate the Handbook's structure and linked agent instructions. They do not assess the accuracy of your content.
+For documentation supplied by the platform itself, open [Documentation](/documentation/guide/documentation). The Handbook is where your team's context belongs.
 
 ## For developers
 

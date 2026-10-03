@@ -1,12 +1,3 @@
----
-title: "Add written context"
-description: "Keep Markdown files alongside prototype views."
-section: "Create"
-order: 11
-toc: true
-slug: "documents"
----
-
 # Documents
 
 Documents adds Markdown pages inside a prototype. It is optional: disabling it hides those pages from normal prototype navigation and preserves their files. The Handbook and Guide retain their own Markdown support.
@@ -64,7 +55,7 @@ These references share their original files; no source is copied into the docume
 
 ### Mermaid diagrams
 
-See [Diagrams and code](/documentation/guide/diagrams) for examples, the shared theme, and customization.
+See [Diagrams and code](/documentation/reference/platform/core/diagrams.md) for examples, the shared theme, and customization.
 
 Use a fenced code block with the language `mermaid` to show a diagram:
 

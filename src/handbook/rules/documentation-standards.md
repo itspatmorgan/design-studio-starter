@@ -22,6 +22,8 @@ Documentation has two reading modes: Guide provides a curated introduction, and 
 
 Give each contract one authoritative location. Other documents can summarize its purpose, then link to it. Do not copy requirements, schemas, or procedures into multiple locations.
 
+Organize the Guide around the main app surfaces. Introduce essential concepts and everyday capabilities for people working with agents. Keep detailed commands, file contracts, and troubleshooting in Reference. A supporting module does not need a separate Guide chapter.
+
 Code defines implemented behavior. Documentation explains that behavior and the intended constraints. If they disagree, identify whether the implementation or the documentation needs correction.
 
 Keep module details with their module. This lets removal also remove the related documentation. Keep shared standards in the Handbook.

@@ -1,56 +1,37 @@
 ---
-title: "Manage design systems"
-description: "Maintain components, documentation, and system choices."
-section: "Maintain"
-order: 21
+title: "Systems"
+description: "Browse and adapt your design toolkit."
+section: "Studio"
+order: 12
 toc: true
 slug: "systems"
 ---
 
 # Systems
 
-**Systems** lists the available systems, their foundations, and their components. For initial import, see [Set up your design system](/documentation/guide/setup-design-system).
+Systems shows the components and styles available to your prototypes. Use the selector to switch between systems, then browse foundations and component examples.
 
-| System | Used by |
-| --- | --- |
-| Platform | Studio navigation, menus, editors, and documentation pages. |
-| Assigned prototype system | A prototype's views and live previews. |
+## Product and Platform
 
-Prototypes cannot import platform UI. Each prototype has one assigned system, but can also build local components and styles.
+**Product** is the starter toolkit for prototype views. Replace or adapt it to match your product. You can add more systems when different work needs a different toolkit.
 
-Shared brand fonts, logos, and images can live with the system. See [Static assets](/documentation/guide/assets) for ownership and locations.
+**Platform** supplies Studio's own interface: navigation, menus, editors, and documentation. It stays separate from prototype design systems.
 
-## Foundations and component pages
+Each prototype uses an assigned system and can also have local components and styles.
 
-Foundation pages read tokens from the system's theme: colors, typography, radius, shadows, spacing, and other values. Typography includes Tailwind defaults where the theme does not override them.
+## Explore the toolkit
 
-Component pages can include descriptions, generated props tables, and live examples with source code. Props tables come from TypeScript. Upstream documentation links depend on the library used by that system.
+Foundations show colors, typography, and other theme values. Component pages show examples, source, and available properties. These help you and your agent understand what you can use.
 
-## Maintain the kit
+A system declares whether it supports light mode, dark mode, or both. Systems with one mode keep that appearance in their pages, prototype views, and embeds while Studio follows its global toggle.
 
-Ask your agent to add or update components and their documentation. The `document-component` skill provides the component-page procedure.
+## Bring your own system
 
-Locally, right-click a navigation item and select **Edit source**, or use **⌘' / Ctrl+'** to toggle source and rendering. Component pages expose Markdown, examples, and component code in file tabs. Foundation pages open their theme CSS; Introduction and Icons open their introduction source. Missing component page and example files can be created from templates. **⌘S / Ctrl+S** saves. Published pages are read-only. See the [shared source workflow](../../core/source.md).
+Ask your agent to import your components, tokens, fonts, and supported color modes. You can keep the starter while exploring and replace it later.
 
-Missing documentation normally produces build warnings. A system can require complete documentation with `docs: 'strict'`.
+System files are shared team content. Coordinate changes with your maintainer. Changing the default system preserves existing prototypes' system choices; migrating a prototype is a separate change.
 
-System files are shared platform content. Changes require maintainer authorization.
-
-## Add, replace, or remove a system
-
-Ask your agent to preview the change. Another system can support a different product or type of work. Adding it preserves the current default.
-
-Changing the default through the configuration command preserves existing prototypes' system choices. Migrating a prototype requires changing its imports and assigned system together.
-
-Keep a system until retained prototypes no longer depend on it. Removal checks identify dependencies that must change first.
-
-## Theme boundaries
-
-Each system has a unique theme class. Theme rules must target that class or its descendants, and pop-ups must stay inside its themed container.
-
-These boundaries keep the system separate from other prototypes and the platform. Imported systems can use their own token conventions and component APIs.
-
-Systems declare the color modes they support. A light-only or dark-only system keeps that mode in views, embeds, and its entire Systems content page while Studio follows its global toggle. New systems default to both modes; single-mode support is an explicit declaration. See the [system contract](reference.md) for declarations and scoped theme selectors.
+Source is available through navigation, using the [shared file workflow](/documentation/guide/home#working-with-files). Component pages offer separate source tabs for documentation, examples, and component code.
 
 ## For developers
 

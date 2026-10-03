@@ -6,7 +6,8 @@ Follow the [documentation standard](documentation-standards.md) and [Maintain do
 
 - Keep Reference content beside the platform code it describes. The shared reader discovers core contracts and enabled modules’ top-level Markdown.
 - Put platform-wide chapters in `src/platform/modules/documentation/pages/`.
-- Put a module's human chapter in its README, so removal also removes the chapter.
+- Organize the Guide around setup, the main app surfaces, and collaboration. Keep it concise for people working with agents.
+- Put a main surface's human chapter in its module README, so removal also removes the chapter. Supporting artifact types can remain in Reference and be introduced together in Prototypes.
 - For module implementation details, use the README's `## For developers` section or directly linked module references.
 - Use frontmatter with `title`, `description`, `order`, and `section`. Set `toc: true` when useful.
 - Use `slug` to preserve a README chapter's address when its module ID differs.

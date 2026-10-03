@@ -1,10 +1,4 @@
----
-title: "Studio config"
-description: "The shared settings and defaults in studio.config.ts."
-section: "Learn more"
-order: 41
-toc: true
----
+# Studio configuration
 
 `studio.config.ts` holds a small set of shared choices. Other customization happens in code, which you also own.
 
@@ -28,6 +22,6 @@ Restart the dev server after configuration changes. Shared configuration changes
 
 ## Inspect setup
 
-The agent can run `pnpm -s studio status --json` to inspect configuration and setup state. This report does not replace a build and review of a working prototype.
+The agent can run `pnpm studio status --json` to inspect configuration and setup state. This report does not replace a build and review of a working prototype.
 
-For capabilities and removal behavior, see [Extend your Studio](/documentation/guide/modules).
+For capabilities and removal behavior, see [Extend your Studio](/documentation/reference/platform/modules/README.md).

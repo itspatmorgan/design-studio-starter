@@ -1,12 +1,3 @@
----
-title: "Arrange work on a canvas"
-description: "Connect prototype artifacts on an optional visual surface."
-section: "Create"
-order: 12
-toc: true
-slug: "canvases"
----
-
 # Canvases
 
 Canvases adds an Excalidraw surface inside a prototype. Each canvas is an `.excalidraw` file with shapes, text, notes, arrows, and linked artifacts.
@@ -57,7 +48,7 @@ The agent tool `artifacts` lists the prototype's available artifacts. To embed o
 A page to arrange things on: live views and diagrams, and cards for documents from its own prototype, beside sticky
 notes, text, and arrows. It's [Excalidraw](https://github.com/excalidraw/excalidraw) with the app's
 look, and its design comes from Design Studio's canvas. Agent contract: `src/handbook/rules/canvases.md`.
-Human docs: the Guide's Canvases page.
+Human orientation: [Prototypes](/documentation/guide/prototypes#artifacts-work-together).
 
 **This folder is a self-contained file type.** Core never imports it (`scripts/check/check-modules.js`),
 so the app runs with or without it. Canvas doesn't import another file type either: it asks the

@@ -16,12 +16,12 @@ See the [setup guide](src/platform/modules/documentation/pages/getting-started.m
 
 ## Learn more
 
-The Guide is available in the running app at `/documentation/guide`, and its pages are also in this repository:
+The Guide at `/documentation/guide` introduces setup, the app surfaces, and collaboration. Detailed platform contracts live in Reference at `/documentation/reference`.
 
 - [Introduction](src/platform/modules/documentation/pages/index.md) — how the studio works.
-- [Working with agents](src/platform/modules/documentation/pages/agents.md) — rules, skills, and shared context.
-- [Modules](src/platform/modules/documentation/pages/modules.md) — customize and extend your studio.
-- [Tech stack](src/platform/modules/documentation/pages/tech-stack.md) — what's under the hood.
+- [Collaborate](src/platform/modules/documentation/pages/collaborate.md) — ownership and sharing work.
+- [Modules](src/platform/modules/README.md) — customize and extend your studio.
+- [Tech stack](src/platform/core/stack.md) — what's under the hood.
 
 ## Project status
 

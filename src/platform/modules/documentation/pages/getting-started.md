@@ -1,39 +1,33 @@
 ---
-title: "Set up or join a studio"
-description: "Let your agent prepare a local environment for you."
+title: "Set up"
+description: "Run the starter locally, then configure it when you are ready."
 section: "Begin"
 order: 2
 toc: true
 ---
 
-Your coding agent handles installation, configuration, and verification. You provide the identity, choices, and source material it needs.
+Start the template from your terminal. You can explore the working starter before you configure it or ask an agent to change anything.
 
-## Start or resume setup
+## Run the starter
 
-Open the repository with your agent and use the request that fits your situation:
+Create a repository from this GitHub template, clone your copy, then move into its directory. Install [mise](https://mise.jdx.dev/installing-mise.html) if needed. From the repository directory, run:
 
-| Situation | Ask your agent |
-| --- | --- |
-| New copy of the starter | “Set up my studio.” |
-| Joining an existing studio | “Get me set up as a contributor.” |
-| Setup stopped partway through | “Resume my studio setup.” |
+```sh
+mise install
+mise exec -- pnpm install
+mise exec -- pnpm dev
+```
 
-The studio uses Git and mise. Mise supplies the pinned Node and pnpm versions. The agent can help install these tools and the project dependencies.
+`mise install` installs the Node.js and pnpm versions listed in `mise.toml`. `mise exec --` runs pnpm with those versions even when your shell is not configured to activate mise. Open the local URL printed by Vite.
 
-Personal and team studios use the same contributor system. Personal local use does not require GitHub or hosting. To join a Studio on GitHub, provide the repository address and an account with access.
+## Explore, then configure
 
-## What the agent sets up
+The starter is ready to explore as soon as it runs. Try the Feedback Inbox sample and browse the Guide at `/documentation/guide`. You do not need to choose a studio name, personal or team use, or a design system before your first run.
 
-For a new studio, the agent helps configure its name, personal or team use, and optional modules. It registers the first contributor and helps establish the design system and Handbook context.
+When you want to adapt the environment, open the repository with your coding agent and ask it to configure your studio. It can help with the studio name, personal or team use, contributor identity, optional modules, design system, and Handbook context. Bring your own system source and product context when you have them; you can also keep the starter system while exploring.
 
-When you join an existing Studio, it creates or reuses your contributor registration. It preserves the Studio's shared configuration and content.
+If you are joining an existing studio, ask your agent to set you up as a contributor. It should preserve the studio's shared configuration and content.
 
-Provide your name and Git commit email when asked. Provide your GitHub username if you will share through GitHub. Use the same email in Git and your contributor entry.
+Configuration can continue after first run. Personal local use does not require GitHub or hosting. For collaboration through GitHub, use an account with access to the repository.
 
-## What should be ready
-
-Setup should leave you with a running local studio, your contributor registration, and a working first prototype. The agent verifies the build and reports missing materials or unfinished setup.
-
-The starter includes a Feedback Inbox sample owned by `patrick`. You can inspect it or ask the agent to copy useful parts into your own prototype. Removing the shared sample is a maintainer change.
-
-Next, [set up your design system](/documentation/guide/setup-design-system), or keep the example system while trying the studio.
+The starter includes a Feedback Inbox sample owned by `patrick`. You can inspect it or ask an agent to help create your own prototype. Removing the sample is a maintainer change.

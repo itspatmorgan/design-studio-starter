@@ -1,86 +1,48 @@
 ---
-title: "Build a prototype"
-description: "Use a design-system toolkit, a blank view, or both."
-section: "Create"
-order: 10
+title: "Prototypes"
+description: "Explore ideas with artifacts that work together."
+section: "Studio"
+order: 11
 toc: true
 slug: "prototypes"
 ---
 
 # Prototypes
 
-A prototype is an independent workspace for artifacts: views, documents, diagrams, and canvases. Each artifact is backed by a file. It lives in `src/prototypes/<contributor>/<prototype>/`. The app finds it automatically.
+A prototype is a workspace for an idea. It brings interactive screens and supporting context together, without affecting other prototypes.
 
-Ask your agent to create a prototype, or select **New prototype** on the Prototypes page. The agent uses `pnpm new "Prototype Name"`.
+Ask your agent to create one, or select **New prototype**. Give it a goal, then iterate with your agent as you review the result.
 
-## A toolkit with room to explore
+## Artifacts work together
 
-Your assigned design system provides components and tokens. It does not limit what you can create.
+A prototype's pieces of work are **artifacts**. Each artifact is backed by a file.
 
-Use those components, build local alternatives, or start with a blank view. Local helpers belong in the prototype, for example in `_components/`. You can explore without changing the shared system first.
-
-Dependency and style boundaries contain the experiment so it does not affect other prototypes or the platform. See [Prototype files and boundaries](/documentation/guide/prototype-reference).
-
-## Artifacts and navigation
-
-| Artifact | Purpose |
+| Artifact | Use it for |
 | --- | --- |
-| View (`.tsx` or `.jsx`) | Interactive code-based screen or state. |
-| Document (`.md`, optional) | Written context. |
-| Diagram (`.mermaid` or `.mmd`, optional) | Mermaid source rendered as a standalone diagram. |
-| Canvas (`.excalidraw`, optional) | Views, cards, and notes arranged together. |
+| View | An interactive screen or state. |
+| Document | Goals, decisions, research, or a handoff. |
+| Diagram | A portable, text-based model of a flow or system. |
+| Canvas | Views, diagrams, and notes arranged together. |
 
-Folders organize artifacts at any depth; they are not artifacts themselves. Helper code, assets, and metadata support the work but stay out of normal artifact navigation.
+Documents can embed views, diagrams, and canvas previews. Canvases can embed views and diagrams, and link to documents. Use these together to explain both an idea and how it works.
 
-For fonts, logos, and images, see [Static assets](/documentation/guide/assets).
+Views are always available. Documents, diagrams, and canvases are optional capabilities included in the starter.
 
-Views and text-file support are required. Documents, Canvases, and Diagrams are optional modules.
+## Organize the exploration
 
-Names starting with `_` identify helpers, which are not screens. Select **Show all files** in the prototype's **…** menu to see helpers and assets locally.
+Add artifacts with **+** in navigation. Enter a name; Studio supplies the file extension. Use folders to group work, and drag items to move or reorder them. The first artifact in navigation is where the prototype opens.
 
-## Local editing controls
+The Feedback Inbox sample demonstrates an introduction, early exploration, app screens, and individual states. Your prototype can use whatever organization suits the work.
 
-These controls are available in your own prototypes:
+Right-click a view and choose **Make lofi** to explore in grayscale with handwritten type. **Make hi-fi** restores its normal appearance.
 
-| Action | Control |
-| --- | --- |
-| Add an artifact or folder | **New** (+) in the Artifacts row. |
-| Rename or delete | Artifact's right-click menu. F2 also renames. |
-| Move | Drag onto a folder or below the list for the top level. |
-| Reorder | Drag between rows, or Option+Up/Down (Alt+Up/Down). |
-| Choose the opening artifact | Move it to the top of the navigation. |
-| Edit source | **Edit source** in the artifact's menu. |
+## Make changes safely
 
-To edit source:
+Your assigned design system supplies components and styles. You can also explore local alternatives inside the prototype. Those experiments stay separate from the shared system.
 
-1. Select **Edit source** in the artifact's right-click menu.
-2. Edit the text.
-3. Save with Command+S on macOS or Ctrl+S on other systems.
-4. Select **Done** to return to the artifact.
+Edit your own artifacts with your agent or the [shared source workflow](/documentation/guide/home#working-with-files). Other contributors' source opens read-only.
 
-Conflicting external changes prompt you to choose how to proceed. Another contributor's source opens read-only.
-
-**⌘; / Ctrl+;** toggles navigation from both the rendered artifact and its source editor.
-
-Use **⌘'** on Mac or **Ctrl+'** on Windows/Linux to switch between an artifact's rendered view and source locally. The source editor receives focus. **⌘S / Ctrl+S** saves; the toggle returns to the rendered view. Unsaved edits require confirmation before leaving. These shortcuts leave prototype form fields, canvas text, and dialogs alone.
-
-When creating an artifact, enter its name without a file extension. The selected artifact type adds the correct extension automatically.
-
-Without a custom order, files appear before folders, alphabetically. The prototype opens on the first available artifact in navigation order, including artifacts inside folders.
-
-## Appearance and prototype details
-
-**Make lofi** draws a view in grayscale with handwritten type. **Make hi-fi** restores its normal appearance. Components and behavior stay the same. The mode is stored as `/** @lofi */` in that view. A folder named `lofi` has no special behavior.
-
-Select **Edit** in the prototype's **…** menu to change its title. Changing the title also renames the folder and changes its URL. Contributor and creation date are read-only details in this dialog. Use document artifacts for project context.
-
-## Archive and delete
-
-**Archive** keeps the prototype available locally and excludes it from the published site. **Unarchive** includes it in the next build.
-
-**Delete** moves the folder to the system Trash or the repository's `.trash/` fallback. Ask your agent to restore it if needed.
-
-Published prototypes support viewing and interaction, without repository editing. A view that fails to render shows an error and a **Copy** button. Give that error to your agent.
+Use the prototype's **…** menu to change its title or archive it. Archiving keeps it locally and excludes it from the published site. Put project context in a document artifact.
 
 ## For developers
 

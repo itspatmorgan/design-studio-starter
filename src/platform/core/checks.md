@@ -1,10 +1,4 @@
----
-title: "Checks and troubleshooting"
-description: "Understand Git warnings, failed checks, and repository protection."
-section: "Learn more"
-order: 44
-toc: true
----
+# Checks and troubleshooting
 
 Checks help keep the shared studio consistent. Give your agent the warning or error so it can identify the cause.
 
@@ -18,7 +12,7 @@ Checks help keep the shared studio consistent. Give your agent the warning or er
 | GitHub pull request | Scope review, asset sizes, and full build. Platform proposals are flagged for review. |
 | Push to `main` | Scope authorization, asset sizes, and full build. Platform changes require an admin or maintainer role. |
 
-See [Ownership and permissions](/documentation/guide/ownership-and-permissions) for how these checks fit the workflow. Configure branch protection and required checks to enforce the team's merge policy.
+See [Collaborate](/documentation/guide/collaborate) for how these checks fit the workflow. Configure branch protection and required checks to enforce the team's merge policy.
 
 ## Respond to a check
 
@@ -31,11 +25,11 @@ See [Ownership and permissions](/documentation/guide/ownership-and-permissions) 
 | File exceeds the size limit | Reduce the asset before committing. |
 | Type check fails | Give your agent the error and ask it to correct the code. |
 
-See [Ownership and permissions](/documentation/guide/ownership-and-permissions) for review paths and [Prototype files and boundaries](/documentation/guide/prototype-reference#dependency-boundaries) for permitted dependencies.
+See [Collaborate](/documentation/guide/collaborate) for review paths and [Prototype files and boundaries](/documentation/reference/platform/modules/prototypes/reference.md#dependency-boundaries) for permitted dependencies.
 
 ## Keep files small
 
-The [Asset Guard](../../../core/assets.md#asset-guard) blocks oversized files before commit and in CI. Its convention defines the size limit and exception handling.
+The [Asset Guard](assets.md#asset-guard) blocks oversized files before commit and in CI. Its convention defines the size limit and exception handling.
 
 Use WebP or compressed JPEG for images. Export them at the size needed. Ask your agent to reduce an oversized asset.
 

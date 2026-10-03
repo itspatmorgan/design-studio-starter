@@ -1,10 +1,4 @@
----
-title: "Publish a Studio"
-description: "Understand the built site and prepare a host when you need one."
-section: "Collaborate"
-order: 32
-toc: true
----
+# Publishing
 
 Hosting is optional. You can create prototypes locally and collaborate through Git before publishing a site.
 
