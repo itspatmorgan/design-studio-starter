@@ -28,9 +28,9 @@ flowchart LR
 
 Include an accessible title and description where the selected diagram type supports them. Use the diagram type that communicates the relationship clearly. All diagram types supported by the installed Mermaid renderer are available.
 
-Right-click the file and select **Edit source** to edit it. Save with Command+S on macOS or Ctrl+S elsewhere, then select **Done**. Edits made by your agent or external editor also update the open diagram locally. Invalid syntax displays an error and keeps the source available for inspection and repair.
+Right-click the file and select **Edit source** to edit it. Save with Command+S on macOS or Ctrl+S elsewhere, then select **Done**. Edits made by your agent or external editor also update the open diagram locally. Invalid syntax displays an error. Use the file menu’s **Edit source** action to inspect and repair it. Standalone diagrams have no separate source toggle.
 
-Published diagrams and other contributors’ files are read-only. Published source is visible through **Mermaid source**, so keep secrets out of diagram files.
+Published diagrams and other contributors’ files are read-only. Source access on local files uses the file menu.
 
 ## Share the same visual language
 

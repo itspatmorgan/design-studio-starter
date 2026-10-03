@@ -13,4 +13,4 @@ This rule applies to standalone prototype diagrams when Diagrams is enabled. Rea
 - To transfer a diagram to Excalidraw, use its existing Mermaid import. The imported canvas is a separate artifact; later source edits do not synchronize it.
 - Apply the [contributor scope rule](contributor-scope.md) before editing prototype files.
 
-Write the source directly. The local app discovers new files and reflects edits. Invalid syntax is shown as a render error alongside the source so it can be repaired.
+Write the source directly. The local app discovers new files and reflects edits. Invalid syntax is shown as a render error. Inspect and repair it through the file menu’s Edit source action.
