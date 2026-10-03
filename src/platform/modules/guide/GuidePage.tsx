@@ -2,6 +2,7 @@ import { lazy, Suspense, type ComponentProps } from 'react';
 import { MDXProvider } from '@mdx-js/react';
 import { Link, getRouteApi, useNavigate } from '@tanstack/react-router';
 import { DocLayout } from '@/platform/app/docs/DocLayout';
+import { DocBase } from '@/platform/app/docs/DocBase';
 import type { GuideModule } from './loadGuide';
 import { Button } from '@/platform/components/button';
 import studioParts from './assets/studio-parts.svg';
@@ -25,6 +26,7 @@ type Props = { slug: string; Component?: GuideModule['default']; source?: { path
 
 export default function GuidePage({ slug, source, ...props }: Props) {
   const { guide } = rootApi.useLoaderData();
+  const file = guide.find((page) => page.slug === slug)?.source ?? `/platform/modules/guide/pages/${slug}.md`;
   const navigate = useNavigate();
   // Only enabled pages participate. Release history is separate from the reading sequence.
   const chapters = guide.filter((page) => page.section !== 'Releases');
@@ -50,5 +52,5 @@ export default function GuidePage({ slug, source, ...props }: Props) {
   if (source && GuideEditor) return <Suspense fallback={<p className="p-4 text-sm text-muted-foreground">Opening source…</p>}><GuideEditor slug={slug} path={source.path} /></Suspense>;
   if (!props.Component) return null;
   const edit = import.meta.env.DEV && <Button size="sm" variant="outline" className="shrink-0" onClick={() => navigate({ to: '.', search: ((previous: object) => ({ ...previous, mode: 'source' })) as never })}>Edit</Button>;
-  return <MDXProvider components={components}><DocLayout {...props} Component={props.Component} actions={edit} scrollKey={slug} footer={footer} /></MDXProvider>;
+  return <DocBase.Provider value={file.slice(0, file.lastIndexOf('/'))}><MDXProvider components={components}><DocLayout {...props} Component={props.Component} actions={edit} scrollKey={slug} footer={footer} /></MDXProvider></DocBase.Provider>;
 }

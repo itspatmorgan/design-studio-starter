@@ -61,6 +61,8 @@ Build checks validate the Handbook's structure and linked agent instructions. Th
 
 ## For developers
 
+Repository links to module READMEs and contracts open the platform's read-only reference reader at `/reference/<source-path>`. It retains developer sections and resolves relative links back to Handbook content. Only core references and enabled modules' Markdown are bundled. This reader does not depend on the Guide or prototype Documents.
+
 The Handbook: the docs, rules and skills in `src/handbook/` that people and agents read, at `/handbook`. Required.
 
 - `module.ts`, `app.tsx`: who it is, its rail button and routes.

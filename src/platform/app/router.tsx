@@ -25,6 +25,8 @@ import type { Item, Manifest, Prototype } from '@/platform/app/data/types';
 import { TAB_ID } from '@/platform/app/data/files';
 import { moduleApps } from '@/platform/app/modules';
 import { APP_NAME } from '@/platform/app/data/config';
+import { loadReference } from '@/platform/app/docs/loadReference';
+import MarkdownPage from '@/platform/app/docs/MarkdownPage';
 
 
 function LoadError({ error, reset }: { error: unknown; reset: () => void }) {
@@ -50,6 +52,24 @@ const homeRoute = createRoute({
   path: '/',
   head: () => ({ meta: [{ title: APP_NAME }] }),
   component: Home,
+});
+
+// Read-only repository references; the loader accepts only bundled Markdown entries.
+const referenceRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: 'reference/$',
+  loader: async ({ params }) => {
+    const path = `/${params._splat ?? ''}`;
+    const mod = await loadReference(path);
+    if (!mod) throw notFound();
+    return { Component: mod.default, frontmatter: mod.frontmatter ?? {}, path };
+  },
+  head: ({ loaderData }) => ({ meta: [{ title: [loaderData?.frontmatter.title, APP_NAME].filter(Boolean).join(' — ') }] }),
+  component: () => {
+    const { path, ...props } = referenceRoute.useLoaderData();
+    return <MarkdownPage {...props} docKey={path} base={`/reference${path.slice(0, path.lastIndexOf('/'))}`} />;
+  },
+  notFoundComponent: NotFound,
 });
 
 // ?mode=source shows an item's text instead of the item (dev only): "Edit source" in its file menu.
@@ -167,7 +187,7 @@ const sectionItemSplatRoute = createRoute({
 // The app's own routes are typed, so links to them are checked. The modules' routes (Systems, the
 // Handbook, the Guide, in src/platform/modules/<id>/app.tsx) are added at run time, and the types leave
 // them out: a link to one is written loosely.
-const coreRoutes = [homeRoute, prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]), sectionItemRoute.addChildren([sectionItemIndexRoute, sectionItemSplatRoute])] as const;
+const coreRoutes = [homeRoute, referenceRoute, prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]), sectionItemRoute.addChildren([sectionItemIndexRoute, sectionItemSplatRoute])] as const;
 const routeTree = rootRoute.addChildren([...coreRoutes, ...moduleApps.flatMap(({ app }) => app.routes?.(rootRoute) ?? [])] as unknown as typeof coreRoutes);
 
 export const router = createRouter({

@@ -28,6 +28,26 @@ import { ENABLED_MODULES, PROTOTYPE_DIRS } from './scripts/lib/modules.js';
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const prototypeFolders = ['prototypes', ...PROTOTYPE_DIRS.map((dir: string) => path.basename(dir))].map(escapeRegExp).join('|');
 
+// References use the same plain-Markdown pipeline, with the full README retained.
+function markdown(reference = false) {
+  const plugin = mdx({
+    format: 'md',
+    providerImportSource: '@mdx-js/react',
+    remarkPlugins: [remarkFrontmatter, ...(reference ? [remarkTitleFromHeading, () => remarkReadmeGuide({ full: true })] : [remarkReadmeGuide, remarkTitleFromHeading]), remarkMdxFrontmatter, remarkGfm, remarkHtmlAsText],
+    rehypePlugins: [rehypeSlug, [rehypePrettyCode, { theme: { light: 'github-light', dark: 'github-dark' }, keepBackground: false }]],
+  });
+  const transform = plugin.transform;
+  return {
+    ...plugin,
+    name: reference ? 'studio-reference-markdown' : 'studio-markdown',
+    enforce: 'pre' as const,
+    transform(code: string, id: string) {
+      if (id.includes('?reference') !== reference) return null;
+      return transform.call(this, code, id);
+    },
+  };
+}
+
 // A module with `lib: true` gives prototypes one door in: `import ... from '@module/<id>'` is its lib/index.
 const moduleLibs = ENABLED_MODULES.filter((m: { lib?: boolean }) => m.lib).map((m: { id: string }) => ({
   find: `@module/${m.id}`, replacement: fileURLToPath(new URL(`./src/platform/modules/${m.id}/lib/index`, import.meta.url)),
@@ -53,15 +73,8 @@ export default defineConfig({
   plugins: [
     // Markdown pages (Guide pages in src/platform/modules/guide/pages/, and prototype documents), as plain
     // Markdown (no JSX or expressions, so any .md file compiles; raw HTML shows as text): frontmatter (a first heading is the title when there's no `title`), GitHub-style Markdown, heading ids, and code highlighting with Shiki in both color modes.
-    {
-      enforce: 'pre',
-      ...mdx({
-        format: 'md',
-        providerImportSource: '@mdx-js/react',
-        remarkPlugins: [remarkFrontmatter, remarkReadmeGuide, remarkTitleFromHeading, remarkMdxFrontmatter, remarkGfm, remarkHtmlAsText],
-        rehypePlugins: [rehypeSlug, [rehypePrettyCode, { theme: { light: 'github-light', dark: 'github-dark' }, keepBackground: false }]],
-      }),
-    },
+    markdown(),
+    markdown(true),
     // Prototype documents refresh through scripts/build/vite-markdown-refresh-plugin.js instead.
     react({ include: /\.(md|[jt]sx)$/, exclude: new RegExp(`[\\\\/](${prototypeFolders})[\\\\/].*\\.md$`) }),
     markdownRefresh(),

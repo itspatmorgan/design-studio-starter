@@ -37,6 +37,10 @@ export default function globs() {
       negations = archived.map((glob) => `!${literal(glob)}`);
     },
     transform(code, id) {
+      if (/[\\/]app[\\/]docs[\\/]loadReference\.ts$/.test(id.split('?')[0])) {
+        const references = ['/platform/core/*.md', '/platform/modules/README.md', ...ENABLED_MODULES.map((m) => `/platform/modules/${m.id}/*.md`)];
+        return { code: code.replace("['/__studio_references__/*']", JSON.stringify(references)), map: null };
+      }
       const match = LOADER.exec(id.split('?')[0]);
       if (!match || !code.includes("'/__studio_globs__/*'")) return null;
       // A type that is turned off is still bundled (the app reads every type's folder and keeps the ones that are on), so
