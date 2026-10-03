@@ -13,6 +13,8 @@ Canvases adds an Excalidraw surface inside a prototype. Each canvas is an `.exca
 
 The module is optional. Disabling it preserves canvas files and hides them from normal navigation.
 
+The canvas grid shortcut is **⌘⇧'** on Mac or **Ctrl+Shift+'** on Windows/Linux. **⌘' / Ctrl+'** is reserved for switching the artifact between rendered view and source locally.
+
 ## Create and add artifacts
 
 Ask your agent to create a canvas, or select **New** (+), then **New canvas**, in the Artifacts row.

@@ -19,6 +19,7 @@ import { canChangePrototype, readSource, repoPath, SourceChanged, useMe, writeSo
 import type { Artifact, Prototype } from '@/platform/app/data/types';
 import { Button } from '@/platform/components/button';
 import { toast } from '@/platform/components/toast';
+import { shortcutLabel } from '@/platform/app/shell/artifactShortcuts';
 import { sourceTheme } from '@/platform/modules/prototypes/viewer/sourceTheme';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
 
@@ -123,6 +124,7 @@ export default function SourcePane({ proto, item, label, actions, onDirty, sourc
           ],
         }),
       });
+      view.current.focus();
     })();
     return () => { cancelled = true; view.current?.destroy(); view.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -181,7 +183,7 @@ export default function SourcePane({ proto, item, label, actions, onDirty, sourc
         <span className="ml-auto shrink-0 text-muted-foreground">{!editable ? 'Read-only' : isDirty ? 'Unsaved changes' : ''}</span>
         {/* Save and the buttons after it sit closer together than the header's other items. */}
         <div className="flex shrink-0 items-center gap-1.5">
-          {editable && <Button size="sm" disabled={!isDirty || saving} onClick={() => save.current()} title="Save (⌘S)">{saving ? 'Saving…' : 'Save'}</Button>}
+          {editable && <Button size="sm" disabled={!isDirty || saving} onClick={() => save.current()} title={`Save (${shortcutLabel('save')})`}>{saving ? 'Saving…' : 'Save'}</Button>}
           {actions}
         </div>
       </div>

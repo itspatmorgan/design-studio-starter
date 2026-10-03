@@ -12,8 +12,10 @@
 //
 // The modules add their own: /prototypes (the gallery), /examples, /systems/$system, /handbook, /documentation/guide/$page
 // (src/platform/modules/<id>/app.tsx). Everything that opens in the viewer does so through the routes above.
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect, useRef } from 'react';
 import { createRootRoute, createRoute, createRouter, notFound, redirect, useNavigate, useRouter } from '@tanstack/react-router';
+import { useSourceShortcut } from '@/platform/modules/prototypes/viewer/useSourceShortcut';
+import { shortcutLabel } from '@/platform/app/shell/artifactShortcuts';
 import { Button } from '@/platform/components/button';
 import App, { NotFound } from '@/platform/app/shell/App';
 import Home from '@/platform/app/pages/home/Home';
@@ -121,12 +123,21 @@ const SourcePane = import.meta.env.DEV ? lazy(() => import('@/platform/modules/p
 // prototype's navigation, and never renders without its loader's data.
 function ItemPage({ data }: { data: ItemData | undefined }) {
   const navigate = useNavigate();
+  const rendered = useRef<HTMLDivElement>(null);
+  const wasSource = useRef(Boolean(data?.source));
+  const source = Boolean(data?.source);
+  const toggle = () => { void navigate({ to: '.', search: ((prev: object) => ({ ...prev, mode: source ? undefined : 'source' })) as never }); };
+  useSourceShortcut(import.meta.env.DEV && Boolean(data && FILE_TYPES[data.fileType]?.language), source, toggle);
+  useEffect(() => {
+    if (wasSource.current && !source) rendered.current?.focus();
+    wasSource.current = source;
+  }, [source]);
   if (!data) return null;
   // Done goes back to the item's page; unsaved edits ask first (SourcePane.tsx).
-  const done = <Button size="sm" variant="outline" onClick={() => navigate({ to: '.', search: ((prev: object) => ({ ...prev, mode: undefined })) as never })}>Done</Button>;
+  const done = <Button size="sm" variant="outline" onClick={toggle} title={`Return to rendered view (${shortcutLabel('source')})`}>Done</Button>;
   if (data.source) return SourcePane && <Suspense fallback={null}><SourcePane key={data.source.item.path} {...data.source} actions={done} /></Suspense>;
   const { Page } = fileTypeModules[data.fileType];
-  return <Suspense fallback={null}><Page {...data.props!} /></Suspense>;
+  return <div ref={rendered} tabIndex={-1} className="flex min-h-0 min-w-0 flex-1 outline-none"><Suspense fallback={null}><Page {...data.props!} /></Suspense></div>;
 }
 
 // The routes that open an item in the viewer: one set for a prototype (/prototypes/<person>/<id>) and one for an item

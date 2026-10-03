@@ -373,6 +373,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
               <FileActionItems key="file-actions" path={repoPath(proto, node.path)}
                 href={items.has(node.path) ? artifactUrl(proto, items.get(node.path)!) : undefined}
                 edit={items.has(node.path) && FILE_TYPES[items.get(node.path)!.fileType]?.language ? () => { void navigate({ ...artifactLink(proto, items.get(node.path)!), search: { mode: 'source' } } as never); } : undefined}
+                sourceShortcut
                 sourceLabel={editable ? 'Edit source' : 'View source'}
                 open={!node.dir ? () => openInEditor(proto, node.path) : undefined}
                 reveal={() => revealInFinder(proto, node.path)} />,

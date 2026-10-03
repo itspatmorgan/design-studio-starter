@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 
 // Excalidraw's own labels for the shortcuts we don't support, and why.
 const UNSUPPORTED = new Set([
+  'Toggle grid', // remapped by the platform; the canvas menu shows its shortcut
   'Insert image', // images are off: they'd be stored inside the canvas file
   'Crop image',
   'Finish image cropping',

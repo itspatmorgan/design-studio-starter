@@ -16,7 +16,7 @@
     "baseline": "node scripts/cli/baseline.js",
     "studio": "node scripts/cli/studio.js",
     "canvas": "node src/platform/modules/canvas/cli.ts",
-    "test": "node --test src/platform/modules/canvas/tools.test.ts src/platform/modules/view/lofi.test.ts src/platform/modules/handbook/handbook.test.ts src/platform/modules/systems/docs.test.ts src/platform/core/archive.test.ts src/platform/core/order.test.ts src/platform/core/modules/modules.test.ts src/platform/core/modules/globs.test.ts src/platform/core/permissions.test.ts src/platform/core/roots.test.ts src/platform/core/config.test.ts src/platform/modules/systems/spec.test.ts src/platform/core/modules/pack.test.ts scripts/lib/beta.test.js scripts/lib/onboarding.test.js scripts/lib/boundaries.test.js scripts/lib/reference-links.test.js scripts/build/rehype-mermaid.test.js scripts/lib/mermaid-source.test.js"
+    "test": "node --test src/platform/modules/canvas/tools.test.ts src/platform/modules/view/lofi.test.ts src/platform/modules/handbook/handbook.test.ts src/platform/modules/systems/docs.test.ts src/platform/core/archive.test.ts src/platform/core/order.test.ts src/platform/core/modules/modules.test.ts src/platform/core/modules/globs.test.ts src/platform/core/permissions.test.ts src/platform/core/roots.test.ts src/platform/core/config.test.ts src/platform/modules/systems/spec.test.ts src/platform/core/modules/pack.test.ts scripts/lib/beta.test.js scripts/lib/onboarding.test.js scripts/lib/boundaries.test.js scripts/lib/reference-links.test.js scripts/build/rehype-mermaid.test.js scripts/lib/mermaid-source.test.js scripts/lib/artifact-shortcuts.test.js"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^4.0.0",

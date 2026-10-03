@@ -73,7 +73,7 @@ export function CanvasMenu({ api, controlsHidden, onToggleControls, editable }: 
       <MainMenu.Item onSelect={() => pressHistory('button-undo')} shortcut={key('⌘Z', 'Ctrl+Z')} icon={<UndoIcon />}>Undo</MainMenu.Item>
       <MainMenu.Item onSelect={() => pressHistory('button-redo')} shortcut={key('⇧⌘Z', 'Ctrl+Shift+Z')} icon={<UndoIcon redo />}>Redo</MainMenu.Item>
       <MainMenu.Separator />
-      <MainMenu.Item onSelect={() => api?.updateScene({ appState: { gridModeEnabled: !grid, objectsSnapModeEnabled: false } })} shortcut={key("⌘'", "Ctrl+'")} icon={<GridIcon />} selected={grid} aria-pressed={grid}>
+      <MainMenu.Item onSelect={() => api?.updateScene({ appState: { gridModeEnabled: !grid, objectsSnapModeEnabled: false } })} shortcut={key("⌘⇧'", "Ctrl+Shift+'")} icon={<GridIcon />} selected={grid} aria-pressed={grid}>
         Toggle grid
       </MainMenu.Item>
       <MainMenu.Item onSelect={() => api?.updateScene({ appState: { objectsSnapModeEnabled: !snap, gridModeEnabled: false } })} shortcut={key('⌥S', 'Alt+S')} icon={<SnapIcon />} selected={snap} aria-pressed={snap}>
