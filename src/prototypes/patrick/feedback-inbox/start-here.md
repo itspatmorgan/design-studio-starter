@@ -14,6 +14,7 @@ The navigation shows the prototype's folder as it is on disk. Choose **Reveal in
 
 - A **view** is a screen: a `.tsx` file, like [Feedback inbox](app/feedback-inbox). This prototype has three screens in the `app` folder, and a view for each state in the `states` folder.
 - A **document** is a page of writing: a `.md` file, like this one and [Project context](project-context).
+- A **diagram** is a model in plain text: a `.mermaid` file, like [Feedback flow](feedback-flow.mermaid). Documents and canvases can embed its live preview.
 - A **canvas** is a page to arrange things on: an `.excalidraw` file, like [Breadboard](breadboard) and [Eng handoff](eng-handoff).
 - A **folder** only organizes. Move files between folders, and nothing about them changes.
 
@@ -43,10 +44,10 @@ Sketching with plain shapes and no design system is fine too, when an idea isn't
 
 This prototype has two canvases, for two moments.
 
-- [Breadboard](breadboard) is for early ideas. It uses only Excalidraw's own shapes, a flowchart of the key workflows and of the logic behind create, read, update, and delete: ovals for starts and ends, boxes for screens, diamonds for decisions, arrows for what the person does. It looks rough on purpose, so nobody mistakes it for a spec.
+- [Breadboard](breadboard) is for modeling the system before polishing screens. It shows the same feedback flow twice: a live embed of the portable Mermaid file, then editable shapes created with Excalidraw's **More tools → Mermaid to Excalidraw**. The embed follows the source; the converted shapes are a separate sketch you can rearrange, annotate, and redraw.
 - [Eng handoff](eng-handoff) is for when the design is settled. It shows the real screens live: the main flow first, then each create, read, update, and delete state, with a yellow note under each saying what engineering needs to know.
 
-Drag any view from the navigation onto a canvas, or ask your agent to lay something out. A canvas shows only this prototype's own screens, so a prototype stays self-contained. To show a screen from another prototype, copy it in.
+Drag a view or diagram from the navigation onto a canvas, or ask your agent to lay something out. A canvas embeds only this prototype's own files, so a prototype stays self-contained. To show a file from another prototype, copy it in.
 
 ## 7. A view for every state
 

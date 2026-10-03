@@ -22,12 +22,15 @@ Drag an item from the prototype's navigation onto the canvas. You can also selec
 | Linked item | Display |
 | --- | --- |
 | View | Live-rendered preview. Open the view to interact with it. |
+| Diagram | Live preview of the Mermaid source, with an Open link. Requires the Diagrams module. |
 | Document or canvas | Card with an Open link. |
 | Missing item | Placeholder. |
 
 A canvas embeds only items from its own prototype. An embed from another prototype shows a scope message and fails the build. Copy the item into this prototype to reuse it.
 
-The canvas cannot store images. View previews provide a connection to the working code.
+The canvas cannot store images. View and diagram previews provide a connection to their source files.
+
+To explore a Mermaid flowchart as editable shapes, open **More tools → Mermaid to Excalidraw**, paste its source, and select **Insert**. The converted shapes are an independent sketch; editing them does not update the Mermaid file. The sample prototype's Breadboard canvas demonstrates both approaches.
 
 ## Local controls and saving
 
@@ -43,7 +46,7 @@ Live tool operations support undo. External file edits are not necessarily separ
 
 ## For developers
 
-A page to arrange things on: live views and cards for documents from its own prototype, beside sticky
+A page to arrange things on: live views and diagrams, and cards for documents from its own prototype, beside sticky
 notes, text, and arrows. It's [Excalidraw](https://github.com/excalidraw/excalidraw) with the app's
 look, and its design comes from Design Studio's canvas. Agent contract: `src/handbook/rules/canvases.md`.
 Human docs: the Guide's Canvases page.
@@ -56,10 +59,10 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an item.
 
 - **One file per canvas:** `<name>.excalidraw`, anywhere in a prototype. An Excalidraw scene as JSON.
   The name in the navigation comes from the file name.
-- **Items are embeds.** A view or document on a canvas is an Excalidraw `embeddable` element whose
+- **Items are embeds.** A view, diagram, or document on a canvas is an Excalidraw `embeddable` element whose
   `link` is the item's address in the app (`/prototypes/patrick/hello-world/lofi/main`; one saved in the older form, without `/prototypes`, still resolves and is written back in the new form when the canvas is saved). The link resolves through
   the manifest (`src/platform/app/items/itemLinks.ts`) to a prototype and an item, and the item's file type
-  decides how it looks: a type with an `Embed` in its `open.tsx` (views) shows live, any other
+  decides how it looks: a type with an `Embed` in its `open.tsx` (views and diagrams) shows live, any other
   type shows a card (`src/platform/app/items/ItemCard.tsx`), and a link to nothing shows "Not found".
 - **Views are pictures.** A view is laid out at 1440 px wide and scaled down to the element's width,
   cropped at the bottom. Resizing the element changes the crop. Nothing in it takes clicks.
