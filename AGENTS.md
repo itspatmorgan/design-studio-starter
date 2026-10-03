@@ -16,6 +16,7 @@ For documentation creation, revision, or audits, follow [src/handbook/skills/mai
 When the person wants to turn off, add, remove, or build a module or a design system, read [src/handbook/rules/modules.md](src/handbook/rules/modules.md).
 <!-- studio:modules -->
 When the person asks for a canvas (a page of views, documents, and notes arranged together), read [src/handbook/rules/canvases.md](src/handbook/rules/canvases.md).
+When the person asks to add or change a standalone diagram in a prototype, read [src/handbook/rules/diagrams.md](src/handbook/rules/diagrams.md).
 When the person asks for a document (written context in a prototype), read [src/handbook/rules/documents.md](src/handbook/rules/documents.md).
 When the person asks to add or change platform documentation, read [src/handbook/rules/documentation.md](src/handbook/rules/documentation.md).
 <!-- /studio:modules -->

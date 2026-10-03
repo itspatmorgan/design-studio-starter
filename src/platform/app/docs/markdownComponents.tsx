@@ -5,7 +5,7 @@ import { DocBase } from '@/platform/app/docs/DocBase';
 import { fileTypeOf } from '@/platform/app/data/fileTypes';
 import { itemSlug } from '@/platform/core/fileTypes';
 import { markdownPath } from './referenceLinks';
-import { MermaidDiagram } from './MermaidDiagram';
+import { MermaidDiagram } from '@/platform/app/diagrams/MermaidDiagram';
 
 // Styling for Markdown comes from Tailwind Typography's `prose` classes (see Prose).
 // This map covers only what CSS can't: app links navigate without a reload, and

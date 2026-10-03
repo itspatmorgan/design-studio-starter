@@ -27,10 +27,11 @@ Dependency and style boundaries contain the experiment so it does not affect oth
 | --- | --- |
 | View (`.tsx` or `.jsx`) | Interactive code-based screen or state. |
 | Document (`.md`, optional) | Written context. |
+| Diagram (`.mermaid` or `.mmd`, optional) | Mermaid source rendered as a standalone diagram. |
 | Canvas (`.excalidraw`, optional) | Views, cards, and notes arranged together. |
 | Folder | Organization at any depth. |
 
-Views and text-file support are required. Documents and Canvases are optional modules.
+Views and text-file support are required. Documents, Canvases, and Diagrams are optional modules.
 
 Names starting with `_` identify helpers, which are not screens. Select **Show all files** in the prototype's **…** menu to see helpers and assets locally.
 

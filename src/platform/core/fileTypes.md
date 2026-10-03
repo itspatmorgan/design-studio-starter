@@ -7,6 +7,7 @@ A file type is a module capability declared by `type.ts`. Enabled types determin
 | Module | Scope |
 | --- | --- |
 | Views | Required prototype `.tsx` and `.jsx` views. |
+| Diagrams | Optional prototype `.mermaid` and `.mmd` diagrams. |
 | Documents | Optional prototype `.md` pages. |
 | Handbook | Required Handbook `.md` pages. |
 | Canvases | Optional prototype `.excalidraw` scenes. |

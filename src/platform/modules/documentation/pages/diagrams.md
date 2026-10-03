@@ -10,6 +10,8 @@ Mermaid blocks render automatically in the Guide, Handbook, reference pages, and
 
 The starter uses platform neutrals for structural diagrams and Flexoki accents for categories and chart series. Document code and the source editor share those accents. Change the platform's light or dark mode to preview both appearances.
 
+Standalone prototype diagrams use the optional [Diagrams module](/documentation/guide/diagram-files). They share this renderer and theme; Markdown fences remain available when that module is disabled.
+
 ## Flowchart
 
 ```mermaid
@@ -118,6 +120,6 @@ export function nextStep(actionable: boolean, count = 3) {
 
 Studio owners can edit `src/platform/styles/contentPalette.js` to change the shared accent palette and document syntax color roles. The source editor reads the same palette.
 
-Edit `src/platform/app/docs/mermaidTheme.ts` for diagram color roles and `MermaidDiagram.tsx` for renderer defaults. Diagram neutrals resolve from the platform's current CSS theme. The renderer keeps theme and security defaults under platform control. Authors can still use Mermaid's supported diagram styles, such as flowchart `classDef`, to communicate specific meaning.
+Edit `src/platform/app/diagrams/mermaidTheme.ts` for diagram color roles and `MermaidDiagram.tsx` for renderer defaults. Diagram neutrals resolve from the platform's current CSS theme. The renderer keeps theme and security defaults under platform control. Authors can still use Mermaid's supported diagram styles, such as flowchart `classDef`, to communicate specific meaning.
 
 Support follows the bundled Mermaid version. These examples cover common foundations, not every diagram type or syntax feature. Additional Mermaid integrations, such as external layouts or icon packs, may require platform configuration. Excalidraw uses its own rendering.

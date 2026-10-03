@@ -22,6 +22,7 @@ const MODULES = {
   handbook: { paths: ['src/handbook', 'src/platform/modules/handbook/map.ts', 'src/platform/modules/handbook/rules.ts', 'src/platform/modules/handbook/handbook.test.ts', 'src/platform/modules/handbook/pages'], pattern: 'handbook' },
   systems: { paths: ['src/systems', 'src/platform/modules/systems/pages', 'src/platform/modules/systems/data/loadDocs.ts'], pattern: 'systems' },
   canvas: { paths: ['src/platform/modules/canvas'], pattern: 'excalidraw|canvas' },
+  diagrams: { paths: ['src/platform/modules/diagrams'], pattern: 'modules/diagrams' },
   document: { paths: ['src/platform/modules/document'], pattern: 'modules/document' },
   view: { paths: ['src/platform/modules/view'], pattern: 'modules/view' },
   text: { paths: ['src/platform/modules/text'], pattern: 'modules/text' },

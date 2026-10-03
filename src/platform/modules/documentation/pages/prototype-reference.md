@@ -15,6 +15,7 @@ src/prototypes/<contributor>/hello-world/
 ├── meta.json
 ├── prototype.tsx
 ├── notes.md
+├── feedback-flow.mermaid
 ├── flow.excalidraw
 └── _components/
     └── header.tsx

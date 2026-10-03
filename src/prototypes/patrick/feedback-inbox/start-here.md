@@ -73,3 +73,7 @@ A prototype never imports from another prototype. To reuse something, link to it
 - Change the colors in `src/systems/product/styles/theme.css` and every screen follows.
 - Open the [Guide](/documentation/guide) when you want the long version of anything above.
 - Ask your agent: "set me up" if you haven't joined yet.
+
+## Feedback flow
+
+The [feedback review diagram](feedback-flow.mermaid) models how feedback moves from capture through review to resolution. It opens when the optional Diagrams module is enabled.

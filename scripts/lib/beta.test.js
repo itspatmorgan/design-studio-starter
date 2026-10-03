@@ -216,3 +216,44 @@ test('documentation source operations allow indexed files and protect against st
     assert.equal(call({ action: 'read', path: relative }).status, 404);
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
+
+test('standalone diagrams are discovered by both extensions and disabling preserves Markdown', { skip: !fs.existsSync('src/platform/modules/diagrams/type.ts') }, async () => {
+  const { execFileSync } = await import('node:child_process');
+  const root = path.resolve('.');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-diagrams-'));
+  try {
+    fs.cpSync(root, dir, { recursive: true, filter: file => !['.git', 'node_modules', 'dist'].includes(path.basename(file)) });
+    fs.symlinkSync(path.join(root, 'node_modules'), path.join(dir, 'node_modules'));
+    execFileSync(process.execPath, ['--input-type=module', '--eval', `
+      import fs from 'node:fs'; import assert from 'node:assert/strict';
+      import { editModulesFlag } from './src/platform/core/modules/pack.ts';
+      const config='studio.config.ts';
+      fs.writeFileSync(config, editModulesFlag(fs.readFileSync(config,'utf8'), 'diagrams', true));
+      const folder='src/prototypes/patrick/feedback-inbox';
+      fs.writeFileSync(folder+'/test-flow.mermaid','flowchart LR\\n  a --> b');
+      fs.writeFileSync(folder+'/test-sequence.mmd','sequenceDiagram\\n  Alice->>Bob: Hello');
+      fs.writeFileSync(folder+'/_helper.mermaid','flowchart LR\\n  a --> b');
+      fs.writeFileSync(folder+'/test-invalid.mermaid','this is intentionally invalid');
+      const { buildManifest } = await import('./scripts/build/build-manifest.js');
+      const { manifest, errors } = buildManifest({write:false,quiet:true});
+      assert.equal(errors,0);
+      const prototype=manifest.prototypes.find(p=>p.contributorKey==='patrick'&&p.id==='feedback-inbox');
+      for(const name of ['test-flow.mermaid','test-sequence.mmd','test-invalid.mermaid']) assert.equal(prototype.items.find(i=>i.path===name)?.fileType,'diagrams');
+      assert.equal(prototype.items.some(i=>i.path==='_helper.mermaid'),false);
+      assert.ok(prototype.items.some(i=>i.fileType==='document'));
+      assert.ok(manifest.platformReferences.find(g=>g.id==='diagrams')?.references.length);
+      fs.writeFileSync(config,editModulesFlag(fs.readFileSync(config,'utf8'),'diagrams',false));
+    `], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
+    // A fresh process observes the changed module configuration.
+    execFileSync(process.execPath, ['--input-type=module', '--eval', `
+      import fs from 'node:fs'; import assert from 'node:assert/strict';
+      import {buildManifest} from './scripts/build/build-manifest.js';
+      const {manifest,errors}=buildManifest({write:false,quiet:true}); assert.equal(errors,0);
+      const prototype=manifest.prototypes.find(p=>p.contributorKey==='patrick'&&p.id==='feedback-inbox');
+      assert.equal(prototype.items.some(i=>i.fileType==='diagrams'),false);
+      assert.ok(prototype.items.some(i=>i.fileType==='document'));
+      assert.ok(fs.existsSync('src/prototypes/patrick/feedback-inbox/test-flow.mermaid'));
+      assert.equal(manifest.platformReferences.find(g=>g.id==='diagrams')?.references.length,0);
+    `], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});
