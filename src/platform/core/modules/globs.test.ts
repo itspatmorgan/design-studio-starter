@@ -14,7 +14,7 @@ const module = (id: string, section?: ModuleSpec['section']): ModuleSpec => ({ i
 const examples = module('examples', { key: 'examples', folder: 'src/examples', items: 'prototypes' });
 const modules = [
   module('prototypes', { key: 'prototypes', folder: 'src/prototypes', items: 'prototypes', byPerson: true }),
-  module('guide', { key: 'guide', folder: 'src/platform/modules/guide/pages' }),
+  module('documentation', { key: 'documentation', folder: 'src/platform/modules/documentation/pages' }),
   module('handbook', { key: 'handbook', folder: 'src/handbook', items: 'handbook' }),
   module('systems', { key: 'systems', folder: 'src/systems' }),
   examples,

@@ -13,7 +13,7 @@ type Props = { slug: string; Component?: GuideModule['default']; source?: { path
 
 export default function GuidePage({ slug, source, ...props }: Props) {
   const { guide } = rootApi.useLoaderData();
-  const file = guide.find((page) => page.slug === slug)?.source ?? `/platform/modules/guide/pages/${slug}.md`;
+  const file = guide.find((page) => page.slug === slug)?.source ?? `/platform/modules/documentation/pages/${slug}.md`;
   const navigate = useNavigate();
   // Only enabled pages participate. Release history is separate from the reading sequence.
   const chapters = guide.filter((page) => page.section !== 'Releases');

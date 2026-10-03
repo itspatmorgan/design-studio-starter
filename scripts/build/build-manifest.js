@@ -28,8 +28,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 // The Guide's pages, or null when its module is off or not installed.
-const guideModule = ENABLED_MODULES.find((m) => m.id === 'guide');
-const GUIDE = guideModule?.section?.folder ? path.join(ROOT, guideModule.section.folder) : null;
+const documentationModule = ENABLED_MODULES.find((m) => m.id === 'documentation');
+const GUIDE = documentationModule?.section?.folder ? path.join(ROOT, documentationModule.section.folder) : null;
 const OUT_DIR = path.join(ROOT, 'public', 'prototypes');
 const OUT = path.join(OUT_DIR, 'manifest.json');
 // Each prototype's items, one file each: items/<contributor>/<prototype>.json. The app fetches a
@@ -223,7 +223,7 @@ function writeManifest(manifest) {
   writeIfChanged(OUT, JSON.stringify({ ...manifest, prototypes, sections }) + '\n');
 }
 
-// Scans src/prototypes/, src/handbook/, and src/platform/modules/guide/pages/, writes public/prototypes/ (manifest.json, and items/), and returns the whole manifest.
+// Scans src/prototypes/, src/handbook/, and src/platform/modules/documentation/pages/, writes public/prototypes/ (manifest.json, and items/), and returns the whole manifest.
 // Problems are printed; errors counts them. The dev server calls this on every change
 // (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
 // Options: `deploy` leaves archived prototypes and views out (see src/platform/core/archive.ts), `write: false`
@@ -358,13 +358,13 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     }
   }
 
-  // Guide pages: src/platform/modules/guide/pages/*.md, and the README.md of a module or file type that opens with
+  // Guide pages: src/platform/modules/documentation/pages/*.md, and the README.md of a module or file type that opens with
   // Guide frontmatter (it keeps its page with its folder: `source` says where it is). Ordered by `order` in each page's
   // frontmatter. They share the title, description, and toc fields with prototype documents, and add order and section;
   // a README may also set `slug` (its address, /documentation/guide/<slug>), which is its folder's name otherwise.
   const guide = [];
   const guideFiles = GUIDE && fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.md')).sort() : [];
-  const pages = guideFiles.map((file) => ({ file: path.join(GUIDE, file), where: `src/platform/modules/guide/pages/${file}`, slug: file.replace(/\.md$/, ''), readme: false }));
+  const pages = guideFiles.map((file) => ({ file: path.join(GUIDE, file), where: `src/platform/modules/documentation/pages/${file}`, slug: file.replace(/\.md$/, ''), readme: false }));
   // A README without a title is only a README.
   if (GUIDE) for (const r of readmes()) pages.push({ file: r.file, where: path.relative(ROOT, r.file), slug: r.folder, readme: true, source: r.source });
   const taken = new Map();

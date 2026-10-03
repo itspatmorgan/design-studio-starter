@@ -15,7 +15,7 @@ function sourceFile(slug: unknown) {
   const source = page?.source;
   // A standalone chapter can still be repaired if its frontmatter is temporarily invalid.
   const relative = source && /^\/platform\/modules\/[a-z][a-z0-9-]*\/README\.md$/.test(source)
-    ? `src${source}` : `src/platform/modules/guide/pages/${slug}.md`;
+    ? `src${source}` : `src/platform/modules/documentation/pages/${slug}.md`;
   const file = path.join(root, relative);
   if (!canonicalDirectory(path.dirname(file), root)) return null;
   try {

@@ -41,7 +41,7 @@ export type PrototypeRef = PrototypeInfo & {
   itemsHash?: string;     // changes when the items do, so a changed list is fetched again
 };
 
-// One Guide page, from its frontmatter: src/platform/modules/guide/pages/<slug>.md, or the README of a module or file
+// One Guide page, from its frontmatter: src/platform/modules/documentation/pages/<slug>.md, or the README of a module or file
 // type that opens with Guide frontmatter (`source`, as the app's glob names it).
 export type GuidePage = {
   slug: string;           // its address, /guide/<slug>: the file name without .md, e.g. "getting-started"

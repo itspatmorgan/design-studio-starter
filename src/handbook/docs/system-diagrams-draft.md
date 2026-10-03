@@ -64,7 +64,7 @@ Modules organize platform capabilities. The Systems module supports design syste
 
 **Review focus:** Can a new contributor identify their working area and recognize when a change affects the team? Do modules feel like capabilities supporting the workspace?
 
-**Sources:** [Guide introduction](../../platform/modules/guide/pages/index.md), [Extend your Studio](../../platform/modules/guide/pages/modules.md), [Contributor scope](../rules/contributor-scope.md).
+**Sources:** [Guide introduction](../../platform/modules/documentation/pages/index.md), [Extend your Studio](../../platform/modules/documentation/pages/modules.md), [Contributor scope](../rules/contributor-scope.md).
 
 ## 2. Agent collaboration
 
@@ -100,7 +100,7 @@ sequenceDiagram
 
 **Review focus:** Does the sequence clarify responsibility better than the current three-node cycle? Should repeated refinement be a loop, or is one optional revision easier to read?
 
-**Source:** [Work with your agent](../../platform/modules/guide/pages/agents.md).
+**Source:** [Work with your agent](../../platform/modules/documentation/pages/agents.md).
 
 ## 3. Sharing files
 
@@ -131,7 +131,7 @@ flowchart TB
 
 **Review focus:** Is the distinction between files and history worth the extra nodes? Would publication be clearer as a separate diagram on the publishing page?
 
-**Source:** [Share work](../../platform/modules/guide/pages/working-with-others.md).
+**Source:** [Share work](../../platform/modules/documentation/pages/working-with-others.md).
 
 ## 4. Instruction context
 
@@ -162,7 +162,7 @@ flowchart TB
 
 **Review focus:** Can we simplify the converging arrows without suggesting that every file is always loaded? Does “routes” communicate the role of AGENTS.md clearly?
 
-**Sources:** [Handbook](../../platform/modules/handbook/README.md), [Work with your agent](../../platform/modules/guide/pages/agents.md).
+**Sources:** [Handbook](../../platform/modules/handbook/README.md), [Work with your agent](../../platform/modules/documentation/pages/agents.md).
 
 ## 5. Prototype scope and dependencies
 

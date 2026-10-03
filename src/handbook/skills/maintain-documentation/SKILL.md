@@ -7,7 +7,7 @@ description: "Create, revise, or audit platform guides, module documentation, an
 
 Read the [documentation standard](../../rules/documentation-standards.md) and [Handbook rule](../../rules/handbook.md).
 
-For Guide chapters or module READMEs, also read the [Guide rule](../../rules/guide.md). For component pages, use [document-component](../document-component/SKILL.md).
+For Guide chapters or module READMEs, also read the [Documentation rule](../../rules/documentation.md). For component pages, use [document-component](../document-component/SKILL.md).
 
 Identify the audience, requested outcome, and affected behavior. Preserve current user edits. Limit a focused update to relevant documents.
 

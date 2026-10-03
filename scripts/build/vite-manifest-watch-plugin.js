@@ -1,6 +1,6 @@
 // Keeps the manifest live during `pnpm dev`, without reloading the page.
 //
-// Vite already watches every file. When something under src/prototypes/, a module's content folder, src/handbook/, src/systems/, src/platform/modules/guide/pages/, or a README that is a Guide page
+// Vite already watches every file. When something under src/prototypes/, a module's content folder, src/handbook/, src/systems/, src/platform/modules/documentation/pages/, or a README that is a Guide page
 // changes (from the app, an agent, or your editor), this rebuilds the manifest in-process
 // and pushes it to the app over Vite's dev connection. The app swaps it in and refreshes
 // only the routes that use it (see router.tsx), so the open view and scroll position stay.
@@ -17,8 +17,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const HANDBOOK = path.join(ROOT, 'src', 'handbook');
 // The Guide's pages, or null when its module is off or not installed.
-const guideModule = ENABLED_MODULES.find((m) => m.id === 'guide');
-const GUIDE = guideModule?.section?.folder ? path.join(ROOT, guideModule.section.folder) : null;
+const documentationModule = ENABLED_MODULES.find((m) => m.id === 'documentation');
+const GUIDE = documentationModule?.section?.folder ? path.join(ROOT, documentationModule.section.folder) : null;
 const SYSTEMS = path.join(ROOT, 'src', 'systems');
 // The app's own system: its components, and its theme (the tokens the Systems pages list).
 const PLATFORM_COMPONENTS = path.join(ROOT, 'src', 'platform', 'components');

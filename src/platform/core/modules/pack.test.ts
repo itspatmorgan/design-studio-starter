@@ -84,12 +84,12 @@ test('a library needs a license file and a permissive license', () => {
 
 test('turning a module off and on edits the one list in studio.config.ts', () => {
   const config = "export default {\n  name: 'X',\n  modules: {},\n} satisfies StudioConfig;\n";
-  const off = editModulesFlag(config, 'guide', false)!;
-  assert.match(off, /modules: \{ guide: false \},/);
-  assert.match(editModulesFlag(off, 'examples', false)!, /modules: \{ guide: false, examples: false \},/);
-  assert.equal(editModulesFlag(off, 'guide', true), config);
-  assert.equal(editModulesFlag('export default {}', 'guide', false), null);
-  assert.equal(editModulesFlag("modules: { guide: maybe },", 'guide', false), null);
+  const off = editModulesFlag(config, 'documentation', false)!;
+  assert.match(off, /modules: \{ documentation: false \},/);
+  assert.match(editModulesFlag(off, 'examples', false)!, /modules: \{ documentation: false, examples: false \},/);
+  assert.equal(editModulesFlag(off, 'documentation', true), config);
+  assert.equal(editModulesFlag('export default {}', 'documentation', false), null);
+  assert.equal(editModulesFlag("modules: { documentation: maybe },", 'documentation', false), null);
 });
 
 test('the AGENTS.md lines come from the modules that are on, and replace themselves', () => {

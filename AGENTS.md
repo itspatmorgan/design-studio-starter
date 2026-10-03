@@ -17,7 +17,7 @@ When the person wants to turn off, add, remove, or build a module or a design sy
 <!-- studio:modules -->
 When the person asks for a canvas (a page of views, documents, and notes arranged together), read [src/handbook/rules/canvases.md](src/handbook/rules/canvases.md).
 When the person asks for a document (written context in a prototype), read [src/handbook/rules/documents.md](src/handbook/rules/documents.md).
-When the person asks to add or change a Guide page, read [src/handbook/rules/guide.md](src/handbook/rules/guide.md).
+When the person asks to add or change platform documentation, read [src/handbook/rules/documentation.md](src/handbook/rules/documentation.md).
 <!-- /studio:modules -->
 
 Use pnpm for project commands. Resolve the contributor before editing prototypes. Follow the scope and prototype rules above.

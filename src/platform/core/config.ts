@@ -10,7 +10,7 @@ export type StudioConfig = {
   // One line on the front page of the deployed site, under the name, that tells a visitor what this is: "Our team's
   // prototypes and design systems." Left out, there's no line.
   tagline?: string;
-  // Modules to turn off, by id: { guide: false }. A module left out is on. Turning one off keeps its
+  // Modules to turn off, by id: { documentation: false }. A module left out is on. Turning one off keeps its
   // files, so turning it on again is one line; to remove it for good, delete its folder.
   modules?: Record<string, boolean>;
   // The design system a prototype uses when its meta.json doesn't name one: an id from src/systems/. Left out,
@@ -33,7 +33,7 @@ export function configProblems(config: unknown, modules: readonly { id: string; 
   }
   if (c.modules !== undefined) {
     if (!c.modules || typeof c.modules !== 'object' || Array.isArray(c.modules)) {
-      problems.push(`${where}: modules should list module ids with true or false, like { guide: false }.`);
+      problems.push(`${where}: modules should list module ids with true or false, like { documentation: false }.`);
     } else {
       for (const [id, on] of Object.entries(c.modules)) {
         const installed = modules.find((m) => m.id === id);

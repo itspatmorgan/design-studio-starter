@@ -17,7 +17,7 @@ function groupBySection(pages: GuidePage[]) {
   return groups;
 }
 
-// The Guide: a sidebar of pages (from src/platform/modules/guide/pages/, via the manifest) and the open page. The
+// The Guide: a sidebar of pages (from src/platform/modules/documentation/pages/, via the manifest) and the open page. The
 // sidebar is built from the shared navigation pieces (shell/nav/).
 export default function GuideLayout() {
   const { guide } = rootApi.useLoaderData();
@@ -29,7 +29,7 @@ export default function GuideLayout() {
           {groupBySection(guide).map((g, i) => (
             <NavGroup key={g.section ?? i} heading={g.section ?? undefined}>
               {g.pages.map((page) => (
-                <DocumentationNavItem key={page.slug} href={page.slug === 'index' ? '/documentation/guide' : '/documentation/guide/' + page.slug} path={'src' + (page.source ?? '/platform/modules/guide/pages/' + page.slug + '.md')} label={page.title} />
+                <DocumentationNavItem key={page.slug} href={page.slug === 'index' ? '/documentation/guide' : '/documentation/guide/' + page.slug} path={'src' + (page.source ?? '/platform/modules/documentation/pages/' + page.slug + '.md')} label={page.title} />
               ))}
             </NavGroup>
           ))}

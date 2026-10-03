@@ -274,5 +274,5 @@ test('a README that is a Guide page shows down to "For developers", without its 
   const run = (file: string) => { const t = tree(); plugin()(t, { path: file }); return t.children.map((n: { type: string; depth?: number }) => `${n.type}${n.depth ?? ''}`); };
   assert.deepEqual(run('/repo/src/platform/modules/canvas/README.md'), ['yaml', 'paragraph', 'heading2']);
   // Other Markdown files are left alone.
-  assert.equal(run('/repo/src/platform/modules/guide/pages/modules.md').length, 7);
+  assert.equal(run('/repo/src/platform/modules/documentation/pages/modules.md').length, 7);
 });

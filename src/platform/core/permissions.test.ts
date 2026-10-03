@@ -7,7 +7,7 @@ import type { ModuleSpec } from './modules/index.ts';
 const modules: ModuleSpec[] = [
   { id: 'examples', label: 'Examples', version: '0.1.0', section: { key: 'examples', folder: 'src/examples', items: 'prototypes', policy: 'maintainers' } },
   { id: 'handbook', label: 'Handbook', version: '0.1.0', section: { key: 'handbook', folder: 'src/handbook', items: 'handbook', policy: 'open' } },
-  { id: 'guide', label: 'Guide', version: '0.1.0', section: { key: 'guide', folder: 'src/platform/modules/guide/pages' } },
+  { id: 'documentation', label: 'Guide', version: '0.1.0', section: { key: 'documentation', folder: 'src/platform/modules/documentation/pages' } },
   { id: 'extra', label: 'Extra', version: '0.1.0' },
 ];
 
@@ -37,7 +37,7 @@ test('a key no module claims is a contributor, and a section says its own policy
   assert.equal(policyFor('patrick', modules), 'owner');
   assert.equal(policyFor('examples', modules), 'maintainers');
   assert.equal(policyFor('handbook', modules), 'open');
-  assert.equal(policyFor('guide', modules), 'none');
+  assert.equal(policyFor('documentation', modules), 'none');
 });
 
 test('you own your own prototypes and nobody else\'s', () => {
@@ -58,7 +58,7 @@ test('open files can be changed by anyone, but nobody owns them', () => {
 });
 
 test('nobody changes a section with no policy', () => {
-  assert.equal(canChange('none', { me: 'patrick', key: 'guide' }), false);
+  assert.equal(canChange('none', { me: 'patrick', key: 'documentation' }), false);
 });
 
 test('changing needs owning, except where files are open', () => {

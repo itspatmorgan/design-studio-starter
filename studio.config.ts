@@ -1,5 +1,5 @@
 // What nearly every team changes. Everything else is code: you own the whole repo.
-// A module you leave out of `modules` is on; { guide: false } turns the Guide off (its files stay, so
+// A module you leave out of `modules` is on; { documentation: false } turns the Guide off (its files stay, so
 // turning it back on is one line). `pnpm check` explains anything that's wrong here.
 import type { StudioConfig } from './src/platform/core/config.ts';
 

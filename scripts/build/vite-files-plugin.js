@@ -179,7 +179,7 @@ export default function filesPlugin() {
           }
           if (req.method === 'POST' && url.pathname === '/documentation') {
             const manifest = buildManifest({ write: false, quiet: true }).manifest;
-            const allowed = [...manifest.platformReferences.flatMap((group) => group.references.map((ref) => 'src' + ref.source)), ...manifest.guide.map((page) => 'src' + (page.source ?? '/platform/modules/guide/pages/' + page.slug + '.md'))];
+            const allowed = [...manifest.platformReferences.flatMap((group) => group.references.map((ref) => 'src' + ref.source)), ...manifest.guide.map((page) => 'src' + (page.source ?? '/platform/modules/documentation/pages/' + page.slug + '.md'))];
             const result = documentationFile(ROOT, allowed, await readJson(req));
             if (result.reveal) reveal(result.reveal);
             return send(res, result.status ?? 200, result.body);

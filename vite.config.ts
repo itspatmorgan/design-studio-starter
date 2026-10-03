@@ -73,7 +73,7 @@ export default defineConfig({
     alias: [{ find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) }, ...moduleLibs],
   },
   plugins: [
-    // Markdown pages (Guide pages in src/platform/modules/guide/pages/, and prototype documents), as plain
+    // Markdown pages (Guide pages in src/platform/modules/documentation/pages/, and prototype documents), as plain
     // Markdown (no JSX or expressions, so any .md file compiles; raw HTML shows as text): frontmatter (a first heading is the title when there's no `title`), GitHub-style Markdown, heading ids, and code highlighting with Shiki in both color modes.
     markdown(),
     markdown(true),

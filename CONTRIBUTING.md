@@ -2,7 +2,7 @@
 
 Design Studio Starter is an early beta. The current priority is a reliable local workflow: studio initialization, contributor onboarding, prototypes and their file types, design systems, and the Handbook. Hosting is outside the current release focus.
 
-For local setup, follow the [README](README.md) and the Guide in `src/platform/modules/guide/pages/`. Coding agents should start with [AGENTS.md](AGENTS.md), which points to the platform rules, principles, personas, and setup skills.
+For local setup, follow the [README](README.md) and the Guide in `src/platform/modules/documentation/pages/`. Coding agents should start with [AGENTS.md](AGENTS.md), which points to the platform rules, principles, personas, and setup skills.
 
 ## Proposing a change
 

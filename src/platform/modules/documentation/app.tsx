@@ -1,5 +1,5 @@
 // The Guide in the app: its rail button and its routes (/documentation/guide and /documentation/guide/<page>). The pages are in
-// src/platform/modules/guide/pages/ and in the READMEs of modules and file types, listed in the manifest.
+// src/platform/modules/documentation/pages/ and in the READMEs of modules and file types, listed in the manifest.
 import { createRoute, lazyRouteComponent, notFound } from '@tanstack/react-router';
 import { BookOpen01Icon } from '@hugeicons/core-free-icons';
 import { CommandItem } from '@/platform/components/command';

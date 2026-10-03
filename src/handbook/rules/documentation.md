@@ -1,10 +1,11 @@
-# Guide
+# Documentation
 
-The Guide describes capabilities, defaults, and boundaries for people. Keep agent requirements in Rules and task procedures in Skills.
+Documentation offers a curated Guide for people and full Reference from platform contracts. The Guide describes capabilities, defaults, and boundaries. Keep agent requirements in Rules and task procedures in Skills.
 
 Follow the [documentation standard](documentation-standards.md) and [Maintain documentation skill](../skills/maintain-documentation/SKILL.md).
 
-- Put platform-wide chapters in `src/platform/modules/guide/pages/`.
+- Keep Reference content beside the platform code it describes. The shared reader discovers core contracts and enabled modules’ top-level Markdown.
+- Put platform-wide chapters in `src/platform/modules/documentation/pages/`.
 - Put a module's human chapter in its README, so removal also removes the chapter.
 - For module implementation details, use the README's `## For developers` section or directly linked module references.
 - Use frontmatter with `title`, `description`, `order`, and `section`. Set `toc: true` when useful.
@@ -13,6 +14,6 @@ Follow the [documentation standard](documentation-standards.md) and [Maintain do
 - Describe the environment without prescribing a team's design process.
 - Use visual aids only when they explain a relationship or action more clearly.
 - Validate chapter links and anchors after changes. Consider optional-module availability.
-- Apply the [contributor scope rule](contributor-scope.md). Guide changes are shared.
+- Apply the [contributor scope rule](contributor-scope.md). Documentation changes are shared.
 
-The sidebar and previous/next links follow enabled chapters automatically. The Guide module's [README](../../platform/modules/guide/README.md) explains source editing and discovery.
+The sidebar and previous/next links follow enabled chapters automatically. The Documentation module's [README](../../platform/modules/documentation/README.md) explains source editing and discovery.
