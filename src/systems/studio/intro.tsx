@@ -19,6 +19,10 @@ const ICONS = {
 
 export default {
   summary: 'The interface toolkit and operating guidance for Design Studio. Supplied and maintained with platform releases.',
+  overview: {
+    guidance: "Defines who Studio serves and how work should be maintained. Covers prototype workflows, system boundaries, documentation, and collaboration, with procedures for setup and component documentation.",
+    code: "Supplies Studio’s interface through its vendored shadcn/ui components and neutral theme, including typography, spacing, colors, and motion.",
+  },
   intro: (
     <>
       <Prose>

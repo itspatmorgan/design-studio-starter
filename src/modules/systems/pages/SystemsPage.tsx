@@ -213,7 +213,7 @@ function SystemPage({ system, sys, components, tokens, origin, page }: {
   const has = (group: TokenGroup) => tokens.some((t) => t.group === group);
   switch (page) {
     case undefined:
-      return <SystemOverview system={system} sys={sys} components={components} tokens={tokens} foundations={TOKEN_PAGES.filter(p => p.id === 'typography' || tokens.some(t => t.group === p.group))} />;
+      return <SystemOverview system={system} sys={sys} components={components} tokens={tokens} />;
     case 'colors':
       return has('colors') ? <><PageHeader title="Colors" description="Every color token in the theme. Values reflect this system's active mode." /><ColorTokens tokens={tokens} /></> : null;
     case 'typography':

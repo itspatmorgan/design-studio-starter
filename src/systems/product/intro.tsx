@@ -9,6 +9,10 @@ import type { SystemIntro } from '@/platform/app/data/types';
 
 export default {
   summary: 'A starter toolkit for product prototypes. Replace its components, theme, and guidance with your own product system when you are ready.',
+  overview: {
+    guidance: "No product-specific context, rules, or skills have been added yet. Bring in your product’s terminology, workflows, and requirements as you develop this system.",
+    code: "A starter set of shadcn/ui components with warm stone neutrals, an emerald accent, square corners, and Space Grotesk typography. Replace this toolkit with your production components and theme when you are ready.",
+  },
   intro: (
     <>
       <div className="rounded-xl border-2 border-dashed border-foreground/25 bg-muted/40 p-6">
