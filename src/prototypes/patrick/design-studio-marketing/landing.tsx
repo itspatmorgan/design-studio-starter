@@ -1,59 +1,74 @@
-import { ArrowRight, Code02, LayersThree01, BookOpen01, ArrowUpRight, InfoCircle, Check } from '@untitledui/icons';
+import { useState } from 'react';
+import { ArrowRight, ArrowUpRight, Copy01, Check } from '@untitledui/icons';
 import { Button } from '@/systems/marketing/components/button';
-import { Tooltip, TooltipTrigger } from '@/systems/marketing/components/tooltip';
+import { Tabs } from '@/systems/marketing/components/tabs';
+import viewPreview from './assets/demo-view.jpg';
+import diagramPreview from './assets/demo-diagram.jpg';
+import canvasPreview from './assets/demo-canvas.jpg';
+import documentPreview from './assets/demo-document.jpg';
+import styles from './_components/landing.module.css';
 
-const features = [
-  {icon: LayersThree01, title: 'Explore in the right fidelity', text: 'Connect working views, documents, diagrams, and canvases. Keep the thinking alongside the interface.'},
-  {icon: Code02, title: 'Build with your real system', text: 'Bring your components and visual language. Prototype with the same building blocks your team uses.'},
-  {icon: BookOpen01, title: 'Give your agent the context', text: 'Keep product knowledge, rules, and procedures with your system. Make decisions easier to understand and carry forward.'},
+const sample = '/prototypes/patrick/feedback-inbox';
+const artifacts = [
+  { id: 'view', label: 'View', title: 'Try the working interface.', text: 'A feedback inbox built with the Product system. Add an item, change its status, and explore the states.', image: viewPreview, alt: 'Studio displaying the Feedback Inbox interface, with its related artifacts in the navigation.', href: `${sample}/app/feedback-inbox` },
+  { id: 'diagram', label: 'Diagram', title: 'Make the flow legible.', text: 'A text-based Mermaid diagram models the feedback review loop. The same source can appear in a document or on a canvas.', image: diagramPreview, alt: 'Studio displaying the feedback review diagram, from recording feedback through review and resolution.', href: `${sample}/explore/feedback-flow` },
+  { id: 'canvas', label: 'Canvas', title: 'Give the idea room to move.', text: 'Arrange references and sketches together. This canvas compares a live diagram with an independent, editable drawing.', image: canvasPreview, alt: 'The Breadboard canvas comparing an embedded feedback diagram with editable Excalidraw shapes.', href: `${sample}/explore/breadboard` },
+  { id: 'document', label: 'Document', title: 'Keep the reasoning with the work.', text: 'Written context explains the problem and decisions, and references the original diagrams, views, and canvases.', image: documentPreview, alt: 'The Project Context document explaining the feedback prototype and its exploration artifacts.', href: `${sample}/explore/project-context` },
 ];
+const setupPrompt = 'Help me set up this Design Studio starter. Read the repository’s README and AGENTS.md first. Get it running locally, then help me configure my studio, contributor identity, and design system. Start by asking what I want to prototype.';
 const questions = [
-  ['What is Design Studio?', 'An open-source starter kit for prototyping with an AI coding agent. Your team owns the code, systems, and supporting context.'],
-  ['Can we use our own design system?', 'Yes. Systems have their own components, themes, and guidance. This page uses Marketing; the Feedback Inbox demo uses Product; Studio uses Platform.'],
-  ['How does this fit our workflow?', 'Use the coding environment your team already works in. Direct your agent, review working prototypes, and share the files and context with engineering.'],
+  ['What do I need to use it?', 'A local copy of the starter and a coding agent. Open the repository in the coding environment you use, then follow the setup guide. You can explore the sample before changing the configuration.'],
+  ['Can I bring my own system?', 'Yes. Each prototype can use an explicitly assigned system with its own components, theme, and context. Product and Marketing are two included examples.'],
+  ['What do I own?', 'The repository: your prototypes, systems, context, and the Studio itself. Artifacts are ordinary files that you and your agent can read, edit, and share.'],
 ];
 function StudioMark() {
   return <svg viewBox="0 0 40 32" className="h-8 w-10" aria-hidden="true" fill="currentColor"><path d="M0 0h11v32H0zM15 0h3a16 16 0 0 1 0 32h-3z" /></svg>;
 }
-function BrandGeometry() {
-  return <svg viewBox="0 0 640 240" className="mt-12 w-full text-text-primary" role="img" aria-label="Architectural composition of a circle, rectangles, and a grid">
-    <rect width="640" height="240" fill="var(--color-bg-secondary)" />
-    <circle cx="430" cy="160" r="150" fill="var(--color-border-primary)" />
-    <path d="M80 0v240M240 0v240M400 0v240M560 0v240M0 80h640M0 160h640" stroke="var(--color-border-primary)" strokeWidth="1" />
-    <path d="M400 0h80v160h-80z" fill="var(--color-text-tertiary)" opacity=".3" />
-    <path d="M480 160h160v80H480z" fill="currentColor" />
-    <path d="M80 240A160 160 0 0 1 240 80" stroke="currentColor" fill="none" />
-  </svg>;
+function Setup() {
+  const [status, setStatus] = useState('');
+  async function copyPrompt() {
+    try { await navigator.clipboard.writeText(setupPrompt); setStatus('Prompt copied. Paste it into your coding agent.'); }
+    catch { setStatus('Copy the prompt text below and paste it into your coding agent.'); }
+  }
+  return <section id="start" className="mx-auto max-w-5xl px-6 py-16">
+    <div className="grid gap-8 md:grid-cols-2">
+      <div><p className={styles.eyebrow}>Make it yours</p><h2 className="mt-3 text-display-sm font-medium tracking-tight">Start with your agent.</h2><p className="mt-4 text-md leading-relaxed text-text-tertiary">Create your own copy of the starter, open it in your coding environment, and let your agent help with setup. Bring your system when you are ready.</p><div className="mt-6 flex flex-wrap gap-4"><Button href="https://github.com/itspatmorgan/design-studio-starter" target="_blank" rel="noreferrer" iconTrailing={ArrowUpRight}>Get the starter</Button><Button href="/documentation/guide/getting-started" color="link-gray">Read the setup guide</Button></div></div>
+      <div className="rounded-lg border border-border-primary bg-bg-secondary p-6"><p className="text-sm font-semibold">A first prompt</p><p className="mt-4 text-md leading-relaxed text-text-secondary">{setupPrompt}</p><div className="mt-6"><Button color="secondary" onPress={copyPrompt} iconLeading={status.startsWith('Prompt copied') ? Check : Copy01}>Copy setup prompt</Button></div><p role="status" className="mt-3 text-sm text-text-tertiary">{status}</p></div>
+    </div>
+  </section>;
 }
 export default function MarketingLanding() {
   return <div className="min-h-full bg-bg-primary font-sans text-text-primary">
-    <header className="border-b border-border-secondary">
-      <nav aria-label="Marketing" className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-5">
-        <a href="#" className="flex items-center gap-2 text-lg font-semibold"><StudioMark />Design Studio</a>
-        <div className="flex items-center gap-6"><a href="#features" className="hidden text-sm font-medium text-text-secondary md:block">Why Studio</a><Button href="/documentation/guide" color="secondary">Get started <ArrowUpRight className="inline size-4" /></Button></div>
-      </nav>
-    </header>
+    <header className="border-b border-border-secondary"><nav aria-label="Marketing" className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-5">
+      <a href="#" className="flex items-center gap-3 text-lg font-semibold"><StudioMark />Design Studio</a>
+      <div className="flex items-center gap-6"><a href="#demo" className="hidden text-sm font-medium text-text-secondary sm:block">Explore</a><Button href="#start" color="secondary">Get started <ArrowUpRight className="inline size-4" /></Button></div>
+    </nav></header>
     <main>
-      <section className="mx-auto max-w-5xl px-6 pt-16 pb-12 text-center md:pt-24">
-        <span className="inline-flex items-center gap-2 rounded-full bg-bg-brand-secondary px-3 py-1 text-sm font-medium text-text-brand-secondary"><span className="size-2 rounded-full bg-bg-brand-solid" />Your system. Your studio.</span>
-        <h1 className="mx-auto mt-6 max-w-3xl text-display-lg font-medium tracking-tight md:text-display-xl">A prototype sandbox<br className="hidden md:block" /> for designers and builders.</h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-text-tertiary md:text-xl">A shared space for people and agents to explore ideas, build with real components, and keep the context that makes a prototype useful.</p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3"><Button href="/prototypes/patrick/feedback-inbox" color="secondary" size="lg">Explore the demo</Button><Button href="/documentation/guide" size="lg" iconTrailing={ArrowRight}>Start building</Button></div>
-        <p className="mt-4 text-sm text-text-tertiary">Open source. Built for your team. Owned by you.</p>
-        <BrandGeometry />
-        <div className="mt-12 overflow-hidden rounded-xl border border-border-primary bg-bg-secondary p-4 text-left shadow-lg md:p-6" aria-label="An illustration of connected prototype artifacts">
-          <div className="flex items-center justify-between gap-4 border-b border-border-secondary pb-4"><span className="text-sm font-semibold">A place for the whole idea</span><Tooltip title="A different system, in the same Studio" description="This page and popup use Marketing. Studio navigation uses Platform." arrow><TooltipTrigger aria-label="About system isolation" className="rounded-full p-1 text-text-tertiary"><InfoCircle className="size-5" /></TooltipTrigger></Tooltip></div>
-          <div className="grid gap-4 pt-4 md:grid-cols-3">
-            {['Map the flow', 'Build the experience', 'Explain the decisions'].map((title,i)=><div key={title} className="rounded-lg border border-border-secondary bg-bg-primary p-5"><span className="text-xs font-semibold text-text-brand-secondary">0{i+1}</span><h2 className="mt-3 text-md font-semibold">{title}</h2><div className="mt-4 flex flex-col gap-3 text-sm text-text-tertiary">{(i===0?['Capture an idea','Explore the paths','Choose a direction']:i===1?['Your components','A working prototype','Something to discuss']:['Product context','Open questions','Engineering handoff']).map(t=><span key={t} className="flex items-center gap-2"><Check className="size-4 text-text-brand-secondary" />{t}</span>)}</div></div>)}
-          </div>
+      <section className="mx-auto max-w-5xl px-6 pt-12 pb-10 text-center md:pt-16">
+        <p className={styles.eyebrow}>Open source. A space to make things.</p>
+        <h1 className="mx-auto mt-5 max-w-4xl text-display-md font-medium tracking-tight md:text-display-lg">A prototype sandbox<br className="hidden sm:block" /> for designers and builders.</h1>
+        <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-text-tertiary">Design with your coding agent, using your team’s components. Keep the working prototype, diagrams, and decisions together.</p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3"><Button href={sample} size="lg" iconTrailing={ArrowRight}>Try the sample</Button><Button href="#start" color="secondary" size="lg">Start your studio</Button></div>
+      </section>
+      <section id="demo" className="mx-auto max-w-5xl px-6 pb-16">
+        <div className="flex flex-wrap items-end justify-between gap-4 border-t border-border-secondary pt-8"><div><p className={styles.eyebrow}>One idea, connected artifacts</p><h2 className="mt-3 text-display-sm font-medium tracking-tight">See the work from every side.</h2></div><span className="text-sm text-text-tertiary">An actual prototype. Four ways in.</span></div>
+        <Tabs defaultSelectedKey="view" className="mt-8">
+          <Tabs.List aria-label="Explore the sample artifacts">{artifacts.map(item => <Tabs.Item key={item.id} id={item.id}>{item.label}</Tabs.Item>)}</Tabs.List>
+          {artifacts.map(item => <Tabs.Panel key={item.id} id={item.id} className="pt-5">
+            <figure className="overflow-hidden rounded-lg border border-border-primary bg-bg-secondary"><img src={item.image} alt={item.alt} className={styles.preview} width={item.id === 'document' ? 1456 : 1280} height={item.id === 'document' ? 799 : 720} /><figcaption className="flex flex-wrap items-center justify-between gap-4 border-t border-border-secondary px-4 py-3"><span className="text-xs text-text-tertiary">Captured preview · Feedback Inbox sample</span><Button href={item.href} color="link-gray" iconTrailing={ArrowUpRight}>Open {item.label.toLowerCase()}</Button></figcaption></figure>
+            <div className="mt-5 grid gap-3 md:grid-cols-2"><h3 className="text-xl font-semibold">{item.title}</h3><p className="text-md leading-relaxed text-text-tertiary">{item.text}</p></div>
+          </Tabs.Panel>)}
+        </Tabs>
+      </section>
+      <section className="border-y border-border-secondary bg-bg-secondary py-12">
+        <div className="mx-auto grid max-w-5xl gap-8 px-6 md:grid-cols-2">
+          <div><p className={styles.eyebrow}>Your components. Your context.</p><h2 className="mt-3 text-display-sm font-medium tracking-tight">A system that feels like you.</h2><p className="mt-4 text-md leading-relaxed text-text-tertiary">A system holds more than UI. Its theme, components, context, rules, and skills give your agent the building blocks and guidance for your work.</p><p className="mt-4 text-md leading-relaxed text-text-tertiary">This marketing page and the product demo use different systems. Studio provides the shared tools around both.</p></div>
+          <div className="grid gap-4 sm:grid-cols-2"><a href="/systems/marketing" className={styles.systemCard}><span className={styles.systemName}>Marketing</span><span className={styles.systemDescription}>This project</span><strong className="mt-6 block text-xl font-medium">Design Studio</strong><span className={styles.systemDescription}>Plus Jakarta Sans<br />Warm neutrals<br />Untitled UI / React Aria</span><span className={styles.systemAction}>Explore the system ↗</span></a><a href="/systems/product" className={styles.systemCard}><span className={styles.systemName}>Product</span><span className={styles.systemDescription}>Feedback Inbox sample</span><img src={viewPreview} alt="Product system in use in the feedback inbox." className="mt-6 w-full border border-border-secondary" loading="lazy" width={1280} height={720} /><span className={styles.systemDescription}>Space Grotesk<br />Emerald accents<br />shadcn / Base UI</span><span className={styles.systemAction}>Explore the system ↗</span></a></div>
         </div>
       </section>
-      <section id="features" className="border-y border-border-secondary bg-bg-secondary py-16">
-        <div className="mx-auto max-w-5xl px-6"><p className="text-sm font-semibold text-text-brand-secondary">From idea to shared understanding</p><h2 className="mt-3 text-display-md font-semibold tracking-tight">More than a screen to show.</h2><div className="mt-10 grid gap-10 md:grid-cols-3">{features.map(({icon:Icon,title,text})=><article key={title}><div className="flex size-12 items-center justify-center rounded-lg border border-border-primary bg-bg-primary shadow-xs"><Icon className="size-6 text-text-brand-secondary" /></div><h3 className="mt-5 text-xl font-semibold">{title}</h3><p className="mt-3 text-md leading-relaxed text-text-tertiary">{text}</p></article>)}</div></div>
-      </section>
-      <section className="mx-auto max-w-3xl px-6 py-16"><h2 className="text-display-sm font-semibold tracking-tight">A few things to know</h2><div className="mt-8">{questions.map(([question,answer])=><details key={question} className="group border-b border-border-secondary py-5"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold">{question}<span aria-hidden className="text-text-brand-secondary group-open:rotate-45">+</span></summary><p className="mt-3 text-md leading-relaxed text-text-tertiary">{answer}</p></details>)}</div></section>
-      <section className="mx-auto max-w-5xl px-6 pb-16"><div className="rounded-xl bg-bg-brand-secondary px-6 py-12 text-center"><h2 className="text-display-md font-semibold tracking-tight">Bring your next idea.</h2><p className="mt-4 text-lg text-text-tertiary">Give it the system, the space, and the context to grow.</p><div className="mt-6"><Button href="/documentation/guide" size="lg" iconTrailing={ArrowRight}>Make it tangible</Button></div></div></section>
+      <Setup />
+      <section className="mx-auto max-w-3xl px-6 pb-16"><h2 className="text-xl font-semibold">A few things to know</h2><div className="mt-5">{questions.map(([question,answer]) => <details key={question} className="group border-b border-border-secondary py-5"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-md font-semibold">{question}<span aria-hidden className="text-text-brand-secondary group-open:rotate-45">+</span></summary><p className="mt-3 text-md leading-relaxed text-text-tertiary">{answer}</p></details>)}</div></section>
     </main>
-    <footer className="border-t border-border-secondary"><div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-6 text-sm text-text-tertiary"><span>Design Studio · A starter kit you own.</span><Button href="/systems/marketing" color="link-gray">Built with Marketing <ArrowUpRight className="inline size-4" /></Button></div></footer>
+    <footer className="border-t border-border-secondary"><div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-6 text-sm text-text-tertiary"><span className="flex items-center gap-3"><StudioMark />Design Studio</span><div className="flex flex-wrap gap-6"><a href="/documentation/guide">Guide</a><a href="/prototypes/patrick/design-studio-marketing/project-brief">About this marketing demo</a><a href="https://github.com/itspatmorgan/design-studio-starter" target="_blank" rel="noreferrer">GitHub ↗</a></div></div></footer>
   </div>;
 }

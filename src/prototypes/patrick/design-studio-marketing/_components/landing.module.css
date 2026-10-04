@@ -1,0 +1,8 @@
+.eyebrow { font-size: var(--text-xs); font-weight: var(--font-weight-medium); letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-tertiary); }
+.preview { display: block; width: 100%; height: auto; }
+.systemCard { display: flex; flex-direction: column; padding: var(--spacing-5); border: 1px solid var(--color-border-primary); border-radius: var(--radius-lg); background: var(--color-bg-primary); }
+.systemCard:hover { border-color: var(--color-text-tertiary); }
+.systemCard:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 4px; }
+.systemName { font-size: var(--text-md); font-weight: var(--font-weight-semibold); }
+.systemDescription { margin-top: var(--spacing-2); font-size: var(--text-sm); line-height: var(--text-sm--line-height); color: var(--color-text-tertiary); }
+.systemAction { display: block; margin-top: auto; padding-top: var(--spacing-6); font-size: var(--text-sm); color: var(--color-text-secondary); }

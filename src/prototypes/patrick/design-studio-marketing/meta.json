@@ -1,5 +1,13 @@
 {
   "title": "Design Studio Marketing",
   "created": "2026-10-03",
-  "system": "marketing"
+  "system": "marketing",
+  "order": [
+    "landing.tsx",
+    "project-brief.md",
+    "explore",
+    "explore/visitor-flow.mermaid",
+    "explore/wireframe.tsx",
+    "explore/campaign-board.excalidraw"
+  ]
 }

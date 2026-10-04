@@ -1,0 +1,213 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "studioVersion": 1,
+  "elements": [
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 28,
+      "height": 35,
+      "id": "mutgn9q5ylhwo7",
+      "lineHeight": 1.25,
+      "originalText": "Design Studio / Marketing exploration",
+      "seed": 1303080199,
+      "text": "Design Studio / Marketing exploration",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 392081684,
+      "verticalAlign": "top",
+      "width": 900,
+      "x": 0,
+      "y": -150
+    },
+    {
+      "autoResize": false,
+      "fontFamily": 6,
+      "fontSize": 18,
+      "height": 22.5,
+      "id": "mutgn9q53uxazp",
+      "lineHeight": 1.25,
+      "originalText": "Marketing supplies the page's brand and components. Studio supplies the artifact tools.",
+      "seed": 1858503870,
+      "text": "Marketing supplies the page's brand and components. Studio supplies the artifact tools.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 147375665,
+      "verticalAlign": "top",
+      "width": 900,
+      "x": 0,
+      "y": -100
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "mutgn9q6xozujm",
+      "height": 270,
+      "id": "mutgn9q6gt16n0",
+      "link": "/prototypes/patrick/design-studio-marketing/explore/visitor-flow",
+      "seed": 813297968,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 594532227,
+      "width": 680,
+      "x": 0,
+      "y": 60
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "mutgn9q6uy7uxr",
+      "height": 600,
+      "id": "mutgn9q6gi2blr",
+      "link": "/prototypes/patrick/design-studio-marketing/explore/wireframe",
+      "seed": 1063405180,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 3,
+      "versionNonce": 219661647,
+      "width": 700,
+      "x": 840,
+      "y": 60
+    },
+    {
+      "customData": {
+        "frame": true,
+        "hideLinkIcon": true
+      },
+      "frameId": "mutgn9q6xozujm",
+      "height": 88,
+      "id": "mutgn9q6aybakk",
+      "link": "/prototypes/patrick/design-studio-marketing/project-brief",
+      "seed": 375904405,
+      "strokeColor": "transparent",
+      "type": "embeddable",
+      "version": 2,
+      "versionNonce": 1966064396,
+      "width": 680,
+      "x": 0,
+      "y": 370
+    },
+    {
+      "backgroundColor": "#ffec99",
+      "boundElements": [
+        {
+          "id": "mutgn9q69s4hn",
+          "type": "text"
+        }
+      ],
+      "frameId": "mutgn9q6xozujm",
+      "height": 180,
+      "id": "mutgn9q6b2hv2s",
+      "roughness": 0,
+      "seed": 1196446709,
+      "strokeColor": "#ecd67a",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 797341171,
+      "width": 300,
+      "x": 0,
+      "y": 510
+    },
+    {
+      "autoResize": true,
+      "containerId": "mutgn9q6b2hv2s",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "mutgn9q6xozujm",
+      "height": 100,
+      "id": "mutgn9q69s4hn",
+      "lineHeight": 1.25,
+      "originalText": "Show the product early. One real example should do more work than a row of feature cards.",
+      "seed": 365214288,
+      "text": "Show the product early. One\nreal example should do more\nwork than a row of feature\ncards.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1925802320,
+      "verticalAlign": "top",
+      "width": 274.14,
+      "x": 10,
+      "y": 520
+    },
+    {
+      "backgroundColor": "#a5d8ff",
+      "boundElements": [
+        {
+          "id": "mutgn9q6yorxgh",
+          "type": "text"
+        }
+      ],
+      "frameId": "mutgn9q6xozujm",
+      "height": 180,
+      "id": "mutgn9q65aofp3",
+      "roughness": 0,
+      "seed": 335076605,
+      "strokeColor": "#87c0ec",
+      "strokeWidth": 1,
+      "type": "rectangle",
+      "version": 2,
+      "versionNonce": 275358106,
+      "width": 300,
+      "x": 350,
+      "y": 510
+    },
+    {
+      "autoResize": true,
+      "containerId": "mutgn9q65aofp3",
+      "fontFamily": 6,
+      "fontSize": 20,
+      "frameId": "mutgn9q6xozujm",
+      "height": 75,
+      "id": "mutgn9q6yorxgh",
+      "lineHeight": 1.25,
+      "originalText": "Keep the brand quiet: Plus Jakarta Sans, warm neutrals, fine rules, simple geometry.",
+      "seed": 1768556650,
+      "text": "Keep the brand quiet: Plus\nJakarta Sans, warm neutrals,\nfine rules, simple geometry.",
+      "textAlign": "left",
+      "type": "text",
+      "version": 2,
+      "versionNonce": 1350241125,
+      "verticalAlign": "top",
+      "width": 268.53,
+      "x": 360,
+      "y": 520
+    },
+    {
+      "height": 750,
+      "id": "mutgn9q6xozujm",
+      "name": "Visitor paths and campaign direction",
+      "seed": 1344508727,
+      "type": "frame",
+      "version": 1,
+      "versionNonce": 852350277,
+      "width": 800,
+      "x": -60,
+      "y": 0
+    },
+    {
+      "height": 720,
+      "id": "mutgn9q6uy7uxr",
+      "name": "Page structure — before polish",
+      "seed": 595965326,
+      "type": "frame",
+      "version": 2,
+      "versionNonce": 923619841,
+      "width": 820,
+      "x": 780,
+      "y": 0
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {}
+}

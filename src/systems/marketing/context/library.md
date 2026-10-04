@@ -8,6 +8,7 @@ Marketing is a small, independent system for public-facing Design Studio pages. 
 ## Included
 
 - Untitled UI Button: small and large sizes; primary, secondary, and two link variants.
+- Untitled UI Tabs: horizontal underline tabs and associated panels.
 - Untitled UI Tooltip and TooltipTrigger: supplemental information, including a scoped popup.
 - Plus Jakarta Sans typography, Design Studio’s warm neutral brand colors, neutral surfaces, selected spacing, four display sizes for larger headings, and small rounded controls.
 - Light and dark modes. Both are defined in `styles/theme.css`.
@@ -17,6 +18,8 @@ The theme file is the inventory. Omitted foundations and unimported Untitled UI 
 ## Source and adaptations
 
 Components and utility helpers are adapted from the [public Untitled UI repository](https://github.com/untitleduico/react), revision `4702dc0ea8d140c3491a85670c7b4fab47b722da`. The original MIT notice is retained in `src/systems/marketing/LICENSE`.
+
+Tabs come from `components/application/tabs/tabs.tsx`; Marketing retains horizontal underline tabs without badges or extra variants.
 
 The Button and Tooltip come from `components/base/buttons/button.tsx` and `components/base/tooltip/tooltip.tsx`. Class merging and component detection come from `utils/cx.ts` and `utils/is-react-component.ts`.
 
