@@ -4,4 +4,4 @@ This system supports public-facing Design Studio marketing prototypes. Read [Des
 
 Use Marketing components and `@untitledui/icons`. Compose page sections inside the prototype. Do not import Platform or Product components, or expand the token inventory to the upstream catalog. Keep React Aria popups in the shared themed portal container.
 
-Use factual Design Studio messaging. Avoid invented testimonials, customer logos, usage metrics, or pricing claims.
+Follow [Marketing design](rules/marketing-design.md) when composing or revising marketing pages and project artifacts.

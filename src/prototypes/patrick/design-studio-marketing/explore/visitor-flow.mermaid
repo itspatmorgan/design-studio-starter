@@ -1,8 +1,8 @@
 flowchart LR
   accTitle: Design Studio marketing visitor paths
-  accDescr: A visitor understands the promise, explores the sample, and either starts a studio or reads the guide. The sample and setup remain accessible directly from the landing page.
-  A[Understand the promise] --> B[Explore a real prototype]
-  B --> C[Start your own studio]
-  B --> D[Read the guide]
-  A --> C
-  D --> C
+  accDescr: A visitor reads the introduction in human or agent mode, explores captured examples, and uses the repository and terminal commands to run a studio. The setup guide helps with configuration.
+  A[Choose human or agent mode] --> B[Understand Design Studio]
+  B --> C[Explore captured examples]
+  C --> D[Clone and run the studio]
+  B --> D
+  D --> E[Configure with the setup guide]

@@ -7,6 +7,6 @@ Use Plus Jakarta Sans, a warm neutral palette, and minimal architectural geometr
 
 The reference palette is ink `#0F0F0F`, charcoal `#2A2A2A`, gray `#6B6B6B`, stone `#D7D6D1`, and paper `#F6F5F2`. The theme maps these to semantic roles and includes supporting surface and border colors. Dark mode is an adaptation of this direction, not a separately supplied brand specification.
 
-Use generous space, restrained type weights, fine rules, circles, rectangles, and simple grid compositions. The Design Studio mark combines a vertical bar and a semicircle. Prefer repository-native SVG for this geometry.
+Use generous space, restrained type weights, circles, rectangles, and simple geometry. The Design Studio mark combines a vertical bar and a semicircle. Prefer repository-native SVG for this geometry. Follow [Marketing design](../rules/marketing-design.md) for composition and copy requirements.
 
 Untitled UI provides the imported interaction components. Its default purple palette and Inter font are replaced by the brand choices in this system. Marketing guidance does not change Platform or Product.

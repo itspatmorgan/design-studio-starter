@@ -1,0 +1,31 @@
+# Design Studio
+
+An open-source prototype sandbox for designers and builders working with coding agents.
+
+## Install
+
+Install mise: https://mise.jdx.dev/installing-mise.html
+
+```sh
+git clone https://github.com/itspatmorgan/design-studio-starter.git
+cd design-studio-starter
+mise install
+mise exec -- pnpm install
+mise exec -- pnpm dev
+```
+
+Open the local URL printed by Vite. To create a repository you own, use **Use this template** on GitHub and clone that repository instead.
+
+## Use
+
+Read README.md and AGENTS.md before changing files. Follow the setup guide to configure studio identity and the contributor. Resolve the assigned system before editing a prototype.
+
+A prototype keeps views, diagrams, canvases, and documents together. Its assigned system supplies the theme, components, context, rules, and skills.
+
+This marketing project uses the Marketing system: Plus Jakarta Sans, warm neutrals, and adapted Untitled UI components. Captured product examples use a separate Product system. Studio supplies the shared artifact tools.
+
+## Reference
+
+Repository: https://github.com/itspatmorgan/design-studio-starter
+Setup guide: /documentation/guide/getting-started
+Project brief: ./project-brief

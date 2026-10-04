@@ -1,24 +1,17 @@
 ---
 title: Project brief
-description: A small website project built with the Marketing system.
+description: A self-contained marketing project using the Marketing system.
 ---
 
-## What we are making
+## Purpose
 
-A landing page for Design Studio: an open-source prototype sandbox for designers and builders working with coding agents. Help a visitor understand the product, explore a real example, then start their own studio.
+Introduce Design Studio, show its artifact surfaces, and help visitors run a local copy. Keep the page to a simple column: introduction, examples, install, usage, and reference. Human and agent modes share the same facts.
 
-This is a marketing project, not a product-app screen. Its metadata explicitly assigns **Marketing**. The [Marketing system](/systems/marketing) supplies Plus Jakarta Sans, the warm neutral brand palette, and adapted Untitled UI components on React Aria. The Feedback Inbox sample uses **Product**, with Space Grotesk and shadcn components. Studio's navigation, documents, diagrams, and canvas controls use **Platform**.
+This prototype explicitly uses **Marketing**: Plus Jakarta Sans, warm neutrals, and adapted Untitled UI components. The captured product examples use a separate Product system. Studio provides the navigation, documents, diagrams, and canvas tools around both.
 
-## Direction
+Follow the system’s [Marketing design rule](/systems/marketing/rules/marketing-design). The [landing page](landing.tsx) uses screenshots rather than live product embeds, and keeps visitors within this marketing project. Motion previews can replace the screenshots when a useful recording is available.
 
-- Demonstrate connected artifacts before explaining every feature.
-- Use minimal architectural geometry, generous space, and restrained typography.
-- Provide an agent-assisted setup path and a direct link to the Guide.
-- Avoid invented testimonials, usage figures, and pricing.
-
-[Open the landing page](landing.tsx). Its product previews are captured from the working Feedback Inbox sample; each links to the original. They are snapshots, not live embeds. The examples below use Studio's live artifact previews.
-
-## Explore the structure
+## Exploration
 
 ![Visitor flow](explore/visitor-flow.mermaid)
 
@@ -26,8 +19,8 @@ This is a marketing project, not a product-app screen. Its metadata explicitly a
 
 ![Campaign board](explore/campaign-board.excalidraw)
 
-The canvas references these original files. Edit the diagram or wireframe to update their document and canvas previews together.
+The diagram and wireframe are shared source artifacts; their document and canvas previews update together.
 
-## Still to decide
+## Open decisions
 
-The public launch URL and final launch copy are open. The current calls to action use the starter repository, Guide, and included sample. The site is a demo; it does not submit leads or create accounts.
+The public launch URL and final copy remain open. The current demo links to the repository and setup guide. It does not collect leads or create accounts.
