@@ -7,12 +7,16 @@ Made for designers and product managers, working individually or with a team. Br
 ## Get started
 
 1. Select **Use this template** on GitHub to create your own repository, then clone it locally.
-2. Open the repository in your coding agent.
-3. Ask: **“Set up my studio.”**
+2. Install [mise](https://mise.jdx.dev/installing-mise.html) if you do not already have it.
+3. From the repository directory, run:
 
-The agent handles local setup and configuration, asks for the context it needs, and helps you bring in your design system. If you're joining an existing studio, ask **“Set me up as a contributor.”**
+   ```sh
+   mise install
+   mise exec -- pnpm install
+   mise exec -- pnpm dev
+   ```
 
-See the [setup guide](src/modules/documentation/pages/getting-started.md) for prerequisites and the full walkthrough.
+Open the local URL printed by Vite. You can explore the starter before configuring anything or opening it in a coding agent. See the [setup guide](src/modules/documentation/pages/getting-started.md) for what to do next.
 
 ## Learn more
 
