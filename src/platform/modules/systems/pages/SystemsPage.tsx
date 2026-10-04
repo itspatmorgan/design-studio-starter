@@ -78,7 +78,7 @@ function SystemBranch({ label, path, active, children }: { label: string; path: 
   const [open, setOpen] = useState(active);
   useEffect(() => { if (active) setOpen(true); }, [active]);
   return <Collapsible open={open} onOpenChange={setOpen}>
-    <CollapsibleTrigger title={path} className="mx-1 flex h-7 w-[calc(100%-8px)] items-center gap-1.5 rounded-md px-2 text-left text-[12px] font-medium hover:bg-sidebar-foreground/5"><ChevronDown className={'size-3.5 shrink-0 text-muted-foreground transition-transform ' + (open ? '' : '-rotate-90')} />{label}</CollapsibleTrigger>
+    <CollapsibleTrigger title={path} className="mx-1 flex h-7 w-[calc(100%-8px)] items-center gap-1.5 rounded-md px-2 text-left text-[12px] font-medium leading-tight hover:bg-sidebar-foreground/5"><ChevronDown className={'size-3.5 shrink-0 text-muted-foreground transition-transform ' + (open ? '' : '-rotate-90')} />{label}</CollapsibleTrigger>
     <CollapsibleContent className="space-y-0.5 pl-4">{children}</CollapsibleContent>
   </Collapsible>;
 }
@@ -93,7 +93,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   const foundations = TOKEN_PAGES.filter((p) => p.id === 'typography' || tokens.some((t) => t.group === p.group));
   const file = (id: string | undefined, label: string) => {
     const path = sourcePath(system, id, components);
-    return path && <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={path} label={label} icon={id && components.some((c) => c.slug === id) ? <FileCode className="size-3.5 shrink-0 text-muted-foreground" /> : <FileText className="size-3.5 shrink-0 text-muted-foreground" />} reveal={() => systemSourceRequest('reveal', path)} />;
+    return path && <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={path} label={label} className={id ? undefined : 'h-7'} icon={id && components.some((c) => c.slug === id) ? <FileCode className="size-3.5 shrink-0 text-muted-foreground" /> : <FileText className="size-3.5 shrink-0 text-muted-foreground" />} reveal={() => systemSourceRequest('reveal', path)} />;
   };
   return (
     <SectionNav label="Systems">
@@ -120,7 +120,6 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
             </SelectContent>
           </Select>
         </div>
-        <p className="mt-2 truncate px-2 text-[11px] text-muted-foreground" title={source.dir}>{source.dir.replace(/\/$/, '')}</p>
       </NavHeader>
       <NavList>
         {file(undefined, 'Introduction')}
