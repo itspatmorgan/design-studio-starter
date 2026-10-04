@@ -26,6 +26,7 @@ import FileNavItem from '@/platform/app/shell/FileNavItem';
 import { sourceOf } from '../sources';
 import { PLATFORM_ID, PLATFORM_SOURCE } from '../data/systems';
 import { systemSourceRequest } from './systemSource';
+import SystemOverview from './SystemOverview';
 
 const ComponentEditor = import.meta.env.DEV ? lazy(() => import('./ComponentEditor').then((module) => ({ default: module.ComponentEditor }))) : null;
 
@@ -212,7 +213,7 @@ function SystemPage({ system, sys, components, tokens, origin, page }: {
   const has = (group: TokenGroup) => tokens.some((t) => t.group === group);
   switch (page) {
     case undefined:
-      return <><PageHeader title={`${sys.label} system`} />{sys.intro}</>;
+      return <SystemOverview system={system} sys={sys} components={components} tokens={tokens} foundations={TOKEN_PAGES.filter(p => p.id === 'typography' || tokens.some(t => t.group === p.group))} />;
     case 'colors':
       return has('colors') ? <><PageHeader title="Colors" description="Every color token in the theme. Values reflect this system's active mode." /><ColorTokens tokens={tokens} /></> : null;
     case 'typography':
@@ -263,7 +264,7 @@ export default function SystemsPage() {
         <main className="flex min-h-0 min-w-0 flex-1 flex-col"><Suspense fallback={<p className="p-4 text-sm">Loading editor…</p>}>{editable && ComponentEditor ? <ComponentEditor key={system + '/' + editable.slug} system={system} component={editable} onDone={toggle} /> : SystemSourceEditor && <SystemSourceEditor path={path} onDone={toggle} />}</Suspense></main>
       ) : (
         <main ref={mainRef} className="min-w-0 flex-1 overflow-y-auto">
-          <ThemeScope themeClass={sys.scopeClass} className="min-h-full bg-background text-foreground">
+          <ThemeScope themeClass={params.page ? sys.scopeClass : platform.scopeClass} className="min-h-full bg-background text-foreground">
             <div ref={rendered} tabIndex={-1} className="mx-auto w-full max-w-3xl px-8 py-10 outline-none" data-testid={`${system}-set`}>{content}</div>
           </ThemeScope>
         </main>

@@ -71,9 +71,10 @@ export type Manifest = {
 // has them). Its components and foundations pages come from its files (systemDocs.ts, themeTokens.ts).
 // What only a system's people can write for its Systems page: its introduction (which covers its theme), and
 // icons if it has them. A prototype system keeps this in src/systems/<id>/intro.tsx.
-export type SystemIntro = { intro: ReactNode; icons?: DesignSystem['icons'] };
+export type SystemIntro = { summary?: string; intro: ReactNode; icons?: DesignSystem['icons'] };
 
 export type DesignSystem = {
+  summary?: string;       // system-owned purpose shown above the generated overview
   label: string;
   dir: string;            // where its components live, e.g. "src/systems/studio/components/"
   scopeClass: string;     // the class its theme is set under, or "" when it's set on the page (studio)

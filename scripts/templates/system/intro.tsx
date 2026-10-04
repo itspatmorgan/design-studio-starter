@@ -5,6 +5,7 @@ import system from './system';
 import type { SystemIntro } from '@/platform/app/data/types';
 
 export default {
+  summary: '__LABEL__ is a design system prototypes can build with. Describe its purpose and audience here.',
   intro: (
     <>
       <Prose>

@@ -18,6 +18,7 @@ const ICONS = {
 };
 
 export default {
+  summary: 'The interface toolkit and operating guidance for Design Studio. Supplied and maintained with platform releases.',
   intro: (
     <>
       <Prose>

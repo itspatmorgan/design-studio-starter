@@ -8,6 +8,7 @@ import system from './system';
 import type { SystemIntro } from '@/platform/app/data/types';
 
 export default {
+  summary: 'A starter toolkit for product prototypes. Replace its components, theme, and guidance with your own product system when you are ready.',
   intro: (
     <>
       <div className="rounded-xl border-2 border-dashed border-foreground/25 bg-muted/40 p-6">
