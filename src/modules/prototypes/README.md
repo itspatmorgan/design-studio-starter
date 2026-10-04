@@ -17,6 +17,8 @@ The creation dialog asks for a title and system. Choose an installed system for 
 
 The sidebar shows the prototype's assigned system beneath its title. Select the system name to browse its components and guidance. A prototype without an assigned system shows **None**.
 
+The Prototypes page supports links filtered to a system. A visible system filter identifies the collection; search works within it. Select **Clear system filter** to return to all systems.
+
 ## Artifacts work together
 
 A prototype's pieces of work are **artifacts**. Each artifact is backed by a file.

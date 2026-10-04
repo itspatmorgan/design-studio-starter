@@ -77,3 +77,7 @@ Remove the comment for normal appearance. A folder named `lofi` has no special b
 Dependency and style requirements are maintained in the prototype rule. Module checks enforce them through `scripts/lib/scope.js` and the style checks.
 
 Whole-prototype archiving is defined in the [archiving rule](../../systems/studio/rules/archiving.md).
+
+## Gallery system filter
+
+`/prototypes?system=<id>` filters the gallery by the resolved system assignment. The active filter is visible and can be cleared. Title and contributor search (`q`) combines with the system filter and preserves it when typing or clearing search. Archived prototypes remain in their separate gallery section; the system overview counts and previews only active prototypes.

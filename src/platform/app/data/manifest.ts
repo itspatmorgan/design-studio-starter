@@ -87,3 +87,5 @@ export const prototypeLink = (p: Pick<PrototypeInfo, 'contributorKey' | 'id'>) =
 export const artifactLink = (p: PrototypeInfo, item: Artifact) => p.contributorKey === SYSTEM_CONTENT_KEY ? { to: addressOf(p.contributorKey, p.id) + '/' + artifactSlug(item.path) } as never : isSectionKey(p.contributorKey)
   ? linkOptions({ to: '/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: artifactSlug(item.path) } })
   : linkOptions({ to: '/prototypes/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: artifactSlug(item.path) } });
+
+export { matchesSystem, systemUsage } from './prototypeUsage';

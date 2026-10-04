@@ -14,7 +14,7 @@ import Gallery from './gallery/Gallery';
 import NewPrototypeButton from './gallery/NewPrototypeDialog';
 import { PrototypeRow } from './gallery/PrototypeCard';
 
-type GallerySearch = { q?: string };
+type GallerySearch = { q?: string; system?: string };
 
 function PrototypesPlaces({ go }: PaletteContext) {
   return <CommandItem value="prototypes gallery" onSelect={() => go({ to: '/prototypes' } as never)}>Prototypes</CommandItem>;
@@ -78,7 +78,7 @@ export default {
       getParentRoute: () => root,
       path: 'prototypes',
       // https://tanstack.com/router/latest/docs/framework/react/guide/search-params#validating-search-params
-      validateSearch: (search: Record<string, unknown>): GallerySearch => ({ q: typeof search.q === 'string' && search.q ? search.q : undefined }),
+      validateSearch: (search: Record<string, unknown>): GallerySearch => ({ q: typeof search.q === 'string' && search.q ? search.q : undefined, system: typeof search.system === 'string' && search.system ? search.system : undefined }),
       head: () => ({ meta: [{ title: `Prototypes — ${APP_NAME}` }] }),
       component: Gallery,
     }),
