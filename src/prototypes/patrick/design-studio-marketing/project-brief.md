@@ -13,7 +13,7 @@ Follow the [Marketing design rule](/systems/marketing/rules/marketing-design). P
 
 ## Iterations
 
-- [V1 — Introduction](landing-v1.tsx): establish the promise and link to the repository.
+- [V1 — Introduction](landing-v1.tsx): establish the promise and start with the GitHub template.
 - [V2 — Demonstration and install](landing-v2.tsx): add artifact examples and terminal commands.
 - [V3 — Human and agent](landing-v3.tsx): add Markdown instructions and setup guidance.
 

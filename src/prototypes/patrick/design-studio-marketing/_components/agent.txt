@@ -4,17 +4,21 @@ An open-source prototype sandbox for designers and builders working with coding 
 
 ## Install
 
+Choose **Use this template** at https://github.com/itspatmorgan/design-studio-starter to create your own repository. Clone that copy, never the starter repository directly.
+
 Install mise: https://mise.jdx.dev/installing-mise.html
 
+Replace YOUR-ACCOUNT and YOUR-STUDIO with your GitHub account and new repository name.
+
 ```sh
-git clone https://github.com/itspatmorgan/design-studio-starter.git
-cd design-studio-starter
+git clone https://github.com/YOUR-ACCOUNT/YOUR-STUDIO.git
+cd YOUR-STUDIO
 mise install
 mise exec -- pnpm install
 mise exec -- pnpm dev
 ```
 
-Open the local URL printed by Vite. To create a repository you own, use **Use this template** on GitHub and clone that repository instead.
+Open the local URL printed by Vite.
 
 ## Use
 
