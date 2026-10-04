@@ -128,7 +128,7 @@ test('changes stay inside the SystemContent\'s shape', () => {
   assert.notEqual(opProblem('context', { op: 'meta' }, false), null);
 });
 
-test('the map: what an agent reads, in order, from the real files', () => {
+test('the map inventories declared routes from real files', () => {
   const agents = [
     '# Starter',
     "If `node_modules/` doesn't exist, or the person is new, follow [setup](src/systems/studio/skills/setup/SKILL.md) first.",
@@ -199,4 +199,44 @@ test('system instruction maps keep identical rule and skill names in their own s
   assert.deepEqual(product.missing, []);
   assert.deepEqual(brand.onDemand, []);
   assert.deepEqual(brand.unrouted, ['accessibility.md']);
+});
+
+test('Studio instructions combine repository and local routes using the declared role, not a fixed id', async () => {
+  const { systemInstructions } = await import('./node/instructions.js');
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-instructions-'));
+  const write = (file: string, text: string) => { fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true }); fs.writeFileSync(path.join(root, file), text); };
+  try {
+    write('AGENTS.md', 'At the start of every session, read:\n- [scope](src/systems/custom-studio/rules/scope.md)\n\nWhen documenting, follow [document](src/systems/custom-studio/skills/document/SKILL.md).');
+    write('src/systems/custom-studio/AGENTS.md', 'Read [copy](rules/copy.md) and [people](context/people.md).');
+    write('src/systems/custom-studio/rules/scope.md', '# Scope');
+    write('src/systems/custom-studio/rules/copy.md', '# Copy');
+    write('src/systems/custom-studio/context/people.md', '# People\nRead [entry](../AGENTS.md).\nExample: `![screen](missing.tsx)`\n```md\n[example](missing.md)\n```');
+    write('src/systems/custom-studio/skills/document/SKILL.md', 'Read [checklist](references/checklist.md).');
+    write('src/systems/custom-studio/skills/document/references/checklist.md', '# Checklist');
+    const instructions = systemInstructions({root, systemRoot:'src/systems/custom-studio', platform:true});
+    const map = systemContentMap({root:'src/systems/custom-studio', agents:instructions.agents, rules:{'scope.md':'# Scope','copy.md':'# Copy'}, skills:[{folder:'document',name:'document',description:'Document work.'}]});
+    assert.deepEqual(instructions.missing, []);
+    assert.deepEqual(map.always, ['scope.md']);
+    assert.deepEqual(map.onDemand.map(r => r.path), ['copy.md']);
+    assert.equal(map.skills[0].when, 'documenting');
+    write('src/systems/custom-studio/context/people.md', 'Read [missing](missing.md).');
+    fs.unlinkSync(path.join(root,'src/systems/custom-studio/skills/document/references/checklist.md'));
+    assert.deepEqual(systemInstructions({root,systemRoot:'src/systems/custom-studio',platform:true}).missing, [
+      'src/systems/custom-studio/context/missing.md',
+      'src/systems/custom-studio/skills/document/references/checklist.md',
+    ]);
+    write('src/systems/product/AGENTS.md', 'Read [product](rules/product.md).');
+    write('src/systems/product/rules/product.md', '# Product');
+    const product = systemInstructions({root,systemRoot:'src/systems/product'});
+    assert.ok(!product.agents?.includes('custom-studio'));
+    assert.deepEqual(product.missing, []);
+    assert.equal(systemInstructions({root,systemRoot:'src/systems/empty'}).agents, null);
+  } finally { fs.rmSync(root,{recursive:true,force:true}); }
+});
+
+// Repository-relative links must reach the same rule as a sibling-relative link.
+test('rule routes follow repository-relative links without crossing system scopes', () => {
+  const map = systemContentMap({root:'src/systems/product',agents:'Read [entry](rules/entry.md).',rules:{'entry.md':'Read [detail](src/systems/product/rules/detail.md) and [other](src/systems/marketing/rules/other.md).','detail.md':'# Detail','other.md':'# Product other'},skills:[]});
+  assert.deepEqual(map.via, [{path:'detail.md',from:'entry.md'}]);
+  assert.deepEqual(map.unrouted, ['other.md']);
 });

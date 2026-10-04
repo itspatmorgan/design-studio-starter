@@ -21,6 +21,8 @@ flowchart LR
   person[Describe your idea] --> agent[Agent changes files] --> studio[Review in Studio] --> person
 ```
 
+The [Agent context chapter](/documentation/guide/agent-context) diagrams how repository instructions lead to the right system knowledge.
+
 Give the agent your goals, constraints, and feedback. You can work visually while it handles code and technical details.
 
 ## Find your way around

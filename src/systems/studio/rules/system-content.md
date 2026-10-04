@@ -10,7 +10,8 @@ Read the [Systems contract](../../../modules/systems/reference.md) and follow th
 - Give Context Markdown a frontmatter title. Context and Rules may contain folders.
 - Keep each skill in `skills/<name>/SKILL.md`, with supporting files inside its folder. Use lowercase letters, digits, and single hyphens, up to 64 characters; match the folder and frontmatter name.
 - Include `name` and `description` in skill frontmatter. Keep procedures focused and link to substantial references.
-- Route the agent through the owning system's `AGENTS.md`. The repository instructions route platform tasks and require resolving the assigned system for prototype work. Visibility in Systems is not evidence that an agent read a file.
+- Route the agent through the owning system's `AGENTS.md`. Link essential context directly and state the task conditions for rules and skills. Inspect skill descriptions before reading applicable procedures. The repository instructions route platform tasks and require resolving the assigned system for prototype work. Visibility in Systems is not evidence that an agent read a file.
+- The [agent context contract](../../../platform/core/agent-context.md) explains instruction routing, module synchronization, system resolution, and the diagnostic map.
 - Product rules add conventions; they cannot relax platform scope, dependency, or file-access boundaries.
 - System content is shared. Apply the [contributor scope rule](contributor-scope.md).
 - Update affected guidance when platform behavior changes. Verify links and instruction routing after moving files.

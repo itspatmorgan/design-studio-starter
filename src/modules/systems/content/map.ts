@@ -1,10 +1,10 @@
-// The system content's map: in what order an agent reads its instructions, worked out from the files
-// themselves so it can't go stale. It reads AGENTS.md (the entry point every agent starts from), the
+// The system content's diagnostic routing map, worked out from the files
+// themselves. It inventories declared routes, not what an agent actually read. It reads AGENTS.md, the
 // rules, and the skills:
 //   1. the rules AGENTS.md says to read at the start of every session ("always"),
 //   2. the rules it routes to by task ("when asked"), with the sentence that says when,
 //   3. the skills, which an agent finds by their descriptions (and AGENTS.md may route to one too).
-// A rule that no link reaches is "unrouted": no agent will ever read it. A link to a file that
+// A rule that no declared link reaches is "unrouted"; an agent may still discover it. A link to a file that
 // isn't there is "missing". This file has no imports, so Node scripts can load it directly.
 
 export type MapInput = {
@@ -85,7 +85,7 @@ export function systemContentMap({ agents, rules, skills, root = 'src/systems/st
     for (const m of (rules[from] ?? '').matchAll(LINK)) {
       const target = m[1];
       if (/^[a-z][a-z0-9+.-]*:/i.test(target) || !target.split('#')[0].endsWith('.md')) continue;
-      const path = resolve(from, target);
+      const path = target.startsWith(root + '/rules/') ? target.slice((root + '/rules/').length).split('#')[0] : resolve(from, target);
       if (known.has(path) && !reached.has(path)) { reached.add(path); map.via.push({ path, from }); queue.push(path); }
     }
   }

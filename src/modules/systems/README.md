@@ -62,7 +62,7 @@ A system declares whether it supports light mode, dark mode, or both. Systems wi
 
 Ask your agent to import your components, tokens, fonts, and supported color modes. You can keep the starter while exploring and replace it later.
 
-System files are shared team content. Coordinate changes with your maintainer. Changing the default system preserves existing prototypes' system choices; migrating a prototype is a separate change.
+System files are shared team content. Coordinate changes with your maintainer. Changing the default system preserves explicit assignments. Prototypes without an assignment follow the new default; explicit None assignments remain without a system.
 
 Foundations are generated from its theme file; component pages combine documentation, examples, and component source. Source is available through navigation, using the [shared file workflow](/documentation/guide/home#working-with-files). Component pages offer separate source tabs for documentation, examples, and component code.
 
@@ -80,7 +80,7 @@ Expand a folder to read, add, or edit its files. Other folders stay available as
 
 Each skill appears once in navigation and opens its instructions. In source mode, use the file picker to browse its `SKILL.md` and supporting files. Rename or delete a skill through its navigation menu to act on the whole skill, including its supporting files.
 
-A prototype uses its assigned system's knowledge along with platform operating rules and its own local intent. Files being visible here does not automatically load them into an agent conversation.
+A prototype uses its assigned system's knowledge along with platform operating rules and its own local intent. Files being visible here does not automatically load them into an agent conversation. The [Agent context chapter](/documentation/guide/agent-context) diagrams how the agent chooses instructions.
 
 Studio contains Design Studio's own context and instructions. Keep your product context in its product system. System knowledge follows Studio's appearance; UI examples follow the system's supported color modes.
 

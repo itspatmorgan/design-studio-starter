@@ -22,6 +22,7 @@ import { systemContentProblems } from '../../src/modules/systems/content/node/co
 import { systemDocs } from '../../src/modules/systems/node/docs.js';
 import { themeTokens } from '../../src/modules/systems/themeTokens.ts';
 import { platformReferences } from '../lib/platform-references.js';
+import { systemInstructions } from '../../src/modules/systems/content/node/instructions.js';
 import { systemContentMap } from '../../src/modules/systems/content/map.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -282,7 +283,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
 
   for (const key of cache.keys()) if (!seen.has(key)) cache.delete(key);
 
-  // Context, rules, and skills are owned by their system, including Platform.
+  // Context, rules, and skills are owned by their system, including Studio.
   const systemContent = [];
   const maps = {};
   for (const system of Object.keys(SYSTEM_SOURCES)) {
@@ -309,10 +310,9 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
       const fm = frontmatter(fs.readFileSync(path.join(skillsDir, e.name, 'SKILL.md'), 'utf8')) ?? {};
       return { folder: e.name, name: String(fm.name ?? e.name), description: String(fm.description ?? '') };
     }) : [];
-    const agentsFile = system === 'platform' ? path.join(ROOT, 'AGENTS.md') : path.join(base, 'AGENTS.md');
-    const localAgents = path.join(base, 'AGENTS.md');
-    const agents = [agentsFile, ...(localAgents !== agentsFile ? [localAgents] : [])].filter((file) => fs.existsSync(file)).map((file) => fs.readFileSync(file, 'utf8')).join('\n');
-    maps[system] = systemContentMap({ agents: agents || null, rules, skills, root: 'src/' + systemRoot(system) });
+    const instructions = systemInstructions({ root: ROOT, systemRoot: 'src/' + systemRoot(system), platform: system === PLATFORM_ID });
+    maps[system] = systemContentMap({ agents: instructions.agents, rules, skills, root: 'src/' + systemRoot(system) });
+    maps[system].missing = [...new Set([...maps[system].missing, ...instructions.missing])];
     for (const file of maps[system].missing) { out.error('[manifest] Agent instructions link to ' + file + ', which is missing.'); errors++; }
   }
   // Each prototype system's theme.css may only set values under its own class, like
