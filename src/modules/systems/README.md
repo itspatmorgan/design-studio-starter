@@ -11,7 +11,7 @@ slug: "systems"
 
 Systems brings together the components, styles, and knowledge used by your prototypes. Use the selector to switch between systems. One navigation tree shows the selected system’s theme, components, context, rules, and skills.
 
-The Contents toolbar searches across the tree and expands or collapses all folders. Search reveals matches without losing your previous expansion choices. Context, Rules, Skills, and Theme start open; Components starts closed until you expand it or visit a component. Guidance appears above the toolkit, and each guidance group has its own **New** action.
+The Contents toolbar searches across the tree and expands or collapses all folders. Search reveals matches without losing your previous expansion choices. Context, Rules, Skills, Theme, and Components start open. Guidance appears above the toolkit, and each guidance group has its own **New** action.
 
 ## Prototype systems and Studio
 

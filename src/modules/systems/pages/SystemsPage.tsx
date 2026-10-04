@@ -117,7 +117,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   const source = system === PLATFORM_ID ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
   const foundations = TOKEN_PAGES.filter((p) => p.id === 'typography' || tokens.some((t) => t.group === p.group));
   const savedTree = systemTreeState.get(system);
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => savedTree?.openGroups ?? { context: true, rules: true, skills: true, theme: true, components: components.some(c => c.slug === page) });
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => savedTree?.openGroups ?? { context: true, rules: true, skills: true, theme: true, components: true });
   const [folderCommand, setFolderCommand] = useState(() => savedTree?.folderCommand ?? { version: 0, expanded: true });
   const [foldersExpanded, setFoldersExpanded] = useState<Record<string, boolean>>(() => savedTree?.foldersExpanded ?? {});
   useEffect(() => { systemTreeState.set(system, { openGroups, folderCommand, foldersExpanded }); }, [system, openGroups, folderCommand, foldersExpanded]);
