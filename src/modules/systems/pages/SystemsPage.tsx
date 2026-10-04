@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
-import { ChevronDown, FileCode, FileText } from 'lucide-react';
+import { ChevronDown, Compass, Palette, Blocks, NotebookText, ListChecks, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, type LucideIcon } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/systems/studio/components/collapsible';
 import FileTree from '@/modules/prototypes/viewer/FileTree';
 import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
@@ -76,12 +76,20 @@ const TOKEN_PAGES: { id: string; label: string; group: TokenGroup }[] = [
   { id: 'tokens', label: 'Other tokens', group: 'other' },
 ];
 
+// Stable semantic icons distinguish system guidance and foundation pages from source files.
+const PAGE_ICONS: Record<string, LucideIcon> = {
+  intro: Compass, colors: SwatchBook, typography: Type, radius: SquareRoundCorner,
+  shadows: Layers2, spacing: Ruler, motion: MoveRight, effects: Sparkles, tokens: Braces, icons: Smile,
+};
+const CONTENT_ICONS: Record<string, LucideIcon> = { context: NotebookText, rules: ListChecks, skills: WandSparkles };
+const navIcon = (Icon: LucideIcon) => <Icon aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />;
+
 // A fixed system folder and its readable contents. Page changes preserve branch state.
-function SystemBranch({ label, path, active, children }: { label: string; path: string; active: boolean; children: ReactNode }) {
+function SystemBranch({ label, path, active, icon, children }: { label: string; path: string; active: boolean; icon: ReactNode; children: ReactNode }) {
   const [open, setOpen] = useState(active);
   useEffect(() => { if (active) setOpen(true); }, [active]);
   return <Collapsible open={open} onOpenChange={setOpen}>
-    <CollapsibleTrigger title={path} className="mx-1 flex h-7 w-[calc(100%-8px)] items-center gap-1.5 rounded-md px-2 text-left text-[12px] font-medium leading-tight hover:bg-sidebar-foreground/5"><ChevronDown className={'size-3.5 shrink-0 text-muted-foreground transition-transform ' + (open ? '' : '-rotate-90')} />{label}</CollapsibleTrigger>
+    <CollapsibleTrigger title={path} className="mx-1 flex h-7 w-[calc(100%-8px)] items-center gap-1.5 rounded-md px-2 text-left text-[12px] font-medium leading-tight hover:bg-sidebar-foreground/5"><ChevronDown className={'size-3.5 shrink-0 text-muted-foreground transition-transform ' + (open ? '' : '-rotate-90')} />{icon}{label}</CollapsibleTrigger>
     <CollapsibleContent className="space-y-0.5 pl-4">{children}</CollapsibleContent>
   </Collapsible>;
 }
@@ -96,7 +104,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   const foundations = TOKEN_PAGES.filter((p) => p.id === 'typography' || tokens.some((t) => t.group === p.group));
   const file = (id: string | undefined, label: string) => {
     const path = sourcePath(system, id, components);
-    return path && <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={path} label={label} className={id ? undefined : 'h-7'} icon={id && components.some((c) => c.slug === id) ? <FileCode className="size-3.5 shrink-0 text-muted-foreground" /> : <FileText className="size-3.5 shrink-0 text-muted-foreground" />} reveal={() => systemSourceRequest('reveal', path)} />;
+    return path && <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={path} label={label} className={id ? undefined : 'h-7'} icon={navIcon(id && components.some((c) => c.slug === id) ? Blocks : PAGE_ICONS[id ?? 'intro'] ?? Blocks)} reveal={() => systemSourceRequest('reveal', path)} />;
   };
   return (
     <SectionNav label="Systems">
@@ -126,17 +134,17 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
       </NavHeader>
       <NavList>
         {file(undefined, 'Introduction')}
-        <SystemBranch label="Theme" path={source.theme} active={foundations.some((p) => p.id === page) || page === 'icons'}>
+        <SystemBranch icon={navIcon(Palette)} label="Theme" path={source.theme} active={foundations.some((p) => p.id === page) || page === 'icons'}>
           {foundations.map((p) => file(p.id, p.label))}
           {SYSTEMS[system].icons && file('icons', 'Icons')}
         </SystemBranch>
-        <SystemBranch label="Components" path={source.components} active={components.some((c) => c.slug === page)}>
+        <SystemBranch icon={navIcon(Blocks)} label="Components" path={source.components} active={components.some((c) => c.slug === page)}>
           {components.map((c) => file(c.slug, c.title))}
           {!components.length && <p className="px-3 py-1 text-[12px] text-muted-foreground">Empty folder</p>}
         </SystemBranch>
         {Object.entries(SYSTEM_CONTENT_SECTIONS).map(([id, section]) => {
           const proto = manifest.systemContent.find((p) => p.id === contentId(system, id));
-          return proto && <FileTree key={proto.id} proto={proto} current={page === id && params._splat ? findArtifact(proto, params._splat) : undefined} embedded branch={{ label: section.title, path: source.dir + id + '/', active: page === id }} />;
+          return proto && <FileTree key={proto.id} proto={proto} current={page === id && params._splat ? findArtifact(proto, params._splat) : undefined} embedded contentIcon={navIcon(CONTENT_ICONS[id])} branch={{ icon: navIcon(CONTENT_ICONS[id]), label: section.title, path: source.dir + id + '/', active: page === id }} />;
         })}
       </NavList>
     </SectionNav>
