@@ -2,7 +2,7 @@
 
 This is the required Studio system, supplied and maintained with platform releases. Its foundations and components support the application; its context, rules, and skills guide operating and maintaining Studio, including infrastructure and modules.
 
-When changing platform requirements or deciding where guidance belongs, read [Contracts and operating instructions](../../platform/core/contracts-and-instructions.md). Core and module contracts own technical requirements. This system owns operating policy, intent, and task procedures.
+When changing platform requirements or deciding where guidance belongs, read [Platform and system responsibilities](../../platform/core/contracts-and-instructions.md). Core and module contracts own technical requirements. This system owns operating policy, intent, and task procedures.
 
 When working on Studio, read [Principles](context/principles.md) and [Personas](context/personas.md). Follow the repository’s [operating instructions](../../../AGENTS.md), which route tasks to this system’s rules and skills.
 

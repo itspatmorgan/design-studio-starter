@@ -1,8 +1,9 @@
 ---
-referenceOrder: 50
+referenceSection: operate
+referenceOrder: 25
 ---
 
-# Source editing
+# Editing and saving
 
 Source editing is a shared platform capability used by Prototypes, Systems, and Documentation. It has no separate module, route section, or navigation entry.
 
@@ -20,7 +21,7 @@ Source editing is available during local development. Published pages retain the
 
 Each module maps its navigation items to real files and supplies file access and permissions. Prototype ownership, system context constraints, and platform file allowlists continue to apply. The editor does not grant permission or infer a prototype from a platform document.
 
-Guide and Reference edit the complete underlying Markdown file, including README developer sections hidden from the Guide. Systems components expose Page, Examples, and Component file tabs. Systems introduction and icon pages expose their introduction source; generated foundation pages expose their theme CSS. A system without an introduction exposes its declaration instead.
+Guide and Reference edit the complete underlying Markdown file, including README developer sections hidden from the Guide. Systems components expose Page, Examples, and Component file tabs. Systems overview and icon pages expose their overview source; generated foundation pages expose their theme CSS. A system without an overview source exposes its declaration instead. Skills expose a file picker for `SKILL.md` and supporting files, preserving the skill’s directory structure.
 
 ## Implementation
 

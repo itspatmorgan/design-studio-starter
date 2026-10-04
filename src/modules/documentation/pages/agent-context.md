@@ -32,7 +32,7 @@ flowchart TD
 
 The platform baseline remains in every branch. Selecting a product system adds its instructions to the task; it does not remove Studio's operating rules.
 
-Studio rules direct the agent’s operating behavior; core and module contracts define the technical requirements it works within. [Contracts and operating instructions](/documentation/reference/platform/core/contracts-and-instructions.md) explains which source owns each responsibility.
+Studio rules direct the agent’s operating behavior; core and module contracts define the technical requirements it works within. [Platform and system responsibilities](/documentation/reference/platform/core/contracts-and-instructions.md) explains which source owns each responsibility.
 
 ## Understand the layers
 
@@ -71,4 +71,4 @@ The diagnostic instruction map inventories rule routes and skills. Build checks 
 
 For a task you want to verify, ask your agent to explain the resolved system and the instructions it used. Compare that answer with the target prototype and your request.
 
-The [Agent context contract](/documentation/reference/platform/core/agent-context.md) provides the detailed resolution and validation boundaries.
+The [Agent context routing](/documentation/reference/platform/core/agent-context.md) provides the detailed resolution and validation boundaries.

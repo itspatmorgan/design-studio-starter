@@ -101,7 +101,7 @@ Systems declaring `styling: 'custom'` are exempt from the Tailwind vocabulary co
 
 Systems uses the [shared platform source workflow](../../platform/core/source.md). Right-click a navigation item for file actions, or use **⌘' / Ctrl+'** to toggle source. **⌘S / Ctrl+S** saves; the toggle or **Done** returns to rendering with unsaved-change protection. Source editors remain in Studio's color mode.
 
-Component pages open their Page, Examples, and Component file tabs. Overview and Icons open the system's introduction source (`intro.tsx`). A missing introduction opens `system.ts`. Generated foundation pages open the system's theme CSS. There is no separate editable file for each token-family page.
+Component pages open their Page, Examples, and Component file tabs. Overview and Icons open the system's overview source (`intro.tsx`). A missing overview source opens `system.ts`. Generated foundation pages open the system's theme CSS. There is no separate editable file for each token-family page.
 
 Only these system source files and discovered component files are accessible through the local Systems source endpoint. Menus provide edit, external editor, reveal, and copying actions without rename or delete.
 

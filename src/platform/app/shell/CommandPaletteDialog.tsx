@@ -75,6 +75,17 @@ export default function CommandPaletteDialog({ open, setOpen, returnFocus }: { o
               {moduleApps.map(({ spec, app }) => app.places && <app.places key={spec.id} {...context} />)}
             </CommandGroup>
 
+            <CommandSeparator />
+            <CommandGroup heading="Documentation">
+              <CommandItem value="reference overview documentation" onSelect={() => go({ to: '/documentation/reference' })}>Reference overview</CommandItem>
+              {manifest.guide.map(page => <CommandItem key={'guide:' + page.slug} value={'guide ' + page.title + ' ' + (page.source ?? page.slug)} onSelect={() => go({ to: '/documentation/guide' + (page.slug === 'index' ? '' : '/' + page.slug) } as never)}>
+                <span className="truncate">{page.title}</span><span className="ml-auto text-xs text-muted-foreground">Guide</span>
+              </CommandItem>)}
+              {manifest.platformReferences.flatMap(group => group.references).map(page => <CommandItem key={page.source} value={'reference ' + page.title + ' ' + page.source} onSelect={() => go({ to: '/documentation/reference' + page.source } as never)}>
+                <span className="truncate">{page.title}</span><span className="ml-auto text-xs text-muted-foreground">Reference</span>
+              </CommandItem>)}
+            </CommandGroup>
+
             {moduleApps.map(({ spec, app }) => app.palette && <Fragment key={spec.id}><app.palette {...context} /></Fragment>)}
 
 

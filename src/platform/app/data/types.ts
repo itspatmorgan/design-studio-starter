@@ -56,11 +56,11 @@ export type GuidePage = {
 // module section artifacts (src/examples/, as `sections.examples`), shaped like prototypes.
 // `systemContent` holds the system content's sections (src/systems/<id>/, see src/platform/core/roots.ts), shaped like
 // prototypes.
-// `systemContentMap` is how an agent reads the system content, worked out from the files (modules/systems/content/map.ts).
+// `systemContentMaps` inventories declared instruction routes; it does not record agent reads.
 // `systems` holds each system's components and their docs (systemDocs.ts), the tokens its theme
 // defines (themeTokens.ts), and where its components come from (systemSources.ts). The app's own
 // system is one of them.
-export type PlatformReferenceGroup = { id: string; label: string; enabled: boolean; references: { source: string; title: string; order?: number }[]; related: { title: string; href: string }[] };
+export type PlatformReferenceGroup = { id: string; label: string; enabled: boolean; references: { source: string; title: string; order?: number; section?: 'understand' | 'operate' | 'extend'; related?: { title: string; href: string }[] }[]; related: { title: string; href: string }[] };
 
 export type Manifest = {
   prototypes: PrototypeRef[]; sections: Record<string, PrototypeRef[]>; guide: GuidePage[]; systemContent: Prototype[]; systemContentMaps: Record<string, SystemContentMap>; platformReferences: PlatformReferenceGroup[];

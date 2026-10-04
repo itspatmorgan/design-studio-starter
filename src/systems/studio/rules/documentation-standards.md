@@ -21,7 +21,7 @@ Documentation is part of the platform. Keep it accurate as behavior changes. Thi
 
 Documentation has two reading modes: Guide provides a curated introduction, and Reference exposes full module documentation and core contracts from their original files. The system context holds studio context and agent instructions. Reference access remains available when the optional Documentation module is disabled.
 
-The [Contracts and operating instructions](../../../platform/core/contracts-and-instructions.md) foundation defines the system of record: core and module contracts own technical requirements; Studio rules own agent operating policy; context owns intent; skills own procedures.
+The [Platform and system responsibilities](../../../platform/core/contracts-and-instructions.md) foundation defines the system of record: core and module contracts own technical requirements; Studio rules own agent operating policy; context owns intent; skills own procedures.
 
 Give each contract one authoritative location. Other documents can summarize its purpose, then link to it. Do not copy requirements, schemas, or procedures into multiple locations.
 

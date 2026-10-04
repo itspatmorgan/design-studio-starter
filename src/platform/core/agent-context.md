@@ -1,12 +1,14 @@
 ---
-title: Agent context contract
+referenceSection: understand
+title: Agent context routing
 description: File-based instruction routing, system resolution, and validation boundaries.
+referenceOrder: 6
 toc: true
 ---
 
 Design Studio routes coding agents through repository files. It does not assemble or inject a context bundle into an agent conversation. The coding agent's host controls automatic instruction discovery; the agent follows linked instructions by reading files.
 
-The [contracts and operating instructions foundation](contracts-and-instructions.md) explains which files own technical requirements, operating policy, intent, and procedures. This contract owns how those files are routed to a task.
+The [Platform and system responsibilities](contracts-and-instructions.md) page explains which files own technical requirements, operating policy, intent, and procedures. This contract owns how those files are routed to a task. When the Guide is enabled, its [Agent context chapter](/documentation/guide/agent-context) diagrams the reading flow.
 
 ## Entry and platform baseline
 
@@ -42,11 +44,24 @@ Use the system entry point to link essential context and explain when rules and 
 
 Follow the [system content rule](../../systems/studio/rules/system-content.md) for layout and authoring. Skills preserve their specified filesystem structure, including references, scripts, and assets. Read supporting material as the applicable procedure requires it.
 
-## Diagnostic map and validation
+## Inspect the diagnostic map
+
+Run `pnpm dev` to regenerate the local manifest, then inspect `public/prototypes/manifest.json`. Its `systemContentMaps` object contains one entry per registered system. This is a generated diagnostic file; do not edit it.
+
+- `always`: declared rules for every session.
+- `onDemand`: rules and their task conditions.
+- `via`: rules reached through another rule.
+- `unrouted`: rules with no discovered route.
+- `skills`: skill descriptions and declared conditions.
+- `missing`: unresolved local instruction targets, including context and skill supporting files.
+
+Compare the target prototype’s resolved system with the entry for that system. The Studio entry also includes repository-level routes. Context files are listed separately under `systemContent`. For a specific task, ask the agent which files it actually read; the map cannot supply that answer.
+
+## Validation boundaries
 
 The manifest build creates each system's diagnostic instruction map. For the declared application system, it combines root and local entry points. Other systems use only their own entry point. Links are resolved relative to the file that owns them before entry points are combined.
 
-The map reports declared rule routes, transitive rule links, unrouted rules, and skill descriptions and direct selection conditions. It is an inventory, not an instruction executor, conversation bundle, or record of actual reads. Context is available in the system inventory; the rule/skill routing map does not list every context read.
+The map inventories declared routes. It is not an instruction executor, conversation bundle, or record of actual reads.
 
 The manifest also follows local links reachable from the entry points within that system. It checks context, rules, skills, and their linked supporting files for missing targets, with cycle protection. Strict builds fail on missing targets. Unlinked material is not proved reachable by this check. Code examples, URL links, anchors, and contracts outside the selected system need their own documentation checks.
 

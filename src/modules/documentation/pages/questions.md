@@ -20,7 +20,7 @@ Yes. Ask your agent to bring in your components, tokens, and assets. Systems can
 
 ## Where do fonts, logos, and images go?
 
-Keep prototype-specific assets with that prototype, system assets with their system, and shared studio assets in the shared assets location. Your agent can follow the [Static assets convention](/documentation/reference/platform/core/assets.md).
+Keep prototype-specific assets with that prototype, system assets with their system, and shared studio assets in the shared assets location. Your agent can follow the [Assets and fonts](/documentation/reference/platform/core/assets.md).
 
 Asset Guard checks asset sizes before commits and in repository checks to catch large files before they slow down the codebase.
 
