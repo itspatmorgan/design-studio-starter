@@ -611,7 +611,7 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
       )}
       {/* The whole list is the drop target for the top level (the end of it). */}
       <div ref={listRef} className={cn('flex min-h-0 flex-1 flex-col gap-0.5 rounded-md', overTop && 'bg-sidebar-foreground/5')}>
-        {branch && !q && !shown.length && !editing && <p className="px-2.5 py-1 text-[12px] text-muted-foreground">Empty folder</p>}
+        {branch && !q && !shown.length && !editing && <p className="px-3 py-1 text-[12px] text-muted-foreground">Empty folder</p>}
         {q && shown.length === 0 && <p className="px-2.5 py-1 text-[12px] text-muted-foreground">No matching {noun}.</p>}
         {createField('', 0)}
         {rows(shown, 0)}
