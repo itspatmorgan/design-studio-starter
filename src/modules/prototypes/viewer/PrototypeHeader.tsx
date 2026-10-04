@@ -122,7 +122,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
           <div className="mt-1 mb-2 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
             <span>System ·</span>
             {system ? <Link to={`/systems/${proto.system}` as never} className="min-w-0 truncate rounded-sm hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-ring" aria-label={`Open ${system.label} system`}>{system.label} ↗</Link>
-              : proto.system === null ? <span title="This prototype uses its own components and CSS">None · custom styling</span> : <span title={`Assigned system: ${proto.system}`}>System unavailable</span>}
+              : proto.system === null ? <span title="This prototype uses its own components and CSS">None</span> : <span title={`Assigned system: ${proto.system}`}>System unavailable</span>}
           </div>
           <PrototypeRebuildNotice proto={proto} />
           {proto.status === 'archived' && (
