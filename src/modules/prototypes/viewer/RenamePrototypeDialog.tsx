@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 
 type Props = { proto: PrototypeInfo; open: boolean; onOpenChange: (open: boolean) => void };
 
-export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props) {
+export default function RenamePrototypeDialog({ proto, open, onOpenChange }: Props) {
   const applyRename = useRenamePrototype(proto);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -35,7 +35,7 @@ export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props
         {/* key: reset the fields to the saved values each time it opens */}
         <form key={String(open)} action={save} className="grid gap-4">
           <DialogHeader>
-            <DialogTitle>Edit prototype</DialogTitle>
+            <DialogTitle>Rename prototype</DialogTitle>
             <DialogDescription>{policyFor(proto.contributorKey, MODULES) !== 'owner' ? 'Its link stays the same when its title changes.' : 'A new title renames the folder, so the link changes.'}</DialogDescription>
           </DialogHeader>
           <label className="grid gap-1.5 text-sm font-medium">
@@ -51,7 +51,7 @@ export default function EditPrototypeDialog({ proto, open, onOpenChange }: Props
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-            <Button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
+            <Button type="submit" disabled={saving}>{saving ? 'Renaming…' : 'Rename'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

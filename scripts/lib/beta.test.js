@@ -104,6 +104,29 @@ test('create and rename preserve addresses, file errors recover, and system remo
       assert.equal(JSON.parse(fs.readFileSync('src/prototypes/patrick/cli-custom/meta.json')).system, null);
       fs.writeFileSync(path.join(original, 'notes.md'), '[View](/prototypes/patrick/beta-journey/main)');
       fs.writeFileSync(path.join(original, 'flow.excalidraw'), JSON.stringify({ type: 'excalidraw', version: 2, elements: [], appState: {}, files: {} }));
+      const { duplicatePrototype } = await load('src/modules/prototypes/node/duplicate.js');
+      const before = fs.readFileSync(path.join(original, 'meta.json'), 'utf8');
+      const copy = duplicatePrototype({key:'patrick',id:slug,title:'Beta Copy',system:DEFAULT_SYSTEM});
+      const copiedMeta = JSON.parse(fs.readFileSync('src/prototypes/patrick/' + copy.id + '/meta.json'));
+      assert.equal(copiedMeta.system, DEFAULT_SYSTEM);
+      assert.equal(copiedMeta.rebuild, undefined);
+      assert.match(fs.readFileSync('src/prototypes/patrick/' + copy.id + '/notes.md','utf8'), /beta-copy/);
+      assert.equal(fs.readFileSync(path.join(original, 'meta.json'), 'utf8'), before);
+      const rebuild = duplicatePrototype({key:'patrick',id:slug,title:'Beta Rebuild',system:null});
+      const rebuildMeta = JSON.parse(fs.readFileSync('src/prototypes/patrick/' + rebuild.id + '/meta.json'));
+      assert.equal(rebuildMeta.system, DEFAULT_SYSTEM);
+      assert.deepEqual(rebuildMeta.rebuild, {targetSystem:null,source:'src/prototypes/patrick/' + slug});
+      assert.deepEqual(rebuild.manifest.prototypes.find(p => p.id === rebuild.id).rebuild, rebuildMeta.rebuild);
+      const fromCustom = duplicatePrototype({key:'patrick',id:custom.slug,title:'Custom Rebuild',system:DEFAULT_SYSTEM});
+      assert.equal(fromCustom.manifest.prototypes.find(p => p.id === fromCustom.id).system, null);
+      assert.equal(fromCustom.manifest.prototypes.find(p => p.id === fromCustom.id).rebuild.targetSystem, DEFAULT_SYSTEM);
+      assert.throws(() => duplicatePrototype({key:'patrick',id:slug,title:'Invalid Copy',system:'missing'}), /installed prototype system/);
+      assert.ok(!fs.existsSync('src/prototypes/patrick/invalid-copy'));
+      assert.throws(() => duplicatePrototype({key:'patrick',id:slug,title:'Beta Copy'}), /already exists/);
+      fs.symlinkSync('/tmp', path.join(original,'outside'));
+      assert.throws(() => duplicatePrototype({key:'patrick',id:slug,title:'Linked Copy'}), /symbolic links/);
+      assert.ok(!fs.existsSync('src/prototypes/patrick/linked-copy'));
+      fs.unlinkSync(path.join(original,'outside'));
       const renamed = renamePrototype({ key: 'patrick', id: slug, title: 'Beta Roundtrip' });
       assert.equal(renamed.id, 'beta-roundtrip');
       const moved = path.resolve('src/prototypes/patrick', renamed.id);
@@ -124,6 +147,13 @@ test('create and rename preserve addresses, file errors recover, and system remo
       assert.equal(failed.statusCode, 500);
       const recovered = response(); await handler(request, recovered, () => assert.fail('Unexpected fallback'));
       assert.equal(recovered.statusCode, 200);
+      const { Readable } = await import('node:stream');
+      const deniedRequest = Readable.from([JSON.stringify({contributor:'system-content',prototype:'studio:context',title:'Unauthorized Copy',system:null})]);
+      deniedRequest.method = 'POST'; deniedRequest.url = '/prototype-duplicate';
+      deniedRequest.headers = {'sec-fetch-site':'same-origin'};
+      const denied = response(); await handler(deniedRequest, denied, () => assert.fail('Unexpected fallback'));
+      assert.equal(denied.statusCode, 403);
+      assert.ok(!fs.existsSync('src/prototypes/patrick/unauthorized-copy'));
       // Shared Markdown remains editable even when prototype Documents is absent.
       const { runOp } = await load('scripts/build/files/ops.js');
       runOp(path.resolve('src/systems/studio/context'), {op:'create', name:'beta-context.md'}, 'context');
@@ -144,6 +174,11 @@ test('create and rename preserve addresses, file errors recover, and system remo
       assert.equal(removal.status, 1);
       assert.equal((removal.stderr + removal.stdout).includes('patrick/beta-roundtrip'), true, removal.stderr + removal.stdout);
       assert.equal(fs.existsSync('src/systems/z-beta-fixture/system.ts'), true);
+      meta.system = DEFAULT_SYSTEM; meta.rebuild = {targetSystem:'z-beta-fixture',source:'src/prototypes/patrick/beta-journey'};
+      fs.writeFileSync(metaPath, JSON.stringify(meta));
+      const pendingRemoval = spawnSync(process.execPath, ['scripts/cli/studio.js','remove','z-beta-fixture'], {encoding:'utf8'});
+      assert.equal(pendingRemoval.status, 1);
+      assert.equal((pendingRemoval.stderr + pendingRemoval.stdout).includes('patrick/beta-roundtrip'), true);
 
     `;
     execFileSync(process.execPath, ['--input-type=module', '--eval', script], { cwd: dir, timeout: 30000, encoding: 'utf8', stdio: 'pipe', env: { ...process.env, MISE_TRUSTED_CONFIG_PATHS: dir } });

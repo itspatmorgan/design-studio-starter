@@ -180,8 +180,19 @@ export async function createPrototype(title: string, system?: string | null) {
   return body as { contributor: string; prototype: string; manifest: Manifest };
 }
 
-// Changes a prototype's title. A new title renames its folder too, so its link
-// changes: `prototype` in the reply is the folder name now. Throws the server's message.
+// Copies an owned prototype; a different target system records an agent rebuild request.
+export async function duplicatePrototype(p: PrototypeInfo, change: { title: string; system: string | null }) {
+  const res = await fetch('/__studio/prototype-duplicate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },
+    body: JSON.stringify({ contributor: p.contributorKey, prototype: p.id, ...change }),
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error ?? 'Could not duplicate this prototype.');
+  return body as { prototype: string; manifest: Manifest };
+}
+
+// Renames the title and folder. The reply includes the new URL id.
 export async function renamePrototype(p: PrototypeInfo, change: { title: string }) {
   const res = await fetch('/__studio/prototype-rename', {
     method: 'POST',

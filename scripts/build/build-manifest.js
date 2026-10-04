@@ -143,6 +143,10 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
   // "system" (optional) is the design system it builds with, one of the folders in src/systems/.
   const system = meta.system === undefined ? DEFAULT_SYSTEM : meta.system;
   if (system !== null && !(typeof system === 'string' && Object.hasOwn(PROTOTYPE_SYSTEMS, system))) return skip(`has "system": "${system}", which isn't a folder in src/systems/ (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`);
+  const rebuild = meta.rebuild;
+  if (rebuild !== undefined && (!rebuild || typeof rebuild !== 'object' ||
+    !(rebuild.targetSystem === null || typeof rebuild.targetSystem === 'string' && Object.hasOwn(PROTOTYPE_SYSTEMS, rebuild.targetSystem)) ||
+    typeof rebuild.source !== 'string' || !/^src\/prototypes\/[a-z0-9][a-z0-9._-]*\/[a-z0-9][a-z0-9._-]*$/i.test(rebuild.source))) return skip('has an invalid rebuild request');
   // "status" (optional) is 'active' (the default) or 'archived'.
   let status = null;
   if (meta.status !== undefined) {
@@ -155,6 +159,7 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
       id, contributorKey, title: meta.title, ...(SECTION_KEYS.has(contributorKey) && { description: meta.description ?? '' }),
       contributor: maintained ? maintainers.map((k) => contributors[k]?.name ?? k).join(', ') : contributors[contributorKey]?.name ?? '',
       created: meta.created ?? null, system, artifacts,
+      ...(rebuild !== undefined && { rebuild }),
       ...(maintained && { maintainers }),
       ...(status === 'archived' && { status }),
     },

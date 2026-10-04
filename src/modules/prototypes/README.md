@@ -46,7 +46,15 @@ Your assigned design system supplies components and styles. You can also explore
 
 Edit your own artifacts with your agent or the [shared source workflow](/documentation/guide/home#working-with-files). Other contributors' source opens read-only.
 
-Use the prototype's **…** menu to change its title or archive it. Archiving keeps it locally and excludes it from the published site. Put project context in a document artifact.
+Use the prototype's **…** menu to **Rename**, **Duplicate…**, or archive it. Archiving keeps it locally and excludes it from the published site. Put project context in a document artifact.
+
+## Explore another system
+
+The assigned system stays with the prototype in the app. To try another system, choose **Duplicate…** from your own prototype's menu. Give the copy a title and choose a system, including **No system — custom styling**.
+
+Keeping the same system creates an ordinary copy. Choosing another system asks you to confirm a rebuild copy. Systems rarely translate directly; components, styles, and some behavior may need to be reconstructed. The original stays unchanged so you can compare the result.
+
+A rebuild copy keeps its current system until your agent migrates it. Its sidebar shows **Rebuild needed** and the target. Select **Copy rebuild instructions** and paste them into your coding agent. Creating the copy does not start an agent or convert its code automatically. The agent updates the assignment and clears the notice after verifying the rebuild.
 
 ## For developers
 

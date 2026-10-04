@@ -24,6 +24,7 @@ Two artifacts cannot share a URL, such as `main.tsx` and `main.md` in one folder
 | `title` | Required display title. |
 | `created` | Optional `YYYY-MM-DD` date. Creation fills it in. |
 | `system` | Installed prototype system ID, or `null` for no system (custom styling). Omission uses the explicitly configured `defaultSystem`. Creation saves the chosen value. |
+| `rebuild` | Optional pending migration: `targetSystem` is an installed ID or `null`; `source` is `src/prototypes/<contributor>/<id>`. Current `system` remains the runtime boundary until migration. |
 | `order` | Relative file and folder paths placed first within their folder, in sequence. |
 | `status` | `active` or `archived`. Omission means active. |
 
@@ -54,6 +55,14 @@ Renaming changes shared URLs. Relative document links survive a prototype-folder
 The app rewrites links to the prototype's own address in its Markdown and canvas files. Direct file changes must update those links explicitly.
 
 Use TanStack Router's `Link` for view navigation. See its [navigation documentation](https://tanstack.com/router/latest/docs/framework/react/guide/navigation).
+
+## Duplication and system rebuilds
+
+The local **Duplicate…** action is available for your own personal prototypes. It copies files into a new folder, resets the creation date, makes an archived source's copy active, and rewrites self-address links in Markdown and canvas files. Relative imports and links stay local to the copy. Symbolic links are rejected; Git metadata, node_modules, and trash folders are excluded.
+
+A different selected system records `rebuild.targetSystem` and the original repository path. It retains the source's resolved `system` so its copied implementation can still run. The confirmation explains that reconstruction is required. The sidebar supplies a copyable agent prompt; there is no automatic agent dispatch.
+
+To finish, migrate code and the `system` value together, verify the build and rendered artifacts, then remove `rebuild`. Pending targets prevent removing that system through the studio CLI. Assignment has no in-place switching action in the app; direct code owners can still change metadata while migrating their implementation.
 
 ## Lofi mode
 

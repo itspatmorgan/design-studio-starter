@@ -1,7 +1,7 @@
 // What you can do to a prototype or section item from a menu: the prototype's "…" menu in its navigation
 // (PrototypeHeader.tsx) and the "…" on its card (PrototypeCardMenu.tsx) share this, so they offer the same
 // things. Reaching it (copy its link; locally, open it in your editor) is open to everyone. Changing it
-// (edit, archive, delete, and whatever a module adds, like publish) is only for its owner, or the maintainers
+// (rename, duplicate, archive, delete, and whatever a module adds, like publish) is only for its owner, or the maintainers
 // of an item in a module's section (ownsPrototype). That only decides what is shown: the dev server checks
 // ownership again on every change.
 import { useState, type ReactNode } from 'react';
@@ -14,7 +14,8 @@ import { prototypeLink, setManifest } from '@/platform/app/data/manifest';
 import type { PrototypeInfo } from '@/platform/app/data/types';
 import { moduleApps } from '@/platform/app/modules';
 import { toast } from '@/systems/studio/components/toast';
-import EditPrototypeDialog from '@/modules/prototypes/viewer/EditPrototypeDialog';
+import RenamePrototypeDialog from '@/modules/prototypes/viewer/RenamePrototypeDialog';
+import DuplicatePrototypeDialog from '@/modules/prototypes/viewer/DuplicatePrototypeDialog';
 import DeletePrototypeDialog from '@/modules/prototypes/viewer/DeletePrototypeDialog';
 type Icon = typeof Link01Icon;
 
@@ -28,7 +29,8 @@ export function usePrototypeActions(proto: PrototypeInfo) {
   const editable = local && ownsPrototype(proto, me);
   // What the modules add. Their hooks run in a fixed order, because the modules that are on never change while the app runs.
   const contributed = moduleApps.flatMap(({ app }) => app.useActions?.(proto, { editable }) ?? []);
-  const [editing, setEditing] = useState(false);
+  const [renaming, setRenaming] = useState(false);
+  const [duplicating, setDuplicating] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   // Archiving leaves the whole prototype out of the deployed site. Here it stays, marked, so it can be opened and brought back.
@@ -58,7 +60,8 @@ export function usePrototypeActions(proto: PrototypeInfo) {
       local && { label: 'Copy path', icon: Copy01Icon, onSelect: () => { navigator.clipboard.writeText(repoPath(proto, '')); toast.add({ title: 'Path copied' }); } },
     ],
     [
-      editable && { label: 'Edit', icon: PencilEdit02Icon, onSelect: () => setEditing(true) },
+      editable && { label: 'Rename', icon: PencilEdit02Icon, onSelect: () => setRenaming(true) },
+      editable && proto.contributorKey === me && { label: 'Duplicate…', icon: Copy01Icon, onSelect: () => setDuplicating(true) },
       editable && (proto.status === 'archived'
         ? { label: 'Unarchive', icon: ArchiveRestoreIcon, onSelect: () => setArchived(false) }
         : { label: 'Archive', icon: Archive02Icon, onSelect: () => setArchived(true) }),
@@ -70,7 +73,8 @@ export function usePrototypeActions(proto: PrototypeInfo) {
   // The dialogs those actions open. Render them anywhere under the menu.
   const dialogs: ReactNode = editable ? (
     <>
-      <EditPrototypeDialog proto={proto} open={editing} onOpenChange={setEditing} />
+      <RenamePrototypeDialog proto={proto} open={renaming} onOpenChange={setRenaming} />
+      <DuplicatePrototypeDialog key={String(duplicating)} proto={proto} open={duplicating} onOpenChange={setDuplicating} />
       <DeletePrototypeDialog proto={proto} open={deleting} onOpenChange={setDeleting} />
     </>
   ) : null;

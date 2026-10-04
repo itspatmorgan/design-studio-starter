@@ -16,6 +16,7 @@ import { usePrototypeActions, type Action } from '@/modules/prototypes/viewer/us
 import { NavHeader } from '@/platform/app/shell/nav';
 import { menuGroups } from '@/platform/app/shell/menuGroups';
 import { Link } from '@tanstack/react-router';
+import PrototypeRebuildNotice from './PrototypeRebuildNotice';
 import { PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
 
 // The title, renamed in place: Enter or leaving the field saves, Escape cancels.
@@ -123,6 +124,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
             {system ? <Link to={`/systems/${proto.system}` as never} className="min-w-0 truncate rounded-sm hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-ring" aria-label={`Open ${system.label} system`}>{system.label} ↗</Link>
               : proto.system === null ? <span title="This prototype uses its own components and CSS">None · custom styling</span> : <span title={`Assigned system: ${proto.system}`}>System unavailable</span>}
           </div>
+          <PrototypeRebuildNotice proto={proto} />
           {proto.status === 'archived' && (
             <p className="mt-1 flex items-center gap-1.5 text-[12px] text-muted-foreground" title="The deployed site leaves this prototype out">
               <HugeiconsIcon icon={Archive02Icon} size={12} /> Archived

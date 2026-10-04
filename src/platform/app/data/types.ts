@@ -22,6 +22,7 @@ export type PrototypeInfo = {
   contributor: string;    // display name, from contributors.json
   created: string | null;
   system: string | null;  // null means custom styling; omission in meta.json resolves to defaultSystem
+  rebuild?: { targetSystem: string | null; source: string }; // requested fork migration, before changing the actual assignment
   status?: 'archived';    // meta.json "status", when archived; absent means active
   maintainers?: string[]; // meta.json "maintainers" (contributors.json keys), where a section's policy is maintainers; prototypes don't have them
 };

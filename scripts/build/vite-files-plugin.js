@@ -21,7 +21,8 @@ import { documentationSources, sourceFile } from './files/source.js';
 //      (contributor "systems" opens a prototype system's components, src/systems/<id>/components/. Anyone can
 //      read and save its text files, and it has one operation of its own:
 //        add-docs { component }                    the examples and page a component is missing)
-//   POST /__studio/prototype { title }   a new prototype in your folder, like pnpm new
+//   POST /__studio/prototype { title, system? }   a new prototype in your folder, like pnpm new
+//   POST /__studio/prototype-duplicate { contributor, prototype, title, system }   copy an owned personal prototype
 //   POST /__studio/prototype-rename { contributor, prototype, title }   retitle a prototype you own; a new title renames its folder too
 //   POST /__studio/prototype-delete { contributor, prototype }   move a prototype you own to the Trash
 //     It replies with the new path and the updated manifest, so the app can follow a renamed view.
@@ -41,6 +42,7 @@ import { ROOT } from './files/paths.js';
 import { pathToFileURL } from 'node:url';
 import { buildManifest } from './build-manifest.js';
 import { createPrototype, renamePrototype } from '../../src/modules/prototypes/node/create.js';
+import { duplicatePrototype } from '../../src/modules/prototypes/node/duplicate.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from '../cli/resolve-contributor.js';
 import { fileTypeOf, systemContentTypeOf } from '../lib/file-types.js';
@@ -166,6 +168,17 @@ export default function filesPlugin() {
             } catch (e) {
               return send(res, 400, { error: e.message });
             }
+          }
+          if (req.method === 'POST' && url.pathname === '/prototype-duplicate') {
+            const { contributor, prototype, title, system } = await readJson(req);
+            const dir = prototypeDir(contributor, prototype);
+            if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
+            if (!me() || contributor !== me()) return send(res, 403, { error: 'You can duplicate prototypes in your own workspace.' });
+            try {
+              const { id, manifest } = duplicatePrototype({ key: contributor, id: prototype, title, system });
+              publishManifest(server, manifest, req.headers['x-studio-tab']);
+              return send(res, 200, { prototype: id, manifest });
+            } catch (e) { return send(res, 400, { error: e.message }); }
           }
           if (req.method === 'POST' && url.pathname === '/prototype-delete') {
             const { contributor, prototype } = await readJson(req);
