@@ -13,7 +13,7 @@ Systems brings together the components, styles, and knowledge used by your proto
 
 The Contents toolbar searches across the tree and expands or collapses all folders. Search reveals matches without losing your previous expansion choices. Context, Rules, Skills, Theme, and Components start open. Guidance appears above the toolkit, and each guidance group has its own **New** action.
 
-Overview shows the selected system’s purpose and resource counts with links to its included files. It also lists active prototypes using the system. Studio’s overview explains its role in the application instead. Working with this system holds the system’s own implementation and customization guidance.
+Overview shows the selected system’s purpose and inventories with links to its included files. Guidance groups Context, Rules, and Skills; Code groups Theme and Components. It also lists active prototypes using the system. Studio’s overview explains its role in the application instead. Working with this system holds the system’s own implementation and customization guidance.
 
 ## Prototype systems and Studio
 

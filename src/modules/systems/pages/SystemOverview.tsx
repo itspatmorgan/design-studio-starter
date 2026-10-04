@@ -32,24 +32,30 @@ export default function SystemOverview({ system, sys, components, tokens, founda
   const cardClass = 'flex min-w-0 flex-col rounded-lg border border-border bg-card p-4';
 
   return <>
-    <PageHeader title={`${sys.label} system`} description={sys.summary ?? `Resources and guidance for work using ${sys.label}.`} />
+    <PageHeader title={`${sys.label} system`} description={sys.summary ?? `The guidance and code included in ${sys.label}.`} />
     <div className="mb-8 space-y-2 text-[13px] text-muted-foreground">
       <p className="font-medium text-foreground">{platform ? 'Required application system' : 'Prototype system'}</p>
       <ColorModeSupport modes={spec.colorModes} />
     </div>
 
-    <section className="mb-8" aria-labelledby="system-resources">
-      <h2 id="system-resources" className={sectionHeading}>Available resources</h2>
-      <div className="grid gap-3 sm:grid-cols-2">
+    <section className="mb-8" aria-labelledby="system-guidance">
+      <h2 id="system-guidance" className={sectionHeading}>Guidance</h2>
+      <div className="grid gap-3 md:grid-cols-3">
         {guidance.map(section => <div key={section.id} className={cardClass}>
           <div className="mb-2 flex items-center gap-2"><section.icon aria-hidden className="size-4 text-muted-foreground" /><h3 className="text-sm font-semibold">{section.label}</h3><span className="ml-auto text-[12px] text-muted-foreground">{section.artifacts.length}</span></div>
           {section.artifacts.length ? <ul className="space-y-1 text-[13px]">{section.artifacts.slice(0, 3).map(artifact => <li key={artifact.path}><Link {...artifactLink(section.proto!, artifact)} className="hover:underline">{artifactLabel(artifact.path, section.proto)}</Link></li>)}</ul> : <p className="text-[13px] text-muted-foreground">No {section.label.toLowerCase()} yet. Use New in this section to add useful material.</p>}
         </div>)}
+      </div>
+    </section>
+
+    <section className="mb-8" aria-labelledby="system-code">
+      <h2 id="system-code" className={sectionHeading}>Code</h2>
+      <div className="grid gap-3 sm:grid-cols-2">
         <div className={cardClass}>
           <div className="mb-2 flex items-center gap-2"><Palette aria-hidden className="size-4 text-muted-foreground" /><h3 className="text-sm font-semibold">Theme</h3><span className="ml-auto text-[12px] text-muted-foreground">{new Set(tokens.map(token => token.name)).size} tokens</span></div>
           <ul className="flex flex-wrap gap-x-3 gap-y-1 text-[13px]">{foundations.map(page => <li key={page.id}><Link to={(base + '/' + page.id) as never} className="hover:underline">{page.label}</Link></li>)}{sys.icons && <li><Link to={(base + '/icons') as never} className="hover:underline">Icons</Link></li>}</ul>
         </div>
-        <div className={cardClass + ' sm:col-span-2'}>
+        <div className={cardClass}>
           <div className="mb-2 flex items-center gap-2"><Blocks aria-hidden className="size-4 text-muted-foreground" /><h3 className="text-sm font-semibold">Components</h3><span className="ml-auto text-[12px] text-muted-foreground">{components.length}</span></div>
           {components.length ? <ul className="flex flex-wrap gap-x-3 gap-y-1 text-[13px]">{components.slice(0, 5).map(component => <li key={component.slug}><Link to={(base + '/' + component.slug) as never} className="hover:underline">{component.title}</Link></li>)}</ul> : <p className="text-[13px] text-muted-foreground">No components yet. Ask your agent to import or build your toolkit.</p>}
           <p className="mt-auto pt-4 text-[12px] text-muted-foreground">Browse the full collection in navigation.</p>
