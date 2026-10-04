@@ -13,7 +13,7 @@ Systems brings together the components, styles, and knowledge used by your proto
 
 The Contents toolbar searches across the tree and expands or collapses all folders. Search reveals matches without losing your previous expansion choices. Context, Rules, Skills, Theme, and Components start open. Guidance appears above the toolkit, and each guidance group has its own **New** action.
 
-Overview shows the system’s purpose, a diagram of how its guidance and toolkit support the work, and resource counts with links to examples. It also lists active prototypes using the system. Studio’s overview explains its role in the application instead. Working with this system holds the system’s own implementation and customization guidance.
+Overview shows the selected system’s purpose and resource counts with links to its included files. It also lists active prototypes using the system. Studio’s overview explains its role in the application instead. Working with this system holds the system’s own implementation and customization guidance.
 
 ## Prototype systems and Studio
 
@@ -24,6 +24,33 @@ Overview shows the system’s purpose, a diagram of how its guidance and toolkit
 **Studio** supplies Studio's own interface: navigation, menus, editors, and documentation. It stays separate from prototype design systems.
 
 Each prototype uses an assigned system and can also have local components and styles.
+
+## How a system supports the work
+
+Context explains the people, domain, and intent. Rules set standing constraints. Skills provide procedures for specific tasks. Together, they guide an agent’s decisions and work. Theme and components provide the interface toolkit used by the code.
+
+```mermaid
+---
+config:
+  flowchart:
+    nodeSpacing: 15
+    rankSpacing: 35
+---
+flowchart LR
+  accTitle: How a system supports the work
+  accDescr: Context, rules, and skills guide an agent. Theme and components provide the interface toolkit. Both contribute to the work.
+  context[Context] --> agent[Agent]
+  rules[Rules] --> agent
+  skills[Skills] --> agent
+  theme[Theme] --> components[Components]
+  agent -->|Decisions and tasks| work[Prototype]
+  components -->|Code and styles| work
+  theme --> work
+```
+
+A prototype’s assigned system connects it to that toolkit and guidance. Its code imports components and uses the system’s styles. Agents follow the system’s linked instructions; selecting a system does not automatically load every resource into a conversation.
+
+The Studio system follows the same pattern for the application itself: its toolkit supplies Studio’s interface, and its guidance helps agents operate and maintain the platform.
 
 ## Explore the toolkit
 
