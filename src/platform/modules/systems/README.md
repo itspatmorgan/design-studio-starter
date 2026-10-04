@@ -9,11 +9,13 @@ slug: "systems"
 
 # Systems
 
-Systems brings together the components, styles, and knowledge used by your prototypes. Use the selector to switch between systems. One navigation tree shows the selected system’s foundations, components, context, rules, and skills.
+Systems brings together the components, styles, and knowledge used by your prototypes. Use the selector to switch between systems. One navigation tree shows the selected system’s theme, components, context, rules, and skills.
 
-## Product and Platform
+## Prototype systems and Platform
 
 **Product** is the starter toolkit for prototype views. Replace or adapt it to match your product. You can add more systems when different work needs a different toolkit.
+
+**Marketing** demonstrates a second prototype toolkit, using a small Untitled UI subset. The Design Studio Marketing prototype uses its own palette, typography, and components alongside Product.
 
 **Platform** supplies Studio's own interface: navigation, menus, editors, and documentation. It stays separate from prototype design systems.
 

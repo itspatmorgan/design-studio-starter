@@ -17,14 +17,14 @@ export default function ViewFrame({ Component, viewKey, themeClass, empty, lofi 
   const [portal, setPortal] = useState<HTMLElement | null>(null);
   if (empty) return <div className="bg-background text-foreground min-w-0 flex-1 overflow-auto"><EmptyView path={empty.path} /></div>;
   return (
-    <div className="min-w-0 flex-1">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
       {/* The boundary sits outside the system's theme class, so its fallback keeps the app UI's look. */}
       <ErrorBoundary resetKeys={[viewKey, Component]} FallbackComponent={ViewError}>
         {/* contain: layout makes this box the frame for fixed-position overlays, so dialogs
             and their backdrops center and dim within the prototype, not the whole app.
             The box itself doesn't scroll; the inner div does, so overlays stay put. */}
-        <ThemeScope themeClass={themeClass} className={`${lofi ? ' lofi-view' : ''} bg-background text-foreground relative h-full [contain:layout]`}>
-          <div className="h-full overflow-auto">
+        <ThemeScope themeClass={themeClass} className={`${lofi ? ' lofi-view' : ''} bg-background text-foreground relative flex min-h-0 flex-1 flex-col [contain:layout]`}>
+          <div className="min-h-0 flex-1 overflow-auto">
             <PortalContext.Provider value={portal}>
               <Component />
             </PortalContext.Provider>

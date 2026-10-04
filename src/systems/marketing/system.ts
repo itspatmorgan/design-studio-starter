@@ -1,0 +1,12 @@
+import type { SystemSpec } from '../../platform/modules/systems/spec.ts';
+
+// Marketing: a design system prototypes can build with. A prototype picks it with "system": "marketing" in its meta.json.
+export default {
+  role: 'prototype',
+  label: 'Marketing',
+  themeClass: 'marketing-theme',
+  styling: 'tailwind',
+  colorModes: ['light', 'dark'],
+  docs: 'warn',
+  origin: null,
+} satisfies SystemSpec;

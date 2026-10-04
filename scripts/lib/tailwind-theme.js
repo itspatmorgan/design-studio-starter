@@ -86,7 +86,20 @@ export function scopeThemeUtilities(code, systems) {
         if (node.nodes) { for (const child of [...node.nodes]) if (!filter(child)) child.remove(); return node.nodes.length > 0; }
         return true;
       };
-      for (const originalNode of original) { const node = originalNode.clone(); if (filter(node)) scope.append(node); }
+      for (const originalNode of original) {
+        const node = originalNode.clone();
+        if (!filter(node)) continue;
+        // An implicit @scope selector starts below the root. Include :scope
+        // explicitly so frame utilities also apply on the theme boundary itself.
+        const includeRoot = rule => {
+          if (rule.parent?.type === 'rule') return;
+          const selectors = selectorParser().astSync(rule.selector).nodes.map(n => n.toString());
+          rule.selector = [...selectors, ...selectors.map(selector => `:scope:is(${selector})`)].join(', ');
+        };
+        if (node.type === 'rule') includeRoot(node);
+        else if (node.walkRules) node.walkRules(includeRoot);
+        scope.append(node);
+      }
       if (scope.nodes?.length) layer.append(scope);
     }
   });

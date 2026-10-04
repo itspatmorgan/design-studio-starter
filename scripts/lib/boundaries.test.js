@@ -147,23 +147,34 @@ test('Tailwind inventories allow intentional omissions and reject inherited refe
   const systems = [
     { role: 'platform', styling: 'tailwind', themeClass: 'platform-theme', inventory: themeInventory('.platform-theme { --shadow-sm: 0 1px black; --shadow-lg: 0 4px black; --spacing-4: 1rem; }', 'platform-theme') },
     { role: 'prototype', styling: 'tailwind', themeClass: 'product-theme', inventory: themeInventory('.product-theme { --shadow-sm: 0 2px black; }', 'product-theme') },
+    { role: 'prototype', styling: 'tailwind', themeClass: 'marketing-theme', inventory: themeInventory('.marketing-theme { --color-bg-brand-solid: #7f56d9; }', 'marketing-theme') },
   ];
   const { compile } = await import('tailwindcss');
   const compiler = await compile(themeAdapter(systems) + '\n@layer utilities { @tailwind utilities; }');
-  const compiled = compiler.build(['shadow-sm', 'shadow-lg', 'shadow-xl', 'p-4', 'p-5', 'flex', 'rounded-full']);
+  const compiled = compiler.build(['shadow-sm', 'shadow-lg', 'shadow-xl', 'p-4', 'p-5', 'flex', 'rounded-full', 'bg-bg-brand-solid']);
   assert.ok(!compiled.includes('.shadow-xl'));
   assert.ok(!compiled.includes('.p-5'));
   const scoped = scopeThemeUtilities(compiled, systems);
-  assert.match(scoped, /@scope \(.product-theme\) to \(.platform-theme\)/);
+  assert.match(scoped, /@scope \(.product-theme\) to \(.platform-theme, .marketing-theme\)/);
   const postcss = (await import('postcss')).default;
   const root = postcss.parse(scoped);
   const product = [];
-  root.walkAtRules('scope', rule => { if (rule.params.startsWith('(.product-theme)')) rule.walkRules(r => product.push(r.selector)); });
+  const marketing = [];
+  const selectorParser = (await import('postcss-selector-parser')).default;
+  root.walkAtRules('scope', rule => {
+    const list = rule.params.startsWith('(.product-theme)') ? product : rule.params.startsWith('(.marketing-theme)') ? marketing : null;
+    if (list) rule.walkRules(r => selectorParser(tree => tree.walkClasses(c => list.push('.' + c.value))).processSync(r.selector));
+  });
+  assert.ok(scoped.includes(':scope:is(.flex)'), 'frame utilities must apply to the theme boundary itself');
   assert.ok(product.includes('.shadow-sm'));
   assert.ok(product.includes('.flex'));
   assert.ok(!product.includes('.shadow-lg'));
   assert.ok(!product.includes('.p-4'));
   assert.ok(!product.includes('.rounded-full'));
+  assert.ok(!product.includes('.bg-bg-brand-solid'));
+  assert.ok(marketing.includes('.bg-bg-brand-solid'));
+  assert.ok(marketing.includes('.flex'));
+  assert.ok(!marketing.includes('.shadow-sm'));
   assert.ok(scoped.includes('--shadow-lg: initial'));
 });
 
