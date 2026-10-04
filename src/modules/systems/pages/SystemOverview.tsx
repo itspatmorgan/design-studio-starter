@@ -39,9 +39,9 @@ export default function SystemOverview({ system, sys, components, tokens }: {
 
     <div className="mb-8 divide-y divide-border border-y border-border">
       <section className="py-6" aria-labelledby="system-guidance">
-        <h2 id="system-guidance" className={sectionHeading}>Guidance</h2>
+        <h2 id="system-guidance" className={sectionHeading}>Instructions</h2>
         <Metrics items={guidance.map(section => ({ label: section.label, count: section.artifacts.length }))} />
-        {sys.overview?.guidance ? <p className="text-sm leading-6 text-muted-foreground">{sys.overview.guidance}</p> : !guidanceCount && <p className="text-sm leading-6 text-muted-foreground">No system guidance has been added yet.</p>}
+        {sys.overview?.guidance ? <p className="text-sm leading-6 text-muted-foreground">{sys.overview.guidance}</p> : !guidanceCount && <p className="text-sm leading-6 text-muted-foreground">No system instructions have been added yet.</p>}
       </section>
       <section className="py-6" aria-labelledby="system-code">
         <h2 id="system-code" className={sectionHeading}>Code</h2>
