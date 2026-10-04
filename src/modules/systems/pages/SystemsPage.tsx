@@ -90,7 +90,7 @@ function SystemBranch({ label, path, active, children }: { label: string; path: 
   useEffect(() => { if (active) setOpen(true); }, [active]);
   return <Collapsible open={open} onOpenChange={setOpen}>
     <CollapsibleTrigger title={path} className="mx-1 flex h-7 w-[calc(100%-8px)] items-center gap-1.5 rounded-md px-2 text-left text-[12px] font-medium leading-tight hover:bg-sidebar-foreground/5"><ChevronDown className={'size-3.5 shrink-0 text-muted-foreground transition-transform ' + (open ? '' : '-rotate-90')} />{label}</CollapsibleTrigger>
-    <CollapsibleContent className="space-y-0.5 pl-4">{children}</CollapsibleContent>
+    <CollapsibleContent className="space-y-0.5 pl-5">{children}</CollapsibleContent>
   </Collapsible>;
 }
 

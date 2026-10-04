@@ -545,7 +545,7 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
           );
         })()}
       </div>
-      <div hidden={branch && !expanded} className={branch ? "pl-4" : undefined}>
+      <div hidden={branch && !expanded} className={branch ? "pl-5" : undefined}>
       {filterOpen && (
         <div className="relative shrink-0 px-1">
           <Input
