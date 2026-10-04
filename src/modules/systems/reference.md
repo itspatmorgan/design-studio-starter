@@ -101,7 +101,7 @@ Only these system source files and discovered component files are accessible thr
 
 The selected system has one persistent navigation tree, ordered Overview, Context, Rules, Skills, Theme, and Components. Overview opens the system’s overview source. Context, Rules, Skills, Theme, and Components start expanded. Opening a page expands its owning branch and folders and preserves the other branches’ state while navigating the selected system. Branches and folders use disclosure chevrons without category icons; individual pages and artifacts use icons to distinguish their type.
 
-The Contents toolbar provides search across all sections and an expand-all or collapse-all action for branches and nested folders. Search matches navigation names and file paths, temporarily revealing matching branches and folders. Clearing search restores their previous expansion state. Creation actions remain beside Context, Rules, and Skills so their destination is clear.
+The Resources toolbar provides search across all sections and an expand-all or collapse-all action for branches and nested folders. Search matches navigation names and file paths, temporarily revealing matching branches and folders. Clearing search restores their previous expansion state. Creation actions remain beside Context, Rules, and Skills so their destination is clear.
 
 Theme contains token pages generated from the system’s theme file. Its navigation actions expose that source. Component items group their documentation, examples, and runtime source without presenting category metadata as filesystem folders.
 

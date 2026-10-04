@@ -178,7 +178,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
       </NavHeader>
       <div className="shrink-0 px-3 pt-3">
         <div className="flex h-7 items-center justify-between pl-2">
-          <p className="text-[12px] font-semibold">Contents</p>
+          <p className="text-[12px] font-semibold">Resources</p>
           <div className="flex items-center gap-0.5">
             <TreeAction label="Search" onClick={() => { setSearchOpen(open => !open); setQuery(''); }}>{navIcon(Search)}</TreeAction>
             <TreeAction label={allExpanded ? 'Collapse all' : 'Expand all'} onClick={toggleAll} disabled={Boolean(q)}>{navIcon(allExpanded ? ChevronsDownUp : ChevronsUpDown)}</TreeAction>
