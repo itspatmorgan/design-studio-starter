@@ -27,7 +27,7 @@ export default function SystemOverview({ system, sys, components, tokens }: {
     return { ...section, proto, artifacts };
   });
   const usage = systemUsage(manifest.prototypes, system);
-  const sectionHeading = 'mb-3 text-lg font-semibold tracking-tight';
+  const sectionHeading = 'mb-4 text-lg font-semibold tracking-tight';
   const guidanceCount = guidance.reduce((count, section) => count + section.artifacts.length, 0);
 
   return <>
@@ -35,34 +35,34 @@ export default function SystemOverview({ system, sys, components, tokens }: {
     {platform && <p className="mb-6 text-[13px] text-muted-foreground">Required application system</p>}
     {sys.overview?.starter && <aside className="mb-8 rounded-lg border border-border bg-background p-4" aria-label="Starter design system">
       <p className="mb-1 text-sm font-semibold">Replace this starter with your team’s design system</p>
-      <p className="text-sm leading-6 text-muted-foreground">{sys.label} is included to help you explore. Bring in your team’s components, styles, and instructions when you’re ready.</p>
+      <p className="text-sm leading-6 text-foreground/80">{sys.label} is included to help you explore. Bring in your team’s components, styles, and instructions when you’re ready.</p>
       <Link to={'/documentation/guide/systems' as never} hash="bring-your-own-system" className="mt-2 inline-flex items-center gap-1 text-sm hover:underline">Set up your system<ArrowUpRight aria-hidden className="size-3.5" /></Link>
     </aside>}
 
-    <div className="mb-4 grid gap-4 md:grid-cols-2">
+    <div className="mb-4 grid gap-4">
       <section className="min-w-0 rounded-xl bg-muted/40 p-6" aria-labelledby="system-guidance">
         <h2 id="system-guidance" className={sectionHeading}>Instructions</h2>
         <Metrics items={guidance.map(section => ({ label: section.label, count: section.artifacts.length }))} />
-        {sys.overview?.guidance ? <p className="text-sm leading-6 text-muted-foreground">{sys.overview.guidance}</p> : !guidanceCount && <p className="text-sm leading-6 text-muted-foreground">No system instructions have been added yet.</p>}
+        {sys.overview?.guidance ? <p className="text-sm leading-6 text-foreground/80">{sys.overview.guidance}</p> : !guidanceCount && <p className="text-sm leading-6 text-foreground/80">No system instructions have been added yet.</p>}
       </section>
       <section className="min-w-0 rounded-xl bg-muted/40 p-6" aria-labelledby="system-code">
         <h2 id="system-code" className={sectionHeading}>Code</h2>
         <Metrics items={[{ label: 'Components', count: components.length }, { label: 'Theme tokens', count: new Set(tokens.map(token => token.name)).size }]} />
-        {sys.overview?.code && <p className="text-sm leading-6 text-muted-foreground">{sys.overview.code}</p>}
+        {sys.overview?.code && <p className="text-sm leading-6 text-foreground/80">{sys.overview.code}</p>}
         <div className="mt-4 text-xs text-muted-foreground"><ColorModeSupport modes={spec.colorModes} /></div>
       </section>
     </div>
 
-    <section className="grid gap-6 rounded-xl bg-muted/40 p-6 md:grid-cols-3" aria-labelledby="system-usage">
+    <section className="rounded-xl bg-muted/40 p-6" aria-labelledby="system-usage">
       <div className="min-w-0">
         <h2 id="system-usage" className={sectionHeading}>Where it’s used</h2>
         {!platform && <Metrics items={[{ label: 'Active prototypes', count: usage.count }]} />}
       </div>
-      <div className="min-w-0 md:col-span-2">
-        {platform ? <p className="text-sm leading-6 text-muted-foreground">Studio’s navigation, menus, editors, and documentation use this system. It is maintained with platform releases and is unavailable as a prototype system.</p> : usage.count ? <>
+      <div className="min-w-0">
+        {platform ? <p className="text-sm leading-6 text-foreground/80">Studio’s navigation, menus, editors, and documentation use this system. It is maintained with platform releases and is unavailable as a prototype system.</p> : usage.count ? <>
           <ul className="space-y-1">{usage.recent.map(proto => <li key={proto.contributorKey + '/' + proto.id}><Link {...prototypeLink(proto)} className="flex items-center gap-3 rounded-lg bg-background px-4 py-3 text-sm hover:bg-muted"><span className="min-w-0 flex-1 truncate">{proto.title}</span><span className="max-w-36 truncate text-[12px] text-muted-foreground">{proto.contributor}</span><ArrowUpRight aria-hidden className="size-3.5 shrink-0" /></Link></li>)}</ul>
           <Link to={'/prototypes' as never} search={{ system } as never} className="mt-3 inline-flex items-center gap-1 text-sm hover:underline">View all prototypes<ArrowUpRight aria-hidden className="size-3.5" /></Link>
-        </> : <p className="text-sm leading-6 text-muted-foreground">No active prototypes use this system yet. Choose {sys.label} when creating a prototype.</p>}
+        </> : <p className="text-sm leading-6 text-foreground/80">No active prototypes use this system yet. Choose {sys.label} when creating a prototype.</p>}
       </div>
     </section>
 
@@ -71,7 +71,7 @@ export default function SystemOverview({ system, sys, components, tokens }: {
 }
 
 function Metrics({ items }: { items: { label: string; count: number }[] }) {
-  return <dl className="mb-4 flex flex-wrap gap-x-6 gap-y-4">
+  return <dl className="mb-5 grid grid-cols-3 gap-4">
     {items.map(item => <div key={item.label} className="flex flex-col gap-1">
       <dt className="order-2 text-xs text-muted-foreground">{item.label}</dt>
       <dd className="text-3xl font-semibold tracking-tight tabular-nums">{item.count}</dd>
