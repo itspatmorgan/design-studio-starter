@@ -68,7 +68,7 @@ flowchart LR
 
 In the Markdown source, put three backticks followed by `mermaid` before the diagram, and three backticks after it.
 
-Diagrams follow the platform's light or dark mode. Expand **Mermaid source** below a diagram to read or copy its text. Invalid syntax shows an error with the source still available. Add `accTitle` and `accDescr` to describe the diagram for assistive technology.
+Diagrams follow the platform's light or dark mode. Use the document's source control to read or copy diagram text. Invalid syntax shows an error; you can correct it in the document source. Add `accTitle` and `accDescr` to describe the diagram for assistive technology.
 
 This shared reader also supports Mermaid in the system context, Guide, and repository reference pages. It loads Mermaid only when a diagram appears. The Markdown text remains the saved source; no image file is required. Diagram scripts and click actions are disabled.
 

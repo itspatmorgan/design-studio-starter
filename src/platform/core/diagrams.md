@@ -4,7 +4,7 @@ referenceOrder: 60
 
 # Diagrams and code
 
-Mermaid blocks render automatically in the Guide, system context, reference pages, and prototype Documents. Write standard Mermaid syntax inside a fenced `mermaid` code block. Expand **Mermaid source** to read or copy an example below.
+Mermaid blocks render automatically in the Guide, system context, reference pages, and prototype Documents. Write standard Mermaid syntax inside a fenced `mermaid` code block. Use the full view's source control to read or copy the diagram text.
 
 The starter uses platform neutrals for structural diagrams and Flexoki accents for categories and chart series. Document code and the source editor share those accents. Change the platform's light or dark mode to preview both appearances.
 
