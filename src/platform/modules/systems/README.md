@@ -21,7 +21,7 @@ Each prototype uses an assigned system and can also have local components and st
 
 ## Explore the toolkit
 
-Foundations show colors, typography, and other theme values. Component pages show examples, source, and available properties. These help you and your agent understand what you can use.
+Foundations show the colors, typography, radius, shadows, and spacing declared in the system’s theme file. Component pages show examples, source, and available properties. These help you and your agent understand what you can use.
 
 A system declares whether it supports light mode, dark mode, or both. Systems with one mode keep that appearance in their pages, prototype views, and embeds while Studio follows its global toggle.
 
@@ -31,7 +31,7 @@ Ask your agent to import your components, tokens, fonts, and supported color mod
 
 System files are shared team content. Coordinate changes with your maintainer. Changing the default system preserves existing prototypes' system choices; migrating a prototype is a separate change.
 
-The navigation identifies the system’s repository folder. Foundations are generated from its theme file; component pages combine documentation, examples, and component source. Source is available through navigation, using the [shared file workflow](/documentation/guide/home#working-with-files). Component pages offer separate source tabs for documentation, examples, and component code.
+Foundations are generated from its theme file; component pages combine documentation, examples, and component source. Source is available through navigation, using the [shared file workflow](/documentation/guide/home#working-with-files). Component pages offer separate source tabs for documentation, examples, and component code.
 
 ## Context, rules, and skills
 

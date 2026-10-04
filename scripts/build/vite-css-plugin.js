@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import { cssProblems } from '../lib/css-scope.js';
-// Fills in the two lists in the app's stylesheet (src/systems/platform/styles/theme.css) that depend on what is installed,
+// Fills in the two lists in the app's stylesheet (src/platform/app/styles.css) that depend on what is installed,
 // so adding a design system or a module needs no edit to it. CSS can't be given a list at run time, so the stylesheet
 // has a marker where each goes and this puts the lines in as the file is read:
 //   /* @studio:system-themes */   an @import of each design system's styles/theme.css (src/systems/<id>/)
@@ -12,7 +12,7 @@ import { PROTOTYPE_DIRS } from '../lib/modules.js';
 import { SYSTEM_IDS, PROTOTYPE_SYSTEMS } from '../../src/platform/modules/systems/node/systems.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const STYLESHEET = path.join(ROOT, 'src', 'systems', 'platform', 'styles', 'theme.css');
+const STYLESHEET = path.join(ROOT, 'src', 'platform', 'app', 'styles.css');
 const rel = (target) => path.relative(path.dirname(STYLESHEET), target).split(path.sep).join('/');
 
 function validateThemes() {

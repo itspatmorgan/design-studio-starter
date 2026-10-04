@@ -246,14 +246,32 @@ test('a theme\'s tokens: scoped light and dark values, sorted into groups', asyn
   assert.deepEqual(themeTokens('.x { --a: red }', 'brand-theme'), []);
 });
 
-test('the shipped product theme is colors, a font, and one radius', async () => {
+test('the shipped systems explicitly own every foundation family', async () => {
   const { themeTokens } = await import('./themeTokens.ts');
   const css = fs.readFileSync(path.resolve(import.meta.dirname, '../../../systems/product/styles/theme.css'), 'utf8');
   const tokens = themeTokens(css, 'product-theme');
   assert.equal(tokens.filter((t) => t.group === 'colors').length, 31);
-  assert.deepEqual(tokens.filter((t) => t.group !== 'colors').map((t) => t.name).sort(), ['--font-sans', '--radius']);
+  for (const group of ['typography', 'radius', 'shadows', 'spacing']) assert.ok(tokens.some((t) => t.group === group), group);
+  assert.ok(tokens.filter((t) => t.group === 'radius').every((t) => t.value === '0rem'));
+  const platform = themeTokens(fs.readFileSync(path.resolve(import.meta.dirname, '../../../systems/platform/styles/theme.css'), 'utf8'), { light: ':root', dark: '.dark' });
+  for (const name of ['--font-sans', '--text-sm', '--text-sm--line-height', '--font-weight-medium', '--radius-xl', '--shadow-md', '--spacing']) {
+    assert.ok(tokens.some((t) => t.name === name), `Product ${name}`);
+    assert.ok(platform.some((t) => t.name === name), `Platform ${name}`);
+  }
   // Every one is a known shadcn token with a dark value of its own.
   assert.ok(tokens.filter((t) => t.group === 'colors').every((t) => t.subgroup && t.dark));
+});
+
+test('foundation utilities resolve system variables instead of compiling Platform values', async () => {
+  const { compile } = await import('tailwindcss');
+  const css = fs.readFileSync(path.resolve(import.meta.dirname, '../../app/styles.css'), 'utf8');
+  const bridge = css.match(/@theme inline \{[^}]+\}/)?.[0];
+  assert.ok(bridge);
+  const compiler = await compile(bridge + '\n@tailwind utilities;');
+  const output = compiler.build(['font-sans', 'font-heading', 'rounded-xl', 'shadow-md', 'inset-shadow-sm', 'drop-shadow-md']);
+  for (const declaration of ['font-family: var(--font-sans)', 'font-family: var(--font-heading)', 'border-radius: var(--radius-xl)', '--tw-shadow: var(--shadow-md)', '--tw-inset-shadow: var(--inset-shadow-sm)', 'var(--drop-shadow-md)']) {
+    assert.ok(output.includes(declaration), declaration);
+  }
 });
 
 test('a menu\'s items are grouped: what doesn\'t apply is dropped, and groups are never merged', async () => {

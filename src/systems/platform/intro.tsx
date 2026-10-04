@@ -28,8 +28,8 @@ export default {
       <h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2>
       <Prose>
         <ColorModeSupport modes={system.colorModes} />
-        <p>shadcn/ui's default theme with the neutral base color, in <Code>src/systems/platform/styles/theme.css</Code>. Light values are on <Code>:root</Code>, dark values on <Code>.dark</Code>.</p>
-        <p>To restyle the app for your team, change the values in those two blocks, or paste a theme from the shadcn/ui theme builder. Keep the variable names.</p>
+        <p>shadcn/ui's default theme with the neutral base color, in <Code>src/systems/platform/styles/theme.css</Code>. Font families, typography, radius, shadows, and spacing are declared there alongside colors. Light values are on <Code>:root</Code> and <Code>.platform-theme</Code>; dark colors use the dark selectors.</p>
+        <p>To restyle the app for your team, change the values in that file, or paste a theme from the shadcn/ui theme builder. Keep the variable names.</p>
       </Prose>
     </>
   ),

@@ -10,6 +10,7 @@ Read the [system contract](../../../platform/modules/systems/reference.md) when 
 - Scope theme selectors to the system's unique theme class or its descendants. Imported stylesheets follow the same constraint.
 - Prefix keyframe names with the theme class and a dash. Font-face registration is permitted.
 - Keep pop-ups inside the prototype's themed container. For starter Base UI portals, pass `usePortalContainer()` as `container`.
+- Declare system foundations in its own scoped theme. Tailwind configuration and utility mappings belong to `src/platform/app/styles.css`; imported systems may use other scoped CSS conventions. Missing declarations inherit application defaults and are not system-owned tokens.
 - Use the system's tokens and component APIs. Review affected behavior in both supported color modes.
 - Obtain shared-change authorization through the [contributor scope rule](contributor-scope.md).
 

@@ -71,13 +71,17 @@ Foundation pages come from custom properties in the theme. No separate foundatio
 | Color values | Colors |
 | Remaining tokens | Other tokens |
 
-Typography includes Tailwind defaults where tokens do not override them. Pages appear when relevant tokens exist, with typography always available.
+Each supplied system explicitly declares font families, type sizes and line heights, weights, tracking, leading, radii, shadows, spacing, and container sizes in its own theme. Foundation pages preview those declarations; they do not substitute Tailwind's default type scale or assume Platform's radius formulas. Pages appear when relevant tokens exist, with typography always available.
+
+The application stylesheet, `src/platform/app/styles.css`, owns Tailwind configuration, utility mappings, and global application styles. System `styles/theme.css` files own runtime values. Utilities read CSS variables inside the active system boundary; Product's radius scale is explicitly square. Missing system declarations may still inherit application defaults through ordinary CSS, but those inherited values are not presented as system-owned foundations.
+
+Tailwind is optional for imported systems. Their theme entry point can contain scoped CSS and validated local imports with their own token names. A library that requires a React theme provider must wrap its system's views and documentation examples using that library; Studio does not automatically install or infer providers. JavaScript-only tokens need custom system documentation until a dedicated adapter is implemented. Top-level Tailwind `@theme` blocks remain application configuration and are rejected in prototype-system styles because they affect all systems.
 
 ## Source editing
 
 Systems uses the [shared platform source workflow](../../core/source.md). Right-click a navigation item for file actions, or use **⌘' / Ctrl+'** to toggle source. **⌘S / Ctrl+S** saves; the toggle or **Done** returns to rendering with unsaved-change protection. Source editors remain in Studio's color mode.
 
-Component pages open their Page, Examples, and Component file tabs. Introduction and Icons open the system's introduction source (`intro.tsx`, or the platform's `platformSystem.tsx`). A missing introduction opens `system.ts`. Generated foundation pages open the system's theme CSS. There is no separate editable file for each token-family page.
+Component pages open their Page, Examples, and Component file tabs. Introduction and Icons open the system's introduction source (`intro.tsx`). A missing introduction opens `system.ts`. Generated foundation pages open the system's theme CSS. There is no separate editable file for each token-family page.
 
 Only these system source files and discovered component files are accessible through the local Systems source endpoint. Menus provide edit, external editor, reveal, and copying actions without rename or delete.
 

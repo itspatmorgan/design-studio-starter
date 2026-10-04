@@ -2,7 +2,6 @@ import { PortalContext } from '@/lib/portal';
 import type { ColorMode } from '../spec';
 import type { DesignSystem } from '@/platform/app/data/types';
 import { useEffect, useRef, useState, type ReactNode, type Ref } from 'react';
-import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/platform/components/tooltip';
 import { KNOWN_COLORS, type ThemeToken } from '@/platform/modules/systems/themeTokens';
 
@@ -118,37 +117,6 @@ export function ColorTokens({ tokens }: { tokens: ThemeToken[] }) {
           </div>
         </div>
       ))}
-    </div>
-  );
-}
-
-// --- Radius -----------------------------------------------------------------
-
-const RADII = ['rounded-sm', 'rounded-md', 'rounded-lg', 'rounded-xl', 'rounded-2xl', 'rounded-3xl', 'rounded-4xl', 'rounded-full'];
-
-function RadiusBox({ cls }: { cls: string }) {
-  const [ref, value] = useComputed((s) => s.borderTopLeftRadius);
-  return (
-    <div className="flex flex-col items-center gap-2">
-      <div ref={ref} className={cn('size-20 border-2 border-primary/60 bg-primary/10', cls)} />
-      <span className="font-mono text-xs text-foreground">{cls}</span>
-      <span className="font-mono text-xs text-muted-foreground">{value}</span>
-    </div>
-  );
-}
-
-function BaseRadius() {
-  const [ref, value] = useComputed<HTMLParagraphElement>((s) => s.getPropertyValue('--radius').trim());
-  return <p ref={ref} className="mb-4 text-sm text-muted-foreground">Base <Code>--radius</Code> is <Code>{value}</Code>. The scale is calculated from it.</p>;
-}
-
-export function RadiusScale() {
-  return (
-    <div className="text-foreground">
-      <BaseRadius />
-      <div className="flex flex-wrap gap-6 rounded-lg border border-border p-6">
-        {RADII.map((c) => <RadiusBox key={c} cls={c} />)}
-      </div>
     </div>
   );
 }
