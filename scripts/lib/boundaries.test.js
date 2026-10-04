@@ -155,14 +155,16 @@ test('Tailwind inventories allow intentional omissions and reject inherited refe
   assert.ok(!compiled.includes('.shadow-xl'));
   assert.ok(!compiled.includes('.p-5'));
   const scoped = scopeThemeUtilities(compiled, systems);
-  assert.match(scoped, /@scope \(.product-theme\) to \(.studio-theme, .marketing-theme\)/);
+  assert.match(scoped, /@scope \(.product-theme\) to \(.studio-theme, .marketing-theme, .prototype-unstyled\)/);
+  assert.match(scoped, /@scope \(.prototype-unstyled\) to \(.studio-theme, .product-theme, .marketing-theme\)/);
   const postcss = (await import('postcss')).default;
   const root = postcss.parse(scoped);
   const product = [];
   const marketing = [];
+  const custom = [];
   const selectorParser = (await import('postcss-selector-parser')).default;
   root.walkAtRules('scope', rule => {
-    const list = rule.params.startsWith('(.product-theme)') ? product : rule.params.startsWith('(.marketing-theme)') ? marketing : null;
+    const list = rule.params.startsWith('(.product-theme)') ? product : rule.params.startsWith('(.marketing-theme)') ? marketing : rule.params.startsWith('(.prototype-unstyled)') ? custom : null;
     if (list) rule.walkRules(r => selectorParser(tree => tree.walkClasses(c => list.push('.' + c.value))).processSync(r.selector));
   });
   assert.ok(scoped.includes(':scope:is(.flex)'), 'frame utilities must apply to the theme boundary itself');
@@ -175,6 +177,9 @@ test('Tailwind inventories allow intentional omissions and reject inherited refe
   assert.ok(marketing.includes('.bg-bg-brand-solid'));
   assert.ok(marketing.includes('.flex'));
   assert.ok(!marketing.includes('.shadow-sm'));
+  assert.ok(custom.includes('.flex'));
+  assert.ok(!custom.includes('.p-4'));
+  assert.ok(!custom.includes('.bg-bg-brand-solid'));
   assert.ok(scoped.includes('--shadow-lg: initial'));
 });
 

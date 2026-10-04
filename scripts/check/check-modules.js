@@ -49,7 +49,9 @@ for (const [id, spec] of Object.entries(SYSTEM_SPECS)) {
 const themeSystems = inventories();
 const themePrototypePolicy = scopePolicy({ root: ROOT, systems: PROTOTYPE_SYSTEMS, defaultSystem: DEFAULT_SYSTEM, modules: ENABLED_MODULES, prototypeDirs: PROTOTYPE_DIRS });
 const prototypeThemeFiles = [path.join(ROOT, 'src/prototypes'), ...PROTOTYPE_DIRS.map(dir => path.join(ROOT, dir))].flatMap(dir => [...sourceFiles(dir)]).filter(file => /\.[cm]?[jt]sx?$/.test(file));
-problems.push(...await themeUsageProblems(themeSystems, (system) => {
+const customPrototypeTheme = { role: 'prototype', styling: 'tailwind', themeClass: 'prototype-unstyled', inventory: { base: new Map(), modes: new Map() } };
+problems.push(...await themeUsageProblems([...themeSystems, customPrototypeTheme], (system) => {
+  if (system === customPrototypeTheme) return prototypeThemeFiles.filter(file => themePrototypePolicy.scopeOf(file)?.system === null);
   const dirs = system.role === 'platform' ? ['src/platform', 'src/modules', system.dir + 'components'] : [system.dir + 'components'];
   const files = dirs.flatMap(dir => [...sourceFiles(path.join(ROOT, dir))]).filter(file => /\.[cm]?[jt]sx?$/.test(file) && !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(file));
   const prototypeFiles = system.role === 'platform' ? [] : prototypeThemeFiles.filter(file => themePrototypePolicy.scopeOf(file)?.system === path.basename(system.dir));

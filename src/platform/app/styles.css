@@ -32,6 +32,15 @@
 html { color-scheme: light; }
 html.dark { color-scheme: dark; }
 
+/* A prototype choosing no system starts from browser defaults, with no system tokens. */
+.prototype-unstyled {
+  background-color: Canvas;
+  color: CanvasText;
+  font-family: system-ui, sans-serif;
+  font-size: 16px;
+  line-height: normal;
+}
+
 /* Menu items. shadcn/ui shows the hovered item with :focus (focus:bg-accent), which a page without
    focus never matches, and the page loses focus when "Open in editor" or "Reveal in Finder" brings
    another app forward, so the next menu's hover looked dead. The menu also marks the hovered item

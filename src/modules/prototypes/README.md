@@ -13,6 +13,10 @@ A prototype is a workspace for an idea. It brings interactive screens and suppor
 
 Ask your agent to create one, or select **New prototype**. Give it a goal, then iterate with your agent as you review the result.
 
+The creation dialog asks for a title and system. Choose an installed system for its components, styles, and guidance. Choose **No system — custom styling** to build with your own components and CSS instead.
+
+The sidebar shows the prototype's assigned system beneath its title. Select the system name to browse its components and guidance. A custom-styled prototype shows **None · custom styling**.
+
 ## Artifacts work together
 
 A prototype's pieces of work are **artifacts**. Each artifact is backed by a file.

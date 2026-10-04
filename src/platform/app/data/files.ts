@@ -169,11 +169,11 @@ export async function writeSource(p: PrototypeInfo, path: string, content: strin
 }
 
 // Creates a prototype in your folder, like pnpm new. Returns its URL parts and the new manifest.
-export async function createPrototype(title: string) {
+export async function createPrototype(title: string, system?: string | null) {
   const res = await fetch('/__studio/prototype', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Studio-Tab': TAB_ID },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify({ title, system }),
   });
   const body = await res.json();
   if (!res.ok) throw new Error(body.error ?? 'Something went wrong. Check that the dev server is still running.');

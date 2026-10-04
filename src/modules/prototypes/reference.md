@@ -23,7 +23,7 @@ Two artifacts cannot share a URL, such as `main.tsx` and `main.md` in one folder
 | --- | --- |
 | `title` | Required display title. |
 | `created` | Optional `YYYY-MM-DD` date. Creation fills it in. |
-| `system` | Installed system ID. If omitted, uses the required, explicitly configured `defaultSystem`. |
+| `system` | Installed prototype system ID, or `null` for no system (custom styling). Omission uses the explicitly configured `defaultSystem`. Creation saves the chosen value. |
 | `order` | Relative file and folder paths placed first within their folder, in sequence. |
 | `status` | `active` or `archived`. Omission means active. |
 
@@ -32,6 +32,10 @@ Remaining artifacts sort alphabetically, files before folders. Use `order` to re
 Moving, renaming, or deleting an artifact must update its `order` entries. The app performs these updates for its own operations.
 
 Invalid metadata skips the prototype with a local warning and fails the production build.
+
+With `system: null`, views start from browser colors and a system font, without registered system tokens or components. Use local components, CSS Modules, shared utilities, and installed packages. System imports remain outside this prototype's runtime boundary. Layout utilities without system tokens remain available; style colors, typography, and spacing in local CSS. This is distinct from an invalid system ID, which fails validation.
+
+`pnpm new "Prototype Name"` assigns the studio default. Use `--system <id>` to choose another installed prototype system, or `--no-system` for custom styling.
 
 The first available artifact in navigation order opens by default, including artifacts inside folders. Helpers and disabled file types are excluded. An empty prototype shows an empty state.
 

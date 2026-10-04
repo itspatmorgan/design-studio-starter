@@ -132,9 +132,9 @@ export default function filesPlugin() {
             }
           }
           if (req.method === 'POST' && url.pathname === '/prototype') {
-            const { title } = await readJson(req);
+            const { title, system } = await readJson(req);
             try {
-              const { slug, manifest } = createPrototype({ title, key: me() });
+              const { slug, manifest } = createPrototype({ title, system, key: me() });
               publishManifest(server, manifest, req.headers['x-studio-tab']);
               return send(res, 200, { contributor: me(), prototype: slug, manifest });
             } catch (e) {

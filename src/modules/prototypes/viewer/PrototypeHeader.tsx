@@ -15,6 +15,8 @@ import { useRenamePrototype } from '@/modules/prototypes/viewer/useRenamePrototy
 import { usePrototypeActions, type Action } from '@/modules/prototypes/viewer/usePrototypeActions';
 import { NavHeader } from '@/platform/app/shell/nav';
 import { menuGroups } from '@/platform/app/shell/menuGroups';
+import { Link } from '@tanstack/react-router';
+import { PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
 
 // The title, renamed in place: Enter or leaving the field saves, Escape cancels.
 function TitleInput({ initial, onDone }: { initial: string; onDone: (title: string | null) => void }) {
@@ -43,6 +45,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
   const { local, editable } = actions;
   const [renaming, setRenaming] = useState(false);
   const [showAll, toggleShowAll] = useShowAllFiles();
+  const system = proto.system === null ? undefined : PROTOTYPE_SYSTEMS[proto.system];
 
   async function rename(title: string | null) {
     setRenaming(false);
@@ -114,6 +117,11 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
               </Tooltip>
               <DropdownMenuContent align="end" className="min-w-44">{menuItems(DropdownMenuItem, DropdownMenuSeparator)}</DropdownMenuContent>
             </DropdownMenu>
+          </div>
+          <div className="mt-1 mb-2 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+            <span>System ·</span>
+            {system ? <Link to={`/systems/${proto.system}` as never} className="min-w-0 truncate rounded-sm hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-ring" aria-label={`Open ${system.label} system`}>{system.label} ↗</Link>
+              : proto.system === null ? <span title="This prototype uses its own components and CSS">None · custom styling</span> : <span title={`Assigned system: ${proto.system}`}>System unavailable</span>}
           </div>
           {proto.status === 'archived' && (
             <p className="mt-1 flex items-center gap-1.5 text-[12px] text-muted-foreground" title="The deployed site leaves this prototype out">

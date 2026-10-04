@@ -56,6 +56,8 @@ export function inventoryLiterals(rule) {
 // CSS scopes stop utility selectors at other system boundaries, including nested embeds.
 // Token resets separately stop custom-property inheritance; scopes alone do not do that.
 export function scopeThemeUtilities(code, systems) {
+  // Custom-styled prototypes are a boundary without a registered system inventory.
+  systems = [...systems, { role: 'prototype', styling: 'custom', themeClass: 'prototype-unstyled', inventory: { base: new Map(), modes: new Map() } }];
   const tree = postcss.parse(code);
   const known = new Set(['--radius-full', '--default-font-family', '--default-mono-font-family', ...systems.flatMap(s => [...s.inventory.base.keys()])]);
   const reset = postcss.atRule({ name: 'layer', params: 'theme' });

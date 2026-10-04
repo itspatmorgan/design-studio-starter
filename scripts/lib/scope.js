@@ -27,7 +27,7 @@ export function scopePolicy({ root, systems, defaultSystem, modules, prototypeDi
     const proto = prototypeRoot(file);
     if (proto) {
       let system = defaultSystem;
-      try { system = JSON.parse(fs.readFileSync(path.join(proto, 'meta.json'), 'utf8')).system ?? defaultSystem; } catch { /* manifest reports invalid metadata */ }
+      try { const meta = JSON.parse(fs.readFileSync(path.join(proto, 'meta.json'), 'utf8')); system = meta.system === undefined ? defaultSystem : meta.system; } catch { /* manifest reports invalid metadata */ }
       return { kind: 'Prototype', dir: proto, system };
     }
     const system = runtimeSystem(file);

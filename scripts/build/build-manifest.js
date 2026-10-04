@@ -141,8 +141,8 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
   // Two artifacts can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
   errors += checkArtifacts(dir, artifacts, out, { contributor: contributorKey, id });
   // "system" (optional) is the design system it builds with, one of the folders in src/systems/.
-  const system = meta.system ?? DEFAULT_SYSTEM;
-  if (!(system in PROTOTYPE_SYSTEMS)) return skip(`has "system": "${system}", which isn't a folder in src/systems/ (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`);
+  const system = meta.system === undefined ? DEFAULT_SYSTEM : meta.system;
+  if (system !== null && !(typeof system === 'string' && Object.hasOwn(PROTOTYPE_SYSTEMS, system))) return skip(`has "system": "${system}", which isn't a folder in src/systems/ (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`);
   // "status" (optional) is 'active' (the default) or 'archived'.
   let status = null;
   if (meta.status !== undefined) {

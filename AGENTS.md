@@ -13,7 +13,7 @@ When the person wants to set a prototype or view aside, or keep it out of the de
 When the person asks to add or change system context, rules, or skills, read [src/systems/studio/rules/system-content.md](src/systems/studio/rules/system-content.md).
 For documentation creation, revision, or audits, follow [src/systems/studio/skills/maintain-documentation/SKILL.md](src/systems/studio/skills/maintain-documentation/SKILL.md). When platform behavior changes, update affected guidance in the same change.
 When the person wants to turn off, add, remove, or build a module or a design system, read [src/systems/studio/rules/modules.md](src/systems/studio/rules/modules.md).
-Before editing a prototype, resolve its assigned system from its metadata and the studio configuration. Read that system's `src/systems/<id>/AGENTS.md` when present, then the relevant context, rules, and skills it references. Read only the applicable system's product instructions. Platform operating rules continue to apply.
+Before editing a prototype, resolve its assigned system from its metadata and the studio configuration. An explicit `system: null` means custom styling with no assigned system; do not substitute the default. For an assigned system, read its `src/systems/<id>/AGENTS.md` when present, then the relevant context, rules, and skills it references. Read only the applicable system's product instructions. Platform operating rules continue to apply.
 
 <!-- studio:modules -->
 When the person asks for a canvas (a page of views, documents, and notes arranged together), read [src/systems/studio/rules/canvases.md](src/systems/studio/rules/canvases.md).

@@ -1,7 +1,7 @@
 // Loads a view for its page (open.tsx) and for embeds (ViewEmbed.tsx).
 import type { ArtifactContext } from '@/platform/app/data/fileTypeModule';
 import { artifactSlug } from '@/platform/app/data/manifest';
-import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
+import { PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
 import { repoPath } from '@/platform/app/data/files';
 import { emptyView } from '@/lib/emptyView';
 import { views } from './loader';
@@ -25,6 +25,6 @@ export async function loadView({ proto, item }: ArtifactContext) {
     viewKey: `${file.contributor}/${file.prototype}/${artifactSlug(item.path)}`,
     empty,
     lofi: item.lofi === true,
-    themeClass: PROTOTYPE_SYSTEMS[proto.system]?.themeClass ?? PROTOTYPE_SYSTEMS[DEFAULT_SYSTEM]?.themeClass ?? '',
+    themeClass: proto.system === null ? 'prototype-unstyled' : PROTOTYPE_SYSTEMS[proto.system]?.themeClass ?? 'prototype-unstyled',
   };
 }

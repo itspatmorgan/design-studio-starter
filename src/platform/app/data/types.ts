@@ -21,7 +21,7 @@ export type PrototypeInfo = {
   description?: string;   // shared section descriptions; prototypes use artifacts for context
   contributor: string;    // display name, from contributors.json
   created: string | null;
-  system: string;         // meta.json "system", or the default (the required studio.config.ts defaultSystem)
+  system: string | null;  // null means custom styling; omission in meta.json resolves to defaultSystem
   status?: 'archived';    // meta.json "status", when archived; absent means active
   maintainers?: string[]; // meta.json "maintainers" (contributors.json keys), where a section's policy is maintainers; prototypes don't have them
 };

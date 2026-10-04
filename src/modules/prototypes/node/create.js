@@ -8,6 +8,7 @@ import { rootOf } from '../../../platform/core/roots.ts';
 import { PROTOTYPE_SECTIONS } from '../../../../scripts/lib/modules.js';
 import { resolveContributor } from '../../../../scripts/cli/resolve-contributor.js';
 import { moveWithLinks, personAddress } from '../../../../scripts/lib/prototype-links.js';
+import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '../../../modules/systems/node/systems.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 
@@ -16,12 +17,13 @@ export const slugify = (title) => title.toLowerCase().normalize('NFKD').replace(
 
 // Copies scripts/templates/prototype/ into src/prototypes/<key>/<slug>/,
 // fills in meta.json, and rebuilds the manifest. Returns { slug, manifest }, or throws a message.
-export function createPrototype({ title, key }) {
+export function createPrototype({ title, key, system = DEFAULT_SYSTEM }) {
   title = (title ?? '').trim();
   if (!title) throw new Error('Add a title.');
   const slug = slugify(title);
   if (!slug) throw new Error('Use at least one letter or number in the title.');
   if (!key) throw new Error("You're not set up as a contributor yet. Ask your agent to add you.");
+  if (system !== null && !Object.hasOwn(PROTOTYPE_SYSTEMS, system)) throw new Error('Choose an installed prototype system, or null for no system.');
   const dest = path.join(ROOT, 'src', 'prototypes', key, slug);
   if (fs.existsSync(dest)) throw new Error(`You already have a prototype named “${title}”. Choose a different title.`);
 
@@ -31,7 +33,7 @@ export function createPrototype({ title, key }) {
   const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
   const d = new Date();
   const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  Object.assign(meta, { title, created: today });
+  Object.assign(meta, { title, created: today, system });
   fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2) + '\n');
   return { slug, manifest: buildManifest().manifest };
 }
@@ -61,11 +63,22 @@ export function renamePrototype({ key, id, title }) {
 
 // Run as a script.
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const title = process.argv.slice(2).filter((a) => a !== '--').join(' ');
-  if (!title.trim()) { console.error('Usage: pnpm new "Prototype Name"'); process.exit(1); }
+  const args = process.argv.slice(2).filter((a) => a !== '--');
+  let system = DEFAULT_SYSTEM;
+  const titleParts = [];
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--no-system') system = null;
+    else if (args[i] === '--system') {
+      if (!args[i + 1] || args[i + 1].startsWith('--')) { console.error('Provide an installed system ID after --system.'); process.exit(1); }
+      system = args[++i];
+    } else if (args[i].startsWith('--')) { console.error(`Unknown option: ${args[i]}`); process.exit(1); }
+    else titleParts.push(args[i]);
+  }
+  const title = titleParts.join(' ');
+  if (!title.trim()) { console.error('Usage: pnpm new "Prototype Name" [--system <id> | --no-system]'); process.exit(1); }
   const key = resolveContributor();
   try {
-    const { slug } = createPrototype({ title, key });
+    const { slug } = createPrototype({ title, key, system });
     console.log(`Created src/prototypes/${key}/${slug}/`);
     console.log(`Open it with pnpm dev, at /prototypes/${key}/${slug}`);
   } catch (e) {

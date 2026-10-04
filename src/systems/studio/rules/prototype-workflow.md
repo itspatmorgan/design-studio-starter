@@ -8,6 +8,7 @@ Read the [prototype contract](../../../modules/prototypes/reference.md) when cre
 - Write new views as `.tsx` with a default-exported React component. Keep helper files under underscore names, such as `_components/`.
 - Replace the `emptyView` export when implementing an empty view.
 - Use the assigned design system as a toolkit. Build local components when the experiment needs them.
+- For `system: null`, use local components and CSS Modules; no existing system is assigned. Do not replace this explicit choice with the studio default.
 - Follow that system's component APIs, token conventions, and icon library. For starter components, use Base UI's `render` prop instead of `asChild`.
 - Read the [systems rule](systems.md) when working with components, themes, or pop-ups.
 - Re-read files before changing them. The person can edit and reorganize content in the running app.
