@@ -1,3 +1,7 @@
+---
+referenceOrder: 70
+---
+
 # Checks and troubleshooting
 
 Checks help keep the shared studio consistent. Give your agent the warning or error so it can identify the cause.

@@ -1,3 +1,7 @@
+---
+referenceOrder: 20
+---
+
 # Studio configuration
 
 `studio.config.ts` holds a small set of shared choices. Other customization happens in code, which you also own.

@@ -1,3 +1,7 @@
+---
+referenceOrder: 35
+---
+
 # File-type contract
 
 An artifact is a navigable piece of prototype work backed by a file, such as a view, document, diagram, or canvas. Folders organize artifacts; helpers, metadata, and other assets remain supporting files.

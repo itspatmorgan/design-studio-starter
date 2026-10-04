@@ -9,7 +9,9 @@ export const referenceHref = (source: string) => `/documentation/reference${sour
 
 export function ReferenceLayout() {
   const { platformReferences } = rootApi.useLoaderData();
-  const foundations = platformReferences.filter((group) => group.id === 'core' || group.id === 'modules');
+  const foundations = platformReferences.filter((group) => group.id === 'core' || group.id === 'modules')
+    .flatMap((group) => group.references)
+    .sort((a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER) || a.title.localeCompare(b.title));
   const modules = platformReferences.filter((group) => group.id !== 'core' && group.id !== 'modules' && group.references.length);
   return <div className="flex h-full min-h-0">
     <SectionNav label="Documentation">
@@ -17,7 +19,7 @@ export function ReferenceLayout() {
       <NavList>
         <Link to="/documentation/reference" activeOptions={{ exact: true }} style={navLinkStyle} className={navLinkClass}>Overview</Link>
         <NavGroup heading="Platform foundations">
-          {foundations.flatMap((group) => group.references).map((ref) => <DocumentationNavItem key={ref.source} href={referenceHref(ref.source)} path={'src' + ref.source} label={ref.title} />)}
+          {foundations.map((ref) => <DocumentationNavItem key={ref.source} href={referenceHref(ref.source)} path={'src' + ref.source} label={ref.title} />)}
         </NavGroup>
         {modules.length > 0 && <NavGroup heading="Modules">
           {modules.map((group) => {

@@ -1,3 +1,7 @@
+---
+referenceOrder: 80
+---
+
 # Publishing
 
 Hosting is optional. You can create prototypes locally and collaborate through Git before publishing a site.

@@ -1,3 +1,7 @@
+---
+referenceOrder: 60
+---
+
 # Diagrams and code
 
 Mermaid blocks render automatically in the Guide, Handbook, reference pages, and prototype Documents. Write standard Mermaid syntax inside a fenced `mermaid` code block. Expand **Mermaid source** to read or copy an example below.

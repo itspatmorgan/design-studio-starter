@@ -47,6 +47,7 @@ Right-click a file in either reading mode for **Edit source**, **Open in editor*
 - A page for a module or file type is that folder's `README.md`, when it opens with Guide frontmatter: the Guide shows it down to a `## For developers` heading (`scripts/lib/guide-pages.js` finds them, `scripts/build/remark-readme-guide.js` trims them). Removing the folder removes the page.
 - `src/platform/app/docs/DocumentationHeader.tsx`, `References.tsx`: the shared Documentation heading, Reference navigation, and reference metadata.
 - `scripts/lib/platform-references.js`: indexes the same top-level core and enabled-module Markdown set as the shared reader. Related guidance comes from Handbook links and module declarations.
+- Platform foundations follow a general-to-specific reading order. Core Markdown uses numeric `referenceOrder` frontmatter; the Module contract sits at 30. Unordered foundations follow alphabetically by title. Module navigation keeps its own alphabetical hierarchy.
 - `GuideLayout.tsx`, `GuidePage.tsx`, `loadGuide.ts`: the sidebar, reader, and enabled-page previous/next navigation.
 - Diagrams are fenced `mermaid` blocks in the Markdown pages, rendered by the shared platform reader.
 

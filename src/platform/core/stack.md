@@ -1,3 +1,7 @@
+---
+referenceOrder: 10
+---
+
 # Tech stack
 
 This reference is for maintainers and people who want to inspect or extend the code. Your agent can use these projects' documentation.

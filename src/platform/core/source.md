@@ -1,3 +1,7 @@
+---
+referenceOrder: 50
+---
+
 # Source editing
 
 Source editing is a shared platform capability used by Prototypes, Handbook, Documentation, and Systems. It has no separate module, route section, or navigation entry.
