@@ -1,28 +1,26 @@
 ---
 title: Project brief
-description: A self-contained marketing project using the Marketing system.
+description: Three complete marketing directions using the Marketing system.
 ---
 
 ## Purpose
 
-Introduce Design Studio, show its artifact surfaces, and help visitors run a local copy. Plan the page’s story with content blocks, then develop it through three iterations.
+Introduce Design Studio, demonstrate its artifact surfaces, and help visitors run their own copy. Every version tells the same complete story: introduction, examples, template-first install, usage, and reference.
 
-This prototype uses **Marketing**: Plus Jakarta Sans, warm neutrals, and adapted Untitled UI components. The captured product examples use a separate Product system. Studio supplies the artifact tools around both.
+This prototype uses **Marketing**: Plus Jakarta Sans, warm neutrals, and adapted Untitled UI components. Captured product examples use a separate Product system. Studio supplies the shared artifact tools.
 
-Follow the [Marketing design rule](/systems/marketing/rules/marketing-design). Product examples are screenshots and keep visitors within this project. Motion previews can replace them when a useful recording is available.
+Follow the [Marketing design rule](/systems/marketing/rules/marketing-design). Screenshots stay within this project; motion previews can replace them when a useful recording is available.
 
-## Iterations
+## Review directions
 
-- [V1 — Introduction](landing-v1.tsx): establish the promise and start with the GitHub template.
-- [V2 — Demonstration and install](landing-v2.tsx): add artifact examples and terminal commands.
-- [V3 — Human and agent](landing-v3.tsx): add Markdown instructions and setup guidance.
+Start on the [Review Board](review-board.excalidraw). It places this brief, editable content blocks, and live versions together, with plain-text annotations.
 
-## Content blocking
+- [V1 — Direct](landing-v1.tsx): a large left-aligned promise, restrained layout, and interface-led demonstration.
+- [V2 — Open](landing-v2.tsx): a centered invitation, broad geometric composition, and canvas-led demonstration.
+- [V3 — Connected](landing-v3.tsx): a split hero, architectural geometry, a more specific headline, and Human / Agent reading modes.
 
-![Content blocking](content-blocking.excalidraw)
-
-The canvas starts with editable story blocks, followed by live previews of V1, V2, and V3. Plain text annotations describe what changed. Edit each view’s source to update its preview.
+These are design iterations, not successive feature additions. Compare clarity, visual character, and how naturally each page leads into setup.
 
 ## Open decisions
 
-The public launch URL and final copy remain open. The demo links to the repository and setup guide. It does not collect leads or create accounts.
+The public launch URL and final direction remain open. The demo links to the template and setup guide. It does not collect leads or create accounts.

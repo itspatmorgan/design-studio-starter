@@ -28,37 +28,58 @@ function ResourceLink({ href, children }: { href: string; children: ReactNode })
   const external = href.startsWith('https://');
   return <Button href={href} color="link-gray" size="sm" iconTrailing={ArrowUpRight} target={external ? '_blank' : undefined} rel={external ? 'noreferrer' : undefined}>{children}</Button>;
 }
+function BrandGeometry({ version }: { version: 2 | 3 }) {
+  return <svg viewBox="0 0 480 320" className={styles.geometry} aria-hidden="true">
+    <rect width="480" height="320" fill="var(--color-bg-secondary)" />
+    {version === 2 ? <>
+      <circle cx="240" cy="160" r="150" fill="currentColor" opacity="0.12" />
+      <rect x="240" width="120" height="160" fill="currentColor" opacity="0.18" />
+      <rect x="360" y="160" width="120" height="160" fill="currentColor" />
+      <path d="M0 160H480M240 0V320" stroke="currentColor" opacity="0.3" strokeDasharray="2 6" />
+    </> : <>
+      <rect x="320" width="160" height="160" fill="currentColor" opacity="0.1" />
+      <rect x="160" y="160" width="160" height="160" fill="currentColor" opacity="0.2" />
+      <rect x="320" y="160" width="160" height="160" fill="currentColor" />
+      <path d="M0 0A320 320 0 0 1 320 320M0 0A160 160 0 0 1 160 160" fill="none" stroke="currentColor" strokeWidth="2" />
+      <path d="M160 0V320M320 0V320M0 160H480" stroke="currentColor" opacity="0.3" strokeDasharray="2 6" />
+    </>}
+  </svg>;
+}
 export function LandingPage({ version }: { version: 1 | 2 | 3 }) {
+  const headlines = { 1: <>Your next idea.<br />Make it real.</>, 2: <>A studio for<br />what comes next.</>, 3: <>Design. Build.<br />Keep it together.</> };
   const content = <>
         <main>
-          <section className="pt-12 pb-16 md:pt-16 md:pb-20">
-            <h1 className="max-w-3xl text-display-md font-medium tracking-tight md:text-display-lg">A space to make<br />ideas real.</h1>
+          <section className={`${styles.hero} ${styles['hero' + version]}`}>
+            <div className={styles.heroCopy}>
+            <h1 className="text-display-md font-medium tracking-tight md:text-display-lg">{headlines[version]}</h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-tertiary">An open-source prototype sandbox for designers and builders. Work with your coding agent, your components, and your context.</p>
-            <div className="mt-6"><Button href={version === 1 ? repository : '#install'} size="lg">{version === 1 ? 'Use the template' : 'Get started'}</Button></div>
+            <div className="mt-6"><Button href="#install" size="lg">Get started</Button></div>
+            </div>
+            {version > 1 && <BrandGeometry version={version as 2 | 3} />}
           </section>
-          {version >= 2 && <section className="py-8 md:py-12" aria-labelledby="demo-title">
-            <h2 id="demo-title" className="text-display-sm font-medium tracking-tight">One idea. Different ways to explore.</h2>
-            <Tabs defaultSelectedKey="view" className="mt-6">
+          <section className="py-8 md:py-12" aria-labelledby="demo-title">
+            <h2 id="demo-title" className="text-display-sm font-medium tracking-tight">{version === 1 ? 'From an idea to a working prototype.' : version === 2 ? 'Give the idea room to move.' : 'One idea. Every part of the story.'}</h2>
+            <Tabs defaultSelectedKey={version === 2 ? 'canvas' : 'view'} className="mt-6">
               <Tabs.List aria-label="Artifact examples">{examples.map(item => <Tabs.Item key={item.id} id={item.id}>{item.label}</Tabs.Item>)}</Tabs.List>
               {examples.map(item => <Tabs.Panel key={item.id} id={item.id} className="pt-5">
                 <figure><img src={item.image} alt={item.alt} className={styles.preview} width={item.id === 'document' ? 1456 : 1280} height={item.id === 'document' ? 799 : 720} /><figcaption className="mt-4 text-md text-text-secondary">{item.text}</figcaption></figure>
               </Tabs.Panel>)}
             </Tabs>
             <p className="mt-3 text-sm text-text-tertiary">Captured previews from the included Product example.</p>
-          </section>}
-          {version >= 2 && <section id="install" className="py-16 md:py-20">
+          </section>
+          <section id="install" className="py-16 md:py-20">
             <h2 className="text-display-sm font-medium tracking-tight">Run your own studio.</h2>
             <p className="mt-5 text-md leading-relaxed text-text-tertiary">Choose “Use this template” on GitHub to create your own repository.</p>
             <div className="mt-4 flex flex-wrap gap-6"><ResourceLink href={repository}>Use the template</ResourceLink><ResourceLink href="https://mise.jdx.dev/installing-mise.html">Install mise</ResourceLink></div>
             <p className="mt-5 text-md leading-relaxed text-text-tertiary">Clone your new repository, then run these commands. Replace YOUR-ACCOUNT and YOUR-STUDIO with your GitHub account and repository name.</p>
             <pre className={styles.code}><code>{commands}</code></pre>
             <p className="mt-4 text-sm leading-relaxed text-text-tertiary">Open the local URL printed by Vite.</p>
-          </section>}
-          {version === 3 && <section className="pb-16 md:pb-20">
+          </section>
+          <section className="pb-16 md:pb-20">
             <h2 className="text-display-sm font-medium tracking-tight">Make it yours.</h2>
             <p className="mt-5 max-w-2xl text-md leading-relaxed text-text-tertiary">Open the folder in your coding environment. Configure your studio, bring your system, and start a prototype.</p>
             <div className="mt-4"><ResourceLink href="/documentation/guide/getting-started">Follow the setup guide</ResourceLink></div>
-          </section>}
+          </section>
         </main>
         <footer className="pb-12"><p className="text-sm leading-relaxed text-text-tertiary">This marketing demo uses its own Marketing system: Plus Jakarta Sans, warm neutrals, and Untitled UI.</p><div className="mt-4 flex flex-wrap gap-6"><ResourceLink href="/prototypes/patrick/design-studio-marketing/project-brief">Project brief</ResourceLink><ResourceLink href="/systems/marketing">Marketing system</ResourceLink><ResourceLink href={repository}>GitHub</ResourceLink></div></footer>
   </>;

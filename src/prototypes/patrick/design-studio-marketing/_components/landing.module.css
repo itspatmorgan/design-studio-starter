@@ -1,3 +1,13 @@
 .preview { display: block; width: 100%; height: auto; border: 1px solid var(--color-border-primary); border-radius: var(--radius-lg); }
 .code { margin-top: var(--spacing-5); padding: var(--spacing-5); overflow-x: auto; border-radius: var(--radius-lg); background: var(--color-bg-secondary); font-family: var(--font-mono); font-size: var(--text-sm); line-height: 1.8; }
 .markdown { white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: var(--text-sm); line-height: 1.8; color: var(--color-text-primary); }
+.hero { padding: 4rem 0 5rem; }
+.heroCopy { max-width: 42rem; }
+.hero1 h1 { max-width: 44rem; font-size: clamp(2.5rem, 6vw, 5.5rem); line-height: 1.08; }
+.hero2 { text-align: center; }
+.hero2 .heroCopy { margin: 0 auto; }
+.hero2 .geometry { margin-top: 3rem; max-height: 20rem; }
+.hero3 { display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; gap: 2rem; }
+.hero3 h1 { font-size: clamp(2.5rem, 4vw, 3.5rem); }
+.geometry { display: block; width: 100%; height: auto; color: var(--color-text-primary); }
+@media (max-width: 640px) { .hero { padding: 3rem 0 4rem; } .hero3 { grid-template-columns: 1fr; } .hero3 .geometry { max-height: 16rem; } }

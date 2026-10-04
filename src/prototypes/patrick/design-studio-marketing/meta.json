@@ -3,8 +3,8 @@
   "created": "2026-10-03",
   "system": "marketing",
   "order": [
+    "review-board.excalidraw",
     "project-brief.md",
-    "content-blocking.excalidraw",
     "landing-v1.tsx",
     "landing-v2.tsx",
     "landing-v3.tsx"
