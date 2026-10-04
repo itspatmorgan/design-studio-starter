@@ -12,7 +12,7 @@ import type { Prototype } from '@/platform/app/data/types';
 import { NavHeader, NavList, NavTitle, SectionNav } from '@/platform/app/shell/nav';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/systems/studio/components/select';
 import { NotFound } from '@/platform/app/shell/App';
-import { Code, ColorModeSupport, ColorTokens, IconsPage, PageHeader, Prose } from '@/modules/systems/pages/foundations';
+import { ColorTokens, IconsPage, PageHeader } from '@/modules/systems/pages/foundations';
 import { OtherTokens, RadiusTokens, ShadowTokens, SpacingTokens, TypographyTokens } from '@/modules/systems/pages/tokens';
 import { ComponentDocPage } from '@/modules/systems/pages/ComponentDocPage';
 import { useManifest } from '@/platform/app/data/useManifest';
@@ -35,14 +35,11 @@ const SystemSourceEditor = import.meta.env.DEV ? lazy(() => import('./SystemSour
 // Systems: a selector for design systems, and one page per foundation and component,
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
 // Every system is treated the same, the app's own (Studio) included. What only its people can write
-// comes from its spec (src/systems/<id>/intro.tsx): the introduction (which covers its
-// theme), and icons. The rest comes from its files: a component page for each component in its components
+// comes from src/systems/<id>/intro.tsx: overview summaries, optional additional content, and icons. The rest comes from its files: a component page for each component in its components
 // folder (src/modules/systems/docs.ts), and a foundations page for each kind of token its theme
 // defines (src/modules/systems/themeTokens.ts). Prototype systems appear in the selector, followed by Studio.
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
-const introOf = (id: string): SystemIntro => intros[`/systems/${id}/intro.tsx`]?.default ?? {
-  intro: <><Prose><p>This system has no overview yet. Add one in <Code>src/systems/{id}/intro.tsx</Code>.</p></Prose><h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2><Prose><ColorModeSupport modes={SYSTEM_SPECS[id].colorModes} /></Prose></>,
-};
+const introOf = (id: string): SystemIntro => intros[`/systems/${id}/intro.tsx`]?.default ?? {};
 const PROTOTYPE_SPECS: Record<string, DesignSystem> = Object.fromEntries(Object.entries(SYSTEM_SPECS).map(([id, spec]) => [id, {
   label: spec.label, dir: `${spec.dir}components/`, scopeClass: spec.themeClass, ...introOf(id),
 }]));

@@ -67,13 +67,11 @@ export type Manifest = {
   systems: Record<string, { docs: DocsMode; origin: 'shadcn' | null; components: SystemComponentDoc[]; tokens: ThemeToken[] }>;
 };
 
-// One tab on the Systems page: what only its people can write, its introduction (and icons, if it
-// has them). Its components and foundations pages come from its files (systemDocs.ts, themeTokens.ts).
-// What only a system's people can write for its Systems page: its introduction (which covers its theme), and
-// icons if it has them. A prototype system keeps this in src/systems/<id>/intro.tsx.
-export type SystemIntro = { summary?: string; overview?: SystemOverviewSummary; intro: ReactNode; icons?: DesignSystem['icons'] };
+// Authored overview copy, optional additional content, and icon examples live in src/systems/<id>/intro.tsx.
+// Inventory metrics and foundation/component pages come from the system's files.
+export type SystemIntro = { summary?: string; overview?: SystemOverviewSummary; intro?: ReactNode; icons?: DesignSystem['icons'] };
 
-export type SystemOverviewSummary = { guidance?: string; code?: string };
+export type SystemOverviewSummary = { guidance?: string; code?: string; starter?: boolean };
 
 export type DesignSystem = {
   overview?: SystemOverviewSummary; // authored descriptions; inventory counts stay automatic
@@ -81,6 +79,6 @@ export type DesignSystem = {
   label: string;
   dir: string;            // where its components live, e.g. "src/systems/studio/components/"
   scopeClass: string;     // the class its theme is set under, or "" when it's set on the page (studio)
-  intro: ReactNode;      // what the system is, and how its theme is set up
+  intro?: ReactNode;     // optional system-owned content shown directly below the overview
   icons?: { library: string; href: string; snippet: string; grid: ReactNode };
 };

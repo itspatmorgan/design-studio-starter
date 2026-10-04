@@ -13,13 +13,13 @@ Systems brings together the components, styles, and knowledge used by your proto
 
 The Resources toolbar searches across the tree and expands or collapses all folders. Search reveals matches without losing your previous expansion choices. Context, Rules, Skills, Theme, and Components start open. Guidance appears above the toolkit, and each guidance group has its own **New** action.
 
-Overview shows the selected system’s purpose and two authored summaries: the Instructions section describes Context, Rules, and Skills; Code describes Theme and Components. Each section leads with large inventory counts, followed by its description. Counts come from the system’s files, while navigation holds the full inventory. It also shows the number of active prototypes using the system, previews up to three newest prototypes, and links to the full Prototypes collection filtered to that system. Studio’s overview explains its role in the application instead. The collapsed Working with this system section holds the system’s own implementation and customization guidance.
+Overview shows the selected system’s purpose and two authored summaries: the Instructions section describes Context, Rules, and Skills; Code describes Theme and Components. Each section leads with large inventory counts, followed by its description. Counts come from the system’s files, while navigation holds the full inventory. It also shows the number of active prototypes using the system, previews up to three newest prototypes, and links to the full Prototypes collection filtered to that system. Studio’s overview explains its role in the application instead. Product and Marketing display a starter notice near the top, prompting teams to replace them with their own design systems. Instructions and Code share one summary area. Optional additional system content appears directly on the page.
 
 ## Prototype systems and Studio
 
 **Product** is the starter toolkit for prototype views. Replace or adapt it to match your product. You can add more systems when different work needs a different toolkit.
 
-**Marketing** demonstrates a second prototype toolkit, using a small Untitled UI subset. The Design Studio Marketing prototype uses its own palette, typography, and components alongside Product.
+**Marketing** demonstrates a second starter toolkit, using a small Untitled UI subset. Replace it with the system relevant to your team’s public-facing work. The Design Studio Marketing prototype uses its own palette, typography, and components alongside Product.
 
 **Studio** supplies Studio's own interface: navigation, menus, editors, and documentation. It stays separate from prototype design systems.
 
