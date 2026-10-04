@@ -6,15 +6,11 @@ import viewPreview from '../assets/demo-view.jpg';
 import diagramPreview from '../assets/demo-diagram.jpg';
 import canvasPreview from '../assets/demo-canvas.jpg';
 import documentPreview from '../assets/demo-document.jpg';
+import homePreview from '../assets/demo-home.png';
 import agentMarkdown from './agent.txt?raw';
 import styles from './landing.module.css';
 
 const repository = 'https://github.com/itspatmorgan/design-studio-starter';
-const commands = `git clone https://github.com/YOUR-ACCOUNT/YOUR-STUDIO.git
-cd YOUR-STUDIO
-mise install
-mise exec -- pnpm install
-mise exec -- pnpm dev`;
 const examples = [
   { id: 'view', label: 'View', image: viewPreview, alt: 'Feedback Inbox interface built with the Product system.', text: 'Build a working interface with your own components.' },
   { id: 'diagram', label: 'Diagram', image: diagramPreview, alt: 'Mermaid diagram of the feedback review flow.', text: 'Make the system and its flows easier to understand.' },
@@ -69,19 +65,33 @@ export function LandingPage({ version }: { version: 1 | 2 | 3 }) {
           </section>
           <section id="install" className="py-16 md:py-20">
             <h2 className="text-display-sm font-medium tracking-tight">Run your own studio.</h2>
-            <p className="mt-5 text-md leading-relaxed text-text-tertiary">Choose “Use this template” on GitHub to create your own repository.</p>
-            <div className="mt-4 flex flex-wrap gap-6"><ResourceLink href={repository}>Use the template</ResourceLink><ResourceLink href="https://mise.jdx.dev/installing-mise.html">Install mise</ResourceLink></div>
-            <p className="mt-5 text-md leading-relaxed text-text-tertiary">Clone your new repository, then run these commands. Replace YOUR-ACCOUNT and YOUR-STUDIO with your GitHub account and repository name.</p>
-            <pre className={styles.code}><code>{commands}</code></pre>
-            <p className="mt-4 text-sm leading-relaxed text-text-tertiary">Open the local URL printed by Vite.</p>
+            <ol className={styles.steps}>
+              <li><h3 className="text-lg font-semibold">Create your repository.</h3>
+                <p>On GitHub, choose “Use this template” → “Create a new repository”. Select your account or organization, give your studio a repository name, and choose its visibility.</p>
+                <ResourceLink href={repository}>Use the template</ResourceLink>
+              </li>
+              <li><h3 className="text-lg font-semibold">Bring it onto your computer.</h3>
+                <p>In your new repository, open “Code” and copy the HTTPS clone URL. Run these commands in your terminal, using that URL and the repository name you chose.</p>
+                <pre className={styles.code}><code>{`git clone https://github.com/YOUR-ACCOUNT/YOUR-STUDIO.git\ncd YOUR-STUDIO`}</code></pre>
+              </li>
+              <li><h3 className="text-lg font-semibold">Install and start Studio.</h3>
+                <p>Install mise if needed, then run these commands from your repository folder.</p>
+                <ResourceLink href="https://mise.jdx.dev/installing-mise.html">Install mise</ResourceLink>
+                <pre className={styles.code}><code>{`mise install\nmise exec -- pnpm install\nmise exec -- pnpm dev`}</code></pre>
+                <p><code>mise install</code> installs the Node.js and pnpm versions this project uses. <code>pnpm install</code> installs its dependencies. <code>pnpm dev</code> starts the local development server.</p>
+                <p>The <code>mise exec --</code> prefix runs pnpm with the project's tool versions. If mise is already activated in your shell, you can use <code>pnpm install</code> and <code>pnpm dev</code> directly.</p>
+                <p>Open the local URL printed in your terminal. Keep the server running while you use Studio.</p>
+              </li>
+            </ol>
           </section>
           <section className="pb-16 md:pb-20">
             <h2 className="text-display-sm font-medium tracking-tight">Make it yours.</h2>
-            <p className="mt-5 max-w-2xl text-md leading-relaxed text-text-tertiary">Open the folder in your coding environment. Configure your studio, bring your system, and start a prototype.</p>
+            <p className="mt-5 max-w-2xl text-md leading-relaxed text-text-tertiary">Open your repository folder in the editor or coding agent you already use, and run Studio alongside it. Ask your agent to configure your studio, bring your design system, or start a prototype. Review the results in your browser.</p>
             <div className="mt-4"><ResourceLink href="/documentation/guide/getting-started">Follow the setup guide</ResourceLink></div>
+            <figure className="mt-6"><img src={homePreview} alt="Studio home welcomes Patrick and lists his prototypes and design systems." className={styles.preview} width={1456} height={799} /><figcaption className="mt-3 text-sm text-text-tertiary">Captured Studio home after contributor setup. Your own name, prototypes, and systems appear here.</figcaption></figure>
           </section>
         </main>
-        <footer className="pb-12"><p className="text-sm leading-relaxed text-text-tertiary">This marketing demo uses its own Marketing system: Plus Jakarta Sans, warm neutrals, and Untitled UI.</p><div className="mt-4 flex flex-wrap gap-6"><ResourceLink href="/prototypes/patrick/design-studio-marketing/project-brief">Project brief</ResourceLink><ResourceLink href="/systems/marketing">Marketing system</ResourceLink><ResourceLink href={repository}>GitHub</ResourceLink></div></footer>
+        <footer className="pb-12"><p className="text-sm leading-relaxed text-text-tertiary">This marketing demo uses its own Marketing system: Plus Jakarta Sans, warm neutrals, and Untitled UI.</p><div className="mt-4 flex flex-wrap gap-6"><ResourceLink href="/systems/marketing">Marketing system</ResourceLink><ResourceLink href={repository}>GitHub</ResourceLink></div></footer>
   </>;
   const brand = <a href="#" className="flex items-center gap-3 text-lg font-semibold"><StudioMark small={version === 3} />Design Studio</a>;
   return <div className="min-h-full bg-bg-primary font-sans text-text-primary">

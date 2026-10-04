@@ -4,25 +4,30 @@ An open-source prototype sandbox for designers and builders working with coding 
 
 ## Install
 
-Choose **Use this template** at https://github.com/itspatmorgan/design-studio-starter to create your own repository. Clone that copy, never the starter repository directly.
+1. At https://github.com/itspatmorgan/design-studio-starter, choose **Use this template → Create a new repository**. Select the owner (your account or organization), enter a repository name, and choose visibility.
 
-Install mise: https://mise.jdx.dev/installing-mise.html
-
-Replace YOUR-ACCOUNT and YOUR-STUDIO with your GitHub account and new repository name.
+2. In your new repository, copy the HTTPS clone URL from **Code**. Clone that copy, never the starter repository directly. Replace YOUR-ACCOUNT and YOUR-STUDIO below with its owner and repository name.
 
 ```sh
 git clone https://github.com/YOUR-ACCOUNT/YOUR-STUDIO.git
 cd YOUR-STUDIO
+```
+
+3. Install mise if needed: https://mise.jdx.dev/installing-mise.html. Run from the repository folder:
+
+```sh
 mise install
 mise exec -- pnpm install
 mise exec -- pnpm dev
 ```
 
-Open the local URL printed by Vite.
+`mise install` installs the configured Node.js and pnpm versions. `pnpm install` installs project dependencies; `pnpm dev` starts the local development server. `mise exec --` selects the project's tool versions without shell activation. If mise is already activated, plain `pnpm install` and `pnpm dev` work too.
+
+Open the local URL printed by Vite. Keep the server running while using Studio.
 
 ## Use
 
-Read README.md and AGENTS.md before changing files. Follow the setup guide to configure studio identity and the contributor. Resolve the assigned system before editing a prototype.
+Open the repository in your existing editor or coding agent, and run Studio alongside it. Read README.md and AGENTS.md before changing files. Follow the setup guide to configure studio identity and the contributor. Resolve the assigned system before editing a prototype.
 
 A prototype keeps views, diagrams, canvases, and documents together. Its assigned system supplies the theme, components, context, rules, and skills.
 
@@ -32,4 +37,3 @@ This marketing project uses the Marketing system: Plus Jakarta Sans, warm neutra
 
 Repository: https://github.com/itspatmorgan/design-studio-starter
 Setup guide: /documentation/guide/getting-started
-Project brief: ./project-brief
