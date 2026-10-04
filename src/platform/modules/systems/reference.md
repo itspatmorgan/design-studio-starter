@@ -60,7 +60,7 @@ The [document-component skill](../../../systems/platform/skills/document-compone
 
 ## Foundations
 
-Foundation pages come from custom properties in the theme. No separate foundation-page files are required.
+Foundation pages come from custom properties in the theme. No separate foundation-page files are required. Preview geometry belongs to the documentation renderer, so omitted system utilities cannot collapse swatches or samples. Samples use the selected system’s live token values. Spacing and container widths appear separately.
 
 | Token family | Page |
 | --- | --- |

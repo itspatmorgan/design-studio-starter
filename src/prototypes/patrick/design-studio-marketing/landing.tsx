@@ -12,21 +12,35 @@ const questions = [
   ['Can we use our own design system?', 'Yes. Systems have their own components, themes, and guidance. This page uses Marketing; the Feedback Inbox demo uses Product; Studio uses Platform.'],
   ['How does this fit our workflow?', 'Use the coding environment your team already works in. Direct your agent, review working prototypes, and share the files and context with engineering.'],
 ];
+function StudioMark() {
+  return <svg viewBox="0 0 40 32" className="h-8 w-10" aria-hidden="true" fill="currentColor"><path d="M0 0h11v32H0zM15 0h3a16 16 0 0 1 0 32h-3z" /></svg>;
+}
+function BrandGeometry() {
+  return <svg viewBox="0 0 640 240" className="mt-12 w-full text-text-primary" role="img" aria-label="Architectural composition of a circle, rectangles, and a grid">
+    <rect width="640" height="240" fill="var(--color-bg-secondary)" />
+    <circle cx="430" cy="160" r="150" fill="var(--color-border-primary)" />
+    <path d="M80 0v240M240 0v240M400 0v240M560 0v240M0 80h640M0 160h640" stroke="var(--color-border-primary)" strokeWidth="1" />
+    <path d="M400 0h80v160h-80z" fill="var(--color-text-tertiary)" opacity=".3" />
+    <path d="M480 160h160v80H480z" fill="currentColor" />
+    <path d="M80 240A160 160 0 0 1 240 80" stroke="currentColor" fill="none" />
+  </svg>;
+}
 export default function MarketingLanding() {
   return <div className="min-h-full bg-bg-primary font-sans text-text-primary">
     <header className="border-b border-border-secondary">
       <nav aria-label="Marketing" className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-5">
-        <a href="#" className="flex items-center gap-2 text-lg font-semibold"><span className="flex size-8 items-center justify-center rounded-lg bg-bg-brand-solid text-white"><LayersThree01 className="size-5" /></span>Design Studio</a>
+        <a href="#" className="flex items-center gap-2 text-lg font-semibold"><StudioMark />Design Studio</a>
         <div className="flex items-center gap-6"><a href="#features" className="hidden text-sm font-medium text-text-secondary md:block">Why Studio</a><Button href="/documentation/guide" color="secondary">Get started <ArrowUpRight className="inline size-4" /></Button></div>
       </nav>
     </header>
     <main>
       <section className="mx-auto max-w-5xl px-6 pt-16 pb-12 text-center md:pt-24">
         <span className="inline-flex items-center gap-2 rounded-full bg-bg-brand-secondary px-3 py-1 text-sm font-medium text-text-brand-secondary"><span className="size-2 rounded-full bg-bg-brand-solid" />Your system. Your studio.</span>
-        <h1 className="mx-auto mt-6 max-w-3xl text-display-lg font-semibold tracking-tight md:text-display-xl">Turn your thinking<br className="hidden md:block" /> into working software.</h1>
+        <h1 className="mx-auto mt-6 max-w-3xl text-display-lg font-medium tracking-tight md:text-display-xl">A prototype sandbox<br className="hidden md:block" /> for designers and builders.</h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg text-text-tertiary md:text-xl">A shared space for people and agents to explore ideas, build with real components, and keep the context that makes a prototype useful.</p>
         <div className="mt-8 flex flex-wrap justify-center gap-3"><Button href="/prototypes/patrick/feedback-inbox" color="secondary" size="lg">Explore the demo</Button><Button href="/documentation/guide" size="lg" iconTrailing={ArrowRight}>Start building</Button></div>
         <p className="mt-4 text-sm text-text-tertiary">Open source. Built for your team. Owned by you.</p>
+        <BrandGeometry />
         <div className="mt-12 overflow-hidden rounded-xl border border-border-primary bg-bg-secondary p-4 text-left shadow-lg md:p-6" aria-label="An illustration of connected prototype artifacts">
           <div className="flex items-center justify-between gap-4 border-b border-border-secondary pb-4"><span className="text-sm font-semibold">A place for the whole idea</span><Tooltip title="A different system, in the same Studio" description="This page and popup use Marketing. Studio navigation uses Platform." arrow><TooltipTrigger aria-label="About system isolation" className="rounded-full p-1 text-text-tertiary"><InfoCircle className="size-5" /></TooltipTrigger></Tooltip></div>
           <div className="grid gap-4 pt-4 md:grid-cols-3">

@@ -2,6 +2,7 @@
 // defines (src/platform/modules/systems/themeTokens.ts): typography, radius, shadows, spacing, and everything else.
 // Each token is drawn with its own value (`var(--name)`), inside the system's theme class, and its
 // value is read live, so the pages follow the color mode and the theme file.
+import styles from './theme-docs.module.css';
 import type { ReactNode } from 'react';
 import { useComputed } from '@/platform/modules/systems/pages/foundations';
 import type { ThemeToken, TokenGroup } from '@/platform/modules/systems/themeTokens';
@@ -17,7 +18,7 @@ const ref = ({ name, value }: ThemeToken) => (/^--[\w-]+$/.test(name) ? `var(${n
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section>
-      <h3 className="mb-3 text-[16px] font-semibold leading-6 tracking-tight text-foreground">{title}</h3>
+      <h3 className={styles.sectionTitle}>{title}</h3>
       {children}
     </section>
   );
@@ -29,23 +30,23 @@ function TokenLine({ token, sample }: { token: ThemeToken; sample?: ReactNode })
   const [valueRef, live] = useComputed((s) => s.getPropertyValue(name).trim());
   const value = live || token.value;
   return (
-    <div ref={valueRef} className="grid grid-cols-[minmax(0,200px)_minmax(0,1fr)_minmax(0,220px)] items-center gap-4 border-b border-border py-2.5 last:border-0">
-      <code className="truncate font-mono text-xs text-foreground">{name}</code>
+    <div ref={valueRef} className={styles.tokenLine}>
+      <code className={styles.tokenName}>{name}</code>
       <div className="min-w-0">{sample}</div>
-      <code className="truncate text-right font-mono text-xs text-muted-foreground" title={value}>{value}</code>
+      <code className={styles.tokenValue} title={value}>{value}</code>
     </div>
   );
 }
 
-const Lines = ({ children }: { children: ReactNode }) => <div className="rounded-lg border border-border px-4">{children}</div>;
+const Lines = ({ children }: { children: ReactNode }) => <div className={styles.lines}>{children}</div>;
 
 function FontFamily({ token }: { token: ThemeToken }) {
   const [familyRef, live] = useComputed((s) => s.getPropertyValue(token.name).trim());
   const value = live || token.value;
   return (
-    <div ref={familyRef} className="rounded-lg border border-border p-4">
-      <p className="truncate text-2xl text-foreground" style={{ fontFamily: ref(token) }}>The quick brown fox jumps over the lazy dog</p>
-      <p className="mt-2 truncate font-mono text-xs text-muted-foreground" title={value}><span className="text-foreground">{token.name}</span>: {value}</p>
+    <div ref={familyRef} className={styles.family}>
+      <p className={styles.familySample} style={{ fontFamily: ref(token) }}>The quick brown fox jumps over the lazy dog</p>
+      <p className={styles.familyValue} title={value}><span className="text-foreground">{token.name}</span>: {value}</p>
     </div>
   );
 }
@@ -58,19 +59,19 @@ export function TypographyTokens({ tokens }: Props) {
   const sizes = all.filter((t) => /^--text-[^-]+(-[^-]+)*$/.test(t.name) && !t.name.includes('--', 2));
   const rest = all.filter((t) => ![...weights, ...families, ...sizes].includes(t));
   return (
-    <div className="space-y-10 text-foreground">
-      {families.length > 0 && <Section title="Font families"><div className="space-y-3">{families.map((t) => <FontFamily key={t.name} token={t} />)}</div></Section>}
+    <div className={styles.sections}>
+      {families.length > 0 && <Section title="Font families"><div className={styles.families}>{families.map((t) => <FontFamily key={t.name} token={t} />)}</div></Section>}
       <Section title="Sizes">
         <Lines>
-          {sizes.map((t) => <TokenLine key={t.name} token={t} sample={<span className="block truncate text-foreground" style={{ fontSize: ref(t), lineHeight: `var(${t.name}--line-height, normal)` }}>Quick brown fox</span>} />)}
+          {sizes.map((t) => <TokenLine key={t.name} token={t} sample={<span className={styles.typeSample} style={{ fontSize: ref(t), lineHeight: `var(${t.name}--line-height, normal)` }}>Quick brown fox</span>} />)}
         </Lines>
-        {sizes.length === 0 && <p className="mt-2 text-xs text-muted-foreground">This system does not declare font sizes in its theme.</p>}
+        {sizes.length === 0 && <p className={styles.note}>This system does not declare font sizes in its theme.</p>}
       </Section>
       <Section title="Weights">
         <Lines>
-          {weights.map((t) => <TokenLine key={t.name} token={t} sample={<span className="text-lg text-foreground" style={{ fontWeight: ref(t) }}>The quick brown fox</span>} />)}
+          {weights.map((t) => <TokenLine key={t.name} token={t} sample={<span className={styles.weightSample} style={{ fontWeight: ref(t) }}>The quick brown fox</span>} />)}
         </Lines>
-        {weights.length === 0 && <p className="mt-2 text-xs text-muted-foreground">This system does not declare font weights in its theme.</p>}
+        {weights.length === 0 && <p className={styles.note}>This system does not declare font weights in its theme.</p>}
       </Section>
       {rest.length > 0 && <Section title="Other"><Lines>{rest.map((t) => <TokenLine key={t.name} token={t} />)}</Lines></Section>}
     </div>
@@ -79,21 +80,25 @@ export function TypographyTokens({ tokens }: Props) {
 
 // Preview exactly the radius tokens declared by this system.
 export function RadiusTokens({ tokens }: Props) {
-  return <Lines>{inGroup(tokens, 'radius').map((t) => <TokenLine key={t.name} token={t} sample={<div className="size-12 border-2 border-primary/60 bg-primary/10" style={{ borderRadius: ref(t) }} />} />)}</Lines>;
+  return <Lines>{inGroup(tokens, 'radius').map((t) => <TokenLine key={t.name} token={t} sample={<div className={styles.radiusSample} style={{ borderRadius: ref(t) }} />} />)}</Lines>;
 }
 
 export function ShadowTokens({ tokens }: Props) {
   return (
     <div className="text-foreground">
-      <Lines>{inGroup(tokens, 'shadows').map((t) => <TokenLine key={t.name} token={t} sample={t.name.startsWith('--text-shadow') ? <span style={{ textShadow: ref(t) }}>Quick brown fox</span> : <div className="h-12 w-24 rounded-md border border-border bg-background" style={t.name.startsWith('--drop-shadow') ? { filter: `drop-shadow(${ref(t)})` } : { boxShadow: ref(t) }} />} />)}</Lines>
+      <Lines>{inGroup(tokens, 'shadows').map((t) => <TokenLine key={t.name} token={t} sample={t.name.startsWith('--text-shadow') ? <span style={{ textShadow: ref(t) }}>Quick brown fox</span> : <div className={styles.shadowSample} style={t.name.startsWith('--drop-shadow') ? { filter: `drop-shadow(${ref(t)})` } : { boxShadow: ref(t) }} />} />)}</Lines>
     </div>
   );
 }
 
 export function SpacingTokens({ tokens }: Props) {
+  const all = inGroup(tokens, 'spacing');
+  const widths = all.filter((t) => t.name.startsWith('--container-'));
+  const spacing = all.filter((t) => !widths.includes(t));
   return (
-    <div className="text-foreground">
-      <Lines>{inGroup(tokens, 'spacing').map((t) => <TokenLine key={t.name} token={t} sample={<div className="h-3 rounded-sm bg-primary/60" style={{ width: ref(t), maxWidth: '100%', minWidth: 1 }} />} />)}</Lines>
+    <div className={styles.sections}>
+      {spacing.length > 0 && <Section title="Spacing"><Lines>{spacing.map((t) => <TokenLine key={t.name} token={t} sample={<div className={styles.spacingSample} style={{ width: ref(t) }} />} />)}</Lines></Section>}
+      {widths.length > 0 && <Section title="Container widths"><p className={styles.note}>Maximum widths for content and layouts, separate from the spacing scale.</p><Lines>{widths.map((t) => <TokenLine key={t.name} token={t} />)}</Lines></Section>}
     </div>
   );
 }

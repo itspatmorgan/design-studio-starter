@@ -9,7 +9,7 @@ Marketing is a small, independent system for public-facing Design Studio pages. 
 
 - Untitled UI Button: small and large sizes; primary, secondary, and two link variants.
 - Untitled UI Tooltip and TooltipTrigger: supplemental information, including a scoped popup.
-- Inter typography, violet brand colors, neutral surfaces, selected spacing, four display sizes for larger headings, and small rounded controls.
+- Plus Jakarta Sans typography, Design Studio’s warm neutral brand colors, neutral surfaces, selected spacing, four display sizes for larger headings, and small rounded controls.
 - Light and dark modes. Both are defined in `styles/theme.css`.
 
 The theme file is the inventory. Omitted foundations and unimported Untitled UI components are outside this system. Add them deliberately when needed. Landing-page sections are local prototype composition, not imports of paid marketing templates.

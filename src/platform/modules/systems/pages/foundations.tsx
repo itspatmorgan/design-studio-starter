@@ -1,3 +1,4 @@
+import styles from './theme-docs.module.css';
 import { PortalContext } from '@/lib/portal';
 import type { ColorMode } from '../spec';
 import type { DesignSystem } from '@/platform/app/data/types';
@@ -76,8 +77,8 @@ export function Prose({ children }: Children) {
 export function TokenRow({ name, utility, role }: { name: string; utility?: string; role?: string }) {
   const [ref, value] = useComputed((s) => s.getPropertyValue(`--${name}`).trim());
   return (
-    <div ref={ref} className="grid grid-cols-[2.5rem_minmax(0,15rem)_minmax(0,1fr)_minmax(0,12rem)] items-center gap-3 py-1.5">
-      <div className="h-7 w-10 rounded border border-border" style={{ background: `var(--${name})` }} data-swatch={name} />
+    <div ref={ref} className={styles.colorRow}>
+      <div className={styles.swatch} style={{ background: `var(--${name})` }} data-swatch={name} />
       {utility ? (
         <Tooltip>
           <TooltipTrigger render={<code tabIndex={0} className="cursor-help truncate text-[13px] text-foreground underline decoration-muted-foreground/50 decoration-dotted underline-offset-4 outline-none focus-visible:decoration-foreground" />}>--{name}</TooltipTrigger>
@@ -106,10 +107,10 @@ function colorGroups(tokens: Pick<ThemeToken, 'name' | 'subgroup'>[]) {
 // Token rows inherit the selected system's page boundary.
 export function ColorTokens({ tokens }: { tokens: ThemeToken[] }) {
   return (
-    <div className="space-y-10 text-foreground">
+    <div className={styles.sections}>
       {colorGroups(tokens.filter((t) => t.group === 'colors')).map(([heading, names]) => (
         <div key={heading}>
-          <h3 className="mb-3 text-[16px] font-semibold leading-6 tracking-tight text-foreground">{heading}</h3>
+          <h3 className={styles.sectionTitle}>{heading}</h3>
           <div className="divide-y divide-border/60">
             {names.map((name) => (
               <TokenRow key={name} name={name} utility={KNOWN_COLORS[name.replace(/^color-/, '')]?.utility} role={KNOWN_COLORS[name.replace(/^color-/, '')]?.role} />

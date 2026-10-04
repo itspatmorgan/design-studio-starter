@@ -18,7 +18,7 @@ export const styles = sortCx({
     lg: {root: "gap-1.5 rounded-lg px-4 py-2.5 text-md font-semibold data-icon-only:p-3", linkRoot: "gap-1.5"},
   },
   colors: {
-    primary: {root: "bg-bg-brand-solid text-white shadow-xs-skeuomorphic ring-1 ring-transparent ring-inset hover:bg-bg-brand-solid_hover"},
+    primary: {root: "bg-bg-brand-solid text-button-primary-fg shadow-xs-skeuomorphic ring-1 ring-transparent ring-inset hover:bg-bg-brand-solid_hover"},
     secondary: {root: "bg-bg-primary text-text-secondary shadow-xs-skeuomorphic ring-1 ring-border-primary ring-inset hover:bg-bg-primary_hover"},
     "link-color": {root: "justify-normal rounded-none p-0! text-text-brand-secondary hover:text-text-brand-secondary_hover"},
     "link-gray": {root: "justify-normal rounded-none p-0! text-text-tertiary hover:text-text-secondary"},
