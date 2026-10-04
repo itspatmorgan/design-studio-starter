@@ -53,13 +53,17 @@ export default function SystemOverview({ system, sys, components, tokens }: {
       </section>
     </div>
 
-    <section className="rounded-xl bg-muted/40 p-6" aria-labelledby="system-usage">
-      <h2 id="system-usage" className={sectionHeading}>Where it’s used</h2>
-      {platform ? <p className="text-sm leading-6 text-muted-foreground">Studio’s navigation, menus, editors, and documentation use this system. It is maintained with platform releases and is unavailable as a prototype system.</p> : usage.count ? <>
-        <Metrics items={[{ label: 'Active prototypes', count: usage.count }]} />
-        <ul className="space-y-1">{usage.recent.map(proto => <li key={proto.contributorKey + '/' + proto.id}><Link {...prototypeLink(proto)} className="flex items-center gap-3 rounded-lg bg-background px-4 py-3 text-sm hover:bg-muted"><span className="min-w-0 flex-1 truncate">{proto.title}</span><span className="max-w-36 truncate text-[12px] text-muted-foreground">{proto.contributor}</span><ArrowUpRight aria-hidden className="size-3.5" /></Link></li>)}</ul>
-        <Link to={'/prototypes' as never} search={{ system } as never} className="mt-3 inline-flex items-center gap-1 text-sm hover:underline">View all prototypes<ArrowUpRight aria-hidden className="size-3.5" /></Link>
-      </> : <p className="text-sm text-muted-foreground">No active prototypes use this system yet. Choose {sys.label} when creating a prototype.</p>}
+    <section className="grid gap-6 rounded-xl bg-muted/40 p-6 md:grid-cols-3" aria-labelledby="system-usage">
+      <div className="min-w-0">
+        <h2 id="system-usage" className={sectionHeading}>Where it’s used</h2>
+        {!platform && <Metrics items={[{ label: 'Active prototypes', count: usage.count }]} />}
+      </div>
+      <div className="min-w-0 md:col-span-2">
+        {platform ? <p className="text-sm leading-6 text-muted-foreground">Studio’s navigation, menus, editors, and documentation use this system. It is maintained with platform releases and is unavailable as a prototype system.</p> : usage.count ? <>
+          <ul className="space-y-1">{usage.recent.map(proto => <li key={proto.contributorKey + '/' + proto.id}><Link {...prototypeLink(proto)} className="flex items-center gap-3 rounded-lg bg-background px-4 py-3 text-sm hover:bg-muted"><span className="min-w-0 flex-1 truncate">{proto.title}</span><span className="max-w-36 truncate text-[12px] text-muted-foreground">{proto.contributor}</span><ArrowUpRight aria-hidden className="size-3.5 shrink-0" /></Link></li>)}</ul>
+          <Link to={'/prototypes' as never} search={{ system } as never} className="mt-3 inline-flex items-center gap-1 text-sm hover:underline">View all prototypes<ArrowUpRight aria-hidden className="size-3.5" /></Link>
+        </> : <p className="text-sm leading-6 text-muted-foreground">No active prototypes use this system yet. Choose {sys.label} when creating a prototype.</p>}
+      </div>
     </section>
 
     {sys.intro && <ThemeScope themeClass={sys.scopeClass} className="mt-10 text-foreground">{sys.intro}</ThemeScope>}
