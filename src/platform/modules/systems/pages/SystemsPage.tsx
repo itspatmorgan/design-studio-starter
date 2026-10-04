@@ -125,8 +125,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
       </NavHeader>
       <NavList>
         {file(undefined, 'Introduction')}
-        <SystemBranch label="Foundations" path={source.theme} active={foundations.some((p) => p.id === page) || page === 'icons'}>
-          <p className="mx-1 truncate px-2 py-1 text-[11px] text-muted-foreground" title={source.theme}>From {source.theme.slice(source.dir.length)}</p>
+        <SystemBranch label="Theme" path={source.theme} active={foundations.some((p) => p.id === page) || page === 'icons'}>
           {foundations.map((p) => file(p.id, p.label))}
           {SYSTEMS[system].icons && file('icons', 'Icons')}
         </SystemBranch>
