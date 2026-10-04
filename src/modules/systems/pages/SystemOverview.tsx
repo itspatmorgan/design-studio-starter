@@ -18,9 +18,9 @@ export default function SystemOverview({ system, sys, components, tokens }: {
   const platform = system === PLATFORM_ID;
   const spec = SYSTEM_SPECS[system];
   const guidance = [
-    { id: 'context', label: 'context documents' },
-    { id: 'rules', label: 'rules' },
-    { id: 'skills', label: 'skills' },
+    { id: 'context', label: 'Context documents' },
+    { id: 'rules', label: 'Rules' },
+    { id: 'skills', label: 'Skills' },
   ].map(section => {
     const proto = manifest.systemContent.find(proto => proto.id === contentId(system, section.id));
     const artifacts = proto?.artifacts.filter(artifact => section.id !== 'skills' || isSkillFile('skills', artifact.path)) ?? [];
@@ -40,13 +40,13 @@ export default function SystemOverview({ system, sys, components, tokens }: {
     <div className="mb-8 divide-y divide-border border-y border-border">
       <section className="py-6" aria-labelledby="system-guidance">
         <h2 id="system-guidance" className={sectionHeading}>Guidance</h2>
+        <Metrics items={guidance.map(section => ({ label: section.label, count: section.artifacts.length }))} />
         {sys.overview?.guidance ? <p className="text-sm leading-6 text-muted-foreground">{sys.overview.guidance}</p> : !guidanceCount && <p className="text-sm leading-6 text-muted-foreground">No system guidance has been added yet.</p>}
-        <p className="mt-3 text-xs text-muted-foreground">{guidance.map(section => section.artifacts.length + ' ' + section.label).join(' · ')}</p>
       </section>
       <section className="py-6" aria-labelledby="system-code">
         <h2 id="system-code" className={sectionHeading}>Code</h2>
+        <Metrics items={[{ label: 'Components', count: components.length }, { label: 'Theme tokens', count: new Set(tokens.map(token => token.name)).size }]} />
         {sys.overview?.code && <p className="text-sm leading-6 text-muted-foreground">{sys.overview.code}</p>}
-        <p className="mt-3 text-xs text-muted-foreground">{components.length} components · {new Set(tokens.map(token => token.name)).size} theme tokens</p>
       </section>
     </div>
 
@@ -60,4 +60,13 @@ export default function SystemOverview({ system, sys, components, tokens }: {
       <ThemeScope themeClass={sys.scopeClass} className="mt-4 rounded-lg border border-border bg-background p-5 text-foreground">{sys.intro}</ThemeScope>
     </details>
   </>;
+}
+
+function Metrics({ items }: { items: { label: string; count: number }[] }) {
+  return <dl className="mb-4 flex flex-wrap gap-x-8 gap-y-4">
+    {items.map(item => <div key={item.label} className="flex flex-col gap-1">
+      <dt className="order-2 text-xs text-muted-foreground">{item.label}</dt>
+      <dd className="text-3xl font-semibold tracking-tight tabular-nums">{item.count}</dd>
+    </div>)}
+  </dl>;
 }
