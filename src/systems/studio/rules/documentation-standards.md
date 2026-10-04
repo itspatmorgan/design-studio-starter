@@ -12,13 +12,16 @@ Documentation is part of the platform. Keep it accurate as behavior changes. Thi
 | --- | --- |
 | Guide | Explain capabilities, defaults, boundaries, and setup choices to people. |
 | Module README | Own the module's Guide chapter and developer orientation. |
-| Module reference | Define detailed file, API, configuration, and lifecycle contracts. |
+| Core contract | Define shared technical interfaces, behavior, and boundaries. |
+| Module reference | Define that capability's file, API, configuration, dependency, and lifecycle contracts. |
 | system context Context | Preserve curated knowledge for people, agents, or both. |
 | system context Rules | State standing requirements for agent behavior. |
 | system context Skills | Describe a task-specific procedure and when it applies. |
 | `AGENTS.md` | Provide essential project instructions and route agents to relevant context. |
 
 Documentation has two reading modes: Guide provides a curated introduction, and Reference exposes full module documentation and core contracts from their original files. The system context holds studio context and agent instructions. Reference access remains available when the optional Documentation module is disabled.
+
+The [Contracts and operating instructions](../../../platform/core/contracts-and-instructions.md) foundation defines the system of record: core and module contracts own technical requirements; Studio rules own agent operating policy; context owns intent; skills own procedures.
 
 Give each contract one authoritative location. Other documents can summarize its purpose, then link to it. Do not copy requirements, schemas, or procedures into multiple locations.
 

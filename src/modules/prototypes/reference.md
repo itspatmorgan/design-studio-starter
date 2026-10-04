@@ -1,6 +1,6 @@
 # Prototype contract
 
-This reference defines prototype files, metadata, and links. Agent behavior belongs in the [prototype rule](../../systems/studio/rules/prototype-workflow.md).
+This reference owns prototype files, metadata, links, dependency boundaries, and deployment status. Agent operating behavior belongs in the [prototype rule](../../systems/studio/rules/prototype-workflow.md).
 
 ## Artifacts and files
 
@@ -72,11 +72,29 @@ An opening `/** @lofi */` comment draws that view in grayscale with handwritten 
 
 Remove the comment for normal appearance. A folder named `lofi` has no special behavior. Local wireframes can also use custom components without this mode.
 
+## Dependency boundaries
+
+Prototype runtime code may depend on its own files, its assigned system's runtime components and assets, independent shared utilities, installed packages, and enabled public module libraries. System documentation adapters are outside runtime code.
+
+Public module libraries are accessed through `@module/<id>` only. Private platform implementation, another prototype, and another system are outside this boundary. An enabled module must declare a public library before it can be reused this way.
+
+These requirements apply to indirect and type-only dependencies. Dynamic imports use literal paths so checks can resolve them. Shared utilities cannot depend on prototypes, systems, or platform code.
+
+Prototype styles use Tailwind classes or CSS Modules with local selectors. Plain CSS imports, `:global`, and CSS `@import` are not supported in prototype code. Assigned system tokens follow the [system styling contract](../systems/reference.md#foundations).
+
+## Archiving and deployment
+
+Archiving applies to a whole prototype. `meta.json.status: "archived"` keeps it available locally and excludes it and its files from production discovery and bundling. Omission or `active` restores publication eligibility. Unknown values fail validation.
+
+Individual artifacts and folders have no separate archival status. Organizing them into a folder does not exclude them from publication. The build warns when active content links to an excluded prototype; a published viewer cannot open that target.
+
+`src/platform/core/archive.ts` defines exclusion, and the manifest and production globs apply it. The [archiving rule](../../systems/studio/rules/archiving.md) owns the agent's choice and verification workflow.
+
 ## Validation
 
-Dependency and style requirements are maintained in the prototype rule. Module checks enforce them through `scripts/lib/scope.js` and the style checks.
+Module checks enforce runtime dependency boundaries through `scripts/lib/scope.js` and validate prototype styles. Manifest checks validate metadata and artifact structure. These checks do not enforce every agent operating instruction.
 
-Whole-prototype archiving is defined in the [archiving rule](../../systems/studio/rules/archiving.md).
+The [prototype workflow rule](../../systems/studio/rules/prototype-workflow.md) requires verification before committing. The [Asset Guard](../../platform/core/assets.md#asset-guard) owns the staged-file size limit.
 
 ## Gallery system filter
 

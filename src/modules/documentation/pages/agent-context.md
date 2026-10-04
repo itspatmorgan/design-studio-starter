@@ -32,6 +32,8 @@ flowchart TD
 
 The platform baseline remains in every branch. Selecting a product system adds its instructions to the task; it does not remove Studio's operating rules.
 
+Studio rules direct the agent’s operating behavior; core and module contracts define the technical requirements it works within. [Contracts and operating instructions](/documentation/reference/platform/core/contracts-and-instructions.md) explains which source owns each responsibility.
+
 ## Understand the layers
 
 | Layer | What it contributes |
@@ -49,7 +51,7 @@ Skills are selected by their names, descriptions, and linked task conditions. Th
 
 An explicit system assignment selects that system. An explicit **None** assignment selects no system. Older prototypes with no assignment use the configured default.
 
-Changing the default affects prototypes that omit an assignment. Explicit assignments stay the same. Choosing a system in the browser only changes what you are browsing.
+Directly changing the configured default affects prototypes that omit an assignment. The studio configuration command first records those assignments to preserve existing choices. Explicit assignments stay the same. Choosing a system in the browser only changes what you are browsing.
 
 For example, **Design Studio Marketing** explicitly uses Marketing. Its system instructions link to Brand and Library context and the Marketing Design rule. An agent editing that prototype follows those links along with the platform rules. Product context is outside that task unless your request makes it relevant.
 

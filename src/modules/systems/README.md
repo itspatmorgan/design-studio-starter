@@ -62,7 +62,7 @@ A system declares whether it supports light mode, dark mode, or both. Systems wi
 
 Ask your agent to import your components, tokens, fonts, and supported color modes. You can keep the starter while exploring and replace it later.
 
-System files are shared team content. Coordinate changes with your maintainer. Changing the default system preserves explicit assignments. Prototypes without an assignment follow the new default; explicit None assignments remain without a system.
+System files are shared team content. Coordinate changes with your maintainer. The studio configuration command records omitted assignments before changing the default, preserving existing choices. Direct configuration edits do not perform that step. Explicit system and None assignments remain unchanged.
 
 Foundations are generated from its theme file; component pages combine documentation, examples, and component source. Source is available through navigation, using the [shared file workflow](/documentation/guide/home#working-with-files). Component pages offer separate source tabs for documentation, examples, and component code.
 

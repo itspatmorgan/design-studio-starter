@@ -34,6 +34,14 @@ The shared `ThemeScope` sets `data-color-mode` and CSS `color-scheme` on the sys
 
 The starter Product system and new system scaffolds declare both modes and include light and dark tokens. For a light-only system such as Sublime, declare `colorModes: ['light']`; for a dark-only system, declare `colorModes: ['dark']`. Its rendered content then keeps that mode regardless of Studio's toggle.
 
+## Runtime boundaries
+
+System runtime code may depend on its own runtime files, independent shared utilities, installed packages, and enabled public module libraries through `@module/<id>`. Other systems, prototype files, private platform implementation, and documentation adapters are outside its runtime boundary. Indirect and type-only dependencies follow the same requirements. Dynamic imports use literal paths.
+
+Theme selectors and imported stylesheets stay under the system's unique theme class or its descendants. Keyframe names use the theme class followed by a dash. Font-face registration is permitted and follows the [static asset convention](../../platform/core/assets.md#scope-and-fonts).
+
+Pop-ups render within the themed container. Starter Base UI portals pass `usePortalContainer()` as their `container`. This preserves system styling and local color-mode behavior.
+
 ## Component pages
 
 A component can use a folder named for it:
@@ -113,7 +121,7 @@ Local menus support creation, source editing, rename, move, and recoverable dele
 
 The Systems navigation uses a grouped selector: Prototype systems contains installed prototype systems, with the configured default first; Studio contains Studio’s own system. Entering /systems opens the default prototype system; switching systems opens its overview. Explicit system URLs keep their selected system.
 
-`meta.json.system` selects a prototype's system. Otherwise, it uses the studio default.
+`meta.json.system` selects a prototype's system; explicit `null` selects no system. Only omission uses the studio default. The [prototype contract](../prototypes/reference.md#metadata) owns the metadata definition.
 
 The configuration command preserves existing prototypes' system choices before changing the default. Migration must update imports and metadata together.
 
@@ -122,6 +130,8 @@ See `scripts/lib/studio-setup.js` for preservation and the setup-design-system s
 Studio is maintained with Studio and excluded from prototype choices, default-system configuration, and system removal. Its runtime UI stays unavailable to prototypes and other systems.
 
 ## System knowledge and agent routing
+
+The [contracts and operating instructions foundation](../../platform/core/contracts-and-instructions.md) distinguishes technical contracts from operating policy, intent, and procedures.
 
 A system’s guidance applies to its domain, not just its components. Studio rules cover Studio modules, architecture, documentation, and collaboration; product rules can cover terminology, accessibility, business requirements, and workflows.
 

@@ -23,7 +23,13 @@ Your agent can consult these files for implementation details. You can inspect t
 
 ## How it relates to Systems
 
-Documentation explains the platform. [Systems](/documentation/guide/systems) holds each system's components, foundations, context, rules, and skills. Both are file-based and available to your agent.
+Reference presents the technical system of record: core contracts define shared platform behavior, and module contracts define individual capabilities. These files can state requirements as well as explain how things work.
+
+The Studio system supplies the operating instructions for working in that environment. Its **Rules** direct agent behavior, **Skills** provide procedures, and **Context** explains Design Studio's intent. They link to the technical contracts rather than maintaining a second definition of them.
+
+For example, a prototype contract defines permitted dependencies. The Studio workflow rule tells an agent to read that contract, preserve your work, and verify the result. Your assigned product system adds its own context and conventions within these boundaries.
+
+Read [Contracts and operating instructions](/documentation/reference/platform/core/contracts-and-instructions.md) for the ownership model, or [Agent context](/documentation/guide/agent-context) for the reading flow. [Systems](/documentation/guide/systems) exposes each system's components, foundations, context, rules, and skills.
 
 Use navigation for the [shared source workflow](/documentation/guide/home#working-with-files). Platform documentation does not offer rename or delete actions in these menus.
 

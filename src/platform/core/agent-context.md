@@ -6,6 +6,8 @@ toc: true
 
 Design Studio routes coding agents through repository files. It does not assemble or inject a context bundle into an agent conversation. The coding agent's host controls automatic instruction discovery; the agent follows linked instructions by reading files.
 
+The [contracts and operating instructions foundation](contracts-and-instructions.md) explains which files own technical requirements, operating policy, intent, and procedures. This contract owns how those files are routed to a task.
+
 ## Entry and platform baseline
 
 The repository's `AGENTS.md` is the entry point. It routes every session to the Studio system's prototype workflow and contributor scope rules. These operating rules apply to platform and prototype work.

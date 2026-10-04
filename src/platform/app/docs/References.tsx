@@ -41,8 +41,8 @@ export function AboutReference({ source, group }: { source: string; group?: Plat
   return <details className="mt-10 border-t border-border pt-4 text-sm">
     <summary className="cursor-pointer text-muted-foreground">About this reference</summary>
     <p className="mt-4 break-words font-mono text-xs text-muted-foreground">src{source}</p>
-    <p className="mt-3 text-muted-foreground">Supplied with the platform. Available to the agent when relevant instructions or the current task lead it here.</p>
-    {Boolean(group?.related.length) && <><p className="mt-4 font-medium">Related context and instructions</p><ul className="mt-2 space-y-2">{group!.related.map((link) => <li key={link.href}><Link to={link.href as never} className="underline underline-offset-4">{link.title}</Link></li>)}</ul></>}
+    <p className="mt-3 text-muted-foreground">This source owns the technical behavior it describes. Studio rules and skills consult it when relevant to a task. Availability does not mean an agent has read it.</p>
+    {Boolean(group?.related.length) && <><p className="mt-4 font-medium">Related operating instructions and intent</p><ul className="mt-2 space-y-2">{group!.related.map((link) => <li key={link.href}><Link to={link.href as never} className="underline underline-offset-4">{link.title}</Link></li>)}</ul></>}
   </details>;
 }
 
@@ -55,8 +55,10 @@ export function ReferenceIndex() {
     {guide.length > 0 && <p className="mt-4 text-sm">For a guided introduction, start with the <Link to={'/documentation/guide' as never} className="underline underline-offset-4">Guide</Link>.</p>}
     <p className="mt-4 text-sm">The <Link to={'/systems/studio/rules/documentation-standards' as never} className="underline underline-offset-4">Documentation standards</Link> define where context belongs and how to keep it accurate.</p>
     <section className="mt-10 max-w-[65ch] space-y-4">
-      <h2 className="text-xl font-semibold">What this documentation contributes</h2>
-      <p>Reference describes the environment an agent is operating: what a prototype may depend on, how files are structured, and what each capability provides. It helps the agent make changes that fit the platform.</p>
+      <h2 className="text-xl font-semibold">Contracts and Studio instructions</h2>
+      <p>Core and module contracts are the technical system of record: supported file structures, behavior, interfaces, and dependency boundaries. Reference displays those source files.</p>
+      <p>The Studio system owns operating instructions for working within those contracts. Rules direct agent behavior, Skills provide task procedures, and Context explains Design Studio’s intent. These files link to contracts instead of redefining their technical requirements.</p>
+      <p>See <Link to={'/documentation/reference/platform/core/contracts-and-instructions.md' as never} className="underline underline-offset-4">Contracts and operating instructions</Link> for ownership, examples, and how to update each source.</p>
       <p>The Guide explains how to use the studio. Reference supplies the detailed contracts behind that guidance, including developer sections omitted from Guide chapters. Both can present the same module README.</p>
     </section>
     <section className="mt-10 max-w-[65ch] space-y-4">

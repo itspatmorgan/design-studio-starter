@@ -1,6 +1,6 @@
 # Prototype workflow
 
-Read the [prototype contract](../../../modules/prototypes/reference.md) when creating or reorganizing prototype files, metadata, or links.
+Read the [prototype contract](../../../modules/prototypes/reference.md) when creating or reorganizing prototype files, metadata, or links, and before changing runtime dependencies or styles. It owns these technical requirements.
 
 ## Create and edit
 
@@ -19,21 +19,15 @@ Read the [prototype contract](../../../modules/prototypes/reference.md) when cre
 
 Follow the [static asset convention](../../../platform/core/assets.md) when adding images, logos, fonts, or shared static files.
 
-A prototype may use its own files, its assigned system, shared utilities, installed packages, and enabled public module libraries.
+Follow the prototype contract's [dependency boundaries](../../../modules/prototypes/reference.md#dependency-boundaries). Use permitted dependencies and local styles; fix boundary errors instead of bypassing checks.
 
-Access a public module library through `@module/<id>` only. Do not import private platform files, another prototype, or another system.
-
-These boundaries also apply to indirect and type-only dependencies. Use literal paths for dynamic imports.
-
-Use Tailwind classes or CSS Modules with local selectors. Do not import plain CSS, use `:global`, or add CSS `@import` in prototypes.
-
-Keep shared utilities independent of prototypes, systems, and platform code. Keep experiments local until an authorized shared change moves them into the system.
+Keep experiments local until an authorized shared change moves them into the system.
 
 ## Verify and save
 
 - Read rendering errors before changing code. Fix type and boundary errors rather than suppressing them.
 - Run `pnpm build` before committing completed work. Inspect the rendered result when changing views.
-- Keep committed files within the 750 KB limit. Compress oversized assets instead of bypassing the check.
+- Follow the [Asset Guard](../../../platform/core/assets.md#asset-guard). Compress oversized assets instead of bypassing the check.
 - Commit finished work with a concise message. Push only when the person asks to share.
 
 A push runs repository checks. It does not publish a site.
