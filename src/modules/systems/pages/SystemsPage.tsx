@@ -1,10 +1,12 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
-import { ChevronDown, Compass, Blocks, NotebookText, ListChecks, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, type LucideIcon } from 'lucide-react';
+import { ChevronDown, Compass, Blocks, NotebookText, ListChecks, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, Search, ChevronsDownUp, ChevronsUpDown, X, type LucideIcon } from 'lucide-react';
+import { Input } from '@/systems/studio/components/input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
+import { artifactLabel, findArtifact } from '@/platform/app/data/manifest';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/systems/studio/components/collapsible';
 import FileTree from '@/modules/prototypes/viewer/FileTree';
 import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
-import { findArtifact } from '@/platform/app/data/manifest';
 import SystemContentPage from '../content/SystemContentPage';
 import type { Prototype } from '@/platform/app/data/types';
 import { NavHeader, NavList, NavTitle, SectionNav } from '@/platform/app/shell/nav';
@@ -84,14 +86,26 @@ const PAGE_ICONS: Record<string, LucideIcon> = {
 const CONTENT_ICONS: Record<string, LucideIcon> = { context: NotebookText, rules: ListChecks, skills: WandSparkles };
 const navIcon = (Icon: LucideIcon) => <Icon aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />;
 
+// Different Systems routes mount separate page instances. Keep tree choices for the session.
+const systemTreeState = new Map<string, {
+  openGroups: Record<string, boolean>;
+  folderCommand: { version: number; expanded: boolean };
+  foldersExpanded: Record<string, boolean>;
+}>();
+
 // A fixed system folder and its readable contents. Page changes preserve branch state.
-function SystemBranch({ label, path, active, children }: { label: string; path: string; active: boolean; children: ReactNode }) {
-  const [open, setOpen] = useState(active);
-  useEffect(() => { if (active) setOpen(true); }, [active]);
-  return <Collapsible open={open} onOpenChange={setOpen}>
+function SystemBranch({ label, path, open, onOpenChange, children }: { label: string; path: string; open: boolean; onOpenChange: (open: boolean) => void; children: ReactNode }) {
+  return <Collapsible open={open} onOpenChange={onOpenChange}>
     <CollapsibleTrigger title={path} className="mx-1 flex h-7 w-[calc(100%-8px)] items-center gap-1.5 rounded-md px-2 text-left text-[12px] font-medium leading-tight hover:bg-sidebar-foreground/5"><ChevronDown className={'size-3.5 shrink-0 text-muted-foreground transition-transform ' + (open ? '' : '-rotate-90')} />{label}</CollapsibleTrigger>
     <CollapsibleContent className="space-y-0.5 pl-5">{children}</CollapsibleContent>
   </Collapsible>;
+}
+
+function TreeAction({ label, onClick, disabled = false, children }: { label: string; onClick: () => void; disabled?: boolean; children: ReactNode }) {
+  return <Tooltip>
+    <TooltipTrigger render={<button type="button" aria-label={label} disabled={disabled} onClick={onClick} className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-foreground/5 disabled:opacity-40" />}>{children}</TooltipTrigger>
+    <TooltipContent side="bottom">{label}</TooltipContent>
+  </Tooltip>;
 }
 
 // The Systems navigation, built from the shared pieces (shell/nav/): the section's name, the
@@ -102,6 +116,35 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   const manifest = useManifest();
   const source = system === PLATFORM_ID ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
   const foundations = TOKEN_PAGES.filter((p) => p.id === 'typography' || tokens.some((t) => t.group === p.group));
+  const savedTree = systemTreeState.get(system);
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => savedTree?.openGroups ?? { context: true, rules: true, skills: true, theme: true, components: components.some(c => c.slug === page) });
+  const [folderCommand, setFolderCommand] = useState(() => savedTree?.folderCommand ?? { version: 0, expanded: true });
+  const [foldersExpanded, setFoldersExpanded] = useState<Record<string, boolean>>(() => savedTree?.foldersExpanded ?? {});
+  useEffect(() => { systemTreeState.set(system, { openGroups, folderCommand, foldersExpanded }); }, [system, openGroups, folderCommand, foldersExpanded]);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const searchRef = useRef<HTMLInputElement>(null);
+  useEffect(() => { if (searchOpen) searchRef.current?.focus(); }, [searchOpen]);
+  const q = query.trim().toLowerCase();
+  const matches = (label: string) => !q || label.toLowerCase().includes(q);
+  const activeGroup = page && (Object.hasOwn(SYSTEM_CONTENT_SECTIONS, page) ? page : foundations.some(p => p.id === page) || page === 'icons' ? 'theme' : components.some(c => c.slug === page) ? 'components' : undefined);
+  useEffect(() => { if (activeGroup) setOpenGroups(prev => ({ ...prev, [activeGroup]: true })); }, [activeGroup, page, params._splat]);
+  const groupOpen = (id: string) => Boolean(q) || openGroups[id];
+  const changeGroup = (id: string, open: boolean) => { if (!q) setOpenGroups(prev => ({ ...prev, [id]: open })); };
+  const allExpanded = Object.values(openGroups).every(Boolean) && Object.values(foldersExpanded).every(Boolean);
+  const toggleAll = () => {
+    const expanded = !allExpanded;
+    setOpenGroups({ context: expanded, rules: expanded, skills: expanded, theme: expanded, components: expanded });
+    setFolderCommand(prev => ({ version: prev.version + 1, expanded }));
+  };
+  const contentSections = Object.entries(SYSTEM_CONTENT_SECTIONS).flatMap(([id, section]) => {
+    const proto = manifest.systemContent.find(p => p.id === contentId(system, id));
+    return proto ? [{ id, section, proto }] : [];
+  });
+  const matchingFoundations = foundations.filter(p => matches('Theme') || matches(p.label));
+  const matchingComponents = components.filter(c => matches('Components') || matches(c.title));
+  const iconsMatch = SYSTEMS[system].icons && (matches('Theme') || matches('Icons'));
+  const anyMatch = matches('Overview') || matchingFoundations.length > 0 || iconsMatch || matchingComponents.length > 0 || contentSections.some(({ section, proto }) => matches(section.title) || proto.artifacts.some(a => matches(artifactLabel(a.path, proto)) || matches(a.path)));
   const file = (id: string | undefined, label: string) => {
     const path = sourcePath(system, id, components);
     return path && <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={path} label={label} className={id ? undefined : 'h-7'} icon={navIcon(id && components.some((c) => c.slug === id) ? Blocks : PAGE_ICONS[id ?? 'intro'] ?? Blocks)} reveal={() => systemSourceRequest('reveal', path)} />;
@@ -132,20 +175,31 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
           </Select>
         </div>
       </NavHeader>
+      <div className="shrink-0 px-3 pt-3">
+        <div className="flex h-7 items-center justify-between pl-2">
+          <p className="text-[12px] font-semibold">Contents</p>
+          <div className="flex items-center gap-0.5">
+            <TreeAction label="Search" onClick={() => { setSearchOpen(open => !open); setQuery(''); }}>{navIcon(Search)}</TreeAction>
+            <TreeAction label={allExpanded ? 'Collapse all' : 'Expand all'} onClick={toggleAll} disabled={Boolean(q)}>{navIcon(allExpanded ? ChevronsDownUp : ChevronsUpDown)}</TreeAction>
+          </div>
+        </div>
+        {searchOpen && <div className="relative mt-1">
+          <Input ref={searchRef} aria-label="Search system" placeholder="Search system" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') { event.stopPropagation(); if (query) setQuery(''); else setSearchOpen(false); } }} className="h-8 pr-8 text-[13px] shadow-none" />
+          {query && <button type="button" aria-label="Clear search" onClick={() => { setQuery(''); searchRef.current?.focus(); }} className="absolute right-1 top-0.5 inline-flex size-7 items-center justify-center rounded-md text-muted-foreground">{navIcon(X)}</button>}
+        </div>}
+      </div>
       <NavList>
-        {file(undefined, 'Overview')}
-        <SystemBranch label="Theme" path={source.theme} active={foundations.some((p) => p.id === page) || page === 'icons'}>
-          {foundations.map((p) => file(p.id, p.label))}
-          {SYSTEMS[system].icons && file('icons', 'Icons')}
-        </SystemBranch>
-        <SystemBranch label="Components" path={source.components} active={components.some((c) => c.slug === page)}>
-          {components.map((c) => file(c.slug, c.title))}
+        {matches('Overview') && file(undefined, 'Overview')}
+        {contentSections.map(({ id, section, proto }) => <FileTree key={proto.id} proto={proto} current={page === id && params._splat ? findArtifact(proto, params._splat) : undefined} embedded contentIcon={navIcon(CONTENT_ICONS[id])} branch={{ label: section.title, path: source.dir + id + '/', active: page === id }} navigation={{ query: matches(section.title) ? '' : q, searching: Boolean(q), expanded: groupOpen(id), onExpandedChange: open => changeGroup(id, open), folderCommand, onFoldersExpanded: open => setFoldersExpanded(prev => prev[id] === open ? prev : { ...prev, [id]: open }) }} />)}
+        {(matchingFoundations.length > 0 || iconsMatch || matches('Theme')) && <SystemBranch label="Theme" path={source.theme} open={groupOpen('theme')} onOpenChange={open => changeGroup('theme', open)}>
+          {matchingFoundations.map(p => file(p.id, p.label))}
+          {iconsMatch && file('icons', 'Icons')}
+        </SystemBranch>}
+        {(matchingComponents.length > 0 || matches('Components')) && <SystemBranch label="Components" path={source.components} open={groupOpen('components')} onOpenChange={open => changeGroup('components', open)}>
+          {matchingComponents.map(c => file(c.slug, c.title))}
           {!components.length && <p className="px-3 py-1 text-[12px] text-muted-foreground">Empty folder</p>}
-        </SystemBranch>
-        {Object.entries(SYSTEM_CONTENT_SECTIONS).map(([id, section]) => {
-          const proto = manifest.systemContent.find((p) => p.id === contentId(system, id));
-          return proto && <FileTree key={proto.id} proto={proto} current={page === id && params._splat ? findArtifact(proto, params._splat) : undefined} embedded contentIcon={navIcon(CONTENT_ICONS[id])} branch={{ label: section.title, path: source.dir + id + '/', active: page === id }} />;
-        })}
+        </SystemBranch>}
+        {q && !anyMatch && <p role="status" className="px-3 py-1 text-[12px] text-muted-foreground">No matching items.</p>}
       </NavList>
     </SectionNav>
   );

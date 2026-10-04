@@ -75,10 +75,12 @@ function itemsAsNodes(proto: Prototype): FileNode[] {
 const itemsOf = (m: Manifest, p: Prototype) => allPrototypes(m).find((x) => x.contributorKey === p.contributorKey && x.id === p.id)?.artifacts ?? [];
 
 // While filtering, keep files whose name matches, and folders with a match inside.
-function filterNodes(nodes: FileNode[], q: string): FileNode[] {
+function filterNodes(nodes: FileNode[], q: string, systemProto?: Prototype): FileNode[] {
   return nodes.flatMap((n) => {
+    // System search includes artifact titles and paths; matching a folder reveals its contents.
+    if (systemProto && (n.path.toLowerCase().includes(q) || artifactLabel(n.path, systemProto).toLowerCase().includes(q))) return [n];
     if (!n.dir) return n.name.toLowerCase().includes(q) || artifactLabel(n.name).toLowerCase().includes(q) ? [n] : [];
-    const children = filterNodes(n.children ?? [], q);
+    const children = filterNodes(n.children ?? [], q, systemProto);
     return children.length || n.name.toLowerCase().includes(q) ? [{ ...n, children }] : [];
   });
 }
@@ -164,13 +166,25 @@ function IconButton({ label, onClick, pressed, children }: { label: string; onCl
   );
 }
 
-type FileTreeProps = { proto: Prototype; current: Artifact | undefined; embedded?: boolean; contentIcon?: ReactNode; branch?: { label: string; path: string; active: boolean } };
+type TreeNavigation = {
+  query: string;
+  searching: boolean;
+  expanded: boolean;
+  onExpandedChange: (open: boolean) => void;
+  folderCommand: { version: number; expanded: boolean };
+  onFoldersExpanded: (open: boolean) => void;
+};
+type FileTreeProps = { proto: Prototype; current: Artifact | undefined; embedded?: boolean; contentIcon?: ReactNode; branch?: { label: string; path: string; active: boolean }; navigation?: TreeNavigation };
 
-export default function FileTree({ proto, current, embedded = false, contentIcon, branch }: FileTreeProps) {
+const systemFolderState = new Map<string, { closed: Set<string>; commandVersion: number }>();
+
+export default function FileTree({ proto, current, embedded = false, contentIcon, branch, navigation }: FileTreeProps) {
   const { files, reload } = useFileTree(proto);
   const treeScope = proto.contributorKey + ":" + proto.id;
   const [expanded, setExpanded] = useState(branch?.active ?? true);
   useEffect(() => { if (branch?.active) setExpanded(true); }, [branch?.active]);
+  const branchExpanded = navigation?.expanded ?? expanded;
+  const changeExpanded = navigation?.onExpandedChange ?? setExpanded;
   const me = useMe();
   const router = useRouter();
   const navigate = useNavigate();
@@ -192,7 +206,9 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
   const nodes = !files ? itemsAsNodes(proto) : showAll ? files : visibleNodes(files, items);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filter, setFilter] = useState('');
-  const [closed, setClosed] = useState(() => new Set<string>());
+  const savedFolders = navigation ? systemFolderState.get(proto.id) : undefined;
+  const [closed, setClosed] = useState(() => savedFolders?.closed ?? new Set<string>());
+  const commandVersion = useRef(savedFolders?.commandVersion ?? -1);
   const [editing, setEditing] = useState<Editing>(null);
   const [confirmDelete, setConfirmDelete] = useState<FileNode | null>(null);
   const [overTop, setOverTop] = useState(false);
@@ -200,13 +216,34 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
   const filterRef = useRef<HTMLInputElement>(null);
   useEffect(() => { if (filterOpen) filterRef.current?.focus(); }, [filterOpen]);
 
-  const q = filter.trim().toLowerCase();
-  const shown = q ? filterNodes(nodes, q) : nodes;
+  const q = (navigation?.query ?? filter).trim().toLowerCase();
+  const shown = q ? filterNodes(nodes, q, navigation ? proto : undefined) : nodes;
   const dirs = allDirs(nodes);
   // While filtering, every folder with a match shows open.
-  const isOpen = (d: string) => Boolean(q) || !closed.has(d);
+  const isOpen = (d: string) => Boolean(q) || Boolean(navigation?.searching) || !closed.has(d);
   const allOpen = dirs.every((d) => !closed.has(d));
+  const dirSignature = dirs.join('\0');
+  useEffect(() => {
+    if (navigation && commandVersion.current !== navigation.folderCommand.version) {
+      commandVersion.current = navigation.folderCommand.version;
+      setClosed(navigation.folderCommand.expanded ? new Set() : new Set(dirs));
+    }
+  }, [navigation?.folderCommand.version, dirSignature]);
+  useEffect(() => {
+    if (navigation) systemFolderState.set(proto.id, { closed, commandVersion: commandVersion.current });
+  }, [proto.id, closed]);
+  useEffect(() => { navigation?.onFoldersExpanded(allOpen); }, [allOpen]);
+  useEffect(() => {
+    if (!navigation || !current) return;
+    setClosed(previous => {
+      const next = new Set(previous);
+      const parts = current.path.split('/');
+      parts.slice(0, -1).forEach((_, index) => next.delete(parts.slice(0, index + 1).join('/')));
+      return next;
+    });
+  }, [current?.path]);
   const setOpen = (d: string, open: boolean) => setClosed((prev) => {
+    if (navigation?.searching) return prev;
     const next = new Set(prev);
     if (open) next.delete(d); else next.add(d);
     return next;
@@ -504,12 +541,14 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
     });
   }
 
+  if (navigation?.query && !shown.length && !editing) return null;
+
   return (
     <nav className={cn("group/tree flex min-h-0 flex-col", branch ? "gap-0.5" : "space-y-1.5 px-2 pt-3 pb-3", !embedded && "flex-1 overflow-y-auto")}>
       <div className={cn("flex h-7 shrink-0 items-center justify-between gap-1 pr-0.5", branch ? "mx-1 rounded-md pl-2 hover:bg-sidebar-foreground/5" : "pl-2.5")}>
-        {branch ? <button type="button" aria-expanded={expanded} onClick={() => setExpanded((open) => !open)} title={branch.path} className="flex h-full min-w-0 flex-1 items-center gap-1.5 text-left text-[12px] font-medium leading-tight"><HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !expanded && '-rotate-90')} /><span className="truncate">{branch.label}</span></button> : <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{showAll || proto.contributorKey === SYSTEM_CONTENT_KEY ? 'Files' : 'Artifacts'}</p>}
+        {branch ? <button type="button" aria-expanded={branchExpanded} onClick={() => changeExpanded(!branchExpanded)} title={branch.path} className="flex h-full min-w-0 flex-1 items-center gap-1.5 text-left text-[12px] font-medium leading-tight"><HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !branchExpanded && '-rotate-90')} /><span className="truncate">{branch.label}</span></button> : <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{showAll || proto.contributorKey === SYSTEM_CONTENT_KEY ? 'Files' : 'Artifacts'}</p>}
         {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
-        <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
+        {!navigation && <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
           <IconButton label="Filter" pressed={filterOpen} onClick={() => { setExpanded(true); setFilterOpen((o) => !o); }}>
             <HugeiconsIcon icon={Search01Icon} size={14} />
           </IconButton>
@@ -518,7 +557,7 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
               <HugeiconsIcon icon={allOpen ? UnfoldLessIcon : UnfoldMoreIcon} size={14} />
             </IconButton>
           )}
-        </div>
+        </div>}
         {/* Making things is here, with the file actions, and offers what the open folder holds: a prototype's
             file types and folders, or what a SystemContent section allows. It's always shown, and last, so the actions
             that fade in and out sit to its left without moving it. It's the main action, and a folder can be
@@ -545,8 +584,8 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
           );
         })()}
       </div>
-      <div hidden={branch && !expanded} className={branch ? "pl-5" : undefined}>
-      {filterOpen && (
+      <div hidden={branch && !branchExpanded} className={branch ? "pl-5" : undefined}>
+      {!navigation && filterOpen && (
         <div className="relative shrink-0 px-1">
           <Input
             ref={filterRef}
