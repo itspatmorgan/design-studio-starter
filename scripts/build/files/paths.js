@@ -10,7 +10,7 @@ import { isHelper } from '../../../src/platform/core/fileTypes.ts';
 import { byOrder, parseOrder } from '../../../src/platform/core/order.ts';
 import { SYSTEM_CONTENT_KEY, SYSTEMS_KEY, isSystemContentSection, contentParts, rootOf } from '../../../src/platform/core/roots.ts';
 import { PROTOTYPE_SECTIONS } from '../../lib/modules.js';
-import { SYSTEM_SOURCES } from '../../../src/platform/modules/systems/node/systems.js';
+import { SYSTEM_SOURCES } from '../../../src/modules/systems/node/systems.js';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 export const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -24,7 +24,7 @@ export const BATCH_MS = 50;
 export const MAX_SOURCE_BYTES = 750 * 1024; // the same limit as any committed file (check-asset-size.js)
 
 // A prototype's folder, or null if the contributor or prototype name isn't valid. The system content
-// sections (src/systems/platform/context, rules, skills) are found here too, by their fixed names, to read.
+// sections (src/systems/studio/context, rules, skills) are found here too, by their fixed names, to read.
 export const safeScope = (dir) => {
   if (!dir || !canonicalDirectory(dir, ROOT)) return null;
   const meta = path.join(dir, 'meta.json');

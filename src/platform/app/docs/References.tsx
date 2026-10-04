@@ -53,7 +53,7 @@ export function ReferenceIndex() {
     <h1 className="text-3xl font-semibold tracking-tight">Overview</h1>
     <p className="mt-4 max-w-[65ch] text-muted-foreground">The complete documentation supplied with the platform: capabilities, boundaries, and file contracts. People and agents can consult it when needed. You do not need to read or customize these files to begin creating.</p>
     {guide.length > 0 && <p className="mt-4 text-sm">For a guided introduction, start with the <Link to={'/documentation/guide' as never} className="underline underline-offset-4">Guide</Link>.</p>}
-    <p className="mt-4 text-sm">The <Link to={'/systems/platform/rules/documentation-standards' as never} className="underline underline-offset-4">Documentation standards</Link> define where context belongs and how to keep it accurate.</p>
+    <p className="mt-4 text-sm">The <Link to={'/systems/studio/rules/documentation-standards' as never} className="underline underline-offset-4">Documentation standards</Link> define where context belongs and how to keep it accurate.</p>
     <section className="mt-10 max-w-[65ch] space-y-4">
       <h2 className="text-xl font-semibold">What this documentation contributes</h2>
       <p>Reference describes the environment an agent is operating: what a prototype may depend on, how files are structured, and what each capability provides. It helps the agent make changes that fit the platform.</p>

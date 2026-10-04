@@ -29,7 +29,7 @@ See [Collaborate](/documentation/guide/collaborate) for how these checks fit the
 | File exceeds the size limit | Reduce the asset before committing. |
 | Type check fails | Give your agent the error and ask it to correct the code. |
 
-See [Collaborate](/documentation/guide/collaborate) for review paths and [Prototype files and boundaries](/documentation/reference/platform/modules/prototypes/reference.md#dependency-boundaries) for permitted dependencies.
+See [Collaborate](/documentation/guide/collaborate) for review paths and [Prototype files and boundaries](/documentation/reference/modules/prototypes/reference.md#dependency-boundaries) for permitted dependencies.
 
 ## Keep files small
 

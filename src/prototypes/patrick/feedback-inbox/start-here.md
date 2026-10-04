@@ -57,6 +57,6 @@ Shared screen code lives in `app/_components`. Underscore folders contain helper
 
 Ask your agent to change something concrete: “add a due date to feedback,” “explore a different inbox layout,” or “put the empty state beside the main screen on the handoff canvas.” Point it at Project context so the changes have a reason behind them.
 
-For more detail, open the [Guide](/documentation/guide). The [system context](/systems/platform/context) holds the team's shared context; this prototype holds context specific to the feedback tracker.
+For more detail, open the [Guide](/documentation/guide). The [system context](/systems/studio/context) holds the team's shared context; this prototype holds context specific to the feedback tracker.
 
 When you're ready, create your own prototype from the Prototypes page. You can keep this sample as a reference, archive it to leave it out of the deployed site, or delete it from its **…** menu.

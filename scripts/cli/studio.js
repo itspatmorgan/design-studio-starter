@@ -24,9 +24,9 @@ import { compatible, listProblems, moduleProblems, PLATFORM_VERSION } from '../.
 import {
   agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, readDeclaration,
 } from '../../src/platform/core/modules/pack.ts';
-import { systemProblems } from '../../src/platform/modules/systems/spec.ts';
+import { systemProblems } from '../../src/modules/systems/spec.ts';
 import { MODULES, ENABLED_MODULES, CONFIG } from '../lib/modules.js';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from '../../src/platform/modules/systems/node/systems.js';
+import { PLATFORM_ID, SYSTEM_SPECS, PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from '../../src/modules/systems/node/systems.js';
 import { configProblems } from '../../src/platform/core/config.ts';
 import { applySetupChanges, editStudioConfig, pinImplicitSystems } from '../lib/studio-setup.js';
 import { resolveContributor } from './resolve-contributor.js';
@@ -56,7 +56,7 @@ const titleOf = (id) => id.split('-').map((w) => w.charAt(0).toUpperCase() + w.s
 const slug = (text) => text.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/^[^a-z]+/, '');
 
 // ---- places that must never be deleted, whatever a pack or a flag says
-const PROTECTED = new Set(['src', 'src/platform', 'src/platform/modules', 'src/prototypes', 'src/lib', 'src/systems/platform', 'src/systems/platform/rules', 'src/systems/platform/context', 'src/systems/platform/skills', 'src/systems', 'src/types']);
+const PROTECTED = new Set(['src', 'src/platform', 'src/modules', 'src/prototypes', 'src/lib', `src/systems/${PLATFORM_ID}`, `src/systems/${PLATFORM_ID}/rules`, `src/systems/${PLATFORM_ID}/context`, `src/systems/${PLATFORM_ID}/skills`, 'src/systems', 'src/types']);
 function removable(relative) {
   const clean = path.posix.normalize(relative.replace(/\/$/, ''));
   if (!relative || clean.startsWith('..') || clean.startsWith('/') || !clean.startsWith('src/') || PROTECTED.has(clean)) throw new Error(`Refusing to delete ${relative}.`);
@@ -75,7 +75,7 @@ function syncAgents() {
   const file = rel('AGENTS.md');
   if (!fs.existsSync(file)) return false;
   const text = fs.readFileSync(file, 'utf8');
-  const next = applyAgentsBlock(text, agentsBlock(ENABLED_MODULES));
+  const next = applyAgentsBlock(text, agentsBlock(ENABLED_MODULES, PLATFORM_ID));
   if (next === text) return false;
   fs.writeFileSync(file, next);
   return true;
@@ -158,10 +158,11 @@ async function add() {
     if (typeof id !== 'string' || !ID.test(id)) fail(kind === 'module' ? 'module.ts needs an id: lowercase letters, numbers, and dashes.' : 'Give the system an id with --id <name>: lowercase letters, numbers, and dashes.');
     const problems = kind === 'module' ? moduleProblems(spec, id) : systemProblems(spec, id);
     if (kind === 'module' && !compatible(spec)) problems.push(`It needs platform ${spec.requires} or newer, and this is ${PLATFORM_VERSION}. Update the platform first.`);
-    const installed = kind === 'module' ? fs.existsSync(rel('src', 'platform', 'modules', id)) : fs.existsSync(rel('src', 'systems', id));
+    const installed = kind === 'module' ? fs.existsSync(rel('src', 'modules', id)) : fs.existsSync(rel('src', 'systems', id));
     if (installed) problems.push(`There's already a ${kind === 'module' ? 'module' : 'design system'} called "${id}". Remove it first (pnpm studio remove ${id}), or add this one with another id.`);
     if (kind === 'module') problems.push(...listProblems([...Object.values(MODULES).filter((m) => m && typeof m === 'object'), spec]).filter((p) => p.includes(`"${spec.section?.key}"`) || p.includes(` ${id} `)));
-    const plan = packPlan(kind, id, spec, names);
+    if (kind === 'system' && spec.role === 'platform') problems.push('The application already has a required Studio system. Added systems must declare role: prototype.');
+    const plan = packPlan(kind, id, spec, names, PLATFORM_ID);
     problems.push(...plan.problems);
     const licenseFile = names.some((n) => /^licen[sc]e(\.[a-z]+)?$/i.test(n));
     const verdict = licenseVerdict(spec, licenseFile);
@@ -244,7 +245,7 @@ function remove() {
   const [id] = positional;
   if (!id) fail('Usage: pnpm studio remove <module|system> [--content] [--yes] [--force]');
   const isModule = Object.hasOwn(MODULES, id) && MODULES[id];
-  if (id === 'platform') fail('The Platform system is supplied with Studio and cannot be removed.');
+  if (!isModule && SYSTEM_SPECS[id]?.role === 'platform') fail('The Studio system serves the platform and cannot be removed.');
   const isSystem = !isModule && Object.hasOwn(PROTOTYPE_SYSTEMS, id);
   if (!isModule && !isSystem) fail(`Nothing is called "${id}". Modules: ${Object.keys(MODULES).join(', ')}. Design systems: ${SYSTEM_IDS.join(', ')}.`);
   const paths = [];
@@ -252,9 +253,9 @@ function remove() {
   if (isModule) {
     const spec = MODULES[id];
     if (!spec.optional) fail(`The ${id} module can't be removed yet; other parts of the app still use it.`);
-    paths.push(`src/platform/modules/${id}`);
-    for (const h of spec.instructions ?? []) paths.push(`src/systems/platform/${h.path}`);
-    if (spec.section?.folder && !spec.section.folder.startsWith(`src/platform/modules/${id}`)) {
+    paths.push(`src/modules/${id}`);
+    for (const h of spec.instructions ?? []) paths.push(`src/systems/${PLATFORM_ID}/${h.path}`);
+    if (spec.section?.folder && !spec.section.folder.startsWith(`src/modules/${id}`)) {
       if (flags.content) paths.push(spec.section.folder);
       else if (fs.existsSync(rel(spec.section.folder))) notes.push(`Its content in ${spec.section.folder} stays. Add --content to delete that too.`);
     }
@@ -331,6 +332,8 @@ function create(kind) {
     // A pack in its own folder, to publish.
     const out = path.resolve(flags.out);
     if (fs.existsSync(out) && fs.readdirSync(out).length) fail(`${out} isn't empty.`);
+    for (const file of files) say(`Create ${path.join(out, file)}`);
+    if (!flags.yes) { say('Nothing written. Apply this scaffold with --yes.'); return; }
     for (const f of files) {
       const to = path.join(out, f); fs.mkdirSync(path.dirname(to), { recursive: true });
       fs.writeFileSync(to, fill(fs.readFileSync(path.join(template, sourceOf.get(f)), 'utf8')));
@@ -339,10 +342,16 @@ function create(kind) {
     return;
   }
   const spec = readDeclaration(fill(fs.readFileSync(path.join(template, kind === 'module' ? 'module.ts' : 'system.ts'), 'utf8'))).value;
-  if (kind === 'module' ? fs.existsSync(rel('src', 'platform', 'modules', id)) : fs.existsSync(rel('src', 'systems', id))) fail(`There's already a ${kind} called "${id}".`);
+  if (kind === 'module' ? fs.existsSync(rel('src', 'modules', id)) : fs.existsSync(rel('src', 'systems', id))) fail(`There's already a ${kind} called "${id}".`);
   if (kind === 'module' && SECTION_TAKEN(id)) fail(`"${id}" is already the address of another module, or a contributor's folder. Choose another id.`);
-  const plan = packPlan(kind, id, spec, files);
+  const plan = packPlan(kind, id, spec, files, PLATFORM_ID);
   if (plan.problems.length) fail(plan.problems.join('\n'));
+  for (const move of plan.moves) {
+    if (fs.existsSync(rel(move.to))) fail(`${move.to} already exists.`);
+    say(`Create ${move.to}`);
+  }
+  say(`Register ${kind} ${id} in studio.config.ts and synchronize agent routing.`);
+  if (!flags.yes) { say('Nothing written. Apply this scaffold with --yes.'); return; }
   const written = [];
   const backups = new Map();
   try {
@@ -362,7 +371,7 @@ function create(kind) {
     fail(`Nothing was made. ${e.message}`);
   }
   syncInFreshProcess();
-  say(`Made the ${kind} "${id}" in ${kind === 'module' ? `src/platform/modules/${id}/` : `src/systems/${id}/`}. Restart the dev server to see it.`);
+  say(`Made the ${kind} "${id}" in ${kind === 'module' ? `src/modules/${id}/` : `src/systems/${id}/`}. Restart the dev server to see it.`);
 }
 
 function SECTION_TAKEN(id) {
@@ -386,7 +395,7 @@ function configure() {
   const changes = Object.fromEntries(['name', 'tagline', 'usage'].filter((key) => flags[key] !== undefined).map((key) => [key, flags[key]]));
   if (flags.system !== undefined) changes.defaultSystem = flags.system;
   if (!Object.keys(changes).length) fail('Usage: pnpm studio configure --name "My Studio" --usage personal|team --system <id> [--tagline "..."] [--yes]');
-  const problems = configProblems({ ...CONFIG, ...changes }, Object.values(MODULES), SYSTEM_IDS);
+  const problems = configProblems({ ...CONFIG, ...changes }, Object.values(MODULES), SYSTEM_IDS, PLATFORM_ID);
   if (problems.length) fail(problems.join('\n'));
   const file = rel('studio.config.ts');
   const before = fs.readFileSync(file, 'utf8');
@@ -407,7 +416,7 @@ function status() {
     modules: { enabled: ENABLED_MODULES.map((module) => module.id), disabled: Object.keys(MODULES).filter((id) => !ENABLED_MODULES.some((module) => module.id === id)) },
     systems: CONFIG.systems,
     systemContentPlaceholders: systemContent.filter((file) => fs.existsSync(rel(file)) && fs.readFileSync(rel(file), 'utf8').includes('**Placeholder.**')),
-    problems: configProblems(CONFIG, Object.values(MODULES), SYSTEM_IDS),
+    problems: configProblems(CONFIG, Object.values(MODULES), SYSTEM_IDS, PLATFORM_ID),
   };
   if (flags.json) say(JSON.stringify(report, null, 2));
   else {

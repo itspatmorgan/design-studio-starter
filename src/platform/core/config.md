@@ -12,7 +12,7 @@ referenceOrder: 20
 | `usage` | Required `personal` or `team`. Guides onboarding, without changing contributor ownership. |
 | `tagline` | Optional line on the published front page, up to 140 characters. |
 | `modules` | Installed module IDs set to `true` or `false`. Every installed module needs an explicit entry; omission is invalid and never enables it. Required modules cannot be disabled. |
-| `systems` | Required list of every installed system ID, including `platform`. Discovery does not register a system. |
+| `systems` | Required list of every installed system ID, including the required Studio system (`studio` in the starter). Discovery does not register a system. |
 | `defaultSystem` | System for prototypes without an explicit system choice. Required registered prototype-system ID; no alphabetical fallback. |
 
 ## Change configuration
@@ -29,4 +29,4 @@ Restart the dev server after configuration changes. Shared configuration changes
 
 The agent can run `pnpm studio status --json` to inspect configuration and setup state. This report does not replace a build and review of a working prototype.
 
-For capabilities and removal behavior, see [Extend your Studio](/documentation/reference/platform/modules/README.md).
+For capabilities and removal behavior, see [Extend your Studio](/documentation/reference/modules/README.md).

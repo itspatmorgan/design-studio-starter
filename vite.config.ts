@@ -14,14 +14,14 @@ import rehypeSlug from 'rehype-slug';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeMermaid from './scripts/build/rehype-mermaid.js';
 import rehypeFileEmbeds from './scripts/build/rehype-file-embeds.js';
-import { documentCodeTheme } from './src/systems/platform/styles/contentPalette.js';
+import { documentCodeTheme } from './src/systems/studio/styles/contentPalette.js';
 import tailwindcss from '@tailwindcss/vite';
 import importGuard from './scripts/build/vite-import-guard-plugin.js';
 import manifestWatch from './scripts/build/vite-manifest-watch-plugin.js';
 import spa404 from './scripts/build/vite-spa-404-plugin.js';
 import files from './scripts/build/vite-files-plugin.js';
 import markdownRefresh from './scripts/build/vite-markdown-refresh-plugin.js';
-import systemProps from './src/platform/modules/systems/node/props-plugin.js';
+import systemProps from './src/modules/systems/node/props-plugin.js';
 import globs from './scripts/build/vite-globs-plugin.js';
 import css, { scopedUtilities } from './scripts/build/vite-css-plugin.js';
 import { ENABLED_MODULES, PROTOTYPE_DIRS } from './scripts/lib/modules.js';
@@ -53,7 +53,7 @@ function markdown(reference = false) {
 
 // A module with `lib: true` gives prototypes one door in: `import ... from '@module/<id>'` is its lib/index.
 const moduleLibs = ENABLED_MODULES.filter((m: { lib?: boolean }) => m.lib).map((m: { id: string }) => ({
-  find: `@module/${m.id}`, replacement: fileURLToPath(new URL(`./src/platform/modules/${m.id}/lib/index`, import.meta.url)),
+  find: `@module/${m.id}`, replacement: fileURLToPath(new URL(`./src/modules/${m.id}/lib/index`, import.meta.url)),
 }));
 
 export default defineConfig({
@@ -75,7 +75,7 @@ export default defineConfig({
     alias: [{ find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) }, ...moduleLibs],
   },
   plugins: [
-    // Markdown pages (Guide pages in src/platform/modules/documentation/pages/, and prototype documents), as plain
+    // Markdown pages (Guide pages in src/modules/documentation/pages/, and prototype documents), as plain
     // Markdown (no JSX or expressions, so any .md file compiles; raw HTML shows as text): frontmatter (a first heading is the title when there's no `title`), GitHub-style Markdown, heading ids, and code highlighting with Shiki in both color modes.
     markdown(),
     markdown(true),

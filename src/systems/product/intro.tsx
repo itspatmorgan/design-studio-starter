@@ -3,7 +3,7 @@
 // them); without one the page says so. Kept short on purpose: it shows how the product look differs from the app
 // UI. Its component pages come from the files in src/systems/product/components/ (button.tsx, button.examples.tsx,
 // button.md), and its foundations pages from styles/theme.css.
-import { Code, ColorModeSupport, Prose } from '@/platform/modules/systems/pages/foundations';
+import { Code, ColorModeSupport, Prose } from '@/modules/systems/pages/foundations';
 import system from './system';
 import type { SystemIntro } from '@/platform/app/data/types';
 

@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback } from '@/systems/platform/components/avatar';
+import { Avatar, AvatarFallback } from '@/systems/studio/components/avatar';
 
 // A contributor's initials in shadcn/ui's Avatar ("Patrick Morgan" → "PM").
 export function ContributorAvatar({ name, size = 'sm' }: { name?: string; size?: 'sm' | 'default' | 'lg' }) {

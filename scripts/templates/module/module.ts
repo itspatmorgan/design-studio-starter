@@ -1,6 +1,6 @@
-import type { ModuleSpec } from '../../core/modules/index.ts';
+import type { ModuleSpec } from '../../platform/core/api.ts';
 
-// __LABEL__. This file says what the module is, and what it adds. See src/platform/modules/README.md for everything
+// __LABEL__. This file says what the module is, and what it adds. See src/modules/README.md for everything
 // it can say: a section (an address and a folder), a lib prototypes can import, systemContent files, npm dependencies.
 export default {
   lib: false,

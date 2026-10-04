@@ -1,6 +1,7 @@
+import { modulePlatformProblem } from '../../src/platform/core/modules/boundaries.ts';
 import { scopePolicy } from '../lib/scope.js';
 import { dependencyResolver, importsOf, sourceFiles } from '../lib/imports.js';
-// Checks the modules in src/platform/modules/ (src/platform/core/modules/index.ts):
+// Checks the modules in src/modules/ (src/platform/core/modules/index.ts):
 //   - each module.ts is well formed, and its id is its folder's name
 //   - no two modules claim the same section key or folder
 //   - a module's section folder exists
@@ -24,19 +25,19 @@ import { pathToFileURL } from 'node:url';
 import { PLATFORM_VERSION, compatible, listProblems } from '../../src/platform/core/modules/index.ts';
 import { configProblems } from '../../src/platform/core/config.ts';
 import { CONFIG, MODULES, ENABLED_MODULES, SECTION_KEYS, PROTOTYPE_DIRS, declarationProblems } from '../lib/modules.js';
-import { SYSTEM_SPECS, PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS, systemDeclarationProblems } from '../../src/platform/modules/systems/node/systems.js';
+import { PLATFORM_ID, SYSTEM_SPECS, PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS, systemDeclarationProblems } from '../../src/modules/systems/node/systems.js';
 import { changesFromLock } from '../lib/lock.js';
 import { readContributors } from '../lib/contributors.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const problems = declarationProblems();
 const specs = Object.values(MODULES).filter((m) => m && typeof m === 'object');
-problems.push(...listProblems(specs), ...configProblems(CONFIG, specs, SYSTEM_IDS), ...systemDeclarationProblems());
+problems.push(...listProblems(specs), ...configProblems(CONFIG, specs, SYSTEM_IDS, PLATFORM_ID), ...systemDeclarationProblems());
 if (!SYSTEM_IDS.length) problems.push('There is no design system in src/systems/. Prototypes need one to build with: add one with pnpm studio create-system.');
 if (SYSTEM_IDS.length > 1 && !CONFIG.defaultSystem) problems.push(`There are ${SYSTEM_IDS.length} design systems (${SYSTEM_IDS.join(', ')}), so say which one prototypes use when their meta.json names none: add defaultSystem: '${SYSTEM_IDS.includes('product') ? 'product' : SYSTEM_IDS[0]}', to studio.config.ts.`);
 for (const id of SYSTEM_IDS) {
   for (const part of ['components', 'styles/theme.css']) {
-    if (!fs.existsSync(path.join(ROOT, PROTOTYPE_SYSTEMS[id].dir, part))) problems.push(`src/systems/${id}/${part} is missing. A design system has components/ and styles/theme.css.`);
+    if (!fs.existsSync(path.join(ROOT, SYSTEM_SPECS[id].dir, part))) problems.push(`src/systems/${id}/${part} is missing. A design system has components/ and styles/theme.css.`);
   }
 }
 
@@ -49,7 +50,7 @@ const themeSystems = inventories();
 const themePrototypePolicy = scopePolicy({ root: ROOT, systems: PROTOTYPE_SYSTEMS, defaultSystem: DEFAULT_SYSTEM, modules: ENABLED_MODULES, prototypeDirs: PROTOTYPE_DIRS });
 const prototypeThemeFiles = [path.join(ROOT, 'src/prototypes'), ...PROTOTYPE_DIRS.map(dir => path.join(ROOT, dir))].flatMap(dir => [...sourceFiles(dir)]).filter(file => /\.[cm]?[jt]sx?$/.test(file));
 problems.push(...await themeUsageProblems(themeSystems, (system) => {
-  const dirs = system.role === 'platform' ? ['src/platform', 'src/systems/platform/components'] : [system.dir + 'components'];
+  const dirs = system.role === 'platform' ? ['src/platform', 'src/modules', system.dir + 'components'] : [system.dir + 'components'];
   const files = dirs.flatMap(dir => [...sourceFiles(path.join(ROOT, dir))]).filter(file => /\.[cm]?[jt]sx?$/.test(file) && !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(file));
   const prototypeFiles = system.role === 'platform' ? [] : prototypeThemeFiles.filter(file => themePrototypePolicy.scopeOf(file)?.system === path.basename(system.dir));
   return [...files, ...prototypeFiles];
@@ -74,7 +75,7 @@ for (const key of SECTION_KEYS) {
 // Imports, as written: from '...', import('...'), import '...'.
 const resolveDependency = dependencyResolver(ROOT);
 const runtimePolicy = scopePolicy({ root: ROOT, systems: PROTOTYPE_SYSTEMS, defaultSystem: DEFAULT_SYSTEM, modules: ENABLED_MODULES, prototypeDirs: PROTOTYPE_DIRS });
-const MODULES_DIR = path.join(ROOT, 'src', 'platform', 'modules');
+const MODULES_DIR = path.join(ROOT, 'src', 'modules');
 const ids = Object.keys(MODULES);
 
 for (const file of [...sourceFiles(path.join(ROOT, 'src')), ...sourceFiles(path.join(ROOT, 'scripts')), path.join(ROOT, 'vite.config.ts')]) {
@@ -82,10 +83,13 @@ for (const file of [...sourceFiles(path.join(ROOT, 'src')), ...sourceFiles(path.
   const inside = ids.includes(own[0]) ? own[0] : null;
   const rel = path.relative(ROOT, file);
   const dependencies = importsOf(fs.readFileSync(file, 'utf8'), file);
-  if (runtimePolicy.scopeOf(file) && dependencies.some((i) => i.source === null)) problems.push(`${rel}: computed imports cannot be checked; use literal import paths.`);
+  const browserModule = inside && !/\/(?:node\/|cli\.ts$|server\.ts$|check\.ts$)/.test(rel);
+  if ((runtimePolicy.scopeOf(file) || browserModule) && dependencies.some((i) => i.source === null)) problems.push(`${rel}: computed imports cannot be checked; use literal import paths.`);
   for (const { source: specifier } of dependencies) {
     const resolved = resolveDependency(specifier, file);
     if (!resolved) continue;
+    const platformProblem = modulePlatformProblem(rel.replaceAll(path.sep, '/'), path.relative(ROOT, resolved).replaceAll(path.sep, '/'));
+    if (platformProblem) problems.push(platformProblem);
     const problem = runtimePolicy.problem(specifier, file, resolved);
     if (problem) problems.push(problem);
     const target = path.relative(MODULES_DIR, resolved).split(path.sep);
@@ -105,7 +109,7 @@ for (const id of typeIds) {
   if (!fs.existsSync(path.join(dir, 'open.tsx'))) problems.push(`${where}/ has a type.ts, so it is a file type, but no open.tsx saying how the app opens it.`);
   // Real import lines only: a type.ts can hold import text inside a template, like a new view's.
   for (const [, specifier] of fs.readFileSync(path.join(dir, 'type.ts'), 'utf8').matchAll(/^import\b[^\n]*?\bfrom\s*['"]([^'"]+)['"]/gm)) {
-    if (specifier !== '../../core/fileTypes.ts') problems.push(`${where}/type.ts imports "${specifier}". A type.ts can import only ../../core/fileTypes.ts, because the build loads it directly in Node.`);
+    if (specifier !== '../../platform/core/fileTypes.ts') problems.push(`${where}/type.ts imports "${specifier}". A type.ts can import only ../../core/fileTypes.ts, because the build loads it directly in Node.`);
   }
   const loader = path.join(dir, 'loader.ts');
   if (fs.existsSync(loader) && !fs.readFileSync(loader, 'utf8').includes("'/__studio_globs__/*'")) {
@@ -115,7 +119,7 @@ for (const id of typeIds) {
 
 // Each module's own check (check.ts), for the modules that are on.
 for (const m of specs) {
-  const file = path.join(ROOT, 'src', 'platform', 'modules', m.id, 'check.ts');
+  const file = path.join(ROOT, 'src', 'modules', m.id, 'check.ts');
   if (!fs.existsSync(file) || !compatible(m) || CONFIG.modules?.[m.id] === false) continue;
   try {
     const run = (await import(pathToFileURL(file).href)).default;

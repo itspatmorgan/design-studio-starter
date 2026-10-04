@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { frontmatter } from './frontmatter.js';
 import { rootOf, addressOf, contentSection } from '../../src/platform/core/roots.ts';
-import { skillTitle } from '../../src/platform/modules/systems/content/skills.ts';
+import { skillTitle } from '../../src/modules/systems/content/skills.ts';
 
 // Match the shared reader's deliberately limited top-level Markdown set.
 export function platformReferences({ root, modules, enabled, systemContent }) {
@@ -25,12 +25,12 @@ export function platformReferences({ root, modules, enabled, systemContent }) {
       return { source, title: entry.name === 'README.md' && id !== 'core' ? label : fm?.title ?? text.match(/^#\s+(.+)$/m)?.[1] ?? entry.name,
         ...(id === 'core' && Number.isFinite(fm?.referenceOrder) ? { order: fm.referenceOrder } : {}) };
     }) : [];
-    const links = related.filter((item) => item.targets.some((target) => references.some((ref) => target === ref.source)) || declared.some((d) => item.source === `/systems/platform/${d.path}` || item.source.startsWith(`/systems/platform/${d.path.endsWith('/') ? d.path : d.path + '/'}`)));
+    const links = related.filter((item) => item.targets.some((target) => references.some((ref) => target === ref.source)) || declared.some((d) => item.source === `/systems/studio/${d.path}` || item.source.startsWith(`/systems/studio/${d.path.endsWith('/') ? d.path : d.path + '/'}`)));
     return { id, label, enabled: on, references, related: links.map(({ title, href }) => ({ title, href })) };
   };
   return [group('core', 'Platform foundations', '/platform/core', true), {
     id: 'modules', label: 'Module contract', enabled: true,
-    references: [{ source: '/platform/modules/README.md', title: 'Module contract', order: 30 }],
-    related: related.filter((r) => r.targets.includes('/platform/modules/README.md')).map(({title,href}) => ({title,href})),
-  }, ...modules.slice().sort((a,b) => a.label.localeCompare(b.label)).map((m) => group(m.id, m.label, `/platform/modules/${m.id}`, enabled.includes(m.id), m.instructions))];
+    references: [{ source: '/modules/README.md', title: 'Module contract', order: 30 }],
+    related: related.filter((r) => r.targets.includes('/modules/README.md')).map(({title,href}) => ({title,href})),
+  }, ...modules.slice().sort((a,b) => a.label.localeCompare(b.label)).map((m) => group(m.id, m.label, `/modules/${m.id}`, enabled.includes(m.id), m.instructions))];
 }

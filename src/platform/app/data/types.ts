@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
-import type { SystemContentMap } from '@/platform/modules/systems/content/map';
-import type { SystemComponentDoc } from '@/platform/modules/systems/docs';
-import type { ThemeToken } from '@/platform/modules/systems/themeTokens';
-import type { DocsMode } from '@/platform/modules/systems/sources';
+import type { SystemContentMap } from '@/modules/systems/content/map';
+import type { SystemComponentDoc } from '@/modules/systems/docs';
+import type { ThemeToken } from '@/modules/systems/themeTokens';
+import type { DocsMode } from '@/modules/systems/sources';
 
 
 // public/prototypes/manifest.json, written by scripts/build/build-manifest.js, with each prototype's artifacts
@@ -40,14 +40,14 @@ export type PrototypeRef = PrototypeInfo & {
   artifactsHash?: string;     // changes when the items do, so a changed list is fetched again
 };
 
-// One Guide page, from its frontmatter: src/platform/modules/documentation/pages/<slug>.md, or the README of a module or file
+// One Guide page, from its frontmatter: src/modules/documentation/pages/<slug>.md, or the README of a module or file
 // type that opens with Guide frontmatter (`source`, as the app's glob names it).
 export type GuidePage = {
   slug: string;           // its address, /guide/<slug>: the file name without .md, e.g. "getting-started"
   title: string;
   description: string;
   section: string | null; // sidebar heading, e.g. "Core concepts"
-  source?: string;        // where a README page is, like "/platform/modules/canvas/README.md"
+  source?: string;        // where a README page is, like "/modules/canvas/README.md"
 };
 
 // `sections` holds the artifacts of the modules' sections of prototype-shaped folders, by section key: the
@@ -73,7 +73,7 @@ export type SystemIntro = { intro: ReactNode; icons?: DesignSystem['icons'] };
 
 export type DesignSystem = {
   label: string;
-  dir: string;            // where its components live, e.g. "src/systems/platform/components/"
+  dir: string;            // where its components live, e.g. "src/systems/studio/components/"
   scopeClass: string;     // the class its theme is set under, or "" when it's set on the page (studio)
   intro: ReactNode;      // what the system is, and how its theme is set up
   icons?: { library: string; href: string; snippet: string; grid: ReactNode };

@@ -10,7 +10,7 @@ export const contentSection = (id: string) => contentParts(id).section;
 
 // A prototype system's components (src/systems/<id>/components/) are opened for editing the same
 // way: under the reserved key "systems" (already an app page URL, so nobody's folder), with the
-// system's id as the prototype ("platform" is the app's own, in src/systems/platform/components/). Platform
+// system's id as the prototype ("studio" is the app's own, in src/systems/studio/components/). Studio
 // files too: changed in the repo and reviewed.
 export const SYSTEMS_KEY = 'systems';
 
@@ -21,7 +21,7 @@ let sectionKeys: ReadonlySet<string> = new Set();
 export const setSections = (keys: Iterable<string>) => { sectionKeys = new Set(keys); };
 
 // The system content's sections: the folders in each system, in the order they're shown. The shape of
-// each is checked by src/platform/modules/systems/content/node/content-check.js.
+// each is checked by src/modules/systems/content/node/content-check.js.
 export const SYSTEM_CONTENT_SECTIONS = {
   context: { title: 'Context', description: 'Context for people and agents: principles, personas, and anything worth writing down once.' },
   rules: { title: 'Rules', description: 'Standing constraints for agents. AGENTS.md routes to the applicable rules.' },

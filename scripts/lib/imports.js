@@ -39,7 +39,7 @@ export function dependencyResolver(root) {
     const clean = source.split('?')[0];
     let local;
     if (clean.startsWith('@/')) local = path.join(root, 'src', clean.slice(2));
-    else if (clean.startsWith('@module/')) local = path.join(root, 'src/platform/modules', clean.slice(8), 'lib/index');
+    else if (clean.startsWith('@module/')) local = path.join(root, 'src/modules', clean.slice(8), 'lib/index');
     else if (clean.startsWith('/')) local = inside(clean, root) ? clean : path.join(root, 'src', clean.slice(1));
     else if (clean.startsWith('.')) local = path.resolve(path.dirname(importer), clean);
     if (local) {
@@ -63,7 +63,7 @@ export function* sourceFiles(dir) {
 }
 
 export function moduleConsumers(root, id) {
-  const dir = path.join(root, 'src/platform/modules', id);
+  const dir = path.join(root, 'src/modules', id);
   const resolve = dependencyResolver(root);
   return [...sourceFiles(path.join(root, 'src')), ...sourceFiles(path.join(root, 'scripts')), path.join(root, 'vite.config.ts')]
     .filter((file) => !inside(file, dir) && fs.existsSync(file) && importsOf(fs.readFileSync(file, 'utf8'), file).some(({ source }) => {

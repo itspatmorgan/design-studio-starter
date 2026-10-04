@@ -6,18 +6,18 @@ import { execFile, execFileSync } from 'node:child_process';
 import { FILE_TYPES, fileTypeOf, systemContentTypeOf } from '../../lib/file-types.js';
 import { STATUSES, parseStatus } from '../../../src/platform/core/archive.ts';
 import { afterChange, parentOf, parseOrder, place, withFolderOrder } from '../../../src/platform/core/order.ts';
-import { scaffold } from '../../../src/platform/modules/systems/node/scaffold-docs.js';
-import { opProblem } from '../../../src/platform/modules/systems/content/rules.ts';
-import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/platform/modules/systems/content/skills.ts';
+import { scaffold } from '../../../src/modules/systems/node/scaffold-docs.js';
+import { opProblem } from '../../../src/modules/systems/content/rules.ts';
+import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/modules/systems/content/skills.ts';
 import { TRASH, readOrder, readTree, resolveInside, validName } from './paths.js';
 
-// The contents of a new file: its file type's template, by extension (src/platform/modules/<type>/type.ts).
+// The contents of a new file: its file type's template, by extension (src/modules/<type>/type.ts).
 // Files of no type start empty.
 export const templateFor = (name, systemContent = false) => FILE_TYPES[(systemContent ? systemContentTypeOf : fileTypeOf)(name)]?.template?.(name) ?? '';
 
 // The system content's files are platform files: anyone can change their copy here, and the changes go
 // through review before they reach everyone. So it's open to whoever runs the app; what it does
-// enforce is the system content's shape (src/platform/modules/systems/content/rules.ts).
+// enforce is the system content's shape (src/modules/systems/content/rules.ts).
 export const SYSTEM_CONTENT_NOTE = 'System sections (Context, Rules, Skills) can\'t be renamed or deleted.';
 
 // "code-review" → "Code review"
@@ -76,7 +76,7 @@ export function renameSkillInFile(file, name) {
 export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, title, description, status }, section = null) {
   const inside = (r) => resolveInside(dir, r);
   const relOf = (abs) => path.relative(fs.realpathSync(dir), abs).split(path.sep).join('/');
-  // The system content has a fixed shape: check the change against it first (src/platform/modules/systems/content/rules.ts).
+  // The system content has a fixed shape: check the change against it first (src/modules/systems/content/rules.ts).
   if (section) {
     if (op === 'create-skill') {
       if (section !== 'skills') throw new Error('Skills are made in the Skills tab.');
@@ -123,7 +123,7 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     return {};
   }
   if (op === 'reorder') {
-    // Arranging is for prototypes: the system content has a fixed shape (src/platform/modules/systems/content/rules.ts).
+    // Arranging is for prototypes: the system content has a fixed shape (src/modules/systems/content/rules.ts).
     if (section) throw new Error('System sections keep their own order.');
     const from = inside(rel);
     if (!from || from === fs.realpathSync(dir) || rel === 'meta.json') throw new Error('That file was moved or deleted.');

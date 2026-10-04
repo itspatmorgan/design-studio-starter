@@ -11,7 +11,7 @@ export type StudioConfig = {
   tagline?: string;
   // Every installed module is declared true or false. Disabling retains its files.
   modules: Record<string, boolean>;
-  // Every installed system, including Platform. A folder alone does not register a system.
+  // Every installed system, including Studio. A folder alone does not register a system.
   systems: readonly string[];
   // Required registered prototype system used when a prototype has no local system choice.
   defaultSystem: string;
@@ -19,7 +19,7 @@ export type StudioConfig = {
 
 // What is wrong with a config, each as a sentence that says what to fix. `modules` is the installed
 // modules and whether each can be turned off, and `systems` the installed design systems' ids.
-export function configProblems(config: unknown, modules: readonly { id: string; optional?: boolean }[], systems?: readonly string[]): string[] {
+export function configProblems(config: unknown, modules: readonly { id: string; optional?: boolean }[], systems?: readonly string[], platformId: string = 'studio'): string[] {
   const where = 'studio.config.ts';
   if (!config || typeof config !== 'object') return [`${where} must export a config as its default.`];
   const c = config as Partial<StudioConfig>;
@@ -45,11 +45,11 @@ export function configProblems(config: unknown, modules: readonly { id: string; 
       for (const module of modules) if (!Object.hasOwn(c.modules, module.id)) problems.push(`${where}: declare modules.${module.id} as true or false.`);
     }
   }
-  if (!Array.isArray(c.systems) || !c.systems.length || c.systems.some((id) => typeof id !== 'string') || new Set(c.systems).size !== c.systems.length) problems.push(`${where}: systems must explicitly list unique installed system ids, including platform.`);
+  if (!Array.isArray(c.systems) || !c.systems.length || c.systems.some((id) => typeof id !== 'string') || new Set(c.systems).size !== c.systems.length) problems.push(`${where}: systems must explicitly list unique installed system ids, including the application system.`);
   else {
-    if (!c.systems.includes('platform')) problems.push(`${where}: systems must include platform.`);
+    if (!c.systems.includes(platformId)) problems.push(`${where}: systems must include ${platformId}.`);
     if (systems) {
-      const installed = ['platform', ...systems];
+      const installed = [platformId, ...systems];
       for (const id of installed) if (!c.systems.includes(id)) problems.push(`${where}: register installed system "${id}" in systems.`);
       for (const id of c.systems) if (!installed.includes(id)) problems.push(`${where}: systems lists "${id}", but it is not installed.`);
     }

@@ -50,10 +50,10 @@ const SKIP = (name: string) => name === '.DS_Store' || name === 'node_modules' |
 export const plainPath = (p: string) =>
   p.length > 0 && !p.startsWith('/') && !p.includes('\\') && !BAD_CHARS.test(p) && p.split('/').every((s) => s !== '' && s !== '.' && s !== '..');
 
-// Where each file of a pack goes. `files` are paths inside the pack. A module pack's files go to src/platform/modules/<id>/,
-// except instructions/ (to src/systems/platform/, and only the paths the module declares) and content/ (to the section's folder,
+// Where each file of a pack goes. `files` are paths inside the pack. A module pack's files go to src/modules/<id>/,
+// except instructions/ (to src/systems/studio/, and only the paths the module declares) and content/ (to the section's folder,
 // which the module must declare). A design system pack goes to src/systems/<id>/. Hidden files are left behind.
-export function packPlan(kind: Kind, id: string, spec: Partial<ModuleSpec> | undefined, files: readonly string[]): { moves: Move[]; skipped: string[]; problems: string[] } {
+export function packPlan(kind: Kind, id: string, spec: Partial<ModuleSpec> | undefined, files: readonly string[], platformId: string = 'studio'): { moves: Move[]; skipped: string[]; problems: string[] } {
   const moves: Move[] = [];
   const skipped: string[] = [];
   const problems: string[] = [];
@@ -69,19 +69,19 @@ export function packPlan(kind: Kind, id: string, spec: Partial<ModuleSpec> | und
       const inside = parts.slice(1).join('/');
       if (!inside) continue;
       if (!declared(inside)) problems.push(`instructions/${inside} isn't listed in the module's instructions, so it won't be installed. List it in module.ts, or remove it.`);
-      else moves.push({ from: file, to: `src/systems/platform/${inside}` });
+      else moves.push({ from: file, to: `src/systems/${platformId}/${inside}` });
     } else if (parts[0] === 'content') {
       const inside = parts.slice(1).join('/');
       if (!inside) continue;
       if (!spec?.section) problems.push(`content/${inside}: a module with no section has nowhere for content to go.`);
       else moves.push({ from: file, to: `${spec.section.folder}/${inside}` });
     } else {
-      moves.push({ from: file, to: `src/platform/modules/${id}/${file}` });
+      moves.push({ from: file, to: `src/modules/${id}/${file}` });
     }
   }
   // Everything the module says it brings has to be in the pack.
   for (const h of systemContent) {
-    const present = moves.some((m) => (h.endsWith('/') ? m.to.startsWith(`src/systems/platform/${h}`) : m.to === `src/systems/platform/${h}`));
+    const present = moves.some((m) => (h.endsWith('/') ? m.to.startsWith(`src/systems/${platformId}/${h}`) : m.to === `src/systems/${platformId}/${h}`));
     if (!present) problems.push(`module.ts lists instructions/${h}, which isn't in the pack.`);
   }
   const seen = new Set<string>();
@@ -126,9 +126,9 @@ export const AGENTS_END = '<!-- /studio:modules -->';
 
 // The lines AGENTS.md gets for the modules that are on: "When the person ..., read [rule](path)." for each systemContent
 // entry with a `when`. They are what routes an agent to a module's rules, so a module that's off isn't mentioned.
-export function agentsBlock(modules: readonly Partial<ModuleSpec>[]): string {
+export function agentsBlock(modules: readonly Partial<ModuleSpec>[], platformId: string = 'studio'): string {
   const lines = modules.flatMap((m) => (m.instructions ?? []).filter((h) => h.when).map((h) => {
-    const target = `src/systems/platform/${h.path}`;
+    const target = `src/systems/${platformId}/${h.path}`;
     const link = h.path.endsWith('/') ? `${target}SKILL.md` : target;
     return `When the person ${h.when}, read [${link}](${link}).`;
   }));

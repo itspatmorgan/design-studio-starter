@@ -6,20 +6,20 @@
 //   /prototypes/$contributor/$prototype/$    an item, by its path without the extension, at any depth:
 //                                            /prototypes/patrick/hello-world/lofi/main
 //                                            (?mode=source shows its text, in dev: ArtifactSource)
-//   /$contributor/$prototype[/$]             the same for a section's items: /examples/sample, /systems/platform/context.
+//   /$contributor/$prototype[/$]             the same for a section's items: /examples/sample, /systems/studio/context.
 //                                            An address from before prototypes moved, /patrick/hello-world, is
 //                                            sent on to /prototypes/patrick/hello-world.
 //
 // The modules add their own: /prototypes (the gallery), /examples, /systems/$system, /documentation/guide/$page
-// (src/platform/modules/<id>/app.tsx). Everything that opens in the viewer does so through the routes above.
+// (src/modules/<id>/app.tsx). Everything that opens in the viewer does so through the routes above.
 import { lazy, Suspense } from 'react';
 import { createRootRoute, createRoute, createRouter, notFound, redirect, useRouter } from '@tanstack/react-router';
 import { useSourceView } from '@/platform/core/source/useSourceView';
 import { shortcutLabel } from '@/platform/app/shell/artifactShortcuts';
-import { Button } from '@/systems/platform/components/button';
+import { Button } from '@/systems/studio/components/button';
 import App, { NotFound } from '@/platform/app/shell/App';
 import Home from '@/platform/app/pages/home/Home';
-import PrototypeLayout from '@/platform/modules/prototypes/viewer/PrototypeLayout';
+import PrototypeLayout from '@/modules/prototypes/viewer/PrototypeLayout';
 import { isSectionKey } from '@/platform/core/roots';
 import { findArtifact, firstArtifact, artifactLabel, loadManifest, loadPrototype, setManifest } from '@/platform/app/data/manifest';
 import { FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
@@ -97,7 +97,7 @@ const referenceRoute = createRoute({
 type ItemSearch = { mode?: 'source' };
 
 // Loads an item before the route renders, so the current one stays on screen until the next
-// one is ready. Its file type (src/platform/modules/<type>/) loads the file. An unknown address, or a type
+// one is ready. Its file type (src/modules/<type>/) loads the file. An unknown address, or a type
 // that isn't installed, shows the not-found page.
 async function itemLoader({ contributor, prototype, _splat }: { contributor: string; prototype: string; _splat?: string }, mode?: ItemSearch['mode']): Promise<ItemData> {
   const proto = await loadPrototype(contributor, prototype);
@@ -211,7 +211,7 @@ const sectionItemSplatRoute = createRoute({
 });
 
 // The app's own routes are typed, so links to them are checked. The modules' routes (Systems, the
-// system content, the Guide, in src/platform/modules/<id>/app.tsx) are added at run time, and the types leave
+// system content, the Guide, in src/modules/<id>/app.tsx) are added at run time, and the types leave
 // them out: a link to one is written loosely.
 const coreRoutes = [homeRoute, documentationRoute, referencesRoute.addChildren([referenceIndexRoute, referenceRoute]), prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]), sectionItemRoute.addChildren([sectionItemIndexRoute, sectionItemSplatRoute])] as const;
 const routeTree = rootRoute.addChildren([...coreRoutes, ...moduleApps.flatMap(({ app }) => app.routes?.(rootRoute) ?? [])] as unknown as typeof coreRoutes);

@@ -2,7 +2,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Moon02Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Sun01Icon,
 } from '@hugeicons/core-free-icons';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/platform/components/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
 import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 import { Link, useRouterState, type LinkProps } from '@tanstack/react-router';
@@ -56,7 +56,7 @@ function RailButton({ label, onClick, children }: { label: string; onClick: () =
 // Main navigation: a narrow icon rail, visible on every page.
 // Top: the logo (the front page), search, Prototypes, Systems, and Documentation. Bottom: navigation
 // visibility and the color mode toggle. Module entries come from
-// src/platform/modules/<id>/app.tsx, so the rail has exactly the ones installed and on. sectionNav is set only
+// src/modules/<id>/app.tsx, so the rail has exactly the ones installed and on. sectionNav is set only
 // while a page has a section navigation (shell/nav/), to show or hide it.
 type MainNavProps = {
   colorMode: string;

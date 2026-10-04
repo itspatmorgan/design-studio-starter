@@ -45,8 +45,8 @@ test('a module pack goes to its folder, with systemContent files and content sen
   const plan = packPlan('module', 'quote', spec, ['module.ts', 'app.tsx', 'lib/index.ts', 'instructions/rules/quote.md', 'instructions/skills/quote-tour/SKILL.md', 'content/sample/meta.json']);
   assert.deepEqual(plan.problems, []);
   assert.deepEqual(plan.moves.map((m) => m.to), [
-    'src/platform/modules/quote/module.ts', 'src/platform/modules/quote/app.tsx', 'src/platform/modules/quote/lib/index.ts',
-    'src/systems/platform/rules/quote.md', 'src/systems/platform/skills/quote-tour/SKILL.md', 'src/quote/sample/meta.json',
+    'src/modules/quote/module.ts', 'src/modules/quote/app.tsx', 'src/modules/quote/lib/index.ts',
+    'src/systems/studio/rules/quote.md', 'src/systems/studio/skills/quote-tour/SKILL.md', 'src/quote/sample/meta.json',
   ]);
 });
 
@@ -58,7 +58,7 @@ test('systemContent files the module did not list, or listed but did not bring, 
 test('content needs a section, and hidden files and dependencies stay behind', () => {
   assert.match(packPlan('module', 'x', { id: 'x' }, ['module.ts', 'content/a.md']).problems.join('\n'), /nowhere for content/);
   const plan = packPlan('module', 'x', { id: 'x' }, ['module.ts', '.DS_Store', '.git/config', 'node_modules/a/index.js', '.env']);
-  assert.deepEqual(plan.moves.map((m) => m.to), ['src/platform/modules/x/module.ts']);
+  assert.deepEqual(plan.moves.map((m) => m.to), ['src/modules/x/module.ts']);
   assert.equal(plan.skipped.length, 4);
 });
 
@@ -95,7 +95,7 @@ test('turning a module off and on edits the one list in studio.config.ts', () =>
 
 test('the AGENTS.md lines come from the modules that are on, and replace themselves', () => {
   const block = agentsBlock([spec, { id: 'plain' }]);
-  assert.match(block, /When the person wants a quote, read \[src\/systems\/platform\/rules\/quote\.md\]\(src\/systems\/platform\/rules\/quote\.md\)\./);
+  assert.match(block, /When the person wants a quote, read \[src\/systems\/studio\/rules\/quote\.md\]\(src\/systems\/studio\/rules\/quote\.md\)\./);
   assert.ok(!block.includes('quote-tour'), 'a systemContent entry with no "when" is not routed');
   const agents = '# A\n\nWhen the person asks for a canvas, read x.\nFind out who.\n';
   const once = applyAgentsBlock(agents, block);

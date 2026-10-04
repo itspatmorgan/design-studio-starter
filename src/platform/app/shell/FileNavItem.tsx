@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@/systems/platform/components/context-menu';
+import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@/systems/studio/components/context-menu';
 import { FileActionItems } from '@/platform/app/shell/FileActionItems';
 import { navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
 

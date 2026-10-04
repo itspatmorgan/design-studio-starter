@@ -52,7 +52,7 @@ A loader uses `import.meta.glob(['/__studio_globs__/*'])`. Vite replaces the pla
 
 ## Lifecycle
 
-Follow the [module contract](../modules/README.md) for installation, disabling, removal, and dependency boundaries.
+Follow the [module contract](../../modules/README.md) for installation, disabling, removal, and dependency boundaries.
 
 Disabling a prototype file type preserves its files as plain files. Normal navigation hides them unless Show all files is selected.
 

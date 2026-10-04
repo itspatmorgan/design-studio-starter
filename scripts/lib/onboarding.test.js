@@ -18,7 +18,7 @@ test('configuration edits preserve unrelated customization and validate syntax',
 
 test('local personal setup resumes, then a second clone joins a team without changing configuration', () => {
   const root = path.resolve('.');
-  const hasDocumentation = fs.existsSync(path.join(root, 'src/platform/modules/documentation/module.ts'));
+  const hasDocumentation = fs.existsSync(path.join(root, 'src/modules/documentation/module.ts'));
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-onboarding-'));
   const clone = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-contributor-'));
   const copy = (from, to) => {
@@ -36,11 +36,17 @@ test('local personal setup resumes, then a second clone joins a team without cha
       fs.rmSync(path.join(dir, folder), { recursive: true, force: true });
       fs.mkdirSync(path.join(dir, folder), { recursive: true });
     }
-    fs.cpSync(path.join(root, 'src/systems/platform'), path.join(dir, 'src/systems/platform'), { recursive: true });
-    fs.writeFileSync(path.join(dir, 'studio.config.ts'), `import type { StudioConfig } from './src/platform/core/config.ts';\nexport default { name: 'Fixture Studio', usage: 'team', tagline: 'Fixture', modules: ${JSON.stringify(Object.fromEntries(fs.readdirSync(path.join(dir, 'src/platform/modules')).filter((id) => fs.existsSync(path.join(dir, 'src/platform/modules', id, 'module.ts'))).map((id) => [id, id !== 'documentation'])))}, systems: ['platform'], defaultSystem: 'product' } satisfies StudioConfig;\n`);
+    fs.cpSync(path.join(root, 'src/systems/studio'), path.join(dir, 'src/systems/studio'), { recursive: true });
+    fs.writeFileSync(path.join(dir, 'studio.config.ts'), `import type { StudioConfig } from './src/platform/core/config.ts';\nexport default { name: 'Fixture Studio', usage: 'team', tagline: 'Fixture', modules: ${JSON.stringify(Object.fromEntries(fs.readdirSync(path.join(dir, 'src/modules')).filter((id) => fs.existsSync(path.join(dir, 'src/modules', id, 'module.ts'))).map((id) => [id, id !== 'documentation'])))}, systems: ['studio'], defaultSystem: 'product' } satisfies StudioConfig;\n`);
     run(dir, 'scripts/cli/studio.js', 'create-system', 'product', '--label', 'Product', '--yes');
     const declared = () => readDeclaration(fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8')).value;
-    assert.deepEqual(declared().systems, ['platform', 'product']);
+    assert.deepEqual(declared().systems, ['studio', 'product']);
+    const required = spawnSync(process.execPath, ['scripts/cli/studio.js', 'remove', 'studio', '--yes'], { cwd: dir, encoding: 'utf8' });
+    assert.equal(required.status, 1);
+    assert.match(required.stderr, /cannot be removed/);
+    assert.ok(fs.existsSync(path.join(dir, 'src/systems/studio/system.ts')));
+    run(dir, 'scripts/cli/studio.js', 'create-module', 'explicit-fixture');
+    assert.equal(fs.existsSync(path.join(dir, 'src/modules/explicit-fixture')), false);
     run(dir, 'scripts/cli/studio.js', 'create-module', 'explicit-fixture', '--yes');
     assert.equal(declared().modules['explicit-fixture'], true);
     run(dir, 'scripts/cli/studio.js', 'disable', 'explicit-fixture');
@@ -49,10 +55,19 @@ test('local personal setup resumes, then a second clone joins a team without cha
     assert.equal(declared().modules['explicit-fixture'], true);
     run(dir, 'scripts/cli/studio.js', 'remove', 'explicit-fixture', '--yes');
     assert.equal(Object.hasOwn(declared().modules, 'explicit-fixture'), false);
+    const localPack = path.join(dir, 'local-pack');
+    run(dir, 'scripts/cli/studio.js', 'create-module', 'installed-fixture', '--out', localPack, '--yes');
+    run(dir, 'scripts/cli/studio.js', 'add', localPack);
+    assert.equal(fs.existsSync(path.join(dir, 'src/modules/installed-fixture')), false);
+    run(dir, 'scripts/cli/studio.js', 'add', localPack, '--yes');
+    assert.equal(declared().modules['installed-fixture'], true);
+    assert.ok(fs.existsSync(path.join(dir, 'src/modules/installed-fixture/app.tsx')));
+    run(dir, 'scripts/cli/studio.js', 'remove', 'installed-fixture', '--yes');
+    fs.rmSync(localPack, { recursive: true });
     run(dir, 'scripts/cli/studio.js', 'create-system', 'brand', '--yes');
     assert.ok(declared().systems.includes('brand'));
     run(dir, 'scripts/cli/studio.js', 'remove', 'brand', '--yes');
-    assert.deepEqual(declared().systems, ['platform', 'product']);
+    assert.deepEqual(declared().systems, ['studio', 'product']);
     const beforeFailedInstall = fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8');
     const pack = path.join(dir, 'failing-pack');
     fs.mkdirSync(pack);
@@ -60,12 +75,12 @@ test('local personal setup resumes, then a second clone joins a team without cha
     fs.writeFileSync(path.join(pack, 'check.ts'), "export default () => ['Deliberate fixture failure'];\n");
     assert.throws(() => run(dir, 'scripts/cli/studio.js', 'add', pack, '--yes'), /Command failed/);
     assert.equal(fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8'), beforeFailedInstall);
-    assert.equal(fs.existsSync(path.join(dir, 'src/platform/modules/failing-fixture')), false);
+    assert.equal(fs.existsSync(path.join(dir, 'src/modules/failing-fixture')), false);
     fs.rmSync(pack, { recursive: true });
     git(dir, 'init', '-q');
     git(dir, 'config', 'user.name', 'Patrick Morgan'); git(dir, 'config', 'user.email', 'legacy@example.test');
     assert.equal(run(dir, 'scripts/cli/resolve-contributor.js').trim(), 'patrick');
-    run(dir, 'src/platform/modules/prototypes/node/create.js', 'Sample');
+    run(dir, 'src/modules/prototypes/node/create.js', 'Sample');
     git(dir, 'config', 'user.name', 'Sam Solo'); git(dir, 'config', 'user.email', 'sam@gmail.com');
     assert.equal(spawnSync(process.execPath, ['scripts/cli/resolve-contributor.js'], {cwd:dir,encoding:'utf8'}).status, 1);
     const config = path.join(dir, 'studio.config.ts'); const before = fs.readFileSync(config, 'utf8');
@@ -85,7 +100,7 @@ test('local personal setup resumes, then a second clone joins a team without cha
     const components = path.join(dir, 'src/systems/acme/components/button');
     fs.mkdirSync(components, { recursive: true });
     fs.writeFileSync(path.join(components, 'index.tsx'), 'export function Button(){return <button className="bg-primary text-primary-foreground">Continue</button>}');
-    const script = `import {createPrototype} from './src/platform/modules/prototypes/node/create.js'; import fs from 'node:fs'; const {slug}=createPrototype({title:'First Flow',key:'sam'}); const dir='src/prototypes/sam/'+slug; fs.writeFileSync(dir+'/prototype.tsx','import { Button } from \"@/systems/acme/components/button\"; export default function View(){return <Button/>}'); fs.writeFileSync(dir+'/context.md','# First flow\\nA local setup example.'); fs.writeFileSync(dir+'/flow.excalidraw',JSON.stringify({type:'excalidraw',version:2,elements:[],appState:{},files:{}}));`;
+    const script = `import {createPrototype} from './src/modules/prototypes/node/create.js'; import fs from 'node:fs'; const {slug}=createPrototype({title:'First Flow',key:'sam'}); const dir='src/prototypes/sam/'+slug; fs.writeFileSync(dir+'/prototype.tsx','import { Button } from \"@/systems/acme/components/button\"; export default function View(){return <Button/>}'); fs.writeFileSync(dir+'/context.md','# First flow\\nA local setup example.'); fs.writeFileSync(dir+'/flow.excalidraw',JSON.stringify({type:'excalidraw',version:2,elements:[],appState:{},files:{}}));`;
     execFileSync(process.execPath, ['--input-type=module', '--eval', script], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
     run(dir, 'scripts/build/build-manifest.js', '--strict');
     const status = JSON.parse(run(dir, 'scripts/cli/studio.js', 'status', '--json'));

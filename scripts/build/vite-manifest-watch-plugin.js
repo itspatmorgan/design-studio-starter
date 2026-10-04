@@ -1,6 +1,6 @@
 // Keeps the manifest live during `pnpm dev`, without reloading the page.
 //
-// Vite already watches every file. When something under src/prototypes/, a module's content folder, src/platform/, src/systems/, src/platform/modules/documentation/pages/, or a README that is a Guide page
+// Vite already watches every file. When something under src/prototypes/, a module's content folder, src/platform/, src/systems/, src/modules/documentation/pages/, or a README that is a Guide page
 // changes (from the app, an agent, or your editor), this rebuilds the manifest in-process
 // and pushes it to the app over Vite's dev connection. The app swaps it in and refreshes
 // only the routes that use it (see router.tsx), so the open view and scroll position stay.
@@ -20,10 +20,7 @@ const SYSTEM_CONTENT = path.join(ROOT, 'src', 'platform');
 const documentationModule = ENABLED_MODULES.find((m) => m.id === 'documentation');
 const GUIDE = documentationModule?.section?.folder ? path.join(ROOT, documentationModule.section.folder) : null;
 const SYSTEMS = path.join(ROOT, 'src', 'systems');
-// The app's own system: its components, and its theme (the tokens the Systems pages list).
-const PLATFORM_COMPONENTS = path.join(ROOT, 'src', 'systems', 'platform', 'components');
-const PLATFORM_THEME = path.join(ROOT, 'src', 'systems', 'platform', 'styles', 'theme.css');
-// The system content's map reads it (src/platform/modules/systems/content/map.ts).
+// The system content's map reads it (src/modules/systems/content/map.ts).
 const AGENTS = path.join(ROOT, 'AGENTS.md');
 const BATCH_MS = 50;
 
@@ -46,11 +43,10 @@ function relevant(file, kind) {
   // A README that is a Guide page: its frontmatter and title are in the manifest.
   if (GUIDE && path.basename(file) === 'README.md' && README_FILES().includes(file)) return true;
   if (inside(SYSTEM_CONTENT, file)) return kind !== 'change' || file.endsWith('.md');
-  if (file.endsWith('.md') && /src[\\/]platform[\\/](core|modules)[\\/]/.test(file)) return true;
+  if (file.endsWith('.md') && /src[\\/](?:platform[\\/]core|modules)[\\/]/.test(file)) return true;
   // A system's component docs: files coming and going, and edits to the ones that describe a component
   // and to its theme (the tokens it lists).
-  if (file === PLATFORM_THEME) return kind === 'change';
-  if (inside(SYSTEMS, file) || inside(PLATFORM_COMPONENTS, file)) return kind !== 'change' || /\.(md|examples\.[jt]sx)$|styles[\\/]theme\.css$/.test(file);
+  if (inside(SYSTEMS, file)) return kind !== 'change' || /\.(md|examples\.[jt]sx)$|styles[\\/]theme\.css$/.test(file);
   if (![PROTOS, ...PROTOTYPE_DIRS].some((dir) => inside(dir, file))) return false;
   return kind !== 'change' || path.basename(file) === 'meta.json' || hasFidelity(file);
 }

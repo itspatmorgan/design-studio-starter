@@ -8,7 +8,7 @@ setSections(['examples']);
 test('a prototype opens under /prototypes, a section item under its section', () => {
   assert.equal(addressOf('patrick', 'hello-world'), '/prototypes/patrick/hello-world');
   assert.equal(addressOf('examples', 'sample'), '/examples/sample');
-  assert.equal(addressOf('system-content', 'platform:rules'), '/systems/platform/rules');
+  assert.equal(addressOf('system-content', 'studio:rules'), '/systems/studio/rules');
   assert.equal(isSectionKey('patrick'), false);
   assert.equal(isSectionKey('systems'), true);
 });

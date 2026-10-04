@@ -1,9 +1,9 @@
-// The modules installed in src/platform/modules/: one folder each, found with a glob, so the app runs
+// The modules installed in src/modules/: one folder each, found with a glob, so the app runs
 // with any of them removed. (scripts/lib/modules.js finds the same folders for the build.)
 import type { ModuleSpec } from '@/platform/core/modules';
 import { setSections } from '@/platform/core/roots';
 
-const specs = import.meta.glob<ModuleSpec>('/platform/modules/*/module.ts', { eager: true, import: 'default' });
+const specs = import.meta.glob<ModuleSpec>('/modules/*/module.ts', { eager: true, import: 'default' });
 
 export const MODULES: ModuleSpec[] = Object.values(specs);
 export const moduleById = (id: string) => MODULES.find((m) => m.id === id);

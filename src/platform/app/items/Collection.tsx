@@ -1,9 +1,9 @@
 import { Fragment, useSyncExternalStore, type ReactNode } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { GridViewIcon, LeftToRightListBulletIcon } from '@hugeicons/core-free-icons';
-import { Card } from '@/systems/platform/components/card';
-import { ToggleGroup, ToggleGroupItem } from '@/systems/platform/components/toggle-group';
-import { ItemGroup } from '@/systems/platform/components/item';
+import { Card } from '@/systems/studio/components/card';
+import { ToggleGroup, ToggleGroupItem } from '@/systems/studio/components/toggle-group';
+import { ItemGroup } from '@/systems/studio/components/item';
 import { ItemGrid } from './ItemGrid';
 
 // A collection's index (/prototypes, /examples, ...) can be read as cards or as a plain list. Which one is saved in this

@@ -1,4 +1,4 @@
-// The file types installed in src/platform/modules/ (the modules that have a type.ts and are on), for the build
+// The file types installed in src/modules/ (the modules that have a type.ts and are on), for the build
 // and the dev server. Delete a folder, or turn the module off in studio.config.ts, and its type is gone from here
 // too: its files become plain files. The app finds the same folders with a glob (src/platform/app/data/fileTypes.ts).
 import fs from 'node:fs';
@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertUniqueExtensions, systemContentType, matchFileType } from '../../src/platform/core/fileTypes.ts';
 import { ENABLED_MODULES } from './modules.js';
 
-const DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src/platform/modules');
+const DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src/modules');
 
 const ids = ENABLED_MODULES
   .map((m) => m.id)

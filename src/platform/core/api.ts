@@ -4,7 +4,10 @@
 //   module.ts   what the module is and its section          ModuleSpec
 //   server.ts   routes it adds to the dev server            ModuleServer, ServerRoute
 //   app.tsx     its rail button, routes, palette, menu      ModuleApp, PaletteContext, PrototypeAction
-// Types only: this file adds nothing to the app or the build. A module.ts and a server.ts are loaded by Node as well as
-// the app, so they take their types from ./modules/index.ts, where these two are defined; app.tsx takes all of them from here.
+// This entrypoint is safe for Node declarations and browser code. Browser-only
+// framework services have explicit entrypoints listed in modules/boundaries.ts.
 export type { ModuleServer, ModuleSpec, ServerRoute } from './modules/index.ts';
 export type { ModuleApp, PaletteContext, PrototypeAction } from '../app/modules.ts';
+
+// Studio identity is available to module routes without importing app internals.
+export { APP_NAME, TAGLINE, CONFIG } from '../app/data/config.ts';

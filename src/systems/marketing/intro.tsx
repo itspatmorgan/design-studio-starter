@@ -1,4 +1,4 @@
-import { Code, ColorModeSupport, Prose } from '@/platform/modules/systems/pages/foundations';
+import { Code, ColorModeSupport, Prose } from '@/modules/systems/pages/foundations';
 import system from './system';
 import type { SystemIntro } from '@/platform/app/data/types';
 export default {

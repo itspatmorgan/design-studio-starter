@@ -18,13 +18,13 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 
 // A module's own files (what removing it deletes) and the words that mean source code is using it.
 const MODULES = {
-  documentation: { paths: ['src/platform/modules/documentation'], pattern: "modules/documentation|'documentation'" },
-  systems: { paths: ['src/systems', 'src/platform/modules/systems/pages', 'src/platform/modules/systems/data/loadDocs.ts'], pattern: 'systems' },
-  canvas: { paths: ['src/platform/modules/canvas'], pattern: 'excalidraw|canvas' },
-  diagrams: { paths: ['src/platform/modules/diagrams'], pattern: 'modules/diagrams' },
-  document: { paths: ['src/platform/modules/document'], pattern: 'modules/document' },
-  view: { paths: ['src/platform/modules/view'], pattern: 'modules/view' },
-  text: { paths: ['src/platform/modules/text'], pattern: 'modules/text' },
+  documentation: { paths: ['src/modules/documentation'], pattern: "modules/documentation|'documentation'" },
+  systems: { paths: ['src/systems', 'src/modules/systems/pages', 'src/modules/systems/data/loadDocs.ts'], pattern: 'systems' },
+  canvas: { paths: ['src/modules/canvas'], pattern: 'excalidraw|canvas' },
+  diagrams: { paths: ['src/modules/diagrams'], pattern: 'modules/diagrams' },
+  document: { paths: ['src/modules/document'], pattern: 'modules/document' },
+  view: { paths: ['src/modules/view'], pattern: 'modules/view' },
+  text: { paths: ['src/modules/text'], pattern: 'modules/text' },
 };
 
 // Tools run straight from node_modules: pnpm would stop to re-check dependencies in a scratch copy.
@@ -89,7 +89,7 @@ function coupling() {
     let out = '';
     try {
       out = execFileSync('git', ['grep', '-lEi', m.pattern, '--', 'src', 'scripts', 'vite.config.ts', 'package.json', 'tsconfig.app.json', 'tsconfig.node.json',
-        ':!*.md', ':!*.mdx', ':!*.excalidraw', ':!src/prototypes', ':!src/platform', ':!*.test.ts', ':!src/platform/modules', ...m.paths.map((p) => `:!${p}`)],
+        ':!*.md', ':!*.mdx', ':!*.excalidraw', ':!src/prototypes', ':!src/platform', ':!*.test.ts', ':!src/modules', ...m.paths.map((p) => `:!${p}`)],
       { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
     } catch (e) {
       if (e.status !== 1) throw e; // git grep exits 1 when nothing matches
@@ -125,12 +125,10 @@ function removal(id) {
   if (!m) { console.error(`Unknown module "${id}". Modules: ${Object.keys(MODULES).join(', ')}.`); process.exit(2); }
   const dir = scratchCopy(`remove-${id}`);
   try {
-    if (process.argv.includes('--off')) {
-      // Turn it off in the config and leave its files, which is what a team that only hides it does.
-      const config = path.join(dir, 'studio.config.ts');
-      fs.writeFileSync(config, fs.readFileSync(config, 'utf8').replace('modules: {}', `modules: { ${id}: false }`));
-    } else {
-      for (const p of m.paths) fs.rmSync(path.join(dir, p), { recursive: true, force: true });
+    if (id !== 'none') {
+      const args = process.argv.includes('--off') ? ['disable', id] : ['remove', id, '--yes'];
+      const operation = run(dir, 'node', ['scripts/cli/studio.js', ...args]);
+      if (!operation.ok) { console.log(`${id}: FAILS at capability change\n${operation.tail}`); return false; }
     }
     for (const [name, cmd, args] of STEPS) {
       const r = run(dir, cmd, args);

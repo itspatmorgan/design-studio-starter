@@ -8,7 +8,7 @@ Mermaid blocks render automatically in the Guide, system context, reference page
 
 The starter uses platform neutrals for structural diagrams and Flexoki accents for categories and chart series. Document code and the source editor share those accents. Change the platform's light or dark mode to preview both appearances.
 
-Standalone prototype diagrams use the optional [Diagrams module](/documentation/reference/platform/modules/diagrams/README.md). They share this renderer and theme; Markdown fences remain available when that module is disabled.
+Standalone prototype diagrams use the optional [Diagrams module](/documentation/reference/modules/diagrams/README.md). They share this renderer and theme; Markdown fences remain available when that module is disabled.
 
 ## Flowchart
 
@@ -116,7 +116,7 @@ export function nextStep(actionable: boolean, count = 3) {
 
 ## Customize the defaults
 
-Studio owners can edit `src/systems/platform/styles/contentPalette.js` to change the shared accent palette and document syntax color roles. The source editor reads the same palette.
+Studio owners can edit `src/systems/studio/styles/contentPalette.js` to change the shared accent palette and document syntax color roles. The source editor reads the same palette.
 
 Edit `src/platform/app/diagrams/mermaidTheme.ts` for diagram color roles and `MermaidDiagram.tsx` for renderer defaults. Diagram neutrals resolve from the platform's current CSS theme. The renderer keeps theme and security defaults under platform control. Authors can still use Mermaid's supported diagram styles, such as flowchart `classDef`, to communicate specific meaning.
 

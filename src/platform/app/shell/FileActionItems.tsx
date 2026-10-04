@@ -1,8 +1,8 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Copy01Icon, FileEditIcon, Folder01Icon, Link01Icon, SourceCodeIcon } from '@hugeicons/core-free-icons';
 import { shortcutLabel } from './artifactShortcuts';
-import { ContextMenuItem, ContextMenuShortcut } from '@/systems/platform/components/context-menu';
-import { toast } from '@/systems/platform/components/toast';
+import { ContextMenuItem, ContextMenuShortcut } from '@/systems/studio/components/context-menu';
+import { toast } from '@/systems/studio/components/toast';
 
 // Shared non-destructive actions for system content, prototype, and documentation files.
 export function FileActionItems({ path, href, edit, sourceLabel = 'Edit source', sourceShortcut = false, open, reveal }: { path: string; href?: string; edit?: () => void; sourceLabel?: string; sourceShortcut?: boolean; open?: () => void; reveal?: () => void | Promise<unknown> }) {

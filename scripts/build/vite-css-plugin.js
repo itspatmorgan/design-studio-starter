@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import postcss from 'postcss';
 import { tailwindThemeProblems, themeInventory, themeAdapter, scopeThemeUtilities } from '../lib/tailwind-theme.js';
-import { SYSTEM_SPECS } from '../../src/platform/modules/systems/node/systems.js';
+import { SYSTEM_SPECS } from '../../src/modules/systems/node/systems.js';
 import { cssProblems } from '../lib/css-scope.js';
 // Fills in the two lists in the app's stylesheet (src/platform/app/styles.css) that depend on what is installed,
 // so adding a design system or a module needs no edit to it. CSS can't be given a list at run time, so the stylesheet
@@ -12,7 +12,7 @@ import { cssProblems } from '../lib/css-scope.js';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CONFIG, PROTOTYPE_DIRS } from '../lib/modules.js';
-import { PROTOTYPE_SYSTEMS } from '../../src/platform/modules/systems/node/systems.js';
+import { PROTOTYPE_SYSTEMS } from '../../src/modules/systems/node/systems.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const STYLESHEET = path.join(ROOT, 'src', 'platform', 'app', 'styles.css');
@@ -26,7 +26,7 @@ function validateThemes() {
   const problems = Object.keys(SYSTEM_SPECS).flatMap((id) => {
     const file = path.join(ROOT, 'src/systems', id, 'styles/theme.css');
     const code = fs.readFileSync(file, 'utf8');
-    return [...(id === 'platform' ? [] : cssProblems(code, { file, themeClass: SYSTEM_SPECS[id].themeClass })), ...tailwindThemeProblems(code, { file, ...SYSTEM_SPECS[id] })];
+    return [...(SYSTEM_SPECS[id].role === 'platform' ? [] : cssProblems(code, { file, themeClass: SYSTEM_SPECS[id].themeClass })), ...tailwindThemeProblems(code, { file, ...SYSTEM_SPECS[id] })];
   });
   if (problems.length) return problems.join('\n');
 }

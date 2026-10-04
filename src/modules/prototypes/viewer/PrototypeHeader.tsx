@@ -1,0 +1,128 @@
+// The top of the prototype navigation: everything about the prototype, in one place.
+// Its title and a "…" menu (also on right-click). Making new things is in the file tree below.
+// In dev, the menu edits or deletes your prototypes; double-click the title to rename.
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Archive02Icon, MoreHorizontalIcon, ViewIcon, ViewOffSlashIcon } from '@hugeicons/core-free-icons';
+import { useShowAllFiles } from '@/platform/app/shell/appPrefs';
+import type { Prototype } from '@/platform/app/data/types';
+import { Input } from '@/systems/studio/components/input';
+import { toast } from '@/systems/studio/components/toast';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from '@/systems/studio/components/context-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/systems/studio/components/dropdown-menu';
+import { useRenamePrototype } from '@/modules/prototypes/viewer/useRenamePrototype';
+import { usePrototypeActions, type Action } from '@/modules/prototypes/viewer/usePrototypeActions';
+import { NavHeader } from '@/platform/app/shell/nav';
+import { menuGroups } from '@/platform/app/shell/menuGroups';
+
+// The title, renamed in place: Enter or leaving the field saves, Escape cancels.
+function TitleInput({ initial, onDone }: { initial: string; onDone: (title: string | null) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
+  const done = useRef(false);
+  const finish = (t: string | null) => { if (!done.current) { done.current = true; onDone(t); } };
+  useEffect(() => { ref.current?.select(); }, []);
+  return (
+    <Input
+      ref={ref}
+      defaultValue={initial}
+      aria-label="Prototype title"
+      className="h-7 rounded-sm px-1.5 text-sm font-semibold shadow-none"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') { e.preventDefault(); finish(e.currentTarget.value.trim()); }
+        if (e.key === 'Escape') { e.preventDefault(); finish(null); }
+      }}
+      onBlur={(e) => finish(e.currentTarget.value.trim())}
+    />
+  );
+}
+
+export default function PrototypeHeader({ proto }: { proto: Prototype }) {
+  const applyRename = useRenamePrototype(proto);
+  const actions = usePrototypeActions(proto);
+  const { local, editable } = actions;
+  const [renaming, setRenaming] = useState(false);
+  const [showAll, toggleShowAll] = useShowAllFiles();
+
+  async function rename(title: string | null) {
+    setRenaming(false);
+    if (!title || title === proto.title) return;
+    try {
+      await applyRename({ title });
+    } catch (e) {
+      toast.add({ type: 'error', title: (e as Error).message });
+    }
+  }
+
+  // Groups, in this order, with a line between them (the file menu follows the same rule, FileTree.tsx):
+  // how this panel looks; reach the prototype (open it elsewhere, then copy where it is); change it;
+  // delete it, last and alone. A group with nothing in it leaves no line. The last three are shared
+  // with the prototype's card (usePrototypeActions.ts).
+  const [reach, change, remove] = actions.groups;
+  const groups = menuGroups<Action>([
+    [
+      local && { label: showAll ? 'Hide other files' : 'Show all files', icon: showAll ? ViewOffSlashIcon : ViewIcon, onSelect: toggleShowAll },
+    ],
+    reach,
+    change,
+    remove,
+  ]);
+  // Actions run after the menu has closed, so a dialog they open isn't closed by the same click.
+  const menuItems = (Item: typeof DropdownMenuItem | typeof ContextMenuItem, Separator: typeof DropdownMenuSeparator) =>
+    groups.map((group, g) => (
+      <Fragment key={g}>
+        {g > 0 && <Separator />}
+        {group.map((a) => <Item key={a.label} variant={a.destructive ? 'destructive' : 'default'} onClick={() => setTimeout(a.onSelect)}><HugeiconsIcon icon={a.icon} /> {a.label}</Item>)}
+      </Fragment>
+    ));
+
+  // Right-click anywhere on the header opens the same menu, in dev.
+  const withContextMenu = (children: ReactNode) => (!local ? children : (
+    <ContextMenu>
+      <ContextMenuTrigger>{children}</ContextMenuTrigger>
+      <ContextMenuContent className="min-w-44">{menuItems(ContextMenuItem, ContextMenuSeparator)}</ContextMenuContent>
+    </ContextMenu>
+  ));
+
+  return (
+    <NavHeader className="pb-0">
+      {withContextMenu(
+        <div className="pl-3 pr-2.5">
+          <div className="-mr-2 flex min-h-8 items-center gap-0.5">
+            {renaming ? (
+              <div className="min-w-0 flex-1"><TitleInput initial={proto.title} onDone={rename} /></div>
+            ) : (
+              <h2
+                className="min-w-0 flex-1 truncate text-sm font-semibold leading-tight"
+                title={editable ? 'Double-click to rename' : proto.title}
+                onDoubleClick={editable ? () => setRenaming(true) : undefined}
+              >
+                {proto.title}
+              </h2>
+            )}
+            <DropdownMenu>
+              <Tooltip>
+                <TooltipTrigger
+                  render={<DropdownMenuTrigger
+                    aria-label="Prototype actions"
+                    className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground"
+                  />}
+                >
+                  <HugeiconsIcon icon={MoreHorizontalIcon} size={14} />
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Prototype actions</TooltipContent>
+              </Tooltip>
+              <DropdownMenuContent align="end" className="min-w-44">{menuItems(DropdownMenuItem, DropdownMenuSeparator)}</DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          {proto.status === 'archived' && (
+            <p className="mt-1 flex items-center gap-1.5 text-[12px] text-muted-foreground" title="The deployed site leaves this prototype out">
+              <HugeiconsIcon icon={Archive02Icon} size={12} /> Archived
+            </p>
+          )}
+        </div>,
+      )}
+      {actions.dialogs}
+    </NavHeader>
+  );
+}

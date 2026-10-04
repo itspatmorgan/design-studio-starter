@@ -16,6 +16,6 @@ export default {
     text: true,
     view: true,
   },
-  systems: ['platform', 'product', 'marketing'],
+  systems: ['studio', 'product', 'marketing'],
   defaultSystem: 'product',   // the design system a prototype uses when its meta.json doesn't name one
 } satisfies StudioConfig;

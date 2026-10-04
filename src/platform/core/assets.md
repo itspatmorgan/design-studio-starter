@@ -10,7 +10,7 @@ Keep fonts, logos, images, and other static files with the scope that owns them.
 
 | Owner or purpose | Location |
 | --- | --- |
-| Shared Studio UI assets | `src/systems/platform/assets/` |
+| Shared Studio UI assets | `src/systems/studio/assets/` |
 | A design system's brand assets and fonts | `src/systems/<id>/assets/` |
 | Assets intentionally shared across prototypes and systems | `src/lib/assets/` |
 | Assets used by one prototype | `src/prototypes/<contributor>/<prototype>/assets/` |
@@ -36,7 +36,7 @@ Asset imports follow the same boundaries as code: a prototype can import its own
 
 Define system font usage in its scoped theme or components. When systems ship different fonts, use distinct font-family names; font-face registration is global even when the theme's use of it is scoped.
 
-Assets support artifacts; they do not become navigable artifacts themselves. Follow the repository's [prototype workflow](../../systems/platform/rules/prototype-workflow.md) for asset-size checks and the [system contract](../modules/systems/reference.md) for theme scoping.
+Assets support artifacts; they do not become navigable artifacts themselves. Follow the repository's [prototype workflow](../../systems/studio/rules/prototype-workflow.md) for asset-size checks and the [system contract](../../modules/systems/reference.md) for theme scoping.
 
 ## Asset Guard
 

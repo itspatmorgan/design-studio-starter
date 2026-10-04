@@ -7,11 +7,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ENABLED_MODULES } from './modules.js';
 
-const MODULES = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src/platform/modules');
+const MODULES = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src/modules');
 
 export function readmes() {
   return ENABLED_MODULES
-    .map((m) => ({ file: path.join(MODULES, m.id, 'README.md'), source: `/platform/modules/${m.id}/README.md`, folder: m.id }))
+    .map((m) => ({ file: path.join(MODULES, m.id, 'README.md'), source: `/modules/${m.id}/README.md`, folder: m.id }))
     .filter(({ file }) => fs.existsSync(file));
 }
 

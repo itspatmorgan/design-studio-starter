@@ -1,4 +1,4 @@
-import { SYSTEM_SOURCES } from '../../src/platform/modules/systems/node/systems.js';
+import { SYSTEM_SOURCES } from '../../src/modules/systems/node/systems.js';
 import { documentationSources, sourceFile } from './files/source.js';
 // The file layer behind the prototype navigation's file tree, during `pnpm dev` only.
 // (The deployed site is static, so this doesn't exist there.)
@@ -17,7 +17,7 @@ import { documentationSources, sourceFile } from './files/source.js';
 //        reorder  { path, to?, before? }         put a file or folder before another in its folder ("before" empty: last), moving it to folder "to" first if given; saved in meta.json "order"
 //        meta     { title?, status? }  edit meta.json (status is "active" or "archived")
 //        create-skill { name, description }       system content skills only: skills/<name>/SKILL.md, in the Agent Skills format
-//      (In the system content, anyone can change files, but only in its fixed shape: src/platform/modules/systems/content/rules.ts.)
+//      (In the system content, anyone can change files, but only in its fixed shape: src/modules/systems/content/rules.ts.)
 //      (contributor "systems" opens a prototype system's components, src/systems/<id>/components/. Anyone can
 //      read and save its text files, and it has one operation of its own:
 //        add-docs { component }                    the examples and page a component is missing)
@@ -40,14 +40,14 @@ import path from 'node:path';
 import { ROOT } from './files/paths.js';
 import { pathToFileURL } from 'node:url';
 import { buildManifest } from './build-manifest.js';
-import { createPrototype, renamePrototype } from '../../src/platform/modules/prototypes/node/create.js';
+import { createPrototype, renamePrototype } from '../../src/modules/prototypes/node/create.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from '../cli/resolve-contributor.js';
 import { fileTypeOf, systemContentTypeOf } from '../lib/file-types.js';
 import { SYSTEM_CONTENT_KEY, SYSTEMS_KEY, contentSection, contentId, SYSTEM_CONTENT_SECTIONS } from '../../src/platform/core/roots.ts';
 import { PROTOTYPE_SECTIONS, SERVER_FILES } from '../lib/modules.js';
 import { CONTRIBUTORS_DIR, loadContributors } from '../lib/contributors.js';
-import { SKILL_FILE, skillProblems } from '../../src/platform/modules/systems/content/skills.ts';
+import { SKILL_FILE, skillProblems } from '../../src/modules/systems/content/skills.ts';
 import { frontmatter } from '../lib/frontmatter.js';
 import { BATCH_MS, SYSTEM_CONTENT, MAX_SOURCE_BYTES, PROTOS, itemFile, prototypeDir, readTree, resolveInside, systemOf, versionOf } from './files/paths.js';
 import { readJson, sameOrigin, send } from './files/http.js';
@@ -60,7 +60,7 @@ export default function filesPlugin() {
     apply: 'serve',
     // When a prototype file is moved, created, or deleted, Vite would try to hot-reload it
     // (at its old path, or at a path the page loaded before), fail, and reload the page. The
-    // manifest and the item lists (src/platform/modules/<type>/loader.ts) already handle these, so drop Vite's copy of
+    // manifest and the item lists (src/modules/<type>/loader.ts) already handle these, so drop Vite's copy of
     // the file itself and let its importers, like those lists, update as usual. Edits to a
     // file are left to Vite's normal hot reload.
     hotUpdate({ type, file, modules }) {
@@ -183,7 +183,7 @@ export default function filesPlugin() {
             const allowed = Object.entries(SYSTEM_SOURCES).flatMap(([id, source]) => [
               source.theme,
               ...(id === 'platform' ? [] : [source.dir + 'system.ts']),
-              id === 'platform' ? 'src/systems/platform/intro.tsx' : source.dir + 'intro.tsx',
+              id === 'platform' ? 'src/systems/studio/intro.tsx' : source.dir + 'intro.tsx',
               ...(manifest.systems[id]?.components ?? []).flatMap((component) => Object.values(component.files).filter(Boolean).map((file) => source.components + '/' + file)),
             ]);
             const result = sourceFile(ROOT, allowed, await readJson(req));

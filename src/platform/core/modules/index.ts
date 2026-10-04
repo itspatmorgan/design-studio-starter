@@ -1,5 +1,5 @@
 // Modules: the parts of Design Studio you can add or remove. A module is a folder in
-// src/platform/modules/<id>/ with a module.ts that says what it is and what it adds, so the build,
+// src/modules/<id>/ with a module.ts that says what it is and what it adds, so the build,
 // the dev server and the app all read one list instead of each knowing about every module.
 // A file type is a module that has a type.ts and an open.tsx (src/platform/core/fileTypes.md).
 // This file has no imports, so Node scripts can load it directly.
@@ -35,7 +35,7 @@ export type ModuleSpec = {
   // Prototypes may import the module's lib/index.ts as `@module/<id>`, the one way a prototype can reach into a
   // module when lib is true (the import guard allows exactly that). Removing an imported module is refused.
   lib: boolean;
-  // system content files the module brings (rules, skills), as paths inside src/systems/platform/ ("rules/examples.md"; a trailing
+  // system content files the module brings (rules, skills), as paths inside src/systems/studio/ ("rules/examples.md"; a trailing
   // slash is a whole folder, like a skill's). `when` finishes the sentence "When the person ..." in AGENTS.md,
   // which routes agents to the rule; pnpm studio sync writes those lines for the modules that are on.
   instructions?: { path: string; when?: string }[];
@@ -47,14 +47,14 @@ export type ModuleSpec = {
   upstream?: { repo: string; version: string; license: string };
 };
 
-// A module can add routes to the dev server (src/platform/modules/<id>/server.ts, served by
+// A module can add routes to the dev server (src/modules/<id>/server.ts, served by
 // scripts/build/vite-files-plugin.js at POST /__studio/<id>/<route>). A handler gets who is asking (their
 // contributors.json key, or null) and the request's JSON, and returns what to send back; a manifest it returns
 // is sent to the open app. It throws an Error to answer with that message. Dev only: the deployed site has no server.
 export type ServerRoute = (request: { me: string | null; body: unknown }) => { status?: number; body: object; manifest?: unknown } | Promise<{ status?: number; body: object; manifest?: unknown }>;
 export type ModuleServer = Record<string, ServerRoute>;
 
-// A module can add its own check to `pnpm check` (src/platform/modules/<id>/check.ts, default export): it gets the repo's
+// A module can add its own check to `pnpm check` (src/modules/<id>/check.ts, default export): it gets the repo's
 // root folder and returns a sentence for each problem it finds, or an empty list. It runs only while the module is on.
 export type ModuleCheck = (context: { root: string }) => string[] | Promise<string[]>;
 
@@ -68,7 +68,7 @@ const NPM_VERSION = /^[\^~]?\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/;
 // What is wrong with a module's declaration, each as a sentence that says what to fix. `folder` is the
 // name of the folder it was found in.
 export function moduleProblems(spec: unknown, folder: string): string[] {
-  const where = `src/platform/modules/${folder}/module.ts`;
+  const where = `src/modules/${folder}/module.ts`;
   if (!spec || typeof spec !== 'object') return [`${where} must export a module as its default.`];
   const m = spec as Partial<ModuleSpec>;
   const problems: string[] = [];

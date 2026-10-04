@@ -1,6 +1,6 @@
 /* Tailwind configuration is explicit; system CSS supplies scoped runtime values. */
 @import "tailwindcss";
-@import "../../systems/platform/styles/theme.css";
+@import "../../systems/studio/styles/theme.css";
 /* @studio:system-themes */
 /* Explicit shared component-animation extensions; not system foundation defaults. */
 @import "tw-animate-css";

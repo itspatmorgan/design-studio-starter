@@ -15,7 +15,7 @@ const APP_PAGES = new Set(MODULES.flatMap((m) => (m.section && !m.section?.items
 // The app's address on this origin, without a trailing slash: "" at the root, "/repo" under a base path.
 const base = () => import.meta.env.BASE_URL.replace(/\/$/, '');
 
-// An item's path in the app, without the base: "/prototypes/patrick/hello-world/lofi/main" (or "/systems/platform/context/principles").
+// An item's path in the app, without the base: "/prototypes/patrick/hello-world/lofi/main" (or "/systems/studio/context/principles").
 export const artifactPath = (p: Prototype, item: Artifact) =>
   `${addressOf(p.contributorKey, p.id)}/${artifactSlug(item.path).split('/').map(encodeURIComponent).join('/')}`;
 

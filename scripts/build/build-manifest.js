@@ -6,8 +6,8 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from '../../src/platform/modules/systems/node/systems.js';
-import { PLATFORM_ID } from '../../src/platform/modules/systems/sources.ts';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from '../../src/modules/systems/node/systems.js';
+import { PLATFORM_ID } from '../../src/modules/systems/node/systems.js';
 import { isHelper, artifactSlug } from '../../src/platform/core/fileTypes.ts';
 import { SYSTEM_CONTENT_KEY, SYSTEM_CONTENT_SECTIONS, rootOf, contentId, systemRoot } from '../../src/platform/core/roots.ts';
 import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../../src/platform/core/archive.ts';
@@ -18,11 +18,11 @@ import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from '../l
 import { frontmatter } from '../lib/frontmatter.js';
 import { readmes } from '../lib/guide-pages.js';
 import { contributorsSignature, loadContributors } from '../lib/contributors.js';
-import { systemContentProblems } from '../../src/platform/modules/systems/content/node/content-check.js';
-import { systemDocs } from '../../src/platform/modules/systems/node/docs.js';
-import { themeTokens } from '../../src/platform/modules/systems/themeTokens.ts';
+import { systemContentProblems } from '../../src/modules/systems/content/node/content-check.js';
+import { systemDocs } from '../../src/modules/systems/node/docs.js';
+import { themeTokens } from '../../src/modules/systems/themeTokens.ts';
 import { platformReferences } from '../lib/platform-references.js';
-import { systemContentMap } from '../../src/platform/modules/systems/content/map.ts';
+import { systemContentMap } from '../../src/modules/systems/content/map.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -69,7 +69,7 @@ const inSystemContent = {
 };
 
 // Problems with a folder's artifacts: two sharing a URL, or a file its type rejects (a view needs a
-// default export, and so on: src/platform/modules/<type>/type.ts). Printed; returns how many.
+// default export, and so on: src/modules/<type>/type.ts). Printed; returns how many.
 function checkArtifacts(dir, artifacts, out = console, prototype) {
   let errors = 0;
   const seen = new Set();
@@ -216,7 +216,7 @@ function writeManifest(manifest) {
   writeIfChanged(OUT, JSON.stringify({ ...manifest, prototypes, sections }) + '\n');
 }
 
-// Scans src/prototypes/, src/platform/, and src/platform/modules/documentation/pages/, writes public/prototypes/ (manifest.json, and artifacts/), and returns the whole manifest.
+// Scans src/prototypes/, src/platform/, and src/modules/documentation/pages/, writes public/prototypes/ (manifest.json, and artifacts/), and returns the whole manifest.
 // Problems are printed; errors counts them. The dev server calls this on every change
 // (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
 // Options: `deploy` leaves archived prototypes and views out (see src/platform/core/archive.ts), `write: false`
@@ -318,7 +318,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   }
 
   // Each system's components and tokens, for the Systems pages, and what its component pages lack
-  // (src/platform/modules/systems/docs.ts, themeTokens.ts). The app's own system (Platform) is one of them. By
+  // (src/modules/systems/docs.ts, themeTokens.ts). The app's own system (Platform) is one of them. By
   // default a gap is a warning, and the first few are listed; docs: 'strict' fails the build and
   // 'off' says nothing.
   if (PLATFORM_ID in PROTOTYPE_SYSTEMS) { out.error(`[manifest] src/systems/${PLATFORM_ID}/: "${PLATFORM_ID}" is the app's own system, so a prototype system can't use that name`); errors++; }
@@ -338,13 +338,13 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     }
   }
 
-  // Guide pages: src/platform/modules/documentation/pages/*.md, and the README.md of a module or file type that opens with
+  // Guide pages: src/modules/documentation/pages/*.md, and the README.md of a module or file type that opens with
   // Guide frontmatter (it keeps its page with its folder: `source` says where it is). Ordered by `order` in each page's
   // frontmatter. They share the title, description, and toc fields with prototype documents, and add order and section;
   // a README may also set `slug` (its address, /documentation/guide/<slug>), which is its folder's name otherwise.
   const guide = [];
   const guideFiles = GUIDE && fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter((f) => f.endsWith('.md')).sort() : [];
-  const pages = guideFiles.map((file) => ({ file: path.join(GUIDE, file), where: `src/platform/modules/documentation/pages/${file}`, slug: file.replace(/\.md$/, ''), readme: false }));
+  const pages = guideFiles.map((file) => ({ file: path.join(GUIDE, file), where: `src/modules/documentation/pages/${file}`, slug: file.replace(/\.md$/, ''), readme: false }));
   // A README without a title is only a README.
   if (GUIDE) for (const r of readmes()) pages.push({ file: r.file, where: path.relative(ROOT, r.file), slug: r.folder, readme: true, source: r.source });
   const taken = new Map();

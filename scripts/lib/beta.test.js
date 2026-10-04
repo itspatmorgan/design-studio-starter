@@ -80,7 +80,7 @@ test('create and rename preserve addresses, file errors recover, and system remo
       import assert from 'node:assert/strict';
       import { pathToFileURL } from 'node:url';
       const load = (file) => import(pathToFileURL(path.resolve(file)).href);
-      const { createPrototype, renamePrototype } = await load('src/platform/modules/' + 'prototypes/node/create.js');
+      const { createPrototype, renamePrototype } = await load('src/modules/' + 'prototypes/node/create.js');
       const { slug } = createPrototype({ title: 'Beta Journey', key: 'patrick' });
       const original = path.resolve('src/prototypes/patrick', slug);
       fs.writeFileSync(path.join(original, 'notes.md'), '[View](/prototypes/patrick/beta-journey/main)');
@@ -107,16 +107,16 @@ test('create and rename preserve addresses, file errors recover, and system remo
       assert.equal(recovered.statusCode, 200);
       // Shared Markdown remains editable even when prototype Documents is absent.
       const { runOp } = await load('scripts/build/files/ops.js');
-      runOp(path.resolve('src/systems/platform/context'), {op:'create', name:'beta-context.md'}, 'context');
-      assert.match(fs.readFileSync('src/systems/platform/context/beta-context.md', 'utf8'), /title: Beta Context/);
+      runOp(path.resolve('src/systems/studio/context'), {op:'create', name:'beta-context.md'}, 'context');
+      assert.match(fs.readFileSync('src/systems/studio/context/beta-context.md', 'utf8'), /title: Beta Context/);
       const systemContentResponse = response();
-      await handler({...request, url:'/file?contributor=system-content&prototype=platform%3Acontext&path=beta-context.md'}, systemContentResponse, () => assert.fail('Unexpected fallback'));
+      await handler({...request, url:'/file?contributor=system-content&prototype=studio%3Acontext&path=beta-context.md'}, systemContentResponse, () => assert.fail('Unexpected fallback'));
       assert.equal(systemContentResponse.statusCode, 200);
 
       fs.mkdirSync('src/systems/z-beta-fixture');
       fs.copyFileSync('src/systems/product/system.ts', 'src/systems/z-beta-fixture/system.ts');
       const { editStudioConfig } = await load('scripts/lib/studio-setup.js');
-      fs.writeFileSync('studio.config.ts', editStudioConfig(fs.readFileSync('studio.config.ts', 'utf8'), { systems: ['platform', 'product', 'z-beta-fixture'] }));
+      fs.writeFileSync('studio.config.ts', editStudioConfig(fs.readFileSync('studio.config.ts', 'utf8'), { systems: ['studio', 'product', 'z-beta-fixture'] }));
       const metaPath = path.join(moved, 'meta.json');
       const meta = JSON.parse(fs.readFileSync(metaPath)); meta.system = 'z-beta-fixture';
       fs.writeFileSync(metaPath, JSON.stringify(meta));
@@ -160,13 +160,13 @@ test('shared documentation catalog covers Guide and Reference and keeps damaged 
   const { documentationSources, sourceFile } = await import('../build/files/source.js');
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-documentation-catalog-'));
   try {
-    const chapter = 'src/platform/modules/documentation/pages/index.md';
-    const readme = 'src/platform/modules/prototypes/README.md';
+    const chapter = 'src/modules/documentation/pages/index.md';
+    const readme = 'src/modules/prototypes/README.md';
     for (const file of [chapter, readme]) {
       fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
       fs.writeFileSync(path.join(root, file), '# Source');
     }
-    const manifest = { guide: [{ slug: 'prototypes', source: '/platform/modules/prototypes/README.md' }], platformReferences: [{ id: 'documentation', enabled: true, references: [] }, { id: 'prototypes', enabled: true, references: [{ source: '/platform/modules/prototypes/README.md' }] }] };
+    const manifest = { guide: [{ slug: 'prototypes', source: '/modules/prototypes/README.md' }], platformReferences: [{ id: 'documentation', enabled: true, references: [] }, { id: 'prototypes', enabled: true, references: [{ source: '/modules/prototypes/README.md' }] }] };
     const allowed = documentationSources(root, manifest);
     assert.ok(allowed.includes(chapter));
     assert.equal(allowed.filter((file) => file === readme).length, 1);
@@ -216,7 +216,7 @@ test('shared source operations allow cataloged Markdown and system code with sta
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
 
-test('standalone diagrams are discovered by both extensions and disabling preserves Markdown', { skip: !fs.existsSync('src/platform/modules/diagrams/type.ts') }, async () => {
+test('standalone diagrams are discovered by both extensions and disabling preserves Markdown', { skip: !fs.existsSync('src/modules/diagrams/type.ts') }, async () => {
   const { execFileSync } = await import('node:child_process');
   const root = path.resolve('.');
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-diagrams-'));
@@ -247,7 +247,8 @@ test('standalone diagrams are discovered by both extensions and disabling preser
       assert.equal(prototype.artifacts[0].path,'test-folder/entry.mermaid');
       assert.equal('start' in prototype,false);
       assert.equal('description' in prototype,false);
-      assert.ok(prototype.artifacts.some(i=>i.fileType==='document'));
+      if (fs.existsSync('src/modules/document/type.ts')) assert.ok(prototype.artifacts.some(i=>i.fileType==='document'));
+      else assert.equal(prototype.artifacts.some(i=>i.fileType==='document'), false);
       assert.ok(manifest.platformReferences.find(g=>g.id==='diagrams')?.references.length);
       fs.writeFileSync(config,editModulesFlag(fs.readFileSync(config,'utf8'),'diagrams',false));
     `], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
@@ -258,8 +259,10 @@ test('standalone diagrams are discovered by both extensions and disabling preser
       const {manifest,errors}=buildManifest({write:false,quiet:true}); assert.equal(errors,0);
       const prototype=manifest.prototypes.find(p=>p.contributorKey==='patrick'&&p.id==='feedback-inbox');
       assert.equal(prototype.artifacts.some(i=>i.fileType==='diagrams'),false);
-      assert.equal(prototype.artifacts[0].path,'start-here.md');
-      assert.ok(prototype.artifacts.some(i=>i.fileType==='document'));
+      if (fs.existsSync('src/modules/document/type.ts')) assert.equal(prototype.artifacts[0].path,'start-here.md');
+      assert.ok(fs.existsSync('src/prototypes/patrick/feedback-inbox/start-here.md'));
+      if (fs.existsSync('src/modules/document/type.ts')) assert.ok(prototype.artifacts.some(i=>i.fileType==='document'));
+      else assert.equal(prototype.artifacts.some(i=>i.fileType==='document'), false);
       assert.ok(fs.existsSync('src/prototypes/patrick/feedback-inbox/test-flow.mermaid'));
       assert.equal(manifest.platformReferences.find(g=>g.id==='diagrams')?.references.length,0);
     `], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });

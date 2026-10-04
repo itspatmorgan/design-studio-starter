@@ -12,15 +12,15 @@ Made for designers and product managers, working individually or with a team. Br
 
 The agent handles local setup and configuration, asks for the context it needs, and helps you bring in your design system. If you're joining an existing studio, ask **“Set me up as a contributor.”**
 
-See the [setup guide](src/platform/modules/documentation/pages/getting-started.md) for prerequisites and the full walkthrough.
+See the [setup guide](src/modules/documentation/pages/getting-started.md) for prerequisites and the full walkthrough.
 
 ## Learn more
 
 The Guide at `/documentation/guide` introduces setup, the app surfaces, and collaboration. Detailed platform contracts live in Reference at `/documentation/reference`.
 
-- [Introduction](src/platform/modules/documentation/pages/index.md) — how the studio works.
-- [Collaborate](src/platform/modules/documentation/pages/collaborate.md) — ownership and sharing work.
-- [Modules](src/platform/modules/README.md) — customize and extend your studio.
+- [Introduction](src/modules/documentation/pages/index.md) — how the studio works.
+- [Collaborate](src/modules/documentation/pages/collaborate.md) — ownership and sharing work.
+- [Modules](src/modules/README.md) — customize and extend your studio.
 - [Tech stack](src/platform/core/stack.md) — what's under the hood.
 
 ## Project status

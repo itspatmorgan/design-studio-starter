@@ -1,0 +1,12 @@
+import type { SystemSpec } from '../../modules/systems/spec.ts';
+
+// Studio's supplied toolkit and operating guidance. Prototype systems remain independent.
+export default {
+  label: 'Studio',
+  role: 'platform',
+  themeClass: 'studio-theme',
+  styling: 'tailwind',
+  colorModes: ['light', 'dark'],
+  docs: 'off',
+  origin: 'shadcn',
+} satisfies SystemSpec;

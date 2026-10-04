@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { configProblems, isEnabled, type StudioConfig } from './config.ts';
 
 const modules = [{ id: 'documentation', optional: true }, { id: 'prototypes', optional: false }];
-const config: StudioConfig = { name: 'Studio', usage: 'team', modules: { documentation: true, prototypes: true }, systems: ['platform', 'product'], defaultSystem: 'product' };
+const config: StudioConfig = { name: 'Studio', usage: 'team', modules: { documentation: true, prototypes: true }, systems: ['studio', 'product'], defaultSystem: 'product' };
 const problems = (changes: Record<string, unknown>) => configProblems({ ...config, ...changes }, modules, ['product']).join('\n');
 
 test('an explicit configuration is complete', () => {
@@ -39,11 +39,18 @@ test('omission never activates a module', () => {
 
 test('systems and default system are registered explicitly', () => {
   assert.match(problems({ systems: undefined }), /explicitly list/);
-  assert.match(problems({ systems: ['product'] }), /must include platform/);
-  assert.match(problems({ systems: ['platform'] }), /register installed system "product"/);
-  assert.match(problems({ systems: ['platform', 'product', 'brand'] }), /not installed/);
-  assert.match(problems({ systems: ['platform', 'product', 'product'] }), /unique/);
+  assert.match(problems({ systems: ['product'] }), /must include studio/);
+  assert.match(problems({ systems: ['studio'] }), /register installed system "product"/);
+  assert.match(problems({ systems: ['studio', 'product', 'brand'] }), /not installed/);
+  assert.match(problems({ systems: ['studio', 'product', 'product'] }), /unique/);
   assert.match(problems({ defaultSystem: undefined }), /declare defaultSystem/);
-  assert.match(problems({ defaultSystem: 'platform' }), /no system has that id/);
+  assert.match(problems({ defaultSystem: 'studio' }), /no system has that id/);
   assert.match(problems({ defaultSystem: 'brand' }), /no system has that id/);
+});
+
+test('required application registration follows the resolved platform role id', () => {
+  const custom = { ...config, systems: ['custom-studio', 'product'] };
+  assert.deepEqual(configProblems(custom, modules, ['product'], 'custom-studio'), []);
+  assert.match(configProblems({ ...custom, systems: ['product'] }, modules, ['product'], 'custom-studio').join(' '), /must include custom-studio/);
+  assert.match(configProblems({ ...custom, defaultSystem: 'custom-studio' }, modules, ['product'], 'custom-studio').join(' '), /no system has that id/);
 });
