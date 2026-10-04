@@ -42,6 +42,8 @@ The first available artifact in navigation order opens by default, including art
 
 Contributor details come from `contributors.json` and `contributors/<key>.json`.
 
+Gallery cards use the contributor's registered `github` username to load a profile photo. Initials appear while it loads, when no GitHub account is registered, or if the image is unavailable. Photo loading is optional and requires no GitHub authentication.
+
 ## Links and renaming
 
 `/prototypes/<contributor>/<id>` opens the first available artifact in navigation order. Appending an artifact path without extension opens that artifact.

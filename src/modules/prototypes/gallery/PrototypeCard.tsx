@@ -16,7 +16,7 @@ export default function PrototypeCard({ prototype: p }: { prototype: PrototypeIn
       icon={Layers01Icon}
       title={p.title}
       archived={p.status === 'archived'}
-      meta={<><ContributorAvatar name={nameOf(p)} /><span className="truncate">{nameOf(p).split(' ')[0]}</span>{p.created && <span>· {formatDate(p.created)}</span>}</>}
+      meta={<><ContributorAvatar name={nameOf(p)} github={p.contributorGithub} /><span className="truncate">{nameOf(p).split(' ')[0]}</span>{p.created && <span>· {formatDate(p.created)}</span>}</>}
       menu={<PrototypeCardMenu proto={p} />}
     />
   );

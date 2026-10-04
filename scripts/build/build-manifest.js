@@ -158,6 +158,7 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
     entry: {
       id, contributorKey, title: meta.title, ...(SECTION_KEYS.has(contributorKey) && { description: meta.description ?? '' }),
       contributor: maintained ? maintainers.map((k) => contributors[k]?.name ?? k).join(', ') : contributors[contributorKey]?.name ?? '',
+      ...(!maintained && typeof contributors[contributorKey]?.github === 'string' && contributors[contributorKey].github.trim() && { contributorGithub: contributors[contributorKey].github.trim() }),
       created: meta.created ?? null, system, artifacts,
       ...(rebuild !== undefined && { rebuild }),
       ...(maintained && { maintainers }),

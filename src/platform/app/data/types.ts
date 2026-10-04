@@ -20,6 +20,7 @@ export type PrototypeInfo = {
   title: string;
   description?: string;   // shared section descriptions; prototypes use artifacts for context
   contributor: string;    // display name, from contributors.json
+  contributorGithub?: string; // registered GitHub account, for optional profile photos
   created: string | null;
   system: string | null;  // null means custom styling; omission in meta.json resolves to defaultSystem
   rebuild?: { targetSystem: string | null; source: string }; // requested fork migration, before changing the actual assignment
