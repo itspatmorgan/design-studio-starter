@@ -5,9 +5,9 @@ import { canChange, canMaintain, canOwn, parseMaintainers, policyFor, whyNot } f
 import type { ModuleSpec } from './modules/index.ts';
 
 const modules: ModuleSpec[] = [
-  { id: 'examples', label: 'Examples', version: '0.1.0', section: { key: 'examples', folder: 'src/examples', items: 'prototypes', policy: 'maintainers' } },
-  { id: 'documentation', label: 'Guide', version: '0.1.0', section: { key: 'documentation', folder: 'src/platform/modules/documentation/pages' } },
-  { id: 'extra', label: 'Extra', version: '0.1.0' },
+  { optional: false, lib: false, id: 'examples', label: 'Examples', version: '0.1.0', section: { key: 'examples', folder: 'src/examples', items: 'prototypes', policy: 'maintainers' } },
+  { optional: false, lib: false, id: 'documentation', label: 'Guide', version: '0.1.0', section: { key: 'documentation', folder: 'src/platform/modules/documentation/pages' } },
+  { optional: false, lib: false, id: 'extra', label: 'Extra', version: '0.1.0' },
 ];
 
 test('maintainers are a list of at least one contributor key', () => {

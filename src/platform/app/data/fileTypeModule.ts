@@ -18,12 +18,12 @@ export type FileTypeModule<Props extends object = any> = { // eslint-disable-lin
   load(context: ArtifactContext): Promise<Props | undefined>;
   Page: ComponentType<Props>;
   Embed?: ComponentType<EmbedProps>;
-  embedSurfaces?: EmbedSurface[];
+  embedSurfaces: EmbedSurface[];
 };
 
 export type EmbedSurface = "document" | "canvas";
 
-// Omitting the list makes a preview available on both surfaces.
+// Only explicitly declared surfaces receive a preview.
 export function embedFor(module: FileTypeModule | undefined, surface: EmbedSurface) {
-  return module?.embedSurfaces && !module.embedSurfaces.includes(surface) ? undefined : module?.Embed;
+  return module?.embedSurfaces?.includes(surface) ? module.Embed : undefined;
 }

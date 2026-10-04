@@ -10,7 +10,7 @@ const types = FILE_TYPES;
 // A file type is removable, so a test about one is skipped when it isn't installed.
 const needs = (...ids: string[]) => ({ skip: ids.some((id) => !types[id]) && 'needs a file type that is not installed' });
 // Modules as fixtures, so the test still runs when one is removed.
-const module = (id: string, section?: ModuleSpec['section']): ModuleSpec => ({ id, label: id, version: '0.1.0', section });
+const module = (id: string, section?: ModuleSpec['section']): ModuleSpec => ({ optional: false, lib: false, id, label: id, version: '0.1.0', section });
 const examples = module('examples', { key: 'examples', folder: 'src/examples', items: 'prototypes' });
 const modules = [
   module('prototypes', { key: 'prototypes', folder: 'src/prototypes', items: 'prototypes', byPerson: true }),
@@ -53,7 +53,7 @@ test('without the examples module, nothing looks in /examples', () => {
 });
 
 test('a new section that holds prototypes is listed by every type that opens prototype files', needs('view', 'document', 'text'), () => {
-  const playbooks: ModuleSpec = { id: 'playbooks', label: 'Playbooks', version: '0.1.0', section: { key: 'playbooks', folder: 'src/playbooks', items: 'prototypes' } };
+  const playbooks: ModuleSpec = { optional: false, lib: false, id: 'playbooks', label: 'Playbooks', version: '0.1.0', section: { key: 'playbooks', folder: 'src/playbooks', items: 'prototypes' } };
   assert.ok(globsFor('view', types, [...modules, playbooks]).includes('/playbooks/**/*.{tsx,jsx}'));
   assert.ok(globsFor('document', types, [...modules, playbooks]).includes('!/playbooks/**/_*'));
   assert.ok(!globsFor('text', types, [...modules, playbooks]).some((g) => g.includes('playbooks')));
@@ -74,10 +74,21 @@ test('SystemContent Markdown stays readable and validated without prototype Docu
   assert.ok(withoutDocuments.systems.check!({ source: '---\ntitle: Unclosed', frontmatter: null }).length);
 });
 
-const withoutDocument = (specs: typeof types) => Object.fromEntries(Object.entries(specs).filter(([id]) => id !== 'document'));
 
 test('extension ownership is unique within each content scope', () => {
   assert.doesNotThrow(() => assertUniqueExtensions(types));
-  assert.throws(() => assertUniqueExtensions({ ...withoutDocument(types), prototypeMarkdown: {extensions: ['.md'], label: 'Markdown'}, other: { extensions: ['.md'], label: 'Other' } }), /both use .md in prototype/);
-  assert.throws(() => assertUniqueExtensions({ ...types, other: { extensions: ['.md'], label: 'Other', inPrototype: false, inSystemContent: true } }), /both use .md in systemContent/);
+  const type = { preview: false, inPrototype: true, inSystemContent: false, fallback: false, extensions: ['.md'], label: 'Document' };
+  assert.throws(() => assertUniqueExtensions({ document: type, other: { ...type, label: 'Other' } }), /both use .md in prototype/);
+  assert.throws(() => assertUniqueExtensions({ shared: { ...type, inPrototype: false, inSystemContent: true }, other: { ...type, inPrototype: false, inSystemContent: true } }), /both use .md in systemContent/);
+});
+
+test('file types cannot gain a scope or preview by omission', async () => {
+  const { defineFileType } = await import('../fileTypes.ts');
+  const spec = { label: 'Fixture', extensions: ['.fixture'], preview: false, inPrototype: false, inSystemContent: false, fallback: false };
+  for (const field of ['preview', 'inPrototype', 'inSystemContent', 'fallback']) {
+    const incomplete = { ...spec };
+    delete (incomplete as Record<string, unknown>)[field];
+    assert.throws(() => defineFileType(incomplete), new RegExp(field));
+  }
+  assert.equal(matchFileType({ fixture: spec }, 'file.fixture'), null);
 });

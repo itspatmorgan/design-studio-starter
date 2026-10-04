@@ -36,13 +36,13 @@ Other prototype files remain plain files. Underscore helpers are excluded from n
 
 `type.ts` imports only `../../core/fileTypes.ts`, because Node loads it directly.
 
-`inPrototype` defaults to true. `insystem content` enables system context use. A `fallback` type opens other system context text files without claiming extensions.
+`preview`, `inPrototype`, `inSystemContent`, and `fallback` are required booleans. `inPrototype: true` permits prototype artifacts; `inSystemContent: true` permits system knowledge files. Omission fails validation. A `fallback` type opens other system context text files without claiming extensions.
 
 Supported editor languages are `tsx`, `markdown`, `json`, `mermaid`, and `text`. The template supplies new-file content. The check reports invalid content.
 
 The app record is `Artifact`, and a loaded `Prototype` holds an `artifacts` collection. Manifest lookup and navigation use `findArtifact`, `firstArtifact`, `artifactLink`, and `artifactSlug`. Shared readers such as the system context reuse the same record and file-type machinery while keeping their own user-facing document terms.
 
-An `Embed` in `open.tsx` supplies a read-only preview for documents and canvases. Core resolves references and uses this contract without importing individual modules. `embedSurfaces` can restrict the preview to `document` or `canvas`; omitting it enables both. Types without a preview on that surface appear as cards. Canvas restricts its preview to documents, keeping canvas nesting bounded.
+An `Embed` in `open.tsx` supplies a read-only preview for documents and canvases. Core resolves references and uses this contract without importing individual modules. The required `embedSurfaces` array explicitly permits `document`, `canvas`, both, or neither (`[]`). Omission never enables a surface. Types without a preview on that surface appear as cards. Canvas restricts its preview to documents, keeping canvas nesting bounded.
 
 Prototype documents use `![Description](relative/file.ext)` on its own line. The shared Markdown reader resolves the exact file within the same prototype, renders the registered preview or card, and provides an Open link. Inline references stay links. Missing or disabled types show an unavailable message. Ordinary image formats retain Markdown image behavior.
 

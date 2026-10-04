@@ -23,6 +23,6 @@ const snapshot = () => document.documentElement.classList.contains('dark') ? 'da
 export function ThemeScope({ themeClass, className, style, ...props }: ComponentProps<'div'> & { themeClass: string }) {
   const global = useSyncExternalStore(subscribe, snapshot, () => 'light' as const);
   const system = Object.values(SYSTEM_SPECS).find((spec) => spec.themeClass === themeClass);
-  const mode = themeClass ? systemColorMode(system?.colorModes, global) : undefined;
+  const mode = system ? systemColorMode(system.colorModes, global) : undefined;
   return <div {...props} className={cn(themeClass, className)} data-color-mode={mode} style={{ ...style, ...(mode && { colorScheme: mode }) }} />;
 }

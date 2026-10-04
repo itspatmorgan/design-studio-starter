@@ -24,6 +24,12 @@ Modularity, composability, extensibility, and scalability are product qualities 
 
 **In practice:** keep the platform, prototype design systems, prototypes, file types, and shared context in understandable scopes. Connect working code, canvases, wireframes, and documents so they support the same exploration. Keep performance usable as the number of prototypes and contributors grows.
 
+## Declare what the system provides
+
+Make platform capabilities and system choices explicit, even when they match starter defaults. Discovery finds available files; declarations determine registration, activation, supported surfaces, and operating policy. Missing decisions should be identified by validation rather than silently inherited.
+
+**In practice:** scaffolds write useful defaults as concrete declarations. Keep those declarations readable, validate them, and generate documentation from the same source. This applies to modules, systems, artifact capabilities, and visual foundations.
+
 ## Let the human direct and the agent execute
 
 The human should be able to work primarily as a creative director: set intent, judge the result, make edits, and guide refinement. The agent should perform the work it can do across the environment, including setup, implementation, organization, documentation, and verification. People should also be able to contribute directly on the surfaces where that is clearest or quickest for them.

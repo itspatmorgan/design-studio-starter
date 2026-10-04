@@ -102,8 +102,8 @@ export function licenseVerdict(spec: Partial<ModuleSpec>, hasLicenseFile: boolea
 }
 
 // studio.config.ts with one module turned on or off, or null if its `modules` list isn't in the plain form this writes
-// (edit it by hand then). On means left out, since a module is on unless the config says otherwise.
-export function editModulesFlag(text: string, id: string, on: boolean): string | null {
+// (edit it by hand then). true enables, false disables, null removes the installed entry.
+export function editModulesFlag(text: string, id: string, on: boolean | null): string | null {
   const m = /(\bmodules:\s*)\{([^{}]*)\}/.exec(text);
   if (!m) return null;
   const entries = new Map<string, boolean>();
@@ -112,9 +112,13 @@ export function editModulesFlag(text: string, id: string, on: boolean): string |
     if (!e) return null;
     entries.set(e[1].replace(/^['"]|['"]$/g, ''), e[2] === 'true');
   }
-  if (on) entries.delete(id); else entries.set(id, false);
+  if (on === null) entries.delete(id); else entries.set(id, on);
   const body = [...entries].map(([k, v]) => `${/^[A-Za-z_]\w*$/.test(k) ? k : `'${k}'`}: ${v}`).join(', ');
-  return text.slice(0, m.index) + `${m[1]}{${body ? ` ${body} ` : ''}}` + text.slice(m.index + m[0].length);
+  const indent = text.slice(text.lastIndexOf('\n', m.index) + 1, m.index).match(/^\s*/)?.[0] ?? '';
+  const formatted = body && m[2].includes('\n')
+    ? '\n' + [...entries].map(([k, v]) => `${indent}  ${/^[A-Za-z_]\w*$/.test(k) ? k : `'${k}'`}: ${v},`).join('\n') + '\n' + indent
+    : body ? ` ${body} ` : '';
+  return text.slice(0, m.index) + `${m[1]}{${formatted}}` + text.slice(m.index + m[0].length);
 }
 
 export const AGENTS_START = '<!-- studio:modules -->';
@@ -227,17 +231,4 @@ export function readDeclaration(source: string): { value: unknown } | { error: s
   } catch (e) {
     return { error: (e as Error).message };
   }
-}
-
-// studio.config.ts with defaultSystem set: replaces the line if there is one (or a commented example of it), else adds it after
-// `name`. Null if the file has no `name:` line to put it after. It is written when a second design system is added, so that
-// adding one never changes which system existing prototypes use.
-export function setDefaultSystem(text: string, id: string): string | null {
-  const line = `defaultSystem: '${id}',`;
-  const existing = /^([ \t]*)(?:\/\/[ \t]*)?defaultSystem:[^\n]*$/m.exec(text);
-  if (existing) return text.slice(0, existing.index) + `${existing[1]}${line}` + text.slice(existing.index + existing[0].length);
-  const name = /^([ \t]*)name:[^\n]*,[ \t]*$/m.exec(text);
-  if (!name) return null;
-  const end = name.index + name[0].length;
-  return text.slice(0, end) + `\n${name[1]}${line}` + text.slice(end);
 }

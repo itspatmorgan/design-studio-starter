@@ -8,6 +8,10 @@ import { defineFileType } from '../../core/fileTypes.ts';
 const KNOWN_VERSION = 1;
 
 export default defineFileType({
+  preview: false,
+  inPrototype: true,
+  inSystemContent: false,
+  fallback: false,
   label: 'Canvas',
   extensions: ['.excalidraw'],
   language: 'json',

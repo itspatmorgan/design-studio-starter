@@ -1,15 +1,16 @@
 // A design system prototypes build with is a folder in src/systems/<id>/ with a system.ts that says what it is,
 // next to its components/ and styles/theme.css. The build, the dev server and the app all find the systems by
-// their folders, so adding one is adding a folder (pnpm studio create-system), and no list is kept anywhere.
+// their folders; studio.config.ts explicitly registers each installed system.
 // The Platform system lives in src/systems/platform/ and declares role: 'platform'; prototypes
 // never use it (src/platform/modules/systems/sources.ts). This file has no imports, so Node scripts and the app can load it.
 
 export type ColorMode = 'light' | 'dark';
 
-// Missing capability declarations support both modes and follow Studio.
-export function systemColorMode(supported: readonly ColorMode[] | undefined, global: ColorMode): ColorMode {
-  const modes = supported ?? ['light', 'dark'];
-  return modes.includes(global) ? global : modes[0] ?? 'light';
+// Resolve global mode against the system's explicitly declared supported modes.
+export function systemColorMode(supported: readonly ColorMode[], global: ColorMode): ColorMode {
+  const modes = supported;
+  if (!modes.length) throw new Error('A system must declare at least one color mode.');
+  return modes.includes(global) ? global : modes[0];
 }
 
 // How the build treats a component without examples or a description (systemDocs.ts): 'warn' says
@@ -17,17 +18,17 @@ export function systemColorMode(supported: readonly ColorMode[] | undefined, glo
 export type DocsMode = 'warn' | 'strict' | 'off';
 
 export type SystemSpec = {
-  role?: 'platform' | 'prototype'; // prototype by default; only Studio's built-in system uses platform
+  role: 'platform' | 'prototype';
   label: string;               // "Product"
   // The class its theme is set under, like "product-theme". Its styles/theme.css may set values only under
   // this class, so it can't leak into the app UI or another system.
   themeClass: string;
-  colorModes?: readonly ColorMode[]; // supported modes; default ['light', 'dark']
-  docs?: DocsMode;             // default 'warn'
+  colorModes: readonly ColorMode[];
+  docs: DocsMode;
   // Where its components come from. 'shadcn' gives each component page a link to that component's
-  // shadcn/ui docs; a page can set its own link with `docs:` in its frontmatter. Leave it out for a
-  // system that isn't shadcn/ui, like your product's own.
-  origin?: 'shadcn';
+  // shadcn/ui docs; a page can set its own link with `docs:` in its frontmatter. Use null for a
+  // system that isn't shadcn/ui; declare null instead.
+  origin: 'shadcn' | null;
 };
 
 const ID = /^[a-z][a-z0-9-]*$/;
@@ -42,13 +43,13 @@ export function systemProblems(spec: unknown, folder: string): string[] {
   const s = spec as Partial<SystemSpec>;
   const problems: string[] = [];
   if (folder === 'platform' && s.role !== 'platform') problems.push(where + ": platform is the app's own system and must declare role: 'platform'.");
-  if (s.role !== undefined && !['platform', 'prototype'].includes(s.role)) problems.push(where + ": role must be 'platform' or 'prototype'.");
+  if (!s.role || !['platform', 'prototype'].includes(s.role)) problems.push(where + ": role must be 'platform' or 'prototype'.");
   if (folder !== 'platform' && s.role === 'platform') problems.push(where + ": only the built-in platform system may declare role: 'platform'.");
   if (typeof s.label !== 'string' || !s.label.trim()) problems.push(`${where}: add a label, the name people see.`);
   if (typeof s.themeClass !== 'string' || !CLASS.test(s.themeClass)) problems.push(`${where}: themeClass should be a CSS class name like "${folder}-theme".`);
-  if (s.colorModes !== undefined && (!Array.isArray(s.colorModes) || !s.colorModes.length || s.colorModes.some((mode) => !['light', 'dark'].includes(mode)) || new Set(s.colorModes).size !== s.colorModes.length)) problems.push(`${where}: colorModes must be a nonempty list of unique 'light' or 'dark' modes.`);
-  if (s.docs !== undefined && !['warn', 'strict', 'off'].includes(s.docs)) problems.push(`${where}: docs should be 'warn', 'strict', or 'off'.`);
-  if (s.origin !== undefined && s.origin !== 'shadcn') problems.push(`${where}: origin should be 'shadcn', or left out.`);
+  if (!Array.isArray(s.colorModes) || !s.colorModes.length || s.colorModes.some((mode) => !['light', 'dark'].includes(mode)) || new Set(s.colorModes).size !== s.colorModes.length) problems.push(`${where}: colorModes must be a nonempty list of unique 'light' or 'dark' modes.`);
+  if (!s.docs || !['warn', 'strict', 'off'].includes(s.docs)) problems.push(`${where}: docs should be 'warn', 'strict', or 'off'.`);
+  if (s.origin !== null && s.origin !== 'shadcn') problems.push(`${where}: origin should be 'shadcn', or explicitly null.`);
   return problems;
 }
 

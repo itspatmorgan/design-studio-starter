@@ -4,6 +4,8 @@ import type { ModuleSpec } from '../../core/modules/index.ts';
 // (views, documents, canvases, text) that opens in the viewer; each belongs to the person whose folder it is in.
 // Required: the viewer here is also how a module item or a system content section opens.
 export default {
+  optional: false,
+  lib: false,
   id: 'prototypes',
   label: 'Prototypes',
   version: '0.1.0',

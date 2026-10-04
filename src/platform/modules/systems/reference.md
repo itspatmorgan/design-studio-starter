@@ -1,6 +1,6 @@
 # System contract
 
-Systems are discovered from their folders. Each prototype uses one system. Runtime requirements are maintained in the [systems rule](../../../systems/platform/rules/systems.md).
+Systems are discovered from their folders and explicitly registered in `studio.config.ts.systems`. Unregistered folders fail configuration validation. Each prototype uses one system. Runtime requirements are maintained in the [systems rule](../../../systems/platform/rules/systems.md).
 
 ## Structure
 
@@ -18,13 +18,13 @@ A prototype system lives in `src/systems/<id>/` and contains:
 
 `system.ts`, introductions, examples, and Markdown are documentation adapters. Runtime components and prototypes cannot import these adapters.
 
-The Platform system lives in `src/systems/platform/` with the same structure as other systems. Its `system.ts` declares `role: 'platform'`; other systems default to `role: 'prototype'`. Only the built-in Platform system may claim that role. Its documentation mode is `off`. Platform infrastructure remains under `src/platform/`.
+The Platform system lives in `src/systems/platform/` with the same structure as other systems. Its `system.ts` declares `role: 'platform'`; other systems explicitly declare `role: 'prototype'`. Only the built-in Platform system may claim that role. Its documentation mode is `off`. Every system explicitly declares `role`, `colorModes`, `docs`, and `origin`. Platform infrastructure remains under `src/platform/`.
 
 Follow the [static asset convention](../../core/assets.md) for system assets and font loading.
 
 The starter Product system uses shadcn/ui on Base UI. `components.json` controls the CLI destination. A replacement system may use another library.
 
-`colorModes` declares supported modes: `['light']`, `['dark']`, or `['light', 'dark']`. Omission supports both modes and follows Studio. Declare a single mode explicitly to protect a system that supports only that mode. Empty, duplicate, and unknown modes fail validation.
+`colorModes` declares supported modes: `['light']`, `['dark']`, or `['light', 'dark']`. This field is required; omission fails validation. Declare a single mode explicitly to protect a system that supports only that mode. Empty, duplicate, and unknown modes fail validation.
 
 Studio follows the global mode. Rendered views, their document/canvas embeds, and Systems foundation previews and component examples resolve that mode against their system's capabilities. Unsupported global modes use the first supported mode. Documents, diagrams, canvas chrome, and source editors keep Studio's mode.
 
@@ -52,7 +52,7 @@ Each capitalized export from the examples file is one live example. The platform
 
 Props tables come from TypeScript. They summarize inputs rather than replacing upstream API documentation.
 
-`origin: 'shadcn'` adds upstream component links. A Markdown page can provide its own `docs` URL. Remove an unsuitable origin when replacing the starter kit.
+`origin: 'shadcn'` adds upstream component links. A Markdown page can provide its own `docs` URL. Declare `origin: null` when replacing the starter kit with another library.
 
 Missing pages, examples, or required page fields normally produce warnings. `docs: 'strict'` makes these errors. `docs: 'off'` suppresses documentation warnings.
 

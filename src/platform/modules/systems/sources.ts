@@ -27,8 +27,8 @@ export const sourceOf = (id: string, spec: SystemSpec): SystemSource => ({
   components: `src/systems/${id}/components`,
   theme: `src/systems/${id}/styles/theme.css`,
   scope: { light: `.${spec.themeClass}`, dark: `.${spec.themeClass}[data-color-mode="dark"]` },
-  docs: spec.docs ?? 'warn',
-  origin: spec.origin ?? null,
+  docs: spec.docs,
+  origin: spec.origin,
 });
 
 // The app's own system: stock shadcn/ui components, themed on the page itself (:root and .dark).

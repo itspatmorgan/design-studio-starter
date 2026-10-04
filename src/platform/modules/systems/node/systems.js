@@ -28,14 +28,14 @@ export const SYSTEM_SPECS = Object.fromEntries(await Promise.all(
   }),
 ));
 
-export const PROTOTYPE_SYSTEMS = Object.fromEntries(Object.entries(SYSTEM_SPECS).filter(([id, spec]) => id !== PLATFORM_ID && spec.role !== 'platform'));
-const prototypeIds = Object.keys(PROTOTYPE_SYSTEMS);
+export const PROTOTYPE_SYSTEMS = Object.fromEntries(Object.entries(SYSTEM_SPECS).filter(([id, spec]) => CONFIG.systems?.includes(id) && id !== PLATFORM_ID && spec.role === 'prototype'));
+const prototypeIds = ids.filter((id) => id !== PLATFORM_ID);
 
-// The system a prototype uses when its meta.json doesn't say: studio.config.ts defaultSystem, else the first by name.
-export const DEFAULT_SYSTEM = CONFIG.defaultSystem in PROTOTYPE_SYSTEMS ? CONFIG.defaultSystem : prototypeIds[0];
+// The system a prototype uses when its meta.json doesn't say: the explicitly configured studio.config.ts defaultSystem.
+export const DEFAULT_SYSTEM = CONFIG.defaultSystem;
 
 export const SYSTEM_SOURCES = {
-  ...Object.fromEntries(ids.map((id) => [id, sourceOf(id, SYSTEM_SPECS[id])])),
+  ...Object.fromEntries(ids.filter((id) => CONFIG.systems?.includes(id)).map((id) => [id, sourceOf(id, SYSTEM_SPECS[id])])),
   [PLATFORM_ID]: PLATFORM_SOURCE,
 };
 

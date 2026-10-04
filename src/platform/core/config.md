@@ -6,13 +6,14 @@ referenceOrder: 20
 
 `studio.config.ts` holds a small set of shared choices. Other customization happens in code, which you also own.
 
-| Setting | Purpose and default |
+| Setting | Declaration |
 | --- | --- |
 | `name` | Required studio name, used by the app. |
-| `usage` | `personal` or `team`. Defaults to `team`. Guides onboarding, without changing contributor ownership. |
+| `usage` | Required `personal` or `team`. Guides onboarding, without changing contributor ownership. |
 | `tagline` | Optional line on the published front page, up to 140 characters. |
-| `modules` | Installed module IDs set to `true` or `false`. Omitted modules are enabled. Required modules cannot be disabled. |
-| `defaultSystem` | System for prototypes without an explicit system choice. Defaults to the first installed system by name. |
+| `modules` | Installed module IDs set to `true` or `false`. Every installed module needs an explicit entry; omission is invalid and never enables it. Required modules cannot be disabled. |
+| `systems` | Required list of every installed system ID, including `platform`. Discovery does not register a system. |
+| `defaultSystem` | System for prototypes without an explicit system choice. Required registered prototype-system ID; no alphabetical fallback. |
 
 ## Change configuration
 

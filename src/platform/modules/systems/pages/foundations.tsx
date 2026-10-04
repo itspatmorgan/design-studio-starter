@@ -42,7 +42,7 @@ export function PageHeader({ title, description }: { title: string; description?
 }
 
 // Introduction metadata stays in sync with the system's declared capabilities.
-export function ColorModeSupport({ modes = ['light', 'dark'] }: { modes?: readonly ColorMode[] }) {
+export function ColorModeSupport({ modes }: { modes: readonly ColorMode[] }) {
   const label = modes.length === 1 ? `${modes[0] === 'light' ? 'Light' : 'Dark'} only` : 'Light and dark';
   const behavior = modes.length === 1
     ? `This system stays in ${modes[0]} mode while Studio follows its global color mode.`

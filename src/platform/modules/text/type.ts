@@ -4,8 +4,11 @@
 import { defineFileType } from '../../core/fileTypes.ts';
 
 export default defineFileType({
+  preview: false,
+  inPrototype: false,
+  inSystemContent: true,
+  fallback: true,
   label: 'Text file',
   extensions: [],
   language: 'text',
-  fallback: true,
 });

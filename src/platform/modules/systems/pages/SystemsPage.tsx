@@ -37,7 +37,7 @@ const SystemSourceEditor = import.meta.env.DEV ? lazy(() => import('./SystemSour
 // defines (src/platform/modules/systems/themeTokens.ts). Prototype systems appear in the selector, followed by Platform.
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
 const introOf = (id: string): SystemIntro => intros[`/systems/${id}/intro.tsx`]?.default ?? {
-  intro: <><Prose><p>This system has no introduction yet. Add one in <Code>src/systems/{id}/intro.tsx</Code>.</p></Prose><h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2><Prose><ColorModeSupport modes={PROTOTYPE_SYSTEMS[id]?.colorModes} /></Prose></>,
+  intro: <><Prose><p>This system has no introduction yet. Add one in <Code>src/systems/{id}/intro.tsx</Code>.</p></Prose><h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2><Prose><ColorModeSupport modes={SYSTEM_SPECS[id].colorModes} /></Prose></>,
 };
 const PROTOTYPE_SPECS: Record<string, DesignSystem> = Object.fromEntries(Object.entries(SYSTEM_SPECS).map(([id, spec]) => [id, {
   label: spec.label, dir: `${spec.dir}components/`, scopeClass: spec.themeClass, ...introOf(id),

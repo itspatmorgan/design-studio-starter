@@ -21,10 +21,13 @@ function setLofi(source: string, on: boolean) {
 }
 
 export default defineFileType({
+  preview: true,
+  inPrototype: true,
+  inSystemContent: false,
+  fallback: false,
   label: 'View',
   extensions: ['.tsx', '.jsx'],
   language: 'tsx',
-  preview: true,
   fidelity: { isLofi, setLofi },
 
   // It starts as emptyView (src/lib/emptyView.ts), which the platform shows as an empty page, until something is built in it.

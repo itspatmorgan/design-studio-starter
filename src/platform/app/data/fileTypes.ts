@@ -25,5 +25,5 @@ export const fileTypeOf = (file: string) => matchFileType(FILE_TYPES, file);
 
 // The types you can make a new file of: those with a template, in the "+" menu.
 export const creatableTypes = Object.entries(FILE_TYPES)
-  .filter(([id, spec]) => spec.inPrototype !== false && spec.template && fileTypeModules[id])
+  .filter(([id, spec]) => spec.inPrototype === true && spec.template && fileTypeModules[id])
   .map(([id, spec]) => ({ id, label: spec.label, extension: spec.extensions[0], icon: fileTypeModules[id].icon }));

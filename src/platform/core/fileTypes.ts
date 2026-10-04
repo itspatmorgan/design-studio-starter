@@ -16,19 +16,18 @@ export type FileTypeSpec = {
   // The syntax the Source view highlights (src/platform/app/source/ArtifactSource.tsx). Leave it
   // out for a type with no source to show.
   language?: 'tsx' | 'markdown' | 'json' | 'mermaid' | 'text';
-  // True if the type shows itself live where another artifact includes it (on a canvas), and false or
-  // absent for a card. Its open.tsx provides the Embed; this is for code that can't load that
+  // True if the type shows itself live where another artifact includes it (on a canvas), and false for a card. Its open.tsx provides the Embed; this is for code that can't load that
   // (the command line), to size things.
-  preview?: boolean;
+  preview: boolean;
   // True if the type opens in the system content (src/platform/), where every other file opens as plain
   // text instead of as its own type. (A script in a skill's folder is text there, not a view.)
-  inSystemContent?: boolean;
+  inSystemContent: boolean;
   // False for a type owned by a shared section, such as system content Markdown.
-  // Absent means the type can open files in prototypes.
-  inPrototype?: boolean;
+  // Declare true to permit files in prototypes, false to exclude them.
+  inPrototype: boolean;
   // True for the one type that opens any file no other type claims, where the system content allows it.
   // It has no extensions of its own, and prototypes never use it: their other files stay plain.
-  fallback?: boolean;
+  fallback: boolean;
   // Set if a file of this type can be shown in lofi: rough, grayscale, with handwritten type, over the
   // same components. A file says so itself (a view starts with /** @lofi */), so it stays with the file
   // when it is renamed or moved. `isLofi` reads that from the file's text, and `setLofi` returns the text
@@ -46,12 +45,17 @@ export type FileTypeSpec = {
   check?: (file: { source: string; frontmatter: Record<string, unknown> | null; prototype?: { contributor: string; id: string } }) => string[];
 };
 
-export const defineFileType = (spec: FileTypeSpec) => spec;
+export const defineFileType = (spec: FileTypeSpec) => {
+  for (const key of ['preview', 'inSystemContent', 'inPrototype', 'fallback'] as const) {
+    if (typeof spec[key] !== 'boolean') throw new Error(`File type ${spec.label}: declare ${key} as true or false.`);
+  }
+  return spec;
+};
 
 // The id of the type that owns a file, by its extension, or null for a plain file.
 export function matchFileType(specs: Record<string, FileTypeSpec>, file: string): string | null {
   for (const [id, { extensions, inPrototype }] of Object.entries(specs)) {
-    if (inPrototype !== false && extensions.some((ext) => file.endsWith(ext))) return id;
+    if (inPrototype === true && extensions.some((ext) => file.endsWith(ext))) return id;
   }
   return null;
 }
@@ -74,7 +78,7 @@ export function assertUniqueExtensions(specs: Record<string, FileTypeSpec>) {
   if (fallbacks.length > 1) throw new Error(`File types ${fallbacks.map((id) => `"${id}"`).join(' and ')} are both the fallback. Only one type can open the files no other type claims.`);
   for (const [id, spec] of Object.entries(specs)) {
     for (const scope of ['prototype', 'systemContent'] as const) {
-      if (scope === 'prototype' ? spec.inPrototype === false : !spec.inSystemContent) continue;
+      if (scope === 'prototype' ? spec.inPrototype !== true : !spec.inSystemContent) continue;
       for (const ext of spec.extensions) {
         const key = `${scope}:${ext}`;
         const other = owners.get(key);
@@ -99,6 +103,10 @@ const titleOf = (name: string) => name.replace(/\.md$/, '').split(/[-_]/).filter
 
 export const markdownFileType: FileTypeSpec = {
   label: 'Document',
+  preview: false,
+  inPrototype: true,
+  inSystemContent: false,
+  fallback: false,
   extensions: ['.md'],
   language: 'markdown',
 

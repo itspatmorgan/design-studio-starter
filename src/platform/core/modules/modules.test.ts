@@ -3,11 +3,11 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { compatible, listProblems, moduleProblems, sectionKeys, type ModuleSpec } from './index.ts';
 
-const examples: ModuleSpec = { id: 'examples', label: 'Examples', version: '0.1.0', section: { key: 'examples', folder: 'src/examples' } };
+const examples: ModuleSpec = { optional: false, lib: false, id: 'examples', label: 'Examples', version: '0.1.0', section: { key: 'examples', folder: 'src/examples' } };
 
 test('a well formed module has no problems', () => {
   assert.deepEqual(moduleProblems(examples, 'examples'), []);
-  assert.deepEqual(moduleProblems({ id: 'x', label: 'X', version: '1.2.3' }, 'x'), []);
+  assert.deepEqual(moduleProblems({ optional: false, lib: false, id: 'x', label: 'X', version: '1.2.3' }, 'x'), []);
 });
 
 test('the id has to be the folder name', () => {
@@ -31,7 +31,7 @@ test('anything that is not an object is not a module', () => {
 });
 
 test('two modules can not share a section key or folder', () => {
-  const other: ModuleSpec = { id: 'other', label: 'Other', version: '0.1.0', section: { key: 'examples', folder: 'src/examples' } };
+  const other: ModuleSpec = { optional: false, lib: false, id: 'other', label: 'Other', version: '0.1.0', section: { key: 'examples', folder: 'src/examples' } };
   const problems = listProblems([examples, other]);
   assert.equal(problems.length, 2);
   assert.match(problems[0], /both use the section key "examples"/);
@@ -39,7 +39,7 @@ test('two modules can not share a section key or folder', () => {
 });
 
 test('section keys skip modules with no section', () => {
-  assert.deepEqual(sectionKeys([examples, { id: 'x', label: 'X', version: '0.1.0' }]), ['examples']);
+  assert.deepEqual(sectionKeys([examples, { optional: false, lib: false, id: 'x', label: 'X', version: '0.1.0' }]), ['examples']);
 });
 
 test('a policy must be one a section can have', () => {
@@ -67,4 +67,12 @@ test('a module needing a newer platform than this one is not compatible', () => 
   assert.equal(compatible({ requires: '0.2.0' }, '0.1.9'), false);
   assert.equal(compatible({ requires: '1.0.0' }, '0.9.9'), false);
   assert.equal(compatible({ requires: '0.10.0' }, '0.9.0'), false);
+});
+
+test('module capability decisions require explicit booleans', () => {
+  for (const field of ['optional', 'lib']) {
+    const declaration = { ...examples };
+    delete (declaration as Record<string, unknown>)[field];
+    assert.ok(moduleProblems(declaration, 'examples').some((problem) => problem.includes(field)));
+  }
 });

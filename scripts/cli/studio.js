@@ -22,7 +22,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compatible, listProblems, moduleProblems, PLATFORM_VERSION } from '../../src/platform/core/modules/index.ts';
 import {
-  agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, readDeclaration, setDefaultSystem,
+  agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, readDeclaration,
 } from '../../src/platform/core/modules/pack.ts';
 import { systemProblems } from '../../src/platform/modules/systems/spec.ts';
 import { MODULES, ENABLED_MODULES, CONFIG } from '../lib/modules.js';
@@ -70,17 +70,6 @@ function removeEmptyParents(abs) {
   }
 }
 
-// Adding a second design system must not change which one existing prototypes use (they name none, so they get the
-// default): write the current default into studio.config.ts first. Returns nothing; throws if it can't.
-function pinDefaultSystem(remember) {
-  if (SYSTEM_IDS.length < 1 || CONFIG.defaultSystem) return;
-  const file = rel('studio.config.ts');
-  const next = setDefaultSystem(fs.readFileSync(file, 'utf8'), DEFAULT_SYSTEM);
-  if (next === null) throw new Error(`I couldn't set defaultSystem in studio.config.ts. Add defaultSystem: '${DEFAULT_SYSTEM}', to it by hand first, so existing prototypes keep their system.`);
-  remember(file);
-  fs.writeFileSync(file, next);
-}
-
 // ---- AGENTS.md
 function syncAgents() {
   const file = rel('AGENTS.md');
@@ -100,14 +89,14 @@ function list() {
   say('Modules');
   for (const [id, m] of Object.entries(MODULES)) {
     if (!m || typeof m !== 'object') continue;
-    const state = CONFIG.modules?.[id] === false ? 'off' : !compatible(m) ? `off (needs platform ${m.requires})` : 'on';
+    const state = CONFIG.modules?.[id] !== true ? (CONFIG.modules?.[id] === false ? 'off' : 'unregistered') : !compatible(m) ? `off (needs platform ${m.requires})` : 'on';
     const where = lock.modules[id] ? `added from ${lock.modules[id].source}` : 'came with the kit';
     say(`  ${id.padEnd(12)} ${state.padEnd(8)} ${m.optional ? 'can be turned off' : 'required         '}  ${where}`);
     if (m.description) say(`               ${m.description}`);
   }
   say();
-  say('Design systems');
-  for (const id of SYSTEM_IDS) {
+  say('Systems');
+  for (const id of CONFIG.systems ?? []) {
     const where = lock.systems[id] ? `added from ${lock.systems[id].source}` : 'came with the kit';
     say(`  ${id.padEnd(12)} ${id === DEFAULT_SYSTEM ? 'default ' : '        '} ${where}`);
   }
@@ -126,6 +115,24 @@ function setEnabled(id, on) {
   fs.writeFileSync(file, next);
   syncInFreshProcess();
   say(`${spec.label} is ${on ? 'on' : 'off'}. ${on ? '' : 'Its files are still there; turn it on again any time. '}Restart the dev server for it to take effect.`);
+}
+
+// Installation and registration are one operation. Rollback restores both.
+function registerCapability(kind, id, present, remember = () => {}) {
+  const file = rel('studio.config.ts');
+  const text = fs.readFileSync(file, 'utf8');
+  let next;
+  if (kind === 'module') next = editModulesFlag(text, id, present ? true : null);
+  else {
+    const declaration = readDeclaration(text);
+    if ('error' in declaration || !Array.isArray(declaration.value.systems)) throw new Error('Declare systems as an explicit array in studio.config.ts.');
+    const systems = declaration.value.systems.filter((value) => value !== id);
+    if (present) systems.push(id);
+    next = editStudioConfig(text, { systems });
+  }
+  if (next === null) throw new Error('Declare modules as explicit true/false entries in studio.config.ts.');
+  remember(file);
+  fs.writeFileSync(file, next);
 }
 
 async function add() {
@@ -190,13 +197,13 @@ async function add() {
     }
     if (deps.length) say(`It needs npm packages: ${deps.map(([n, v]) => `${n}@${v}${needed.some(([x]) => x === n) ? '' : ' (already installed)'}`).join(', ')}. ${needed.length ? 'They are installed only if you say yes, with install scripts off.' : ''}`);
     if (plan.skipped.length) say(`Left behind: ${plan.skipped.length} hidden or dependency file(s).`);
+    say(`Registration: studio.config.ts ${kind === 'module' ? `modules.${id}: true` : `systems includes ${id}`}.`);
     say('Everything it adds is code that will run in your app and your dev server, so read it before you say yes.');
     if (names.includes('check.ts')) say('With --yes, its check.ts runs on your computer during installation, after its packages are installed.');
     if (problems.length) { say(); for (const p of problems) console.error(`Can't add it: ${p}`); process.exit(1); }
     if (!flags.yes) { say(); say(`Nothing was changed. To add it, run the same command with --yes.`); return; }
 
     // Add it.
-    if (kind === 'system') pinDefaultSystem(remember);
     for (const m of plan.moves) {
       const to = rel(m.to);
       if (fs.existsSync(to)) continue; // content that was already there stays
@@ -217,6 +224,7 @@ async function add() {
       say(`Installing ${needed.map(([n]) => n).join(', ')} ...`);
       run('pnpm', ['add', '--ignore-scripts', ...needed.map(([n, v]) => `${n}@${v}`)]);
     }
+    registerCapability(kind, id, true, remember);
     const problem = checkInFreshProcess();
     if (problem) throw new Error(`It didn't pass the checks:\n${problem}`);
     syncInFreshProcess();
@@ -304,12 +312,7 @@ function remove() {
   const lock = readLock();
   delete lock[isModule ? 'modules' : 'systems'][id];
   writeLock(lock);
-  if (isModule) {
-    const file = rel('studio.config.ts');
-    const text = fs.readFileSync(file, 'utf8');
-    const next = editModulesFlag(text, id, true);
-    if (next && next !== text) fs.writeFileSync(file, next);
-  }
+  registerCapability(isModule ? 'module' : 'system', id, false);
   syncInFreshProcess();
   say(`Removed ${id}. Restart the dev server.`);
 }
@@ -343,7 +346,6 @@ function create(kind) {
   const written = [];
   const backups = new Map();
   try {
-    if (kind === 'system') pinDefaultSystem((file) => backups.set(file, fs.readFileSync(file)));
     for (const m of plan.moves) {
       const to = rel(m.to);
       if (fs.existsSync(to)) throw new Error(`${m.to} already exists.`);
@@ -351,6 +353,7 @@ function create(kind) {
       fs.writeFileSync(to, fill(fs.readFileSync(path.join(template, sourceOf.get(m.from)), 'utf8')));
       written.push(to);
     }
+    registerCapability(kind, id, true, (file) => backups.set(file, fs.readFileSync(file)));
     const problem = checkInFreshProcess();
     if (problem) throw new Error(problem);
   } catch (e) {
@@ -399,10 +402,10 @@ function configure() {
 function status() {
   const systemContent = ['principles', 'personas'].map((name) => `src/systems/${DEFAULT_SYSTEM}/context/${name}.md`);
   const report = {
-    config: { name: CONFIG.name, usage: CONFIG.usage ?? 'team', defaultSystem: DEFAULT_SYSTEM },
+    config: { name: CONFIG.name, usage: CONFIG.usage, defaultSystem: DEFAULT_SYSTEM },
     contributor: resolveContributor(),
     modules: { enabled: ENABLED_MODULES.map((module) => module.id), disabled: Object.keys(MODULES).filter((id) => !ENABLED_MODULES.some((module) => module.id === id)) },
-    systems: SYSTEM_IDS,
+    systems: CONFIG.systems,
     systemContentPlaceholders: systemContent.filter((file) => fs.existsSync(rel(file)) && fs.readFileSync(rel(file), 'utf8').includes('**Placeholder.**')),
     problems: configProblems(CONFIG, Object.values(MODULES), SYSTEM_IDS),
   };

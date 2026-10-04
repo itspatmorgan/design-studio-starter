@@ -1,7 +1,7 @@
 // Adding a module from a source (pack.ts). Run with `pnpm test`.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, plainPath, readDeclaration, setDefaultSystem } from './pack.ts';
+import { agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, plainPath, readDeclaration } from './pack.ts';
 
 test('a source is a folder, a git address, or an https tarball', () => {
   assert.deepEqual(parseSource('../my-module'), { kind: 'path', path: '../my-module' });
@@ -87,7 +87,8 @@ test('turning a module off and on edits the one list in studio.config.ts', () =>
   const off = editModulesFlag(config, 'documentation', false)!;
   assert.match(off, /modules: \{ documentation: false \},/);
   assert.match(editModulesFlag(off, 'examples', false)!, /modules: \{ documentation: false, examples: false \},/);
-  assert.equal(editModulesFlag(off, 'documentation', true), config);
+  assert.match(editModulesFlag(off, 'documentation', true)!, /documentation: true/);
+  assert.equal(editModulesFlag(off, 'documentation', null), config);
   assert.equal(editModulesFlag('export default {}', 'documentation', false), null);
   assert.equal(editModulesFlag("modules: { documentation: maybe },", 'documentation', false), null);
 });
@@ -144,14 +145,4 @@ test('a declaration that needs code is refused, never run', () => {
 
 test('a comment marker inside text is text', () => {
   assert.deepEqual(readDeclaration("export default { label: 'See https://x.y // not a comment', note: \"a /* b */ c\" };"), { value: { label: 'See https://x.y // not a comment', note: 'a /* b */ c' } });
-});
-
-test('the default system is pinned in studio.config.ts without disturbing anything else', () => {
-  const plain = "export default {\n  name: 'X',\n  modules: {},\n} satisfies StudioConfig;\n";
-  const pinned = setDefaultSystem(plain, 'product')!;
-  assert.equal(pinned, "export default {\n  name: 'X',\n  defaultSystem: 'product',\n  modules: {},\n} satisfies StudioConfig;\n");
-  assert.equal(setDefaultSystem(pinned, 'brand'), pinned.replace("'product'", "'brand'"));
-  const commented = "  name: 'X',\n  modules: {},\n  // defaultSystem: 'product',   // the design system a prototype uses\n";
-  assert.match(setDefaultSystem(commented, 'brand')!, /\n  defaultSystem: 'brand',\n/);
-  assert.equal(setDefaultSystem('export default {}', 'x'), null);
 });

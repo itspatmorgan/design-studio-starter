@@ -1,6 +1,7 @@
 import type { ModuleSpec } from '../../core/modules/index.ts';
 
 export default {
+  lib: false,
   id: 'diagrams',
   label: 'Diagrams',
   version: '0.1.0',

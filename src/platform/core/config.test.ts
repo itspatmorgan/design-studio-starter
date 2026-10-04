@@ -1,60 +1,49 @@
-// What studio.config.ts may say (config.ts). Run with `pnpm test`.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import viewModule from '../modules/view/module.ts';
-import textModule from '../modules/text/module.ts';
-import { configProblems, isEnabled } from './config.ts';
+import { configProblems, isEnabled, type StudioConfig } from './config.ts';
 
-const modules = [{ id: 'documentation', optional: true }, { id: 'prototypes' }];
+const modules = [{ id: 'documentation', optional: true }, { id: 'prototypes', optional: false }];
+const config: StudioConfig = { name: 'Studio', usage: 'team', modules: { documentation: true, prototypes: true }, systems: ['platform', 'product'], defaultSystem: 'product' };
+const problems = (changes: Record<string, unknown>) => configProblems({ ...config, ...changes }, modules, ['product']).join('\n');
 
-test('a name alone is a complete config', () => {
-  assert.deepEqual(configProblems({ name: 'Acme Studio' }, modules), []);
-  assert.deepEqual(configProblems({ name: 'Acme Studio', modules: {} }, modules), []);
+test('an explicit configuration is complete', () => {
+  assert.deepEqual(configProblems(config, modules, ['product']), []);
+  assert.deepEqual(configProblems({ ...config, usage: 'personal', modules: { ...config.modules, documentation: false } }, modules, ['product']), []);
 });
 
-test('a tagline is one short line of text', () => {
-  assert.deepEqual(configProblems({ name: 'A', tagline: 'Prototypes for our team.' }, modules), []);
-  assert.match(configProblems({ name: 'A', tagline: 42 as unknown as string }, modules)[0], /tagline/);
-  assert.match(configProblems({ name: 'A', tagline: 'x'.repeat(141) }, modules)[0], /tagline/);
+test('identity and optional tagline are validated', () => {
+  assert.match(problems({ name: ' ' }), /add a name/);
+  assert.match(problems({ usage: undefined }), /usage should/);
+  assert.match(problems({ usage: 'other' }), /usage should/);
+  assert.match(problems({ tagline: 'x'.repeat(141) }), /tagline/);
+  assert.match(problems({ tagline: 42 }), /tagline/);
+  assert.deepEqual(configProblems({ ...config, tagline: 'Our work' }, modules, ['product']), []);
+  assert.match(configProblems(undefined, modules)[0], /must export/);
 });
 
-test('the name is required', () => {
-  assert.match(configProblems({ name: ' ' }, modules)[0], /add a name/);
-  assert.match(configProblems({}, modules)[0], /add a name/);
-  assert.match(configProblems(undefined, modules)[0], /must export a config/);
+test('every installed module needs an explicit boolean', () => {
+  assert.match(problems({ modules: undefined }), /declare every installed module/);
+  assert.match(problems({ modules: { prototypes: true } }), /declare modules.documentation/);
+  assert.match(problems({ modules: { ...config.modules, nope: true } }), /no module has that id/);
+  assert.match(problems({ modules: { ...config.modules, documentation: 'yes' } }), /true or false/);
+  assert.match(problems({ modules: [] }), /should list module ids/);
+  assert.match(problems({ modules: { ...config.modules, prototypes: false } }), /can't be turned off/);
 });
 
-test('a module that can be turned off may be', () => {
-  assert.deepEqual(configProblems({ name: 'A', modules: { documentation: false } }, modules), []);
-  assert.deepEqual(configProblems({ name: 'A', modules: { documentation: true, prototypes: true } }, modules), []);
+test('omission never activates a module', () => {
+  assert.equal(isEnabled({}, 'documentation'), false);
+  assert.equal(isEnabled({ modules: {} }, 'documentation'), false);
+  assert.equal(isEnabled(config, 'documentation'), true);
+  assert.equal(isEnabled({ modules: { documentation: false } }, 'documentation'), false);
 });
 
-test('a module other parts still use can not be turned off yet', () => {
-  assert.match(configProblems({ name: 'A', modules: { prototypes: false } }, modules)[0], /prototypes module can't be turned off yet/);
-});
-
-test('an unknown module or a value that is not true or false is named', () => {
-  assert.match(configProblems({ name: 'A', modules: { nope: false } }, modules)[0], /"nope".*Installed: documentation, prototypes/);
-  assert.match(configProblems({ name: 'A', modules: { documentation: 'no' } }, modules)[0], /modules\.documentation should be true or false/);
-  assert.match(configProblems({ name: 'A', modules: ['documentation'] }, modules)[0], /should list module ids/);
-});
-
-test('every module is on unless the config turns it off', () => {
-  assert.equal(isEnabled({ name: 'A' }, 'documentation'), true);
-  assert.equal(isEnabled({ name: 'A', modules: { documentation: false } }, 'documentation'), false);
-  assert.equal(isEnabled({ name: 'A', modules: { documentation: false } }, 'prototypes'), true);
-});
-
-test('personal and team guidance are supported without changing module permissions', () => {
-  for (const usage of ['personal', 'team'] as const) {
-    assert.deepEqual(configProblems({ name: 'A', usage }, modules), []);
-    assert.equal(isEnabled({ name: 'A', usage }, 'documentation'), true);
-  }
-  assert.match(configProblems({ name: 'A', usage: 'other' } as unknown, modules)[0], /usage should be personal or team/);
-});
-
-test('Views and Text are required studio capabilities', () => {
-  for (const module of [viewModule, textModule]) {
-    assert.ok(configProblems({ name: 'Studio', modules: { [module.id]: false } }, [module]).length);
-  }
+test('systems and default system are registered explicitly', () => {
+  assert.match(problems({ systems: undefined }), /explicitly list/);
+  assert.match(problems({ systems: ['product'] }), /must include platform/);
+  assert.match(problems({ systems: ['platform'] }), /register installed system "product"/);
+  assert.match(problems({ systems: ['platform', 'product', 'brand'] }), /not installed/);
+  assert.match(problems({ systems: ['platform', 'product', 'product'] }), /unique/);
+  assert.match(problems({ defaultSystem: undefined }), /declare defaultSystem/);
+  assert.match(problems({ defaultSystem: 'platform' }), /no system has that id/);
+  assert.match(problems({ defaultSystem: 'brand' }), /no system has that id/);
 });

@@ -17,9 +17,8 @@ export type ModuleSpec = {
   // The oldest platform version the module works with, like "0.1.0". A module that needs a newer one than
   // this copy has is turned off, and `pnpm check` says why, so an old copy never breaks on a new module.
   requires?: string;
-  // True if studio.config.ts may turn the module off. Leave it out while other parts of the app still
-  // depend on the module, so turning it off can't leave a page broken.
-  optional?: boolean;
+  // Explicitly declare whether studio.config.ts may turn this module off.
+  optional: boolean;
   // The top-level area the module adds: its address in the app (/examples) and, if it keeps content, the folder
   // that content lives in, relative to the repo root. The key can't also be a contributor's folder, since both are addresses.
   // `items` says the folder holds files the app opens as items, so each file type lists them (globs.ts):
@@ -34,8 +33,8 @@ export type ModuleSpec = {
   // (src/prototypes/<person>/<id>/, opening at /prototypes/<person>/<id>), where the others have one folder per id.
   section?: { key: string; folder?: string; items?: 'prototypes'; policy?: 'maintainers' | 'open'; standalone?: boolean; byPerson?: boolean };
   // Prototypes may import the module's lib/index.ts as `@module/<id>`, the one way a prototype can reach into a
-  // module (the import guard allows exactly that). Removing the module while a prototype imports it is refused.
-  lib?: true;
+  // module when lib is true (the import guard allows exactly that). Removing an imported module is refused.
+  lib: boolean;
   // system content files the module brings (rules, skills), as paths inside src/systems/platform/ ("rules/examples.md"; a trailing
   // slash is a whole folder, like a skill's). `when` finishes the sentence "When the person ..." in AGENTS.md,
   // which routes agents to the rule; pnpm studio sync writes those lines for the modules that are on.
@@ -79,7 +78,8 @@ export function moduleProblems(spec: unknown, folder: string): string[] {
   if (typeof m.version !== 'string' || !VERSION.test(m.version)) problems.push(`${where}: version should look like 0.1.0.`);
   if (m.requires !== undefined && (typeof m.requires !== 'string' || !VERSION.test(m.requires))) problems.push(`${where}: requires should look like 0.1.0, the oldest platform version it works with.`);
   if (m.description !== undefined && (typeof m.description !== 'string' || m.description.length > 200)) problems.push(`${where}: description should be one short sentence.`);
-  if (m.lib !== undefined && m.lib !== true) problems.push(`${where}: lib is true, or left out.`);
+  if (typeof m.lib !== 'boolean') problems.push(`${where}: declare lib as true or false.`);
+  if (typeof m.optional !== 'boolean') problems.push(`${where}: declare optional as true or false.`);
   if (m.instructions !== undefined) {
     if (!Array.isArray(m.instructions)) problems.push(`${where}: instructions should be a list of { path, when }.`);
     else for (const h of m.instructions) {

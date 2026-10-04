@@ -1,12 +1,21 @@
 // What nearly every team changes. Everything else is code: you own the whole repo.
-// A module you leave out of `modules` is on; { documentation: false } turns the Guide off (its files stay, so
-// turning it back on is one line). `pnpm check` explains anything that's wrong here.
+// Installed capabilities and system registration are explicit. Run `pnpm check` to validate them.
 import type { StudioConfig } from './src/platform/core/config.ts';
 
 export default {
   name: 'Design Studio',
   usage: 'team',
   tagline: 'Prototypes and design systems for our team.',
-  modules: {},
+  modules: {
+    canvas: true,
+    diagrams: true,
+    document: true,
+    documentation: true,
+    prototypes: true,
+    systems: true,
+    text: true,
+    view: true,
+  },
+  systems: ['platform', 'product'],
   defaultSystem: 'product',   // the design system a prototype uses when its meta.json doesn't name one
 } satisfies StudioConfig;

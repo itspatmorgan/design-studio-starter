@@ -28,7 +28,7 @@ export function globsFor(id: string, types: Record<string, FileTypeSpec>, module
 
   // In every section of prototype-shaped folders, helpers (names starting with an underscore) aren't items.
   const extensions = extensionGlob(spec.extensions);
-  for (const root of (spec.inPrototype === false ? [] : itemFolders(modules, 'prototypes').map(rootOf))) {
+  for (const root of (spec.inPrototype !== true ? [] : itemFolders(modules, 'prototypes').map(rootOf))) {
     patterns.push(`${root}/**/${extensions}`, `!${root}/**/_*/**`, `!${root}/**/_*`);
   }
   if (spec.inSystemContent) for (const root of systemContent) patterns.push(`${root}/**/${extensions}`);

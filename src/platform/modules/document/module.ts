@@ -2,6 +2,7 @@ import type { ModuleSpec } from '../../core/modules/index.ts';
 
 // The document file type: a .md file is a written page in a prototype (src/platform/core/fileTypes.md).
 export default {
+  lib: false,
   id: 'document',
   label: 'Documents',
   version: '0.1.0',

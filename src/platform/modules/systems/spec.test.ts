@@ -3,11 +3,11 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { systemProblems, systemColorMode, type SystemSpec } from './spec.ts';
 
-const product: SystemSpec = { label: 'Product', themeClass: 'product-theme', docs: 'warn', origin: 'shadcn' };
+const product: SystemSpec = { role: 'prototype', colorModes: ['light', 'dark'], label: 'Product', themeClass: 'product-theme', docs: 'warn', origin: 'shadcn' };
 
 test('a well formed system has no problems', () => {
   assert.deepEqual(systemProblems(product, 'product'), []);
-  assert.deepEqual(systemProblems({ label: 'Brand', themeClass: 'brand-theme' }, 'brand'), []);
+  assert.deepEqual(systemProblems({ ...product, label: 'Brand', themeClass: 'brand-theme', origin: null }, 'brand'), []);
 });
 
 test('a label and a theme class are required', () => {
@@ -31,8 +31,8 @@ test('anything that is not an object is not a system', () => {
 
 
 test('systems declare supported modes and safely resolve a global mode', () => {
-  assert.equal(systemColorMode(undefined, 'dark'), 'dark');
-  assert.equal(systemColorMode(undefined, 'light'), 'light');
+  assert.equal(systemColorMode(product.colorModes, 'dark'), 'dark');
+  assert.equal(systemColorMode(product.colorModes, 'light'), 'light');
   assert.equal(systemColorMode(['light'], 'dark'), 'light');
   assert.equal(systemColorMode(['dark'], 'light'), 'dark');
   assert.equal(systemColorMode(['light', 'dark'], 'dark'), 'dark');
@@ -46,4 +46,12 @@ test('systems declare supported modes and safely resolve a global mode', () => {
 test('Platform is a declared system role reserved for Studio', () => {
   assert.deepEqual(systemProblems({ ...product, role: 'platform', themeClass: 'platform-theme' }, 'platform'), []);
   assert.match(systemProblems({ ...product, role: 'platform' }, 'product').join(' '), /only the built-in platform/);
+});
+
+test('system policy fields cannot be inferred from omission', () => {
+  for (const field of ['role', 'colorModes', 'docs', 'origin']) {
+    const spec = { ...product };
+    delete (spec as Record<string, unknown>)[field];
+    assert.ok(systemProblems(spec, 'product').some((problem) => problem.includes(field)), field);
+  }
 });

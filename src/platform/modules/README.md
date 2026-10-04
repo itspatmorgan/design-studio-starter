@@ -30,6 +30,8 @@ Prototypes access public libraries through `@module/<id>`. They cannot import pr
 | `lib/index.ts(x)` | Public entry exposed when `lib: true`. |
 | `instructions/` in a pack | Declared agent files installed into `src/systems/platform/`. |
 
+Every module declares `optional` and `lib` as booleans. Omission cannot silently determine removability or expose a public library.
+
 A section can declare a content folder, prototype-shaped items, contributor grouping, editing policy, and standalone published views.
 
 Use the TypeScript declaration for exact fields. See the [file-type contract](../core/fileTypes.md) for file capabilities.
@@ -38,7 +40,7 @@ Design systems are content in `src/systems/`, not platform modules. Their [contr
 
 ## Configuration and commands
 
-`studio.config.ts` holds identity, personal or team use, enabled modules, and the default system. Other customization happens in code.
+`studio.config.ts` holds identity, personal or team use, enabled modules, and the default system. Each installed module has an explicit true/false entry, and each installed system appears in `systems`. Omitted declarations fail validation. Other customization happens in code.
 
 ```sh
 pnpm studio list
@@ -54,7 +56,7 @@ pnpm check
 
 Add, remove, and create commands preview changes. Applying them requires `--yes`. Use CLI help for source formats and optional flags.
 
-Studio commands manage config module flags, `studio.lock.json`, and module-owned routing in `AGENTS.md`. The [module rule](../../systems/platform/rules/modules.md) governs agent execution.
+Studio commands register and unregister capabilities, manage config module flags, `studio.lock.json`, and module-owned routing in `AGENTS.md`. The [module rule](../../systems/platform/rules/modules.md) governs agent execution.
 
 Disabling retains files. Removal deletes the module and its declared platform instruction files. External content remains unless removal includes `--content`.
 

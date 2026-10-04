@@ -59,7 +59,9 @@ test('file references resolve nested files and remain within the document protot
 test('file previews respect surface restrictions to bound canvas nesting', async () => {
   const { embedFor } = await import('../../src/platform/app/data/fileTypeModule.ts');
   const Embed = () => null;
-  assert.equal(embedFor({ Embed }, 'canvas'), Embed);
+  assert.equal(embedFor({ Embed }, 'document'), undefined);
+  assert.equal(embedFor({ Embed, embedSurfaces: [] }, 'canvas'), undefined);
+  assert.equal(embedFor({ Embed, embedSurfaces: ['document', 'canvas'] }, 'canvas'), Embed);
   assert.equal(embedFor({ Embed, embedSurfaces: ['document'] }, 'document'), Embed);
   assert.equal(embedFor({ Embed, embedSurfaces: ['document'] }, 'canvas'), undefined);
   assert.equal(embedFor(undefined, 'document'), undefined);

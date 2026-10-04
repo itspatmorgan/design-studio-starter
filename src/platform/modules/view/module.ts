@@ -2,6 +2,8 @@ import type { ModuleSpec } from '../../core/modules/index.ts';
 
 // The view file type: a .tsx or .jsx file is a React page in a prototype (src/platform/core/fileTypes.md).
 export default {
+  optional: false,
+  lib: false,
   id: 'view',
   label: 'Views',
   version: '0.1.0',

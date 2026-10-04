@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { applySetupChanges, editStudioConfig, pinImplicitSystems } from './studio-setup.js';
+import { readDeclaration } from '../../src/platform/core/modules/pack.ts';
 
 test('configuration edits preserve unrelated customization and validate syntax', () => {
   const original = 'export default { name: "Old", modules: { documentation: false }, /* custom */ extra: 7 } satisfies StudioConfig;';
@@ -36,8 +37,31 @@ test('local personal setup resumes, then a second clone joins a team without cha
       fs.mkdirSync(path.join(dir, folder), { recursive: true });
     }
     fs.cpSync(path.join(root, 'src/systems/platform'), path.join(dir, 'src/systems/platform'), { recursive: true });
-    fs.writeFileSync(path.join(dir, 'studio.config.ts'), `import type { StudioConfig } from './src/platform/core/config.ts';\nexport default { name: 'Fixture Studio', usage: 'team', tagline: 'Fixture', modules: ${JSON.stringify(hasDocumentation ? { documentation: false } : {})}, defaultSystem: 'product' } satisfies StudioConfig;\n`);
+    fs.writeFileSync(path.join(dir, 'studio.config.ts'), `import type { StudioConfig } from './src/platform/core/config.ts';\nexport default { name: 'Fixture Studio', usage: 'team', tagline: 'Fixture', modules: ${JSON.stringify(Object.fromEntries(fs.readdirSync(path.join(dir, 'src/platform/modules')).filter((id) => fs.existsSync(path.join(dir, 'src/platform/modules', id, 'module.ts'))).map((id) => [id, id !== 'documentation'])))}, systems: ['platform'], defaultSystem: 'product' } satisfies StudioConfig;\n`);
     run(dir, 'scripts/cli/studio.js', 'create-system', 'product', '--label', 'Product', '--yes');
+    const declared = () => readDeclaration(fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8')).value;
+    assert.deepEqual(declared().systems, ['platform', 'product']);
+    run(dir, 'scripts/cli/studio.js', 'create-module', 'explicit-fixture', '--yes');
+    assert.equal(declared().modules['explicit-fixture'], true);
+    run(dir, 'scripts/cli/studio.js', 'disable', 'explicit-fixture');
+    assert.equal(declared().modules['explicit-fixture'], false);
+    run(dir, 'scripts/cli/studio.js', 'enable', 'explicit-fixture');
+    assert.equal(declared().modules['explicit-fixture'], true);
+    run(dir, 'scripts/cli/studio.js', 'remove', 'explicit-fixture', '--yes');
+    assert.equal(Object.hasOwn(declared().modules, 'explicit-fixture'), false);
+    run(dir, 'scripts/cli/studio.js', 'create-system', 'brand', '--yes');
+    assert.ok(declared().systems.includes('brand'));
+    run(dir, 'scripts/cli/studio.js', 'remove', 'brand', '--yes');
+    assert.deepEqual(declared().systems, ['platform', 'product']);
+    const beforeFailedInstall = fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8');
+    const pack = path.join(dir, 'failing-pack');
+    fs.mkdirSync(pack);
+    fs.writeFileSync(path.join(pack, 'module.ts'), "export default { id: 'failing-fixture', label: 'Failing fixture', version: '0.1.0', optional: true, lib: false };\n");
+    fs.writeFileSync(path.join(pack, 'check.ts'), "export default () => ['Deliberate fixture failure'];\n");
+    assert.throws(() => run(dir, 'scripts/cli/studio.js', 'add', pack, '--yes'), /Command failed/);
+    assert.equal(fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8'), beforeFailedInstall);
+    assert.equal(fs.existsSync(path.join(dir, 'src/platform/modules/failing-fixture')), false);
+    fs.rmSync(pack, { recursive: true });
     git(dir, 'init', '-q');
     git(dir, 'config', 'user.name', 'Patrick Morgan'); git(dir, 'config', 'user.email', 'legacy@example.test');
     assert.equal(run(dir, 'scripts/cli/resolve-contributor.js').trim(), 'patrick');

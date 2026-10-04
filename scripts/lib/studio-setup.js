@@ -14,14 +14,17 @@ export function editStudioConfig(text, changes) {
   const names = object.properties.map((property) => property.name?.getText(source));
   if (new Set(names).size !== names.length) throw new Error('Remove duplicate configuration properties before configuring the studio.');
   const remaining = new Map(Object.entries(changes));
+  const literal = (value) => Array.isArray(value)
+    ? ts.factory.createArrayLiteralExpression(value.map((id) => ts.factory.createStringLiteral(id)))
+    : ts.factory.createStringLiteral(value);
   const properties = object.properties.map((property) => {
     const key = property.name && (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)) ? property.name.text : null;
     if (!remaining.has(key)) return property;
     if (!ts.isPropertyAssignment(property)) throw new Error(`Configure ${key} as a plain property first.`);
     const value = remaining.get(key); remaining.delete(key);
-    return ts.factory.updatePropertyAssignment(property, property.name, ts.factory.createStringLiteral(value));
+    return ts.factory.updatePropertyAssignment(property, property.name, literal(value));
   });
-  for (const [key, value] of remaining) properties.push(ts.factory.createPropertyAssignment(key, ts.factory.createStringLiteral(value)));
+  for (const [key, value] of remaining) properties.push(ts.factory.createPropertyAssignment(key, literal(value)));
   const updated = ts.factory.updateObjectLiteralExpression(object, properties);
   const result = ts.transform(source, [(context) => {
     const visit = (node) => node === object ? updated : ts.visitEachChild(node, visit, context);

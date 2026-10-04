@@ -1,21 +1,20 @@
-// studio.config.ts: the few things nearly every team changes, and nothing else. Everything else is code,
-// because a team owns the whole repo. A module's own defaults apply to anything left out, so a fresh
-// config is nearly empty. Has no imports, so Node scripts and the app can both load it.
+// Explicit studio identity, installed module states, system registration, and the default system.
+// Node scripts and the app read the same declaration.
 
 export type StudioConfig = {
   // What the app calls itself: the rail's tooltip and every page's title.
   name: string;
-  // Onboarding guidance only; contributor ownership is identical in both modes. Left out, team.
-  usage?: 'personal' | 'team';
+  // Explicit onboarding mode; contributor ownership is identical in both modes.
+  usage: 'personal' | 'team';
   // One line on the front page of the deployed site, under the name, that tells a visitor what this is: "Our team's
   // prototypes and design systems." Left out, there's no line.
   tagline?: string;
-  // Modules to turn off, by id: { documentation: false }. A module left out is on. Turning one off keeps its
-  // files, so turning it on again is one line; to remove it for good, delete its folder.
-  modules?: Record<string, boolean>;
-  // The design system a prototype uses when its meta.json doesn't name one: an id from src/systems/. Left out,
-  // it's the first by name.
-  defaultSystem?: string;
+  // Every installed module is declared true or false. Disabling retains its files.
+  modules: Record<string, boolean>;
+  // Every installed system, including Platform. A folder alone does not register a system.
+  systems: readonly string[];
+  // Required registered prototype system used when a prototype has no local system choice.
+  defaultSystem: string;
 };
 
 // What is wrong with a config, each as a sentence that says what to fix. `modules` is the installed
@@ -26,12 +25,14 @@ export function configProblems(config: unknown, modules: readonly { id: string; 
   const c = config as Partial<StudioConfig>;
   const problems: string[] = [];
   if (typeof c.name !== 'string' || !c.name.trim()) problems.push(`${where}: add a name, what the app calls itself.`);
-  if (c.usage !== undefined && !['personal', 'team'].includes(c.usage)) problems.push(`${where}: usage should be personal or team.`);
+  if (!c.usage || !['personal', 'team'].includes(c.usage)) problems.push(`${where}: usage should be personal or team.`);
   if (c.tagline !== undefined && (typeof c.tagline !== 'string' || c.tagline.length > 140)) problems.push(`${where}: tagline should be one short line of text, under 140 characters.`);
-  if (c.defaultSystem !== undefined && systems && !systems.includes(c.defaultSystem)) {
+  if (typeof c.defaultSystem !== 'string' || !c.defaultSystem) problems.push(`${where}: declare defaultSystem explicitly.`);
+  else if (systems && !systems.includes(c.defaultSystem)) {
     problems.push(`${where}: defaultSystem is "${c.defaultSystem}", but no system has that id. Installed: ${systems.join(', ') || 'none'}.`);
   }
-  if (c.modules !== undefined) {
+  if (c.modules === undefined) problems.push(`${where}: declare every installed module as true or false in modules.`);
+  else {
     if (!c.modules || typeof c.modules !== 'object' || Array.isArray(c.modules)) {
       problems.push(`${where}: modules should list module ids with true or false, like { documentation: false }.`);
     } else {
@@ -41,10 +42,21 @@ export function configProblems(config: unknown, modules: readonly { id: string; 
         else if (typeof on !== 'boolean') problems.push(`${where}: modules.${id} should be true or false.`);
         else if (!on && !installed.optional) problems.push(`${where}: the ${id} module can't be turned off yet; other parts of the app still use it.`);
       }
+      for (const module of modules) if (!Object.hasOwn(c.modules, module.id)) problems.push(`${where}: declare modules.${module.id} as true or false.`);
     }
+  }
+  if (!Array.isArray(c.systems) || !c.systems.length || c.systems.some((id) => typeof id !== 'string') || new Set(c.systems).size !== c.systems.length) problems.push(`${where}: systems must explicitly list unique installed system ids, including platform.`);
+  else {
+    if (!c.systems.includes('platform')) problems.push(`${where}: systems must include platform.`);
+    if (systems) {
+      const installed = ['platform', ...systems];
+      for (const id of installed) if (!c.systems.includes(id)) problems.push(`${where}: register installed system "${id}" in systems.`);
+      for (const id of c.systems) if (!installed.includes(id)) problems.push(`${where}: systems lists "${id}", but it is not installed.`);
+    }
+    if (c.defaultSystem && !c.systems.includes(c.defaultSystem)) problems.push(`${where}: defaultSystem must be registered in systems.`);
   }
   return problems;
 }
 
-// Whether a module is on: every module is, unless the config turns it off.
-export const isEnabled = (config: StudioConfig, id: string) => config.modules?.[id] !== false;
+// Activation requires an explicit true; omission cannot grant a capability.
+export const isEnabled = (config: Partial<StudioConfig>, id: string) => config.modules?.[id] === true;

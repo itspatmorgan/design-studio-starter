@@ -23,7 +23,7 @@ Two artifacts cannot share a URL, such as `main.tsx` and `main.md` in one folder
 | --- | --- |
 | `title` | Required display title. |
 | `created` | Optional `YYYY-MM-DD` date. Creation fills it in. |
-| `system` | Installed system ID. If omitted, uses `defaultSystem`, or the first installed system by name. |
+| `system` | Installed system ID. If omitted, uses the required, explicitly configured `defaultSystem`. |
 | `order` | Relative file and folder paths placed first within their folder, in sequence. |
 | `status` | `active` or `archived`. Omission means active. |
 

@@ -115,6 +115,8 @@ test('create and rename preserve addresses, file errors recover, and system remo
 
       fs.mkdirSync('src/systems/z-beta-fixture');
       fs.copyFileSync('src/systems/product/system.ts', 'src/systems/z-beta-fixture/system.ts');
+      const { editStudioConfig } = await load('scripts/lib/studio-setup.js');
+      fs.writeFileSync('studio.config.ts', editStudioConfig(fs.readFileSync('studio.config.ts', 'utf8'), { systems: ['platform', 'product', 'z-beta-fixture'] }));
       const metaPath = path.join(moved, 'meta.json');
       const meta = JSON.parse(fs.readFileSync(metaPath)); meta.system = 'z-beta-fixture';
       fs.writeFileSync(metaPath, JSON.stringify(meta));
