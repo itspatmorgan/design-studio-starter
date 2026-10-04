@@ -164,10 +164,13 @@ function IconButton({ label, onClick, pressed, children }: { label: string; onCl
   );
 }
 
-type FileTreeProps = { proto: Prototype; current: Artifact | undefined; embedded?: boolean };
+type FileTreeProps = { proto: Prototype; current: Artifact | undefined; embedded?: boolean; branch?: { label: string; path: string; active: boolean } };
 
-export default function FileTree({ proto, current, embedded = false }: FileTreeProps) {
+export default function FileTree({ proto, current, embedded = false, branch }: FileTreeProps) {
   const { files, reload } = useFileTree(proto);
+  const treeScope = proto.contributorKey + ":" + proto.id;
+  const [expanded, setExpanded] = useState(branch?.active ?? true);
+  useEffect(() => { if (branch?.active) setExpanded(true); }, [branch?.active]);
   const me = useMe();
   const router = useRouter();
   const navigate = useNavigate();
@@ -252,6 +255,7 @@ export default function FileTree({ proto, current, embedded = false }: FileTreeP
   }
 
   const startCreate = (parent: string, target: NewTarget) => {
+    setExpanded(true);
     if (target === 'skill') { setNewSkillOpen(true); return; }
     if (parent) setOpen(parent, true);
     setEditing({ kind: 'create', parent, target });
@@ -303,7 +307,7 @@ export default function FileTree({ proto, current, embedded = false }: FileTreeP
   useEffect(() => {
     const list = listRef.current;
     if (!editable || !list) return;
-    const dragged = (source: { data: Record<string, unknown> }) => source.data.kind === DRAG_KIND;
+    const dragged = (source: { data: Record<string, unknown> }) => source.data.kind === DRAG_KIND && source.data.scope === treeScope;
     const stops = [
       dropTargetForElements({
         element: list,
@@ -316,7 +320,7 @@ export default function FileTree({ proto, current, embedded = false }: FileTreeP
         canMonitor: ({ source }) => dragged(source),
         onDrop: ({ source, location }) => {
           const target = location.current.dropTargets[0];
-          if (!target) return;
+          if (!target || target.element !== list && target.data.scope !== treeScope) return;
           const path = String(source.data.path);
           if (target.element === list) { dropRef.current(path, null, 'combine'); return; }
           const instruction = extractInstruction(target.data);
@@ -325,7 +329,7 @@ export default function FileTree({ proto, current, embedded = false }: FileTreeP
       }),
     ];
     return () => stops.forEach((stop) => stop());
-  }, [editable, isSystemContent]);
+  }, [editable, isSystemContent, treeScope]);
 
   // Move up or down: the same as dragging, from the keyboard (Option + arrow).
   const moves = (node: FileNode) => {
@@ -439,7 +443,7 @@ export default function FileTree({ proto, current, embedded = false }: FileTreeP
         return (
           <Collapsible key={node.path} open={open} onOpenChange={(o) => setOpen(node.path, o)} className="mt-1.5 first:mt-0">
             <div className="flex flex-col gap-0.5 rounded-md">
-              <DragRow path={node.path} dir canDrag={movable(node)} operationsFor={operationsFor(node, open)}>
+              <DragRow scope={treeScope} path={node.path} dir canDrag={movable(node)} operationsFor={operationsFor(node, open)}>
                 {rowMenu(node.path, node, (
                   <CollapsibleTrigger draggable={false} {...keyProps(node)} style={indent(depth)}
                     className={cn(row, 'text-left font-medium text-sidebar-foreground hover:bg-sidebar-foreground/5')}>
@@ -467,7 +471,7 @@ export default function FileTree({ proto, current, embedded = false }: FileTreeP
       if (item) {
         const active = item === current;
         return (
-          <DragRow key={node.path} path={node.path} dir={false} canDrag={movable(node)} url={artifactUrl(proto, item)} operationsFor={operationsFor(node, false)}>
+          <DragRow scope={treeScope} key={node.path} path={node.path} dir={false} canDrag={movable(node)} url={artifactUrl(proto, item)} operationsFor={operationsFor(node, false)}>
           {rowMenu(node.path, node, (
             <Link
               {...artifactLink(proto, item)}
@@ -486,7 +490,7 @@ export default function FileTree({ proto, current, embedded = false }: FileTreeP
       }
       // Everything else (meta.json, _components/, images) opens in your editor.
       return (
-        <DragRow key={node.path} path={node.path} dir={false} canDrag={movable(node)} operationsFor={operationsFor(node, false)}>
+        <DragRow scope={treeScope} key={node.path} path={node.path} dir={false} canDrag={movable(node)} operationsFor={operationsFor(node, false)}>
           {rowMenu(node.path, node, (
             <button type="button" title="Open in editor" onClick={() => openInEditor(proto, node.path)}
               draggable={false} {...keyProps(node)} style={indent(depth)}
@@ -501,12 +505,12 @@ export default function FileTree({ proto, current, embedded = false }: FileTreeP
   }
 
   return (
-    <nav className={cn("group/tree flex min-h-0 flex-col space-y-1.5 px-2 pt-3 pb-3", !embedded && "flex-1 overflow-y-auto")}>
+    <nav className={cn("group/tree flex min-h-0 flex-col", branch ? "space-y-0.5" : "space-y-1.5 px-2 pt-3 pb-3", !embedded && "flex-1 overflow-y-auto")}>
       <div className="flex h-7 shrink-0 items-center justify-between gap-1 px-2.5 pr-0.5">
-        <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{showAll || proto.contributorKey === SYSTEM_CONTENT_KEY ? 'Files' : 'Artifacts'}</p>
+        {branch ? <button type="button" aria-expanded={expanded} onClick={() => setExpanded((open) => !open)} title={branch.path} className="flex min-w-0 flex-1 items-center gap-1.5 py-1 text-left text-[12px] font-medium"><HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !expanded && '-rotate-90')} /><span className="truncate">{branch.label}</span></button> : <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{showAll || proto.contributorKey === SYSTEM_CONTENT_KEY ? 'Files' : 'Artifacts'}</p>}
         {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
         <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
-          <IconButton label="Filter" pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
+          <IconButton label="Filter" pressed={filterOpen} onClick={() => { setExpanded(true); setFilterOpen((o) => !o); }}>
             <HugeiconsIcon icon={Search01Icon} size={14} />
           </IconButton>
           {dirs.length > 0 && (
@@ -541,6 +545,7 @@ export default function FileTree({ proto, current, embedded = false }: FileTreeP
           );
         })()}
       </div>
+      <div hidden={branch && !expanded} className={branch ? "pl-4" : undefined}>
       {filterOpen && (
         <div className="relative shrink-0 px-1">
           <Input
@@ -567,11 +572,13 @@ export default function FileTree({ proto, current, embedded = false }: FileTreeP
       )}
       {/* The whole list is the drop target for the top level (the end of it). */}
       <div ref={listRef} className={cn('flex min-h-0 flex-1 flex-col gap-0.5 rounded-md', overTop && 'bg-sidebar-foreground/5')}>
+        {branch && !q && !shown.length && !editing && <p className="px-2.5 py-1 text-[12px] text-muted-foreground">Empty folder</p>}
         {q && shown.length === 0 && <p className="px-2.5 py-1 text-[12px] text-muted-foreground">No matching {noun}.</p>}
         {createField('', 0)}
         {rows(shown, 0)}
       </div>
 
+      </div>
       {isSystemContent && <NewSkillDialog open={newSkillOpen} onOpenChange={setNewSkillOpen} onCreate={createSkill} />}
 
       <Dialog open={confirmDelete !== null} onOpenChange={(o) => { if (!o) setConfirmDelete(null); }}>

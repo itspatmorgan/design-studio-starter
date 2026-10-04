@@ -1,13 +1,14 @@
+import type { ReactNode } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@/platform/components/context-menu';
 import { FileActionItems } from '@/platform/app/shell/FileActionItems';
 import { navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
 
-export default function FileNavItem({ href, path, label, nested = false, reveal }: { href: string; path: string; label: string; nested?: boolean; reveal: () => Promise<unknown> }) {
+export default function FileNavItem({ href, path, label, nested = false, icon, reveal }: { href: string; path: string; label: string; nested?: boolean; icon?: ReactNode; reveal: () => Promise<unknown> }) {
   const navigate = useNavigate();
   const local = import.meta.env.DEV;
   return <ContextMenu>
-    <ContextMenuTrigger><Link to={href as never} activeOptions={{ exact: true, includeSearch: false }} style={{ ...navLinkStyle, ...(nested ? { paddingLeft: '1.75rem' } : {}) }} className={navLinkClass}>{label}</Link></ContextMenuTrigger>
+    <ContextMenuTrigger><Link title={path} to={href as never} activeOptions={{ exact: true, includeSearch: false }} style={{ ...navLinkStyle, ...(nested ? { paddingLeft: '1.75rem' } : {}) }} className={navLinkClass}>{icon}{label}</Link></ContextMenuTrigger>
     <ContextMenuContent className="min-w-44">
       <FileActionItems path={path} href={new URL(import.meta.env.BASE_URL.replace(/\/$/, '') + href, window.location.origin).href}
         sourceShortcut={local}

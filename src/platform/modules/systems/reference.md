@@ -81,6 +81,14 @@ Component pages open their Page, Examples, and Component file tabs. Introduction
 
 Only these system source files and discovered component files are accessible through the local Systems source endpoint. Menus provide edit, external editor, reveal, and copying actions without rename or delete.
 
+## Navigation and organization
+
+The selected system has one persistent navigation tree. Introduction opens the system’s introduction source. Foundations, Components, Context, Rules, and Skills are expandable branches. Opening a page expands its owning branch and preserves the other branches’ state.
+
+Foundations identifies its theme source; token pages are generated views of that file. Component items group their documentation, examples, and runtime source without presenting category metadata as filesystem folders.
+
+Context, Rules, and Skills reuse the prototype file tree. Local menus support creation, source editing, rename, move, and recoverable deletion within each section’s rules. Drag operations are scoped to their owning tree: they cannot move a file into another system or another content section. Component and foundation menus retain source inspection actions; structural changes to their code require updating imports and related documentation through the agent or editor.
+
 ## System choice
 
 The Systems navigation uses a grouped selector: Prototype systems contains installed prototype systems, with the configured default first; Platform contains Studio’s own system. Entering /systems opens the default prototype system; switching systems opens its introduction. Explicit system URLs keep their selected system.

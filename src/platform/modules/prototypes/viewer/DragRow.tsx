@@ -10,11 +10,12 @@ import { cn } from '@/lib/utils';
 
 // What a dragged row carries, and what a row under it is.
 export const DRAG_KIND = 'studio-path';
-export type Dragged = { kind: typeof DRAG_KIND; path: string; dir: boolean };
+export type Dragged = { kind: typeof DRAG_KIND; path: string; dir: boolean; scope: string };
 export type Dropped = Operation;
 export type Operations = Partial<Record<Operation, Availability>>;
 
-export function DragRow({ path, dir, canDrag, url, operationsFor, children }: {
+export function DragRow({ scope, path, dir, canDrag, url, operationsFor, children }: {
+  scope: string;
   path: string;
   dir: boolean;
   canDrag: boolean;
@@ -38,7 +39,7 @@ export function DragRow({ path, dir, canDrag, url, operationsFor, children }: {
       draggable({
         element,
         canDrag: () => canDrag,
-        getInitialData: (): Dragged => ({ kind: DRAG_KIND, path, dir }),
+        getInitialData: (): Dragged => ({ kind: DRAG_KIND, scope, path, dir }),
         getInitialDataForExternal: () => latest.current.url
           ? { 'text/plain': latest.current.url, 'text/uri-list': latest.current.url }
           : {},
@@ -47,8 +48,8 @@ export function DragRow({ path, dir, canDrag, url, operationsFor, children }: {
       }),
       dropTargetForElements({
         element,
-        canDrop: ({ source }) => source.data.kind === DRAG_KIND && source.data.path !== path && !String(path).startsWith(`${source.data.path}/`),
-        getData: ({ input, element: el, source }) => attachInstruction({ path, dir }, {
+        canDrop: ({ source }) => source.data.kind === DRAG_KIND && source.data.scope === scope && source.data.path !== path && !String(path).startsWith(`${source.data.path}/`),
+        getData: ({ input, element: el, source }) => attachInstruction({ path, dir, scope }, {
           input,
           element: el,
           operations: latest.current.operationsFor({ path: String(source.data.path), dir: Boolean(source.data.dir) }),
@@ -58,7 +59,7 @@ export function DragRow({ path, dir, canDrag, url, operationsFor, children }: {
         onDrop: () => setOver(null),
       }),
     );
-  }, [path, dir, canDrag]);
+  }, [scope, path, dir, canDrag]);
 
   return (
     <div ref={ref} className={cn('relative rounded-md', dragging && 'opacity-50', over === 'combine' && 'bg-sidebar-foreground/10')}>

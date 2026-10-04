@@ -1,14 +1,13 @@
-import { lazy, Suspense, useEffect, useRef } from 'react';
-import { Link, useNavigate, useParams, useSearch } from '@tanstack/react-router';
-import { ChevronDown } from 'lucide-react';
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
+import { ChevronDown, FileCode, FileText } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/platform/components/collapsible';
 import FileTree from '@/platform/modules/prototypes/viewer/FileTree';
-import { contentId, isSystemContentSection, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
+import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
 import { findArtifact } from '@/platform/app/data/manifest';
-import { navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
 import SystemContentPage from '../content/SystemContentPage';
 import type { Prototype } from '@/platform/app/data/types';
-import { NavGroup, NavHeader, NavList, NavTitle, SectionNav } from '@/platform/app/shell/nav';
+import { NavHeader, NavList, NavTitle, SectionNav } from '@/platform/app/shell/nav';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/platform/components/select';
 import { NotFound } from '@/platform/app/shell/App';
 import { Code, ColorModeSupport, ColorTokens, IconsPage, PageHeader, Prose } from '@/platform/modules/systems/pages/foundations';
@@ -50,7 +49,7 @@ const SYSTEM_CHOICES = [
   ['platform', platform] as const,
 ].map(([value, spec]) => ({ value, label: spec.label }));
 type SystemId = string;
-type NavGroup = { heading?: string; items: [id: string | null, label: string][] };
+
 
 // Map a rendered Systems page to its actual source files.
 function sourcePath(system: string, page: string | undefined, components: SystemComponentDoc[]) {
@@ -74,27 +73,28 @@ const TOKEN_PAGES: { id: string; label: string; group: TokenGroup }[] = [
   { id: 'tokens', label: 'Other tokens', group: 'other' },
 ];
 
-// Sidebar groups, in order. A null id is the system's introduction. A foundations page shows when
-// the theme defines that kind of token, and Icons when the spec has them. Components found in the
-// system's files go under their `category` (front matter), or "Components".
-function navGroups(sys: DesignSystem, components: SystemComponentDoc[], tokens: ThemeToken[]): NavGroup[] {
-  // Typography always shows: even a theme with no fonts of its own has Tailwind's type scale.
-  const foundations = TOKEN_PAGES.filter((p) => p.id === 'typography' || tokens.some((t) => t.group === p.group)).map((p): [string, string] => [p.id, p.label]);
-  if (sys.icons) foundations.push(['icons', 'Icons']);
-  const categories = new Map<string, [string, string][]>();
-  for (const c of components) categories.set(c.category ?? 'Components', [...(categories.get(c.category ?? 'Components') ?? []), [c.slug, c.title]]);
-  return [
-    { items: [[null, 'Introduction']] },
-    { heading: 'Foundations', items: foundations },
-    ...[...categories].map(([heading, items]) => ({ heading, items })),
-  ];
+// A fixed system folder and its readable contents. Page changes preserve branch state.
+function SystemBranch({ label, path, active, children }: { label: string; path: string; active: boolean; children: ReactNode }) {
+  const [open, setOpen] = useState(active);
+  useEffect(() => { if (active) setOpen(true); }, [active]);
+  return <Collapsible open={open} onOpenChange={setOpen}>
+    <CollapsibleTrigger title={path} className="mx-1 flex h-7 w-[calc(100%-8px)] items-center gap-1.5 rounded-md px-2 text-left text-[12px] font-medium hover:bg-sidebar-foreground/5"><ChevronDown className={'size-3.5 shrink-0 text-muted-foreground transition-transform ' + (open ? '' : '-rotate-90')} />{label}</CollapsibleTrigger>
+    <CollapsibleContent className="space-y-0.5 pl-4">{children}</CollapsibleContent>
+  </Collapsible>;
 }
 
 // The Systems navigation, built from the shared pieces (shell/nav/): the section's name, the
 // system selector, then the open system's pages under their headings.
-function SystemNav({ system, components, tokens, page, selected }: { system: SystemId; components: SystemComponentDoc[]; tokens: ThemeToken[]; page?: string; selected?: Prototype }) {
+function SystemNav({ system, components, tokens, page }: { system: SystemId; components: SystemComponentDoc[]; tokens: ThemeToken[]; page?: string }) {
   const navigate = useNavigate();
   const params = useParams({ strict: false }) as { _splat?: string };
+  const manifest = useManifest();
+  const source = system === 'platform' ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
+  const foundations = TOKEN_PAGES.filter((p) => p.id === 'typography' || tokens.some((t) => t.group === p.group));
+  const file = (id: string | undefined, label: string) => {
+    const path = sourcePath(system, id, components);
+    return path && <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={path} label={label} icon={id && components.some((c) => c.slug === id) ? <FileCode className="size-3.5 shrink-0 text-muted-foreground" /> : <FileText className="size-3.5 shrink-0 text-muted-foreground" />} reveal={() => systemSourceRequest('reveal', path)} />;
+  };
   return (
     <SectionNav label="Systems">
       <NavHeader>
@@ -120,20 +120,23 @@ function SystemNav({ system, components, tokens, page, selected }: { system: Sys
             </SelectContent>
           </Select>
         </div>
+        <p className="mt-2 truncate px-2 text-[11px] text-muted-foreground" title={source.dir}>{source.dir.replace(/\/$/, '')}</p>
       </NavHeader>
       <NavList>
-        {navGroups(SYSTEMS[system], components, tokens).map((g, i) => (
-          g.heading ? <Collapsible key={g.heading + String(isSystemContentSection(page ?? ''))} defaultOpen={!isSystemContentSection(page ?? '')}>
-            <CollapsibleTrigger className="group mt-4 flex w-full items-center justify-between px-3 py-2 text-left text-[12px] font-semibold">{g.heading}<ChevronDown className="size-3 transition-transform -rotate-90 group-data-[panel-open]:rotate-0" /></CollapsibleTrigger>
-            <CollapsibleContent>{g.items.map(([id, label]) => <FileNavItem key={id!} href={'/systems/' + system + '/' + id} path={sourcePath(system, id!, components)!} label={label} reveal={() => systemSourceRequest('reveal', sourcePath(system, id!, components)!)} />)}</CollapsibleContent>
-          </Collapsible> : <NavGroup key={i}>{g.items.map(([id, label]) => <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={sourcePath(system, id ?? undefined, components)!} label={label} reveal={() => systemSourceRequest('reveal', sourcePath(system, id ?? undefined, components)!)} />)}</NavGroup>
-        ))}
-        <NavGroup>
-          {Object.entries(SYSTEM_CONTENT_SECTIONS).map(([id, section]) => <div key={id}>
-            <Link to={('/systems/' + system + '/' + id) as never} activeOptions={{ exact: false }} style={navLinkStyle} className={navLinkClass}>{section.title}</Link>
-            {page === id && selected && <FileTree key={selected.id} proto={selected} current={params._splat ? findArtifact(selected, params._splat) : undefined} embedded />}
-          </div>)}
-        </NavGroup>
+        {file(undefined, 'Introduction')}
+        <SystemBranch label="Foundations" path={source.theme} active={foundations.some((p) => p.id === page) || page === 'icons'}>
+          <p className="mx-1 truncate px-2 py-1 text-[11px] text-muted-foreground" title={source.theme}>From {source.theme.slice(source.dir.length)}</p>
+          {foundations.map((p) => file(p.id, p.label))}
+          {SYSTEMS[system].icons && file('icons', 'Icons')}
+        </SystemBranch>
+        <SystemBranch label="Components" path={source.components} active={components.some((c) => c.slug === page)}>
+          {components.map((c) => file(c.slug, c.title))}
+          {!components.length && <p className="px-3 py-1 text-[12px] text-muted-foreground">Empty folder</p>}
+        </SystemBranch>
+        {Object.entries(SYSTEM_CONTENT_SECTIONS).map(([id, section]) => {
+          const proto = manifest.systemContent.find((p) => p.id === contentId(system, id));
+          return proto && <FileTree key={proto.id} proto={proto} current={page === id && params._splat ? findArtifact(proto, params._splat) : undefined} embedded branch={{ label: section.title, path: source.dir + id + '/', active: page === id }} />;
+        })}
       </NavList>
     </SectionNav>
   );
@@ -188,7 +191,7 @@ export default function SystemsPage() {
   if (!sys || !content) return <NotFound />;
   return (
     <div className="flex min-h-0 flex-1">
-      <SystemNav system={system} components={components} tokens={tokens} page={params.page} selected={selected} />
+      <SystemNav system={system} components={components} tokens={tokens} page={params.page} key={system} />
       {selected ? <main className="flex min-h-0 min-w-0 flex-1 flex-col">{content}</main> : editing && path ? (
         <main className="flex min-h-0 min-w-0 flex-1 flex-col"><Suspense fallback={<p className="p-4 text-sm">Loading editor…</p>}>{editable && ComponentEditor ? <ComponentEditor key={system + '/' + editable.slug} system={system} component={editable} onDone={toggle} /> : SystemSourceEditor && <SystemSourceEditor path={path} onDone={toggle} />}</Suspense></main>
       ) : (
