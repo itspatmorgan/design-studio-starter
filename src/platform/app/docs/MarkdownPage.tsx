@@ -18,12 +18,12 @@ export default function MarkdownPage({ Component, frontmatter, docKey, base, foo
   footer?: ReactNode;
 }) {
   return (
-    <div className="min-w-0 flex-1">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
       <ErrorBoundary resetKeys={[docKey, Component]} FallbackComponent={ViewError}>
         {/* data-doc-scroll: where DocLayout scrolls to the top or to a heading. `relative` keeps the
             hidden heading Markdown footnotes add (position: absolute) inside this box; otherwise it
             sits against the page, which then scrolls when you follow a footnote link. */}
-        <div data-doc-scroll className="relative h-full overflow-y-auto bg-background text-foreground">
+        <div data-doc-scroll className="relative min-h-0 flex-1 overflow-y-auto bg-background text-foreground">
           <DocBase.Provider value={base}>
             <DocLayout Component={Component} title={frontmatter.title} description={frontmatter.description} toc={frontmatter.toc} scrollKey={docKey} footer={footer} />
           </DocBase.Provider>
