@@ -6,9 +6,11 @@ import { CONFIG } from '@/platform/app/data/config';
 const specs = import.meta.glob<SystemSpec>('/systems/*/system.ts', { eager: true, import: 'default' });
 const idOf = (path: string) => path.split('/').at(-2)!;
 
-export const PROTOTYPE_SYSTEMS: Record<string, SystemSpec & { dir: string }> = Object.fromEntries(
+export const SYSTEM_SPECS: Record<string, SystemSpec & { dir: string }> = Object.fromEntries(
   Object.entries(specs).map(([path, spec]) => [idOf(path), { ...spec, dir: `src/systems/${idOf(path)}/` }]).sort(([a], [b]) => (a as string).localeCompare(b as string)),
 );
+
+export const PROTOTYPE_SYSTEMS = Object.fromEntries(Object.entries(SYSTEM_SPECS).filter(([id, spec]) => id !== 'platform' && spec.role !== 'platform'));
 
 // The system a prototype uses when its meta.json doesn't say: studio.config.ts defaultSystem, else the first by name.
 export const DEFAULT_SYSTEM: string = CONFIG.defaultSystem && CONFIG.defaultSystem in PROTOTYPE_SYSTEMS ? CONFIG.defaultSystem : Object.keys(PROTOTYPE_SYSTEMS)[0];

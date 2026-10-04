@@ -31,7 +31,7 @@ Use navigation for the [shared source workflow](/documentation/guide/home#workin
 
 Documentation opens at `/documentation` and combines a curated **Guide** at `/documentation/guide` with complete **Reference** at `/documentation/reference`. Guide chapters introduce the studio to people. References describe capabilities, boundaries, and implementation contracts available to people and agents. You do not need to read or change them to begin creating.
 
-Follow the [Documentation standards](../../rules/documentation-standards.md) when changing Guide or Reference content.
+Follow the [Documentation standards](../../../systems/platform/rules/documentation-standards.md) when changing Guide or Reference content.
 
 Use the two sidebar tabs to switch reading modes. Reference groups shared contracts under **Platform foundations** and enabled capabilities under **Modules**. Each module opens its README; additional contracts appear beneath their owning module. Modules with no supplied documentation are omitted. Navigation labels match the page titles: module names in Reference, surface names in the Guide. Both presentations use the same source file.
 

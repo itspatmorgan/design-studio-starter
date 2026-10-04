@@ -9,7 +9,7 @@ import type { PrototypeInfo } from '@/platform/app/data/types';
 import { usePrototypeActions } from '@/platform/modules/prototypes/viewer/usePrototypeActions';
 import { menuGroups } from '@/platform/app/shell/menuGroups';
 import { cn } from '@/lib/utils';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/platform/components/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/systems/platform/components/dropdown-menu';
 
 // `triggerClassName` adds to the button's look, for a card whose top isn't a plain surface. By default it sits in the
 // card's top right corner; `inline` leaves it where it is drawn, for a row that places it itself.

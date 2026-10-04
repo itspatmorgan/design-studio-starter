@@ -28,7 +28,7 @@ Prototypes access public libraries through `@module/<id>`. They cannot import pr
 | `server.ts` | Local routes at `POST /__studio/<module>/<route>`. |
 | `check.ts` | Module validation while enabled. |
 | `lib/index.ts(x)` | Public entry exposed when `lib: true`. |
-| `instructions/` in a pack | Declared agent files installed into `src/platform/`. |
+| `instructions/` in a pack | Declared agent files installed into `src/systems/platform/`. |
 
 A section can declare a content folder, prototype-shaped items, contributor grouping, editing policy, and standalone published views.
 
@@ -54,7 +54,7 @@ pnpm check
 
 Add, remove, and create commands preview changes. Applying them requires `--yes`. Use CLI help for source formats and optional flags.
 
-Studio commands manage config module flags, `studio.lock.json`, and module-owned routing in `AGENTS.md`. The [module rule](../rules/modules.md) governs agent execution.
+Studio commands manage config module flags, `studio.lock.json`, and module-owned routing in `AGENTS.md`. The [module rule](../../systems/platform/rules/modules.md) governs agent execution.
 
 Disabling retains files. Removal deletes the module and its declared platform instruction files. External content remains unless removal includes `--content`.
 

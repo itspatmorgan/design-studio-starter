@@ -3,7 +3,7 @@ import { lazy, Suspense } from 'react';
 // and prototype systems in the ⌘K palette. The pages are in src/platform/modules/systems/pages/.
 import { createRoute, redirect, useRouterState } from '@tanstack/react-router';
 import { Shapes01Icon } from '@hugeicons/core-free-icons';
-import { CommandGroup, CommandItem } from '@/platform/components/command';
+import { CommandGroup, CommandItem } from '@/systems/platform/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
 import { ItemRow } from '@/platform/app/items/ItemRow';
 import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';

@@ -20,11 +20,12 @@ test('runtime dependency scopes reject indirect, private, documentation and dott
     const file = (p) => path.join(root, p);
     const cases = [
       ['src/prototypes/sam/flow.v1/main.tsx', 'src/platform/app/router.tsx', false],
+      ['src/prototypes/sam/flow.v1/main.tsx', 'src/systems/platform/components/button.tsx', false],
       ['src/prototypes/sam/flow.v1/main.tsx', 'src/prototypes/sam/flow.v1/_helper.ts', true],
       ['src/prototypes/sam/flow.v1/main.tsx', 'src/systems/product/components/button.tsx', true],
       ['src/prototypes/sam/flow.v1/main.tsx', 'src/systems/brand/components/button.tsx', false],
       ['src/prototypes/sam/flow.v1/main.tsx', 'src/systems/product/intro.tsx', false],
-      ['src/systems/product/components/button.tsx', 'src/platform/components/button.tsx', false],
+      ['src/systems/product/components/button.tsx', 'src/systems/platform/components/button.tsx', false],
       ['src/systems/product/components/button.tsx', 'src/prototypes/sam/other/main.tsx', false],
       ['src/systems/product/components/button.tsx', 'src/systems/brand/components/button.tsx', false],
       ['src/systems/product/components/button.tsx', 'src/lib/portal.ts', true],

@@ -11,10 +11,10 @@ import { systemSourceRequest } from './systemSource';
 import { shortcutLabel } from '@/platform/app/shell/artifactShortcuts';
 import { fileOp, systemFiles } from '@/platform/app/data/files';
 import { setManifest } from '@/platform/app/data/manifest';
-import { Button } from '@/platform/components/button';
-import { toast } from '@/platform/components/toast';
-import { Tabs, TabsList, TabsTrigger } from '@/platform/components/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
+import { Button } from '@/systems/platform/components/button';
+import { toast } from '@/systems/platform/components/toast';
+import { Tabs, TabsList, TabsTrigger } from '@/systems/platform/components/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/systems/platform/components/dialog';
 import type { SystemComponentDoc } from '@/platform/modules/systems/docs';
 
 type Kind = keyof SystemComponentDoc['files'];

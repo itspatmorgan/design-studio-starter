@@ -1,14 +1,14 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
 import { ChevronDown, FileCode, FileText } from 'lucide-react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/platform/components/collapsible';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/systems/platform/components/collapsible';
 import FileTree from '@/platform/modules/prototypes/viewer/FileTree';
 import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
 import { findArtifact } from '@/platform/app/data/manifest';
 import SystemContentPage from '../content/SystemContentPage';
 import type { Prototype } from '@/platform/app/data/types';
 import { NavHeader, NavList, NavTitle, SectionNav } from '@/platform/app/shell/nav';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/platform/components/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/systems/platform/components/select';
 import { NotFound } from '@/platform/app/shell/App';
 import { Code, ColorModeSupport, ColorTokens, IconsPage, PageHeader, Prose } from '@/platform/modules/systems/pages/foundations';
 import { OtherTokens, RadiusTokens, ShadowTokens, SpacingTokens, TypographyTokens } from '@/platform/modules/systems/pages/tokens';
@@ -18,12 +18,11 @@ import type { DesignSystem, SystemIntro } from '@/platform/app/data/types';
 import type { SystemComponentDoc } from '@/platform/modules/systems/docs';
 import type { ThemeToken, TokenGroup } from '@/platform/modules/systems/themeTokens';
 import { ThemeScope } from '@/platform/modules/systems/ThemeScope';
-import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
+import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS, SYSTEM_SPECS } from '@/platform/modules/systems/data/systems';
 import { useSourceView } from '@/platform/core/source/useSourceView';
 import FileNavItem from '@/platform/app/shell/FileNavItem';
 import { PLATFORM_SOURCE, sourceOf } from '../sources';
 import { systemSourceRequest } from './systemSource';
-import { platform } from '@/platform/modules/systems/pages/platformSystem';
 
 const ComponentEditor = import.meta.env.DEV ? lazy(() => import('./ComponentEditor').then((module) => ({ default: module.ComponentEditor }))) : null;
 
@@ -32,7 +31,7 @@ const SystemSourceEditor = import.meta.env.DEV ? lazy(() => import('./SystemSour
 // Systems: a selector for design systems, and one page per foundation and component,
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
 // Every system is treated the same, the app's own (Platform) included. What only its people can write
-// comes from its spec (src/systems/<id>/intro.tsx, platformSystem.tsx): the introduction (which covers its
+// comes from its spec (src/systems/<id>/intro.tsx): the introduction (which covers its
 // theme), and icons. The rest comes from its files: a component page for each component in its components
 // folder (src/platform/modules/systems/docs.ts), and a foundations page for each kind of token its theme
 // defines (src/platform/modules/systems/themeTokens.ts). Prototype systems appear in the selector, followed by Platform.
@@ -40,12 +39,13 @@ const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx'
 const introOf = (id: string): SystemIntro => intros[`/systems/${id}/intro.tsx`]?.default ?? {
   intro: <><Prose><p>This system has no introduction yet. Add one in <Code>src/systems/{id}/intro.tsx</Code>.</p></Prose><h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2><Prose><ColorModeSupport modes={PROTOTYPE_SYSTEMS[id]?.colorModes} /></Prose></>,
 };
-const PROTOTYPE_SPECS: Record<string, DesignSystem> = Object.fromEntries(Object.entries(PROTOTYPE_SYSTEMS).map(([id, spec]) => [id, {
+const PROTOTYPE_SPECS: Record<string, DesignSystem> = Object.fromEntries(Object.entries(SYSTEM_SPECS).map(([id, spec]) => [id, {
   label: spec.label, dir: `${spec.dir}components/`, scopeClass: spec.themeClass, ...introOf(id),
 }]));
-const SYSTEMS: Record<string, DesignSystem> = { ...PROTOTYPE_SPECS, platform };
+const SYSTEMS: Record<string, DesignSystem> = PROTOTYPE_SPECS;
+const platform = SYSTEMS.platform;
 const SYSTEM_CHOICES = [
-  ...Object.entries(PROTOTYPE_SPECS).sort(([a], [b]) => a === DEFAULT_SYSTEM ? -1 : b === DEFAULT_SYSTEM ? 1 : a.localeCompare(b)),
+  ...Object.entries(PROTOTYPE_SPECS).filter(([id]) => id !== 'platform').sort(([a], [b]) => a === DEFAULT_SYSTEM ? -1 : b === DEFAULT_SYSTEM ? 1 : a.localeCompare(b)),
   ['platform', platform] as const,
 ].map(([value, spec]) => ({ value, label: spec.label }));
 type SystemId = string;
@@ -54,7 +54,7 @@ type SystemId = string;
 // Map a rendered Systems page to its actual source files.
 function sourcePath(system: string, page: string | undefined, components: SystemComponentDoc[]) {
   const source = system === 'platform' ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
-  if (!page || page === 'icons') return system === 'platform' ? 'src/platform/modules/systems/pages/platformSystem.tsx' : intros['/systems/' + system + '/intro.tsx'] ? source.dir + 'intro.tsx' : source.dir + 'system.ts';
+  if (!page || page === 'icons') return intros['/systems/' + system + '/intro.tsx'] ? source.dir + 'intro.tsx' : source.dir + 'system.ts';
   const component = components.find((c) => c.slug === page);
   if (component) {
     const file = component.files.doc ?? component.files.examples ?? component.files.source;

@@ -21,8 +21,8 @@ const documentationModule = ENABLED_MODULES.find((m) => m.id === 'documentation'
 const GUIDE = documentationModule?.section?.folder ? path.join(ROOT, documentationModule.section.folder) : null;
 const SYSTEMS = path.join(ROOT, 'src', 'systems');
 // The app's own system: its components, and its theme (the tokens the Systems pages list).
-const PLATFORM_COMPONENTS = path.join(ROOT, 'src', 'platform', 'components');
-const PLATFORM_THEME = path.join(ROOT, 'src', 'platform', 'styles', 'index.css');
+const PLATFORM_COMPONENTS = path.join(ROOT, 'src', 'systems', 'platform', 'components');
+const PLATFORM_THEME = path.join(ROOT, 'src', 'systems', 'platform', 'styles', 'theme.css');
 // The system content's map reads it (src/platform/modules/systems/content/map.ts).
 const AGENTS = path.join(ROOT, 'AGENTS.md');
 const BATCH_MS = 50;

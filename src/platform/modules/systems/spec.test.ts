@@ -42,3 +42,8 @@ test('systems declare supported modes and safely resolve a global mode', () => {
   }
   assert.deepEqual(systemProblems({ ...product, colorModes: ['dark'] }, 'product'), []);
 });
+
+test('Platform is a declared system role reserved for Studio', () => {
+  assert.deepEqual(systemProblems({ ...product, role: 'platform', themeClass: 'platform-theme' }, 'platform'), []);
+  assert.match(systemProblems({ ...product, role: 'platform' }, 'product').join(' '), /only the built-in platform/);
+});

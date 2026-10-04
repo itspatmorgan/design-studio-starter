@@ -56,4 +56,4 @@ The Prototypes module: the gallery at `/prototypes`, and the viewer every protot
 - `src/platform/app/source/ArtifactSource.tsx`: adapts prototype and system context access to the shared editor.
 - `node/create.js`: `pnpm new`, and what the New prototype button runs (Node).
 
-Agent contract: `src/platform/rules/prototype-workflow.md`.
+Agent contract: `src/systems/platform/rules/prototype-workflow.md`.

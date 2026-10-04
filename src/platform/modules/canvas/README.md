@@ -47,7 +47,7 @@ The agent tool `artifacts` lists the prototype's available artifacts. To embed o
 
 A page to arrange things on: live views and diagrams, and cards for documents from its own prototype, beside sticky
 notes, text, and arrows. It's [Excalidraw](https://github.com/excalidraw/excalidraw) with the app's
-look, and its design comes from Design Studio's canvas. Agent contract: `src/platform/rules/canvases.md`.
+look, and its design comes from Design Studio's canvas. Agent contract: `src/systems/platform/rules/canvases.md`.
 Human orientation: [Prototypes](/documentation/guide/prototypes#artifacts-work-together).
 
 **This folder is a self-contained file type.** Core never imports it (`scripts/check/check-modules.js`),
@@ -65,7 +65,7 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an artifact.
   type shows a card (`src/platform/app/artifacts/ArtifactCard.tsx`), and a link to nothing shows "Not found".
 - **Views are pictures.** A view is laid out at 1440 px wide and scaled down to the element's width,
   cropped at the bottom. Resizing the element changes the crop. Nothing in it takes clicks.
-- **Agents** use the tools in tools.ts, live in the open canvas or on the file (src/platform/rules/canvases.md).
+- **Agents** use the tools in tools.ts, live in the open canvas or on the file (src/systems/platform/rules/canvases.md).
 - **Dev:** edits save to the file through the same file layer as the Source view, and changes made to the
   file from outside (an agent) are taken in live. **Deployed:** the committed file, read-only.
 
@@ -96,6 +96,6 @@ Excalidraw's CDN.
 
 ### Remove it
 
-Follow the [module rule](../../rules/modules.md) and use the removal preview. It identifies consumers and retained dependencies.
+Follow the [module rule](../../../systems/platform/rules/modules.md) and use the removal preview. It identifies consumers and retained dependencies.
 
 The module owns the canvas CLI and agent rule. Its npm package and any unused patch configuration need separate cleanup after removal.

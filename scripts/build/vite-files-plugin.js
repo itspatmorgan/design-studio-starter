@@ -183,7 +183,7 @@ export default function filesPlugin() {
             const allowed = Object.entries(SYSTEM_SOURCES).flatMap(([id, source]) => [
               source.theme,
               ...(id === 'platform' ? [] : [source.dir + 'system.ts']),
-              id === 'platform' ? 'src/platform/modules/systems/pages/platformSystem.tsx' : source.dir + 'intro.tsx',
+              id === 'platform' ? 'src/systems/platform/intro.tsx' : source.dir + 'intro.tsx',
               ...(manifest.systems[id]?.components ?? []).flatMap((component) => Object.values(component.files).filter(Boolean).map((file) => source.components + '/' + file)),
             ]);
             const result = sourceFile(ROOT, allowed, await readJson(req));

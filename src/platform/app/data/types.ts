@@ -52,7 +52,7 @@ export type GuidePage = {
 
 // `sections` holds the artifacts of the modules' sections of prototype-shaped folders, by section key: the
 // module section artifacts (src/examples/, as `sections.examples`), shaped like prototypes.
-// `systemContent` holds the system content's sections (src/platform/, see src/platform/core/roots.ts), shaped like
+// `systemContent` holds the system content's sections (src/systems/<id>/, see src/platform/core/roots.ts), shaped like
 // prototypes.
 // `systemContentMap` is how an agent reads the system content, worked out from the files (modules/systems/content/map.ts).
 // `systems` holds each system's components and their docs (systemDocs.ts), the tokens its theme
@@ -73,7 +73,7 @@ export type SystemIntro = { intro: ReactNode; icons?: DesignSystem['icons'] };
 
 export type DesignSystem = {
   label: string;
-  dir: string;            // where its components live, e.g. "src/platform/components/"
+  dir: string;            // where its components live, e.g. "src/systems/platform/components/"
   scopeClass: string;     // the class its theme is set under, or "" when it's set on the page (studio)
   intro: ReactNode;      // what the system is, and how its theme is set up
   icons?: { library: string; href: string; snippet: string; grid: ReactNode };

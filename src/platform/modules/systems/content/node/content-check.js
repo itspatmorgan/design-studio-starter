@@ -1,4 +1,4 @@
-// The shape of src/platform/, which is fixed where the content is open-ended:
+// The knowledge folders in a system, which is fixed where the content is open-ended:
 //   context/ Markdown pages, in folders if you like
 //   rules/   Markdown pages (AGENTS.md points to them), in folders if you like
 //   skills/  one folder per skill, each with a SKILL.md in the Agent Skills format, and any files

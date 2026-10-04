@@ -3,7 +3,7 @@ import type { ColorMode } from '../spec';
 import type { DesignSystem } from '@/platform/app/data/types';
 import { useEffect, useRef, useState, type ReactNode, type Ref } from 'react';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/platform/components/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/platform/components/tooltip';
 import { KNOWN_COLORS, type ThemeToken } from '@/platform/modules/systems/themeTokens';
 
 // Shared building blocks for the Systems page. Everything here reads live values

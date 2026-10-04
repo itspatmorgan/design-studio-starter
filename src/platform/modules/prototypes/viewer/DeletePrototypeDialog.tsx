@@ -5,9 +5,9 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import { deletePrototype } from '@/platform/app/data/files';
 import { setManifest } from '@/platform/app/data/manifest';
 import type { PrototypeInfo } from '@/platform/app/data/types';
-import { toast } from '@/platform/components/toast';
-import { Button } from '@/platform/components/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
+import { toast } from '@/systems/platform/components/toast';
+import { Button } from '@/systems/platform/components/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/systems/platform/components/dialog';
 
 type Props = { proto: PrototypeInfo; open: boolean; onOpenChange: (open: boolean) => void };
 

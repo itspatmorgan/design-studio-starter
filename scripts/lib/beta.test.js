@@ -107,8 +107,8 @@ test('create and rename preserve addresses, file errors recover, and system remo
       assert.equal(recovered.statusCode, 200);
       // Shared Markdown remains editable even when prototype Documents is absent.
       const { runOp } = await load('scripts/build/files/ops.js');
-      runOp(path.resolve('src/platform/context'), {op:'create', name:'beta-context.md'}, 'context');
-      assert.match(fs.readFileSync('src/platform/context/beta-context.md', 'utf8'), /title: Beta Context/);
+      runOp(path.resolve('src/systems/platform/context'), {op:'create', name:'beta-context.md'}, 'context');
+      assert.match(fs.readFileSync('src/systems/platform/context/beta-context.md', 'utf8'), /title: Beta Context/);
       const systemContentResponse = response();
       await handler({...request, url:'/file?contributor=system-content&prototype=platform%3Acontext&path=beta-context.md'}, systemContentResponse, () => assert.fail('Unexpected fallback'));
       assert.equal(systemContentResponse.statusCode, 200);

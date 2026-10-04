@@ -44,7 +44,7 @@ function resolve(from: string, target: string): string {
   return parts.join('/');
 }
 
-export function systemContentMap({ agents, rules, skills, root = 'src/platform' }: MapInput): SystemContentMap {
+export function systemContentMap({ agents, rules, skills, root = 'src/systems/platform' }: MapInput): SystemContentMap {
   const RULE = new RegExp('^(?:\\./)?' + root + '/rules/(.+\\.md)(?:#.*)?$');
   const SKILL = new RegExp('^(?:\\./)?' + root + '/skills/([^/]+)/SKILL\\.md(?:#.*)?$');
   const map: SystemContentMap = { entry: agents !== null, always: [], onDemand: [], via: [], unrouted: [], skills: [], missing: [] };

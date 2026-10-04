@@ -13,7 +13,7 @@ const extensionGlob = (extensions: readonly string[]) =>
 export function globsFor(id: string, types: Record<string, FileTypeSpec>, modules: readonly ModuleSpec[]): string[] {
   const spec = types[id];
   if (!spec) throw new Error(`There is no "${id}" file type, so its loader can't list files.`);
-  const systemContent = ['/platform/context', '/platform/rules', '/platform/skills', '/systems/*/context', '/systems/*/rules', '/systems/*/skills'];
+  const systemContent = ['/systems/*/context', '/systems/*/rules', '/systems/*/skills'];
   const patterns: string[] = [];
 
   // The fallback type opens whatever no other type claims, in the system content only.

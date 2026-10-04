@@ -4,7 +4,7 @@ import { Fragment, type RefObject } from 'react';
 import { getRouteApi, useMatchRoute, useNavigate, useParams, type NavigateOptions } from '@tanstack/react-router';
 import {
   Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
-} from '@/platform/components/command';
+} from '@/systems/platform/components/command';
 import { findArtifact, findPrototype, firstArtifact, artifactFolder, artifactLabel, artifactLink } from '@/platform/app/data/manifest';
 import { moduleApps, type PaletteContext } from '@/platform/app/modules';
 import type { Artifact, Prototype } from '@/platform/app/data/types';

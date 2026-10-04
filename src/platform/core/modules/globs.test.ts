@@ -44,7 +44,7 @@ test('prototype documents stay within prototype-shaped sections', needs('documen
 });
 
 test('the fallback type lists the SystemContent files no other type opens', needs('text', 'systems'), () => {
-  assert.deepEqual(globsFor('text', types, modules), ['/platform/context', '/platform/rules', '/platform/skills', '/systems/*/context', '/systems/*/rules', '/systems/*/skills'].flatMap((root) => [root + '/**/*', '!' + root + '/**/*.md']));
+  assert.deepEqual(globsFor('text', types, modules), ['/systems/*/context', '/systems/*/rules', '/systems/*/skills'].flatMap((root) => [root + '/**/*', '!' + root + '/**/*.md']));
 });
 
 test('without the examples module, nothing looks in /examples', () => {
@@ -68,8 +68,8 @@ test('SystemContent Markdown stays readable and validated without prototype Docu
   assert.equal(matchFileType(withoutDocuments, 'notes.md'), null);
   assert.equal(systemContentType(withoutDocuments, 'notes.md'), 'systems');
   assert.equal(systemContentType(withoutDocuments, 'support.js'), 'text');
-  assert.deepEqual(globsFor('systems', withoutDocuments, modules), ['/platform/context/**/*.md', '/platform/rules/**/*.md', '/platform/skills/**/*.md', '/systems/*/context/**/*.md', '/systems/*/rules/**/*.md', '/systems/*/skills/**/*.md']);
-  assert.deepEqual(globsFor('text', withoutDocuments, modules), ['/platform/context', '/platform/rules', '/platform/skills', '/systems/*/context', '/systems/*/rules', '/systems/*/skills'].flatMap((root) => [root + '/**/*', '!' + root + '/**/*.md']));
+  assert.deepEqual(globsFor('systems', withoutDocuments, modules), ['/systems/*/context/**/*.md', '/systems/*/rules/**/*.md', '/systems/*/skills/**/*.md']);
+  assert.deepEqual(globsFor('text', withoutDocuments, modules), ['/systems/*/context', '/systems/*/rules', '/systems/*/skills'].flatMap((root) => [root + '/**/*', '!' + root + '/**/*.md']));
   assert.match(withoutDocuments.systems.template!('team-context.md'), /title: Team Context/);
   assert.ok(withoutDocuments.systems.check!({ source: '---\ntitle: Unclosed', frontmatter: null }).length);
 });

@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { useSearch } from '@tanstack/react-router';
-import { Button } from '@/platform/components/button';
+import { Button } from '@/systems/platform/components/button';
 import { findArtifact } from '@/platform/app/data/manifest';
 import { fileTypeModules } from '@/platform/app/data/fileTypes';
 import { useSourceView } from '@/platform/core/source/useSourceView';

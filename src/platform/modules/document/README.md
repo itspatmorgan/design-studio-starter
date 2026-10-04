@@ -89,7 +89,7 @@ Keep prototype-specific context here. The [system context](/documentation/guide/
 
 ## For developers
 
-This optional module owns prototype Markdown. Follow the [module rule](../../rules/modules.md) for removal. See the [file-type contract](../../core/fileTypes.md) for extension behavior.
+This optional module owns prototype Markdown. Follow the [module rule](../../../systems/platform/rules/modules.md) for removal. See the [file-type contract](../../core/fileTypes.md) for extension behavior.
 
 - `type.ts`: what the build reads: the `.md` extension, a template (a title and an empty-document line), and the checks on frontmatter.
 - `open.tsx`: the icon, how a document loads, and its page.
@@ -97,4 +97,4 @@ This optional module owns prototype Markdown. Follow the [module rule](../../rul
 - `scripts/build/rehype-mermaid.js`: preserves Mermaid fences before code highlighting. The shared reader maps them to `MermaidDiagram.tsx` for lazy SVG rendering.
 - `loader.ts`: the glob of document files for the deployed site.
 
-Agent contract: `src/platform/rules/documents.md`.
+Agent contract: `src/systems/platform/rules/documents.md`.

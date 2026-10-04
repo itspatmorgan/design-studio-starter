@@ -1,16 +1,16 @@
-// System knowledge lives in src/platform/ or src/systems/<id>/ and opens at /systems/<id>/<section>.
+// System knowledge lives in src/systems/<id>/ and opens at /systems/<id>/<section>.
 // The reserved system-content key adapts these files to the shared file APIs, not a contributor.
 // This file has no imports, so Node scripts can load it directly.
 
 export const SYSTEM_CONTENT_KEY = 'system-content';
-export const systemRoot = (system: string) => system === 'platform' ? 'platform' : `systems/${system}`;
+export const systemRoot = (system: string) => `systems/${system}`;
 export const contentId = (system: string, section: string) => `${system}:${section}`;
 export const contentParts = (id: string) => { const [system, section] = id.split(':'); return { system, section }; };
 export const contentSection = (id: string) => contentParts(id).section;
 
 // A prototype system's components (src/systems/<id>/components/) are opened for editing the same
 // way: under the reserved key "systems" (already an app page URL, so nobody's folder), with the
-// system's id as the prototype ("platform" is the app's own, in src/platform/components/). Platform
+// system's id as the prototype ("platform" is the app's own, in src/systems/platform/components/). Platform
 // files too: changed in the repo and reviewed.
 export const SYSTEMS_KEY = 'systems';
 
@@ -20,7 +20,7 @@ export const SYSTEMS_KEY = 'systems';
 let sectionKeys: ReadonlySet<string> = new Set();
 export const setSections = (keys: Iterable<string>) => { sectionKeys = new Set(keys); };
 
-// The system content's sections: the folders in src/platform/, in the order they're shown. The shape of
+// The system content's sections: the folders in each system, in the order they're shown. The shape of
 // each is checked by src/platform/modules/systems/content/node/content-check.js.
 export const SYSTEM_CONTENT_SECTIONS = {
   context: { title: 'Context', description: 'Context for people and agents: principles, personas, and anything worth writing down once.' },
@@ -64,5 +64,5 @@ export function canonicalPath(path: string): string {
 export const rootOf = (contributor: string, id: string) =>
   contributor === SYSTEM_CONTENT_KEY ? `${systemRoot(contentParts(id).system)}/${contentParts(id).section}`
     : sectionKeys.has(contributor) ? `${contributor}/${id}`
-    : contributor === SYSTEMS_KEY ? (id === 'platform' ? 'platform/components' : `${SYSTEMS_KEY}/${id}/components`)
+    : contributor === SYSTEMS_KEY ? `${SYSTEMS_KEY}/${id}/components`
     : `prototypes/${contributor}/${id}`;

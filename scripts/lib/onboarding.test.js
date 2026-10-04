@@ -35,6 +35,7 @@ test('local personal setup resumes, then a second clone joins a team without cha
       fs.rmSync(path.join(dir, folder), { recursive: true, force: true });
       fs.mkdirSync(path.join(dir, folder), { recursive: true });
     }
+    fs.cpSync(path.join(root, 'src/systems/platform'), path.join(dir, 'src/systems/platform'), { recursive: true });
     fs.writeFileSync(path.join(dir, 'studio.config.ts'), `import type { StudioConfig } from './src/platform/core/config.ts';\nexport default { name: 'Fixture Studio', usage: 'team', tagline: 'Fixture', modules: ${JSON.stringify(hasDocumentation ? { documentation: false } : {})}, defaultSystem: 'product' } satisfies StudioConfig;\n`);
     run(dir, 'scripts/cli/studio.js', 'create-system', 'product', '--label', 'Product', '--yes');
     git(dir, 'init', '-q');

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Button } from '@/platform/components/button';
+import { Button } from '@/systems/platform/components/button';
 import SourceEditor from '@/platform/core/source/SourceEditor';
 import type { SourceAccess } from '@/platform/core/source/access';
 import { shortcutLabel } from '@/platform/app/shell/artifactShortcuts';

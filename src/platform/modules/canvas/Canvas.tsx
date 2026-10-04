@@ -22,8 +22,8 @@ import { CanvasMenu, UI_OPTIONS } from './menu';
 import { useCanvasShortcuts } from './shortcuts';
 import { STICKY_IDS, STICKY_LIBRARY } from './stickyNotes';
 import { useCanvasFile } from './useCanvasFile';
-import { Button } from '@/platform/components/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
+import { Button } from '@/systems/platform/components/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/systems/platform/components/dialog';
 
 type Props = { proto: Prototype; item: Artifact; text: string; version: string };
 

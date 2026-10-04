@@ -1,19 +1,18 @@
 import { useEffect, useState, type ComponentType } from 'react';
 import type { MDXContent } from 'mdx/types';
 import { SYSTEMS_KEY } from '@/platform/core/roots';
-import { PLATFORM_ID } from '@/platform/modules/systems/sources';
 import { exampleNames, type ComponentPropsDoc } from '@/platform/modules/systems/docs';
 
-// A component's docs files in a system (src/systems/<system>/components/, or src/platform/components/; see
+// A component's docs files in a system (src/systems/<system>/components/, or src/systems/platform/components/; see
 // src/platform/modules/systems/docs.ts): its examples, the examples file's text, and its Markdown page.
 export type Example = { name: string; Component: ComponentType };
 
 // Vite only loads a file when it is asked for.
-// The app's own system (Platform) keeps its components in /platform/components/.
+// The app's own system (Platform) keeps its components in /systems/platform/components/.
 const globs = {
-  examples: import.meta.glob<Record<string, unknown>>(['/systems/*/components/**/*.examples.{tsx,jsx}', '/platform/components/**/*.examples.{tsx,jsx}']),
-  sources: import.meta.glob<string>(['/systems/*/components/**/*.examples.{tsx,jsx}', '/platform/components/**/*.examples.{tsx,jsx}'], { query: '?raw', import: 'default' }),
-  docs: import.meta.glob<{ default: MDXContent }>(['/systems/*/components/**/*.md', '/platform/components/**/*.md']),
+  examples: import.meta.glob<Record<string, unknown>>(['/systems/*/components/**/*.examples.{tsx,jsx}']),
+  sources: import.meta.glob<string>(['/systems/*/components/**/*.examples.{tsx,jsx}'], { query: '?raw', import: 'default' }),
+  docs: import.meta.glob<{ default: MDXContent }>(['/systems/*/components/**/*.md']),
 };
 
 // In dev, adding or removing a file makes Vite run this file again with new lists. The app keeps
@@ -21,7 +20,7 @@ const globs = {
 // (like loadGuide.ts).
 const state: { globs: typeof globs; listeners: Set<() => void> } = import.meta.hot?.data.state ?? { globs, listeners: new Set() };
 
-const at = (system: string, file: string) => `${system === PLATFORM_ID ? '/platform' : `/systems/${system}`}/components/${file}`;
+const at = (system: string, file: string) => `${`/systems/${system}`}/components/${file}`;
 
 // The examples an examples file exports: each export named with a capital that is a component,
 // in the order the file lists them (a module's exports come alphabetically).

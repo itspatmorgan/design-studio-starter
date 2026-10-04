@@ -2,8 +2,8 @@
 // page that says so, with a prompt to hand your agent. It's the platform's page, so it looks the same
 // whichever design system the prototype uses.
 import { useState } from 'react';
-import { Button } from '@/platform/components/button';
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/platform/components/empty';
+import { Button } from '@/systems/platform/components/button';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from '@/systems/platform/components/empty';
 
 // `path` is the view's path in the repo, like "src/prototypes/patrick/checkout/review.tsx". Only known in dev: the
 // deployed site has no source to point at.

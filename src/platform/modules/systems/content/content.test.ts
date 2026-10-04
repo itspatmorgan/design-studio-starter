@@ -121,14 +121,14 @@ test('changes stay inside the SystemContent\'s shape', () => {
 test('the map: what an agent reads, in order, from the real files', () => {
   const agents = [
     '# Starter',
-    "If `node_modules/` doesn't exist, or the person is new, follow [setup](src/platform/skills/setup/SKILL.md) first.",
+    "If `node_modules/` doesn't exist, or the person is new, follow [setup](src/systems/platform/skills/setup/SKILL.md) first.",
     '',
     'At the start of every session, read:',
-    '- [systems](src/platform/rules/systems.md)',
-    '- [workflow](src/platform/rules/workflow.md)',
+    '- [systems](src/systems/platform/rules/systems.md)',
+    '- [workflow](src/systems/platform/rules/workflow.md)',
     '',
-    'When the person asks for a canvas (a page of views), read [canvases](src/platform/rules/canvases.md).',
-    'Also see [gone](src/platform/rules/gone.md) and [nope](src/platform/skills/nope/SKILL.md).',
+    'When the person asks for a canvas (a page of views), read [canvases](src/systems/platform/rules/canvases.md).',
+    'Also see [gone](src/systems/platform/rules/gone.md) and [nope](src/systems/platform/skills/nope/SKILL.md).',
   ].join('\n');
   const map = systemContentMap({
     agents,
@@ -139,7 +139,7 @@ test('the map: what an agent reads, in order, from the real files', () => {
   assert.deepEqual(map.onDemand, [{ path: 'canvases.md', when: 'the person asks for a canvas (a page of views)' }]);
   assert.deepEqual(map.via, [{ path: 'sub/scope.md', from: 'workflow.md' }]);
   assert.deepEqual(map.unrouted, ['orphan.md']);
-  assert.deepEqual(map.missing, ['src/platform/rules/gone.md', 'src/platform/skills/nope/SKILL.md']);
+  assert.deepEqual(map.missing, ['src/systems/platform/rules/gone.md', 'src/systems/platform/skills/nope/SKILL.md']);
   assert.equal(map.skills.find((s) => s.folder === 'setup')?.when, "`node_modules/` doesn't exist, or the person is new".replace(/`/g, ''));
   assert.equal(map.skills.find((s) => s.folder === 'review')?.when, undefined);
   assert.equal(map.entry, true);
@@ -163,8 +163,8 @@ test('platform reference discovery preserves ownership and excludes unavailable 
     write('src/platform/modules/example/reference.md', '# Example contract');
     write('src/platform/modules/example/internal/notes.md', '# Internal notes');
     write('src/platform/modules/off/README.md', '# Unavailable capability');
-    write('src/platform/rules/example.md', '# Example rule\nRead [contract](../../platform/modules/example/reference.md#details).');
-    write('src/platform/skills/example/SKILL.md', '---\nname: example\ndescription: Example task\n---\nRead [reference](../../../platform/modules/example/README.md).');
+    write('src/systems/platform/rules/example.md', '# Example rule\nRead [contract](../../../platform/modules/example/reference.md#details).');
+    write('src/systems/platform/skills/example/SKILL.md', '---\nname: example\ndescription: Example task\n---\nRead [reference](../../../../platform/modules/example/README.md).');
     const modules = [{id:'example',label:'Example'}, {id:'off',label:'Off'}];
     const systemContent = [{id:'platform:rules',contributorKey:'system-content',system:'platform',title:'Rules',artifacts:[{path:'example.md'}]}, {id:'platform:skills',contributorKey:'system-content',system:'platform',title:'Skills',artifacts:[{path:'example/SKILL.md'}]}];
     const groups = platformReferences({root,modules,enabled:['example'],systemContent});

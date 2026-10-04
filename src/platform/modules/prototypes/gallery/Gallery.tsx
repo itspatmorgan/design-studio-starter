@@ -1,4 +1,4 @@
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/platform/components/input-group';
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/systems/platform/components/input-group';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, Layers01Icon, Search01Icon } from '@hugeicons/core-free-icons';
 import { getRouteApi, Link, useNavigate, useSearch } from '@tanstack/react-router';
@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { Collection, ViewToggle } from '@/platform/app/items/Collection';
 import NewPrototypeButton from '@/platform/modules/prototypes/gallery/NewPrototypeDialog';
 import PrototypeCard, { PrototypeRow } from './PrototypeCard';
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/platform/components/empty';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/systems/platform/components/empty';
 import { useMe } from '@/platform/app/data/files';
 
 const rootApi = getRouteApi('__root__');

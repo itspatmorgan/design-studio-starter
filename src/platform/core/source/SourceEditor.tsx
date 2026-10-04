@@ -7,11 +7,11 @@ import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete';
 import { bracketMatching, foldGutter, foldKeymap, indentOnInput } from '@codemirror/language';
 import { highlightSelectionMatches, search, searchKeymap } from '@codemirror/search';
 import { SourceChanged, type SourceAccess } from './access';
-import { Button } from '@/platform/components/button';
-import { toast } from '@/platform/components/toast';
+import { Button } from '@/systems/platform/components/button';
+import { toast } from '@/systems/platform/components/toast';
 import { shortcutLabel } from '@/platform/app/shell/artifactShortcuts';
 import { sourceTheme } from '@/platform/core/source/sourceTheme';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/systems/platform/components/dialog';
 
 // The file type's syntax, loaded when it's needed.
 async function languageExtension(language: 'tsx' | 'markdown' | 'json' | 'mermaid' | 'text', path: string): Promise<Extension> {

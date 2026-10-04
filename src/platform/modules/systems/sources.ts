@@ -1,3 +1,4 @@
+import platformSpec from '../../../systems/platform/system.ts';
 // Where each design system keeps its parts, for the Systems pages and everything that reads a system's files:
 // the app's own (Platform) and each prototype system (src/systems/<id>/system.ts, src/platform/modules/systems/spec.ts). Platform is
 // built in here, because prototypes never use it. Build scripts and the file layer take their paths from these,
@@ -31,15 +32,7 @@ export const sourceOf = (id: string, spec: SystemSpec): SystemSource => ({
 });
 
 // The app's own system: stock shadcn/ui components, themed on the page itself (:root and .dark).
-export const PLATFORM_SOURCE: SystemSource = {
-  label: 'Platform',
-  dir: 'src/platform/',
-  components: 'src/platform/components',
-  theme: 'src/platform/styles/index.css',
-  scope: { light: ':root', dark: '.dark' },
-  docs: 'off',
-  origin: 'shadcn',
-};
+export const PLATFORM_SOURCE: SystemSource = { ...sourceOf(PLATFORM_ID, platformSpec), scope: { light: ':root', dark: '.dark' } };
 
 // shadcn/ui's page for a component, from its file's name ("input-group" → .../base/input-group).
 // The name is checked, since it goes into a link.

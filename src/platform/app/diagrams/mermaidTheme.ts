@@ -1,4 +1,4 @@
-import { contentPalette } from '@/platform/styles/contentPalette';
+import { contentPalette } from '@/systems/platform/styles/contentPalette';
 
 // Mermaid's color derivation needs hex colors. Resolve current platform tokens
 // through the browser so studio owners can keep using OKLCH or other CSS colors.

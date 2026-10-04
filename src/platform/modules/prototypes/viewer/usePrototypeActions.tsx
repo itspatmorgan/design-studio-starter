@@ -13,7 +13,7 @@ import { fileOp, openInEditor, ownsPrototype, repoPath, revealInFinder, useMe } 
 import { prototypeLink, setManifest } from '@/platform/app/data/manifest';
 import type { PrototypeInfo } from '@/platform/app/data/types';
 import { moduleApps } from '@/platform/app/modules';
-import { toast } from '@/platform/components/toast';
+import { toast } from '@/systems/platform/components/toast';
 import EditPrototypeDialog from '@/platform/modules/prototypes/viewer/EditPrototypeDialog';
 import DeletePrototypeDialog from '@/platform/modules/prototypes/viewer/DeletePrototypeDialog';
 type Icon = typeof Link01Icon;

@@ -24,6 +24,7 @@ export default {
           <p>The component pages link to shadcn/ui's docs, because these components come from it. If yours don't, remove <Code>origin</Code> from <Code>src/systems/product/system.ts</Code>.</p>
         </Prose>
       </div>
+      <Prose><p>This system can also hold your product’s context, rules, and skills. Guidance can cover terminology, workflows, accessibility, and business requirements as well as components.</p></Prose>
       <h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2>
       <Prose>
         <ColorModeSupport modes={system.colorModes} />

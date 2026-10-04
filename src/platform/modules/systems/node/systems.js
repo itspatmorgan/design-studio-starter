@@ -21,20 +21,23 @@ const ids = fs.existsSync(DIR)
 
 // Every prototype system, by id: its system.ts and its folder. Problems with a declaration are reported by
 // scripts/check/check-modules.js.
-export const PROTOTYPE_SYSTEMS = Object.fromEntries(await Promise.all(
+export const SYSTEM_SPECS = Object.fromEntries(await Promise.all(
   ids.map(async (id) => {
     const spec = (await import(pathToFileURL(path.join(DIR, id, 'system.ts')).href)).default;
     return [id, { ...spec, dir: `src/systems/${id}/` }];
   }),
 ));
 
+export const PROTOTYPE_SYSTEMS = Object.fromEntries(Object.entries(SYSTEM_SPECS).filter(([id, spec]) => id !== PLATFORM_ID && spec.role !== 'platform'));
+const prototypeIds = Object.keys(PROTOTYPE_SYSTEMS);
+
 // The system a prototype uses when its meta.json doesn't say: studio.config.ts defaultSystem, else the first by name.
-export const DEFAULT_SYSTEM = CONFIG.defaultSystem in PROTOTYPE_SYSTEMS ? CONFIG.defaultSystem : ids[0];
+export const DEFAULT_SYSTEM = CONFIG.defaultSystem in PROTOTYPE_SYSTEMS ? CONFIG.defaultSystem : prototypeIds[0];
 
 export const SYSTEM_SOURCES = {
-  ...Object.fromEntries(ids.map((id) => [id, sourceOf(id, PROTOTYPE_SYSTEMS[id])])),
+  ...Object.fromEntries(ids.map((id) => [id, sourceOf(id, SYSTEM_SPECS[id])])),
   [PLATFORM_ID]: PLATFORM_SOURCE,
 };
 
-export const systemDeclarationProblems = () => [...ids.flatMap((id) => systemProblems(PROTOTYPE_SYSTEMS[id], id)), ...themeClassProblems(PROTOTYPE_SYSTEMS)];
-export const SYSTEM_IDS = ids;
+export const systemDeclarationProblems = () => [...ids.flatMap((id) => systemProblems(SYSTEM_SPECS[id], id)), ...themeClassProblems(SYSTEM_SPECS)];
+export const SYSTEM_IDS = prototypeIds;

@@ -3,7 +3,7 @@
 // (src/platform/app/router.tsx), at /prototypes/<person>/<id>.
 import { createRoute } from '@tanstack/react-router';
 import { Layers01Icon } from '@hugeicons/core-free-icons';
-import { CommandGroup, CommandItem, CommandSeparator } from '@/platform/components/command';
+import { CommandGroup, CommandItem, CommandSeparator } from '@/systems/platform/components/command';
 import { HomeHint, HomeSection } from '@/platform/app/items/HomeSection';
 import { useMe } from '@/platform/app/data/files';
 import { APP_NAME } from '@/platform/app/data/config';

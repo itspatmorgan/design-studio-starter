@@ -16,7 +16,7 @@ import { lazy, Suspense } from 'react';
 import { createRootRoute, createRoute, createRouter, notFound, redirect, useRouter } from '@tanstack/react-router';
 import { useSourceView } from '@/platform/core/source/useSourceView';
 import { shortcutLabel } from '@/platform/app/shell/artifactShortcuts';
-import { Button } from '@/platform/components/button';
+import { Button } from '@/systems/platform/components/button';
 import App, { NotFound } from '@/platform/app/shell/App';
 import Home from '@/platform/app/pages/home/Home';
 import PrototypeLayout from '@/platform/modules/prototypes/viewer/PrototypeLayout';

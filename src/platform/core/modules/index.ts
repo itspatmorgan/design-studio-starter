@@ -36,7 +36,7 @@ export type ModuleSpec = {
   // Prototypes may import the module's lib/index.ts as `@module/<id>`, the one way a prototype can reach into a
   // module (the import guard allows exactly that). Removing the module while a prototype imports it is refused.
   lib?: true;
-  // system content files the module brings (rules, skills), as paths inside src/platform/ ("rules/examples.md"; a trailing
+  // system content files the module brings (rules, skills), as paths inside src/systems/platform/ ("rules/examples.md"; a trailing
   // slash is a whole folder, like a skill's). `when` finishes the sentence "When the person ..." in AGENTS.md,
   // which routes agents to the rule; pnpm studio sync writes those lines for the modules that are on.
   instructions?: { path: string; when?: string }[];

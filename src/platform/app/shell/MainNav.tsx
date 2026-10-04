@@ -2,7 +2,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Moon02Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Sun01Icon,
 } from '@hugeicons/core-free-icons';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/platform/components/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/platform/components/tooltip';
 import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 import { Link, useRouterState, type LinkProps } from '@tanstack/react-router';

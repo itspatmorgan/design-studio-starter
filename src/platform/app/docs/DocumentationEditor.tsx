@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { Button } from '@/platform/components/button';
+import { Button } from '@/systems/platform/components/button';
 import SourceEditor from '@/platform/core/source/SourceEditor';
 import type { SourceAccess } from '@/platform/core/source/access';
 import { documentationRequest } from './documentationSource';

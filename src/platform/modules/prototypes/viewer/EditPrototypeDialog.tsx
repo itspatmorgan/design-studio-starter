@@ -5,9 +5,9 @@ import { formatDate } from '@/platform/app/data/manifest';
 import type { PrototypeInfo } from '@/platform/app/data/types';
 import { MODULES } from '@/platform/app/data/modules';
 import { policyFor } from '@/platform/core/permissions';
-import { Button } from '@/platform/components/button';
-import { Input } from '@/platform/components/input';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
+import { Button } from '@/systems/platform/components/button';
+import { Input } from '@/systems/platform/components/input';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/systems/platform/components/dialog';
 
 type Props = { proto: PrototypeInfo; open: boolean; onOpenChange: (open: boolean) => void };
 

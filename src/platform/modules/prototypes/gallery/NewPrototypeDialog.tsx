@@ -7,9 +7,9 @@ import { Add01Icon } from '@hugeicons/core-free-icons';
 import { createPrototype, useMe } from '@/platform/app/data/files';
 import { prototypeLink, setManifest } from '@/platform/app/data/manifest';
 import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
-import { Button } from '@/platform/components/button';
-import { Input } from '@/platform/components/input';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
+import { Button } from '@/systems/platform/components/button';
+import { Input } from '@/systems/platform/components/input';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/systems/platform/components/dialog';
 
 export default function NewPrototypeButton() {
   // Dev only: in the build, this is false and the rest is left out of the deployed site.

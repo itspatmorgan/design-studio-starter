@@ -25,7 +25,7 @@ export function platformReferences({ root, modules, enabled, systemContent }) {
       return { source, title: entry.name === 'README.md' && id !== 'core' ? label : fm?.title ?? text.match(/^#\s+(.+)$/m)?.[1] ?? entry.name,
         ...(id === 'core' && Number.isFinite(fm?.referenceOrder) ? { order: fm.referenceOrder } : {}) };
     }) : [];
-    const links = related.filter((item) => item.targets.some((target) => references.some((ref) => target === ref.source)) || declared.some((d) => item.source === `/platform/${d.path}` || item.source.startsWith(`/platform/${d.path.endsWith('/') ? d.path : d.path + '/'}`)));
+    const links = related.filter((item) => item.targets.some((target) => references.some((ref) => target === ref.source)) || declared.some((d) => item.source === `/systems/platform/${d.path}` || item.source.startsWith(`/systems/platform/${d.path.endsWith('/') ? d.path : d.path + '/'}`)));
     return { id, label, enabled: on, references, related: links.map(({ title, href }) => ({ title, href })) };
   };
   return [group('core', 'Platform foundations', '/platform/core', true), {

@@ -46,7 +46,7 @@ test('a module pack goes to its folder, with systemContent files and content sen
   assert.deepEqual(plan.problems, []);
   assert.deepEqual(plan.moves.map((m) => m.to), [
     'src/platform/modules/quote/module.ts', 'src/platform/modules/quote/app.tsx', 'src/platform/modules/quote/lib/index.ts',
-    'src/platform/rules/quote.md', 'src/platform/skills/quote-tour/SKILL.md', 'src/quote/sample/meta.json',
+    'src/systems/platform/rules/quote.md', 'src/systems/platform/skills/quote-tour/SKILL.md', 'src/quote/sample/meta.json',
   ]);
 });
 
@@ -94,7 +94,7 @@ test('turning a module off and on edits the one list in studio.config.ts', () =>
 
 test('the AGENTS.md lines come from the modules that are on, and replace themselves', () => {
   const block = agentsBlock([spec, { id: 'plain' }]);
-  assert.match(block, /When the person wants a quote, read \[src\/platform\/rules\/quote\.md\]\(src\/platform\/rules\/quote\.md\)\./);
+  assert.match(block, /When the person wants a quote, read \[src\/systems\/platform\/rules\/quote\.md\]\(src\/systems\/platform\/rules\/quote\.md\)\./);
   assert.ok(!block.includes('quote-tour'), 'a systemContent entry with no "when" is not routed');
   const agents = '# A\n\nWhen the person asks for a canvas, read x.\nFind out who.\n';
   const once = applyAgentsBlock(agents, block);

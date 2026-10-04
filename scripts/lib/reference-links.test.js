@@ -7,9 +7,9 @@ import readme from '../build/remark-readme-guide.js';
 
 test('repository links resolve from SystemContent and between references', () => {
   const resolve = (href, base) => markdownPath(new URL(href, `http://doc${base}/`).pathname);
-  assert.equal(resolve('../../../platform/modules/systems/README.md', '/systems/platform/rules'), '/documentation/reference/platform/modules/systems/README.md');
+  assert.equal(resolve('../../../../platform/modules/systems/README.md', '/systems/platform/rules'), '/documentation/reference/platform/modules/systems/README.md');
   assert.equal(resolve('reference.md', '/documentation/reference/platform/modules/systems'), '/documentation/reference/platform/modules/systems/reference.md');
-  assert.equal(resolve('../../../platform/rules/systems.md', '/documentation/reference/platform/modules/systems'), '/systems/platform/rules/systems');
+  assert.equal(resolve('../../../systems/platform/rules/systems.md', '/documentation/reference/platform/modules/systems'), '/systems/platform/rules/systems');
   assert.equal(resolve('./main.tsx', '/prototypes/patrick/example'), '/prototypes/patrick/example/main.tsx');
   assert.equal(markdownPath('/documentation/guide/systemContent'), '/documentation/guide/systemContent');
 });
@@ -32,6 +32,6 @@ test('full README rendering retains developer content without repeating its titl
 });
 
 test('repository Context links resolve to the Context reader', () => {
-  assert.equal(markdownPath('/platform/context/personas.md'), '/systems/platform/context/personas');
+  assert.equal(markdownPath('/systems/platform/context/personas.md'), '/systems/platform/context/personas');
   assert.equal(markdownPath('/systems/platform/rules/documentation-standards'), '/systems/platform/rules/documentation-standards');
 });

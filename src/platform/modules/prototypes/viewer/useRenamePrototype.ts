@@ -1,6 +1,6 @@
 import { useRouter } from '@tanstack/react-router';
 import { renamePrototype } from '@/platform/app/data/files';
-import { toast } from '@/platform/components/toast';
+import { toast } from '@/systems/platform/components/toast';
 import { setManifest } from '@/platform/app/data/manifest';
 import { addressOf } from '@/platform/core/roots';
 import type { PrototypeInfo } from '@/platform/app/data/types';

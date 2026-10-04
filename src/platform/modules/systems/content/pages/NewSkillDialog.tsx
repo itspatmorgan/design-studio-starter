@@ -5,10 +5,10 @@
 // (src/platform/modules/systems/content/skills.ts), and again by the file layer.
 import { useState } from 'react';
 import { NAME_MAX, descriptionProblem, nameProblem } from '@/platform/modules/systems/content/skills';
-import { Button } from '@/platform/components/button';
-import { Input } from '@/platform/components/input';
-import { Textarea } from '@/platform/components/textarea';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/platform/components/dialog';
+import { Button } from '@/systems/platform/components/button';
+import { Input } from '@/systems/platform/components/input';
+import { Textarea } from '@/systems/platform/components/textarea';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/systems/platform/components/dialog';
 
 type Props = { open: boolean; onOpenChange: (open: boolean) => void; onCreate: (name: string, description: string) => Promise<void> };
 

@@ -56,7 +56,7 @@ const titleOf = (id) => id.split('-').map((w) => w.charAt(0).toUpperCase() + w.s
 const slug = (text) => text.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/^[^a-z]+/, '');
 
 // ---- places that must never be deleted, whatever a pack or a flag says
-const PROTECTED = new Set(['src', 'src/platform', 'src/platform/modules', 'src/prototypes', 'src/lib', 'src/platform', 'src/platform/rules', 'src/platform/context', 'src/platform/skills', 'src/systems', 'src/types']);
+const PROTECTED = new Set(['src', 'src/platform', 'src/platform/modules', 'src/prototypes', 'src/lib', 'src/systems/platform', 'src/systems/platform/rules', 'src/systems/platform/context', 'src/systems/platform/skills', 'src/systems', 'src/types']);
 function removable(relative) {
   const clean = path.posix.normalize(relative.replace(/\/$/, ''));
   if (!relative || clean.startsWith('..') || clean.startsWith('/') || !clean.startsWith('src/') || PROTECTED.has(clean)) throw new Error(`Refusing to delete ${relative}.`);
@@ -236,6 +236,7 @@ function remove() {
   const [id] = positional;
   if (!id) fail('Usage: pnpm studio remove <module|system> [--content] [--yes] [--force]');
   const isModule = Object.hasOwn(MODULES, id) && MODULES[id];
+  if (id === 'platform') fail('The Platform system is supplied with Studio and cannot be removed.');
   const isSystem = !isModule && Object.hasOwn(PROTOTYPE_SYSTEMS, id);
   if (!isModule && !isSystem) fail(`Nothing is called "${id}". Modules: ${Object.keys(MODULES).join(', ')}. Design systems: ${SYSTEM_IDS.join(', ')}.`);
   const paths = [];
@@ -244,7 +245,7 @@ function remove() {
     const spec = MODULES[id];
     if (!spec.optional) fail(`The ${id} module can't be removed yet; other parts of the app still use it.`);
     paths.push(`src/platform/modules/${id}`);
-    for (const h of spec.instructions ?? []) paths.push(`src/platform/${h.path}`);
+    for (const h of spec.instructions ?? []) paths.push(`src/systems/platform/${h.path}`);
     if (spec.section?.folder && !spec.section.folder.startsWith(`src/platform/modules/${id}`)) {
       if (flags.content) paths.push(spec.section.folder);
       else if (fs.existsSync(rel(spec.section.folder))) notes.push(`Its content in ${spec.section.folder} stays. Add --content to delete that too.`);

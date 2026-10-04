@@ -304,7 +304,9 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
       return { folder: e.name, name: String(fm.name ?? e.name), description: String(fm.description ?? '') };
     }) : [];
     const agentsFile = system === 'platform' ? path.join(ROOT, 'AGENTS.md') : path.join(base, 'AGENTS.md');
-    maps[system] = systemContentMap({ agents: fs.existsSync(agentsFile) ? fs.readFileSync(agentsFile, 'utf8') : null, rules, skills, root: 'src/' + systemRoot(system) });
+    const localAgents = path.join(base, 'AGENTS.md');
+    const agents = [agentsFile, ...(localAgents !== agentsFile ? [localAgents] : [])].filter((file) => fs.existsSync(file)).map((file) => fs.readFileSync(file, 'utf8')).join('\n');
+    maps[system] = systemContentMap({ agents: agents || null, rules, skills, root: 'src/' + systemRoot(system) });
     for (const file of maps[system].missing) { out.error('[manifest] Agent instructions link to ' + file + ', which is missing.'); errors++; }
   }
   // Each prototype system's theme.css may only set values under its own class, like
