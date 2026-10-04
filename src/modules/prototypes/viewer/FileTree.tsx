@@ -526,7 +526,7 @@ export default function FileTree({ proto, current, embedded = false, branch }: F
         {editable && (() => {
           const options = newOptions('');
           if (options.length === 1) {
-            return <IconButton label={options[0].label} onClick={() => startCreate('', options[0].target)}><HugeiconsIcon icon={Add01Icon} size={14} /></IconButton>;
+            return <IconButton label="New" onClick={() => startCreate('', options[0].target)}><HugeiconsIcon icon={Add01Icon} size={14} /></IconButton>;
           }
           return (
             <DropdownMenu>
@@ -534,7 +534,7 @@ export default function FileTree({ proto, current, embedded = false, branch }: F
                 <TooltipTrigger render={<DropdownMenuTrigger aria-label="New" className={iconButton} />}>
                   <HugeiconsIcon icon={Add01Icon} size={14} />
                 </TooltipTrigger>
-                <TooltipContent side="bottom">{options.length > 2 ? 'New' : `New ${options.map((o) => o.label.replace('New ', '')).join(' or ')}`}</TooltipContent>
+                <TooltipContent side="bottom">New</TooltipContent>
               </Tooltip>
               <DropdownMenuContent align="end" className="min-w-40">
                 {options.map((o) => (
