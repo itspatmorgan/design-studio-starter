@@ -74,7 +74,7 @@ function NewPrototype() {
             {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={saving}>{saving ? 'Creating…' : 'Create'}</Button>
+              <Button type="submit" disabled={saving}>{saving ? 'Creating' : 'Create'}</Button>
             </DialogFooter>
           </form>
         </DialogContent>

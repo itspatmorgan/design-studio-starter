@@ -63,7 +63,7 @@ export default function DuplicatePrototypeDialog({ proto, open, onOpenChange }: 
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <DialogFooter>
           <Button type="button" variant="outline" disabled={saving} onClick={() => confirming ? setConfirming(false) : onOpenChange(false)}>{confirming ? 'Back' : 'Cancel'}</Button>
-          <Button type="submit" disabled={saving || !title.trim()}>{saving ? 'Creating…' : confirming ? 'Create rebuild copy' : rebuild ? 'Continue' : 'Duplicate'}</Button>
+          <Button type="submit" disabled={saving || !title.trim()}>{saving ? 'Creating' : confirming ? 'Create rebuild copy' : rebuild ? 'Continue' : 'Duplicate'}</Button>
         </DialogFooter>
       </form>
     </DialogContent>

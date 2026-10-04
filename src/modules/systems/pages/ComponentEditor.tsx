@@ -84,7 +84,7 @@ export function ComponentEditor({ system, component, onDone }: { system: string;
             <div className="max-w-sm text-center">
               <p className="text-sm font-medium text-foreground">{tab.missing}</p>
               <p className="mt-1 mb-4 text-sm text-muted-foreground">Create the files this component is missing, from a template.</p>
-              <Button onClick={addFiles} disabled={adding}>{adding ? 'Creating…' : 'Create files'}</Button>
+              <Button onClick={addFiles} disabled={adding}>{adding ? 'Creating' : 'Create files'}</Button>
             </div>
           </div>
         </>

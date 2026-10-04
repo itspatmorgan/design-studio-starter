@@ -79,7 +79,7 @@ function Form({ onCreate, onCancel }: { onCreate: Props['onCreate']; onCancel: (
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-        <Button type="submit" disabled={!ready || saving}>{saving ? 'Creating…' : 'Create skill'}</Button>
+        <Button type="submit" disabled={!ready || saving}>{saving ? 'Creating' : 'Create skill'}</Button>
       </DialogFooter>
     </form>
   );

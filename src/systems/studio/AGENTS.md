@@ -4,4 +4,6 @@ This is the required Studio system, supplied and maintained with platform releas
 
 When working on Studio, read [Principles](context/principles.md) and [Personas](context/personas.md). Follow the repository’s [operating instructions](../../../AGENTS.md), which route tasks to this system’s rules and skills.
 
+When adding or changing interface text or actions, read [UI copy rules](rules/ui-copy.md).
+
 Keep product-specific guidance in its own system. Prototype runtime code cannot import Studio components or assets. Platform infrastructure remains under `src/platform/`.

@@ -61,7 +61,7 @@ export function usePrototypeActions(proto: PrototypeInfo) {
     ],
     [
       editable && { label: 'Rename', icon: PencilEdit02Icon, onSelect: () => setRenaming(true) },
-      editable && proto.contributorKey === me && { label: 'Duplicate…', icon: Copy01Icon, onSelect: () => setDuplicating(true) },
+      editable && proto.contributorKey === me && { label: 'Duplicate', icon: Copy01Icon, onSelect: () => setDuplicating(true) },
       editable && (proto.status === 'archived'
         ? { label: 'Unarchive', icon: ArchiveRestoreIcon, onSelect: () => setArchived(false) }
         : { label: 'Archive', icon: Archive02Icon, onSelect: () => setArchived(true) }),

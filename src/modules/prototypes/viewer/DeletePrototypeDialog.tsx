@@ -47,7 +47,7 @@ export default function DeletePrototypeDialog({ proto, open, onOpenChange }: Pro
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button variant="destructive" disabled={deleting} onClick={remove}>{deleting ? 'Deleting…' : 'Delete prototype'}</Button>
+          <Button variant="destructive" disabled={deleting} onClick={remove}>{deleting ? 'Deleting' : 'Delete prototype'}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

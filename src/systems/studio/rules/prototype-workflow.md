@@ -5,7 +5,7 @@ Read the [prototype contract](../../../modules/prototypes/reference.md) when cre
 ## Create and edit
 
 - Create prototypes with `pnpm new "Prototype Name"`. Do not copy a whole prototype folder as a substitute for this command.
-- A **Duplicate…** action creates a separate exploration. If metadata has `rebuild`, read its target system guidance as well as the currently assigned system. Work only in the copy; migrate implementation and `system` together, verify it, then remove `rebuild`. Preserve the original. The target is a request, not the current runtime assignment.
+- A **Duplicate** action creates a separate exploration. If metadata has `rebuild`, read its target system guidance as well as the currently assigned system. Work only in the copy; migrate implementation and `system` together, verify it, then remove `rebuild`. Preserve the original. The target is a request, not the current runtime assignment.
 - Write new views as `.tsx` with a default-exported React component. Keep helper files under underscore names, such as `_components/`.
 - Replace the `emptyView` export when implementing an empty view.
 - Use the assigned design system as a toolkit. Build local components when the experiment needs them.

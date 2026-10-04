@@ -51,7 +51,7 @@ export default function RenamePrototypeDialog({ proto, open, onOpenChange }: Pro
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-            <Button type="submit" disabled={saving}>{saving ? 'Renaming…' : 'Rename'}</Button>
+            <Button type="submit" disabled={saving}>{saving ? 'Renaming' : 'Rename'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
