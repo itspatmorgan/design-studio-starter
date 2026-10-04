@@ -20,7 +20,12 @@
 /* Local light scopes block the global mode; local dark scopes work in light Studio too. */
 @custom-variant dark (&:where(.dark, .dark *, [data-color-mode="dark"], [data-color-mode="dark"] *):not(:where([data-color-mode="light"], [data-color-mode="light"] *)));
 
-/* Code highlighting in Guide pages (Shiki), following the color mode. */
+/* Highlighted blocks use the active Studio surface rather than Typography's dark pre default. */
+[data-rehype-pretty-code-figure] pre {
+  background-color: color-mix(in oklab, var(--muted) 50%, transparent);
+  color: var(--foreground);
+}
+/* Code highlighting in shared Markdown (Shiki), following the color mode. */
 [data-rehype-pretty-code-figure] code span { color: var(--shiki-light); }
 .dark [data-rehype-pretty-code-figure] code span { color: var(--shiki-dark); }
 
