@@ -23,7 +23,7 @@ flowchart TD
   task --> target{Target of the work}
   target -->|Studio application| studio[Studio AGENTS.md<br/>Principles and Personas]
   target -->|Prototype| resolve[Prototype metadata<br/>Named system, default, or None]
-  resolve -->|Named system| entry[Assigned system's AGENTS.md<br/>Relevant Context and Rules<br/>Applicable Skills and references]
+  resolve -->|Named system| entry[Assigned system's AGENTS.md<br/>Context: relevant knowledge<br/>Rules: standing instructions<br/>Skills: applicable procedures]
   resolve -->|None| local[Prototype-local intent<br/>Components and styling]
   studio --> work[Agent works with<br/>the files it has read]
   entry --> work

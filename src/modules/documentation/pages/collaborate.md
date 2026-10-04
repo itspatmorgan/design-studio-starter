@@ -18,6 +18,24 @@ Prototype-local components and styles give you room to experiment without changi
 
 Saving changes updates your local files. To share them, ask your agent to review and commit the work, then push it through your team's review process. Other contributors pull those changes into their copies.
 
+```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 20, "rankSpacing": 30, "subGraphTitleMargin": {"top": 10, "bottom": 15}}}}%%
+flowchart TB
+  accTitle: Save and share repository changes
+  accDescr: Saving changes local files. Committing records changes in local Git history. Pushing shares commits with the repository. Another contributor pulls commits into their local history and working files. These actions do not publish a viewing site.
+  subgraph yours[Your local copy]
+    edits[Unsaved edits] -->|Save| files[Working files]
+    files -->|Stage and commit| history[Local Git history]
+  end
+  history -->|Push commits| remote[Shared Git repository]
+  subgraph theirs[Another contributor's local copy]
+    received[Local Git history] -->|Update working files| otherFiles[Working files]
+  end
+  remote -->|Pull and integrate commits| received
+```
+
+A commit records a version in local Git history. Push shares commits; pull receives and integrates them. Conflicts may need resolution. Follow your team's branching and review process.
+
 Tell your agent when to share work. A local save does not publish it or send it to the team.
 
 ## Publish for review

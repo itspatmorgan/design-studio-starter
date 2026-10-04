@@ -46,6 +46,26 @@ Right-click a view and choose **Make lofi** to explore in grayscale with handwri
 
 Your assigned design system supplies components and styles. You can also explore local alternatives inside the prototype. Those experiments stay separate from the shared system.
 
+```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 20, "rankSpacing": 30, "subGraphTitleMargin": {"top": 10, "bottom": 15}}}}%%
+flowchart TB
+  accTitle: A prototype's local scope and reusable foundations
+  accDescr: A prototype contains interactive views, local helpers, and optional documents, diagrams, and canvases. Its code can reuse its assigned design system, independent shared utilities, installed packages, and public libraries from enabled modules. Other prototypes, other design systems, and private platform code are outside its dependency boundary.
+  subgraph prototype[One prototype — local experiment]
+    direction TB
+    views[Interactive views]
+    helpers[Local components and helpers]
+    material[Documents, diagrams,<br/>and canvases — optional]
+    views -->|Uses| helpers
+    material -.->|Explains and arranges| views
+  end
+  prototype -->|Code may reuse| system[Assigned<br/>design system]
+  prototype -->|Code may reuse| tools[Shared utilities<br/>and packages]
+  prototype -->|Code may reuse| libraries[Enabled public<br/>module libraries]
+```
+
+Your code can reuse the assigned system, independent shared utilities, installed packages, and public libraries from enabled modules. Other prototypes, other systems, and private platform code stay outside its dependencies. A prototype with no assigned system uses local components and styles. Moving a local component into a shared system is a coordinated change.
+
 Edit your own artifacts with your agent or the [shared source workflow](/documentation/guide/home#working-with-files). Other contributors' source opens read-only.
 
 Use the prototype's **…** menu to **Rename**, **Duplicate**, or archive it. Archiving keeps it locally and excludes it from the published site. Put project context in a document artifact.

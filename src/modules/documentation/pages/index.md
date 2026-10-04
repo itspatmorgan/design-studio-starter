@@ -10,16 +10,58 @@ Design Studio brings your prototypes, design system, and team context into one w
 
 You do not need to understand the whole platform to begin. Start with the sample prototype, then ask your coding agent to help create your own.
 
+## Your work and shared foundations
+
+Your prototypes are independent working areas. Systems and platform capabilities support the whole studio. Coordinate changes to these shared foundations with your team.
+
+```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 20, "rankSpacing": 30, "subGraphTitleMargin": {"top": 10, "bottom": 15}}}}%%
+flowchart TB
+  accTitle: Studio ownership and safe working areas
+  accDescr: Platform infrastructure composes modules that provide studio capabilities. Each system owns foundations, components, context, rules, and skills. Contributor-owned prototypes use an assigned system and contain artifacts for local experiments.
+  platform[Platform infrastructure]
+  modules[Modules<br/>Studio capabilities]
+  subgraph system[System scope]
+    ui[Foundations<br/>and components]
+    knowledge[Context, Rules,<br/>and Skills]
+  end
+  subgraph yours[Prototype scope: your experiments]
+    artifacts[Views, documents,<br/>diagrams, and canvases]
+  end
+  platform -->|Composes| modules
+  modules -->|Provides capabilities| system
+  modules -->|Provides capabilities| yours
+  ui -->|Components and tokens| artifacts
+  knowledge -.->|Guides people and agents| yours
+```
+
+These boundaries describe collaboration scope. Your contributor area is the default place for independent work. Modules provide capabilities; system knowledge guides people and agents rather than creating a code dependency. Documents, diagrams, and canvases are optional capabilities.
+
 ## Working with your agent
 
 Open the same repository in your coding agent and run Studio alongside it. Describe what you want to explore. The agent changes files; Studio lets you see and interact with the result.
 
 ```mermaid
-flowchart LR
-  accTitle: Designing with an agent
-  accDescr: A person describes an idea to their coding agent, which changes files. The person reviews the result in Studio and gives feedback.
-  person[Describe your idea] --> agent[Agent changes files] --> studio[Review in Studio] --> person
+sequenceDiagram
+  accTitle: A person and agent refine a prototype
+  accDescr: A person supplies intent. The agent reads relevant repository context, builds and checks the work, and presents it for review. The person directs revisions or accepts the result.
+  actor Person
+  participant Agent as Coding agent
+  participant Repo as Repository files
+  Person->>Agent: Describe outcome and supply context
+  Agent->>Repo: Read relevant instructions and current files
+  Repo-->>Agent: Guidance and working material
+  Agent->>Repo: Build and check changes
+  Agent-->>Person: Present result and remaining questions
+  opt Further refinement
+    Person->>Agent: Direct the next change
+    Agent->>Repo: Revise and check
+    Agent-->>Person: Present updated result
+  end
+  Note over Person,Agent: The person can also edit the work directly
 ```
+
+This shows one iteration. Checks can fail, and the agent may need clarification before it builds.
 
 The [Agent context chapter](/documentation/guide/agent-context) diagrams how repository instructions lead to the right system knowledge.
 
