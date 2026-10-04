@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { FILE_TYPES } from '../../../../scripts/lib/file-types.js';
-import { assertUniqueExtensions, handbookType, matchFileType } from '../fileTypes.ts';
+import { assertUniqueExtensions, systemContentType, matchFileType } from '../fileTypes.ts';
 import { globsFor } from './globs.ts';
 import type { ModuleSpec } from './index.ts';
 
@@ -15,7 +15,6 @@ const examples = module('examples', { key: 'examples', folder: 'src/examples', i
 const modules = [
   module('prototypes', { key: 'prototypes', folder: 'src/prototypes', items: 'prototypes', byPerson: true }),
   module('documentation', { key: 'documentation', folder: 'src/platform/modules/documentation/pages' }),
-  module('handbook', { key: 'handbook', folder: 'src/handbook', items: 'handbook' }),
   module('systems', { key: 'systems', folder: 'src/systems' }),
   examples,
 ];
@@ -44,8 +43,8 @@ test('prototype documents stay within prototype-shaped sections', needs('documen
   ]));
 });
 
-test('the fallback type lists the Handbook files no other type opens', needs('text', 'handbook'), () => {
-  assert.deepEqual(globsFor('text', types, modules), ['/handbook/**/*', '!/handbook/**/*.md']);
+test('the fallback type lists the SystemContent files no other type opens', needs('text', 'systems'), () => {
+  assert.deepEqual(globsFor('text', types, modules), ['/platform/context', '/platform/rules', '/platform/skills', '/systems/*/context', '/systems/*/rules', '/systems/*/skills'].flatMap((root) => [root + '/**/*', '!' + root + '/**/*.md']));
 });
 
 test('without the examples module, nothing looks in /examples', () => {
@@ -64,15 +63,15 @@ test('an unknown type is named', () => {
   assert.throws(() => globsFor('nope', types, modules), /no "nope" file type/);
 });
 
-test('Handbook Markdown stays readable and validated without prototype Documents', () => {
+test('SystemContent Markdown stays readable and validated without prototype Documents', () => {
   const { document: _document, ...withoutDocuments } = types;
   assert.equal(matchFileType(withoutDocuments, 'notes.md'), null);
-  assert.equal(handbookType(withoutDocuments, 'notes.md'), 'handbook');
-  assert.equal(handbookType(withoutDocuments, 'support.js'), 'text');
-  assert.deepEqual(globsFor('handbook', withoutDocuments, modules), ['/handbook/**/*.md']);
-  assert.deepEqual(globsFor('text', withoutDocuments, modules), ['/handbook/**/*', '!/handbook/**/*.md']);
-  assert.match(withoutDocuments.handbook.template!('team-context.md'), /title: Team Context/);
-  assert.ok(withoutDocuments.handbook.check!({ source: '---\ntitle: Unclosed', frontmatter: null }).length);
+  assert.equal(systemContentType(withoutDocuments, 'notes.md'), 'systems');
+  assert.equal(systemContentType(withoutDocuments, 'support.js'), 'text');
+  assert.deepEqual(globsFor('systems', withoutDocuments, modules), ['/platform/context/**/*.md', '/platform/rules/**/*.md', '/platform/skills/**/*.md', '/systems/*/context/**/*.md', '/systems/*/rules/**/*.md', '/systems/*/skills/**/*.md']);
+  assert.deepEqual(globsFor('text', withoutDocuments, modules), ['/platform/context', '/platform/rules', '/platform/skills', '/systems/*/context', '/systems/*/rules', '/systems/*/skills'].flatMap((root) => [root + '/**/*', '!' + root + '/**/*.md']));
+  assert.match(withoutDocuments.systems.template!('team-context.md'), /title: Team Context/);
+  assert.ok(withoutDocuments.systems.check!({ source: '---\ntitle: Unclosed', frontmatter: null }).length);
 });
 
 const withoutDocument = (specs: typeof types) => Object.fromEntries(Object.entries(specs).filter(([id]) => id !== 'document'));
@@ -80,5 +79,5 @@ const withoutDocument = (specs: typeof types) => Object.fromEntries(Object.entri
 test('extension ownership is unique within each content scope', () => {
   assert.doesNotThrow(() => assertUniqueExtensions(types));
   assert.throws(() => assertUniqueExtensions({ ...withoutDocument(types), prototypeMarkdown: {extensions: ['.md'], label: 'Markdown'}, other: { extensions: ['.md'], label: 'Other' } }), /both use .md in prototype/);
-  assert.throws(() => assertUniqueExtensions({ ...types, other: { extensions: ['.md'], label: 'Other', inPrototype: false, inHandbook: true } }), /both use .md in handbook/);
+  assert.throws(() => assertUniqueExtensions({ ...types, other: { extensions: ['.md'], label: 'Other', inPrototype: false, inSystemContent: true } }), /both use .md in systemContent/);
 });

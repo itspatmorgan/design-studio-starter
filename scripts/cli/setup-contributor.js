@@ -12,7 +12,7 @@ import CONFIG from '../../studio.config.ts';
 import { contributorFile } from '../lib/contributors.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-// Keys that are app page URLs, so they can't be contributor folders (/systems, /documentation, /handbook, /examples): the modules' sections.
+// Keys that are app page URLs, so they can't be contributor folders (/systems, /documentation, /examples): the modules' sections.
 const RESERVED = SECTION_KEYS;
 const PERSONAL = /@(gmail|googlemail|yahoo|hotmail|outlook|live|icloud|me|mac|aol|proton|protonmail|hey)\./i;
 

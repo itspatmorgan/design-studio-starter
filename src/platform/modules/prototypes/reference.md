@@ -1,6 +1,6 @@
 # Prototype contract
 
-This reference defines prototype files, metadata, and links. Agent behavior belongs in the [prototype rule](../../../handbook/rules/prototype-workflow.md).
+This reference defines prototype files, metadata, and links. Agent behavior belongs in the [prototype rule](../../rules/prototype-workflow.md).
 
 ## Artifacts and files
 
@@ -61,4 +61,4 @@ Remove the comment for normal appearance. A folder named `lofi` has no special b
 
 Dependency and style requirements are maintained in the prototype rule. Module checks enforce them through `scripts/lib/scope.js` and the style checks.
 
-Whole-prototype archiving is defined in the [archiving rule](../../../handbook/rules/archiving.md).
+Whole-prototype archiving is defined in the [archiving rule](../../rules/archiving.md).

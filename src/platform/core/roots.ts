@@ -1,11 +1,12 @@
-// Where an item's files live, and where it opens. A prototype is src/prototypes/<contributor>/<id>/, at
-// /prototypes/<contributor>/<id>. The Handbook (src/handbook/) is shown the same way, one section at a time,
-// under the reserved key "handbook": /handbook/context is src/handbook/docs/. Nobody is the
-// "handbook" contributor, so the app never offers to change a section as if it were someone's
-// prototype: these are platform files, changed in the repo and reviewed.
+// System knowledge lives in src/platform/ or src/systems/<id>/ and opens at /systems/<id>/<section>.
+// The reserved system-content key adapts these files to the shared file APIs, not a contributor.
 // This file has no imports, so Node scripts can load it directly.
 
-export const HANDBOOK_KEY = 'handbook';
+export const SYSTEM_CONTENT_KEY = 'system-content';
+export const systemRoot = (system: string) => system === 'platform' ? 'platform' : `systems/${system}`;
+export const contentId = (system: string, section: string) => `${system}:${section}`;
+export const contentParts = (id: string) => { const [system, section] = id.split(':'); return { system, section }; };
+export const contentSection = (id: string) => contentParts(id).section;
 
 // A prototype system's components (src/systems/<id>/components/) are opened for editing the same
 // way: under the reserved key "systems" (already an app page URL, so nobody's folder), with the
@@ -19,36 +20,37 @@ export const SYSTEMS_KEY = 'systems';
 let sectionKeys: ReadonlySet<string> = new Set();
 export const setSections = (keys: Iterable<string>) => { sectionKeys = new Set(keys); };
 
-// The Handbook's sections: the folders in src/handbook/, in the order they're shown. The shape of
-// each is checked by src/platform/modules/handbook/node/handbook-check.js.
-export const HANDBOOK_SECTIONS = {
-  docs: { title: 'Context', description: 'Context for people and agents: principles, personas, and anything worth writing down once.' },
+// The system content's sections: the folders in src/platform/, in the order they're shown. The shape of
+// each is checked by src/platform/modules/systems/content/node/content-check.js.
+export const SYSTEM_CONTENT_SECTIONS = {
+  context: { title: 'Context', description: 'Context for people and agents: principles, personas, and anything worth writing down once.' },
   rules: { title: 'Rules', description: 'Standing constraints for agents. AGENTS.md routes to the applicable rules.' },
   skills: { title: 'Skills', description: 'Procedures your agent follows when you ask, one folder each, in the Agent Skills format.' },
 } as const;
 
-export const isHandbookSection = (id: string): id is keyof typeof HANDBOOK_SECTIONS =>
-  Object.prototype.hasOwnProperty.call(HANDBOOK_SECTIONS, id);
+export const isSystemContentSection = (id: string): id is keyof typeof SYSTEM_CONTENT_SECTIONS =>
+  Object.prototype.hasOwnProperty.call(SYSTEM_CONTENT_SECTIONS, id);
 
 // The key of the section that holds everyone's prototypes (the Prototypes module): /prototypes.
 export const PROTOTYPES_KEY = 'prototypes';
 
-// Whether a key names a section (handbook, systems, or a module section) rather than a person. The first part of an item's
+// Whether a key names a section (systemContent, systems, or a module section) rather than a person. The first part of an item's
 // address is a section's key, or, for a prototype, "prototypes" and then the person's.
-export const isSectionKey = (key: string) => key === HANDBOOK_KEY || key === SYSTEMS_KEY || sectionKeys.has(key);
+export const isSectionKey = (key: string) => key === SYSTEM_CONTENT_KEY || key === SYSTEMS_KEY || sectionKeys.has(key);
 
 // An item's address in the app, up to its id and without a base path: "/prototypes/patrick/hello-world"
 // for a prototype, "/examples/sample" for a section item.
 export const addressOf = (contributor: string, id: string) =>
-  isSectionKey(contributor) ? `/${contributor}/${contributor === HANDBOOK_KEY && id === 'docs' ? 'context' : id}` : `/${PROTOTYPES_KEY}/${contributor}/${id}`;
+  contributor === SYSTEM_CONTENT_KEY ? `/systems/${contentParts(id).system}/${contentParts(id).section}` : isSectionKey(contributor) ? `/${contributor}/${id}` : `/${PROTOTYPES_KEY}/${contributor}/${id}`;
 
 // Reads an item's address back: who or what holds it, its id, and the path after it. It also reads the
 // older form of a prototype's address, "/patrick/hello-world/…", so links saved before prototypes moved
 // under /prototypes still open. Null if there isn't an id.
 export function parseAddress(path: string): { contributor: string; id: string; rest: string[] } | null {
   const parts = path.split('/').filter(Boolean);
+  if (parts[0] === 'systems' && parts[1] && isSystemContentSection(parts[2])) return { contributor: SYSTEM_CONTENT_KEY, id: contentId(parts[1], parts[2]), rest: parts.slice(3) };
   const body = parts[0] === PROTOTYPES_KEY ? parts.slice(1) : parts;
-  return body.length >= 2 ? { contributor: body[0], id: body[0] === HANDBOOK_KEY && body[1] === 'context' ? 'docs' : body[1], rest: body.slice(2) } : null;
+  return body.length >= 2 ? { contributor: body[0], id: body[1], rest: body.slice(2) } : null;
 }
 
 // An item path in today's form: the older "/patrick/hello-world/lofi/main" becomes "/prototypes/patrick/hello-world/lofi/main".
@@ -60,7 +62,7 @@ export function canonicalPath(path: string): string {
 
 // The folder holding an item's files, relative to src/.
 export const rootOf = (contributor: string, id: string) =>
-  contributor === HANDBOOK_KEY ? `${HANDBOOK_KEY}/${id}`
+  contributor === SYSTEM_CONTENT_KEY ? `${systemRoot(contentParts(id).system)}/${contentParts(id).section}`
     : sectionKeys.has(contributor) ? `${contributor}/${id}`
     : contributor === SYSTEMS_KEY ? (id === 'platform' ? 'platform/components' : `${SYSTEMS_KEY}/${id}/components`)
     : `prototypes/${contributor}/${id}`;

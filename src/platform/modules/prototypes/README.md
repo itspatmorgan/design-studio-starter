@@ -48,12 +48,12 @@ Use the prototype's **…** menu to change its title or archive it. Archiving ke
 
 Read the [module contract](reference.md) for file structure and implementation details.
 
-The Prototypes module: the gallery at `/prototypes`, and the viewer every prototype, module artifact and Handbook section opens in. Required. The prototypes themselves are in `src/prototypes/<person>/<id>/`, which are your content.
+The Prototypes module: the gallery at `/prototypes`, and the viewer every prototype, module artifact and system context section opens in. Required. The prototypes themselves are in `src/prototypes/<person>/<id>/`, which are your content.
 
 - `module.ts`, `app.tsx`: who it is, its rail button, the `/prototypes` route, its front-page block, and its palette entries. A prototype opens through the platform's artifact routes (`src/platform/app/router.tsx`).
 - `gallery/`: the gallery, a prototype's card, and the New prototype dialog (browser).
 - `viewer/`: a prototype's layout, navigation and file tree, its menus and dialogs (browser). Source editing uses the [shared platform editor](../../core/source.md).
-- `src/platform/app/source/ArtifactSource.tsx`: adapts prototype and Handbook access to the shared editor.
+- `src/platform/app/source/ArtifactSource.tsx`: adapts prototype and system context access to the shared editor.
 - `node/create.js`: `pnpm new`, and what the New prototype button runs (Node).
 
-Agent contract: `src/handbook/rules/prototype-workflow.md`.
+Agent contract: `src/platform/rules/prototype-workflow.md`.

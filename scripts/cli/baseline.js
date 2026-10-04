@@ -19,7 +19,6 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 // A module's own files (what removing it deletes) and the words that mean source code is using it.
 const MODULES = {
   documentation: { paths: ['src/platform/modules/documentation'], pattern: "modules/documentation|'documentation'" },
-  handbook: { paths: ['src/handbook', 'src/platform/modules/handbook/map.ts', 'src/platform/modules/handbook/rules.ts', 'src/platform/modules/handbook/handbook.test.ts', 'src/platform/modules/handbook/pages'], pattern: 'handbook' },
   systems: { paths: ['src/systems', 'src/platform/modules/systems/pages', 'src/platform/modules/systems/data/loadDocs.ts'], pattern: 'systems' },
   canvas: { paths: ['src/platform/modules/canvas'], pattern: 'excalidraw|canvas' },
   diagrams: { paths: ['src/platform/modules/diagrams'], pattern: 'modules/diagrams' },
@@ -90,7 +89,7 @@ function coupling() {
     let out = '';
     try {
       out = execFileSync('git', ['grep', '-lEi', m.pattern, '--', 'src', 'scripts', 'vite.config.ts', 'package.json', 'tsconfig.app.json', 'tsconfig.node.json',
-        ':!*.md', ':!*.mdx', ':!*.excalidraw', ':!src/prototypes', ':!src/handbook', ':!*.test.ts', ':!src/platform/modules', ...m.paths.map((p) => `:!${p}`)],
+        ':!*.md', ':!*.mdx', ':!*.excalidraw', ':!src/prototypes', ':!src/platform', ':!*.test.ts', ':!src/platform/modules', ...m.paths.map((p) => `:!${p}`)],
       { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
     } catch (e) {
       if (e.status !== 1) throw e; // git grep exits 1 when nothing matches

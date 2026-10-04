@@ -15,11 +15,11 @@ A file type is the module capability declared by `type.ts` that recognizes and r
 | Views | Required prototype `.tsx` and `.jsx` views. |
 | Diagrams | Optional prototype `.mermaid` and `.mmd` diagrams. |
 | Documents | Optional prototype `.md` pages. |
-| Handbook | Required Handbook `.md` pages. |
+| Systems | Required system context `.md` pages. |
 | Canvases | Optional prototype `.excalidraw` scenes. |
-| Text files | Required fallback for other Handbook text files. |
+| Text files | Required fallback for other system context text files. |
 
-Extension ownership is unique within each scope. Documents and Handbook can both claim `.md` because their scopes differ.
+Extension ownership is unique within each scope. Documents and system context can both claim `.md` because their scopes differ.
 
 Other prototype files remain plain files. Underscore helpers are excluded from normal artifact discovery.
 
@@ -36,11 +36,11 @@ Other prototype files remain plain files. Underscore helpers are excluded from n
 
 `type.ts` imports only `../../core/fileTypes.ts`, because Node loads it directly.
 
-`inPrototype` defaults to true. `inHandbook` enables Handbook use. A `fallback` type opens other Handbook text files without claiming extensions.
+`inPrototype` defaults to true. `insystem content` enables system context use. A `fallback` type opens other system context text files without claiming extensions.
 
 Supported editor languages are `tsx`, `markdown`, `json`, `mermaid`, and `text`. The template supplies new-file content. The check reports invalid content.
 
-The app record is `Artifact`, and a loaded `Prototype` holds an `artifacts` collection. Manifest lookup and navigation use `findArtifact`, `firstArtifact`, `artifactLink`, and `artifactSlug`. Shared readers such as the Handbook reuse the same record and file-type machinery while keeping their own user-facing document terms.
+The app record is `Artifact`, and a loaded `Prototype` holds an `artifacts` collection. Manifest lookup and navigation use `findArtifact`, `firstArtifact`, `artifactLink`, and `artifactSlug`. Shared readers such as the system context reuse the same record and file-type machinery while keeping their own user-facing document terms.
 
 An `Embed` in `open.tsx` supplies a read-only preview for documents and canvases. Core resolves references and uses this contract without importing individual modules. `embedSurfaces` can restrict the preview to `document` or `canvas`; omitting it enables both. Types without a preview on that surface appear as cards. Canvas restricts its preview to documents, keeping canvas nesting bounded.
 
@@ -64,7 +64,7 @@ Restart the dev server after capability changes. Ordinary content edits are refl
 
 ## Add a type
 
-1. Create a module declaration with the appropriate optional status and Handbook routing.
+1. Create a module declaration with the appropriate optional status and system context routing.
 2. Add `type.ts` and `open.tsx`. Use Documents as a small reference implementation.
 3. Add `loader.ts` if published content needs bundled file loading.
 4. Use the artifact registry to resolve other artifacts rather than importing optional file types.

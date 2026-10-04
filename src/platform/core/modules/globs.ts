@@ -13,15 +13,15 @@ const extensionGlob = (extensions: readonly string[]) =>
 export function globsFor(id: string, types: Record<string, FileTypeSpec>, modules: readonly ModuleSpec[]): string[] {
   const spec = types[id];
   if (!spec) throw new Error(`There is no "${id}" file type, so its loader can't list files.`);
-  const handbook = itemFolders(modules, 'handbook').map(rootOf);
+  const systemContent = ['/platform/context', '/platform/rules', '/platform/skills', '/systems/*/context', '/systems/*/rules', '/systems/*/skills'];
   const patterns: string[] = [];
 
-  // The fallback type opens whatever no other type claims, in the Handbook only.
+  // The fallback type opens whatever no other type claims, in the system content only.
   if (spec.fallback) {
     const claimed = Object.entries(types)
-      .filter(([other, s]) => other !== id && s.inHandbook && s.extensions.length)
+      .filter(([other, s]) => other !== id && s.inSystemContent && s.extensions.length)
       .map(([, s]) => extensionGlob(s.extensions));
-    for (const root of handbook) patterns.push(`${root}/**/*`, ...claimed.map((c) => `!${root}/**/${c}`));
+    for (const root of systemContent) patterns.push(`${root}/**/*`, ...claimed.map((c) => `!${root}/**/${c}`));
     return patterns;
   }
   if (!spec.extensions.length) return patterns;
@@ -31,6 +31,6 @@ export function globsFor(id: string, types: Record<string, FileTypeSpec>, module
   for (const root of (spec.inPrototype === false ? [] : itemFolders(modules, 'prototypes').map(rootOf))) {
     patterns.push(`${root}/**/${extensions}`, `!${root}/**/_*/**`, `!${root}/**/_*`);
   }
-  if (spec.inHandbook) for (const root of handbook) patterns.push(`${root}/**/${extensions}`);
+  if (spec.inSystemContent) for (const root of systemContent) patterns.push(`${root}/**/${extensions}`);
   return patterns;
 }

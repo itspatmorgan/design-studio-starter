@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { HandbookMap } from '@/platform/modules/handbook/map';
+import type { SystemContentMap } from '@/platform/modules/systems/content/map';
 import type { SystemComponentDoc } from '@/platform/modules/systems/docs';
 import type { ThemeToken } from '@/platform/modules/systems/themeTokens';
 import type { DocsMode } from '@/platform/modules/systems/sources';
@@ -52,16 +52,16 @@ export type GuidePage = {
 
 // `sections` holds the artifacts of the modules' sections of prototype-shaped folders, by section key: the
 // module section artifacts (src/examples/, as `sections.examples`), shaped like prototypes.
-// `handbook` holds the Handbook's sections (src/handbook/, see src/platform/core/roots.ts), shaped like
+// `systemContent` holds the system content's sections (src/platform/, see src/platform/core/roots.ts), shaped like
 // prototypes.
-// `handbookMap` is how an agent reads the Handbook, worked out from the files (modules/handbook/map.ts).
+// `systemContentMap` is how an agent reads the system content, worked out from the files (modules/systems/content/map.ts).
 // `systems` holds each system's components and their docs (systemDocs.ts), the tokens its theme
 // defines (themeTokens.ts), and where its components come from (systemSources.ts). The app's own
 // system is one of them.
 export type PlatformReferenceGroup = { id: string; label: string; enabled: boolean; references: { source: string; title: string; order?: number }[]; related: { title: string; href: string }[] };
 
 export type Manifest = {
-  prototypes: PrototypeRef[]; sections: Record<string, PrototypeRef[]>; guide: GuidePage[]; handbook: Prototype[]; handbookMap: HandbookMap | null; platformReferences: PlatformReferenceGroup[];
+  prototypes: PrototypeRef[]; sections: Record<string, PrototypeRef[]>; guide: GuidePage[]; systemContent: Prototype[]; systemContentMaps: Record<string, SystemContentMap>; platformReferences: PlatformReferenceGroup[];
   systems: Record<string, { docs: DocsMode; origin: 'shadcn' | null; components: SystemComponentDoc[]; tokens: ThemeToken[] }>;
 };
 

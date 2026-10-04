@@ -5,13 +5,13 @@ import globs from '../build/vite-globs-plugin.js';
 import { ENABLED_MODULES } from './modules.js';
 import readme from '../build/remark-readme-guide.js';
 
-test('repository links resolve from Handbook and between references', () => {
+test('repository links resolve from SystemContent and between references', () => {
   const resolve = (href, base) => markdownPath(new URL(href, `http://doc${base}/`).pathname);
-  assert.equal(resolve('../../platform/modules/handbook/README.md', '/handbook/rules'), '/documentation/reference/platform/modules/handbook/README.md');
+  assert.equal(resolve('../../../platform/modules/systems/README.md', '/systems/platform/rules'), '/documentation/reference/platform/modules/systems/README.md');
   assert.equal(resolve('reference.md', '/documentation/reference/platform/modules/systems'), '/documentation/reference/platform/modules/systems/reference.md');
-  assert.equal(resolve('../../../handbook/rules/systems.md', '/documentation/reference/platform/modules/systems'), '/handbook/rules/systems.md');
+  assert.equal(resolve('../../../platform/rules/systems.md', '/documentation/reference/platform/modules/systems'), '/systems/platform/rules/systems');
   assert.equal(resolve('./main.tsx', '/prototypes/patrick/example'), '/prototypes/patrick/example/main.tsx');
-  assert.equal(markdownPath('/documentation/guide/handbook'), '/documentation/guide/handbook');
+  assert.equal(markdownPath('/documentation/guide/systemContent'), '/documentation/guide/systemContent');
 });
 
 test('reference glob is limited to platform Markdown and enabled modules', () => {
@@ -23,7 +23,7 @@ test('reference glob is limited to platform Markdown and enabled modules', () =>
 
 test('full README rendering retains developer content without repeating its title', () => {
   const heading = (depth, value) => ({ type: 'heading', depth, children: [{ type: 'text', value }] });
-  const tree = { children: [heading(1, 'Handbook'), heading(2, 'For developers'), { type: 'paragraph', children: [{ type: 'text', value: 'Contract' }] }] };
+  const tree = { children: [heading(1, 'SystemContent'), heading(2, 'For developers'), { type: 'paragraph', children: [{ type: 'text', value: 'Contract' }] }] };
   const full = structuredClone(tree);
   readme({ full: true })(full, { basename: 'README.md' });
   assert.deepEqual(full.children, tree.children.slice(1));
@@ -32,6 +32,6 @@ test('full README rendering retains developer content without repeating its titl
 });
 
 test('repository Context links resolve to the Context reader', () => {
-  assert.equal(markdownPath('/handbook/docs/personas.md'), '/handbook/context/personas.md');
-  assert.equal(markdownPath('/handbook/rules/documentation-standards.md'), '/handbook/rules/documentation-standards.md');
+  assert.equal(markdownPath('/platform/context/personas.md'), '/systems/platform/context/personas');
+  assert.equal(markdownPath('/systems/platform/rules/documentation-standards'), '/systems/platform/rules/documentation-standards');
 });

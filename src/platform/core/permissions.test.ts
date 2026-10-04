@@ -6,7 +6,6 @@ import type { ModuleSpec } from './modules/index.ts';
 
 const modules: ModuleSpec[] = [
   { id: 'examples', label: 'Examples', version: '0.1.0', section: { key: 'examples', folder: 'src/examples', items: 'prototypes', policy: 'maintainers' } },
-  { id: 'handbook', label: 'Handbook', version: '0.1.0', section: { key: 'handbook', folder: 'src/handbook', items: 'handbook', policy: 'open' } },
   { id: 'documentation', label: 'Guide', version: '0.1.0', section: { key: 'documentation', folder: 'src/platform/modules/documentation/pages' } },
   { id: 'extra', label: 'Extra', version: '0.1.0' },
 ];
@@ -36,7 +35,7 @@ test('only a listed maintainer may maintain', () => {
 test('a key no module claims is a contributor, and a section says its own policy', () => {
   assert.equal(policyFor('patrick', modules), 'owner');
   assert.equal(policyFor('examples', modules), 'maintainers');
-  assert.equal(policyFor('handbook', modules), 'open');
+  assert.equal(policyFor('system-content', modules), 'open');
   assert.equal(policyFor('documentation', modules), 'none');
 });
 
@@ -53,8 +52,8 @@ test('a maintained section item is owned by its maintainers, whoever started it'
 });
 
 test('open files can be changed by anyone, but nobody owns them', () => {
-  assert.equal(canChange('open', { me: null, key: 'handbook' }), true);
-  assert.equal(canOwn('open', { me: 'patrick', key: 'handbook' }), false);
+  assert.equal(canChange('open', { me: null, key: 'system-content' }), true);
+  assert.equal(canOwn('open', { me: 'patrick', key: 'system-content' }), false);
 });
 
 test('nobody changes a section with no policy', () => {

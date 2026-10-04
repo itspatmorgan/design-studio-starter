@@ -9,13 +9,13 @@ import { allPrototypes } from '@/platform/app/data/manifest';
 import { MODULES } from '@/platform/app/data/modules';
 
 // The router's first path segments that are pages of a module (/systems/…, /documentation/guide/…) and not items: the sections
-// with no items of their own. The Handbook's and the module sections' addresses are item paths (/examples/<id>/<item>).
+// with no items of their own. The system content's and the module sections' addresses are item paths (/examples/<id>/<item>).
 const APP_PAGES = new Set(MODULES.flatMap((m) => (m.section && !m.section?.items ? [m.section.key] : [])));
 
 // The app's address on this origin, without a trailing slash: "" at the root, "/repo" under a base path.
 const base = () => import.meta.env.BASE_URL.replace(/\/$/, '');
 
-// An item's path in the app, without the base: "/prototypes/patrick/hello-world/lofi/main" (or "/handbook/context/principles").
+// An item's path in the app, without the base: "/prototypes/patrick/hello-world/lofi/main" (or "/systems/platform/context/principles").
 export const artifactPath = (p: Prototype, item: Artifact) =>
   `${addressOf(p.contributorKey, p.id)}/${artifactSlug(item.path).split('/').map(encodeURIComponent).join('/')}`;
 

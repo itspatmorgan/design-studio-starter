@@ -10,7 +10,7 @@ Publish when people need a shared viewing URL. The studio maintainer chooses the
 
 ## What the build provides
 
-`pnpm build` checks the repository and writes a static site to `dist/`. The site includes active prototypes, design-system pages, the Handbook, and the Guide when enabled.
+`pnpm build` checks the repository and writes a static site to `dist/`. The site includes active prototypes, design-system pages, the system context, and the Guide when enabled.
 
 Archived prototypes are excluded from the production build. Individual items cannot be archived. Archive content you want to keep locally without including it in the site.
 
@@ -40,7 +40,7 @@ The router also contains guidance for hash-based URLs when a host cannot provide
 
 ## Review the published content
 
-Review what the build includes before uploading it. Handbook context, prototype data, and bundled source may contain information you do not want to distribute.
+Review what the build includes before uploading it. system context, prototype data, and bundled source may contain information you do not want to distribute.
 
 The starter does not provide built-in sign-in or access control. Configure access at the hosting layer when your studio contains private work.
 

@@ -7,6 +7,6 @@ export default {
   version: '0.1.0',
   description: 'Documentation: a curated Guide and complete platform Reference.',
   optional: true,
-  handbook: [{ path: 'rules/documentation.md', when: 'asks to add or change platform documentation' }],
+  instructions: [{ path: 'rules/documentation.md', when: 'asks to add or change platform documentation' }],
   section: { key: 'documentation', folder: 'src/platform/modules/documentation/pages' },
 } satisfies ModuleSpec;

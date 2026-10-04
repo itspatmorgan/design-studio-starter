@@ -3,11 +3,12 @@
 //   owner        the contributor whose folder it is (a prototype, src/prototypes/<key>/<id>)
 //   maintainers  the people listed in the item's meta.json "maintainers" (a shared section item); anyone can use it
 //   open         whoever runs the app, because the files are the platform's and a pull request reviews
-//                the change (the Handbook, the systems' components)
+//                the change (the system content, the systems' components)
 //   none         nobody, from the app (the Guide)
 // A module's section declares its policy (src/platform/core/modules/index.ts); a contributor's key matches no
 // module, so it is "owner". The server still checks every request: the app only hides what you can't do.
 // Has only type imports, so Node scripts and the app can both load it.
+import { SYSTEM_CONTENT_KEY } from './roots.ts';
 import type { ModuleSpec } from './modules/index.ts';
 
 export type Policy = 'owner' | 'maintainers' | 'open' | 'none';
@@ -29,6 +30,7 @@ export const canMaintain = (maintainers: readonly string[] | undefined, key: str
 
 // The policy of the section a key opens: a module's, else "owner" (a contributor's folder).
 export function policyFor(key: string, modules: readonly ModuleSpec[]): Policy {
+  if (key === SYSTEM_CONTENT_KEY) return 'open';
   const section = modules.find((m) => m.section?.key === key)?.section;
   return section ? section.policy ?? 'none' : 'owner';
 }

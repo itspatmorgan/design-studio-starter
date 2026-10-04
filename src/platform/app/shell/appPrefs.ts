@@ -44,7 +44,7 @@ export function useColorMode() {
 export const isTyping = (target: EventTarget | null) =>
   target instanceof HTMLElement && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
 
-// The section navigation's open/closed state, shared by every section (Prototypes, the Handbook,
+// The section navigation's open/closed state, shared by every section (Prototypes, the system content,
 // Systems, the Guide). ⌘; (Ctrl+; on Windows) and the rail's toggle change it.
 export function useSectionNav() {
   const [open, setOpen] = useState(() => localStorage.getItem(SECTION_NAV_KEY) !== 'closed');

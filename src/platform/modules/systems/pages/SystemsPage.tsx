@@ -1,5 +1,13 @@
 import { lazy, Suspense, useEffect, useRef } from 'react';
-import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
+import { Link, useNavigate, useParams, useSearch } from '@tanstack/react-router';
+import { ChevronDown } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/platform/components/collapsible';
+import FileTree from '@/platform/modules/prototypes/viewer/FileTree';
+import { contentId, isSystemContentSection, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
+import { findArtifact } from '@/platform/app/data/manifest';
+import { navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
+import SystemContentPage from '../content/SystemContentPage';
+import type { Prototype } from '@/platform/app/data/types';
 import { NavGroup, NavHeader, NavList, NavTitle, SectionNav } from '@/platform/app/shell/nav';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/platform/components/select';
 import { NotFound } from '@/platform/app/shell/App';
@@ -84,8 +92,9 @@ function navGroups(sys: DesignSystem, components: SystemComponentDoc[], tokens: 
 
 // The Systems navigation, built from the shared pieces (shell/nav/): the section's name, the
 // system selector, then the open system's pages under their headings.
-function SystemNav({ system, components, tokens }: { system: SystemId; components: SystemComponentDoc[]; tokens: ThemeToken[] }) {
+function SystemNav({ system, components, tokens, page, selected }: { system: SystemId; components: SystemComponentDoc[]; tokens: ThemeToken[]; page?: string; selected?: Prototype }) {
   const navigate = useNavigate();
+  const params = useParams({ strict: false }) as { _splat?: string };
   return (
     <SectionNav label="Systems">
       <NavHeader>
@@ -94,7 +103,7 @@ function SystemNav({ system, components, tokens }: { system: SystemId; component
           <Select items={SYSTEM_CHOICES} value={system} onValueChange={(value) => {
             if (value && value !== system) void navigate({ to: '/systems/$system' as never, params: { system: value } as never });
           }}>
-            <SelectTrigger aria-label="Design system" className="w-full min-w-0">
+            <SelectTrigger aria-label="System" className="w-full min-w-0">
               <SelectValue className="min-w-0 truncate" />
             </SelectTrigger>
             <SelectContent align="start">
@@ -114,12 +123,17 @@ function SystemNav({ system, components, tokens }: { system: SystemId; component
       </NavHeader>
       <NavList>
         {navGroups(SYSTEMS[system], components, tokens).map((g, i) => (
-          <NavGroup key={g.heading ?? i} heading={g.heading}>
-            {g.items.map(([id, label]) => (
-              <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={sourcePath(system, id ?? undefined, components)!} label={label} reveal={() => systemSourceRequest('reveal', sourcePath(system, id ?? undefined, components)!)} />
-            ))}
-          </NavGroup>
+          g.heading ? <Collapsible key={g.heading + String(isSystemContentSection(page ?? ''))} defaultOpen={!isSystemContentSection(page ?? '')}>
+            <CollapsibleTrigger className="group mt-4 flex w-full items-center justify-between px-3 py-2 text-left text-[12px] font-semibold">{g.heading}<ChevronDown className="size-3 transition-transform -rotate-90 group-data-[panel-open]:rotate-0" /></CollapsibleTrigger>
+            <CollapsibleContent>{g.items.map(([id, label]) => <FileNavItem key={id!} href={'/systems/' + system + '/' + id} path={sourcePath(system, id!, components)!} label={label} reveal={() => systemSourceRequest('reveal', sourcePath(system, id!, components)!)} />)}</CollapsibleContent>
+          </Collapsible> : <NavGroup key={i}>{g.items.map(([id, label]) => <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={sourcePath(system, id ?? undefined, components)!} label={label} reveal={() => systemSourceRequest('reveal', sourcePath(system, id ?? undefined, components)!)} />)}</NavGroup>
         ))}
+        <NavGroup>
+          {Object.entries(SYSTEM_CONTENT_SECTIONS).map(([id, section]) => <div key={id}>
+            <Link to={('/systems/' + system + '/' + id) as never} activeOptions={{ exact: false }} style={navLinkStyle} className={navLinkClass}>{section.title}</Link>
+            {page === id && selected && <FileTree key={selected.id} proto={selected} current={params._splat ? findArtifact(selected, params._splat) : undefined} embedded />}
+          </div>)}
+        </NavGroup>
       </NavList>
     </SectionNav>
   );
@@ -154,26 +168,28 @@ function SystemPage({ system, sys, components, tokens, origin, page }: {
 
 export default function SystemsPage() {
   // The router's types leave out the modules' routes, so say what this module's routes carry.
-  const params = useParams({ strict: false }) as { system?: string; page?: string };
+  const params = useParams({ strict: false }) as { system?: string; page?: string; _splat?: string };
   const system = params.system as SystemId;
   const sys = SYSTEMS[system];
   const mainRef = useRef<HTMLElement>(null);
   useEffect(() => { mainRef.current?.scrollTo({ top: 0 }); }, [system, params.page]);
 
-  const manifestSystem = useManifest().systems[system];
+  const manifest = useManifest();
+  const manifestSystem = manifest.systems[system];
+  const selected = manifest.systemContent.find((p) => p.id === contentId(system, params.page ?? '')) as Prototype | undefined;
   const components = manifestSystem?.components ?? [];
   const tokens = manifestSystem?.tokens ?? [];
   const search = useSearch({ strict: false }) as { mode?: 'source' };
   const editing = import.meta.env.DEV && search.mode === 'source';
-  const path = sys ? sourcePath(system, params.page, components) : null;
-  const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(path), editing);
+  const path = sys && !selected ? sourcePath(system, params.page, components) : null;
+  const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(path), editing && !selected);
   const editable = components.find((c) => c.slug === params.page);
-  const content = sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page }) : null;
+  const content = selected ? <SystemContentPage key={selected.id + '/' + (params._splat ?? '')} proto={selected} slug={params._splat} /> : sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page }) : null;
   if (!sys || !content) return <NotFound />;
   return (
     <div className="flex min-h-0 flex-1">
-      <SystemNav system={system} components={components} tokens={tokens} />
-      {editing && path ? (
+      <SystemNav system={system} components={components} tokens={tokens} page={params.page} selected={selected} />
+      {selected ? <main className="flex min-h-0 min-w-0 flex-1 flex-col">{content}</main> : editing && path ? (
         <main className="flex min-h-0 min-w-0 flex-1 flex-col"><Suspense fallback={<p className="p-4 text-sm">Loading editor…</p>}>{editable && ComponentEditor ? <ComponentEditor key={system + '/' + editable.slug} system={system} component={editable} onDone={toggle} /> : SystemSourceEditor && <SystemSourceEditor path={path} onDone={toggle} />}</Suspense></main>
       ) : (
         <main ref={mainRef} className="min-w-0 flex-1 overflow-y-auto">

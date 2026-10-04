@@ -20,13 +20,13 @@ export type FileTypeSpec = {
   // absent for a card. Its open.tsx provides the Embed; this is for code that can't load that
   // (the command line), to size things.
   preview?: boolean;
-  // True if the type opens in the Handbook (src/handbook/), where every other file opens as plain
+  // True if the type opens in the system content (src/platform/), where every other file opens as plain
   // text instead of as its own type. (A script in a skill's folder is text there, not a view.)
-  inHandbook?: boolean;
-  // False for a type owned by a shared section, such as Handbook Markdown.
+  inSystemContent?: boolean;
+  // False for a type owned by a shared section, such as system content Markdown.
   // Absent means the type can open files in prototypes.
   inPrototype?: boolean;
-  // True for the one type that opens any file no other type claims, where the Handbook allows it.
+  // True for the one type that opens any file no other type claims, where the system content allows it.
   // It has no extensions of its own, and prototypes never use it: their other files stay plain.
   fallback?: boolean;
   // Set if a file of this type can be shown in lofi: rough, grayscale, with handwritten type, over the
@@ -42,7 +42,7 @@ export type FileTypeSpec = {
   template?: (name: string) => string;
   // Problems in a file, each a sentence that says what to fix. `frontmatter` is the leading
   // --- block as simple key: value pairs, or null when there isn't one. `prototype` is where the file is,
-  // for a rule that depends on it (a canvas can't link to another prototype), and is left out in the Handbook.
+  // for a rule that depends on it (a canvas can't link to another prototype), and is left out in the system content.
   check?: (file: { source: string; frontmatter: Record<string, unknown> | null; prototype?: { contributor: string; id: string } }) => string[];
 };
 
@@ -61,10 +61,10 @@ export function fallbackType(specs: Record<string, FileTypeSpec>): string | null
   return Object.entries(specs).find(([, spec]) => spec.fallback)?.[0] ?? null;
 }
 
-// The id of the type that opens a file in the Handbook: its own type if that type opens there,
+// The id of the type that opens a file in the system content: its own type if that type opens there,
 // otherwise the fallback (plain text), otherwise null.
-export function handbookType(specs: Record<string, FileTypeSpec>, file: string): string | null {
-  return Object.entries(specs).find(([, spec]) => spec.inHandbook && spec.extensions.some((ext) => file.endsWith(ext)))?.[0] ?? fallbackType(specs);
+export function systemContentType(specs: Record<string, FileTypeSpec>, file: string): string | null {
+  return Object.entries(specs).find(([, spec]) => spec.inSystemContent && spec.extensions.some((ext) => file.endsWith(ext)))?.[0] ?? fallbackType(specs);
 }
 
 // Two types cannot own the same extension within the same content scope.
@@ -73,8 +73,8 @@ export function assertUniqueExtensions(specs: Record<string, FileTypeSpec>) {
   const fallbacks = Object.entries(specs).filter(([, spec]) => spec.fallback).map(([id]) => id);
   if (fallbacks.length > 1) throw new Error(`File types ${fallbacks.map((id) => `"${id}"`).join(' and ')} are both the fallback. Only one type can open the files no other type claims.`);
   for (const [id, spec] of Object.entries(specs)) {
-    for (const scope of ['prototype', 'handbook'] as const) {
-      if (scope === 'prototype' ? spec.inPrototype === false : !spec.inHandbook) continue;
+    for (const scope of ['prototype', 'systemContent'] as const) {
+      if (scope === 'prototype' ? spec.inPrototype === false : !spec.inSystemContent) continue;
       for (const ext of spec.extensions) {
         const key = `${scope}:${ext}`;
         const other = owners.get(key);
@@ -93,7 +93,7 @@ export const artifactSlug = (path: string) => path.replace(/\.[^./]+$/, '');
 // a helper folder is a helper too.
 export const isHelper = (name: string) => name.startsWith('_');
 
-// Markdown presentation is shared by prototype Documents and the Handbook.
+// Markdown presentation is shared by prototype Documents and the system content.
 // "problem-framing.md" → "Problem Framing"
 const titleOf = (name: string) => name.replace(/\.md$/, '').split(/[-_]/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
 

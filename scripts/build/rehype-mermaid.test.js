@@ -51,7 +51,7 @@ test('file references resolve nested files and remain within the document protot
   assert.deepEqual(artifactReference('../feedback-flow.mermaid',base), {contributor:'patrick',prototype:'feedback-inbox',path:'feedback-flow.mermaid'});
   assert.deepEqual(artifactReference('sequence.mmd',base), {contributor:'patrick',prototype:'feedback-inbox',path:'research/sequence.mmd'});
   for(const source of ['../../other/flow.mermaid','https://example.com/flow.mermaid','//example.com/flow.mmd','../_helpers/flow.mermaid','../../../alex/private/flow.mermaid','../../feedback-inbox%2F..%2Fother/flow.mermaid']) assert.equal(artifactReference(source,base),null,source);
-  assert.equal(artifactReference('flow.mermaid','/handbook/context'),null);
+  assert.equal(artifactReference('flow.mermaid','/systemContent/context'),null);
   assert.equal(artifactReference('flow.mermaid',null),null);
   for (const path of ['app/main.tsx', 'board.excalidraw', 'context.md', 'notes.txt']) assert.equal(artifactReference(path, base)?.path, `research/${path}`);
 });

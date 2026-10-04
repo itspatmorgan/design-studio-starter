@@ -3,7 +3,7 @@ import { lazy } from 'react';
 import { File01Icon } from '@hugeicons/core-free-icons';
 import type { FileTypeModule } from '@/platform/app/data/fileTypeModule';
 import { artifactFolder, artifactSlug } from '@/platform/app/data/manifest';
-import { addressOf } from '@/platform/core/roots';
+import { addressOf, SYSTEM_CONTENT_KEY, rootOf } from '@/platform/core/roots';
 import type { createLoader } from '@/platform/app/data/createLoader';
 import type { MDXContent } from 'mdx/types';
 import type { DocFrontmatter } from './types';
@@ -30,7 +30,7 @@ export function markdownFileModule(documents: ReturnType<typeof createLoader<Mar
         preload(),
       ]);
       if (!mod) return undefined;
-      const app = addressOf(file.contributor, file.prototype);
+      const app = file.contributor === SYSTEM_CONTENT_KEY ? '/' + rootOf(file.contributor, file.prototype) : addressOf(file.contributor, file.prototype);
       return {
         Component: mod instanceof Error
           ? () => { throw mod; }

@@ -54,8 +54,8 @@ function RailButton({ label, onClick, children }: { label: string; onClick: () =
 }
 
 // Main navigation: a narrow icon rail, visible on every page.
-// Top: the logo (the front page), then the modules that sit at the top (Prototypes, Systems, Handbook). Bottom: the modules that
-// sit at the bottom (the Guide about the tool itself), then the theme toggle. The modules come from
+// Top: the logo (the front page), search, Prototypes, Systems, and Documentation. Bottom: navigation
+// visibility and the color mode toggle. Module entries come from
 // src/platform/modules/<id>/app.tsx, so the rail has exactly the ones installed and on. sectionNav is set only
 // while a page has a section navigation (shell/nav/), to show or hide it.
 type MainNavProps = {

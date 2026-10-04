@@ -24,7 +24,7 @@ mise exec -- pnpm dev
 
 The starter is ready to explore as soon as it runs. Try the Feedback Inbox sample and browse the Guide at `/documentation/guide`. You do not need to choose a studio name, personal or team use, or a design system before your first run.
 
-When you want to adapt the environment, open the repository with your coding agent and ask it to configure your studio. It can help with the studio name, personal or team use, contributor identity, optional modules, design system, and Handbook context. Bring your own system source and product context when you have them; you can also keep the starter system while exploring.
+When you want to adapt the environment, open the repository with your coding agent and ask it to configure your studio. It can help with the studio name, personal or team use, contributor identity, optional modules, design system, and system context. Bring your own system source and product context when you have them; you can also keep the starter system while exploring.
 
 If you are joining an existing studio, ask your agent to set you up as a contributor. It should preserve the studio's shared configuration and content.
 

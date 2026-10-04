@@ -1,24 +1,24 @@
-// The changes the app can make to files: create, rename, move, delete, reorder, edit meta.json, and the Handbook's skills.
+// The changes the app can make to files: create, rename, move, delete, reorder, edit meta.json, and the system content's skills.
 // Part of the dev server's file layer (scripts/build/vite-files-plugin.js).
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
-import { FILE_TYPES, fileTypeOf, handbookTypeOf } from '../../lib/file-types.js';
+import { FILE_TYPES, fileTypeOf, systemContentTypeOf } from '../../lib/file-types.js';
 import { STATUSES, parseStatus } from '../../../src/platform/core/archive.ts';
 import { afterChange, parentOf, parseOrder, place, withFolderOrder } from '../../../src/platform/core/order.ts';
 import { scaffold } from '../../../src/platform/modules/systems/node/scaffold-docs.js';
-import { opProblem } from '../../../src/platform/modules/handbook/rules.ts';
-import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/platform/modules/handbook/skills.ts';
+import { opProblem } from '../../../src/platform/modules/systems/content/rules.ts';
+import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/platform/modules/systems/content/skills.ts';
 import { TRASH, readOrder, readTree, resolveInside, validName } from './paths.js';
 
 // The contents of a new file: its file type's template, by extension (src/platform/modules/<type>/type.ts).
 // Files of no type start empty.
-export const templateFor = (name, handbook = false) => FILE_TYPES[(handbook ? handbookTypeOf : fileTypeOf)(name)]?.template?.(name) ?? '';
+export const templateFor = (name, systemContent = false) => FILE_TYPES[(systemContent ? systemContentTypeOf : fileTypeOf)(name)]?.template?.(name) ?? '';
 
-// The Handbook's files are platform files: anyone can change their copy here, and the changes go
+// The system content's files are platform files: anyone can change their copy here, and the changes go
 // through review before they reach everyone. So it's open to whoever runs the app; what it does
-// enforce is the Handbook's shape (src/platform/modules/handbook/rules.ts).
-export const HANDBOOK_NOTE = 'The Handbook\'s sections (Docs, Rules, Skills) can\'t be renamed or deleted.';
+// enforce is the system content's shape (src/platform/modules/systems/content/rules.ts).
+export const SYSTEM_CONTENT_NOTE = 'System sections (Context, Rules, Skills) can\'t be renamed or deleted.';
 
 // "code-review" → "Code review"
 export const titleOf = (name) => { const t = name.replace(/-/g, ' '); return t.charAt(0).toUpperCase() + t.slice(1); };
@@ -72,11 +72,11 @@ export function renameSkillInFile(file, name) {
 }
 
 // One file operation. Returns { path } (the new path, for create, rename, and move) or throws a message.
-// `section` is the Handbook section the folder is (docs, rules, skills), or null for a prototype.
+// `section` is the system content section the folder is (docs, rules, skills), or null for a prototype.
 export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, title, description, status }, section = null) {
   const inside = (r) => resolveInside(dir, r);
   const relOf = (abs) => path.relative(fs.realpathSync(dir), abs).split(path.sep).join('/');
-  // The Handbook has a fixed shape: check the change against it first (src/platform/modules/handbook/rules.ts).
+  // The system content has a fixed shape: check the change against it first (src/platform/modules/systems/content/rules.ts).
   if (section) {
     if (op === 'create-skill') {
       if (section !== 'skills') throw new Error('Skills are made in the Skills tab.');
@@ -91,7 +91,7 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     }
     const target = op === 'create' ? null : inside(rel);
     // A Markdown file keeps its .md: rename to "notes" and it's "notes.md", like a new file.
-    if (op === 'rename' && (section === 'docs' || section === 'rules') && target && fs.statSync(target).isFile() && typeof name === 'string' && !name.endsWith('.md')) name += '.md';
+    if (op === 'rename' && (section === 'context' || section === 'rules') && target && fs.statSync(target).isFile() && typeof name === 'string' && !name.endsWith('.md')) name += '.md';
     const problem = opProblem(section, { op, path: rel, name, to, dir: isDir }, Boolean(target && fs.statSync(target).isDirectory()));
     if (problem) throw new Error(problem);
   }
@@ -123,8 +123,8 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     return {};
   }
   if (op === 'reorder') {
-    // Arranging is for prototypes: the Handbook has a fixed shape (src/platform/modules/handbook/rules.ts).
-    if (section) throw new Error('The Handbook keeps its own order.');
+    // Arranging is for prototypes: the system content has a fixed shape (src/platform/modules/systems/content/rules.ts).
+    if (section) throw new Error('System sections keep their own order.');
     const from = inside(rel);
     if (!from || from === fs.realpathSync(dir) || rel === 'meta.json') throw new Error('That file was moved or deleted.');
     let current = rel;

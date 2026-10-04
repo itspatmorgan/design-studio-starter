@@ -51,25 +51,25 @@ export const plainPath = (p: string) =>
   p.length > 0 && !p.startsWith('/') && !p.includes('\\') && !BAD_CHARS.test(p) && p.split('/').every((s) => s !== '' && s !== '.' && s !== '..');
 
 // Where each file of a pack goes. `files` are paths inside the pack. A module pack's files go to src/platform/modules/<id>/,
-// except handbook/ (to src/handbook/, and only the paths the module declares) and content/ (to the section's folder,
+// except instructions/ (to src/platform/, and only the paths the module declares) and content/ (to the section's folder,
 // which the module must declare). A design system pack goes to src/systems/<id>/. Hidden files are left behind.
 export function packPlan(kind: Kind, id: string, spec: Partial<ModuleSpec> | undefined, files: readonly string[]): { moves: Move[]; skipped: string[]; problems: string[] } {
   const moves: Move[] = [];
   const skipped: string[] = [];
   const problems: string[] = [];
-  const handbook = (spec?.handbook ?? []).map((h) => h.path);
-  const declared = (p: string) => handbook.some((h) => (h.endsWith('/') ? p.startsWith(h) : p === h));
+  const systemContent = (spec?.instructions ?? []).map((h) => h.path);
+  const declared = (p: string) => systemContent.some((h) => (h.endsWith('/') ? p.startsWith(h) : p === h));
   if (files.length > MAX_FILES) problems.push(`It has ${files.length} files, and the limit is ${MAX_FILES}.`);
   for (const file of files) {
     if (!plainPath(file)) { problems.push(`"${file}" isn't a plain path inside the pack.`); continue; }
     const parts = file.split('/');
     if (parts.some(SKIP) || parts.some((s) => s.startsWith('.') && s !== '.gitkeep')) { skipped.push(file); continue; }
     if (kind === 'system') { moves.push({ from: file, to: `src/systems/${id}/${file}` }); continue; }
-    if (parts[0] === 'handbook') {
+    if (parts[0] === 'instructions') {
       const inside = parts.slice(1).join('/');
       if (!inside) continue;
-      if (!declared(inside)) problems.push(`handbook/${inside} isn't listed in the module's handbook, so it won't be installed. List it in module.ts, or remove it.`);
-      else moves.push({ from: file, to: `src/handbook/${inside}` });
+      if (!declared(inside)) problems.push(`instructions/${inside} isn't listed in the module's instructions, so it won't be installed. List it in module.ts, or remove it.`);
+      else moves.push({ from: file, to: `src/platform/${inside}` });
     } else if (parts[0] === 'content') {
       const inside = parts.slice(1).join('/');
       if (!inside) continue;
@@ -80,9 +80,9 @@ export function packPlan(kind: Kind, id: string, spec: Partial<ModuleSpec> | und
     }
   }
   // Everything the module says it brings has to be in the pack.
-  for (const h of handbook) {
-    const present = moves.some((m) => (h.endsWith('/') ? m.to.startsWith(`src/handbook/${h}`) : m.to === `src/handbook/${h}`));
-    if (!present) problems.push(`module.ts lists handbook/${h}, which isn't in the pack.`);
+  for (const h of systemContent) {
+    const present = moves.some((m) => (h.endsWith('/') ? m.to.startsWith(`src/platform/${h}`) : m.to === `src/platform/${h}`));
+    if (!present) problems.push(`module.ts lists instructions/${h}, which isn't in the pack.`);
   }
   const seen = new Set<string>();
   for (const m of moves) { if (seen.has(m.to)) problems.push(`Two files would be written to ${m.to}.`); seen.add(m.to); }
@@ -120,11 +120,11 @@ export function editModulesFlag(text: string, id: string, on: boolean): string |
 export const AGENTS_START = '<!-- studio:modules -->';
 export const AGENTS_END = '<!-- /studio:modules -->';
 
-// The lines AGENTS.md gets for the modules that are on: "When the person ..., read [rule](path)." for each handbook
+// The lines AGENTS.md gets for the modules that are on: "When the person ..., read [rule](path)." for each systemContent
 // entry with a `when`. They are what routes an agent to a module's rules, so a module that's off isn't mentioned.
 export function agentsBlock(modules: readonly Partial<ModuleSpec>[]): string {
-  const lines = modules.flatMap((m) => (m.handbook ?? []).filter((h) => h.when).map((h) => {
-    const target = `src/handbook/${h.path}`;
+  const lines = modules.flatMap((m) => (m.instructions ?? []).filter((h) => h.when).map((h) => {
+    const target = `src/platform/${h.path}`;
     const link = h.path.endsWith('/') ? `${target}SKILL.md` : target;
     return `When the person ${h.when}, read [${link}](${link}).`;
   }));

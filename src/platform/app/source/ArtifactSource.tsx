@@ -4,7 +4,7 @@ import { canChangePrototype, readSource, repoPath, useMe, writeSource } from '@/
 import { FILE_TYPES } from '@/platform/app/data/fileTypes';
 import type { Artifact, Prototype } from '@/platform/app/data/types';
 
-// Adapt prototype and Handbook file access to the shared platform editor.
+// Adapt prototype and system content file access to the shared platform editor.
 export default function ArtifactSource({ proto, item, label, actions, onDirty }: { proto: Prototype; item: Artifact; label?: ReactNode; actions?: ReactNode; onDirty?: (dirty: boolean) => void }) {
   const me = useMe();
   const editable = canChangePrototype(proto, me);

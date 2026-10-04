@@ -56,7 +56,7 @@ const titleOf = (id) => id.split('-').map((w) => w.charAt(0).toUpperCase() + w.s
 const slug = (text) => text.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/^[^a-z]+/, '');
 
 // ---- places that must never be deleted, whatever a pack or a flag says
-const PROTECTED = new Set(['src', 'src/platform', 'src/platform/modules', 'src/prototypes', 'src/lib', 'src/handbook', 'src/handbook/rules', 'src/handbook/docs', 'src/handbook/skills', 'src/systems', 'src/types']);
+const PROTECTED = new Set(['src', 'src/platform', 'src/platform/modules', 'src/prototypes', 'src/lib', 'src/platform', 'src/platform/rules', 'src/platform/context', 'src/platform/skills', 'src/systems', 'src/types']);
 function removable(relative) {
   const clean = path.posix.normalize(relative.replace(/\/$/, ''));
   if (!relative || clean.startsWith('..') || clean.startsWith('/') || !clean.startsWith('src/') || PROTECTED.has(clean)) throw new Error(`Refusing to delete ${relative}.`);
@@ -184,7 +184,7 @@ async function add() {
       if (names.includes('server.ts')) provides.push('routes on the dev server');
       if (spec.lib) provides.push(`a library prototypes import as @module/${id}`);
       if (names.includes('check.ts')) provides.push('a check in pnpm check');
-      if (spec.handbook?.length) provides.push(`${spec.handbook.length} Handbook file(s) for agents`);
+      if (spec.instructions?.length) provides.push(`${spec.instructions.length} platform instruction file(s) for agents`);
       say(`It provides: ${provides.join('; ') || 'nothing yet'}.`);
       say(`${spec.optional ? 'It can be turned off in studio.config.ts.' : 'It cannot be turned off.'}`);
     }
@@ -244,7 +244,7 @@ function remove() {
     const spec = MODULES[id];
     if (!spec.optional) fail(`The ${id} module can't be removed yet; other parts of the app still use it.`);
     paths.push(`src/platform/modules/${id}`);
-    for (const h of spec.handbook ?? []) paths.push(`src/handbook/${h.path}`);
+    for (const h of spec.instructions ?? []) paths.push(`src/platform/${h.path}`);
     if (spec.section?.folder && !spec.section.folder.startsWith(`src/platform/modules/${id}`)) {
       if (flags.content) paths.push(spec.section.folder);
       else if (fs.existsSync(rel(spec.section.folder))) notes.push(`Its content in ${spec.section.folder} stays. Add --content to delete that too.`);
@@ -270,6 +270,28 @@ function remove() {
         try { if (JSON.parse(fs.readFileSync(path.join(folder, item.name, 'meta.json'), 'utf8')).system === id) users.push(`${module.section.key}/${item.name}`); } catch { /* not an item */ }
       }
     }
+    const references = [];
+    const scan = (dir) => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const file = path.join(dir, entry.name);
+        if (entry.name.startsWith('.') || file === rel('src/systems/' + id)) continue;
+        if (entry.isDirectory()) scan(file);
+        else if (entry.isFile() && (entry.name.endsWith('.md') || entry.name === 'AGENTS.md')) {
+          const text = fs.readFileSync(file, 'utf8').replace(/```[\s\S]*?```/g, '');
+          if ([...text.matchAll(/\]\(([^)\s]+)\)/g)].some((m) => {
+            const href = m[1].split('#')[0];
+            if (/^[a-z][a-z0-9+.-]*:/i.test(href)) return false;
+            const target = href.startsWith('/') ? rel('src' + href) : path.resolve(path.dirname(file), href);
+            const root = rel('src/systems/' + id);
+            return target === root || target.startsWith(root + path.sep);
+          })) references.push(path.relative(ROOT, file));
+        }
+      }
+    };
+    scan(rel('src'));
+    const rootInstructions = fs.readFileSync(rel('AGENTS.md'), 'utf8');
+    if (rootInstructions.includes('src/systems/' + id + '/')) references.push('AGENTS.md');
+    if (references.length && !flags.force) fail(references.length + ' file(s) reference ' + id + ', like ' + references[0] + '. Update their links before removing this system.');
     if (users.length && !flags.force) fail(`${users.length} prototype(s) use ${id}, like ${users[0]}. Change their "system" first, or add --force.`);
   }
   const abs = paths.map((p) => removable(p)).filter((a) => fs.existsSync(a));
@@ -374,13 +396,13 @@ function configure() {
 }
 
 function status() {
-  const handbook = ['principles', 'personas'].map((name) => `src/handbook/docs/${name}.md`);
+  const systemContent = ['principles', 'personas'].map((name) => `src/systems/${DEFAULT_SYSTEM}/context/${name}.md`);
   const report = {
     config: { name: CONFIG.name, usage: CONFIG.usage ?? 'team', defaultSystem: DEFAULT_SYSTEM },
     contributor: resolveContributor(),
     modules: { enabled: ENABLED_MODULES.map((module) => module.id), disabled: Object.keys(MODULES).filter((id) => !ENABLED_MODULES.some((module) => module.id === id)) },
     systems: SYSTEM_IDS,
-    handbookPlaceholders: handbook.filter((file) => fs.existsSync(rel(file)) && fs.readFileSync(rel(file), 'utf8').includes('**Placeholder.**')),
+    systemContentPlaceholders: systemContent.filter((file) => fs.existsSync(rel(file)) && fs.readFileSync(rel(file), 'utf8').includes('**Placeholder.**')),
     problems: configProblems(CONFIG, Object.values(MODULES), SYSTEM_IDS),
   };
   if (flags.json) say(JSON.stringify(report, null, 2));
@@ -388,7 +410,7 @@ function status() {
     say(`${report.config.name} (${report.config.usage})`);
     say(`Contributor: ${report.contributor ?? 'not registered'}. Default system: ${DEFAULT_SYSTEM}.`);
     say(`Enabled: ${report.modules.enabled.join(', ')}. Disabled: ${report.modules.disabled.join(', ') || 'none'}.`);
-    for (const file of report.handbookPlaceholders) say(`Team context still has starter examples: ${file}`);
+    for (const file of report.systemContentPlaceholders) say(`Team context still has starter examples: ${file}`);
     for (const problem of report.problems) say(problem);
     say('This reports current files, not setup completion. Verify with pnpm build and a first prototype.');
   }

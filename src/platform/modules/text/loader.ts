@@ -1,4 +1,4 @@
-// Every Handbook file that isn't a document, as text, for the deployed site. In dev the app reads a file
+// Every system content file that isn't a document, as text, for the deployed site. In dev the app reads a file
 // from the file layer instead (open.tsx), which is always current. Images and other binary files
 // aren't items (scripts/build/build-manifest.js), so they aren't listed here.
 // ['/__studio_globs__/*'] is replaced by the list of patterns when Vite reads this file (scripts/build/vite-globs-plugin.js).

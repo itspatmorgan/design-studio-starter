@@ -1,6 +1,6 @@
-# Design-system contract
+# System contract
 
-Systems are discovered from their folders. Each prototype uses one system. Runtime requirements are maintained in the [systems rule](../../../handbook/rules/systems.md).
+Systems are discovered from their folders. Each prototype uses one system. Runtime requirements are maintained in the [systems rule](../../rules/systems.md).
 
 ## Structure
 
@@ -10,6 +10,8 @@ A prototype system lives in `src/systems/<id>/` and contains:
 | --- | --- |
 | `system.ts` | Label, unique theme class, documentation mode, component sources, and origin. |
 | `components/` | Runtime components and their documentation files. |
+| `AGENTS.md` | Routes agent work to this system’s knowledge. |
+| `context/`, `rules/`, `skills/` | System-owned knowledge and agent instructions. |
 | `assets/` | Optional system-owned fonts, logos, and images. |
 | `styles/theme.css` | Scoped tokens and styles, loaded by the platform. |
 | `intro.tsx` | Optional Systems introduction page. |
@@ -26,7 +28,7 @@ The starter Product system uses shadcn/ui on Base UI. `components.json` controls
 
 Studio follows the global mode. Rendered views, their document/canvas embeds, and Systems foundation previews and component examples resolve that mode against their system's capabilities. Unsupported global modes use the first supported mode. Documents, diagrams, canvas chrome, and source editors keep Studio's mode.
 
-The shared `ThemeScope` sets `data-color-mode` and CSS `color-scheme` on the system boundary. Pop-ups stay inside it. Dark tokens use `.<theme-class>[data-color-mode="dark"]`; never use an ancestor `.dark` selector for system styles. Tailwind `dark:` utilities respect a local light boundary. System tokens override scoped Studio fallback tokens. The full Systems content page uses the selected system's mode, including its background, headings, token tables, and component examples. Studio navigation and source editors remain in Studio's scope. The introduction calls out supported modes in its Theme section using ColorModeSupport, which reads the declaration from system.ts.
+The shared `ThemeScope` sets `data-color-mode` and CSS `color-scheme` on the system boundary. Pop-ups stay inside it. Dark tokens use `.<theme-class>[data-color-mode="dark"]`; never use an ancestor `.dark` selector for system styles. Tailwind `dark:` utilities respect a local light boundary. System tokens override scoped Studio fallback tokens. Systems UI pages use the selected system's mode, including its background, headings, token tables, and component examples. Studio navigation, system knowledge, and source editors remain in Studio's scope. The introduction calls out supported modes in its Theme section using ColorModeSupport, which reads the declaration from system.ts.
 
 The starter Product system and new system scaffolds declare both modes and include light and dark tokens. For a light-only system such as Sublime, declare `colorModes: ['light']`; for a dark-only system, declare `colorModes: ['dark']`. Its rendered content then keeps that mode regardless of Studio's toggle.
 
@@ -54,7 +56,7 @@ Props tables come from TypeScript. They summarize inputs rather than replacing u
 
 Missing pages, examples, or required page fields normally produce warnings. `docs: 'strict'` makes these errors. `docs: 'off'` suppresses documentation warnings.
 
-The [document-component skill](../../../handbook/skills/document-component/SKILL.md) owns the scaffolding and documentation procedure.
+The [document-component skill](../../skills/document-component/SKILL.md) owns the scaffolding and documentation procedure.
 
 ## Foundations
 
@@ -88,3 +90,13 @@ The Systems navigation uses a grouped selector: Prototype systems contains insta
 The configuration command preserves existing prototypes' system choices before changing the default. Migration must update imports and metadata together.
 
 See `scripts/lib/studio-setup.js` for preservation and the setup-design-system skill for migration and placeholder cleanup.
+
+## System knowledge and agent routing
+
+A system owns five parts: foundations, components, context, rules, and skills. The latter three live directly in `src/systems/<id>/context/`, `rules/`, and `skills/`; the built-in Platform system uses the corresponding folders under `src/platform/`. No separate Handbook module or global content collection is required.
+
+Systems exposes these files at `/systems/<id>/context/<file>`, `rules/<file>`, and `skills/<skill>/SKILL`. The shared source editor and file operations use explicit system and section identifiers. Content remains platform-styled even for a single-mode product system.
+
+The repository's `AGENTS.md` supplies platform operating instructions and routes prototype work to its assigned system's `AGENTS.md`. System-local instructions link to relevant context, rules, and skills. System knowledge supplements platform constraints; it does not override runtime dependency boundaries. Different systems may use the same skill folder name because their source paths remain distinct. Discovery does not imply a harness automatically loads these files.
+
+Module packs declare supplied platform files with `instructions: [{ path, when }]` and provide them under `instructions/` in the pack. Installation places them in the matching Platform content folder. System packs carry their context, rules, skills, and `AGENTS.md` alongside their components. Removal must account for incoming references to system content.

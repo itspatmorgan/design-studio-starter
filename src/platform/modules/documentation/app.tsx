@@ -27,8 +27,8 @@ async function guideLoader(slug: string, mode?: 'source') {
 
 export default {
   icon: BookOpen01Icon,
-  rail: 'bottom',
-  order: 90,
+  rail: 'top',
+  order: 30,
   routes: (root) => {
     // The Guide's sidebar, around whichever page is open.
     const guideRoute = createRoute({

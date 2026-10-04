@@ -5,16 +5,16 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from '../../lib/file-types.js';
+import { FILE_TYPES, fileTypeOf, systemContentTypeOf, isTextFile } from '../../lib/file-types.js';
 import { isHelper } from '../../../src/platform/core/fileTypes.ts';
 import { byOrder, parseOrder } from '../../../src/platform/core/order.ts';
-import { HANDBOOK_KEY, SYSTEMS_KEY, isHandbookSection } from '../../../src/platform/core/roots.ts';
+import { SYSTEM_CONTENT_KEY, SYSTEMS_KEY, isSystemContentSection, contentParts, rootOf } from '../../../src/platform/core/roots.ts';
 import { PROTOTYPE_SECTIONS } from '../../lib/modules.js';
 import { SYSTEM_SOURCES } from '../../../src/platform/modules/systems/node/systems.js';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 export const PROTOS = path.join(ROOT, 'src', 'prototypes');
-export const HANDBOOK = path.join(ROOT, 'src', 'handbook');
+export const SYSTEM_CONTENT = path.join(ROOT, 'src', 'platform');
 // Each system's components folder, to tell which system a file belongs to.
 export const COMPONENT_DIRS = Object.entries(SYSTEM_SOURCES).map(([id, s]) => [id, path.join(ROOT, s.components) + path.sep]);
 export const systemOf = (file) => COMPONENT_DIRS.find(([, dir]) => file.startsWith(dir));
@@ -23,8 +23,8 @@ export const TRASH = path.join(ROOT, '.trash');
 export const BATCH_MS = 50;
 export const MAX_SOURCE_BYTES = 750 * 1024; // the same limit as any committed file (check-asset-size.js)
 
-// A prototype's folder, or null if the contributor or prototype name isn't valid. The Handbook
-// sections (src/handbook/docs, rules, skills) are found here too, by their fixed names, to read.
+// A prototype's folder, or null if the contributor or prototype name isn't valid. The system content
+// sections (src/platform/context, rules, skills) are found here too, by their fixed names, to read.
 export const safeScope = (dir) => {
   if (!dir || !canonicalDirectory(dir, ROOT)) return null;
   const meta = path.join(dir, 'meta.json');
@@ -48,7 +48,7 @@ export function prototypeDir(contributor, prototype) {
     const dir = path.join(section.dir, prototype);
     return safeScope(dir);
   }
-  if (contributor === HANDBOOK_KEY) return isHandbookSection(prototype) ? safeScope(path.join(HANDBOOK, prototype)) : null;
+  if (contributor === SYSTEM_CONTENT_KEY) return (() => { const { system, section } = contentParts(prototype ?? ''); return Object.hasOwn(SYSTEM_SOURCES, system) && isSystemContentSection(section) ? safeScope(path.join(ROOT, 'src', rootOf(contributor, prototype))) : null; })();
   if (!NAME.test(contributor ?? '') || !NAME.test(prototype ?? '')) return null;
   const dir = path.join(PROTOS, contributor, prototype);
   return safeScope(dir);
@@ -66,7 +66,7 @@ export function resolveInside(dir, rel) {
   } catch { return null; }
 }
 
-// A prototype's meta.json "order" (src/platform/core/order.ts), or none. The Handbook and system folders have no meta.json.
+// A prototype's meta.json "order" (src/platform/core/order.ts), or none. The system content and system folders have no meta.json.
 export function readOrder(dir) {
   try { return parseOrder(JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')).order) ?? []; } catch { return []; }
 }
@@ -88,16 +88,16 @@ export const viewKey = (rel) => rel.replace(/\.[^./]+$/, '');
 
 // An existing item file (a view or document, not a helper: a name starting with an underscore) in the prototype,
 // as its real path, or null. The Source view reads and saves only these: never meta.json,
-// hidden files, or anything outside the prototype. In the Handbook, a file is an item if it opens
+// hidden files, or anything outside the prototype. In the system content, a file is an item if it opens
 // as a document or as text, and its folders can be named anything but hidden.
 export function itemFile(dir, rel, contributor) {
-  const handbook = contributor === HANDBOOK_KEY || contributor === SYSTEMS_KEY; // both open documents and text files
-  const typeOf = handbook ? handbookTypeOf : fileTypeOf;
-  if (typeof rel !== 'string' || !typeOf(rel) || rel.split('/').some((part) => (!handbook && isHelper(part)) || part.startsWith('.'))) return null;
+  const systemContent = contributor === SYSTEM_CONTENT_KEY || contributor === SYSTEMS_KEY; // both open documents and text files
+  const typeOf = systemContent ? systemContentTypeOf : fileTypeOf;
+  if (typeof rel !== 'string' || !typeOf(rel) || rel.split('/').some((part) => (!systemContent && isHelper(part)) || part.startsWith('.'))) return null;
   const file = resolveInside(dir, rel);
   if (!file || !fs.statSync(file).isFile()) return null;
-  // Text only: the Handbook's plain-text fallback mustn't hand out binary files.
-  return handbook && FILE_TYPES[typeOf(rel)].fallback && !isTextFile(file) ? null : file;
+  // Text only: the system content's plain-text fallback mustn't hand out binary files.
+  return systemContent && FILE_TYPES[typeOf(rel)].fallback && !isTextFile(file) ? null : file;
 }
 
 // A file's version is a hash of its text, so the Source view can tell when it changed on disk.

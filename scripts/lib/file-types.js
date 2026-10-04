@@ -4,7 +4,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { assertUniqueExtensions, handbookType, matchFileType } from '../../src/platform/core/fileTypes.ts';
+import { assertUniqueExtensions, systemContentType, matchFileType } from '../../src/platform/core/fileTypes.ts';
 import { ENABLED_MODULES } from './modules.js';
 
 const DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src/platform/modules');
@@ -33,5 +33,5 @@ export function isTextFile(file) {
   } finally { fs.closeSync(fd); }
 }
 
-// The id of the type that opens a file in the Handbook (src/handbook/): a document, or else plain text.
-export const handbookTypeOf = (file) => handbookType(FILE_TYPES, file);
+// The id of the type that opens a file in the system content (src/platform/): a document, or else plain text.
+export const systemContentTypeOf = (file) => systemContentType(FILE_TYPES, file);

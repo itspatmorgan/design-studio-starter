@@ -96,7 +96,7 @@ export const useMyName = () => useWho().name;
 const subject = (p: PrototypeInfo, me: string | null) => ({ me, key: p.contributorKey, maintainers: p.maintainers });
 const policyOf = (p: PrototypeInfo) => policyFor(p.contributorKey, MODULES);
 export const ownsPrototype = (p: PrototypeInfo, me: string | null) => canOwn(policyOf(p), subject(p, me));
-// Whether you may change its files: that, or files open to everyone (the Handbook's, the systems').
+// Whether you may change its files: that, or files open to everyone (the system content's, the systems').
 export const canChangePrototype = (p: PrototypeInfo, me: string | null) => canChange(policyOf(p), subject(p, me));
 
 export type FileOp =
@@ -107,7 +107,7 @@ export type FileOp =
   // Put a file or folder before another in its folder (`before` empty: last), moving it to folder `to` first if that's elsewhere.
   | { op: 'reorder'; path: string; to?: string; before?: string }
   | { op: 'meta'; title?: string; status?: Status }
-  // A Handbook skill: skills/<name>/SKILL.md, in the Agent Skills format.
+  // A system content skill: skills/<name>/SKILL.md, in the Agent Skills format.
   | { op: 'create-skill'; name: string; description: string }
   // A prototype system's components: the examples and page one is missing.
   | { op: 'add-docs'; component: string };

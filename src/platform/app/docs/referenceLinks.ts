@@ -1,7 +1,8 @@
-// Repository Markdown links resolve to the reader for their authoritative source.
+// Resolve repository Markdown paths to the owning app surface.
 export function markdownPath(path: string): string {
-  const prefix = '/documentation/reference';
-  const source = path.startsWith(`${prefix}/`) ? path.slice(prefix.length) : path;
-  if (/^\/platform\/(?:modules|core)\/.*\.md$/.test(source)) return `${prefix}${source}`;
-  return source.replace(/^\/handbook\/docs(?=\/|$)/, '/handbook/context');
+  const source = path.replace(/^\/documentation\/reference(?=\/)/, '');
+  const content = source.match(/^\/(platform|systems\/([^/]+))\/(context|rules|skills)(\/.*)?$/);
+  if (content) return '/systems/' + (content[2] ?? 'platform') + '/' + content[3] + (content[4] ?? '').replace(/\.md$/, '');
+  if (/^\/platform\/(core|modules)\//.test(source) && source.endsWith('.md')) return '/documentation/reference' + source;
+  return path;
 }

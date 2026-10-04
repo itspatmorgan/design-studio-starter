@@ -29,8 +29,7 @@ Give the agent your goals, constraints, and feedback. You can work visually whil
 | --- | --- |
 | [Home](/documentation/guide/home) | Find work and search the studio. |
 | [Prototypes](/documentation/guide/prototypes) | Explore ideas using screens, writing, diagrams, and canvases. |
-| [Systems](/documentation/guide/systems) | Browse the components and styles available to your prototypes. |
-| [Handbook](/documentation/guide/handbook) | Provide team context and instructions for your agent. |
+| [Systems](/documentation/guide/systems) | Browse components, styles, context, rules, and skills for your prototypes. |
 | [Documentation](/documentation/guide/documentation) | Read this Guide or consult detailed platform Reference. |
 
 Run Studio locally to make changes. You can also publish a viewing site when you want to share your work.

@@ -32,10 +32,9 @@ export { CONFIG, isEnabled };
 export const SECTION_KEYS = new Set(sectionKeys(Object.values(MODULES).filter(Boolean)));
 
 // Absolute folders of the modules that hold prototype-shaped folders, one per id (src/examples/), and the
-// Handbook's. src/prototypes/, where the folders are grouped by person, is the Prototypes module's own and isn't listed.
+// system content's. src/prototypes/, where the folders are grouped by person, is the Prototypes module's own and isn't listed.
 const oneFolderPerId = (m) => m.section?.items === 'prototypes' && !m.section.byPerson;
 export const PROTOTYPE_DIRS = ENABLED_MODULES.filter(oneFolderPerId).map((m) => path.join(ROOT, m.section.folder));
-export const HANDBOOK_DIRS = itemFolders(ENABLED_MODULES, 'handbook').map((folder) => path.join(ROOT, folder));
 
 // Sections of prototype-shaped folders (custom sections), registered so rootOf can find their folders. Installed ones
 // count even when off, so their files are still found.

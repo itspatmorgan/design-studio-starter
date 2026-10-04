@@ -1,6 +1,6 @@
 import { linkOptions } from '@tanstack/react-router';
 import { artifactSlug } from '@/platform/core/fileTypes';
-import { HANDBOOK_KEY, isSectionKey } from '@/platform/core/roots';
+import { SYSTEM_CONTENT_KEY, isSectionKey, contentSection, addressOf } from '@/platform/core/roots';
 import type { Artifact, Manifest, Prototype, PrototypeInfo, PrototypeRef } from '@/platform/app/data/types';
 
 // Fetched once, then shared by every route loader. In dev, replaced whenever it changes.
@@ -16,11 +16,11 @@ export function loadManifest(): Promise<Manifest> {
   return manifest;
 }
 
-// Everything that opens like a prototype: prototypes, the artifacts of the modules' sections, the Handbook's sections.
-export const allPrototypes = (m: Manifest): PrototypeRef[] => [...m.prototypes, ...Object.values(m.sections).flat(), ...m.handbook];
+// Everything that opens like a prototype: prototypes, the artifacts of the modules' sections, the system content's sections.
+export const allPrototypes = (m: Manifest): PrototypeRef[] => [...m.prototypes, ...Object.values(m.sections).flat(), ...m.systemContent];
 
 export const findPrototype = (m: Manifest, contributor: string, prototype: string): PrototypeRef | undefined =>
-  allPrototypes(m).find((p) => p.contributorKey === contributor && p.id === (contributor === HANDBOOK_KEY && prototype === 'context' ? 'docs' : prototype) && !(contributor === HANDBOOK_KEY && prototype === 'docs'));
+  allPrototypes(m).find((p) => p.contributorKey === contributor && p.id === prototype);
 
 // A prototype's artifacts, fetched the first time they're needed (the deployed manifest leaves them out:
 // scripts/build/build-manifest.js) and then kept on the manifest's entry for it. One fetch per prototype,
@@ -60,7 +60,7 @@ export const findArtifact = (p: Prototype, slug: string) => p.artifacts.find((i)
 // "checkout/session-done.tsx" → "Session Done": an artifact's name, without its folder.
 export const artifactLabel = (path: string, proto?: Pick<PrototypeInfo, 'contributorKey' | 'id'>) => {
   // The entry file keeps its required name on disk; people see the skill it opens.
-  const skill = proto?.contributorKey === HANDBOOK_KEY && proto.id === 'skills' && /^([^/]+)\/SKILL\.md$/.exec(path);
+  const skill = proto?.contributorKey === SYSTEM_CONTENT_KEY && contentSection(proto.id) === 'skills' && /^([^/]+)\/SKILL\.md$/.exec(path);
   const name = skill ? skill[1] : artifactSlug(path).split('/').pop()!;
   return name.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 };
@@ -79,11 +79,11 @@ export const newestFirst = (a: PrototypeInfo, b: PrototypeInfo) => (b.created ??
 
 // Where a prototype's links go. The prototype's own URL opens its default view: /prototypes/<person>/<id>, or
 // /examples/<id> for an artifact of a section.
-export const prototypeLink = (p: Pick<PrototypeInfo, 'contributorKey' | 'id'>) => isSectionKey(p.contributorKey)
-  ? linkOptions({ to: '/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.contributorKey === HANDBOOK_KEY && p.id === 'docs' ? 'context' : p.id } })
+export const prototypeLink = (p: Pick<PrototypeInfo, 'contributorKey' | 'id'>) => p.contributorKey === SYSTEM_CONTENT_KEY ? { to: addressOf(p.contributorKey, p.id) } as never : isSectionKey(p.contributorKey)
+  ? linkOptions({ to: '/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.id } })
   : linkOptions({ to: '/prototypes/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.id } });
 
 // An artifact's URL: the prototype's, plus the artifact's path without its extension.
-export const artifactLink = (p: PrototypeInfo, item: Artifact) => isSectionKey(p.contributorKey)
-  ? linkOptions({ to: '/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.contributorKey === HANDBOOK_KEY && p.id === 'docs' ? 'context' : p.id, _splat: artifactSlug(item.path) } })
+export const artifactLink = (p: PrototypeInfo, item: Artifact) => p.contributorKey === SYSTEM_CONTENT_KEY ? { to: addressOf(p.contributorKey, p.id) + '/' + artifactSlug(item.path) } as never : isSectionKey(p.contributorKey)
+  ? linkOptions({ to: '/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: artifactSlug(item.path) } })
   : linkOptions({ to: '/prototypes/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: artifactSlug(item.path) } });

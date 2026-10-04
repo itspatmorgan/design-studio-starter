@@ -9,24 +9,24 @@ import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from '../../src/platform/modules/systems/node/systems.js';
 import { PLATFORM_ID } from '../../src/platform/modules/systems/sources.ts';
 import { isHelper, artifactSlug } from '../../src/platform/core/fileTypes.ts';
-import { HANDBOOK_KEY, HANDBOOK_SECTIONS, rootOf } from '../../src/platform/core/roots.ts';
+import { SYSTEM_CONTENT_KEY, SYSTEM_CONTENT_SECTIONS, rootOf, contentId, systemRoot } from '../../src/platform/core/roots.ts';
 import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../../src/platform/core/archive.ts';
 import { byOrder, parseOrder } from '../../src/platform/core/order.ts';
 import { parseMaintainers } from '../../src/platform/core/permissions.ts';
-import { FILE_TYPES, fileTypeOf, handbookTypeOf, isTextFile } from '../lib/file-types.js';
+import { FILE_TYPES, fileTypeOf, systemContentTypeOf, isTextFile } from '../lib/file-types.js';
 import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from '../lib/modules.js';
 import { frontmatter } from '../lib/frontmatter.js';
 import { readmes } from '../lib/guide-pages.js';
 import { contributorsSignature, loadContributors } from '../lib/contributors.js';
-import { handbookProblems } from '../../src/platform/modules/handbook/node/handbook-check.js';
+import { systemContentProblems } from '../../src/platform/modules/systems/content/node/content-check.js';
 import { systemDocs } from '../../src/platform/modules/systems/node/docs.js';
 import { themeTokens } from '../../src/platform/modules/systems/themeTokens.ts';
 import { platformReferences } from '../lib/platform-references.js';
-import { handbookMap } from '../../src/platform/modules/handbook/map.ts';
+import { systemContentMap } from '../../src/platform/modules/systems/content/map.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
-const HANDBOOK = path.join(ROOT, 'src', 'handbook');
+
 // The Guide's pages, or null when its module is off or not installed.
 const documentationModule = ENABLED_MODULES.find((m) => m.id === 'documentation');
 const GUIDE = documentationModule?.section?.folder ? path.join(ROOT, documentationModule.section.folder) : null;
@@ -61,10 +61,10 @@ function artifactsIn(dir, base = '', { typeOf, skip, order } = inPrototype) {
     : [{ path: e.path, fileType: e.fileType }]));
 }
 
-// In the Handbook, a document opens as a document and every other text file opens as text (a
+// In the system content, a document opens as a document and every other text file opens as text (a
 // script in a skill's folder). Binary and very large files are left out.
-const inHandbook = {
-  typeOf: (name, file) => { const id = handbookTypeOf(name); return id && (!FILE_TYPES[id].fallback || isTextFile(file)) ? id : null; },
+const inSystemContent = {
+  typeOf: (name, file) => { const id = systemContentTypeOf(name); return id && (!FILE_TYPES[id].fallback || isTextFile(file)) ? id : null; },
   skip: (name) => name === 'node_modules',
 };
 
@@ -194,7 +194,7 @@ function signatureOf(dir) {
 
 // Writes the manifest the app fetches: prototypes without their artifacts (with how many, and a hash
 // of them so a changed list is fetched again), and each prototype's artifacts in its own file. The
-// Handbook's sections are few, so theirs stay in the manifest. Files for prototypes that are gone are removed.
+// system content's sections are few, so theirs stay in the manifest. Files for prototypes that are gone are removed.
 function writeManifest(manifest) {
   const wanted = new Set();
   const split = ({ artifacts, ...info }) => {
@@ -216,7 +216,7 @@ function writeManifest(manifest) {
   writeIfChanged(OUT, JSON.stringify({ ...manifest, prototypes, sections }) + '\n');
 }
 
-// Scans src/prototypes/, src/handbook/, and src/platform/modules/documentation/pages/, writes public/prototypes/ (manifest.json, and artifacts/), and returns the whole manifest.
+// Scans src/prototypes/, src/platform/, and src/platform/modules/documentation/pages/, writes public/prototypes/ (manifest.json, and artifacts/), and returns the whole manifest.
 // Problems are printed; errors counts them. The dev server calls this on every change
 // (vite-manifest-watch-plugin.js), so it's kept fast: one pass, no subprocesses.
 // Options: `deploy` leaves archived prototypes and views out (see src/platform/core/archive.ts), `write: false`
@@ -276,52 +276,37 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
 
   for (const key of cache.keys()) if (!seen.has(key)) cache.delete(key);
 
-  // The Handbook (src/handbook/): a prototype-shaped entry for each section, so the same file tree
-  // and item pages open it. Nobody owns it: the app only reads it. Its shape is fixed
-  // (src/platform/modules/handbook/node/handbook-check.js), and a file or folder out of place is a problem.
-  const handbook = [];
-  if (fs.existsSync(HANDBOOK)) {
-    for (const problem of handbookProblems(HANDBOOK)) { out.error(`[manifest] ${problem}`); errors++; }
-    for (const [id, { title, description }] of Object.entries(HANDBOOK_SECTIONS)) {
-      const dir = path.join(HANDBOOK, id);
-      if (!fs.existsSync(dir)) continue;
-      const artifacts = artifactsIn(dir, '', inHandbook);
-      errors += checkArtifacts(dir, artifacts, out);
-      handbook.push({ id, contributorKey: HANDBOOK_KEY, title, description, contributor: '', created: null, system: DEFAULT_SYSTEM, artifacts });
+  // Context, rules, and skills are owned by their system, including Platform.
+  const systemContent = [];
+  const maps = {};
+  for (const system of Object.keys(SYSTEM_SOURCES)) {
+    const base = path.join(ROOT, 'src', systemRoot(system));
+    for (const [section, { title, description }] of Object.entries(SYSTEM_CONTENT_SECTIONS)) {
+      const dir = path.join(base, section);
+      const artifacts = fs.existsSync(dir) ? artifactsIn(dir, '', inSystemContent) : [];
+      if (fs.existsSync(dir)) errors += checkArtifacts(dir, artifacts, out);
+      systemContent.push({ id: contentId(system, section), contributorKey: SYSTEM_CONTENT_KEY, title, description, contributor: '', created: null, system, artifacts });
     }
-  }
-
-  // The Handbook's map: what an agent reads, in order, from AGENTS.md, the rules, and the skills
-  // (src/platform/modules/handbook/map.ts). A link to a file that isn't there is a problem; a rule nothing
-  // links to is a warning, since no agent will ever read it.
-  let map = null;
-  if (handbook.length) {
-    const rulesDir = path.join(HANDBOOK, 'rules');
+    for (const problem of systemContentProblems(base, { scoped: true })) { out.error('[manifest] ' + problem); errors++; }
+    const rulesDir = path.join(base, 'rules');
     const rules = {};
-    const collect = (dir, base = '') => {
+    const collect = (dir, prefix = '') => {
       for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
         if (e.name.startsWith('.')) continue;
-        if (e.isDirectory()) collect(path.join(dir, e.name), `${base}${e.name}/`);
-        else if (e.isFile() && e.name.endsWith('.md')) rules[base + e.name] = fs.readFileSync(path.join(dir, e.name), 'utf8');
+        if (e.isDirectory()) collect(path.join(dir, e.name), prefix + e.name + '/');
+        else if (e.isFile() && e.name.endsWith('.md')) rules[prefix + e.name] = fs.readFileSync(path.join(dir, e.name), 'utf8');
       }
     };
     if (fs.existsSync(rulesDir)) collect(rulesDir);
-    const skillsDir = path.join(HANDBOOK, 'skills');
-    const skills = fs.existsSync(skillsDir)
-      ? fs.readdirSync(skillsDir, { withFileTypes: true }).filter((e) => e.isDirectory() && !e.name.startsWith('.') && fs.existsSync(path.join(skillsDir, e.name, 'SKILL.md')))
-        .map((e) => {
-          const fm = frontmatter(fs.readFileSync(path.join(skillsDir, e.name, 'SKILL.md'), 'utf8')) ?? {};
-          return { folder: e.name, name: String(fm.name ?? e.name), description: String(fm.description ?? '') };
-        })
-      : [];
-    const agentsFile = path.join(ROOT, 'AGENTS.md');
-    map = handbookMap({ agents: fs.existsSync(agentsFile) ? fs.readFileSync(agentsFile, 'utf8') : null, rules, skills });
-    for (const file of map.missing) { out.error(`[manifest] AGENTS.md links to ${file}, which isn't there. Fix the link, or add the file.`); errors++; }
-    // A rule that belongs to a module that is off is meant to be unrouted: AGENTS.md leaves it out (pnpm studio sync).
-    const offRules = new Set(Object.values(MODULES).filter((m) => m && !ENABLED_MODULES.includes(m)).flatMap((m) => (m.handbook ?? []).map((h) => h.path)));
-    for (const rule of map.unrouted.filter((r) => !offRules.has(`rules/${r}`))) out.warn(`[manifest] src/handbook/rules/${rule}: nothing links to this rule, so no agent will read it. Add a line for it to AGENTS.md.`);
+    const skillsDir = path.join(base, 'skills');
+    const skills = fs.existsSync(skillsDir) ? fs.readdirSync(skillsDir, { withFileTypes: true }).filter((e) => e.isDirectory() && !e.name.startsWith('.') && fs.existsSync(path.join(skillsDir, e.name, 'SKILL.md'))).map((e) => {
+      const fm = frontmatter(fs.readFileSync(path.join(skillsDir, e.name, 'SKILL.md'), 'utf8')) ?? {};
+      return { folder: e.name, name: String(fm.name ?? e.name), description: String(fm.description ?? '') };
+    }) : [];
+    const agentsFile = system === 'platform' ? path.join(ROOT, 'AGENTS.md') : path.join(base, 'AGENTS.md');
+    maps[system] = systemContentMap({ agents: fs.existsSync(agentsFile) ? fs.readFileSync(agentsFile, 'utf8') : null, rules, skills, root: 'src/' + systemRoot(system) });
+    for (const file of maps[system].missing) { out.error('[manifest] Agent instructions link to ' + file + ', which is missing.'); errors++; }
   }
-
   // Each prototype system's theme.css may only set values under its own class, like
   // .product-theme, so it can't leak into the app UI or another system.
   for (const [id, sys] of Object.entries(PROTOTYPE_SYSTEMS)) {
@@ -388,9 +373,9 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     if (links.length > DOC_WARNINGS) out.warn(`[manifest] and ${links.length - DOC_WARNINGS} more file(s) that link to an archived prototype.`);
   }
 
-  const manifest = { prototypes: deploy ? keptPrototypes : prototypes, sections: deploy ? keptSections : sections, guide: guide.map(({ order, ...page }) => page), handbook, handbookMap: map, platformReferences: platformReferences({ root: ROOT, modules: Object.values(MODULES).filter(Boolean), enabled: ENABLED_MODULES.map((m) => m.id), handbook }), systems };
+  const manifest = { prototypes: deploy ? keptPrototypes : prototypes, sections: deploy ? keptSections : sections, guide: guide.map(({ order, ...page }) => page), systemContent, systemContentMaps: maps, platformReferences: platformReferences({ root: ROOT, modules: Object.values(MODULES).filter(Boolean), enabled: ENABLED_MODULES.map((m) => m.id), systemContent }), systems };
   if (write) writeManifest(manifest);
-  out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${Object.entries(manifest.sections).map(([key, artifacts]) => `${artifacts.length} in ${key}`).join(', ') || 'no sections'}, ${guide.length} guide page(s), ${handbook.length} handbook section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
+  out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${Object.entries(manifest.sections).map(([key, artifacts]) => `${artifacts.length} in ${key}`).join(', ') || 'no sections'}, ${guide.length} guide page(s), ${systemContent.length} systemContent section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
   if (deploy && archived.length) out.log(`[manifest] Left out of the deployed site: ${archived.length} archived prototype(s)`);
   return { manifest, errors, archived: deploy ? archived : [] };
 }

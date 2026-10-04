@@ -5,6 +5,6 @@ export default {
   id: 'systems',
   label: 'Systems',
   version: '0.1.0',
-  description: 'The design systems prototypes build with.',
+  description: 'Foundations, components, context, rules, and skills for prototypes.',
   section: { key: 'systems', folder: 'src/systems', policy: 'open' },
 } satisfies ModuleSpec;

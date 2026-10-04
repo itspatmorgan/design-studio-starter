@@ -6,11 +6,11 @@ order: 30
 toc: true
 ---
 
-A team shares a repository, design systems, and Handbook. Each contributor has their own prototypes. Ask your agent to set up your contributor identity when you join an existing studio.
+A team shares a repository and systems, including their components and context. Each contributor has their own prototypes. Ask your agent to set up your contributor identity when you join an existing studio.
 
 ## Own your experiments
 
-Make changes in your own prototypes. You can inspect other contributors' work and discuss changes with them. Ask the studio maintainer before changing shared platform code, systems, or Handbook content.
+Make changes in your own prototypes. You can inspect other contributors' work and discuss changes with them. Ask the studio maintainer before changing shared platform code or systems.
 
 Prototype-local components and styles give you room to experiment without changing the team's shared system.
 

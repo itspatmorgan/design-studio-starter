@@ -27,10 +27,10 @@ import {
 import type { Artifact, Manifest, Prototype } from '@/platform/app/data/types';
 import { isHelper } from '@/platform/core/fileTypes';
 import { navIndent, navRow, navRowState } from '@/platform/app/shell/nav';
-import { HANDBOOK_KEY } from '@/platform/core/roots';
-import { creatableIn, isSkillFile, isSkillFolder, opProblem } from '@/platform/modules/handbook/rules';
-import { NEW_KINDS } from '@/platform/modules/handbook/pages/newKinds';
-import NewSkillDialog from '@/platform/modules/handbook/pages/NewSkillDialog';
+import { SYSTEM_CONTENT_KEY, contentSection } from '@/platform/core/roots';
+import { creatableIn, isSkillFile, isSkillFolder, opProblem } from '@/platform/modules/systems/content/rules';
+import { NEW_KINDS } from '@/platform/modules/systems/content/pages/newKinds';
+import NewSkillDialog from '@/platform/modules/systems/content/pages/NewSkillDialog';
 import { artifactUrl } from '@/platform/app/artifacts/artifactLinks';
 import { place } from '@/platform/core/order';
 import { DRAG_KIND, DragRow, type Dropped, type Operations } from '@/platform/modules/prototypes/viewer/DragRow';
@@ -142,7 +142,7 @@ function NameInput({ initial, depth, onDone }: { initial: string; depth: number;
   );
 }
 
-// What "+" makes: a folder, or a file of a type (its id, like "view" or "document"). In the Handbook
+// What "+" makes: a folder, or a file of a type (its id, like "view" or "document"). In the system content
 // it can also be a plain "file" (inside a skill), or a "skill", which asks for its name first.
 type NewTarget = 'folder' | string;
 
@@ -164,24 +164,24 @@ function IconButton({ label, onClick, pressed, children }: { label: string; onCl
   );
 }
 
-type FileTreeProps = { proto: Prototype; current: Artifact | undefined };
+type FileTreeProps = { proto: Prototype; current: Artifact | undefined; embedded?: boolean };
 
-export default function FileTree({ proto, current }: FileTreeProps) {
+export default function FileTree({ proto, current, embedded = false }: FileTreeProps) {
   const { files, reload } = useFileTree(proto);
   const me = useMe();
   const router = useRouter();
   const navigate = useNavigate();
   const live = import.meta.env.DEV && files !== null;
-  // Your own prototypes, and the Handbook (in dev): its files are platform files, changed here for
-  // review like any change, in the fixed shape src/platform/modules/handbook/rules.ts describes.
-  const isHandbook = proto.contributorKey === HANDBOOK_KEY;
+  // Your own prototypes, and the system content (in dev): its files are platform files, changed here for
+  // review like any change, in the fixed shape src/platform/modules/systems/content/rules.ts describes.
+  const isSystemContent = proto.contributorKey === SYSTEM_CONTENT_KEY;
   const editable = live && canChangePrototype(proto, me);
   const [newSkillOpen, setNewSkillOpen] = useState(false);
   // A skill's SKILL.md can't be renamed, moved, or deleted alone.
-  const fixed = (node: FileNode) => isHandbook && isSkillFile(proto.id, node.path);
-  // What can be made in a folder: a prototype's file types and folders, or what the Handbook section holds there.
-  const newOptions = (folder: string) => (isHandbook
-    ? creatableIn(proto.id, folder).map((kind) => ({ target: kind === 'document' ? 'handbook' : kind, ...NEW_KINDS[kind] }))
+  const fixed = (node: FileNode) => isSystemContent && isSkillFile(contentSection(proto.id), node.path);
+  // What can be made in a folder: a prototype's file types and folders, or what the system content section holds there.
+  const newOptions = (folder: string) => (isSystemContent
+    ? creatableIn(contentSection(proto.id), folder).map((kind) => ({ target: kind === 'document' ? 'systems' : kind, ...NEW_KINDS[kind] }))
     : [...creatableTypes.map((t) => ({ target: t.id, label: `New ${t.label.toLowerCase()}`, icon: t.icon })), { target: 'folder', ...NEW_KINDS.folder }]);
   const items = new Map(proto.artifacts.map((i) => [i.path, i]));
   // Switched in the header's "…" menu, and remembered for every prototype.
@@ -209,7 +209,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
     return next;
   });
   // Show all files exposes helpers and assets as well as artifacts.
-  const noun = showAll || proto.contributorKey === HANDBOOK_KEY ? 'files' : 'artifacts';
+  const noun = showAll || proto.contributorKey === SYSTEM_CONTENT_KEY ? 'files' : 'artifacts';
 
   // Runs a change, then takes the new manifest. If it moved or removed the open view, go to
   // its new place (or the prototype's first view) first, so the old address is never reloaded.
@@ -269,12 +269,12 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   }
 
   // Drag and drop (DragRow.tsx): drag a row before or after another, or into a folder. Order is saved
-  // in meta.json (src/platform/core/order.ts). The Handbook has a fixed shape, so there a row can only move into a folder.
-  const movable = (node: FileNode) => editable && node.path !== 'meta.json' && !fixed(node) && !(isHandbook && isSkillFolder(proto.id, node.path, node.dir));
-  const canMoveTo = (source: { path: string; dir: boolean }, folder: string) => !isHandbook || opProblem(proto.id, { op: 'move', path: source.path, to: folder }, source.dir) === null;
+  // in meta.json (src/platform/core/order.ts). The system content has a fixed shape, so there a row can only move into a folder.
+  const movable = (node: FileNode) => editable && node.path !== 'meta.json' && !fixed(node) && !(isSystemContent && isSkillFolder(contentSection(proto.id), node.path, node.dir));
+  const canMoveTo = (source: { path: string; dir: boolean }, folder: string) => !isSystemContent || opProblem(contentSection(proto.id), { op: 'move', path: source.path, to: folder }, source.dir) === null;
   // What dropping `source` on a row may do. A folder that's open has its contents below it, so "after" it is inside it.
   const operationsFor = (target: FileNode, open: boolean) => (source: { path: string; dir: boolean }): Operations => {
-    const ordering = !isHandbook && !q;
+    const ordering = !isSystemContent && !q;
     return {
       combine: target.dir && parentOf(source.path) !== target.path && canMoveTo(source, target.path) ? 'available' : 'not-available',
       'reorder-before': ordering ? 'available' : 'not-available',
@@ -290,7 +290,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   }
   function drop(path: string, target: string | null, operation: Dropped) {
     if (target === null) { // the empty space below the tree: the top level, last
-      if (isHandbook) run({ op: 'move', path, to: '' }); else arrange(path, '', '');
+      if (isSystemContent) run({ op: 'move', path, to: '' }); else arrange(path, '', '');
       return;
     }
     if (operation === 'combine') { run({ op: 'move', path, to: target }); return; }
@@ -325,13 +325,13 @@ export default function FileTree({ proto, current }: FileTreeProps) {
       }),
     ];
     return () => stops.forEach((stop) => stop());
-  }, [editable, isHandbook]);
+  }, [editable, isSystemContent]);
 
   // Move up or down: the same as dragging, from the keyboard (Option + arrow).
   const moves = (node: FileNode) => {
     const sibs = siblingsOf(node.path);
     const at = sibs.findIndex((n) => n.path === node.path);
-    const can = editable && !isHandbook && !q && node.path !== 'meta.json' && at >= 0;
+    const can = editable && !isSystemContent && !q && node.path !== 'meta.json' && at >= 0;
     return {
       up: can && at > 0 ? () => arrange(node.path, parentOf(node.path), sibs[at - 1].path) : null,
       down: can && at < sibs.length - 1 ? () => arrange(node.path, parentOf(node.path), sibs[at + 2]?.path ?? '') : null,
@@ -379,7 +379,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
                 reveal={() => revealInFinder(proto, node.path)} />,
             ],
             [
-              editable && !isHandbook && FILE_TYPES[items.get(node.path)?.fileType ?? '']?.fidelity && (
+              editable && !isSystemContent && FILE_TYPES[items.get(node.path)?.fileType ?? '']?.fidelity && (
                 <ContextMenuItem key="lofi" onClick={() => setTimeout(() => setLofi(items.get(node.path)!, !items.get(node.path)!.lofi))}>
                   <HugeiconsIcon icon={PaintBoardIcon} /> {items.get(node.path)?.lofi ? 'Make hi-fi' : 'Make lofi'}
                 </ContextMenuItem>
@@ -501,9 +501,9 @@ export default function FileTree({ proto, current }: FileTreeProps) {
   }
 
   return (
-    <nav className="group/tree flex min-h-0 flex-1 flex-col space-y-1.5 overflow-y-auto px-2 pt-3 pb-3">
+    <nav className={cn("group/tree flex min-h-0 flex-col space-y-1.5 px-2 pt-3 pb-3", !embedded && "flex-1 overflow-y-auto")}>
       <div className="flex h-7 shrink-0 items-center justify-between gap-1 px-2.5 pr-0.5">
-        <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{showAll || proto.contributorKey === HANDBOOK_KEY ? 'Files' : 'Artifacts'}</p>
+        <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{showAll || proto.contributorKey === SYSTEM_CONTENT_KEY ? 'Files' : 'Artifacts'}</p>
         {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
         <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
           <IconButton label="Filter" pressed={filterOpen} onClick={() => setFilterOpen((o) => !o)}>
@@ -516,7 +516,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
           )}
         </div>
         {/* Making things is here, with the file actions, and offers what the open folder holds: a prototype's
-            file types and folders, or what a Handbook section allows. It's always shown, and last, so the actions
+            file types and folders, or what a SystemContent section allows. It's always shown, and last, so the actions
             that fade in and out sit to its left without moving it. It's the main action, and a folder can be
             empty. With one thing to make (a skill), it's made directly. */}
         {editable && (() => {
@@ -572,7 +572,7 @@ export default function FileTree({ proto, current }: FileTreeProps) {
         {rows(shown, 0)}
       </div>
 
-      {isHandbook && <NewSkillDialog open={newSkillOpen} onOpenChange={setNewSkillOpen} onCreate={createSkill} />}
+      {isSystemContent && <NewSkillDialog open={newSkillOpen} onOpenChange={setNewSkillOpen} onCreate={createSkill} />}
 
       <Dialog open={confirmDelete !== null} onOpenChange={(o) => { if (!o) setConfirmDelete(null); }}>
         <DialogContent showCloseButton={false}>

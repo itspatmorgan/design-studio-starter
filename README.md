@@ -25,7 +25,7 @@ The Guide at `/documentation/guide` introduces setup, the app surfaces, and coll
 
 ## Project status
 
-Early beta, focused on local workflows: prototypes, canvases, documents, design systems, and the Handbook.
+Early beta, focused on local workflows: prototypes, canvases, documents, design systems, and system-owned context.
 
 For bugs, ideas, and pull requests, see [Contributing](CONTRIBUTING.md). For the intended environment and private vulnerability reporting, see [Security](SECURITY.md).
 

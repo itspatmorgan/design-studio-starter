@@ -53,7 +53,7 @@ export function ReferenceIndex() {
     <h1 className="text-3xl font-semibold tracking-tight">Overview</h1>
     <p className="mt-4 max-w-[65ch] text-muted-foreground">The complete documentation supplied with the platform: capabilities, boundaries, and file contracts. People and agents can consult it when needed. You do not need to read or customize these files to begin creating.</p>
     {guide.length > 0 && <p className="mt-4 text-sm">For a guided introduction, start with the <Link to={'/documentation/guide' as never} className="underline underline-offset-4">Guide</Link>.</p>}
-    <p className="mt-4 text-sm">The <Link to={'/handbook/rules/documentation-standards' as never} className="underline underline-offset-4">Documentation standards</Link> define where context belongs and how to keep it accurate.</p>
+    <p className="mt-4 text-sm">The <Link to={'/systems/platform/rules/documentation-standards' as never} className="underline underline-offset-4">Documentation standards</Link> define where context belongs and how to keep it accurate.</p>
     <section className="mt-10 max-w-[65ch] space-y-4">
       <h2 className="text-xl font-semibold">What this documentation contributes</h2>
       <p>Reference describes the environment an agent is operating: what a prototype may depend on, how files are structured, and what each capability provides. It helps the agent make changes that fit the platform.</p>
@@ -64,7 +64,7 @@ export function ReferenceIndex() {
       <ol className="list-decimal space-y-3 pl-5">
         <li>Your request establishes the outcome and scope.</li>
         <li>Repository instructions, Rules, and Skills lead the agent to relevant contracts and procedures.</li>
-        <li>Handbook Context supplies the team's product context. Prototype documents supply the local intent and decisions.</li>
+        <li>Your system’s Context supplies the team's product context. Prototype documents supply the local intent and decisions.</li>
         <li>The agent reads the relevant files, applies their guidance, and checks the resulting work.</li>
       </ol>
       <p className="text-muted-foreground">This is context available to the agent, not a record of what it read. Listing a file here does not automatically load it into a conversation.</p>
@@ -76,6 +76,6 @@ export function ReferenceIndex() {
       <p>Guide and Reference can share a source file. Editing a module README changes both presentations. Published documentation supports reading and copying; local editing preserves checks for external file changes.</p>
     </section>
     {disabled.length > 0 && <p className="mt-8 text-sm text-muted-foreground">Disabled modules: {disabled.map((group) => group.label).join(', ')}. Their references become available when enabled.</p>}
-    <p className="mt-8 text-sm text-muted-foreground">The <Link to={'/handbook' as never} className="underline underline-offset-4">Handbook</Link> holds the studio's curated context, rules, and skills. References remain with the code they describe.</p>
+    <p className="mt-8 text-sm text-muted-foreground">The <Link to={'/systems' as never} className="underline underline-offset-4">Systems</Link> own their context, rules, and skills. References remain with the code they describe.</p>
   </div>;
 }

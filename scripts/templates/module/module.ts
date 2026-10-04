@@ -1,7 +1,7 @@
 import type { ModuleSpec } from '../../core/modules/index.ts';
 
 // __LABEL__. This file says what the module is, and what it adds. See src/platform/modules/README.md for everything
-// it can say: a section (an address and a folder), a lib prototypes can import, handbook files, npm dependencies.
+// it can say: a section (an address and a folder), a lib prototypes can import, systemContent files, npm dependencies.
 export default {
   id: '__ID__',
   label: '__LABEL__',
@@ -9,5 +9,5 @@ export default {
   description: 'Say what __LABEL__ adds, in one sentence.',
   optional: true,
   section: { key: '__ID__' },
-  handbook: [{ path: 'rules/__ID__.md', when: 'asks about __LABEL__' }],
+  instructions: [{ path: 'rules/__ID__.md', when: 'asks about __LABEL__' }],
 } satisfies ModuleSpec;

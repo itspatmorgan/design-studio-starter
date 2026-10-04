@@ -1,6 +1,6 @@
 # Documents
 
-Documents adds Markdown pages inside a prototype. It is optional: disabling it hides those pages from normal prototype navigation and preserves their files. The Handbook and Guide retain their own Markdown support.
+Documents adds Markdown pages inside a prototype. It is optional: disabling it hides those pages from normal prototype navigation and preserves their files. The system context and Guide retain their own Markdown support.
 
 Documents use the platform's page style, rather than the prototype's design-system theme.
 
@@ -70,7 +70,7 @@ In the Markdown source, put three backticks followed by `mermaid` before the dia
 
 Diagrams follow the platform's light or dark mode. Expand **Mermaid source** below a diagram to read or copy its text. Invalid syntax shows an error with the source still available. Add `accTitle` and `accDescr` to describe the diagram for assistive technology.
 
-This shared reader also supports Mermaid in the Handbook, Guide, and repository reference pages. It loads Mermaid only when a diagram appears. The Markdown text remains the saved source; no image file is required. Diagram scripts and click actions are disabled.
+This shared reader also supports Mermaid in the system context, Guide, and repository reference pages. It loads Mermaid only when a diagram appears. The Markdown text remains the saved source; no image file is required. Diagram scripts and click actions are disabled.
 
 ## Links and related context
 
@@ -85,16 +85,16 @@ The app accepts paths with or without extensions. External links open in a new t
 
 Documents link to views. Canvases can show live view previews alongside document cards.
 
-Keep prototype-specific context here. The [Handbook](/documentation/guide/handbook) holds context shared across the studio.
+Keep prototype-specific context here. The [system context](/documentation/guide/systems) holds context shared across the studio.
 
 ## For developers
 
-This optional module owns prototype Markdown. Follow the [module rule](../../../handbook/rules/modules.md) for removal. See the [file-type contract](../../core/fileTypes.md) for extension behavior.
+This optional module owns prototype Markdown. Follow the [module rule](../../rules/modules.md) for removal. See the [file-type contract](../../core/fileTypes.md) for extension behavior.
 
 - `type.ts`: what the build reads: the `.md` extension, a template (a title and an empty-document line), and the checks on frontmatter.
 - `open.tsx`: the icon, how a document loads, and its page.
-- `src/platform/app/docs/`: the shared Markdown reader and page style. The Handbook uses this reader independently.
+- `src/platform/app/docs/`: the shared Markdown reader and page style. The system context uses this reader independently.
 - `scripts/build/rehype-mermaid.js`: preserves Mermaid fences before code highlighting. The shared reader maps them to `MermaidDiagram.tsx` for lazy SVG rendering.
 - `loader.ts`: the glob of document files for the deployed site.
 
-Agent contract: `src/handbook/rules/documents.md`.
+Agent contract: `src/platform/rules/documents.md`.

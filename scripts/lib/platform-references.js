@@ -1,17 +1,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { frontmatter } from './frontmatter.js';
-import { skillTitle } from '../../src/platform/modules/handbook/skills.ts';
+import { rootOf, addressOf, contentSection } from '../../src/platform/core/roots.ts';
+import { skillTitle } from '../../src/platform/modules/systems/content/skills.ts';
 
 // Match the shared reader's deliberately limited top-level Markdown set.
-export function platformReferences({ root, modules, enabled, handbook }) {
-  const related = handbook.flatMap((section) => section.artifacts.filter((item) => item.path.endsWith('.md')).map((item) => {
-    const source = `/handbook/${section.id}/${item.path}`;
+export function platformReferences({ root, modules, enabled, systemContent }) {
+  const related = systemContent.flatMap((section) => section.artifacts.filter((item) => item.path.endsWith('.md')).map((item) => {
+    const source = '/' + rootOf(section.contributorKey, section.id) + '/' + item.path;
     const text = fs.readFileSync(path.join(root, 'src', source), 'utf8');
     const targets = [...text.matchAll(/\]\(([^)\s]+)(?:\s+[^)]*)?\)/g)].map((match) => path.posix.normalize(path.posix.join(path.posix.dirname(source), match[1].split('#')[0])));
     const fm = frontmatter(text);
     const title = fm?.title ?? (fm?.name ? skillTitle(fm.name) : text.match(/^#\s+(.+)$/m)?.[1] ?? item.path);
-    return { title: `${section.title} · ${title}`, href: source.replace(/^\/handbook\/docs\//, '/handbook/context/').replace(/\.md$/, ''), source, targets };
+    return { title: `${section.system} · ${section.title} · ${title}`, href: addressOf(section.contributorKey, section.id) + '/' + item.path.replace(/\.md$/, ''), source, targets };
   }));
   const group = (id, label, folder, on, declared = []) => {
     const dir = path.join(root, 'src', folder);
@@ -24,12 +25,12 @@ export function platformReferences({ root, modules, enabled, handbook }) {
       return { source, title: entry.name === 'README.md' && id !== 'core' ? label : fm?.title ?? text.match(/^#\s+(.+)$/m)?.[1] ?? entry.name,
         ...(id === 'core' && Number.isFinite(fm?.referenceOrder) ? { order: fm.referenceOrder } : {}) };
     }) : [];
-    const links = related.filter((item) => item.targets.some((target) => references.some((ref) => target === ref.source)) || declared.some((d) => item.source === `/handbook/${d.path}` || item.source.startsWith(`/handbook/${d.path.endsWith('/') ? d.path : d.path + '/'}`)));
+    const links = related.filter((item) => item.targets.some((target) => references.some((ref) => target === ref.source)) || declared.some((d) => item.source === `/platform/${d.path}` || item.source.startsWith(`/platform/${d.path.endsWith('/') ? d.path : d.path + '/'}`)));
     return { id, label, enabled: on, references, related: links.map(({ title, href }) => ({ title, href })) };
   };
   return [group('core', 'Platform foundations', '/platform/core', true), {
     id: 'modules', label: 'Module contract', enabled: true,
     references: [{ source: '/platform/modules/README.md', title: 'Module contract', order: 30 }],
     related: related.filter((r) => r.targets.includes('/platform/modules/README.md')).map(({title,href}) => ({title,href})),
-  }, ...modules.slice().sort((a,b) => a.label.localeCompare(b.label)).map((m) => group(m.id, m.label, `/platform/modules/${m.id}`, enabled.includes(m.id), m.handbook))];
+  }, ...modules.slice().sort((a,b) => a.label.localeCompare(b.label)).map((m) => group(m.id, m.label, `/platform/modules/${m.id}`, enabled.includes(m.id), m.instructions))];
 }

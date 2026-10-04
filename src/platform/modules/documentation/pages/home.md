@@ -6,7 +6,7 @@ order: 10
 toc: true
 ---
 
-Home gives you a starting point: search, prototypes, design systems, and selected Handbook context. The rail on the left opens each app surface.
+Home gives you a starting point: search, prototypes and systems. The rail on the left opens each app surface.
 
 ## Local and published
 

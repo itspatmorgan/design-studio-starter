@@ -7,6 +7,6 @@ export default {
   version: '0.1.0',
   description: 'An .excalidraw file opens as a page to arrange views, documents, and notes on.',
   optional: true,
-  handbook: [{ path: 'rules/canvases.md', when: 'asks for a canvas (a page of views, documents, and notes arranged together)' }],
+  instructions: [{ path: 'rules/canvases.md', when: 'asks for a canvas (a page of views, documents, and notes arranged together)' }],
   dependencies: { '@excalidraw/excalidraw': '0.18.1' },
 } satisfies ModuleSpec;

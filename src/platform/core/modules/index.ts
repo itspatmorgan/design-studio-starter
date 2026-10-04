@@ -23,8 +23,8 @@ export type ModuleSpec = {
   // The top-level area the module adds: its address in the app (/examples) and, if it keeps content, the folder
   // that content lives in, relative to the repo root. The key can't also be a contributor's folder, since both are addresses.
   // `items` says the folder holds files the app opens as items, so each file type lists them (globs.ts):
-  // "prototypes" for a folder of prototype-shaped folders, one per id (src/examples/<id>/), and "handbook"
-  // for the Handbook's fixed shape. Leave it out when the module reads its own files.
+  // "prototypes" for a folder of prototype-shaped folders, one per id (src/examples/<id>/).
+  // Leave it out when the module reads its own files.
   // `policy` says who may change the section's files from the app (src/platform/core/permissions.ts): "maintainers"
   // (the people listed in an item's meta.json) or "open" (anyone running the app; a pull request reviews
   // it). Without one, nobody can: the module's files are changed in the repo.
@@ -32,14 +32,14 @@ export type ModuleSpec = {
   // window with no rail or navigation, on the deployed site (a standalone section item is an app).
   // `byPerson` is for the one section whose folders are grouped by the person who owns them
   // (src/prototypes/<person>/<id>/, opening at /prototypes/<person>/<id>), where the others have one folder per id.
-  section?: { key: string; folder?: string; items?: 'prototypes' | 'handbook'; policy?: 'maintainers' | 'open'; standalone?: boolean; byPerson?: boolean };
+  section?: { key: string; folder?: string; items?: 'prototypes'; policy?: 'maintainers' | 'open'; standalone?: boolean; byPerson?: boolean };
   // Prototypes may import the module's lib/index.ts as `@module/<id>`, the one way a prototype can reach into a
   // module (the import guard allows exactly that). Removing the module while a prototype imports it is refused.
   lib?: true;
-  // Handbook files the module brings (rules, skills), as paths inside src/handbook/ ("rules/examples.md"; a trailing
+  // system content files the module brings (rules, skills), as paths inside src/platform/ ("rules/examples.md"; a trailing
   // slash is a whole folder, like a skill's). `when` finishes the sentence "When the person ..." in AGENTS.md,
   // which routes agents to the rule; pnpm studio sync writes those lines for the modules that are on.
-  handbook?: { path: string; when?: string }[];
+  instructions?: { path: string; when?: string }[];
   // npm packages the module needs, as name → version ("dialkit": "^1.2.0"). Adding the module shows them and installs
   // them only when you say so.
   dependencies?: Record<string, string>;
@@ -62,7 +62,7 @@ export type ModuleCheck = (context: { root: string }) => string[] | Promise<stri
 const ID = /^[a-z][a-z0-9-]*$/;
 const VERSION = /^\d+\.\d+\.\d+$/;
 const KEY = /^[a-z0-9][a-z0-9-]*$/;
-const HANDBOOK_PATH = /^(rules|docs|skills)\/[A-Za-z0-9][A-Za-z0-9._\/-]*$/;
+const SYSTEM_CONTENT_PATH = /^(rules|context|skills)\/[A-Za-z0-9][A-Za-z0-9._\/-]*$/;
 const NPM_NAME = /^(@[a-z0-9][a-z0-9._-]*\/)?[a-z0-9][a-z0-9._-]*$/;
 const NPM_VERSION = /^[\^~]?\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/;
 
@@ -80,12 +80,12 @@ export function moduleProblems(spec: unknown, folder: string): string[] {
   if (m.requires !== undefined && (typeof m.requires !== 'string' || !VERSION.test(m.requires))) problems.push(`${where}: requires should look like 0.1.0, the oldest platform version it works with.`);
   if (m.description !== undefined && (typeof m.description !== 'string' || m.description.length > 200)) problems.push(`${where}: description should be one short sentence.`);
   if (m.lib !== undefined && m.lib !== true) problems.push(`${where}: lib is true, or left out.`);
-  if (m.handbook !== undefined) {
-    if (!Array.isArray(m.handbook)) problems.push(`${where}: handbook should be a list of { path, when }.`);
-    else for (const h of m.handbook) {
+  if (m.instructions !== undefined) {
+    if (!Array.isArray(m.instructions)) problems.push(`${where}: instructions should be a list of { path, when }.`);
+    else for (const h of m.instructions) {
       const path = (h as { path?: unknown })?.path;
-      if (typeof path !== 'string' || !HANDBOOK_PATH.test(path) || path.split('/').includes('..')) problems.push(`${where}: handbook path "${String(path)}" should be inside rules/, docs/ or skills/, like "rules/${folder}.md".`);
-      else if ((h as { when?: unknown }).when !== undefined && typeof (h as { when?: unknown }).when !== 'string') problems.push(`${where}: handbook "when" for ${path} should be text.`);
+      if (typeof path !== 'string' || !SYSTEM_CONTENT_PATH.test(path) || path.split('/').includes('..')) problems.push(`${where}: instructions path "${String(path)}" should be inside rules/, context/ or skills/, like "rules/${folder}.md".`);
+      else if ((h as { when?: unknown }).when !== undefined && typeof (h as { when?: unknown }).when !== 'string') problems.push(`${where}: instructions "when" for ${path} should be text.`);
     }
   }
   if (m.dependencies !== undefined) {
@@ -107,7 +107,7 @@ export function moduleProblems(spec: unknown, folder: string): string[] {
     const policy = (m.section as { policy?: unknown }).policy;
     if (policy !== undefined && policy !== 'maintainers' && policy !== 'open') problems.push(`${where}: section.policy should be "maintainers" or "open", or left out.`);
     const items = (m.section as { items?: unknown }).items;
-    if (items !== undefined && items !== 'prototypes' && items !== 'handbook') problems.push(`${where}: section.items should be "prototypes" or "handbook".`);
+    if (items !== undefined && items !== 'prototypes') problems.push(`${where}: section.items should be "prototypes".`);
     else if (items !== undefined && dir === undefined) problems.push(`${where}: a section with items needs a folder to keep them in, like src/examples.`);
     else if (items !== undefined && !(typeof dir === 'string' && /^src\/[a-z0-9][a-z0-9-]*$/.test(dir))) problems.push(`${where}: a section with items keeps them in a folder directly under src/, like src/examples.`);
     else if (items === 'prototypes' && dir !== `src/${(m.section as { key?: string }).key}`) problems.push(`${where}: a section of prototype-shaped folders keeps them in src/ under its own key, like src/examples for "examples".`);
@@ -142,7 +142,7 @@ export const sectionKeys = (specs: readonly ModuleSpec[]): string[] =>
   specs.flatMap((m) => (m.section ? [m.section.key] : []));
 
 // The folders (relative to the repo) of the modules whose sections hold items of this kind.
-export const itemFolders = (specs: readonly ModuleSpec[], items: 'prototypes' | 'handbook'): string[] =>
+export const itemFolders = (specs: readonly ModuleSpec[], items: 'prototypes'): string[] =>
   specs.flatMap((m) => (m.section?.items === items && m.section.folder ? [m.section.folder] : []));
 
 const parts = (v: string) => v.split('.').map(Number);

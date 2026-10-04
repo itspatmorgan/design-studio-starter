@@ -1,4 +1,4 @@
-// The layout of a prototype, or of the Handbook: its navigation (which hides with the rail's toggle,
+// The layout of a prototype, or of the system content: its navigation (which hides with the rail's toggle,
 // or ⌘;) beside the open item. The route (router.tsx) passes in the prototype it loaded.
 import { Outlet, useParams } from '@tanstack/react-router';
 import { findArtifact, firstArtifact } from '@/platform/app/data/manifest';

@@ -8,7 +8,7 @@ Modules are copied into the repository. They are not downloaded or loaded as plu
 
 Keep a feature's implementation inside its module. Optional modules must support disabling and removal.
 
-Prototypes, Views, Text files, Handbook, and Systems are required. Platform code and modules may depend on required modules.
+Prototypes, Views, Text files, and Systems are required. Platform code and modules may depend on required modules.
 
 A module cannot import another optional module's implementation. Outside code can read an optional module's declaration or its enabled public library entry.
 
@@ -22,13 +22,13 @@ Prototypes access public libraries through `@module/<id>`. They cannot import pr
 
 | Path | Purpose |
 | --- | --- |
-| `module.ts` | Identity, compatibility, optional status, section, dependencies, library, and Handbook declarations. |
+| `module.ts` | Identity, compatibility, optional status, section, dependencies, library, and agent instruction declarations. |
 | `app.tsx` | Navigation, routes, overview blocks, palette entries, and prototype actions. |
 | `type.ts`, `open.tsx`, `loader.ts` | File-type declaration, rendering, and production loading. |
 | `server.ts` | Local routes at `POST /__studio/<module>/<route>`. |
 | `check.ts` | Module validation while enabled. |
 | `lib/index.ts(x)` | Public entry exposed when `lib: true`. |
-| `handbook/` in a pack | Declared agent files installed into `src/handbook/`. |
+| `instructions/` in a pack | Declared agent files installed into `src/platform/`. |
 
 A section can declare a content folder, prototype-shaped items, contributor grouping, editing policy, and standalone published views.
 
@@ -54,9 +54,9 @@ pnpm check
 
 Add, remove, and create commands preview changes. Applying them requires `--yes`. Use CLI help for source formats and optional flags.
 
-Studio commands manage config module flags, `studio.lock.json`, and module-owned routing in `AGENTS.md`. The [module rule](../../handbook/rules/modules.md) governs agent execution.
+Studio commands manage config module flags, `studio.lock.json`, and module-owned routing in `AGENTS.md`. The [module rule](../rules/modules.md) governs agent execution.
 
-Disabling retains files. Removal deletes the module and its declared Handbook files. External content remains unless removal includes `--content`.
+Disabling retains files. Removal deletes the module and its declared platform instruction files. External content remains unless removal includes `--content`.
 
 Packages remain installed after removal. Remove them only when no retained code uses them.
 

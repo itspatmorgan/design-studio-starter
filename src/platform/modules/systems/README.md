@@ -1,6 +1,6 @@
 ---
 title: "Systems"
-description: "Browse and adapt your design toolkit."
+description: "Browse the materials and knowledge for your work."
 section: "Studio"
 order: 12
 toc: true
@@ -9,7 +9,7 @@ slug: "systems"
 
 # Systems
 
-Systems shows the components and styles available to your prototypes. Use the selector to switch between systems, then browse foundations and component examples.
+Systems brings together the components, styles, and knowledge used by your prototypes. Use the selector to switch between systems, then browse foundations and component examples.
 
 ## Product and Platform
 
@@ -32,6 +32,22 @@ Ask your agent to import your components, tokens, fonts, and supported color mod
 System files are shared team content. Coordinate changes with your maintainer. Changing the default system preserves existing prototypes' system choices; migrating a prototype is a separate change.
 
 Source is available through navigation, using the [shared file workflow](/documentation/guide/home#working-with-files). Component pages offer separate source tabs for documentation, examples, and component code.
+
+## Context, rules, and skills
+
+Each system can also hold product knowledge, standing constraints, and task procedures. These are ordinary files beside its components and styles.
+
+| Part | What belongs there |
+| --- | --- |
+| Context | Personas, principles, research, and shared knowledge. |
+| Rules | Constraints for work using this system. |
+| Skills | Procedures for specific tasks. |
+
+Select a section to read, add, or edit its files. Empty sections are fine; add material when it improves the work. Give your agent supplied context and ask it to connect relevant files to the system's instructions.
+
+A prototype uses its assigned system's knowledge along with platform operating rules and its own local intent. Files being visible here does not automatically load them into an agent conversation.
+
+Platform contains Design Studio's own context and instructions. Keep your product context in its product system. System knowledge follows Studio's appearance; UI examples follow the system's supported color modes.
 
 ## For developers
 

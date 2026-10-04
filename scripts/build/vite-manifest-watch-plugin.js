@@ -1,6 +1,6 @@
 // Keeps the manifest live during `pnpm dev`, without reloading the page.
 //
-// Vite already watches every file. When something under src/prototypes/, a module's content folder, src/handbook/, src/systems/, src/platform/modules/documentation/pages/, or a README that is a Guide page
+// Vite already watches every file. When something under src/prototypes/, a module's content folder, src/platform/, src/systems/, src/platform/modules/documentation/pages/, or a README that is a Guide page
 // changes (from the app, an agent, or your editor), this rebuilds the manifest in-process
 // and pushes it to the app over Vite's dev connection. The app swaps it in and refreshes
 // only the routes that use it (see router.tsx), so the open view and scroll position stay.
@@ -15,7 +15,7 @@ import { README_FILES } from '../lib/guide-pages.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
-const HANDBOOK = path.join(ROOT, 'src', 'handbook');
+const SYSTEM_CONTENT = path.join(ROOT, 'src', 'platform');
 // The Guide's pages, or null when its module is off or not installed.
 const documentationModule = ENABLED_MODULES.find((m) => m.id === 'documentation');
 const GUIDE = documentationModule?.section?.folder ? path.join(ROOT, documentationModule.section.folder) : null;
@@ -23,7 +23,7 @@ const SYSTEMS = path.join(ROOT, 'src', 'systems');
 // The app's own system: its components, and its theme (the tokens the Systems pages list).
 const PLATFORM_COMPONENTS = path.join(ROOT, 'src', 'platform', 'components');
 const PLATFORM_THEME = path.join(ROOT, 'src', 'platform', 'styles', 'index.css');
-// The Handbook's map reads it (src/platform/modules/handbook/map.ts).
+// The system content's map reads it (src/platform/modules/systems/content/map.ts).
 const AGENTS = path.join(ROOT, 'AGENTS.md');
 const BATCH_MS = 50;
 
@@ -45,7 +45,7 @@ function relevant(file, kind) {
   if (GUIDE && inside(GUIDE, file)) return file.endsWith('.md');
   // A README that is a Guide page: its frontmatter and title are in the manifest.
   if (GUIDE && path.basename(file) === 'README.md' && README_FILES().includes(file)) return true;
-  if (inside(HANDBOOK, file)) return kind !== 'change' || file.endsWith('.md');
+  if (inside(SYSTEM_CONTENT, file)) return kind !== 'change' || file.endsWith('.md');
   if (file.endsWith('.md') && /src[\\/]platform[\\/](core|modules)[\\/]/.test(file)) return true;
   // A system's component docs: files coming and going, and edits to the ones that describe a component
   // and to its theme (the tokens it lists).
@@ -62,7 +62,7 @@ export default function manifestWatch() {
     name: 'prototype-manifest-watch',
     apply: 'serve',
     configureServer(server) {
-      server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, HANDBOOK, ...(GUIDE ? [GUIDE, ...README_FILES()] : []), SYSTEMS, CONTRIBUTORS_FILE, CONTRIBUTORS_DIR, AGENTS]);
+      server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, SYSTEM_CONTENT, ...(GUIDE ? [GUIDE, ...README_FILES()] : []), SYSTEMS, CONTRIBUTORS_FILE, CONTRIBUTORS_DIR, AGENTS]);
       let timer = null;
       // Every file that changed since the last build, even ones that don't ask for a rebuild: the next one tells the
       // build which prototypes to look at again, so an edit that waited for it is never missed.

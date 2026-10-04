@@ -14,7 +14,7 @@ The starter design systems use shadcn/ui and Base UI. Your prototype design syst
 
 GitHub Actions supplies the included repository checks. Another Git host needs equivalent checks configured separately. Hosting is independent of these choices.
 
-Documents and Canvases are optional modules. The Handbook and Guide keep their own Markdown support when prototype Documents is disabled.
+Documents and Canvases are optional modules. The system context and Guide keep their own Markdown support when prototype Documents is disabled.
 
 ## App and build
 
@@ -40,7 +40,7 @@ Starter components use Base UI's `render` prop for composition. Replacement desi
 
 [MDX](https://mdxjs.com) compiles plain Markdown. [Shiki](https://shiki.style) highlights code with the shared [Flexoki](https://stephango.com/flexoki) accent palette. [Tailwind Typography](https://github.com/tailwindlabs/tailwindcss-typography) styles document pages.
 
-[Mermaid](https://mermaid.js.org) renders fenced `mermaid` blocks as diagrams in the shared Markdown reader. It loads on demand for the Guide, Handbook, reference pages, and prototype Documents. Diagram source stays in the Markdown file. A minimal platform theme coordinates diagrams with the editor and document code. See [Diagrams and code](/documentation/reference/platform/core/diagrams.md) for examples and customization.
+[Mermaid](https://mermaid.js.org) renders fenced `mermaid` blocks as diagrams in the shared Markdown reader. It loads on demand for the Guide, system context, reference pages, and prototype Documents. Diagram source stays in the Markdown file. A minimal platform theme coordinates diagrams with the editor and document code. See [Diagrams and code](/documentation/reference/platform/core/diagrams.md) for examples and customization.
 
 The canvas module uses [Excalidraw](https://excalidraw.com). It loads when a canvas opens.
 

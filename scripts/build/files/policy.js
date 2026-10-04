@@ -7,7 +7,7 @@ import { canChange as mayChange, canOwn, parseMaintainers, policyFor, whyNot } f
 import { MODULES } from '../../lib/modules.js';
 
 // Who can change a prototype's files is the policy of its section (src/platform/core/permissions.ts): your own
-// prototypes; a section item, if you maintain it (its meta.json); the platform's (the Handbook's, and the
+// prototypes; a section item, if you maintain it (its meta.json); the platform's (the system content's, and the
 // prototype systems' components), which go through review like any change to it.
 export const maintainersOf = (dir) => {
   try { return parseMaintainers(JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8')).maintainers) ?? []; } catch { return []; }

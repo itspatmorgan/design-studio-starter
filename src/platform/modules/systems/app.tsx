@@ -3,12 +3,12 @@ import { lazy, Suspense } from 'react';
 // and prototype systems in the ⌘K palette. The pages are in src/platform/modules/systems/pages/.
 import { createRoute, redirect, useRouterState } from '@tanstack/react-router';
 import { Shapes01Icon } from '@hugeicons/core-free-icons';
-import { CommandItem } from '@/platform/components/command';
+import { CommandGroup, CommandItem } from '@/platform/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
 import { ItemRow } from '@/platform/app/items/ItemRow';
 import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/platform/modules/systems/data/systems';
 import { APP_NAME } from '@/platform/app/data/config';
-import { artifactLabel } from '@/platform/app/data/manifest';
+import { artifactLabel, artifactLink } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 
 // Loaded on first visit, so it isn't in the main bundle:
@@ -31,13 +31,21 @@ function SystemsPlaces({ go }: PaletteContext) {
   );
 }
 
+function SystemFiles({ manifest, go }: PaletteContext) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  return <>{manifest.systemContent.filter((section) => section.system !== 'platform' && section.artifacts.length).map((section) =>
+    <CommandGroup key={section.id} heading={PROTOTYPE_SYSTEMS[section.system!]?.label + ' · ' + section.title}>
+      {section.artifacts.map((item) => { const link = artifactLink(section, item); return <CommandItem key={item.path} value={section.system + ' ' + section.title + ' ' + item.path} disabled={pathname === link.to} onSelect={() => go(link)}>{artifactLabel(item.path)}</CommandItem>; })}
+    </CommandGroup>)}</>;
+}
+
 // On the front page: a link to the team's design systems, three at most. The platform's own is how the app itself is
 // built, so it isn't offered here.
 function Overview() {
   const systems = Object.entries(PROTOTYPE_SYSTEMS).slice(0, 3);
   if (!systems.length) return null;
   return (
-    <HomeSection title="Design systems" to="/systems">
+    <HomeSection title="Systems" to="/systems">
       <ul>{systems.map(([id, s]) => <ItemRow key={id} link={{ to: `/systems/${id}` }} icon={Shapes01Icon} title={s.label} />)}</ul>
     </HomeSection>
   );
@@ -67,8 +75,15 @@ export default {
         head: ({ params }) => ({ meta: [{ title: systemsTitle(params.page, params.system) }] }),
         component: () => <Suspense fallback={null}><SystemsPage /></Suspense>,
       }),
+      createRoute({
+        getParentRoute: () => systemsRoute,
+        path: '$system/$page/$',
+        head: ({ params }) => ({ meta: [{ title: systemsTitle(params._splat?.split('/').pop(), params.page, params.system) }] }),
+        component: () => <Suspense fallback={null}><SystemsPage /></Suspense>,
+      }),
     ])];
   },
   overview: Overview,
   places: SystemsPlaces,
+  palette: SystemFiles,
 } satisfies ModuleApp;

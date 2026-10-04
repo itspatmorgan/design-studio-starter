@@ -2,7 +2,7 @@ import type { ModuleSpec } from '../../core/modules/index.ts';
 
 // Prototypes: the team's work, in src/prototypes/<person>/<id>/, at /prototypes. A prototype is a folder of files
 // (views, documents, canvases, text) that opens in the viewer; each belongs to the person whose folder it is in.
-// Required: the viewer here is also how a module item or a Handbook section opens.
+// Required: the viewer here is also how a module item or a system content section opens.
 export default {
   id: 'prototypes',
   label: 'Prototypes',
