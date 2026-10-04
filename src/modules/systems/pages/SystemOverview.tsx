@@ -30,7 +30,6 @@ export default function SystemOverview({ system, sys, components, tokens, founda
   const prototypes = manifest.prototypes.filter(proto => proto.system === system && proto.status !== 'archived');
   const sectionHeading = 'mb-3 text-lg font-semibold tracking-tight';
   const cardClass = 'flex min-w-0 flex-col rounded-lg border border-border bg-card p-4';
-  const more = (id: string, label: string) => <Link to={(base + '/' + id) as never} className="mt-auto flex items-center gap-1 pt-4 text-[13px] font-medium hover:underline">{label}<ArrowUpRight aria-hidden className="size-3.5" /></Link>;
 
   return <>
     <PageHeader title={`${sys.label} system`} description={sys.summary ?? `Resources and guidance for work using ${sys.label}.`} />
@@ -45,7 +44,6 @@ export default function SystemOverview({ system, sys, components, tokens, founda
         {guidance.map(section => <div key={section.id} className={cardClass}>
           <div className="mb-2 flex items-center gap-2"><section.icon aria-hidden className="size-4 text-muted-foreground" /><h3 className="text-sm font-semibold">{section.label}</h3><span className="ml-auto text-[12px] text-muted-foreground">{section.artifacts.length}</span></div>
           {section.artifacts.length ? <ul className="space-y-1 text-[13px]">{section.artifacts.slice(0, 3).map(artifact => <li key={artifact.path}><Link {...artifactLink(section.proto!, artifact)} className="hover:underline">{artifactLabel(artifact.path, section.proto)}</Link></li>)}</ul> : <p className="text-[13px] text-muted-foreground">No {section.label.toLowerCase()} yet. Use New in this section to add useful material.</p>}
-          {more(section.id, 'Browse ' + section.label.toLowerCase())}
         </div>)}
         <div className={cardClass}>
           <div className="mb-2 flex items-center gap-2"><Palette aria-hidden className="size-4 text-muted-foreground" /><h3 className="text-sm font-semibold">Theme</h3><span className="ml-auto text-[12px] text-muted-foreground">{new Set(tokens.map(token => token.name)).size} tokens</span></div>
