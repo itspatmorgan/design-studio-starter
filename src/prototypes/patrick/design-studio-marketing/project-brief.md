@@ -13,13 +13,11 @@ Follow the system’s [Marketing design rule](/systems/marketing/rules/marketing
 
 ## Exploration
 
-![Visitor flow](explore/visitor-flow.mermaid)
-
 ![Landing wireframe](explore/wireframe.tsx)
 
 ![Campaign board](explore/campaign-board.excalidraw)
 
-The diagram and wireframe are shared source artifacts; their document and canvas previews update together.
+The wireframe outlines five content blocks from top to bottom. The canvas sketches the same story beats alongside a live wireframe preview. Edit the wireframe to update its document and canvas previews together.
 
 ## Open decisions
 
