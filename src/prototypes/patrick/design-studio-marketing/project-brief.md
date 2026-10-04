@@ -5,20 +5,24 @@ description: A self-contained marketing project using the Marketing system.
 
 ## Purpose
 
-Introduce Design Studio, show its artifact surfaces, and help visitors run a local copy. Keep the page to a simple column: introduction, examples, install, usage, and reference. Human and agent modes share the same facts.
+Introduce Design Studio, show its artifact surfaces, and help visitors run a local copy. Plan the page’s story with content blocks, then develop it through three iterations.
 
-This prototype explicitly uses **Marketing**: Plus Jakarta Sans, warm neutrals, and adapted Untitled UI components. The captured product examples use a separate Product system. Studio provides the navigation, documents, diagrams, and canvas tools around both.
+This prototype uses **Marketing**: Plus Jakarta Sans, warm neutrals, and adapted Untitled UI components. The captured product examples use a separate Product system. Studio supplies the artifact tools around both.
 
-Follow the system’s [Marketing design rule](/systems/marketing/rules/marketing-design). The [landing page](landing.tsx) uses screenshots rather than live product embeds, and keeps visitors within this marketing project. Motion previews can replace the screenshots when a useful recording is available.
+Follow the [Marketing design rule](/systems/marketing/rules/marketing-design). Product examples are screenshots and keep visitors within this project. Motion previews can replace them when a useful recording is available.
 
-## Exploration
+## Iterations
 
-![Landing wireframe](explore/wireframe.tsx)
+- [V1 — Introduction](landing-v1.tsx): establish the promise and link to the repository.
+- [V2 — Demonstration and install](landing-v2.tsx): add artifact examples and terminal commands.
+- [V3 — Human and agent](landing-v3.tsx): add Markdown instructions and setup guidance.
 
-![Campaign board](explore/campaign-board.excalidraw)
+## Content blocking
 
-The wireframe outlines five content blocks from top to bottom. The canvas sketches the same story beats alongside a live wireframe preview. Edit the wireframe to update its document and canvas previews together.
+![Content blocking](content-blocking.excalidraw)
+
+The canvas starts with editable story blocks, followed by live previews of V1, V2, and V3. Plain text annotations describe what changed. Edit each view’s source to update its preview.
 
 ## Open decisions
 
-The public launch URL and final copy remain open. The current demo links to the repository and setup guide. It does not collect leads or create accounts.
+The public launch URL and final copy remain open. The demo links to the repository and setup guide. It does not collect leads or create accounts.

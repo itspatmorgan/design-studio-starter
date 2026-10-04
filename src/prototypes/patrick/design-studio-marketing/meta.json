@@ -3,10 +3,10 @@
   "created": "2026-10-03",
   "system": "marketing",
   "order": [
-    "landing.tsx",
     "project-brief.md",
-    "explore",
-    "explore/wireframe.tsx",
-    "explore/campaign-board.excalidraw"
+    "content-blocking.excalidraw",
+    "landing-v1.tsx",
+    "landing-v2.tsx",
+    "landing-v3.tsx"
   ]
 }
