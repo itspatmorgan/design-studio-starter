@@ -21,7 +21,7 @@ Each prototype uses an assigned system and can also have local components and st
 
 ## Explore the toolkit
 
-Foundations show the colors, typography, radius, shadows, and spacing declared in the system’s theme file. Component pages show examples, source, and available properties. These help you and your agent understand what you can use.
+Foundations show the colors, typography, radius, shadows, spacing, motion, and effects declared in the system’s theme file. Component pages show examples, source, and available properties. These help you and your agent understand what you can use.
 
 A system declares whether it supports light mode, dark mode, or both. Systems with one mode keep that appearance in their pages, prototype views, and embeds while Studio follows its global toggle.
 

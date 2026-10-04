@@ -15,13 +15,14 @@ import { dependencyResolver, importsOf, sourceFiles } from '../lib/imports.js';
 //     ['/__studio_globs__/*'] placeholder, so a new section and archived files reach it (scripts/build/vite-globs-plugin.js)
 // Usage: node scripts/check/check-modules.js
 import fs from 'node:fs';
+import { tailwindThemeProblems } from '../lib/tailwind-theme.js';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pathToFileURL } from 'node:url';
 import { PLATFORM_VERSION, compatible, listProblems } from '../../src/platform/core/modules/index.ts';
 import { configProblems } from '../../src/platform/core/config.ts';
 import { CONFIG, MODULES, ENABLED_MODULES, SECTION_KEYS, PROTOTYPE_DIRS, declarationProblems } from '../lib/modules.js';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS, systemDeclarationProblems } from '../../src/platform/modules/systems/node/systems.js';
+import { SYSTEM_SPECS, PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS, systemDeclarationProblems } from '../../src/platform/modules/systems/node/systems.js';
 import { changesFromLock } from '../lib/lock.js';
 import { readContributors } from '../lib/contributors.js';
 
@@ -35,6 +36,11 @@ for (const id of SYSTEM_IDS) {
   for (const part of ['components', 'styles/theme.css']) {
     if (!fs.existsSync(path.join(ROOT, PROTOTYPE_SYSTEMS[id].dir, part))) problems.push(`src/systems/${id}/${part} is missing. A design system has components/ and styles/theme.css.`);
   }
+}
+
+for (const [id, spec] of Object.entries(SYSTEM_SPECS)) {
+  const file = path.join(ROOT, 'src/systems', id, 'styles/theme.css');
+  if (fs.existsSync(file)) problems.push(...tailwindThemeProblems(fs.readFileSync(file, 'utf8'), { file, ...spec }));
 }
 
 for (const m of specs) {

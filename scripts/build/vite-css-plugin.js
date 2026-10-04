@@ -1,4 +1,6 @@
 import fs from 'node:fs';
+import { tailwindThemeProblems } from '../lib/tailwind-theme.js';
+import { SYSTEM_SPECS } from '../../src/platform/modules/systems/node/systems.js';
 import { cssProblems } from '../lib/css-scope.js';
 // Fills in the two lists in the app's stylesheet (src/platform/app/styles.css) that depend on what is installed,
 // so adding a design system or a module needs no edit to it. CSS can't be given a list at run time, so the stylesheet
@@ -16,9 +18,10 @@ const STYLESHEET = path.join(ROOT, 'src', 'platform', 'app', 'styles.css');
 const rel = (target) => path.relative(path.dirname(STYLESHEET), target).split(path.sep).join('/');
 
 function validateThemes() {
-  const problems = Object.keys(PROTOTYPE_SYSTEMS).flatMap((id) => {
+  const problems = Object.keys(SYSTEM_SPECS).flatMap((id) => {
     const file = path.join(ROOT, 'src/systems', id, 'styles/theme.css');
-    return cssProblems(fs.readFileSync(file, 'utf8'), { file, themeClass: PROTOTYPE_SYSTEMS[id].themeClass });
+    const code = fs.readFileSync(file, 'utf8');
+    return [...(id === 'platform' ? [] : cssProblems(code, { file, themeClass: SYSTEM_SPECS[id].themeClass })), ...tailwindThemeProblems(code, { file, ...SYSTEM_SPECS[id] })];
   });
   if (problems.length) return problems.join('\n');
 }

@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { systemProblems, systemColorMode, type SystemSpec } from './spec.ts';
 
-const product: SystemSpec = { role: 'prototype', colorModes: ['light', 'dark'], label: 'Product', themeClass: 'product-theme', docs: 'warn', origin: 'shadcn' };
+const product: SystemSpec = { role: 'prototype', styling: 'tailwind', colorModes: ['light', 'dark'], label: 'Product', themeClass: 'product-theme', docs: 'warn', origin: 'shadcn' };
 
 test('a well formed system has no problems', () => {
   assert.deepEqual(systemProblems(product, 'product'), []);
@@ -49,7 +49,7 @@ test('Platform is a declared system role reserved for Studio', () => {
 });
 
 test('system policy fields cannot be inferred from omission', () => {
-  for (const field of ['role', 'colorModes', 'docs', 'origin']) {
+  for (const field of ['role', 'styling', 'colorModes', 'docs', 'origin']) {
     const spec = { ...product };
     delete (spec as Record<string, unknown>)[field];
     assert.ok(systemProblems(spec, 'product').some((problem) => problem.includes(field)), field);

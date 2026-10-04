@@ -225,7 +225,7 @@ test('a theme\'s tokens: scoped light and dark values, sorted into groups', asyn
   assert.equal(groupOf('--spacing'), 'spacing');
   assert.equal(groupOf('--space-4'), 'spacing');
   for (const n of ['--font-sans', '--text-sm', '--font-weight-bold']) assert.equal(groupOf(n), 'typography', n);
-  assert.equal(groupOf('--ease-out'), 'other');
+  assert.equal(groupOf('--ease-out'), 'motion');
   assert.equal(groupOf('--wide-gap'), 'other');
   assert.equal(groupOf('--outside'), 'other');
   // What isn't the system's, or isn't a token, isn't listed; an alias of the same color is listed once.
@@ -250,8 +250,8 @@ test('the shipped systems explicitly own every foundation family', async () => {
   const { themeTokens } = await import('./themeTokens.ts');
   const css = fs.readFileSync(path.resolve(import.meta.dirname, '../../../systems/product/styles/theme.css'), 'utf8');
   const tokens = themeTokens(css, 'product-theme');
-  assert.equal(tokens.filter((t) => t.group === 'colors').length, 31);
-  for (const group of ['typography', 'radius', 'shadows', 'spacing']) assert.ok(tokens.some((t) => t.group === group), group);
+  assert.equal(tokens.filter((t) => t.group === 'colors' && !t.name.startsWith('--color-')).length, 31);
+  for (const group of ['typography', 'radius', 'shadows', 'spacing', 'motion', 'effects']) assert.ok(tokens.some((t) => t.group === group), group);
   assert.ok(tokens.filter((t) => t.group === 'radius').every((t) => t.value === '0rem'));
   const platform = themeTokens(fs.readFileSync(path.resolve(import.meta.dirname, '../../../systems/platform/styles/theme.css'), 'utf8'), { light: ':root', dark: '.dark' });
   for (const name of ['--font-sans', '--text-sm', '--text-sm--line-height', '--font-weight-medium', '--radius-xl', '--shadow-md', '--spacing']) {
@@ -259,16 +259,22 @@ test('the shipped systems explicitly own every foundation family', async () => {
     assert.ok(platform.some((t) => t.name === name), `Platform ${name}`);
   }
   // Every one is a known shadcn token with a dark value of its own.
-  assert.ok(tokens.filter((t) => t.group === 'colors').every((t) => t.subgroup && t.dark));
+  assert.ok(tokens.filter((t) => t.group === 'colors' && !t.name.startsWith('--color-')).every((t) => t.subgroup && t.dark));
 });
 
 test('foundation utilities resolve system variables instead of compiling Platform values', async () => {
   const { compile } = await import('tailwindcss');
-  const css = fs.readFileSync(path.resolve(import.meta.dirname, '../../app/styles.css'), 'utf8');
+  const css = fs.readFileSync(path.resolve(import.meta.dirname, '../../app/tailwind-theme.css'), 'utf8');
   const bridge = css.match(/@theme inline \{[^}]+\}/)?.[0];
   assert.ok(bridge);
-  const compiler = await compile(bridge + '\n@tailwind utilities;');
-  const output = compiler.build(['font-sans', 'font-heading', 'rounded-xl', 'shadow-md', 'inset-shadow-sm', 'drop-shadow-md']);
+  const compiler = await compile(css + '\n@tailwind utilities;');
+  const output = compiler.build(['font-sans', 'font-heading', 'rounded-xl', 'shadow-md', 'inset-shadow-sm', 'drop-shadow-md', 'animate-spin', 'blur-md', 'text-shadow-sm', 'sm:block', '@sm:block', 'max-w-sm']);
+  assert.match(output, /@media \(width >= 40rem\)/);
+  assert.match(output, /@container \(width >= 24rem\)/);
+  assert.match(output, /max-width: var\(--container-sm\)/);
+  assert.match(output, /animation: var\(--animate-spin\)/);
+  assert.match(output, /blur\(var\(--blur-md\)\)/);
+  assert.match(output, /text-shadow: var\(--text-shadow-sm\)/);
   for (const declaration of ['font-family: var(--font-sans)', 'font-family: var(--font-heading)', 'border-radius: var(--radius-xl)', '--tw-shadow: var(--shadow-md)', '--tw-inset-shadow: var(--inset-shadow-sm)', 'var(--drop-shadow-md)']) {
     assert.ok(output.includes(declaration), declaration);
   }

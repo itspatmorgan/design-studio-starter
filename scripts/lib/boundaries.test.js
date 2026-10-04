@@ -137,3 +137,19 @@ test('private module consumers and symlink scopes are rejected; disabled app and
     assert.equal(output.includes('__BOUNDARY_DISABLED_SENTINEL__'), false);
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
+
+test('Tailwind systems explicitly own the complete runtime vocabulary', async () => {
+  const { tailwindThemeProblems } = await import('./tailwind-theme.js');
+  const file = path.resolve('src/systems/product/styles/theme.css');
+  const code = fs.readFileSync(file, 'utf8');
+  const options = { file, styling: 'tailwind', themeClass: 'product-theme' };
+  assert.deepEqual(tailwindThemeProblems(code, options), []);
+  for (const name of ['--color-red-500', '--animate-spin', '--blur-md', '--text-sm', '--background']) {
+    const missing = code.replace(new RegExp(`  ${name}: [^;]+;`), '');
+    assert.ok(tailwindThemeProblems(missing, options).some(p => p.includes(`declare ${name} `)), name);
+  }
+  assert.ok(tailwindThemeProblems('.product-theme[data-color-mode="dark"] { --blur-md: 10px; }', options).some(p => p.includes('declare --blur-md ')));
+  const inherited = code.replace('--blur-md: 12px;', '--blur-md: var(--missing-blur);');
+  assert.ok(tailwindThemeProblems(inherited, options).some(p => p.includes('references --missing-blur')));
+  assert.deepEqual(tailwindThemeProblems('.product-theme { --custom-token: 1px; }', { ...options, styling: 'custom' }), []);
+});

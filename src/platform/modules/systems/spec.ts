@@ -23,6 +23,8 @@ export type SystemSpec = {
   // The class its theme is set under, like "product-theme". Its styles/theme.css may set values only under
   // this class, so it can't leak into the app UI or another system.
   themeClass: string;
+  // Select the declared utility contract, or own scoped CSS without Tailwind token requirements.
+  styling: 'tailwind' | 'custom';
   colorModes: readonly ColorMode[];
   docs: DocsMode;
   // Where its components come from. 'shadcn' gives each component page a link to that component's
@@ -48,6 +50,7 @@ export function systemProblems(spec: unknown, folder: string): string[] {
   if (typeof s.label !== 'string' || !s.label.trim()) problems.push(`${where}: add a label, the name people see.`);
   if (typeof s.themeClass !== 'string' || !CLASS.test(s.themeClass)) problems.push(`${where}: themeClass should be a CSS class name like "${folder}-theme".`);
   if (!Array.isArray(s.colorModes) || !s.colorModes.length || s.colorModes.some((mode) => !['light', 'dark'].includes(mode)) || new Set(s.colorModes).size !== s.colorModes.length) problems.push(`${where}: colorModes must be a nonempty list of unique 'light' or 'dark' modes.`);
+  if (!['tailwind', 'custom'].includes(s.styling ?? '')) problems.push(`${where}: styling must be 'tailwind' or 'custom'.`);
   if (!s.docs || !['warn', 'strict', 'off'].includes(s.docs)) problems.push(`${where}: docs should be 'warn', 'strict', or 'off'.`);
   if (s.origin !== null && s.origin !== 'shadcn') problems.push(`${where}: origin should be 'shadcn', or explicitly null.`);
   return problems;

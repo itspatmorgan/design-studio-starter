@@ -53,7 +53,7 @@ function FontFamily({ token }: { token: ThemeToken }) {
 export function TypographyTokens({ tokens }: Props) {
   const all = inGroup(tokens, 'typography');
   const weights = all.filter((t) => t.name.startsWith('--font-weight-'));
-  const families = all.filter((t) => t.name.startsWith('--font-') && !weights.includes(t) && !t.name.startsWith('--font-size'));
+  const families = all.filter((t) => t.name.startsWith('--font-') && !weights.includes(t) && !t.name.startsWith('--font-size') && !t.name.includes('--', 2));
   // Tailwind's text-xs also sets its line height in --text-xs--line-height: a size has one "--".
   const sizes = all.filter((t) => /^--text-[^-]+(-[^-]+)*$/.test(t.name) && !t.name.includes('--', 2));
   const rest = all.filter((t) => ![...weights, ...families, ...sizes].includes(t));
@@ -85,7 +85,7 @@ export function RadiusTokens({ tokens }: Props) {
 export function ShadowTokens({ tokens }: Props) {
   return (
     <div className="text-foreground">
-      <Lines>{inGroup(tokens, 'shadows').map((t) => <TokenLine key={t.name} token={t} sample={<div className="h-12 w-24 rounded-md border border-border bg-background" style={t.name.startsWith('--drop-shadow') ? { filter: `drop-shadow(${ref(t)})` } : { boxShadow: ref(t) }} />} />)}</Lines>
+      <Lines>{inGroup(tokens, 'shadows').map((t) => <TokenLine key={t.name} token={t} sample={t.name.startsWith('--text-shadow') ? <span style={{ textShadow: ref(t) }}>Quick brown fox</span> : <div className="h-12 w-24 rounded-md border border-border bg-background" style={t.name.startsWith('--drop-shadow') ? { filter: `drop-shadow(${ref(t)})` } : { boxShadow: ref(t) }} />} />)}</Lines>
     </div>
   );
 }
@@ -98,10 +98,10 @@ export function SpacingTokens({ tokens }: Props) {
   );
 }
 
-export function OtherTokens({ tokens }: Props) {
+export function OtherTokens({ tokens, group = 'other' }: Props & { group?: TokenGroup }) {
   return (
     <div className="text-foreground">
-      <Lines>{inGroup(tokens, 'other').map((t) => <TokenLine key={t.name} token={t} />)}</Lines>
+      <Lines>{inGroup(tokens, group).map((t) => <TokenLine key={t.name} token={t} />)}</Lines>
     </div>
   );
 }

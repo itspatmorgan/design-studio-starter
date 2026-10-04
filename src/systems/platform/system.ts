@@ -5,6 +5,7 @@ export default {
   label: 'Platform',
   role: 'platform',
   themeClass: 'platform-theme',
+  styling: 'tailwind',
   colorModes: ['light', 'dark'],
   docs: 'off',
   origin: 'shadcn',

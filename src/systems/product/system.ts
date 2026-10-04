@@ -7,6 +7,7 @@ export default {
   role: 'prototype',
   label: 'Product',
   themeClass: 'product-theme',
+  styling: 'tailwind',
   colorModes: ['light', 'dark'],
   docs: 'warn',
   origin: 'shadcn',

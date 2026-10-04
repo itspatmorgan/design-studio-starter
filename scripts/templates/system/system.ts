@@ -5,6 +5,7 @@ export default {
   role: 'prototype',
   label: '__LABEL__',
   themeClass: '__ID__-theme',
+  styling: 'tailwind',
   colorModes: ['light', 'dark'],
   docs: 'warn',
   origin: null,

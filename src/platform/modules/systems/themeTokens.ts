@@ -6,7 +6,7 @@
 // color mode and can't go stale; the declared value is kept for a token the browser doesn't hold.
 // Nothing here reads a disk or imports anything, so Node scripts and the app can both load it.
 
-export type TokenGroup = 'colors' | 'typography' | 'radius' | 'shadows' | 'spacing' | 'other';
+export type TokenGroup = 'colors' | 'typography' | 'radius' | 'shadows' | 'spacing' | 'motion' | 'effects' | 'other';
 
 export type ThemeToken = {
   name: string;             // "--primary"
@@ -113,8 +113,10 @@ function groupOf(name: string, value: string, values: Map<string, string>): Toke
   const color = isColor(value, values);
   if (color || (color === null && n.startsWith('color-'))) return 'colors';
   if (/^radius(-|$)/.test(n)) return 'radius';
-  if (/^(shadow|drop-shadow|inset-shadow|elevation)(-|$)/.test(n)) return 'shadows';
+  if (/^(shadow|text-shadow|drop-shadow|inset-shadow|elevation)(-|$)/.test(n)) return 'shadows';
   if (/^(spacing|space|gap|container|size)(-|$)/.test(n)) return 'spacing';
+  if (/^(animate|ease|default-transition)(-|$)/.test(n)) return 'motion';
+  if (/^(blur|perspective|aspect)(-|$)/.test(n)) return 'effects';
   if (/^(font|text|leading|tracking|line-height|letter-spacing)(-|$)/.test(n)) return 'typography';
   return 'other';
 }

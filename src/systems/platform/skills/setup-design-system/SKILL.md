@@ -37,7 +37,9 @@ Do not remove another person's work merely because a contributor joined. Explain
 
 ## Completion
 
-Declare the imported system's supported `colorModes` in `system.ts`; omitted modes support both. Declare `['light']` or `['dark']` explicitly for a single-mode system. Scope dark tokens to `.<theme-class>[data-color-mode="dark"]`, and keep pop-ups within the system boundary. Verify that a single-mode system keeps its mode when Studio toggles.
+Register the system in `studio.config.ts.systems`. Explicitly declare its role, styling contract, supported `colorModes`, documentation policy, and origin in `system.ts`; omitted choices fail validation. Tailwind systems must declare every runtime foundation required by the committed adapter, including values matching defaults. Custom systems use their own scoped CSS vocabulary. Responsive query thresholds are shared build settings; use scoped CSS queries for system-specific thresholds.
+
+Declare `['light']` or `['dark']` explicitly for a single-mode system. Scope dark tokens to `.<theme-class>[data-color-mode="dark"]`, and keep pop-ups within the system boundary. Verify that a single-mode system keeps its mode when Studio toggles.
 
 Run `pnpm build` after migration. Review representative components, pop-ups, and supported color modes in the local app.
 

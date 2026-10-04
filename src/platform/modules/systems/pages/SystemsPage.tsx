@@ -70,6 +70,8 @@ const TOKEN_PAGES: { id: string; label: string; group: TokenGroup }[] = [
   { id: 'radius', label: 'Radius', group: 'radius' },
   { id: 'shadows', label: 'Shadows', group: 'shadows' },
   { id: 'spacing', label: 'Spacing', group: 'spacing' },
+  { id: 'motion', label: 'Motion', group: 'motion' },
+  { id: 'effects', label: 'Effects', group: 'effects' },
   { id: 'tokens', label: 'Other tokens', group: 'other' },
 ];
 
@@ -157,6 +159,10 @@ function SystemPage({ system, sys, components, tokens, origin, page }: {
       return has('radius') ? <><PageHeader title="Radius" description="How rounded the corners are." /><RadiusTokens tokens={tokens} /></> : null;
     case 'shadows':
       return has('shadows') ? <><PageHeader title="Shadows" description="The shadows the theme defines." /><ShadowTokens tokens={tokens} /></> : null;
+    case 'motion':
+      return has('motion') ? <><PageHeader title="Motion" description="Animation, easing, and transition values declared by this system." /><OtherTokens tokens={tokens} group="motion" /></> : null;
+    case 'effects':
+      return has('effects') ? <><PageHeader title="Effects" description="Blur, perspective, and aspect ratio values declared by this system." /><OtherTokens tokens={tokens} group="effects" /></> : null;
     case 'spacing':
       return has('spacing') ? <><PageHeader title="Spacing" description="The spacing values the theme defines." /><SpacingTokens tokens={tokens} /></> : null;
     case 'tokens':
