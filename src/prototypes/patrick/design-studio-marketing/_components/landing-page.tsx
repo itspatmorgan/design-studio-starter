@@ -21,8 +21,8 @@ const examples = [
   { id: 'canvas', label: 'Canvas', image: canvasPreview, alt: 'Breadboard canvas with an embedded diagram and editable drawing.', text: 'Explore ideas and arrange references on an open canvas.' },
   { id: 'document', label: 'Document', image: documentPreview, alt: 'Project context document with connected exploration artifacts.', text: 'Keep the reasoning and references alongside the work.' },
 ];
-function StudioMark() {
-  return <svg viewBox="0 0 40 32" className="h-8 w-10" aria-hidden="true" fill="currentColor"><path d="M0 0h11v32H0zM15 0h3a16 16 0 0 1 0 32h-3z" /></svg>;
+function StudioMark({ small = false }: { small?: boolean }) {
+  return <svg viewBox="0 0 40 32" className={small ? styles.smallMark : "h-8 w-10"} aria-hidden="true" fill="currentColor"><path d="M0 0h11v32H0zM15 0h3a16 16 0 0 1 0 32h-3z" /></svg>;
 }
 function ResourceLink({ href, children }: { href: string; children: ReactNode }) {
   const external = href.startsWith('https://');
@@ -46,7 +46,7 @@ function BrandGeometry({ version }: { version: 2 | 3 }) {
   </svg>;
 }
 export function LandingPage({ version }: { version: 1 | 2 | 3 }) {
-  const headlines = { 1: <>Your next idea.<br />Make it real.</>, 2: <>A studio for<br />what comes next.</>, 3: <>Design. Build.<br />Keep it together.</> };
+  const headlines = { 1: <>Your next idea.<br />Make it real.</>, 2: <>A studio for<br />what comes next.</>, 3: <>Design. Build.<br />Together.</> };
   const content = <>
         <main>
           <section className={`${styles.hero} ${styles['hero' + version]}`}>
@@ -60,7 +60,7 @@ export function LandingPage({ version }: { version: 1 | 2 | 3 }) {
           <section className="py-8 md:py-12" aria-labelledby="demo-title">
             <h2 id="demo-title" className="text-display-sm font-medium tracking-tight">{version === 1 ? 'From an idea to a working prototype.' : version === 2 ? 'Give the idea room to move.' : 'One idea. Every part of the story.'}</h2>
             <Tabs defaultSelectedKey={version === 2 ? 'canvas' : 'view'} className="mt-6">
-              <Tabs.List aria-label="Artifact examples">{examples.map(item => <Tabs.Item key={item.id} id={item.id}>{item.label}</Tabs.Item>)}</Tabs.List>
+              <Tabs.List aria-label="Artifact examples">{examples.map(item => <Tabs.Item key={item.id} id={item.id}>{version === 3 && item.id === 'view' ? 'Interactive prototype' : item.label}</Tabs.Item>)}</Tabs.List>
               {examples.map(item => <Tabs.Panel key={item.id} id={item.id} className="pt-5">
                 <figure><img src={item.image} alt={item.alt} className={styles.preview} width={item.id === 'document' ? 1456 : 1280} height={item.id === 'document' ? 799 : 720} /><figcaption className="mt-4 text-md text-text-secondary">{item.text}</figcaption></figure>
               </Tabs.Panel>)}
@@ -83,10 +83,10 @@ export function LandingPage({ version }: { version: 1 | 2 | 3 }) {
         </main>
         <footer className="pb-12"><p className="text-sm leading-relaxed text-text-tertiary">This marketing demo uses its own Marketing system: Plus Jakarta Sans, warm neutrals, and Untitled UI.</p><div className="mt-4 flex flex-wrap gap-6"><ResourceLink href="/prototypes/patrick/design-studio-marketing/project-brief">Project brief</ResourceLink><ResourceLink href="/systems/marketing">Marketing system</ResourceLink><ResourceLink href={repository}>GitHub</ResourceLink></div></footer>
   </>;
-  const brand = <a href="#" className="flex items-center gap-3 text-lg font-semibold"><StudioMark />Design Studio</a>;
+  const brand = <a href="#" className="flex items-center gap-3 text-lg font-semibold"><StudioMark small={version === 3} />Design Studio</a>;
   return <div className="min-h-full bg-bg-primary font-sans text-text-primary">
     {version === 3 ? <Tabs defaultSelectedKey="human" className="mx-auto max-w-4xl px-6">
-      <header className="flex flex-wrap items-center justify-between gap-6 py-8">{brand}<Tabs.List aria-label="Reading mode"><Tabs.Item id="human">Human</Tabs.Item><Tabs.Item id="agent">Agent</Tabs.Item></Tabs.List></header>
+      <header className="flex flex-wrap items-center justify-between gap-6 py-8">{brand}<Tabs.List aria-label="Reading mode" className={styles.modeList}><Tabs.Item id="human" className={styles.modeTab}>Human</Tabs.Item><Tabs.Item id="agent" className={styles.modeTab}>Agent</Tabs.Item></Tabs.List></header>
       <Tabs.Panel id="human">{content}</Tabs.Panel>
       <Tabs.Panel id="agent"><main className="pt-8 pb-16"><pre className={styles.markdown}>{agentMarkdown}</pre></main></Tabs.Panel>
     </Tabs> : <div className="mx-auto max-w-4xl px-6"><header className="py-8">{brand}</header>{content}</div>}

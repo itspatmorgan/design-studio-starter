@@ -321,9 +321,15 @@
 }
 
 /* Excalidraw colors every link blue; the title bars and Open buttons use the app's text color. */
-.canvas [data-canvas-frame] a {
+.canvas [data-canvas-frame] a[data-open] {
   color: var(--foreground);
   text-decoration: none;
+}
+
+/* Excalidraw's unlayered link styles must not replace embedded systems' utilities. */
+.canvas [data-canvas-frame] [data-color-mode] a {
+  color: revert-layer;
+  text-decoration: revert-layer;
 }
 
 /*

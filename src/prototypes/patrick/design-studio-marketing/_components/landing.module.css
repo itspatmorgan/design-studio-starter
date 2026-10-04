@@ -10,4 +10,8 @@
 .hero3 { display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; gap: 2rem; }
 .hero3 h1 { font-size: clamp(2.5rem, 4vw, 3.5rem); }
 .geometry { display: block; width: 100%; height: auto; color: var(--color-text-primary); }
+.smallMark { width: 1.875rem; height: 1.5rem; }
+.modeList { width: fit-content; gap: 0.25rem; padding: 0.25rem; border: 0; border-radius: var(--radius-lg); background: var(--color-bg-secondary); }
+.modeTab { border: 0; border-radius: var(--radius-md); padding: 0.5rem 0.75rem; color: var(--color-text-tertiary); }
+.modeTab[data-selected] { background: var(--color-bg-primary); color: var(--color-text-primary); box-shadow: var(--shadow-xs); }
 @media (max-width: 640px) { .hero { padding: 3rem 0 4rem; } .hero3 { grid-template-columns: 1fr; } .hero3 .geometry { max-height: 16rem; } }
