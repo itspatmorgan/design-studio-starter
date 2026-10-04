@@ -192,6 +192,7 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
   // Your own prototypes, and the system content (in dev): its files are platform files, changed here for
   // review like any change, in the fixed shape src/modules/systems/content/rules.ts describes.
   const isSystemContent = proto.contributorKey === SYSTEM_CONTENT_KEY;
+  const isSkills = isSystemContent && contentSection(proto.id) === 'skills';
   const editable = live && canChangePrototype(proto, me);
   const [newSkillOpen, setNewSkillOpen] = useState(false);
   // A skill's SKILL.md can't be renamed, moved, or deleted alone.
@@ -218,7 +219,7 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
 
   const q = (navigation?.query ?? filter).trim().toLowerCase();
   const shown = q ? filterNodes(nodes, q, navigation ? proto : undefined) : nodes;
-  const dirs = allDirs(nodes);
+  const dirs = isSkills ? [] : allDirs(nodes);
   // While filtering, every folder with a match shows open.
   const isOpen = (d: string) => Boolean(q) || Boolean(navigation?.searching) || !closed.has(d);
   const allOpen = dirs.every((d) => !closed.has(d));
@@ -399,6 +400,7 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
     // import.meta.env.DEV is false in the build, so the menu isn't in the deployed site.
     if (!import.meta.env.DEV || !live) return <div key={key}>{children}</div>;
     const changeable = editable && node.path !== 'meta.json' && !fixed(node);
+    const menuItem = items.get(isSkills && node.dir ? node.path + '/SKILL.md' : node.path);
     return (
       <ContextMenu key={key}>
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
@@ -412,8 +414,8 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
             )) : [],
             [
               <FileActionItems key="file-actions" path={repoPath(proto, node.path)}
-                href={items.has(node.path) ? artifactUrl(proto, items.get(node.path)!) : undefined}
-                edit={items.has(node.path) && FILE_TYPES[items.get(node.path)!.fileType]?.language ? () => { void navigate({ ...artifactLink(proto, items.get(node.path)!), search: { mode: 'source' } } as never); } : undefined}
+                href={menuItem ? artifactUrl(proto, menuItem) : undefined}
+                edit={menuItem && FILE_TYPES[menuItem.fileType]?.language ? () => { void navigate({ ...artifactLink(proto, menuItem), search: { mode: 'source' } } as never); } : undefined}
                 sourceShortcut
                 sourceLabel={editable ? 'Edit source' : 'View source'}
                 open={!node.dir ? () => openInEditor(proto, node.path) : undefined}
@@ -476,6 +478,17 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
         );
       }
       if (node.dir) {
+        // A skill is one bundle, not a folder followed by a duplicate SKILL.md entry.
+        if (isSkills && isSkillFolder('skills', node.path, true)) {
+          const skill = items.get(node.path + '/SKILL.md');
+          if (skill) return <Fragment key={node.path}>
+            {rowMenu(node.path, node, <Link {...artifactLink(proto, skill)} {...keyProps(node)} aria-current={current && within(current.path, node.path) ? 'page' : undefined} style={indent(depth)} className={cn(row, navRowState(Boolean(current && within(current.path, node.path))))}>
+              {contentIcon ?? <HugeiconsIcon icon={fileTypeModules[skill.fileType]?.icon ?? CodeIcon} size={14} className="shrink-0 text-muted-foreground" />}
+              <span className="min-w-0 flex-1 truncate" title={repoPath(proto, skill.path)}>{artifactLabel(skill.path, proto)}</span>
+            </Link>)}
+            {createField(node.path, depth)}
+          </Fragment>;
+        }
         const open = isOpen(node.path);
         return (
           <Collapsible key={node.path} open={open} onOpenChange={(o) => setOpen(node.path, o)} className="mt-1.5 first:mt-0">

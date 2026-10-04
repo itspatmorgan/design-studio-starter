@@ -11,6 +11,16 @@ import { systemContentMap } from './map.ts';
 import { systemContentProblems } from './node/content-check.js';
 import { templateFor } from '../../../../scripts/build/files/ops.js';
 import { frontmatter } from '../../../../scripts/lib/frontmatter.js';
+import { skillBundlePaths, skillFolder } from './skillBundle.ts';
+
+test('skill bundles include only their own files with SKILL.md first', () => {
+  assert.deepEqual(skillBundlePaths('review/references/checklist.md', [
+    'review/scripts/run.ts', 'review/SKILL.md', 'review/references/checklist.md',
+    'review/assets/example.png', 'review/scripts/run.ts', 'review-other/SKILL.md', 'other/SKILL.md',
+  ]), ['review/SKILL.md', 'review/assets/example.png', 'review/references/checklist.md', 'review/scripts/run.ts']);
+  assert.equal(skillFolder('review/SKILL.md'), 'review');
+  assert.equal(skillFolder('SKILL.md'), null);
+});
 
 test('skill names follow the spec', () => {
   for (const ok of ['pdf-processing', 'a', 'code-review-2', 'x'.repeat(64)]) assert.equal(nameProblem(ok), null, ok);

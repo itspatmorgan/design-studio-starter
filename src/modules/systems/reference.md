@@ -103,7 +103,9 @@ The Contents toolbar provides search across all sections and an expand-all or co
 
 Theme contains token pages generated from the system’s theme file. Its navigation actions expose that source. Component items group their documentation, examples, and runtime source without presenting category metadata as filesystem folders.
 
-Context, Rules, and Skills reuse the prototype file tree. Local menus support creation, source editing, rename, move, and recoverable deletion within each section’s rules. Drag operations are scoped to their owning tree: they cannot move a file into another system or another content section. Component and foundation menus retain source inspection actions; structural changes to their code require updating imports and related documentation through the agent or editor.
+Context and Rules show their file and folder trees. Skills shows one entry per skill, opening its required `<name>/SKILL.md`; it does not repeat the skill as a folder and a document. Its source editor provides a file picker for the entry file and supporting references, scripts, assets, or other files inside the skill folder. Text files use the shared editor; other assets can be opened externally. Switching files protects unsaved edits. Direct links to supporting documents remain available.
+
+Local menus support creation, source editing, rename, move, and recoverable deletion within each section’s rules. A skill entry’s Rename and Delete actions operate on its whole folder, preserving the required entry-file name and the skill’s supporting files. Its New actions create supporting files or folders. Drag operations are scoped to their owning tree: they cannot move a file into another system or another content section. Component and foundation menus retain source inspection actions; structural changes to their code require updating imports and related documentation through the agent or editor.
 
 ## System choice
 

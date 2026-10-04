@@ -7,7 +7,10 @@ import { useSourceView } from '@/platform/core/source/useSourceView';
 import { NotFound } from '@/platform/app/shell/App';
 import type { Prototype } from '@/platform/app/data/types';
 import type { FileTypeModule } from '@/platform/app/data/fileTypeModule';
+import { contentSection } from '@/platform/core/roots';
+import { skillFolder } from './skillBundle';
 const Source = import.meta.env.DEV ? lazy(() => import('@/platform/app/source/ArtifactSource')) : null;
+const SkillSource = import.meta.env.DEV ? lazy(() => import('./SkillSource')) : null;
 const explanations: Record<string, string> = {
   Context: 'Product knowledge, personas, principles, and research that help people and agents understand this system.',
   Rules: 'Standing constraints for work using this system. System rules add product conventions while retaining platform boundaries.',
@@ -29,7 +32,7 @@ export default function SystemContentPage({ proto, slug }: { proto: Prototype; s
   }, [proto, item, editing]);
   if (slug && !item) return <NotFound />;
   if (!item) return <div className="mx-auto w-full max-w-3xl px-8 py-10"><h1 className="text-3xl font-semibold">{proto.title}</h1><p className="mt-4 text-muted-foreground">{explanations[proto.title]}</p><p className="mt-4 text-sm">{proto.artifacts.length ? 'Select a file in navigation to read or edit it.' : 'No files yet. Ask your agent to add useful material, or use + in navigation locally.'}</p><p className="mt-4 text-sm text-muted-foreground">Agent instructions must point to the relevant files. Being listed here does not automatically load them into a conversation.</p></div>;
-  if (editing) return Source && <Suspense fallback={null}><Source proto={proto} item={item} actions={<Button size="sm" variant="outline" onClick={toggle}>Done</Button>} /></Suspense>;
+  if (editing) return <Suspense fallback={null}>{contentSection(proto.id) === 'skills' && skillFolder(item.path) && SkillSource ? <SkillSource proto={proto} item={item} onDone={toggle} /> : Source && <Source proto={proto} item={item} actions={<Button size="sm" variant="outline" onClick={toggle}>Done</Button>} />}</Suspense>;
   if (loaded instanceof Error) return <p role="alert" className="p-8">{loaded.message}</p>;
   return <div ref={rendered} tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">{loaded ? <Suspense fallback={null}><loaded.type.Page {...loaded.props} /></Suspense> : <p className="p-8 text-sm">Loading…</p>}</div>;
 }
