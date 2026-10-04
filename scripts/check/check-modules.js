@@ -15,6 +15,8 @@ import { dependencyResolver, importsOf, sourceFiles } from '../lib/imports.js';
 //     ['/__studio_globs__/*'] placeholder, so a new section and archived files reach it (scripts/build/vite-globs-plugin.js)
 // Usage: node scripts/check/check-modules.js
 import fs from 'node:fs';
+import { themeUsageProblems } from '../lib/theme-usage.js';
+import { inventories } from '../build/vite-css-plugin.js';
 import { tailwindThemeProblems } from '../lib/tailwind-theme.js';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -42,6 +44,16 @@ for (const [id, spec] of Object.entries(SYSTEM_SPECS)) {
   const file = path.join(ROOT, 'src/systems', id, 'styles/theme.css');
   if (fs.existsSync(file)) problems.push(...tailwindThemeProblems(fs.readFileSync(file, 'utf8'), { file, ...spec }));
 }
+
+const themeSystems = inventories();
+const themePrototypePolicy = scopePolicy({ root: ROOT, systems: PROTOTYPE_SYSTEMS, defaultSystem: DEFAULT_SYSTEM, modules: ENABLED_MODULES, prototypeDirs: PROTOTYPE_DIRS });
+const prototypeThemeFiles = [path.join(ROOT, 'src/prototypes'), ...PROTOTYPE_DIRS.map(dir => path.join(ROOT, dir))].flatMap(dir => [...sourceFiles(dir)]).filter(file => /\.[cm]?[jt]sx?$/.test(file));
+problems.push(...await themeUsageProblems(themeSystems, (system) => {
+  const dirs = system.role === 'platform' ? ['src/platform', 'src/systems/platform/components'] : [system.dir + 'components'];
+  const files = dirs.flatMap(dir => [...sourceFiles(path.join(ROOT, dir))]).filter(file => /\.[cm]?[jt]sx?$/.test(file) && !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(file));
+  const prototypeFiles = system.role === 'platform' ? [] : prototypeThemeFiles.filter(file => themePrototypePolicy.scopeOf(file)?.system === path.basename(system.dir));
+  return [...files, ...prototypeFiles];
+}));
 
 for (const m of specs) {
   if (m.section?.folder && !fs.existsSync(path.join(ROOT, m.section.folder))) {

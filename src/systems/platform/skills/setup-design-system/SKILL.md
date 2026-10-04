@@ -37,7 +37,7 @@ Do not remove another person's work merely because a contributor joined. Explain
 
 ## Completion
 
-Register the system in `studio.config.ts.systems`. Explicitly declare its role, styling contract, supported `colorModes`, documentation policy, and origin in `system.ts`; omitted choices fail validation. Tailwind systems must declare every runtime foundation required by the committed adapter, including values matching defaults. Custom systems use their own scoped CSS vocabulary. Responsive query thresholds are shared build settings; use scoped CSS queries for system-specific thresholds.
+Register the system in `studio.config.ts.systems`. Explicitly declare its role, styling contract, supported `colorModes`, documentation policy, and origin in `system.ts`; omitted choices fail validation. Declare the system's chosen foundation inventory, including choices matching upstream defaults. Omitted tokens and families stay unavailable; do not fill the upstream catalog. Adjust components and examples to the selected inventory, and check their utility use. Custom systems use their own scoped CSS vocabulary. Query names and thresholds must be declared; shared names currently require matching thresholds, while unique names or scoped CSS queries support system-specific thresholds.
 
 Declare `['light']` or `['dark']` explicitly for a single-mode system. Scope dark tokens to `.<theme-class>[data-color-mode="dark"]`, and keep pop-ups within the system boundary. Verify that a single-mode system keeps its mode when Studio toggles.
 

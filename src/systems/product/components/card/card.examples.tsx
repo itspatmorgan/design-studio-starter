@@ -2,7 +2,7 @@ import { Button } from '@/systems/product/components/button';
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/systems/product/components/card';
 
 export const Basic = () => (
-  <Card className="w-80">
+  <Card className="w-xs">
     <CardHeader>
       <CardTitle>Notifications</CardTitle>
       <CardDescription>Choose what you hear about.</CardDescription>
@@ -17,7 +17,7 @@ export const Basic = () => (
 );
 
 export const WithAction = () => (
-  <Card className="w-80">
+  <Card className="w-xs">
     <CardHeader>
       <CardTitle>Team</CardTitle>
       <CardDescription>Members with access.</CardDescription>

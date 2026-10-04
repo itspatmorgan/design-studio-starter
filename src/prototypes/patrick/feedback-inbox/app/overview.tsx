@@ -17,7 +17,7 @@ function Metric({ label, value, hint, filter }: { label: string; value: number; 
     <button
       type="button"
       onClick={() => { showFiltered(filter); navigate({ to: screen('app/feedback-inbox') as never }); }}
-      className="group/metric rounded-lg border border-border bg-card p-4 text-left transition-colors hover:border-primary/50 hover:bg-accent/40"
+      className="group/metric rounded-square border border-border bg-card p-4 text-left transition-colors hover:border-primary/50 hover:bg-accent/40"
     >
       <div className="flex items-center justify-between text-sm text-muted-foreground">
         {label}

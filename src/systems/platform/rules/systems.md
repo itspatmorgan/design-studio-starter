@@ -11,8 +11,9 @@ Read the [system contract](../../../platform/modules/systems/reference.md) when 
 - Scope theme selectors to the system's unique theme class or its descendants. Imported stylesheets follow the same constraint.
 - Prefix keyframe names with the theme class and a dash. Font-face registration is permitted.
 - Keep pop-ups inside the prototype's themed container. For starter Base UI portals, pass `usePortalContainer()` as `container`.
-- Declare every foundation supplied by the chosen styling contract, even when matching defaults. Tailwind systems must declare the complete runtime vocabulary in `src/platform/app/tailwind-theme.css` on their own unconditional theme boundary; missing values fail checks. Custom systems own their scoped CSS vocabulary.
-- Treat responsive query thresholds as explicit shared build settings. Scoped runtime tokens cannot change compiled Tailwind media/container queries; use scoped CSS queries when a system requires different thresholds.
+- Declare only the foundations the system provides, even when matching upstream defaults. Omission intentionally excludes a token or family. Keep the inventory on the system's unconditional theme boundary, and reference only declared tokens. Platform and prototype systems follow the same convention. Custom systems own their scoped CSS vocabulary.
+- Declare finite spacing steps instead of an unrestricted multiplier when the system has a curated scale. Add tokens intentionally rather than filling the entire upstream catalog.
+- Declare query variants explicitly. Systems sharing breakpoint/container names must currently agree on compiled thresholds; use unique names or scoped CSS queries for different thresholds. Runtime variables cannot change compiled query conditions.
 - Use the system's tokens and component APIs. Review affected behavior in both supported color modes.
 - Obtain shared-change authorization through the [contributor scope rule](contributor-scope.md).
 

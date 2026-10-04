@@ -79,7 +79,7 @@ export function FeedbackInboxScreen({ filter: startFilter, query: startQuery = '
           </div>
         )}
 
-        <div className="rounded-lg border border-border bg-card">
+        <div className="rounded-square border border-border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

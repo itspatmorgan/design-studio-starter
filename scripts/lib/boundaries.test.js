@@ -138,18 +138,45 @@ test('private module consumers and symlink scopes are rejected; disabled app and
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
 
-test('Tailwind systems explicitly own the complete runtime vocabulary', async () => {
-  const { tailwindThemeProblems } = await import('./tailwind-theme.js');
-  const file = path.resolve('src/systems/product/styles/theme.css');
-  const code = fs.readFileSync(file, 'utf8');
-  const options = { file, styling: 'tailwind', themeClass: 'product-theme' };
-  assert.deepEqual(tailwindThemeProblems(code, options), []);
-  for (const name of ['--color-red-500', '--animate-spin', '--blur-md', '--text-sm', '--background']) {
-    const missing = code.replace(new RegExp(`  ${name}: [^;]+;`), '');
-    assert.ok(tailwindThemeProblems(missing, options).some(p => p.includes(`declare ${name} `)), name);
-  }
-  assert.ok(tailwindThemeProblems('.product-theme[data-color-mode="dark"] { --blur-md: 10px; }', options).some(p => p.includes('declare --blur-md ')));
-  const inherited = code.replace('--blur-md: 12px;', '--blur-md: var(--missing-blur);');
-  assert.ok(tailwindThemeProblems(inherited, options).some(p => p.includes('references --missing-blur')));
-  assert.deepEqual(tailwindThemeProblems('.product-theme { --custom-token: 1px; }', { ...options, styling: 'custom' }), []);
+test('Tailwind inventories allow intentional omissions and reject inherited references', async () => {
+  const { tailwindThemeProblems, themeInventory, themeAdapter, scopeThemeUtilities } = await import('./tailwind-theme.js');
+  const options = { file: 'test.css', styling: 'tailwind', themeClass: 'product-theme' };
+  assert.deepEqual(tailwindThemeProblems('.product-theme { --shadow-sm: 0 1px black; }', options), []);
+  assert.ok(tailwindThemeProblems('.product-theme[data-color-mode="dark"] { --blur-xs: 4px; }', options).some(p => p.includes('base value')));
+  assert.ok(tailwindThemeProblems('.product-theme { --blur-xs: var(--missing-blur); }', options).some(p => p.includes('references --missing-blur')));
+  const systems = [
+    { role: 'platform', styling: 'tailwind', themeClass: 'platform-theme', inventory: themeInventory('.platform-theme { --shadow-sm: 0 1px black; --shadow-lg: 0 4px black; --spacing-4: 1rem; }', 'platform-theme') },
+    { role: 'prototype', styling: 'tailwind', themeClass: 'product-theme', inventory: themeInventory('.product-theme { --shadow-sm: 0 2px black; }', 'product-theme') },
+  ];
+  const { compile } = await import('tailwindcss');
+  const compiler = await compile(themeAdapter(systems) + '\n@layer utilities { @tailwind utilities; }');
+  const compiled = compiler.build(['shadow-sm', 'shadow-lg', 'shadow-xl', 'p-4', 'p-5', 'flex', 'rounded-full']);
+  assert.ok(!compiled.includes('.shadow-xl'));
+  assert.ok(!compiled.includes('.p-5'));
+  const scoped = scopeThemeUtilities(compiled, systems);
+  assert.match(scoped, /@scope \(.product-theme\) to \(.platform-theme\)/);
+  const postcss = (await import('postcss')).default;
+  const root = postcss.parse(scoped);
+  const product = [];
+  root.walkAtRules('scope', rule => { if (rule.params.startsWith('(.product-theme)')) rule.walkRules(r => product.push(r.selector)); });
+  assert.ok(product.includes('.shadow-sm'));
+  assert.ok(product.includes('.flex'));
+  assert.ok(!product.includes('.shadow-lg'));
+  assert.ok(!product.includes('.p-4'));
+  assert.ok(!product.includes('.rounded-full'));
+  assert.ok(scoped.includes('--shadow-lg: initial'));
+});
+
+test('utility diagnostics distinguish omitted tokens from unrelated text', async () => {
+  const { themeInventory } = await import('./tailwind-theme.js');
+  const { themeUsageProblems, literalCandidates } = await import('./theme-usage.js');
+  assert.deepEqual(literalCandidates('window.addEventListener("blur", handler);', 'event.ts'), []);
+  const dir = temporary();
+  try {
+    const file = write(dir, 'view.tsx', '<div className="shadow-lg flex" />');
+    const system = { themeClass: 'example-theme', styling: 'tailwind', inventory: themeInventory('.example-theme { --shadow-sm: 0 1px black; }', 'example-theme') };
+    const problems = await themeUsageProblems([system], () => [file]);
+    assert.equal(problems.length, 1);
+    assert.match(problems[0], /shadow-lg requires --shadow-lg/);
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });

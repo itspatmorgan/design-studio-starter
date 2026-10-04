@@ -2,7 +2,7 @@ import { Button } from '@/systems/platform/components/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/systems/platform/components/card';
 
 export const Default = () => (
-  <Card className="w-80">
+  <Card className="w-xs">
     <CardHeader>
       <CardTitle>Card title</CardTitle>
       <CardDescription>A short description.</CardDescription>

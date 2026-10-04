@@ -2,10 +2,10 @@
 @import "tailwindcss";
 @import "../../systems/platform/styles/theme.css";
 /* @studio:system-themes */
-@import "./tailwind-theme.css";
 /* Explicit shared component-animation extensions; not system foundation defaults. */
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+/* @studio:tailwind-theme */
 @plugin "@tailwindcss/typography";
 
 /* Tailwind scans the project for class names and reloads the page when a scanned file

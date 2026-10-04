@@ -1,5 +1,6 @@
 import fs from 'node:fs';
-import { tailwindThemeProblems } from '../lib/tailwind-theme.js';
+import postcss from 'postcss';
+import { tailwindThemeProblems, themeInventory, themeAdapter, scopeThemeUtilities } from '../lib/tailwind-theme.js';
 import { SYSTEM_SPECS } from '../../src/platform/modules/systems/node/systems.js';
 import { cssProblems } from '../lib/css-scope.js';
 // Fills in the two lists in the app's stylesheet (src/platform/app/styles.css) that depend on what is installed,
@@ -10,11 +11,15 @@ import { cssProblems } from '../lib/css-scope.js';
 //                                  Tailwind would otherwise scan for class names and reload the page when they change
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_DIRS } from '../lib/modules.js';
+import { CONFIG, PROTOTYPE_DIRS } from '../lib/modules.js';
 import { PROTOTYPE_SYSTEMS } from '../../src/platform/modules/systems/node/systems.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const STYLESHEET = path.join(ROOT, 'src', 'platform', 'app', 'styles.css');
+export function inventories() {
+  return Object.entries(SYSTEM_SPECS).filter(([id]) => CONFIG.systems.includes(id)).map(([id, spec]) => ({ ...spec, inventory: themeInventory(fs.readFileSync(path.join(ROOT, 'src/systems', id, 'styles/theme.css'), 'utf8'), spec.themeClass) }));
+}
+
 const rel = (target) => path.relative(path.dirname(STYLESHEET), target).split(path.sep).join('/');
 
 function validateThemes() {
@@ -40,10 +45,22 @@ export default function css() {
       if (path.resolve(id.split('?')[0]) !== STYLESHEET) return null;
       const problem = validateThemes();
       if (problem) this.error(problem);
+      for (const system of Object.values(SYSTEM_SPECS)) this.addWatchFile(path.join(ROOT, system.dir, 'styles/theme.css'));
       const themes = Object.keys(PROTOTYPE_SYSTEMS).map((id) => `@import "${rel(path.join(ROOT, 'src', 'systems', id, 'styles', 'theme.css'))}";`).join('\n');
       const sources = ['prototypes', ...PROTOTYPE_DIRS.map((dir) => path.basename(dir))]
         .map((name) => `@source not "${rel(path.join(ROOT, 'src', name))}/**/meta.json";`).join('\n');
-      return { code: code.replace('/* @studio:system-themes */', themes).replace('/* @studio:data-files */', sources), map: null };
+      return { code: code.replace('/* @studio:tailwind-theme */', themeAdapter(inventories())).replace('/* @studio:system-themes */', themes).replace('/* @studio:data-files */', sources), map: null };
     },
   };
+}
+
+export function scopedUtilities() {
+  return { postcssPlugin: 'studio-system-utilities', Once(root) {
+    let utilities = false;
+    root.walkAtRules('layer', layer => { if (layer.params === 'utilities' && layer.nodes) utilities = true; });
+    if (!utilities) return;
+    const scoped = postcss.parse(scopeThemeUtilities(root.toString(), inventories()), { from: root.source?.input.file });
+    root.removeAll();
+    root.append(scoped.nodes);
+  } };
 }

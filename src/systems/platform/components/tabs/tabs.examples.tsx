@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/systems/platform/components/tabs';
 
 export const Default = () => (
-  <Tabs defaultValue="overview" className="w-72">
+  <Tabs defaultValue="overview" className="w-xs">
     <TabsList>
       <TabsTrigger value="overview">Overview</TabsTrigger>
       <TabsTrigger value="views">Views</TabsTrigger>

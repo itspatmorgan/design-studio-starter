@@ -23,7 +23,7 @@ import files from './scripts/build/vite-files-plugin.js';
 import markdownRefresh from './scripts/build/vite-markdown-refresh-plugin.js';
 import systemProps from './src/platform/modules/systems/node/props-plugin.js';
 import globs from './scripts/build/vite-globs-plugin.js';
-import css from './scripts/build/vite-css-plugin.js';
+import css, { scopedUtilities } from './scripts/build/vite-css-plugin.js';
 import { ENABLED_MODULES, PROTOTYPE_DIRS } from './scripts/lib/modules.js';
 
 // Prototype documents (src/prototypes/ and the modules' prototype-shaped folders, like src/examples/) refresh in
@@ -59,6 +59,7 @@ const moduleLibs = ENABLED_MODULES.filter((m: { lib?: boolean }) => m.lib).map((
 export default defineConfig({
   root: 'src',
   publicDir: '../public',
+  css: { postcss: { plugins: [scopedUtilities()] } },
   build: { outDir: '../dist', emptyOutDir: true },
   // The Source view's editor (SourcePane.tsx) loads its languages on demand, so Vite would find these packages
   // only when you first open it, re-bundle them, and end up with two copies of @codemirror/state: the editor

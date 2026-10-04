@@ -24,10 +24,10 @@ function NavItem({ to, children, onClick }: { to: string; children: ReactNode; o
 export default function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-full flex-col bg-background text-foreground">
-      <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur">
+      <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-xs">
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-8 px-8">
           <div className="flex items-center gap-2">
-            <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground"><MessageSquareText className="size-3.5" /></div>
+            <div className="flex size-6 items-center justify-center rounded-square bg-primary text-primary-foreground"><MessageSquareText className="size-3.5" /></div>
             <span className="text-sm font-semibold">Echo</span>
           </div>
           <nav className="flex gap-6">

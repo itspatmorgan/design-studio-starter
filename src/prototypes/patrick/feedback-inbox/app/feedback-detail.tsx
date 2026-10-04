@@ -37,7 +37,7 @@ export function DetailScreen({ editing: startEditing = false, deleting: startDel
       <AppShell>
         <div className="mx-auto max-w-3xl px-8 py-8">
           {back}
-          <div className="rounded-lg border border-dashed border-border px-6 py-14 text-center">
+          <div className="rounded-square border border-dashed border-border px-6 py-14 text-center">
             <p className="text-sm font-medium">No feedback to show</p>
             <p className="mt-1 text-sm text-muted-foreground">Add some in the feedback inbox, or reset the sample data.</p>
           </div>
@@ -74,7 +74,7 @@ export function DetailScreen({ editing: startEditing = false, deleting: startDel
               <h2 className="mb-3 text-sm font-semibold">Notes</h2>
               <ul className="mb-4 space-y-3">
                 {item.notes.map((n) => (
-                  <li key={n.id} className="rounded-md border border-border bg-card px-3 py-2">
+                  <li key={n.id} className="rounded-square border border-border bg-card px-3 py-2">
                     <p className="text-sm">{n.text}</p>
                     <p className="mt-1 text-xs text-muted-foreground">{formatDate(n.at)}</p>
                   </li>

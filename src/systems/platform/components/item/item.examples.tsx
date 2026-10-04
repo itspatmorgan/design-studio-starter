@@ -5,7 +5,7 @@ import { Item, ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, 
 
 // Each export named with a capital is one example on the component's page, shown live with its code.
 export const Default = () => (
-  <Item variant="outline" className="w-96">
+  <Item variant="outline" className="w-sm">
     <ItemMedia variant="icon"><HugeiconsIcon icon={Layers01Icon} /></ItemMedia>
     <ItemContent>
       <ItemTitle>Feedback Inbox</ItemTitle>
@@ -16,7 +16,7 @@ export const Default = () => (
 );
 
 export const AsAList = () => (
-  <ItemGroup className="w-96 gap-0">
+  <ItemGroup className="w-sm gap-0">
     {['Feedback Inbox', 'Settings revamp', 'Onboarding'].map((title) => (
       <Item key={title} size="xs" render={<a href="#" />}>
         <ItemMedia variant="icon"><HugeiconsIcon icon={Layers01Icon} /></ItemMedia>

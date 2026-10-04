@@ -2,7 +2,7 @@ import { Badge } from '@/systems/product/components/badge';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/systems/product/components/table';
 
 export const Basic = () => (
-  <Table className="w-96">
+  <Table className="w-sm">
     <TableCaption>Recent invoices</TableCaption>
     <TableHeader>
       <TableRow>
