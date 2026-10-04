@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
-import { ChevronDown, Compass, Palette, Blocks, NotebookText, ListChecks, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, type LucideIcon } from 'lucide-react';
+import { ChevronDown, Compass, Blocks, NotebookText, ListChecks, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, type LucideIcon } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/systems/studio/components/collapsible';
 import FileTree from '@/modules/prototypes/viewer/FileTree';
 import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
@@ -38,7 +38,7 @@ const SystemSourceEditor = import.meta.env.DEV ? lazy(() => import('./SystemSour
 // defines (src/modules/systems/themeTokens.ts). Prototype systems appear in the selector, followed by Studio.
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
 const introOf = (id: string): SystemIntro => intros[`/systems/${id}/intro.tsx`]?.default ?? {
-  intro: <><Prose><p>This system has no introduction yet. Add one in <Code>src/systems/{id}/intro.tsx</Code>.</p></Prose><h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2><Prose><ColorModeSupport modes={SYSTEM_SPECS[id].colorModes} /></Prose></>,
+  intro: <><Prose><p>This system has no overview yet. Add one in <Code>src/systems/{id}/intro.tsx</Code>.</p></Prose><h2 className="mt-10 mb-3 text-lg font-semibold tracking-tight text-foreground">Theme</h2><Prose><ColorModeSupport modes={SYSTEM_SPECS[id].colorModes} /></Prose></>,
 };
 const PROTOTYPE_SPECS: Record<string, DesignSystem> = Object.fromEntries(Object.entries(SYSTEM_SPECS).map(([id, spec]) => [id, {
   label: spec.label, dir: `${spec.dir}components/`, scopeClass: spec.themeClass, ...introOf(id),
@@ -85,11 +85,11 @@ const CONTENT_ICONS: Record<string, LucideIcon> = { context: NotebookText, rules
 const navIcon = (Icon: LucideIcon) => <Icon aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />;
 
 // A fixed system folder and its readable contents. Page changes preserve branch state.
-function SystemBranch({ label, path, active, icon, children }: { label: string; path: string; active: boolean; icon: ReactNode; children: ReactNode }) {
+function SystemBranch({ label, path, active, children }: { label: string; path: string; active: boolean; children: ReactNode }) {
   const [open, setOpen] = useState(active);
   useEffect(() => { if (active) setOpen(true); }, [active]);
   return <Collapsible open={open} onOpenChange={setOpen}>
-    <CollapsibleTrigger title={path} className="mx-1 flex h-7 w-[calc(100%-8px)] items-center gap-1.5 rounded-md px-2 text-left text-[12px] font-medium leading-tight hover:bg-sidebar-foreground/5"><ChevronDown className={'size-3.5 shrink-0 text-muted-foreground transition-transform ' + (open ? '' : '-rotate-90')} />{icon}{label}</CollapsibleTrigger>
+    <CollapsibleTrigger title={path} className="mx-1 flex h-7 w-[calc(100%-8px)] items-center gap-1.5 rounded-md px-2 text-left text-[12px] font-medium leading-tight hover:bg-sidebar-foreground/5"><ChevronDown className={'size-3.5 shrink-0 text-muted-foreground transition-transform ' + (open ? '' : '-rotate-90')} />{label}</CollapsibleTrigger>
     <CollapsibleContent className="space-y-0.5 pl-4">{children}</CollapsibleContent>
   </Collapsible>;
 }
@@ -133,18 +133,18 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
         </div>
       </NavHeader>
       <NavList>
-        {file(undefined, 'Introduction')}
-        <SystemBranch icon={navIcon(Palette)} label="Theme" path={source.theme} active={foundations.some((p) => p.id === page) || page === 'icons'}>
+        {file(undefined, 'Overview')}
+        <SystemBranch label="Theme" path={source.theme} active={foundations.some((p) => p.id === page) || page === 'icons'}>
           {foundations.map((p) => file(p.id, p.label))}
           {SYSTEMS[system].icons && file('icons', 'Icons')}
         </SystemBranch>
-        <SystemBranch icon={navIcon(Blocks)} label="Components" path={source.components} active={components.some((c) => c.slug === page)}>
+        <SystemBranch label="Components" path={source.components} active={components.some((c) => c.slug === page)}>
           {components.map((c) => file(c.slug, c.title))}
           {!components.length && <p className="px-3 py-1 text-[12px] text-muted-foreground">Empty folder</p>}
         </SystemBranch>
         {Object.entries(SYSTEM_CONTENT_SECTIONS).map(([id, section]) => {
           const proto = manifest.systemContent.find((p) => p.id === contentId(system, id));
-          return proto && <FileTree key={proto.id} proto={proto} current={page === id && params._splat ? findArtifact(proto, params._splat) : undefined} embedded contentIcon={navIcon(CONTENT_ICONS[id])} branch={{ icon: navIcon(CONTENT_ICONS[id]), label: section.title, path: source.dir + id + '/', active: page === id }} />;
+          return proto && <FileTree key={proto.id} proto={proto} current={page === id && params._splat ? findArtifact(proto, params._splat) : undefined} embedded contentIcon={navIcon(CONTENT_ICONS[id])} branch={{ label: section.title, path: source.dir + id + '/', active: page === id }} />;
         })}
       </NavList>
     </SectionNav>

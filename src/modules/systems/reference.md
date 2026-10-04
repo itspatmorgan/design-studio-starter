@@ -14,7 +14,7 @@ A prototype system lives in `src/systems/<id>/` and contains:
 | `context/`, `rules/`, `skills/` | System-owned knowledge and agent instructions. |
 | `assets/` | Optional system-owned fonts, logos, and images. |
 | `styles/theme.css` | Scoped tokens and styles, loaded by the platform. |
-| `intro.tsx` | Optional Systems introduction page. |
+| `intro.tsx` | Optional Systems overview page. |
 
 `system.ts`, introductions, examples, and Markdown are documentation adapters. Runtime components and prototypes cannot import these adapters.
 
@@ -91,13 +91,13 @@ Systems declaring `styling: 'custom'` are exempt from the Tailwind vocabulary co
 
 Systems uses the [shared platform source workflow](../../platform/core/source.md). Right-click a navigation item for file actions, or use **⌘' / Ctrl+'** to toggle source. **⌘S / Ctrl+S** saves; the toggle or **Done** returns to rendering with unsaved-change protection. Source editors remain in Studio's color mode.
 
-Component pages open their Page, Examples, and Component file tabs. Introduction and Icons open the system's introduction source (`intro.tsx`). A missing introduction opens `system.ts`. Generated foundation pages open the system's theme CSS. There is no separate editable file for each token-family page.
+Component pages open their Page, Examples, and Component file tabs. Overview and Icons open the system's introduction source (`intro.tsx`). A missing introduction opens `system.ts`. Generated foundation pages open the system's theme CSS. There is no separate editable file for each token-family page.
 
 Only these system source files and discovered component files are accessible through the local Systems source endpoint. Menus provide edit, external editor, reveal, and copying actions without rename or delete.
 
 ## Navigation and organization
 
-The selected system has one persistent navigation tree. Introduction opens the system’s introduction source. Theme, Components, Context, Rules, and Skills are expandable branches. Opening a page expands its owning branch and preserves the other branches’ state.
+The selected system has one persistent navigation tree. Overview opens the system’s overview source. Theme, Components, Context, Rules, and Skills are expandable branches. Opening a page expands its owning branch and preserves the other branches’ state. Branches and folders use disclosure chevrons without category icons; individual pages and artifacts use icons to distinguish their type.
 
 Theme contains token pages generated from the system’s theme file. Its navigation actions expose that source. Component items group their documentation, examples, and runtime source without presenting category metadata as filesystem folders.
 
@@ -105,7 +105,7 @@ Context, Rules, and Skills reuse the prototype file tree. Local menus support cr
 
 ## System choice
 
-The Systems navigation uses a grouped selector: Prototype systems contains installed prototype systems, with the configured default first; Studio contains Studio’s own system. Entering /systems opens the default prototype system; switching systems opens its introduction. Explicit system URLs keep their selected system.
+The Systems navigation uses a grouped selector: Prototype systems contains installed prototype systems, with the configured default first; Studio contains Studio’s own system. Entering /systems opens the default prototype system; switching systems opens its overview. Explicit system URLs keep their selected system.
 
 `meta.json.system` selects a prototype's system. Otherwise, it uses the studio default.
 

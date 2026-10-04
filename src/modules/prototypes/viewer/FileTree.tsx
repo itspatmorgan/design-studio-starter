@@ -164,7 +164,7 @@ function IconButton({ label, onClick, pressed, children }: { label: string; onCl
   );
 }
 
-type FileTreeProps = { proto: Prototype; current: Artifact | undefined; embedded?: boolean; contentIcon?: ReactNode; branch?: { label: string; path: string; active: boolean; icon?: ReactNode } };
+type FileTreeProps = { proto: Prototype; current: Artifact | undefined; embedded?: boolean; contentIcon?: ReactNode; branch?: { label: string; path: string; active: boolean } };
 
 export default function FileTree({ proto, current, embedded = false, contentIcon, branch }: FileTreeProps) {
   const { files, reload } = useFileTree(proto);
@@ -507,7 +507,7 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
   return (
     <nav className={cn("group/tree flex min-h-0 flex-col", branch ? "gap-0.5" : "space-y-1.5 px-2 pt-3 pb-3", !embedded && "flex-1 overflow-y-auto")}>
       <div className={cn("flex h-7 shrink-0 items-center justify-between gap-1 pr-0.5", branch ? "mx-1 rounded-md pl-2 hover:bg-sidebar-foreground/5" : "pl-2.5")}>
-        {branch ? <button type="button" aria-expanded={expanded} onClick={() => setExpanded((open) => !open)} title={branch.path} className="flex h-full min-w-0 flex-1 items-center gap-1.5 text-left text-[12px] font-medium leading-tight"><HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !expanded && '-rotate-90')} />{branch.icon}<span className="truncate">{branch.label}</span></button> : <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{showAll || proto.contributorKey === SYSTEM_CONTENT_KEY ? 'Files' : 'Artifacts'}</p>}
+        {branch ? <button type="button" aria-expanded={expanded} onClick={() => setExpanded((open) => !open)} title={branch.path} className="flex h-full min-w-0 flex-1 items-center gap-1.5 text-left text-[12px] font-medium leading-tight"><HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !expanded && '-rotate-90')} /><span className="truncate">{branch.label}</span></button> : <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{showAll || proto.contributorKey === SYSTEM_CONTENT_KEY ? 'Files' : 'Artifacts'}</p>}
         {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
         <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
           <IconButton label="Filter" pressed={filterOpen} onClick={() => { setExpanded(true); setFilterOpen((o) => !o); }}>
