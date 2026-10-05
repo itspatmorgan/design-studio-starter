@@ -74,6 +74,11 @@ test('create and rename preserve addresses, file errors recover, and system remo
   try {
     fs.cpSync(root, dir, { recursive: true, filter: (file) => !['node_modules', 'dist', '.git'].includes(path.basename(file)) });
     fs.symlinkSync(path.join(root, 'node_modules'), path.join(dir, 'node_modules'));
+    // CLI operations need a registered identity independent of the host's Git config.
+    fs.rmSync(path.join(dir, 'contributors'), { recursive: true, force: true });
+    fs.writeFileSync(path.join(dir, 'contributors.json'), JSON.stringify({
+      patrick: { name: 'Test Maintainer', email: 'maintainer@example.test', github: '' },
+    }));
     const script = `
       import fs from 'node:fs';
       import path from 'node:path';
@@ -181,7 +186,15 @@ test('create and rename preserve addresses, file errors recover, and system remo
       assert.equal((pendingRemoval.stderr + pendingRemoval.stdout).includes('patrick/beta-roundtrip'), true);
 
     `;
-    execFileSync(process.execPath, ['--input-type=module', '--eval', script], { cwd: dir, timeout: 30000, encoding: 'utf8', stdio: 'pipe', env: { ...process.env, MISE_TRUSTED_CONFIG_PATHS: dir } });
+    execFileSync(process.execPath, ['--input-type=module', '--eval', script], {
+      cwd: dir, timeout: 30000, encoding: 'utf8', stdio: 'pipe',
+      env: {
+        ...process.env, MISE_TRUSTED_CONFIG_PATHS: dir,
+        GIT_CONFIG_COUNT: '2',
+        GIT_CONFIG_KEY_0: 'user.name', GIT_CONFIG_VALUE_0: 'Test Maintainer',
+        GIT_CONFIG_KEY_1: 'user.email', GIT_CONFIG_VALUE_1: 'maintainer@example.test',
+      },
+    });
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
 
