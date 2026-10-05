@@ -29,7 +29,7 @@ The starter provides a portable build. The Checks workflow publishes successful 
 
 That repository uses GitHub Pages with **GitHub Actions** as its publishing source. It inherits `itspatmorgan.com` from the account's user site and publishes at `/design-studio-starter/`. Leave its custom-domain field empty.
 
-The workflow reads the Pages base path and passes it to the build through `STUDIO_BASE_PATH`. Local commands use `/` by default. To preview a subpath deployment locally, run:
+The workflow reads the Pages base path and passes it to the build through `STUDIO_BASE_PATH`. The build normalizes its trailing slash. Local commands use `/` by default. To preview a subpath deployment locally, run:
 
 ```sh
 STUDIO_BASE_PATH=/design-studio-starter/ pnpm build

@@ -58,7 +58,8 @@ const moduleLibs = ENABLED_MODULES.filter((m: { lib?: boolean }) => m.lib).map((
 
 export default defineConfig({
   root: 'src',
-  base: process.env.STUDIO_BASE_PATH || '/',
+  // Pages supplies a path without a trailing slash; data URLs append relative paths.
+  base: `${(process.env.STUDIO_BASE_PATH || '/').replace(/\/+$/, '')}/`,
   publicDir: '../public',
   css: { postcss: { plugins: [scopedUtilities()] } },
   build: { outDir: '../dist', emptyOutDir: true },
