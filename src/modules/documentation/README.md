@@ -14,7 +14,9 @@ Invalid metadata produces a local warning and fails strict builds. Source mode k
 
 The shared browser uses registered owners from the manifest: Platform and enabled modules. Each owner's README entry renders its canonical README when present; without one it displays discovered context and skills. Additional top-level module contracts remain accessible under that owner.
 
-One file tree has fixed Platform and Modules section headings. These headings do not collapse. Every enabled module appears as its own branch, with README and its available Context and Skills. Empty sections are omitted unless opened directly. The current module opens automatically; context and skills start collapsed until selected. Other module branches start collapsed. Manual expansion choices persist while browsing, and selecting a location reveals its branch. Files and skills use human-readable names. README is labeled explicitly, and tooltips expose source paths. One Search control above the tree filters owners, README entries, context, and skills by readable names and paths. Matching branches open temporarily during search; clearing it restores expansion choices. Groups retain creation controls without individual filters. There is no scope selector.
+The instruction browser has fixed Platform and Modules section headings. Each owner lists its README, context documents, and skill entry documents directly, without Context or Skills folder layers. Icons and subtle Document, Context, or Skill labels identify the source type. README stays explicitly named; other entries use human-readable names. Module branches collapse, remember choices while browsing, and open for the current document. One Search control filters owners, entries, types, and source paths. Matching branches open temporarily; clearing the search restores expansion choices.
+
+This navigation supports reading and source access. It has no creation, dragging, renaming, moving, or deletion controls. Skills expose supporting files through their source-mode picker rather than separate navigation entries. Repository ownership and folders remain unchanged.
 
 Platform knowledge lives in `src/platform/context/`, with knowledge and technical requirements at the same level. Module and system context and skills live under their respective owners. Component API pages remain beside components and are exposed by Systems.
 
@@ -30,7 +32,7 @@ Search lists owner overviews, context and skills, and enabled Guide chapters. It
 
 ## Source access
 
-Guide chapters and owner READMEs edit their own complete documents through the shared documentation editor. Context and skill files use their existing file access policies. Navigation exposes Edit source, Open in editor, Reveal in Finder, Copy link, and Copy path where local permissions allow them. Owner README menus have no rename or delete actions.
+Guide chapters and owner READMEs edit their own complete documents through the shared documentation editor. Context and skill files use their existing file access policies. Navigation exposes Edit source, Open in editor, Reveal in Finder, Copy link, and Copy path where local permissions allow them. Instruction document menus have no rename or delete actions.
 
 The [shared editor](../../platform/context/source.md) supplies keyboard controls, version checks, and unsaved-change handling. Published pages retain reading and copying without repository editing or operating-system actions.
 

@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { ChevronDown, Search, X } from 'lucide-react';
+import { ChevronDown, Search, X, FileText, NotebookText, WandSparkles } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/systems/studio/components/collapsible';
 import { Input } from '@/systems/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
 import { Link, useParams } from '@tanstack/react-router';
 import { useManifest } from '@/platform/app/data/useManifest';
 import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
-import { artifactLabel, findArtifact } from '@/platform/app/data/manifest';
+import { artifactLabel, artifactLink } from '@/platform/app/data/manifest';
 import { SectionNav, NavList } from '@/platform/app/shell/nav';
-import FileTree from '@/modules/prototypes/viewer/FileTree';
+import FileNavItem from '@/platform/app/shell/FileNavItem';
+import { repoPath, revealInFinder } from '@/platform/app/data/files';
 import SystemContentPage from '@/modules/systems/content/SystemContentPage';
 import DocumentationHeader from './DocumentationHeader';
 import DocumentationNavItem from './DocumentationNavItem';
@@ -52,11 +53,18 @@ export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
   const ownerTree = (navOwner: typeof owners[number]) => {
     const ownerMatch = matches(navOwner.label) || matches(navOwner.root) || (navOwner.kind === 'module' && matches('Modules'));
     const docs = references(navOwner.root).filter(r => ownerMatch || matches(r.title) || matches(r.source));
-    const branches = manifest.systemContent.filter(proto => proto.owner?.id === navOwner.id && (proto.artifacts.length > 0 || selected?.id === proto.id) && (ownerMatch || matches(proto.title) || proto.artifacts.some(a => matches(a.path) || matches(artifactLabel(a.path, proto)))));
-    if (q && !docs.length && !branches.length) return null;
+    const entries = manifest.systemContent.filter(proto => proto.owner?.id === navOwner.id).flatMap(proto => proto.artifacts
+      .filter(a => proto.title !== 'Skills' || /^[^/]+\/SKILL\.md$/.test(a.path))
+      .map(item => ({ proto, item, label: artifactLabel(item.path, proto), kind: proto.title === 'Skills' ? 'Skill' : 'Context' })))
+      .filter(({ proto, item, label, kind }) => ownerMatch || matches(kind) || matches(label) || matches(repoPath(proto, item.path)))
+      .sort((a, b) => a.kind.localeCompare(b.kind) || a.label.localeCompare(b.label));
+    if (q && !docs.length && !entries.length) return null;
     const content = <>
-      {docs.map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label={r.source.endsWith('/README.md') ? 'README' : r.title} />)}
-      {branches.map(proto => <FileTree key={proto.id} proto={proto} current={selected?.id === proto.id && slug ? findArtifact(proto, slug) : undefined} embedded rememberExpansion externalFilter={{ query: ownerMatch || matches(proto.title) ? '' : q, searching: Boolean(q) }} branch={{ label: proto.title, path: navOwner.root + '/' + proto.title.toLowerCase() + '/', active: selected?.id === proto.id, defaultExpanded: selected?.id === proto.id }} />)}
+      {docs.map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label={r.source.endsWith('/README.md') ? 'README' : r.title} icon={<FileText aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />} detail="Document" />)}
+      {entries.map(({ proto, item, label, kind }) => {
+        const Icon = kind === 'Skill' ? WandSparkles : NotebookText;
+        return <FileNavItem key={proto.id + '/' + item.path} href={(artifactLink(proto, item) as { to: string }).to} path={repoPath(proto, item.path)} label={label} detail={kind} icon={<Icon aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />} reveal={async () => { revealInFinder(proto, item.path); }} />;
+      })}
     </>;
     return navOwner.kind === 'platform'
       ? <GuidanceSection key={navOwner.id} label={navOwner.label}>{content}</GuidanceSection>
