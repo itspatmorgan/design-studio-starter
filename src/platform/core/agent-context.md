@@ -8,7 +8,7 @@ toc: true
 
 Design Studio routes coding agents through repository files. It does not assemble or inject a context bundle into an agent conversation. The coding agent's host controls automatic instruction discovery; the agent follows linked instructions by reading files.
 
-The [Platform and system responsibilities](contracts-and-instructions.md) page explains which files own technical requirements, operating policy, intent, and procedures. This contract owns how those files are routed to a task. When the Guide is enabled, its [Agent context chapter](/documentation/guide/agent-context) diagrams the reading flow.
+The [Responsibilities](contracts-and-instructions.md) page explains which files own technical requirements, operating policy, intent, and procedures. This contract owns how those files are routed to a task. When the Guide is enabled, its [Agent context chapter](/documentation/guide/agent-context) diagrams the reading flow.
 
 ## Entry and platform baseline
 

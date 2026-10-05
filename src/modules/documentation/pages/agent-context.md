@@ -32,7 +32,7 @@ flowchart TD
 
 The platform baseline remains in every branch. Selecting a product system adds its instructions to the task; it does not remove Studio's operating rules.
 
-Studio rules direct the agent’s operating behavior; core and module contracts define the technical requirements it works within. [Platform and system responsibilities](/documentation/reference/platform/core/contracts-and-instructions.md) explains which source owns each responsibility.
+Studio rules direct the agent’s operating behavior; core and module contracts define the technical requirements it works within. [Responsibilities](/documentation/reference/platform/core/contracts-and-instructions.md) explains which source owns each responsibility.
 
 ## Understand the layers
 

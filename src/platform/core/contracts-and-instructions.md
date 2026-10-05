@@ -1,6 +1,6 @@
 ---
 referenceSection: understand
-title: Platform and system responsibilities
+title: Responsibilities
 description: Which files own platform requirements, agent behavior, and design intent.
 referenceOrder: 5
 toc: true

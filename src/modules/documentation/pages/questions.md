@@ -30,4 +30,4 @@ Yes. Admins can change the studio name, defaults, and enabled optional modules i
 
 ## What if something breaks?
 
-Copy the error message and give it to your agent, along with what you were trying to do. It can inspect the files and run the platform checks. [Checks and troubleshooting](/documentation/reference/platform/core/checks.md) provides the technical details.
+Copy the error message and give it to your agent, along with what you were trying to do. It can inspect the files and run the platform checks. [Checks and fixes](/documentation/reference/platform/core/checks.md) provides the technical details.

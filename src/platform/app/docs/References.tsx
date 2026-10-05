@@ -65,7 +65,7 @@ export function ReferenceIndex() {
       title: 'What can I change?',
       description: 'Your prototypes are your working area. Systems, configuration, and platform code are shared capabilities; coordinate changes with the maintainer.',
       links: [
-        { title: 'Platform and system responsibilities', href: ref('contracts-and-instructions') },
+        { title: 'Responsibilities', href: ref('contracts-and-instructions') },
         { title: 'Contributor scope', href: '/systems/studio/rules/contributor-scope' },
         ...(hasGuide('customize') ? [{ title: 'Customize your studio', href: '/documentation/guide/customize' }] : []),
       ],
@@ -99,7 +99,7 @@ export function ReferenceIndex() {
       title: 'What should I check when something breaks?',
       description: 'Give your agent the error and what you were trying to do. Check the affected files, system assignment, and enabled capabilities. A successful build checks supported boundaries; it does not prove that an agent followed every instruction.',
       links: [
-        { title: 'Checks and troubleshooting', href: ref('checks') },
+        { title: 'Checks and fixes', href: ref('checks') },
         { title: 'Inspect studio configuration', href: ref('config') },
       ],
     },

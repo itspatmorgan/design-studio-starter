@@ -3,7 +3,7 @@ referenceSection: operate
 referenceOrder: 70
 ---
 
-# Checks and troubleshooting
+# Checks and fixes
 
 Checks help keep the shared studio consistent. Give your agent the warning or error so it can identify the cause.
 
