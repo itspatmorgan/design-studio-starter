@@ -32,4 +32,15 @@ If you are joining an existing studio, ask your agent to set you up as a contrib
 
 Configuration can continue after first run. Personal local use does not require GitHub or hosting. For collaboration through GitHub, use an account with access to the repository.
 
-The starter includes a Feedback Inbox sample owned by `patrick`. You can inspect it or ask an agent to help create your own prototype. Removing the sample is a maintainer change.
+## Make it your own
+
+The demo content is a starting point. Ask your agent to work through this checklist when you want a blank slate:
+
+- **Set your studio identity.** Choose your name, tagline, personal or team use, contributors, and Admins in [studio configuration](/documentation/guide/customize#configure-the-studio).
+- **Delete the example prototypes.** Remove Feedback Inbox and Design Studio Marketing, both owned by `patrick`, and their unused demo assets.
+- **Replace the starter systems.** Adapt or replace Product and Marketing, or remove either system you do not need. Bring your own components, styles, and product context. Keep Studio and one default prototype system; see [Systems](/documentation/guide/systems#bring-your-own-system).
+- **Choose your modules.** Turn off optional capabilities you do not need in Studio settings.
+- **Configure your repository and deployment.** Review `.github/workflows/scope-check.yml`, branch rules, and repository permissions. Configure publishing for your host; template copies run checks but do not deploy automatically.
+- **Verify before publishing.** Run `pnpm build`, deploy `dist/`, and test a direct prototype link and reload. [Publishing](/documentation/reference/platform/core/publishing.md) covers base paths, routing, and access settings.
+
+Starter cleanup is a maintainer change for a new studio. If you are joining an existing studio, preserve its shared setup and other contributors' work.
