@@ -18,7 +18,7 @@ export const templateFor = (name, systemContent = false) => FILE_TYPES[(systemCo
 // The system content's files are platform files: anyone can change their copy here, and the changes go
 // through review before they reach everyone. So it's open to whoever runs the app; what it does
 // enforce is the system content's shape (src/modules/systems/content/rules.ts).
-export const SYSTEM_CONTENT_NOTE = 'System sections (Context, Rules, Skills) can\'t be renamed or deleted.';
+export const SYSTEM_CONTENT_NOTE = 'Knowledge sections (Context, Skills) can\'t be renamed or deleted.';
 
 // "code-review" → "Code review"
 export const titleOf = (name) => { const t = name.replace(/-/g, ' '); return t.charAt(0).toUpperCase() + t.slice(1); };
@@ -31,8 +31,6 @@ export function skillTemplate(name, description) {
   return `---\nname: ${name}\n${line}\n---\n\nSay what to do, step by step, and when it applies.\n`;
 }
 
-// A new rule's start.
-export const ruleTemplate = (name) => `# ${titleOf(name.replace(/\.md$/, ''))}\n\nWhat your agent should know or do, and when.\n`;
 
 // Moves a file or folder to the Trash with macOS's built-in trash command, or, where
 // there isn't one, into .trash/ at the repo root (ignored by Git).
@@ -72,7 +70,7 @@ export function renameSkillInFile(file, name) {
 }
 
 // One file operation. Returns { path } (the new path, for create, rename, and move) or throws a message.
-// `section` is the system content section the folder is (docs, rules, skills), or null for a prototype.
+// `section` is the system content section the folder is (context, skills), or null for a prototype.
 export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, title, description, status }, section = null) {
   const inside = (r) => resolveInside(dir, r);
   const relOf = (abs) => path.relative(fs.realpathSync(dir), abs).split(path.sep).join('/');
@@ -91,7 +89,7 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     }
     const target = op === 'create' ? null : inside(rel);
     // A Markdown file keeps its .md: rename to "notes" and it's "notes.md", like a new file.
-    if (op === 'rename' && (section === 'context' || section === 'rules') && target && fs.statSync(target).isFile() && typeof name === 'string' && !name.endsWith('.md')) name += '.md';
+    if (op === 'rename' && section === 'context' && target && fs.statSync(target).isFile() && typeof name === 'string' && !name.endsWith('.md')) name += '.md';
     const problem = opProblem(section, { op, path: rel, name, to, dir: isDir }, Boolean(target && fs.statSync(target).isDirectory()));
     if (problem) throw new Error(problem);
   }
@@ -102,7 +100,7 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     const target = path.join(parent, name);
     if (fs.existsSync(target)) throw new Error(`Something named “${name}” already exists here.`);
     if (isDir) fs.mkdirSync(target);
-    else fs.writeFileSync(target, section === 'rules' ? ruleTemplate(name) : templateFor(name, Boolean(section)));
+    else fs.writeFileSync(target, templateFor(name, Boolean(section)));
     return { path: relOf(target) };
   }
   if (op === 'meta') {

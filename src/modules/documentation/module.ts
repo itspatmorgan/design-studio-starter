@@ -8,6 +8,6 @@ export default {
   version: '0.1.0',
   description: 'Documentation: a curated Guide and complete platform Reference.',
   optional: true,
-  instructions: [{ path: 'rules/documentation.md', when: 'asks to add or change platform documentation' }],
+  instructions: [{ path: 'skills/write-guide/', when: 'asks to add or change the human Guide' }],
   section: { key: 'documentation', folder: 'src/modules/documentation/pages' },
 } satisfies ModuleSpec;

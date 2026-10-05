@@ -24,7 +24,7 @@ export default function importGuard() {
       if (scope && /\.css($|\?)/.test(source) && !/\.module\.css($|\?)/.test(source)) this.error(`${scope.kind} scope: ${file} imports global CSS. Use CSS Modules for runtime styles; design-system themes are loaded by the platform.`);
       const resolved = await this.resolve(source, importer, { ...options, skipSelf: true });
       if (!resolved || resolved.external || !path.isAbsolute(resolved.id)) return resolved;
-      const platformProblem = modulePlatformProblem(path.relative(ROOT, file).replaceAll(path.sep, '/'), path.relative(ROOT, resolved.id.split('?')[0]).replaceAll(path.sep, '/'));
+      const platformProblem = modulePlatformProblem(path.relative(ROOT, file).replaceAll(path.sep, '/'), path.relative(ROOT, resolved.id.split('?')[0]).replaceAll(path.sep, '/'), resolved.id.includes('?raw'));
       if (platformProblem) this.error(platformProblem);
       const problem = policy.problem(source, file, resolved.id.split('?')[0]);
       if (problem) this.error(problem);

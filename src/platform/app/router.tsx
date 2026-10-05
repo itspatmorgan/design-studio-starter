@@ -27,6 +27,7 @@ import type { Artifact, Manifest, Prototype } from '@/platform/app/data/types';
 import { TAB_ID } from '@/platform/app/data/files';
 import { moduleApps } from '@/platform/app/modules';
 import { APP_NAME } from '@/platform/app/data/config';
+import { migratedGuidancePath } from '@/platform/app/docs/referenceLinks';
 import { loadReference } from '@/platform/app/docs/loadReference';
 import MarkdownPage from '@/platform/app/docs/MarkdownPage';
 import { ReferenceLayout, ReferenceIndex, AboutReference } from '@/platform/app/docs/References';
@@ -42,6 +43,10 @@ function LoadError({ error, reset }: { error: unknown; reset: () => void }) {
 }
 
 const rootRoute = createRootRoute({
+  beforeLoad: ({ location }) => {
+    const moved = migratedGuidancePath(location.pathname);
+    if (moved) throw redirect({ to: moved as never, search: location.search as never, hash: location.hash, replace: true });
+  },
   loader: () => loadManifest(),
   staleTime: Infinity,
   head: () => ({ meta: [{ title: APP_NAME }] }),

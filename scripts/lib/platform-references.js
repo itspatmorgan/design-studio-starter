@@ -19,7 +19,7 @@ export function platformReferences({ root, modules, enabled, systemContent }) {
     });
     const fm = frontmatter(text);
     const title = fm?.title ?? (fm?.name ? skillTitle(fm.name) : text.match(/^#\s+(.+)$/m)?.[1] ?? item.path);
-    return { title: `${section.system} · ${section.title} · ${title}`, href: addressOf(section.contributorKey, section.id) + '/' + item.path.replace(/\.md$/, ''), source, targets };
+    return { title: `${section.owner?.label ?? section.system} · ${section.title} · ${title}`, href: addressOf(section.contributorKey, section.id) + '/' + item.path.replace(/\.md$/, ''), source, targets };
   }));
   const group = (id, label, folder, on, declared = []) => {
     const dir = path.join(root, 'src', folder);
@@ -28,13 +28,13 @@ export function platformReferences({ root, modules, enabled, systemContent }) {
       const text = fs.readFileSync(path.join(dir, entry.name), 'utf8');
       // Every contract retains its canonical document title.
       const fm = frontmatter(text);
-      const ownLinks = related.filter(item => item.targets.includes(source) || ((entry.name === 'README.md' || (entry.name === 'reference.md' && !fs.existsSync(path.join(dir, 'README.md')))) && declared.some(d => item.source === `/systems/studio/${d.path}` || item.source.startsWith(`/systems/studio/${d.path.endsWith('/') ? d.path : d.path + '/'}`))));
+      const ownLinks = related.filter(item => item.targets.includes(source) || (entry.name === 'README.md' && declared.some(d => item.source === `/modules/${id}/${d.path}` || item.source.startsWith(`/modules/${id}/${d.path.endsWith('/') ? d.path : d.path + '/'}`))));
       return { source, title: fm?.title ?? text.match(/^#\s+(.+)$/m)?.[1] ?? entry.name,
         related: ownLinks.map(({ title, href }) => ({ title, href })),
         ...(id === 'core' ? { section: ['understand', 'operate', 'extend'].includes(fm?.referenceSection) ? fm.referenceSection : 'extend' } : {}),
         ...(id === 'core' && Number.isFinite(fm?.referenceOrder) ? { order: fm.referenceOrder } : {}) };
     }) : [];
-    const links = related.filter((item) => item.targets.some((target) => references.some((ref) => target === ref.source)) || declared.some((d) => item.source === `/systems/studio/${d.path}` || item.source.startsWith(`/systems/studio/${d.path.endsWith('/') ? d.path : d.path + '/'}`)));
+    const links = related.filter((item) => item.targets.some((target) => references.some((ref) => target === ref.source)) || declared.some((d) => item.source === `/modules/${id}/${d.path}` || item.source.startsWith(`/modules/${id}/${d.path.endsWith('/') ? d.path : d.path + '/'}`)));
     return { id, label, enabled: on, references, related: links.map(({ title, href }) => ({ title, href })) };
   };
   return [group('core', 'Platform foundations', '/platform/core', true), {

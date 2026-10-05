@@ -5,7 +5,7 @@ import { documentationSources, sourceFile } from './files/source.js';
 //
 //   GET  /__studio/me                                       your contributors.json key and name
 //   GET  /__studio/files?contributor=<key>&prototype=<id>   the prototype's files and folders
-//        (reserved contributor "system-content" reads a system-owned Context, Rules, or Skills section)
+//        (reserved contributor "system-content" reads a system-owned Context or Skills section)
 //   GET  /__studio/file?contributor=<key>&prototype=<id>&path=<file>   an item's text and its version
 //   POST /__studio/write   { contributor, prototype, path, content, base }  save an item you own, or a system content file (Source view)
 //   POST /__studio/reveal   { contributor, prototype, path }  show a file in Finder
@@ -46,6 +46,8 @@ import { duplicatePrototype } from '../../src/modules/prototypes/node/duplicate.
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from '../cli/resolve-contributor.js';
 import { fileTypeOf, systemContentTypeOf } from '../lib/file-types.js';
+import { knowledgeOwners } from '../lib/agent-skills.js';
+import { ENABLED_MODULES } from '../lib/modules.js';
 import { SYSTEM_CONTENT_KEY, SYSTEMS_KEY, contentSection, contentId, SYSTEM_CONTENT_SECTIONS } from '../../src/platform/core/roots.ts';
 import { PROTOTYPE_SECTIONS, SERVER_FILES } from '../lib/modules.js';
 import { CONTRIBUTORS_DIR, loadContributors } from '../lib/contributors.js';
@@ -231,7 +233,9 @@ export default function filesPlugin() {
       const changed = new Set();
       // A file's contributor, prototype, and path in it: a prototype's, the system content's, or a system's components.
       const locate = (file) => {
-        for (const [system, source] of Object.entries(SYSTEM_SOURCES)) {
+        for (const owner of knowledgeOwners(ENABLED_MODULES, SYSTEM_SOURCES)) {
+          const system = owner.id;
+          const source = { dir: owner.root };
           for (const section of Object.keys(SYSTEM_CONTENT_SECTIONS)) {
             const dir = path.join(ROOT, source.dir, section) + path.sep;
             if (file.startsWith(dir)) return { contributor: SYSTEM_CONTENT_KEY, prototype: contentId(system, section), rel: path.relative(dir, file).split(path.sep).join('/') };

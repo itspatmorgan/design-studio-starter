@@ -10,8 +10,8 @@ export type NewKind = 'document' | 'folder' | 'skill' | 'file';
 const depth = (path: string) => (path ? path.split('/').length : 0);
 const base = (path: string) => path.split('/').at(-1) ?? '';
 
-// Docs and rules are Markdown files in folders; skills are folders with a SKILL.md and anything else in them.
-const isMarkdown = (section: string) => section === 'context' || section === 'rules';
+// Context documents are Markdown files in folders; skills are folders with a SKILL.md and anything else in them.
+const isMarkdown = (section: string) => section === 'context';
 
 // What can be made in `folder` ('' is the top of the section).
 export function creatableIn(section: string, folder: string): NewKind[] {
@@ -36,7 +36,7 @@ export function opProblem(section: string, c: SystemContentOp, isDir: boolean): 
     if (!creatableIn(section, path).includes(c.dir ? 'folder' : isMarkdown(section) ? 'document' : 'file')) {
       return section === 'skills' && path === '' ? 'A skill is made with New skill. It has to be a folder with a SKILL.md.' : 'That can\'t be made here.';
     }
-    if (isMarkdown(section) && !c.dir && !(c.name ?? '').endsWith('.md')) return 'Documents and rules are Markdown files, and end in .md.';
+    if (isMarkdown(section) && !c.dir && !(c.name ?? '').endsWith('.md')) return 'Context documents are Markdown files, and end in .md.';
     return null;
   }
   if (isSkillFile(section, path)) {
@@ -49,7 +49,7 @@ export function opProblem(section: string, c: SystemContentOp, isDir: boolean): 
       const problem = nameProblem(c.name);
       return problem ? `A skill's name ${problem}` : null;
     }
-    if (isMarkdown(section) && !isDir && !(c.name ?? '').endsWith('.md')) return 'Documents and rules are Markdown files, and end in .md.';
+    if (isMarkdown(section) && !isDir && !(c.name ?? '').endsWith('.md')) return 'Context documents are Markdown files, and end in .md.';
     return null;
   }
   if (c.op === 'move') {

@@ -11,7 +11,7 @@ export function systemInstructions({ root, systemRoot, platform = false }) {
   const entries = [...(platform ? ['AGENTS.md'] : []), systemRoot + '/AGENTS.md'];
   const exists = (file) => fs.existsSync(path.join(root, file)) && fs.statSync(path.join(root, file)).isFile();
   const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
-  const scoped = (target) => target.startsWith(systemRoot + '/');
+  const scoped = (target) => target.startsWith('src/platform/') || target.startsWith('src/modules/') || target.startsWith(systemRoot + '/');
   const targetOf = (file, target) => target.startsWith('src/') ? target : resolve(file, target);
   const agents = entries.filter(exists).map(file => read(file).replace(LINK, (match, label, target) => {
     if (external(target)) return match;

@@ -13,6 +13,7 @@ import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 
 // Loaded on first visit, so it isn't in the main bundle:
 // https://tanstack.com/router/latest/docs/framework/react/guide/code-splitting
+const KnowledgePage = lazy(() => import('@/modules/systems/pages/KnowledgePage'));
 const SystemsPage = lazy(() => import('@/modules/systems/pages/SystemsPage'));
 const systemsTitle = (...parts: (string | undefined)[]) =>
   [...parts.filter(Boolean).map((p) => artifactLabel(p!)), 'Systems', APP_NAME].join(' — ');
@@ -33,7 +34,7 @@ function SystemsPlaces({ go }: PaletteContext) {
 
 function SystemFiles({ manifest, go }: PaletteContext) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  return <>{manifest.systemContent.filter((section) => SYSTEM_SPECS[section.system!]?.role !== 'platform' && section.artifacts.length).map((section) =>
+  return <>{manifest.systemContent.filter((section) => section.owner?.kind === 'system' && SYSTEM_SPECS[section.system!]?.role !== 'platform' && section.artifacts.length).map((section) =>
     <CommandGroup key={section.id} heading={PROTOTYPE_SYSTEMS[section.system!]?.label + ' · ' + section.title}>
       {section.artifacts.map((item) => { const link = artifactLink(section, item); return <CommandItem key={item.path} value={section.system + ' ' + section.title + ' ' + item.path} disabled={pathname === link.to} onSelect={() => go(link)}>{artifactLabel(item.path)}</CommandItem>; })}
     </CommandGroup>)}</>;
@@ -57,7 +58,9 @@ export default {
   order: 20,
   routes: (root) => {
     const systemsRoute = createRoute({ getParentRoute: () => root, path: 'systems', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }) });
-    return [systemsRoute.addChildren([
+    const knowledgeRoute = createRoute({ getParentRoute: () => root, path: 'knowledge', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }) });
+    const knowledgeRoutes = ['$owner', '$owner/$page', '$owner/$page/$'].map(path => createRoute({ getParentRoute: () => knowledgeRoute, path, component: () => <Suspense fallback={null}><KnowledgePage /></Suspense> }));
+    return [knowledgeRoute.addChildren(knowledgeRoutes), systemsRoute.addChildren([
       createRoute({
         getParentRoute: () => systemsRoute,
         path: '/',

@@ -228,12 +228,12 @@ test('shared documentation catalog covers Guide and Reference and keeps damaged 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-documentation-catalog-'));
   try {
     const chapter = 'src/modules/documentation/pages/index.md';
-    const readme = 'src/modules/prototypes/reference.md';
+    const readme = 'src/modules/prototypes/README.md';
     for (const file of [chapter, readme]) {
       fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
       fs.writeFileSync(path.join(root, file), '# Source');
     }
-    const manifest = { guide: [{ slug: 'index', source: '/modules/documentation/pages/index.md' }], platformReferences: [{ id: 'documentation', enabled: true, references: [] }, { id: 'prototypes', enabled: true, references: [{ source: '/modules/prototypes/reference.md' }] }] };
+    const manifest = { guide: [{ slug: 'index', source: '/modules/documentation/pages/index.md' }], platformReferences: [{ id: 'documentation', enabled: true, references: [] }, { id: 'prototypes', enabled: true, references: [{ source: '/modules/prototypes/README.md' }] }] };
     const allowed = documentationSources(root, manifest);
     assert.ok(allowed.includes(chapter));
     assert.equal(allowed.filter((file) => file === readme).length, 1);

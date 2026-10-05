@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
-import { ChevronDown, Compass, Blocks, NotebookText, ListChecks, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, Search, ChevronsDownUp, ChevronsUpDown, X, type LucideIcon } from 'lucide-react';
+import { ChevronDown, Compass, Blocks, NotebookText, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, Search, ChevronsDownUp, ChevronsUpDown, X, type LucideIcon } from 'lucide-react';
 import { Input } from '@/systems/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
 import { artifactLabel, findArtifact } from '@/platform/app/data/manifest';
@@ -81,7 +81,7 @@ const PAGE_ICONS: Record<string, LucideIcon> = {
   intro: Compass, colors: SwatchBook, typography: Type, radius: SquareRoundCorner,
   shadows: Layers2, spacing: Ruler, motion: MoveRight, effects: Sparkles, tokens: Braces, icons: Smile,
 };
-const CONTENT_ICONS: Record<string, LucideIcon> = { context: NotebookText, rules: ListChecks, skills: WandSparkles };
+const CONTENT_ICONS: Record<string, LucideIcon> = { context: NotebookText, skills: WandSparkles };
 const navIcon = (Icon: LucideIcon) => <Icon aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />;
 
 // Different Systems routes mount separate page instances. Keep tree choices for the session.
@@ -115,7 +115,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   const source = system === PLATFORM_ID ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
   const foundations = TOKEN_PAGES.filter((p) => p.id === 'typography' || tokens.some((t) => t.group === p.group));
   const savedTree = systemTreeState.get(system);
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => savedTree?.openGroups ?? { context: true, rules: true, skills: true, theme: true, components: true });
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => savedTree?.openGroups ?? { context: true, skills: true, theme: true, components: true });
   const [folderCommand, setFolderCommand] = useState(() => savedTree?.folderCommand ?? { version: 0, expanded: true });
   const [foldersExpanded, setFoldersExpanded] = useState<Record<string, boolean>>(() => savedTree?.foldersExpanded ?? {});
   useEffect(() => { systemTreeState.set(system, { openGroups, folderCommand, foldersExpanded }); }, [system, openGroups, folderCommand, foldersExpanded]);
@@ -132,7 +132,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   const allExpanded = Object.values(openGroups).every(Boolean) && Object.values(foldersExpanded).every(Boolean);
   const toggleAll = () => {
     const expanded = !allExpanded;
-    setOpenGroups({ context: expanded, rules: expanded, skills: expanded, theme: expanded, components: expanded });
+    setOpenGroups({ context: expanded, skills: expanded, theme: expanded, components: expanded });
     setFolderCommand(prev => ({ version: prev.version + 1, expanded }));
   };
   const contentSections = Object.entries(SYSTEM_CONTENT_SECTIONS).flatMap(([id, section]) => {
@@ -151,6 +151,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
     <SectionNav label="Systems">
       <NavHeader>
         <NavTitle>Systems</NavTitle>
+        <a href="/knowledge/platform.core" className="px-1 text-xs text-muted-foreground hover:underline">Platform context and skills</a>
         <div className="mt-2 px-1">
           <Select items={SYSTEM_CHOICES} value={system} onValueChange={(value) => {
             if (value && value !== system) void navigate({ to: '/systems/$system' as never, params: { system: value } as never });

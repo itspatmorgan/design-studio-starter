@@ -19,7 +19,6 @@ export default function SystemOverview({ system, sys, components, tokens }: {
   const spec = SYSTEM_SPECS[system];
   const guidance = [
     { id: 'context', label: 'Context documents' },
-    { id: 'rules', label: 'Rules' },
     { id: 'skills', label: 'Skills' },
   ].map(section => {
     const proto = manifest.systemContent.find(proto => proto.id === contentId(system, section.id));

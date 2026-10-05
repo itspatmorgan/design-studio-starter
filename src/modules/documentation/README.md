@@ -16,7 +16,7 @@ Reference discovers top-level Markdown under `src/platform/core/`, the shared `s
 
 Core pages use `referenceSection` (`understand`, `operate`, or `extend`) and optional numeric `referenceOrder`. Unclassified core pages appear under Extend Studio. Capability documents use their canonical titles. A module with one contract displays one navigation item; additional contracts stay under their owning module.
 
-Related operating instructions are selected per document from system-content links. A module's primary contract (`README.md` or `reference.md`) also includes its declared instructions. The source path and related links appear under About this reference. Availability does not establish that an agent read a file.
+Related operating instructions are selected per document from system-content links. A module's primary contract (`README.md`) also includes its declared instructions. The source path and related links appear under About this reference. Availability does not establish that an agent read a file.
 
 ## Availability and search
 
@@ -43,4 +43,4 @@ Source access is limited to indexed documentation and local Guide Markdown, incl
 - `scripts/build/remark-title-from-heading.js`: extracts opening Markdown headings without hiding document sections.
 - `src/platform/app/docs/DocumentationEditor.tsx`, `documentationSource.ts`, `scripts/build/files/source.js`: local allowlisted source editing.
 
-Follow [Documentation standards](../../systems/studio/rules/documentation-standards.md) for writing policy and the [Maintain documentation skill](../../systems/studio/skills/maintain-documentation/SKILL.md) for verification.
+Follow [Documentation standards](../../platform/context/documentation-standards.md) for writing policy and the [Maintain documentation skill](../../platform/skills/maintain-documentation/SKILL.md) for verification.

@@ -3,6 +3,7 @@ import { cssProblems } from '../lib/css-scope.js';
 //   --strict  exits 1 if any meta.json is invalid
 //   --deploy  leaves archived prototypes and views out (src/platform/core/archive.ts), for the deployed site
 import crypto from 'node:crypto';
+import { knowledgeOwners, skillCatalog } from '../lib/agent-skills.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -283,35 +284,36 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
 
   for (const key of cache.keys()) if (!seen.has(key)) cache.delete(key);
 
-  // Context, rules, and skills are owned by their system, including Studio.
+  // Context and skills belong to the platform, each enabled module, or a registered system.
   const systemContent = [];
   const maps = {};
-  for (const system of Object.keys(SYSTEM_SOURCES)) {
-    const base = path.join(ROOT, 'src', systemRoot(system));
+  for (const owner of knowledgeOwners(ENABLED_MODULES, SYSTEM_SOURCES)) {
+    const system = owner.id;
+    const base = path.join(ROOT, owner.root);
     for (const [section, { title, description }] of Object.entries(SYSTEM_CONTENT_SECTIONS)) {
       const dir = path.join(base, section);
       const artifacts = fs.existsSync(dir) ? artifactsIn(dir, '', inSystemContent) : [];
       if (fs.existsSync(dir)) errors += checkArtifacts(dir, artifacts, out);
-      systemContent.push({ id: contentId(system, section), contributorKey: SYSTEM_CONTENT_KEY, title, description, contributor: '', created: null, system, artifacts });
+      systemContent.push({ id: contentId(system, section), contributorKey: SYSTEM_CONTENT_KEY, title, description, contributor: '', created: null, system, owner, artifacts });
     }
     for (const problem of systemContentProblems(base, { scoped: true })) { out.error('[manifest] ' + problem); errors++; }
-    const rulesDir = path.join(base, 'rules');
-    const rules = {};
+    const contextDir = path.join(base, 'context');
+    const context = {};
     const collect = (dir, prefix = '') => {
       for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
         if (e.name.startsWith('.')) continue;
         if (e.isDirectory()) collect(path.join(dir, e.name), prefix + e.name + '/');
-        else if (e.isFile() && e.name.endsWith('.md')) rules[prefix + e.name] = fs.readFileSync(path.join(dir, e.name), 'utf8');
+        else if (e.isFile() && e.name.endsWith('.md')) context[prefix + e.name] = fs.readFileSync(path.join(dir, e.name), 'utf8');
       }
     };
-    if (fs.existsSync(rulesDir)) collect(rulesDir);
+    if (fs.existsSync(contextDir)) collect(contextDir);
     const skillsDir = path.join(base, 'skills');
     const skills = fs.existsSync(skillsDir) ? fs.readdirSync(skillsDir, { withFileTypes: true }).filter((e) => e.isDirectory() && !e.name.startsWith('.') && fs.existsSync(path.join(skillsDir, e.name, 'SKILL.md'))).map((e) => {
       const fm = frontmatter(fs.readFileSync(path.join(skillsDir, e.name, 'SKILL.md'), 'utf8')) ?? {};
       return { folder: e.name, name: String(fm.name ?? e.name), description: String(fm.description ?? '') };
     }) : [];
-    const instructions = systemInstructions({ root: ROOT, systemRoot: 'src/' + systemRoot(system), platform: system === PLATFORM_ID });
-    maps[system] = systemContentMap({ agents: instructions.agents, rules, skills, root: 'src/' + systemRoot(system) });
+    const instructions = systemInstructions({ root: ROOT, systemRoot: 'src/' + systemRoot(system), platform: owner.kind !== 'system' });
+    maps[system] = systemContentMap({ agents: instructions.agents, context, skills, root: 'src/' + systemRoot(system) });
     maps[system].missing = [...new Set([...maps[system].missing, ...instructions.missing])];
     for (const file of maps[system].missing) { out.error('[manifest] Agent instructions link to ' + file + ', which is missing.'); errors++; }
   }
@@ -377,7 +379,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     if (links.length > DOC_WARNINGS) out.warn(`[manifest] and ${links.length - DOC_WARNINGS} more file(s) that link to an archived prototype.`);
   }
 
-  const manifest = { prototypes: deploy ? keptPrototypes : prototypes, sections: deploy ? keptSections : sections, guide: guide.map(({ order, ...page }) => page), systemContent, systemContentMaps: maps, platformReferences: platformReferences({ root: ROOT, modules: Object.values(MODULES).filter(Boolean), enabled: ENABLED_MODULES.map((m) => m.id), systemContent }), systems };
+  const manifest = { prototypes: deploy ? keptPrototypes : prototypes, sections: deploy ? keptSections : sections, guide: guide.map(({ order, ...page }) => page), systemContent, systemContentMaps: maps, platformReferences: platformReferences({ root: ROOT, modules: Object.values(MODULES).filter(Boolean), enabled: ENABLED_MODULES.map((m) => m.id), systemContent }), systems, skillCatalog: skillCatalog(ROOT, knowledgeOwners(ENABLED_MODULES, SYSTEM_SOURCES)) };
   if (write) writeManifest(manifest);
   out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${Object.entries(manifest.sections).map(([key, artifacts]) => `${artifacts.length} in ${key}`).join(', ') || 'no sections'}, ${guide.length} guide page(s), ${systemContent.length} systemContent section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
   if (deploy && archived.length) out.log(`[manifest] Left out of the deployed site: ${archived.length} archived prototype(s)`);

@@ -206,3 +206,12 @@ test('module implementations use supported platform entries and cannot reach pri
   assert.match(modulePlatformProblem(module, 'src/platform/app/shell/nav/private.ts'), /private platform/);
   assert.equal(modulePlatformProblem('src/platform/app/router.tsx', 'src/platform/app/shell/App.tsx'), null);
 });
+
+test('knowledge readers can inspect support files without executing private platform code', async () => {
+  const { modulePlatformProblem } = await import('../../src/platform/core/modules/boundaries.ts');
+  const script = 'src/platform/skills/create/scripts/helper.js';
+  assert.equal(modulePlatformProblem('src/modules/text/loader.ts', script, true), null);
+  assert.match(modulePlatformProblem('src/modules/text/loader.ts', script), /private platform/);
+  assert.match(modulePlatformProblem('src/modules/canvas/lib/index.ts', script, true), /private platform/);
+  assert.equal(modulePlatformProblem('src/modules/systems/loader.ts', 'src/platform/context/principles.md'), null);
+});

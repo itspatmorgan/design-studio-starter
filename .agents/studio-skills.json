@@ -1,0 +1,109 @@
+{
+  "schema": 1,
+  "files": {
+    ".agents/skills/studio-platform-configure-studio/SKILL.md": {
+      "kind": "file",
+      "hash": "8d11d005e4698753e0175b5c8ea5cc6939cef0422149c482170a06616c9bc204"
+    },
+    ".claude/skills/studio-platform-configure-studio": {
+      "kind": "link",
+      "hash": "9ea2aef310a741eeacdc67118caaeae12a76df0d03432e84110e9aea7242cf4b"
+    },
+    ".agents/skills/studio-platform-maintain-context/SKILL.md": {
+      "kind": "file",
+      "hash": "bfcf4f6584b201732bbef7a05d46da8b028481993db502d93eaa0bb7f462737f"
+    },
+    ".claude/skills/studio-platform-maintain-context": {
+      "kind": "link",
+      "hash": "49a297c8b346c5dd90bcd70d2767c756b8ae8ce11a092463786a1ed2dcb7648e"
+    },
+    ".agents/skills/studio-platform-maintain-documentation/SKILL.md": {
+      "kind": "file",
+      "hash": "b9424adb2239078cf4f2a1ce00b90b883130ebd096df64884274dba19a728ade"
+    },
+    ".claude/skills/studio-platform-maintain-documentation": {
+      "kind": "link",
+      "hash": "43ed30ea7b1a26f30d89a30e3bed1ba9e134e8ebd803e5c6a2ceffb75711248e"
+    },
+    ".agents/skills/studio-platform-manage-modules/SKILL.md": {
+      "kind": "file",
+      "hash": "e27cad333bc7c118b7ae2b2f68a16432039c464e6c85d7e5d574f584c6627e03"
+    },
+    ".claude/skills/studio-platform-manage-modules": {
+      "kind": "link",
+      "hash": "ad58942c9c67350e32b50ec88a94384faa9ac3ca03f50048c814b537f5825bb3"
+    },
+    ".agents/skills/studio-platform-setup-contributor/SKILL.md": {
+      "kind": "file",
+      "hash": "26e83162e8c59cf49a96c4cb584ba5811de0dfd1aae8dfd2e31dfe77021e204d"
+    },
+    ".claude/skills/studio-platform-setup-contributor": {
+      "kind": "link",
+      "hash": "d1aad30fcc84db9e1643700949a680c823a5b137045961db241dabdc43426e24"
+    },
+    ".agents/skills/studio-module-canvas-use-canvas/SKILL.md": {
+      "kind": "file",
+      "hash": "a84e3b427c1410290cd07bd0261ffa9c90eb5129485f9e329c5c5d2f9e29adc8"
+    },
+    ".claude/skills/studio-module-canvas-use-canvas": {
+      "kind": "link",
+      "hash": "4bc59d6761bfddc596f5f715e31ab43cfefbdce8a4e10e0c52d2c2cd0073f5ab"
+    },
+    ".agents/skills/studio-module-diagrams-create-diagram/SKILL.md": {
+      "kind": "file",
+      "hash": "84c597fab39ca276af2dfa294161f9a9753c8693a19e829d9fcd1692d7972f86"
+    },
+    ".claude/skills/studio-module-diagrams-create-diagram": {
+      "kind": "link",
+      "hash": "72b0f4a7dfac54b9ba03d6d094665ff90668d5d5f5d6cb15b7cc43547d06263c"
+    },
+    ".agents/skills/studio-module-document-write-document/SKILL.md": {
+      "kind": "file",
+      "hash": "65a6d5b8361faab304d43b4fc574dfe00078792f9d62beb8c26954003e8a36c6"
+    },
+    ".claude/skills/studio-module-document-write-document": {
+      "kind": "link",
+      "hash": "da8a1ffd1489d66bc2a183bed0d4de20e5994f86bc29a7f6154d8a3c8bc3f655"
+    },
+    ".agents/skills/studio-module-documentation-write-guide/SKILL.md": {
+      "kind": "file",
+      "hash": "91d34cbfc25b2fee5c0b5f02a7253e2f71a9f4c3762eb872d36b0cac9315e37e"
+    },
+    ".claude/skills/studio-module-documentation-write-guide": {
+      "kind": "link",
+      "hash": "b1b28829d1aad7732481d9d1ce0824a81714d903a9b178129c8370d21cb7ee83"
+    },
+    ".agents/skills/studio-module-prototypes-build-prototype/SKILL.md": {
+      "kind": "file",
+      "hash": "3cff5f959b9357bfc23f251594854f7b3109384d7c570b06a05345f82774ead2"
+    },
+    ".claude/skills/studio-module-prototypes-build-prototype": {
+      "kind": "link",
+      "hash": "4cf5aa4078e1dad79b81e0536561314b2e94c16030e8b157a0a8bec5efdc3358"
+    },
+    ".agents/skills/studio-module-prototypes-organize-prototype/SKILL.md": {
+      "kind": "file",
+      "hash": "afc8010801485c60a9bf29adf49e4bf06116207dce4e26580763ad065054c6f2"
+    },
+    ".claude/skills/studio-module-prototypes-organize-prototype": {
+      "kind": "link",
+      "hash": "1a72f6a36656836f44f22f4a536dddbc642d4654d1a7dae3b506b27518a0a4ee"
+    },
+    ".agents/skills/studio-module-systems-document-component/SKILL.md": {
+      "kind": "file",
+      "hash": "24f412ab8ca8308c8ec9d71377640dd7d3a27ce0b34b98532c918a28967193af"
+    },
+    ".claude/skills/studio-module-systems-document-component": {
+      "kind": "link",
+      "hash": "8920db25a0ee31acbaf9207b1e824d8fc26b7a3a44d3774007c0a3ab66e08274"
+    },
+    ".agents/skills/studio-module-systems-setup-design-system/SKILL.md": {
+      "kind": "file",
+      "hash": "947274c358ae4cb651f45c74b2d87688841ca25b3fec7c12c0dcb8b86126576e"
+    },
+    ".claude/skills/studio-module-systems-setup-design-system": {
+      "kind": "link",
+      "hash": "bd6ea023e7ec6524fa7dbacaebaa986fba3493ecce4d0e1083ff4cc275a36a4a"
+    }
+  }
+}

@@ -44,7 +44,8 @@ If a capability needs another integration, add a deliberate public contract rath
 | `server.ts` | Local routes at `POST /__studio/<module>/<route>`. |
 | `check.ts` | Module validation while enabled. |
 | `lib/index.ts(x)` | Public entry exposed when `lib: true`. |
-| `instructions/` in a pack | Declared agent files installed into `src/systems/studio/`. |
+| `context/`, `skills/` | Module-owned knowledge and procedures. |
+| `instructions/` in a pack | Optional packaging prefix for declared context and skills, installed into this module. |
 
 Every module declares `optional` and `lib` as booleans. Omission cannot silently determine removability or expose a public library.
 
@@ -54,7 +55,7 @@ The core page key `settings` is reserved. Modules and contributors cannot use it
 
 Use the TypeScript declaration for exact fields. See the [file-type contract](../platform/core/fileTypes.md) for file capabilities.
 
-Design systems are content in `src/systems/`, not platform modules. Their [contract](systems/reference.md) defines system structure.
+Design systems are content in `src/systems/`, not platform modules. Their [contract](systems/README.md) defines system structure.
 
 ## Configuration and commands
 
@@ -74,9 +75,9 @@ pnpm check
 
 Add, remove, and create commands preview changes. Applying them requires `--yes`. Use CLI help for source formats and optional flags.
 
-Studio commands register and unregister capabilities, manage config module flags, `studio.lock.json`, and module-owned routing in `AGENTS.md`. The [module rule](../systems/studio/rules/modules.md) governs agent execution.
+Studio commands register and unregister capabilities, manage config module flags, `studio.lock.json`, and module-owned routing in `AGENTS.md`. The [manage-modules skill](../platform/skills/manage-modules/SKILL.md) governs agent execution.
 
-Disabling retains files. Removal deletes the module and its declared platform instruction files. External content remains unless removal includes `--content`.
+Disabling retains files. Removal deletes the module, including its context and skills, and refreshes project exposure. External content remains unless removal includes `--content`.
 
 Packages remain installed after removal. Remove them only when no retained code uses them.
 
@@ -104,7 +105,7 @@ The manifest scans declared content sections. Vite supplies file globs and theme
 
 `pnpm baseline removal <id>` checks physical removal. Optional-module verification should also cover disabling and retained content.
 
-A module owns one technical contract in its README or reference document. Human workflows live in `src/modules/documentation/pages/`, where a chapter declares `module: <id>` to follow that capability’s availability. Rules state agent requirements. Skills sequence tasks. Link to contracts instead of copying them.
+A module owns one canonical technical contract in its README.md. Human workflows live in `src/modules/documentation/pages/`, where a chapter declares `module: <id>` to follow that capability’s availability. Context includes standing requirements. Skills describe tasks. Link to contracts instead of copying them.
 
 ## Customization and updates
 

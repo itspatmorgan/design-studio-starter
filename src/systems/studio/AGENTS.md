@@ -1,11 +1,7 @@
 # Studio system instructions
 
-This is the required Studio system, supplied and maintained with platform releases. Its theme and components support the application; its context, rules, and skills guide operating and maintaining Studio, including infrastructure and modules.
+Studio supplies Design Studio's application components, theme, and interface design guidance. Platform operating context and skills live in `src/platform/`; module capabilities live beside their modules.
 
-When changing platform requirements or deciding where guidance belongs, read [Responsibilities](../../platform/core/contracts-and-instructions.md). Core and module contracts own technical requirements. This system owns operating policy, intent, and task procedures.
+Read [writing guidance](context/writing.md) when changing application or module interface text. Follow the repository's [instructions](../../../AGENTS.md) and the Systems module's [authoring context](../../modules/systems/context/authoring.md) for components, themes, and pop-ups.
 
-When working on Studio, read [Principles](context/principles.md) and [Personas](context/personas.md). Follow the repository’s [operating instructions](../../../AGENTS.md), which route tasks to this system’s rules and skills.
-
-When adding or changing interface text or actions, read [UI copy rules](rules/ui-copy.md).
-
-Keep product-specific guidance in its own system. Prototype runtime code cannot import Studio components or assets. Platform infrastructure remains under `src/platform/`.
+Keep product-specific guidance in its own system. Prototype runtime code cannot import Studio components or assets.

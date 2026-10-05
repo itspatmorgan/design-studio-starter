@@ -50,7 +50,7 @@ export function AboutReference({ source, group }: { source: string; group?: Plat
   return <details className="mt-10 border-t border-border pt-4 text-sm">
     <summary className="cursor-pointer text-muted-foreground">About this reference</summary>
     <p className="mt-4 break-words font-mono text-xs text-muted-foreground">src{source}</p>
-    <p className="mt-3 text-muted-foreground">This source owns the technical behavior it describes. Studio rules and skills consult it when relevant to a task. Availability does not mean an agent has read it.</p>
+    <p className="mt-3 text-muted-foreground">This source owns the technical behavior it describes. Context and skills consult it when relevant to a task. Availability does not mean an agent has read it.</p>
     {Boolean(related.length) && <><p className="mt-4 font-medium">Related operating instructions and intent</p><ul className="mt-2 space-y-2">{related.map((link) => <li key={link.href}><Link to={link.href as never} className="underline underline-offset-4">{link.title}</Link></li>)}</ul></>}
   </details>;
 }
@@ -66,7 +66,7 @@ export function ReferenceIndex() {
       description: 'Your prototypes are your working area. Systems, configuration, and platform code are shared capabilities; coordinate changes with the maintainer.',
       links: [
         { title: 'Responsibilities', href: ref('contracts-and-instructions') },
-        { title: 'Contributor scope', href: '/systems/studio/rules/contributor-scope' },
+        { title: 'Contributor scope', href: '/knowledge/platform.core/context/contributor-scope' },
         ...(hasGuide('customize') ? [{ title: 'Customize your studio', href: '/documentation/guide/customize' }] : []),
       ],
     },
@@ -74,13 +74,13 @@ export function ReferenceIndex() {
       title: 'Which system applies?',
       description: 'A prototype’s assignment selects its toolkit and product instructions. None keeps components and styles local. The browser’s Systems selector only changes what you browse.',
       links: [
-        { title: 'System choice and boundaries', href: referenceHref('/modules/systems/reference.md') },
+        { title: 'System choice and boundaries', href: referenceHref('/modules/systems/README.md') },
         { title: 'Configure the default', href: ref('config') },
       ],
     },
     {
       title: 'How does my agent get instructions?',
-      description: 'Repository instructions lead the agent to platform operating rules, relevant procedures, and the assigned system’s knowledge. The agent reads those files; Studio does not inject a context bundle.',
+      description: 'Repository instructions lead the agent to platform working context, relevant procedures, and the assigned system’s knowledge. The agent reads those files; Studio does not inject a context bundle.',
       links: [
         ...(hasGuide('agent-context') ? [{ title: 'See the context flow', href: '/documentation/guide/agent-context' }] : []),
         { title: 'Agent context routing', href: ref('agent-context') },
@@ -115,7 +115,7 @@ export function ReferenceIndex() {
         <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">{question.links.map(link => <li key={link.href}><Link to={link.href as never} className="underline underline-offset-4">{link.title}</Link></li>)}</ul>
       </li>)}
     </ol>
-    <p className="mt-10 max-w-[65ch] text-sm leading-6 text-muted-foreground">Reference presents the original files that define platform behavior. Studio rules direct agent work; context supplies intent; skills describe procedures. Each responsibility has one owning source. Use search (⌘K / Ctrl+K) to find a page by title.</p>
+    <p className="mt-10 max-w-[65ch] text-sm leading-6 text-muted-foreground">Reference presents the original files that define platform behavior. Context preserves knowledge and standing requirements; skills describe procedures. Each responsibility has one owning source. Use search (⌘K / Ctrl+K) to find a page by title.</p>
     {disabled.length > 0 && <p className="mt-6 text-sm text-muted-foreground">Disabled capabilities: {disabled.map(group => group.label).join(', ')}. Their references become available when enabled.</p>}
   </div>;
 }

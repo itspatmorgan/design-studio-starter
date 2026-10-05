@@ -23,6 +23,7 @@ export type PrototypeInfo = {
   contributorGithub?: string; // registered GitHub account, for optional profile photos
   created: string | null;
   system: string | null;  // null means custom styling; omission in meta.json resolves to defaultSystem
+  owner?: { id: string; kind: 'platform' | 'module' | 'system'; label: string; root: string };
   rebuild?: { targetSystem: string | null; source: string }; // requested fork migration, before changing the actual assignment
   status?: 'archived';    // meta.json "status", when archived; absent means active
   maintainers?: string[]; // meta.json "maintainers" (contributors.json keys), where a section's policy is maintainers; prototypes don't have them
@@ -63,6 +64,7 @@ export type PlatformReferenceGroup = { id: string; label: string; enabled: boole
 
 export type Manifest = {
   prototypes: PrototypeRef[]; sections: Record<string, PrototypeRef[]>; guide: GuidePage[]; systemContent: Prototype[]; systemContentMaps: Record<string, SystemContentMap>; platformReferences: PlatformReferenceGroup[];
+  skillCatalog: { owner: NonNullable<PrototypeInfo['owner']>; folder: string; name: string; description: string; source: string }[];
   systems: Record<string, { docs: DocsMode; origin: 'shadcn' | null; components: SystemComponentDoc[]; tokens: ThemeToken[] }>;
 };
 

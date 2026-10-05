@@ -1,5 +1,5 @@
 // Prototype navigation: everything about the prototype at the top (PrototypeHeader.tsx, or the
-// Docs / Rules / Skills tabs for a system content section), then its files (FileTree.tsx). It is a
+// Context / Skills tabs for a system content section), then its files (FileTree.tsx). It is a
 // SectionNav (shell/nav/), so it resizes like every section's navigation.
 import type { Artifact, Prototype } from '@/platform/app/data/types';
 import { SectionNav } from '@/platform/app/shell/nav';

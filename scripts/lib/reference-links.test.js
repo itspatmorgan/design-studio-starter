@@ -7,9 +7,9 @@ import titleFromHeading from '../build/remark-title-from-heading.js';
 
 test('repository links resolve from SystemContent and between references', () => {
   const resolve = (href, base) => markdownPath(new URL(href, `http://doc${base}/`).pathname);
-  assert.equal(resolve('../../../../modules/systems/reference.md', '/systems/studio/rules'), '/documentation/reference/modules/systems/reference.md');
-  assert.equal(resolve('reference.md', '/documentation/reference/modules/systems'), '/documentation/reference/modules/systems/reference.md');
-  assert.equal(resolve('../../../../systems/studio/rules/systems.md', '/documentation/reference/modules/systems'), '/systems/studio/rules/systems');
+  assert.equal(resolve('../../../../modules/systems/README.md', '/systems/studio/context'), '/documentation/reference/modules/systems/README.md');
+  assert.equal(resolve('README.md', '/documentation/reference/modules/systems'), '/documentation/reference/modules/systems/README.md');
+  assert.equal(resolve('../../../../systems/studio/context/systems.md', '/documentation/reference/modules/systems'), '/systems/studio/context/systems');
   assert.equal(resolve('./main.tsx', '/prototypes/patrick/example'), '/prototypes/patrick/example/main.tsx');
   assert.equal(markdownPath('/documentation/guide/systemContent'), '/documentation/guide/systemContent');
   assert.equal(markdownPath('/modules/documentation/pages/prototypes.md'), '/documentation/guide/prototypes');
@@ -33,6 +33,13 @@ test('contracts render every section and extract only the opening title', () => 
 });
 
 test('repository Context links resolve to the Context reader', () => {
-  assert.equal(markdownPath('/systems/studio/context/personas.md'), '/systems/studio/context/personas');
-  assert.equal(markdownPath('/systems/studio/rules/documentation-standards'), '/systems/studio/rules/documentation-standards');
+  assert.equal(markdownPath('/platform/context/personas.md'), '/knowledge/platform.core/context/personas');
+  assert.equal(markdownPath('/systems/studio/context/documentation-standards'), '/systems/studio/context/documentation-standards');
+});
+
+test('saved links follow guidance and contract migrations', () => {
+  assert.equal(markdownPath('/systems/studio/rules/prototype-workflow'), '/knowledge/module.prototypes/skills/build-prototype/SKILL');
+  assert.equal(markdownPath('/systems/studio/context/principles.md'), '/knowledge/platform.core/context/principles');
+  assert.equal(markdownPath('/systems/studio/skills/setup-design-system/SKILL.md'), '/knowledge/module.systems/skills/setup-design-system/SKILL');
+  assert.equal(markdownPath('/documentation/reference/modules/systems/reference.md'), '/documentation/reference/modules/systems/README.md');
 });

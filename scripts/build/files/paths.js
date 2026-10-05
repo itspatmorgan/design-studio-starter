@@ -9,7 +9,8 @@ import { FILE_TYPES, fileTypeOf, systemContentTypeOf, isTextFile } from '../../l
 import { isHelper } from '../../../src/platform/core/fileTypes.ts';
 import { byOrder, parseOrder } from '../../../src/platform/core/order.ts';
 import { SYSTEM_CONTENT_KEY, SYSTEMS_KEY, isSystemContentSection, contentParts, rootOf } from '../../../src/platform/core/roots.ts';
-import { PROTOTYPE_SECTIONS } from '../../lib/modules.js';
+import { knowledgeOwners } from '../../lib/agent-skills.js';
+import { ENABLED_MODULES, PROTOTYPE_SECTIONS } from '../../lib/modules.js';
 import { SYSTEM_SOURCES } from '../../../src/modules/systems/node/systems.js';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -24,7 +25,7 @@ export const BATCH_MS = 50;
 export const MAX_SOURCE_BYTES = 750 * 1024; // the same limit as any committed file (check-asset-size.js)
 
 // A prototype's folder, or null if the contributor or prototype name isn't valid. The system content
-// sections (src/systems/studio/context, rules, skills) are found here too, by their fixed names, to read.
+// sections (context and skills under their knowledge owner) are found here too, by their fixed names, to read.
 export const safeScope = (dir) => {
   if (!dir || !canonicalDirectory(dir, ROOT)) return null;
   const meta = path.join(dir, 'meta.json');
@@ -48,7 +49,7 @@ export function prototypeDir(contributor, prototype) {
     const dir = path.join(section.dir, prototype);
     return safeScope(dir);
   }
-  if (contributor === SYSTEM_CONTENT_KEY) return (() => { const { system, section } = contentParts(prototype ?? ''); return Object.hasOwn(SYSTEM_SOURCES, system) && isSystemContentSection(section) ? safeScope(path.join(ROOT, 'src', rootOf(contributor, prototype))) : null; })();
+  if (contributor === SYSTEM_CONTENT_KEY) return (() => { const { system, section } = contentParts(prototype ?? ''); return knowledgeOwners(ENABLED_MODULES, SYSTEM_SOURCES).some(owner => owner.id === system) && isSystemContentSection(section) ? safeScope(path.join(ROOT, 'src', rootOf(contributor, prototype))) : null; })();
   if (!NAME.test(contributor ?? '') || !NAME.test(prototype ?? '')) return null;
   const dir = path.join(PROTOS, contributor, prototype);
   return safeScope(dir);

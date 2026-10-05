@@ -39,20 +39,20 @@ test('paths in a pack must be plain', () => {
   for (const bad of ['../x', '/x', 'a/../b', 'a//b', 'a\\b', './a', '', 'a/\0b']) assert.equal(plainPath(bad), false, bad);
 });
 
-const spec = { id: 'quote', section: { key: 'quote', folder: 'src/quote' }, instructions: [{ path: 'rules/quote.md', when: 'wants a quote' }, { path: 'skills/quote-tour/' }] };
+const spec = { id: 'quote', section: { key: 'quote', folder: 'src/quote' }, instructions: [{ path: 'context/quote.md', when: 'wants a quote' }, { path: 'skills/quote-tour/' }] };
 
 test('a module pack goes to its folder, with systemContent files and content sent where they belong', () => {
-  const plan = packPlan('module', 'quote', spec, ['module.ts', 'app.tsx', 'lib/index.ts', 'instructions/rules/quote.md', 'instructions/skills/quote-tour/SKILL.md', 'content/sample/meta.json']);
+  const plan = packPlan('module', 'quote', spec, ['module.ts', 'app.tsx', 'lib/index.ts', 'instructions/context/quote.md', 'instructions/skills/quote-tour/SKILL.md', 'content/sample/meta.json']);
   assert.deepEqual(plan.problems, []);
   assert.deepEqual(plan.moves.map((m) => m.to), [
     'src/modules/quote/module.ts', 'src/modules/quote/app.tsx', 'src/modules/quote/lib/index.ts',
-    'src/systems/studio/rules/quote.md', 'src/systems/studio/skills/quote-tour/SKILL.md', 'src/quote/sample/meta.json',
+    'src/modules/quote/context/quote.md', 'src/modules/quote/skills/quote-tour/SKILL.md', 'src/quote/sample/meta.json',
   ]);
 });
 
 test('systemContent files the module did not list, or listed but did not bring, are named', () => {
-  assert.match(packPlan('module', 'quote', spec, ['module.ts', 'instructions/rules/other.md']).problems.join('\n'), /instructions\/rules\/other\.md isn't listed/);
-  assert.match(packPlan('module', 'quote', spec, ['module.ts']).problems.join('\n'), /lists instructions\/rules\/quote\.md, which isn't in the pack/);
+  assert.match(packPlan('module', 'quote', spec, ['module.ts', 'instructions/context/other.md']).problems.join('\n'), /instructions\/context\/other\.md isn't listed/);
+  assert.match(packPlan('module', 'quote', spec, ['module.ts']).problems.join('\n'), /lists instructions\/context\/quote\.md, which isn't in the pack/);
 });
 
 test('content needs a section, and hidden files and dependencies stay behind', () => {
@@ -95,7 +95,7 @@ test('turning a module off and on edits the one list in studio.config.ts', () =>
 
 test('the AGENTS.md lines come from the modules that are on, and replace themselves', () => {
   const block = agentsBlock([spec, { id: 'plain' }]);
-  assert.match(block, /When the person wants a quote, read \[src\/systems\/studio\/rules\/quote\.md\]\(src\/systems\/studio\/rules\/quote\.md\)\./);
+  assert.match(block, /When the person wants a quote, read \[src\/modules\/quote\/context\/quote\.md\]\(src\/modules\/quote\/context\/quote\.md\)\./);
   assert.ok(!block.includes('quote-tour'), 'a systemContent entry with no "when" is not routed');
   const agents = '# A\n\nWhen the person asks for a canvas, read x.\nFind out who.\n';
   const once = applyAgentsBlock(agents, block);
@@ -116,14 +116,14 @@ export default {
   version: '0.1.0',
   optional: true,
   section: { key: 'quote', folder: 'src/quote', items: 'prototypes' },
-  instructions: [{ path: 'rules/quote.md', when: 'wants a quote' },],
+  instructions: [{ path: 'context/quote.md', when: 'wants a quote' },],
   dependencies: { 'left-pad': '^1.0.0' },
 } satisfies ModuleSpec;
 `);
   assert.deepEqual(r, { value: {
     id: 'quote', label: "Quote's card", version: '0.1.0', optional: true,
     section: { key: 'quote', folder: 'src/quote', items: 'prototypes' },
-    instructions: [{ path: 'rules/quote.md', when: 'wants a quote' }], dependencies: { 'left-pad': '^1.0.0' },
+    instructions: [{ path: 'context/quote.md', when: 'wants a quote' }], dependencies: { 'left-pad': '^1.0.0' },
   } });
 });
 

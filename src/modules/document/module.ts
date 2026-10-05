@@ -8,5 +8,5 @@ export default {
   version: '0.1.0',
   description: 'A .md file in a prototype opens as a written page.',
   optional: true,
-  instructions: [{ path: 'rules/documents.md', when: 'asks for a document (written context in a prototype)' }],
+  instructions: [{ path: 'skills/write-document/', when: 'asks for a document inside a prototype' }],
 } satisfies ModuleSpec;

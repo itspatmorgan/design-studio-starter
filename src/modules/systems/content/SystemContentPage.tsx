@@ -12,9 +12,8 @@ import { skillFolder } from './skillBundle';
 const Source = import.meta.env.DEV ? lazy(() => import('@/platform/app/source/ArtifactSource')) : null;
 const SkillSource = import.meta.env.DEV ? lazy(() => import('./SkillSource')) : null;
 const explanations: Record<string, string> = {
-  Context: 'Product knowledge, personas, principles, and research that help people and agents understand this system.',
-  Rules: 'Standing constraints for work using this system. System rules add product conventions while retaining platform boundaries.',
-  Skills: 'Procedures for tasks specific to this system. Each skill describes when to use it and how to perform the task.',
+  Context: 'Knowledge, principles, and standing requirements shared by people and agents.',
+  Skills: 'Procedures for tasks owned by this platform, module, or system. Each skill describes when to use it and how to perform the task.',
 };
 export default function SystemContentPage({ proto, slug }: { proto: Prototype; slug?: string }) {
   const item = slug ? findArtifact(proto, slug) : undefined;

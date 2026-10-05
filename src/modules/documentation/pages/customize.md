@@ -14,7 +14,7 @@ You own this studio and can change any part of it. Start with your prototypes, s
 | --- | --- | --- |
 | `src/prototypes/<contributor>/` | Your views, documents, diagrams, and canvases. | Maintain your work within the prototype contract. |
 | `studio.config.ts` | Studio identity, enabled modules, registered systems, and the default system. | Use supported choices and review configuration migrations. |
-| `src/systems/<id>/` | Your components, theme, context, rules, and skills. | Maintain your system and its dependencies. |
+| `src/systems/<id>/` | Your components, theme, context and skills. | Maintain your system and its dependencies. |
 | `src/modules/<id>/` | A capability such as a new artifact type or studio section. | Maintain your module against the supported extension contracts. |
 | `src/systems/studio/` | The supplied components and guidance used by Design Studio itself. | Reconcile local changes with Studio releases. |
 | `src/platform/` and `scripts/` | Application infrastructure, extension contracts, build tools, and commands. | Maintain local changes and verify them against upstream updates. |

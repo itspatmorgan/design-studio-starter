@@ -8,11 +8,11 @@ Every studio must live in an obvious, ordinary folder on the user's computer. Th
 
 ## Branch and current state
 
-Continue on `codex/chatgpt-plugin-experiment`. The implementation commit is `bf3ec45`. Read the repository's `AGENTS.md` before making changes, then read the [experiment report](README.md) for the technical contracts, installation commands, results, and release gates.
+Continue on `codex/chatgpt-plugin-experiment`. Read the repository's `AGENTS.md` before making changes, then read the [experiment report](README.md) for the technical contracts, installation commands, results, and release gates.
 
-The plugin package is `plugins/design-studio`; the private marketplace is `.agents/plugins/marketplace.json`. The current package is `0.1.0-experiment.7`. Local installation succeeded with Codex CLI 0.137.0 on the first host and 0.151.0 on the second. Both portable and compatibility manifests are present. The compatibility manifest is generated from the portable manifest.
+The plugin package is `plugins/design-studio`; the private marketplace is `.agents/plugins/marketplace.json`. The current package is `0.1.0-experiment.8`. Local installation succeeded with Codex CLI 0.137.0 on the first host and 0.151.0 on the second. Both portable and compatibility manifests are present. The compatibility manifest is generated from the portable manifest.
 
-The bootstrap downloads starter commit `d2d8fe02f1e3ec64d09d60448fbf8de5574ade23` from the public repository. It deliberately downloads the stable starter, not this experimental plugin branch. It creates a full local repository without a remote and preserves existing studios.
+The bootstrap revision must include the committed Context and Skills restructure. Inspect `REVISION` in the helper and ensure that commit is pushed to the public source before distributing experiment .8. It creates a full local repository without a remote and preserves existing studios.
 
 ## What does not transfer through Git
 
@@ -23,13 +23,19 @@ The old test studio was `~/Design Studios/Plugin Experiment`, served on loopback
 ## Verification already completed
 
 - Eight bootstrap tests passed, including preservation and linked-path refusal.
-- Both plugin skills passed the skill-creator validator.
-- The platform build passed with 190 tests and type checks. Vite reported its existing large-bundle warning.
+- All sixteen canonical and plugin skills passed the skill-creator validator.
+- The platform build passed with 196 tests and type checks. Vite reported its existing large-bundle warning.
 - The installed helper downloaded the public starter, prepared personal configuration, reopened it without changing settings, and launched the preview.
 - The studio home and Feedback Inbox rendered in the in-app browser.
 - Existing Corepack shadowed pnpm initially. The helper now uses `mise exec pnpm@12` explicitly; the corrected preparation used pnpm 12.9.1.
 
 The original host used helper and browser tests. On the second host, a fresh plugin chat completed setup and preview opening. The studio was moved to `~/Developer/My Design Studio`, and a documented folder link opened a new chat there. That chat read local rules, configuration, and Guide content. See the [experiment report](README.md) for current results.
+
+## Architecture now implemented
+
+Platform context and skills live in `src/platform/`; module guidance lives under its owning module; system guidance is product and design specific. There are two guidance categories: Context and Skills. Module technical contracts use `README.md`. The local app exposes platform/module browsing at `/knowledge/platform.core`, and compatibility redirects preserve saved links.
+
+`pnpm studio sync` emits managed Codex/Cursor project entries and Claude Code links from canonical sources. Module disable/remove operations refresh exposure. Adapter tests cover preservation and canonical resource resolution. The use-studio plugin entry point delegates operation to the workspace. Native registration and task activation still require live host checks.
 
 ## Next experiment
 
@@ -39,7 +45,7 @@ The original host used helper and browser tests. On the second host, a fresh plu
 4. Record clean-machine prerequisites and recovery behavior. Investigate public discovery and the separate team workflow after the local journey is proved.
 5. Test Claude Code and Cursor adapters while preserving the shared bootstrap and repository context.
 
-Native Codex UI automation was unavailable on the previous computer, so those UI results remain unverified. No public submission was made. The user has authorized committing and pushing this experimental branch, not merging or releasing it.
+Native Codex UI automation was unavailable on the previous computer, so those UI results remain unverified. No public submission was made. Commit locally under repository instructions. Push or publish only with current user authorization; this handoff does not supply it.
 
 ## Suggested continuation prompt
 

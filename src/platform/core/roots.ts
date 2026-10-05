@@ -3,7 +3,7 @@
 // This file has no imports, so Node scripts can load it directly.
 
 export const SYSTEM_CONTENT_KEY = 'system-content';
-export const systemRoot = (system: string) => `systems/${system}`;
+export const systemRoot = (system: string) => system === 'platform.core' ? 'platform' : system.startsWith('module.') ? `modules/${system.slice(7)}` : `systems/${system}`;
 export const contentId = (system: string, section: string) => `${system}:${section}`;
 export const contentParts = (id: string) => { const [system, section] = id.split(':'); return { system, section }; };
 export const contentSection = (id: string) => contentParts(id).section;
@@ -24,7 +24,6 @@ export const setSections = (keys: Iterable<string>) => { sectionKeys = new Set(k
 // each is checked by src/modules/systems/content/node/content-check.js.
 export const SYSTEM_CONTENT_SECTIONS = {
   context: { title: 'Context', description: 'Context for people and agents: principles, personas, and anything worth writing down once.' },
-  rules: { title: 'Rules', description: 'Standing constraints for agents. AGENTS.md routes to the applicable rules.' },
   skills: { title: 'Skills', description: 'Procedures your agent follows when you ask, one folder each, in the Agent Skills format.' },
 } as const;
 
@@ -41,14 +40,14 @@ export const isSectionKey = (key: string) => key === SYSTEM_CONTENT_KEY || key =
 // An item's address in the app, up to its id and without a base path: "/prototypes/patrick/hello-world"
 // for a prototype, "/examples/sample" for a section item.
 export const addressOf = (contributor: string, id: string) =>
-  contributor === SYSTEM_CONTENT_KEY ? `/systems/${contentParts(id).system}/${contentParts(id).section}` : isSectionKey(contributor) ? `/${contributor}/${id}` : `/${PROTOTYPES_KEY}/${contributor}/${id}`;
+  contributor === SYSTEM_CONTENT_KEY ? `${contentParts(id).system === 'platform.core' || contentParts(id).system.startsWith('module.') ? '/knowledge' : '/systems'}/${contentParts(id).system}/${contentParts(id).section}` : isSectionKey(contributor) ? `/${contributor}/${id}` : `/${PROTOTYPES_KEY}/${contributor}/${id}`;
 
 // Reads an item's address back: who or what holds it, its id, and the path after it. It also reads the
 // older form of a prototype's address, "/patrick/hello-world/…", so links saved before prototypes moved
 // under /prototypes still open. Null if there isn't an id.
 export function parseAddress(path: string): { contributor: string; id: string; rest: string[] } | null {
   const parts = path.split('/').filter(Boolean);
-  if (parts[0] === 'systems' && parts[1] && isSystemContentSection(parts[2])) return { contributor: SYSTEM_CONTENT_KEY, id: contentId(parts[1], parts[2]), rest: parts.slice(3) };
+  if ((parts[0] === 'systems' || parts[0] === 'knowledge') && parts[1] && isSystemContentSection(parts[2])) return { contributor: SYSTEM_CONTENT_KEY, id: contentId(parts[1], parts[2]), rest: parts.slice(3) };
   const body = parts[0] === PROTOTYPES_KEY ? parts.slice(1) : parts;
   return body.length >= 2 ? { contributor: body[0], id: body[1], rest: body.slice(2) } : null;
 }

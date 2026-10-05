@@ -99,6 +99,7 @@ export function prepareStudio(value) {
     receipt.prepared = true;
     fs.writeFileSync(path.join(destination, RECEIPT), JSON.stringify(receipt, null, 2) + '\n');
   }
+  run('mise', ['exec', 'pnpm@12', '--', 'pnpm', 'studio', 'sync'], studio.destination, true);
   return inspectStudio(value);
 }
 

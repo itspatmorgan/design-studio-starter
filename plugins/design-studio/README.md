@@ -8,7 +8,7 @@ The pilot targets macOS with a supported local code harness. It does not establi
 
 The default location is `~/Developer/My Design Studio`. The user can choose another visible folder. The plugin cache contains the setup tools; it does not contain the user's studio.
 
-[Create studio](skills/create-studio/SKILL.md) owns first-time setup. [Open studio](skills/open-studio/SKILL.md) owns reopening existing work. These procedures delegate contributor registration and product configuration to the downloaded repository's instructions.
+[Create studio](skills/create-studio/SKILL.md) owns first-time setup. [Open studio](skills/open-studio/SKILL.md) owns reopening existing work. These procedures delegate contributor registration and product configuration to the downloaded repository's instructions. [Use studio](skills/use-studio/SKILL.md) handles ongoing work in the identified workspace and follows its current context and skills.
 
 [bootstrap.mjs](scripts/bootstrap.mjs) downloads a pinned public starter revision and creates a local Git repository without a remote. No GitHub account is required. It uses the existing studio configuration command for personal setup. Repeating setup preserves existing files and settings. Uninstalling the plugin leaves the studio intact.
 
@@ -18,7 +18,7 @@ The receipt `design-studio.local.json` records setup state and is excluded local
 
 ## Packaging
 
-[plugin.json](plugin.json) is the canonical portable manifest. It supplies identity, prompts, light and dark icons, and the OpenAI onboarding skill. Run `node scripts/sync-manifest.mjs` from this directory after changing it. The generator writes the compatibility manifest in `.codex-plugin/plugin.json`.
+[plugin.json](plugin.json) is the canonical portable manifest. It supplies identity, prompts, light and dark icons, and OpenAI create, open, and use skills. Run `node scripts/sync-manifest.mjs` from this directory after changing it. The generator writes the compatibility manifest in `.codex-plugin/plugin.json`.
 
 The repository marketplace lives at [marketplace.json](../../.agents/plugins/marketplace.json). Codex CLI 0.137.0 required the compatibility manifest during local installation. A portable root manifest alone failed in this test.
 
@@ -41,10 +41,13 @@ They are test instructions for maintainers. The intended designer experience use
 | Setup | Dependencies installed and personal studio configuration applied. |
 | Preview | Local preview opened at port 5183; home and Feedback Inbox rendered. |
 | Repeat setup | Existing studio name and configuration preserved. |
-| Automated checks | Eight bootstrap tests, two skill validators, and platform build checks. |
+| Automated checks | Eight bootstrap tests, sixteen canonical and plugin skill validators, and platform build checks. The restructure passes 196 platform tests and type checks. |
 | Fresh conversation | Second-host fresh chat selected create-studio, created and configured the studio, and opened its preview. The person confirmed setup worked. |
 | Native plugin UI | Person supplied screenshots of both native lists. Separate composer and listing assets are installed; final optical balance still needs visual confirmation. |
 | Local workspace handoff | On October 5, 2026, the person opened the documented folder link. The new chat ran in `~/Developer/My Design Studio` and read local rules, configuration, and Guide content before answering. Persistent sidebar registration remains unverified. |
+| Portable project skills | Canonical platform and enabled-module skills generate `.agents/skills` entries for Codex and Cursor and `.claude/skills` links for Claude Code. Automated tests cover canonical references, idempotence, collisions, preservation, and capability removal. Native Claude Code and Cursor activation remain unverified. |
+| Knowledge browser | Platform and module Context and Skills render in the local app. A saved workflow link redirected to its new owner; source editing opened the canonical module skill. |
+| Installer revision | Experiment .8 must pin the committed restructure before distribution. The pinned revision must be available on the public source remote before a fresh GitHub install can work. Existing studios follow their own current instructions and are not migrated by reopening. |
 | Clean computer | Missing-tool installation, interrupted downloads, and permission prompts still need end-to-end testing. |
 | Public discoverability | Submission, eligibility, review, and listing are separate release work. No public package was submitted. |
 | Team use | GitHub publishing, joining a team, authentication, and concurrent work remain outside this pilot. Existing repository contributor procedures provide the starting point. |
@@ -67,3 +70,9 @@ mise exec pnpm@12 -- pnpm build
 The bootstrap tests use local Git fixtures and cover ownership, preservation, path validation, failed fetches, receipts, and interrupted setup. The platform build covers existing studio checks. These checks do not prove host UI behavior or public distribution.
 
 Official reference: [Codex plugins](https://developers.openai.com/codex/plugins/). Use current host documentation when choosing a public distribution route; this local marketplace is not evidence of ChatGPT listing support.
+
+## Guidance ownership in experiment .8
+
+The platform and each enabled module own their context and skills beside implementation. Systems own product and design context and specialized skills. Technical module contracts use `README.md`; procedures link to them. See [agent context routing](../../src/platform/core/agent-context.md) for native adapter ownership and compatibility routes.
+
+Preparation and development startup synchronize native project skills. Modified or unrelated adapters are preserved with a diagnostic. The plugin contains only host installation, reopening, and workspace-use entry points, so it does not carry a stale copy of every operating procedure.

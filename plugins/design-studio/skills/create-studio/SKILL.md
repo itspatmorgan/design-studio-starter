@@ -20,6 +20,6 @@ Invoke the helper as `node <installed-plugin>/scripts/bootstrap.mjs <command> ..
 
 ## Finish
 
-Report the full folder path, verified preview URL, and the workspace handoff. Describe an unclicked link as ready to open, not as completed attachment. All files belong to the person, can open in other editors, and remain if the plugin is uninstalled. Exploration is ready when the app works; contributor registration is required before creating their own prototype. Configure product context and a custom kit later through the repository's initialize-studio skill.
+Report the full folder path, verified preview URL, and the workspace handoff. Describe an unclicked link as ready to open, not as completed attachment. All files belong to the person, can open in other editors, and remain if the plugin is uninstalled. Exploration is ready when the app works; contributor registration is required before creating their own prototype. Configure product context and a custom kit later through the repository's configure-studio skill.
 
-For prototype work, follow the selected repository's current instructions, resolve the contributor and assigned system, and use its existing commands. GitHub sharing and publishing are separate requests.
+For continued work, use [use-studio](../use-studio/SKILL.md). For prototype work, follow the selected repository's current instructions, resolve the contributor and assigned system, and use its existing commands. GitHub sharing and publishing are separate requests.

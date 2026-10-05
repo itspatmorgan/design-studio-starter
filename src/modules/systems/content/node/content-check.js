@@ -1,6 +1,5 @@
 // The knowledge folders in a system, which is fixed where the content is open-ended:
 //   context/ Markdown pages, in folders if you like
-//   rules/   Markdown pages (AGENTS.md points to them), in folders if you like
 //   skills/  one folder per skill, each with a SKILL.md in the Agent Skills format, and any files
 //            and folders you want inside it
 // The sections are listed in src/platform/core/roots.ts. Returns the problems, each a sentence that says
@@ -30,7 +29,7 @@ export function systemContentProblems(root, { scoped = false } = {}) {
     const where = e.isDirectory() ? `${here(e.name)}/` : here(e.name);
     problems.push(`${where} isn't part of the system content structure. Put it in ${sections.map((s) => `${s}/`).join(', ').replace(/, ([^,]*)$/, ' or $1')}.`);
   }
-  for (const id of ['context', 'rules']) {
+  for (const id of ['context']) {
     const dir = path.join(root, id);
     if (!fs.existsSync(dir)) continue;
     for (const file of filesUnder(dir)) {
