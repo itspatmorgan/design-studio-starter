@@ -36,20 +36,22 @@ They are test instructions for maintainers. The intended designer experience use
 
 | Area | Result |
 | --- | --- |
-| Private local marketplace | Plugin installed and enabled with Codex CLI 0.137.0. |
+| Private local marketplace | Plugin installed and enabled with Codex CLI 0.137.0 on the first host and 0.151.0 on the second. |
 | Visible owned source | Public pinned source downloaded to `~/Design Studios/Plugin Experiment`; complete files and local Git present, no remote. |
 | Setup | Dependencies installed and personal studio configuration applied. |
 | Preview | Local preview opened at port 5183; home and Feedback Inbox rendered. |
 | Repeat setup | Existing studio name and configuration preserved. |
 | Automated checks | Eight bootstrap tests, two skill validators, and platform build checks. |
-| Fresh conversation | Skill selection and onboarding still require testing after host refresh. Helpers were exercised directly, not by a fresh agent conversation. |
-| Native plugin UI | Logo, placement, and onboarding presentation remain unverified. Native Codex UI automation was unavailable. |
-| Local harness attachment | No supported project-registration API was available in this test. A browser preview does not prove project attachment. |
+| Fresh conversation | Second-host fresh chat selected create-studio, created and configured the studio, and opened its preview. The person confirmed setup worked. |
+| Native plugin UI | Person supplied screenshots of both native lists. Separate composer and listing assets are installed; final optical balance still needs visual confirmation. |
+| Local workspace handoff | On October 5, 2026, the person opened the documented folder link. The new chat ran in `~/Developer/My Design Studio` and read local rules, configuration, and Guide content before answering. Persistent sidebar registration remains unverified. |
 | Clean computer | Missing-tool installation, interrupted downloads, and permission prompts still need end-to-end testing. |
 | Public discoverability | Submission, eligibility, review, and listing are separate release work. No public package was submitted. |
 | Team use | GitHub publishing, joining a team, authentication, and concurrent work remain outside this pilot. Existing repository contributor procedures provide the starting point. |
 
 Corepack on this computer initially shadowed mise's selected pnpm version. The launcher now requests `pnpm@12` explicitly through mise. Windows and Linux behavior is unverified.
+
+The second-host studio was moved from `~/Design Studios/My Design Studio` to `~/Developer/My Design Studio`. Its directory identity, Git history, settings, contributor registration, and receipt were preserved; its preview restarted successfully. Create and open skills now use the documented [host handoff](skills/create-studio/references/host-handoff.md). The link was tested independently; the revised setup-to-handoff sequence still needs a fresh-chat test.
 
 Before release, prove the complete designer journey in the actual target ChatGPT host: discover, install, invoke onboarding, obtain a visible folder, attach that folder as the working project, and open the preview. Then test reopening, restart, removal, updates that preserve user edits, failure recovery, and a separate team workflow.
 
