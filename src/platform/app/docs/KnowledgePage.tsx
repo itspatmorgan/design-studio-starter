@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from '@tanstack/react-router';
 import { useManifest } from '@/platform/app/data/useManifest';
 import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
 import { artifactLabel, findArtifact } from '@/platform/app/data/manifest';
-import { SectionNav, NavHeader, NavTitle, NavList } from '@/platform/app/shell/nav';
+import { SectionNav, NavHeader, NavList } from '@/platform/app/shell/nav';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/systems/studio/components/select';
 import FileTree from '@/modules/prototypes/viewer/FileTree';
 import SystemContentPage from '@/modules/systems/content/SystemContentPage';
@@ -25,16 +25,17 @@ export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
     <SectionNav label="Documentation">
       <DocumentationHeader reference />
       <NavHeader>
-        <NavTitle>Owner</NavTitle>
-        <Select items={owners.map(o => ({ value: o.id, label: o.label }))} value={id} onValueChange={value => { if (value) void navigate({ to: `/documentation/context/${value}` as never }); }}>
-          <SelectTrigger aria-label="Context owner"><SelectValue /></SelectTrigger>
-          <SelectContent>{owners.map(o => <SelectItem key={o.id} value={o.id}>{o.label} · {o.kind}</SelectItem>)}</SelectContent>
-        </Select>
+        <div className="px-1">
+          <Select items={owners.map(o => ({ value: o.id, label: o.label }))} value={id} onValueChange={value => { if (value) void navigate({ to: `/documentation/context/${value}` as never }); }}>
+            <SelectTrigger aria-label="Context and skills" className="w-full min-w-0"><SelectValue className="min-w-0 truncate" /></SelectTrigger>
+            <SelectContent align="start">{owners.map(o => <SelectItem key={o.id} value={o.id}>{o.label}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
       </NavHeader>
       <NavList>
         {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source === '/' + owner.root.slice(4) + '/README.md').map(r => <DocumentationNavItem key={r.source} href={`/documentation/context/${id}`} path={'src' + r.source} label="Overview" />)}
         {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source.startsWith('/' + owner.root.slice(4) + '/') && !r.source.endsWith('/README.md')).map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label={r.title} />)}
-        {sections.map(proto => <FileTree key={proto.id} proto={proto} current={page && slug ? findArtifact(proto, slug) : undefined} embedded branch={{ label: proto.title, path: `${owner.root}/${proto.title.toLowerCase()}/`, active: selected?.id === proto.id }} />)}
+        {sections.map(proto => <FileTree key={proto.id} proto={proto} current={page && slug ? findArtifact(proto, slug) : undefined} embedded branch={{ label: proto.title, path: `${owner.root}/${proto.title.toLowerCase()}/`, active: selected?.id === proto.id, defaultExpanded: true }} />)}
         {owner.kind === 'system' && <Link to={`/systems/${id}` as never} className="block px-3 py-2 text-sm text-muted-foreground">Components and theme</Link>}
       </NavList>
     </SectionNav>

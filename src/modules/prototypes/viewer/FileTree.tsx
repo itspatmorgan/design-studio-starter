@@ -174,14 +174,14 @@ type TreeNavigation = {
   folderCommand: { version: number; expanded: boolean };
   onFoldersExpanded: (open: boolean) => void;
 };
-type FileTreeProps = { proto: Prototype; current: Artifact | undefined; embedded?: boolean; contentIcon?: ReactNode; branch?: { label: string; path: string; active: boolean }; navigation?: TreeNavigation };
+type FileTreeProps = { proto: Prototype; current: Artifact | undefined; embedded?: boolean; contentIcon?: ReactNode; branch?: { label: string; path: string; active: boolean; defaultExpanded?: boolean }; navigation?: TreeNavigation };
 
 const systemFolderState = new Map<string, { closed: Set<string>; commandVersion: number }>();
 
 export default function FileTree({ proto, current, embedded = false, contentIcon, branch, navigation }: FileTreeProps) {
   const { files, reload } = useFileTree(proto);
   const treeScope = proto.contributorKey + ":" + proto.id;
-  const [expanded, setExpanded] = useState(branch?.active ?? true);
+  const [expanded, setExpanded] = useState(branch?.defaultExpanded ?? branch?.active ?? true);
   useEffect(() => { if (branch?.active) setExpanded(true); }, [branch?.active]);
   const branchExpanded = navigation?.expanded ?? expanded;
   const changeExpanded = navigation?.onExpandedChange ?? setExpanded;
