@@ -30,7 +30,7 @@ export function mermaidTheme(dark: boolean) {
   // Pale category surfaces retain dark/light text contrast while distinguishing groups.
   const tint = (color: string) => '#' + [1, 3, 5].map((offset) => Math.round(parseInt(n.background.slice(offset, offset + 2), 16) * 0.82 + parseInt(color.slice(offset, offset + 2), 16) * 0.18).toString(16).padStart(2, '0')).join('');
   return {
-    darkMode: dark, background: n.background, fontFamily: 'Inter, sans-serif', fontSize: '14px',
+    darkMode: dark, background: n.background, fontFamily: getComputedStyle(document.documentElement).getPropertyValue('--font-sans').trim(), fontSize: '14px',
     primaryColor: n.muted, secondaryColor: n.muted, tertiaryColor: n.background,
     primaryTextColor: n.text, secondaryTextColor: n.text, tertiaryTextColor: n.text,
     primaryBorderColor: n.border, secondaryBorderColor: n.border, tertiaryBorderColor: n.border,

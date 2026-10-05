@@ -35,7 +35,7 @@ The starter uses [Tailwind CSS](https://tailwindcss.com) and [shadcn/ui](https:/
 
 Starter components use Base UI's `render` prop for composition. Replacement design systems can use different component APIs.
 
-[HugeIcons](https://hugeicons.com) supplies platform icons. [Lucide](https://lucide.dev) supplies starter product icons. The platform uses [Inter](https://rsms.me/inter/).
+[HugeIcons](https://hugeicons.com) supplies platform icons. [Lucide](https://lucide.dev) supplies starter product icons. The platform uses [Geist](https://vercel.com/font).
 
 ## Documents and canvases
 

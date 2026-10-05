@@ -7,13 +7,14 @@ let pending: Promise<unknown> = Promise.resolve();
 function render(source: string, id: string, dark: boolean) {
   const job = pending.catch(() => undefined).then(async () => {
     const { default: mermaid } = await import('mermaid');
+    const themeVariables = mermaidTheme(dark);
     mermaid.initialize({
       startOnLoad: false,
       securityLevel: 'strict',
       theme: 'base',
       look: 'classic',
-      themeVariables: mermaidTheme(dark),
-      fontFamily: 'Inter, sans-serif',
+      themeVariables,
+      fontFamily: themeVariables.fontFamily,
       suppressErrorRendering: true,
       secure: ['secure', 'securityLevel', 'startOnLoad', 'maxTextSize', 'maxEdges', 'suppressErrorRendering', 'theme', 'themeVariables', 'fontFamily'],
     });

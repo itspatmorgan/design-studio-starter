@@ -36,14 +36,14 @@
 }
 
 /*
- * The app's theme for Excalidraw's UI: its accent, Inter, and every control as a card-colored
+ * The app's theme for Excalidraw's UI: its accent, typography, and every control as a card-colored
  * island with the app's border and a light shadow, all 40px tall. Tokens come from the app
  * (--primary, --card, --border, --radius).
  */
 .canvas .excalidraw,
 /* Dialogs (Help, …) portal to <body>, outside the canvas wrapper. */
 .excalidraw.excalidraw-modal-container {
-  --ui-font: 'Inter Variable', Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  --ui-font: var(--font-sans);
 
   --color-primary: var(--primary);
   --color-primary-darker: color-mix(in oklab, var(--primary) 85%, black);
@@ -168,7 +168,7 @@
   border-radius: calc(var(--radius, 0.5rem) - 2px);
   background: var(--foreground);
   color: var(--background);
-  font: 500 12px/1.4 'Inter Variable', system-ui, sans-serif;
+  font: 500 12px/1.4 var(--font-sans);
   white-space: nowrap;
   pointer-events: none;
   box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
@@ -179,7 +179,7 @@
   padding: 0 0.3rem;
   border-radius: 4px;
   background: color-mix(in oklab, var(--background) 20%, transparent);
-  font: 600 11px/1.5 'Inter Variable', system-ui, sans-serif;
+  font: 600 11px/1.5 var(--font-sans);
   text-align: center;
 }
 
@@ -225,7 +225,7 @@
 
 .canvas .excalidraw .zoom-actions .reset-zoom-button {
   padding: 0 0.5rem;
-  font: 500 13px/1 'Inter Variable', system-ui, sans-serif;
+  font: 500 13px/1 var(--font-sans);
 }
 
 /* Views need select, move, and Open only: hide Excalidraw's link popover
@@ -257,7 +257,7 @@
   border-radius: 0.75rem;
   background: var(--muted);
   color: var(--muted-foreground);
-  font: 600 72px/1.2 'Inter Variable', system-ui, sans-serif;
+  font: 600 72px/1.2 var(--font-sans);
   text-align: center;
   overflow: hidden;
 }

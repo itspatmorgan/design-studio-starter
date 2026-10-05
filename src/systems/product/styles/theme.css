@@ -1,7 +1,7 @@
 @import "@fontsource-variable/space-grotesk";
 
 /* Product look, scoped to prototypes: warm stone neutrals with an emerald accent, square corners, and
-   Space Grotesk, so it can't be mistaken for the app UI (the platform is neutral gray with Inter and
+   Space Grotesk, so it can't be mistaken for the app UI (the platform is neutral gray with Geist and
    rounded corners). In shadcn/ui's theme terms: base color stone, accent emerald, radius none.
    Swap in your product's colors, radius, and type here. The local dark block follows the resolved system mode. */
 .product-theme {
