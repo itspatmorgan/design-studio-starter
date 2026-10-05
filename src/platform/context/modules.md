@@ -59,7 +59,7 @@ The core page key `settings` is reserved. Modules and contributors cannot use it
 
 Use the TypeScript declaration for exact fields. See the [file-type contract](file-types.md) for file capabilities.
 
-Design systems are content in `src/systems/`, not platform modules. Their [contract](../../../modules/systems/README.md) defines system structure.
+Design systems are content in `src/systems/`, not platform modules. Their [contract](../../modules/systems/README.md) defines system structure.
 
 ## Configuration and commands
 
@@ -79,7 +79,7 @@ pnpm check
 
 Add, remove, and create commands preview changes. Applying them requires `--yes`. Use CLI help for source formats and optional flags.
 
-Studio commands register and unregister capabilities, manage config module flags, `studio.lock.json`, and module-owned routing in `AGENTS.md`. The [manage-modules skill](../../skills/manage-modules/SKILL.md) governs agent execution.
+Studio commands register and unregister capabilities, manage config module flags, `studio.lock.json`, and module-owned routing in `AGENTS.md`. The [manage-modules skill](../skills/manage-modules/SKILL.md) governs agent execution.
 
 Disabling retains files. Removal deletes the module, including its context and skills, and refreshes project exposure. External content remains unless removal includes `--content`.
 

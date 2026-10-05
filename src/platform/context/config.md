@@ -46,4 +46,4 @@ Keep shared choices in `studio.config.ts`. Contributor profiles live in `contrib
 
 The agent can run `pnpm studio status --json` to inspect configuration and setup state. This report does not replace a build and review of a working prototype.
 
-For capabilities and removal behavior, see [Module contract](/documentation/reference/platform/context/technical/modules.md).
+For capabilities and removal behavior, see [Module contract](/documentation/reference/platform/context/modules.md).

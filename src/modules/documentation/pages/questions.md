@@ -12,7 +12,7 @@ You can describe changes to your coding agent and review them in Studio. The sou
 
 ## What is it built with?
 
-The platform uses React, TypeScript, Vite, TanStack Router, and Tailwind CSS. The starter components use shadcn/ui and Base UI. Your product system can use another component library. See [Tech stack](/documentation/reference/platform/context/technical/stack.md).
+The platform uses React, TypeScript, Vite, TanStack Router, and Tailwind CSS. The starter components use shadcn/ui and Base UI. Your product system can use another component library. See [Tech stack](/documentation/reference/platform/context/stack.md).
 
 ## Can I use our design system?
 
@@ -20,7 +20,7 @@ Yes. Ask your agent to bring in your components, tokens, and assets. Systems can
 
 ## Where do fonts, logos, and images go?
 
-Keep prototype-specific assets with that prototype, system assets with their system, and shared studio assets in the shared assets location. Your agent can follow the [Assets and fonts](/documentation/reference/platform/context/technical/assets.md).
+Keep prototype-specific assets with that prototype, system assets with their system, and shared studio assets in the shared assets location. Your agent can follow the [Assets and fonts](/documentation/reference/platform/context/assets.md).
 
 Asset Guard checks asset sizes before commits and in repository checks to catch large files before they slow down the codebase.
 
@@ -30,4 +30,4 @@ Yes. Admins can change the studio name, defaults, and enabled optional modules i
 
 ## What if something breaks?
 
-Copy the error message and give it to your agent, along with what you were trying to do. It can inspect the files and run the platform checks. [Checks and fixes](/documentation/reference/platform/context/technical/checks.md) provides the technical details.
+Copy the error message and give it to your agent, along with what you were trying to do. It can inspect the files and run the platform checks. [Checks and fixes](/documentation/reference/platform/context/checks.md) provides the technical details.

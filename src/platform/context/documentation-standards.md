@@ -18,7 +18,7 @@ Documentation is part of the platform. Keep it accurate as behavior changes. Thi
 
 Documentation has two reading choices: Guide provides a curated introduction, and Context and Skills displays original platform and module files. Systems exposes system context and skills alongside its toolkit. Human chapters live only in `src/modules/documentation/pages/`. Platform, module, and system context preserve knowledge under their respective owners. Context and Skills access remains available when the optional Documentation module is disabled.
 
-The [Responsibilities](technical/contracts-and-instructions.md) foundation defines the system of record: context includes technical contracts, knowledge, and standing requirements; skills own procedures.
+The [Responsibilities](contracts-and-instructions.md) foundation defines the system of record: context includes technical contracts, knowledge, and standing requirements; skills own procedures.
 
 Give each contract one authoritative location. Other documents can summarize its purpose, then link to it. Do not copy requirements, schemas, or procedures into multiple locations.
 
@@ -28,7 +28,7 @@ Code defines implemented behavior. Documentation explains that behavior and the 
 
 Keep technical contracts with their module. Associate its Guide chapter through `module: <id>` so disabling or removal hides the human chapter without relocating its source. Keep shared standards in platform context.
 
-File-backed navigation follows the [shared source workflow](technical/source.md). Expose source editing through navigation and the common keyboard toggle. Keep source-file mappings explicit for generated pages or pages backed by several files.
+File-backed navigation follows the [shared source workflow](source.md). Expose source editing through navigation and the common keyboard toggle. Keep source-file mappings explicit for generated pages or pages backed by several files.
 
 ## Write clearly
 

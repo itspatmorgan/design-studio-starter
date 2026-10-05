@@ -8,13 +8,13 @@ Design Studio maintains file-based context and skills. The host discovers skill 
 
 ## Find the owner
 
-Every owner starts with its README, followed by Context and Skills. The [platform README](../../README.md) indexes shared knowledge. Its detailed technical documents live in `context/technical/`, while `core/` and `app/` contain implementation. Modules and systems keep their own README, context, and relevant skills. A skill is optional when no distinct task procedure is needed.
+Every owner starts with its README, followed by Context and Skills. The [platform README](../README.md) indexes shared knowledge. Its knowledge and technical requirements live together in `context/`, while `core/` and `app/` contain implementation. Modules and systems keep their own README, context, and relevant skills. A skill is optional when no distinct task procedure is needed.
 
-The Documentation surface offers Guide and Context and Skills. The latter reads original platform and module files at `/documentation/context/<owner>`. Each system exposes its own Context and Skills beside Theme and Components at `/systems/<id>/`. The scopes use shared readers and file operations without copying source files. Legacy Reference, Knowledge, and system-content URLs redirect while preserving source mode and anchors.
+The Documentation surface offers Guide and Context and Skills. The latter shows one tree grouped by Platform and Modules and reads original files at `/documentation/context/<owner>`. Each system exposes its own Context and Skills beside Theme and Components at `/systems/<id>/`. The scopes use shared readers and file operations without copying source files. Legacy Reference, Knowledge, and system-content URLs redirect while preserving source mode and anchors.
 
 ## Entry and platform baseline
 
-Root `AGENTS.md` routes to [working context](../working-in-studio.md). Essential requirements cover preservation, contributor scope, assignment, enabled capabilities, and verification. Full [Principles](../principles.md) and [Personas](../personas.md) apply to platform product and architecture decisions. Studio interface work follows its system entry point and writing context.
+Root `AGENTS.md` routes to [working context](working-in-studio.md). Essential requirements cover preservation, contributor scope, assignment, enabled capabilities, and verification. Full [Principles](principles.md) and [Personas](personas.md) apply to platform product and architecture decisions. Studio interface work follows its system entry point and writing context.
 
 [Responsibilities](contracts-and-instructions.md) defines canonical ownership. Enabled modules declare optional task routes through module-relative `instructions: [{ path, when }]`. `pnpm studio sync` refreshes the root `studio:modules` block and native project skill exposure. Adding, removing, and configuring capabilities invokes synchronization; development startup also synchronizes. A build validates sources without rewriting adapters.
 

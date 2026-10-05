@@ -10,9 +10,9 @@ Ask for the result you want. Your agent uses skills for the task and context to 
 
 ## Find guidance
 
-Every owner has a README entry point, context for knowledge and requirements, and skills for tasks. Documentation’s Context & Skills browser displays platform and module files. Select Platform or a module; start with Overview, then read relevant context or skills. For product and design guidance, open Systems and select the relevant system. Its Context and Skills appear beside Theme and Components.
+Every owner has a README entry point, context for knowledge and requirements, and skills for tasks. Documentation’s Context & Skills browser displays platform and module files. The file tree shows Platform and all enabled modules together. Start with a branch’s Overview, then read relevant context or skills. For product and design guidance, open Systems and select the relevant system. Its Context and Skills appear beside Theme and Components.
 
-The platform’s detailed configuration, file-format, and runtime requirements are technical context. They appear under Context → Technical. They are part of the same knowledge model as principles and personas.
+The platform’s detailed configuration, file-format, and runtime requirements are technical context. They appear alongside principles, personas, and working guidance in Platform → Context. They are part of the same knowledge model as principles and personas.
 
 ```mermaid
 flowchart TD
@@ -56,4 +56,4 @@ Ask your agent to refresh skill exposure after adding skills or changing availab
 
 Ask your agent which system applies and which instructions it used. Check the resulting work as well as that explanation. Automated checks find broken links and invalid structures; they do not prove correct agent decisions.
 
-See [Agent context routing](/documentation/context/platform.core/context/technical/agent-context) for technical details.
+See [Agent context routing](/documentation/context/platform.core/context/agent-context) for technical details.

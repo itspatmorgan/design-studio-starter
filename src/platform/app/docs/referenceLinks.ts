@@ -25,6 +25,8 @@ const ownerPath = (id: string) => (id === 'platform.core' || id.startsWith('modu
 const guidancePath = (target: string) => { const [id, ...rest] = target.split('/'); return ownerPath(id) + (rest.length ? '/' + rest.join('/') : ''); };
 
 export function migratedGuidancePath(path: string): string | null {
+  if (path.startsWith('/documentation/context/platform.core/context/technical/')) return path.replace('/context/technical/', '/context/');
+  if (path.startsWith('/platform/context/technical/')) return ownerPath('platform.core') + '/context/' + path.slice('/platform/context/technical/'.length).replace(/\.md$/, '');
   const rule = path.match(/^\/systems\/studio\/rules\/([^/]+?)(?:\.md)?$/);
   if (rule && movedRules[rule[1]]) {
     const target = movedRules[rule[1]];
@@ -55,8 +57,8 @@ export function markdownPath(path: string): string {
   const chapter = path.match(/^\/modules\/documentation\/pages\/([a-z0-9-]+)\.md$/);
   if (chapter) return '/documentation/guide' + (chapter[1] === 'index' ? '' : '/' + chapter[1]);
   const oldCore = path.match(/^\/platform\/core\/([^/]+)\.md$/);
-  if (oldCore && coreDocuments.has(oldCore[1])) return ownerPath('platform.core') + '/context/technical/' + (oldCore[1] === 'fileTypes' ? 'file-types' : oldCore[1]);
-  if (path === '/modules/README.md') return ownerPath('platform.core') + '/context/technical/modules';
+  if (oldCore && coreDocuments.has(oldCore[1])) return ownerPath('platform.core') + '/context/' + (oldCore[1] === 'fileTypes' ? 'file-types' : oldCore[1]);
+  if (path === '/modules/README.md') return ownerPath('platform.core') + '/context/modules';
   const readme = path.match(/^\/(platform|modules\/([^/]+)|systems\/([^/]+))\/README\.md$/);
   if (readme) return ownerPath(readme[1] === 'platform' ? 'platform.core' : readme[2] ? 'module.' + readme[2] : readme[3]);
   const knowledge = path.match(/^\/(platform|modules\/([^/]+)|systems\/([^/]+))\/(context|skills)(\/.*)?$/);

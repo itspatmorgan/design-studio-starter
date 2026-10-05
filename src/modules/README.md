@@ -11,4 +11,4 @@ Modules provide capabilities. Each module's README explains its purpose and tech
 - [Views](view/README.md)
 - [Text files](text/README.md)
 
-Read the platform's [module contract](../platform/context/technical/modules.md) before changing packaging, registration, dependencies, or lifecycle behavior. Enabled declarations determine availability; files alone do not enable a capability.
+Read the platform's [module contract](../platform/context/modules.md) before changing packaging, registration, dependencies, or lifecycle behavior. Enabled declarations determine availability; files alone do not enable a capability.

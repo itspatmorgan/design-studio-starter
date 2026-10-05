@@ -166,8 +166,8 @@ test('platform reference discovery preserves ownership and excludes unavailable 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-references-'));
   const write = (file: string, text: string) => { fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true }); fs.writeFileSync(path.join(root, file), text); };
   try {
-    write('src/platform/context/technical/file-types.md', '# File-type contract');
-    write('src/platform/context/technical/modules.md', '# Module contract');
+    write('src/platform/context/file-types.md', '# File-type contract');
+    write('src/platform/context/modules.md', '# Module contract');
     write('src/modules/example/README.md', '---\ntitle: "Example capability"\n---\n# Example');
     write('src/modules/example/reference.md', '# Example contract');
     write('src/modules/example/internal/notes.md', '# Internal notes');

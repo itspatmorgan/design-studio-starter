@@ -17,7 +17,7 @@ Use supplied decisions. Do not present the placeholder's styles as the person's 
 
 1. Adapt Product in place if the person chooses its components. Otherwise, preview `pnpm studio create-system` and apply authorized creation.
 2. Import components or connect the package. Avoid unnecessary copies of package code.
-3. Adapt aliases, dependencies, themes, and portals to the system contract. Place fonts, logos, and imagery using the [static asset convention](../../../../platform/context/technical/assets.md).
+3. Adapt aliases, dependencies, themes, and portals to the system contract. Place fonts, logos, and imagery using the [static asset convention](../../../../platform/context/assets.md).
 4. Follow [document-component](../document-component/SKILL.md) for component pages and examples.
 5. Create or reuse one representative prototype in the person's folder. Verify the kit there and on its Systems pages.
 

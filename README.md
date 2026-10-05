@@ -24,8 +24,8 @@ The Guide at `/documentation/guide` introduces setup, the app surfaces, and coll
 
 - [Introduction](src/modules/documentation/pages/index.md) — how the studio works.
 - [Collaborate](src/modules/documentation/pages/collaborate.md) — ownership and sharing work.
-- [Modules](src/platform/context/technical/modules.md) — customize and extend your studio.
-- [Tech stack](src/platform/context/technical/stack.md) — what's under the hood.
+- [Modules](src/platform/context/modules.md) — customize and extend your studio.
+- [Tech stack](src/platform/context/stack.md) — what's under the hood.
 
 ## Project status
 

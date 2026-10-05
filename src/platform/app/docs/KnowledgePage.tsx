@@ -1,10 +1,11 @@
-import type { ReactNode } from 'react';
-import { Link, useNavigate, useParams } from '@tanstack/react-router';
+import { useEffect, useState, type ReactNode } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/systems/studio/components/collapsible';
+import { Link, useParams } from '@tanstack/react-router';
 import { useManifest } from '@/platform/app/data/useManifest';
 import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
 import { artifactLabel, findArtifact } from '@/platform/app/data/manifest';
-import { SectionNav, NavHeader, NavList } from '@/platform/app/shell/nav';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/systems/studio/components/select';
+import { SectionNav, NavList } from '@/platform/app/shell/nav';
 import FileTree from '@/modules/prototypes/viewer/FileTree';
 import SystemContentPage from '@/modules/systems/content/SystemContentPage';
 import DocumentationHeader from './DocumentationHeader';
@@ -12,35 +13,36 @@ import DocumentationNavItem from './DocumentationNavItem';
 import { markdownPath } from './referenceLinks';
 import { NotFound } from '@/platform/app/shell/App';
 
+function GuidanceBranch({ label, path, active = false, children }: { label: string; path: string; active?: boolean; children: ReactNode }) {
+  const [open, setOpen] = useState(true);
+  useEffect(() => { if (active) setOpen(true); }, [active]);
+  return <Collapsible open={open} onOpenChange={setOpen}>
+    <CollapsibleTrigger title={path} className="mx-1 flex h-7 w-[calc(100%-8px)] items-center gap-1.5 rounded-md px-2 text-left text-[12px] font-medium hover:bg-sidebar-foreground/5"><ChevronDown aria-hidden="true" className={'size-3.5 shrink-0 text-muted-foreground transition-transform ' + (open ? '' : '-rotate-90')} /><span className="truncate">{label}</span></CollapsibleTrigger>
+    <CollapsibleContent className="space-y-0.5 pl-3">{children}</CollapsibleContent>
+  </Collapsible>;
+}
+
 export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
   const { owner: id, page, _splat: slug } = useParams({ strict: false }) as { owner?: string; page?: string; _splat?: string };
   const manifest = useManifest();
-  const navigate = useNavigate();
   const owners = [...new Map(manifest.systemContent.filter(p => p.owner && p.owner.kind !== 'system').map(p => [p.owner!.id, p.owner!])).values()];
   const owner = owners.find(o => o.id === id);
   const sections = manifest.systemContent.filter(p => p.owner?.id === id);
   const selected = sections.find(p => p.id === contentId(id ?? '', page ?? ''));
   if (!owner || (page && page !== 'reference' && !selected)) return <NotFound />;
+  const ownerTree = (navOwner: typeof owners[number]) => <GuidanceBranch key={navOwner.id} label={navOwner.label} path={navOwner.root + '/'} active={id === navOwner.id}>
+    {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source === '/' + navOwner.root.slice(4) + '/README.md').map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label="Overview" />)}
+    {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source.startsWith('/' + navOwner.root.slice(4) + '/') && !r.source.endsWith('/README.md')).map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label={r.title} />)}
+    {manifest.systemContent.filter(proto => proto.owner?.id === navOwner.id && (proto.artifacts.length > 0 || selected?.id === proto.id)).map(proto => <FileTree key={proto.id} proto={proto} current={selected?.id === proto.id && slug ? findArtifact(proto, slug) : undefined} embedded branch={{ label: proto.title, path: navOwner.root + '/' + proto.title.toLowerCase() + '/', active: selected?.id === proto.id, defaultExpanded: true }} />)}
+  </GuidanceBranch>;
   return <div className="flex min-h-0 flex-1">
     <SectionNav label="Documentation">
       <DocumentationHeader reference />
-      <NavHeader>
-        <div className="px-1">
-          <Select items={owners.map(o => ({ value: o.id, label: o.label }))} value={id} onValueChange={value => { if (value) void navigate({ to: `/documentation/context/${value}` as never }); }}>
-            <SelectTrigger aria-label="Context and skills" className="w-full min-w-0"><SelectValue className="min-w-0 truncate" /></SelectTrigger>
-            <SelectContent align="start">
-              {([{ kind: 'platform', label: 'Platform' }, { kind: 'module', label: 'Modules' }] as const).map(group => <SelectGroup key={group.kind}>
-                <SelectLabel>{group.label}</SelectLabel>
-                {owners.filter(o => o.kind === group.kind).map(o => <SelectItem key={o.id} value={o.id}>{o.label}</SelectItem>)}
-              </SelectGroup>)}
-            </SelectContent>
-          </Select>
-        </div>
-      </NavHeader>
       <NavList>
-        {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source === '/' + owner.root.slice(4) + '/README.md').map(r => <DocumentationNavItem key={r.source} href={`/documentation/context/${id}`} path={'src' + r.source} label="Overview" />)}
-        {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source.startsWith('/' + owner.root.slice(4) + '/') && !r.source.endsWith('/README.md')).map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label={r.title} />)}
-        {sections.map(proto => <FileTree key={proto.id} proto={proto} current={page && slug ? findArtifact(proto, slug) : undefined} embedded branch={{ label: proto.title, path: `${owner.root}/${proto.title.toLowerCase()}/`, active: selected?.id === proto.id, defaultExpanded: true }} />)}
+        {owners.filter(o => o.kind === 'platform').map(navOwner => ownerTree(navOwner))}
+        <GuidanceBranch label="Modules" path="src/modules/" active={owner.kind === 'module'}>
+          {owners.filter(o => o.kind === 'module').map(navOwner => ownerTree(navOwner))}
+        </GuidanceBranch>
       </NavList>
     </SectionNav>
     <main className="flex min-h-0 min-w-0 flex-1 flex-col">

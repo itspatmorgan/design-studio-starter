@@ -10,7 +10,7 @@ test('owner overviews retain original sources, related guidance, and capability 
   const write = (file, text) => { const target = path.join(root, 'src', file); fs.mkdirSync(path.dirname(target), { recursive: true }); fs.writeFileSync(target, text); };
   try {
     write('platform/README.md', '# Platform');
-    write('platform/context/technical/config.md', '# Configuration');
+    write('platform/context/config.md', '# Configuration');
     write('modules/example/README.md', '# Example');
     write('modules/example/extra.md', '# Additional contract');
     write('modules/example/context/configure.md', '# Configure\n[Platform](../../../platform/README.md#context)\n[Additional](../extra.md)\n[Remote](https://example.com/extra.md)');

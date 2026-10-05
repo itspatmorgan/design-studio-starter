@@ -62,7 +62,7 @@ These references share their original files; no source is copied into the docume
 
 ### Mermaid diagrams
 
-See [Diagrams and code](/documentation/reference/platform/context/technical/diagrams.md) for examples, the shared theme, and customization.
+See [Diagrams and code](/documentation/reference/platform/context/diagrams.md) for examples, the shared theme, and customization.
 
 Use a fenced code block with the language `mermaid` to show a diagram:
 

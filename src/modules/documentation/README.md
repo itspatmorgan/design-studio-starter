@@ -14,9 +14,9 @@ Invalid metadata produces a local warning and fails strict builds. Source mode k
 
 The shared browser uses registered owners from the manifest: Platform and enabled modules. Each owner's Overview renders its canonical README when present; without one it displays discovered context and skills. Additional top-level module contracts remain accessible under that owner.
 
-A full-width grouped Studio select separates Platform and Modules, with each option using its name. Context, Skills, and their folders start expanded; people can collapse them while browsing.
+One file tree shows Platform followed by Modules. Every enabled module appears as its own branch, with Overview and its available Context and Skills. Empty sections are omitted unless opened directly. Branches start expanded and can be collapsed while browsing. There is no scope selector.
 
-Platform knowledge lives in `src/platform/context/`, including detailed requirements under `technical/`. Module and system context and skills live under their respective owners. Component API pages remain beside components and are exposed by Systems.
+Platform knowledge lives in `src/platform/context/`, with knowledge and technical requirements at the same level. Module and system context and skills live under their respective owners. Component API pages remain beside components and are exposed by Systems.
 
 The browser uses the same source inventory and file readers as system content. Skills retain their file picker for supporting references, scripts, and assets. Generated harness adapters are discovery outputs and have no separately authored procedure.
 
@@ -32,7 +32,7 @@ Search lists owner overviews, context and skills, and enabled Guide chapters. It
 
 Guide chapters and owner READMEs edit their own complete documents through the shared documentation editor. Context and skill files use their existing file access policies. Navigation exposes Edit source, Open in editor, Reveal in Finder, Copy link, and Copy path where local permissions allow them. Owner README menus have no rename or delete actions.
 
-The [shared editor](../../platform/context/technical/source.md) supplies keyboard controls, version checks, and unsaved-change handling. Published pages retain reading and copying without repository editing or operating-system actions.
+The [shared editor](../../platform/context/source.md) supplies keyboard controls, version checks, and unsaved-change handling. Published pages retain reading and copying without repository editing or operating-system actions.
 
 Source access is limited to indexed owner documents and locally repairable Guide files. Removing a capability removes its documents from the allowlist; retained chapters remain repairable when Documentation is enabled.
 

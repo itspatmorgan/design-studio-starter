@@ -35,18 +35,21 @@ test('contracts render every section and extract only the opening title', () => 
 
 test('technical context and skill source links resolve without a duplicate Reference reader', () => {
   assert.equal(markdownPath('/platform/context/personas.md'), '/documentation/context/platform.core/context/personas');
-  assert.equal(markdownPath('/platform/context/technical/file-types.md'), '/documentation/context/platform.core/context/technical/file-types');
+  assert.equal(markdownPath('/platform/context/file-types.md'), '/documentation/context/platform.core/context/file-types');
   assert.equal(markdownPath('/modules/prototypes/skills/build-prototype/SKILL.md'), '/documentation/context/module.prototypes/skills/build-prototype/SKILL');
 });
 
 test('saved Reference, Knowledge, and system guidance links follow both migrations', () => {
   const cases = {
+    '/documentation/context/platform.core/context/technical/config': '/documentation/context/platform.core/context/config',
+    '/documentation/reference/platform/context/technical/file-types.md': '/documentation/context/platform.core/context/file-types',
+    '/platform/context/technical/agent-context.md': '/documentation/context/platform.core/context/agent-context',
     '/systems/studio/rules/prototype-workflow': '/documentation/context/module.prototypes/skills/build-prototype/SKILL',
     '/systems/studio/context/principles.md': '/documentation/context/platform.core/context/principles',
     '/systems/studio/skills/setup-design-system/SKILL.md': '/documentation/context/module.systems/skills/setup-design-system/SKILL',
     '/documentation/reference/modules/systems/reference.md': '/documentation/context/module.systems',
-    '/documentation/reference/platform/core/fileTypes.md': '/documentation/context/platform.core/context/technical/file-types',
-    '/documentation/reference/modules/README.md': '/documentation/context/platform.core/context/technical/modules',
+    '/documentation/reference/platform/core/fileTypes.md': '/documentation/context/platform.core/context/file-types',
+    '/documentation/reference/modules/README.md': '/documentation/context/platform.core/context/modules',
     '/documentation/reference': '/documentation/context/platform.core',
     '/knowledge/platform.core/context/personas': '/documentation/context/platform.core/context/personas',
     '/documentation/context/product/context/accessibility': '/systems/product/context/accessibility',

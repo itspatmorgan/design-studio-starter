@@ -20,7 +20,7 @@ Prototype-local components and styles give you room to experiment without changi
 
 Contributors own their prototypes. Admins also edit shared settings and switch optional modules on or off. Team studios need at least one Admin and can have several. In personal use, your local contributor is automatically an Admin.
 
-Contributor profiles and assigned roles are read-only here. Ask your agent to register or update a profile or assign team Admins. Local roles do not grant repository access or override prototype ownership. Settings administration is excluded from the published site. See [Studio configuration](/documentation/reference/platform/context/technical/config.md) for file structure and command details.
+Contributor profiles and assigned roles are read-only here. Ask your agent to register or update a profile or assign team Admins. Local roles do not grant repository access or override prototype ownership. Settings administration is excluded from the published site. See [Studio configuration](/documentation/reference/platform/context/config.md) for file structure and command details.
 
 ## Share through Git
 
@@ -52,4 +52,4 @@ Publish a site when people need a viewing link without running Studio. Hosting i
 
 Published views remain interactive. The site does not provide live co-editing or an agent service. Archived prototypes stay available locally and are excluded from the published build.
 
-Your maintainer chooses hosting, access, and update timing. Ask your agent to consult [Publishing](/documentation/reference/platform/context/technical/publishing.md) when setting this up.
+Your maintainer chooses hosting, access, and update timing. Ask your agent to consult [Publishing](/documentation/reference/platform/context/publishing.md) when setting this up.

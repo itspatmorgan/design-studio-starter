@@ -20,7 +20,7 @@ Root `AGENTS.md` supplies essential operating requirements and routes. System en
 
 ## Technical requirements
 
-Each owner has a `README.md` entry point. A module README holds its main technical contract. Detailed platform contracts live in `src/platform/context/technical/`; `core/` holds implementation. These documents are technical context, including valid structures, supported interfaces, and compatibility requirements. Split a substantial specialized subject only when it needs its own maintained source and link it from the README.
+Each owner has a `README.md` entry point. A module README holds its main technical contract. Platform knowledge and contracts live together in `src/platform/context/`; `core/` holds implementation. These documents are technical context, including valid structures, supported interfaces, and compatibility requirements. Split a substantial specialized subject only when it needs its own maintained source and link it from the README.
 
 Skills consult these documents without copying schemas or dependency matrices. Code and checks implement and enforce selected requirements; successful checks cannot prove that an agent read or understood guidance.
 
@@ -30,4 +30,4 @@ Update implementation, authoritative technical context, affected skills, and Gui
 
 Platform guidance lives in `src/platform/context/` and `skills/`. Module guidance lives beside its implementation. Studio's own system retains application design guidance and its interface toolkit; it does not own platform operating procedures.
 
-Run `pnpm studio sync` after changing skill metadata or capability availability. It refreshes task routes and generated project skill adapters. Follow [agent context routing](agent-context.md) for discovery and system resolution, and [maintain-documentation](../../skills/maintain-documentation/SKILL.md) for verification.
+Run `pnpm studio sync` after changing skill metadata or capability availability. It refreshes task routes and generated project skill adapters. Follow [agent context routing](agent-context.md) for discovery and system resolution, and [maintain-documentation](../skills/maintain-documentation/SKILL.md) for verification.

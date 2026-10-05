@@ -23,7 +23,7 @@ The Overview uses a shared Studio presentation for purpose, authored summaries, 
 
 The Studio system lives in `src/systems/studio/` with the same structure as other systems. Its `system.ts` declares `role: 'platform'`; other systems explicitly declare `role: 'prototype'`. Exactly one installed system must declare that role. Discovery resolves the application system by role, independently of its folder name. It must be registered and cannot be removed or assigned to prototypes. Its documentation mode is `off`. Every system explicitly declares `role`, `styling`, `colorModes`, `docs`, and `origin`. Platform infrastructure remains under `src/platform/`.
 
-Follow the [static asset convention](../../platform/context/technical/assets.md) for system assets and font loading.
+Follow the [static asset convention](../../platform/context/assets.md) for system assets and font loading.
 
 The starter Product system uses shadcn/ui on Base UI. `components.json` controls the CLI destination. A replacement system may use another library.
 
@@ -39,7 +39,7 @@ The starter Product system and new system scaffolds declare both modes and inclu
 
 System runtime code may depend on its own runtime files, independent shared utilities, installed packages, and enabled public module libraries through `@module/<id>`. Other systems, prototype files, private platform implementation, and documentation adapters are outside its runtime boundary. Indirect and type-only dependencies follow the same requirements. Dynamic imports use literal paths.
 
-Theme selectors and imported stylesheets stay under the system's unique theme class or its descendants. Keyframe names use the theme class followed by a dash. Font-face registration is permitted and follows the [static asset convention](../../platform/context/technical/assets.md#scope-and-fonts).
+Theme selectors and imported stylesheets stay under the system's unique theme class or its descendants. Keyframe names use the theme class followed by a dash. Font-face registration is permitted and follows the [static asset convention](../../platform/context/assets.md#scope-and-fonts).
 
 Pop-ups render within the themed container. Starter Base UI portals pass `usePortalContainer()` as their `container`. This preserves system styling and local color-mode behavior.
 
@@ -100,7 +100,7 @@ Systems declaring `styling: 'custom'` are exempt from the Tailwind vocabulary co
 
 ## Source editing
 
-Systems uses the [shared platform source workflow](../../platform/context/technical/source.md). Right-click a navigation item for file actions, or use **⌘' / Ctrl+'** to toggle source. **⌘S / Ctrl+S** saves; the toggle or **Done** returns to rendering with unsaved-change protection. Source editors remain in Studio's color mode.
+Systems uses the [shared platform source workflow](../../platform/context/source.md). Right-click a navigation item for file actions, or use **⌘' / Ctrl+'** to toggle source. **⌘S / Ctrl+S** saves; the toggle or **Done** returns to rendering with unsaved-change protection. Source editors remain in Studio's color mode.
 
 Component pages open their Page, Examples, and Component file tabs. Overview and Icons open the system's overview source (`intro.tsx`). A missing overview source opens `system.ts`. Generated theme pages open the system's theme CSS. There is no separate editable file for each token-family page.
 
@@ -132,7 +132,7 @@ Studio is maintained with Studio and excluded from prototype choices, default-sy
 
 ## System knowledge and agent routing
 
-The [contracts and operating instructions foundation](../../platform/context/technical/contracts-and-instructions.md) distinguishes technical contracts from operating policy, intent, and procedures.
+The [contracts and operating instructions foundation](../../platform/context/contracts-and-instructions.md) distinguishes technical contracts from operating policy, intent, and procedures.
 
 A system’s guidance applies to its product and design domain. Platform and modules own their operating knowledge and procedures.
 

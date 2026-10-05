@@ -12,7 +12,7 @@ Start with bounded retrieval under the existing policy. Separately evaluate maki
 
 ## Current implementation
 
-The [agent context contract](../../../src/platform/context/technical/agent-context.md) owns current routing. Studio does not inject a context bundle. The host supplies automatically discovered instructions; the agent reads linked files.
+The [agent context contract](../../../src/platform/context/agent-context.md) owns current routing. Studio does not inject a context bundle. The host supplies automatically discovered instructions; the agent reads linked files.
 
 | Mechanism | Current source | Implication for context |
 | --- | --- | --- |

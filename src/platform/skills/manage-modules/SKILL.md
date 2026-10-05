@@ -5,7 +5,7 @@ description: "Create, install, enable, disable, or remove Design Studio modules 
 
 # Modules
 
-Read the [module contract](../../context/technical/modules.md) before creating, installing, disabling, or removing modules or systems.
+Read the [module contract](../../context/modules.md) before creating, installing, disabling, or removing modules or systems.
 
 - Declare every installed module's enabled state and every installed system in `studio.config.ts`. Discovery does not grant activation. Modules declare `optional` and `lib`; systems declare role, styling contract, modes, docs policy, and origin.
 - Run commands for the person. Use CLI help and previews for current arguments and proposed file changes.

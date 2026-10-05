@@ -7,7 +7,7 @@ import type { DocsMode } from '@/modules/systems/sources';
 
 // public/prototypes/manifest.json, written by scripts/build/build-manifest.js, with each prototype's artifacts
 // in public/prototypes/artifacts/<contributor>/<prototype>.json.
-// A navigable artifact backed by a file. Shared readers use the same record shape (see src/platform/context/technical/file-types.md).
+// A navigable artifact backed by a file. Shared readers use the same record shape (see src/platform/context/file-types.md).
 export type Artifact = {
   path: string;   // file path in the prototype, e.g. "prototype.tsx" or "checkout/step-1.tsx"
   fileType: string; // the id of the file type that owns it, from its extension ("view", "document")
