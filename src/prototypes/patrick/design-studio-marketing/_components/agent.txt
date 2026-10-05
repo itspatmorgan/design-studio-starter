@@ -1,6 +1,6 @@
 # Design Studio
 
-An open-source prototype sandbox for designers and builders working with coding agents.
+An open platform for designers and product managers who build. Turn ideas into working prototypes with an agent that understands your components, context, and design principles.
 
 ## Install
 
@@ -32,6 +32,10 @@ Open the repository in your existing editor or coding agent, and run Studio alon
 A prototype keeps views, diagrams, canvases, and documents together. Its assigned system supplies the theme, components, context, rules, and skills.
 
 This marketing project uses the Marketing system: Geist, warm neutrals, and adapted Untitled UI components. The self-contained demo examples are rendered in code using the same Marketing system. Studio supplies the shared artifact tools.
+
+A design operating system includes theme and components, context and principles, and rules and skills. The starter provides a considered starting point, fits your coding-agent workflow, and uses open-source tools and open file formats you can change and extend.
+
+V3 adapts the personal website’s drafting-table illustrations and feedback-triage demo using React, CSS, and SVG. No image assets or personal portrait are included.
 
 ## Reference
 
