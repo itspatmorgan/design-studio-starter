@@ -5,7 +5,7 @@ import type { StudioConfig } from './src/platform/core/config.ts';
 export default {
   name: 'Design Studio',
   usage: 'team',
-  tagline: 'Prototypes and design systems for our team.',
+  tagline: 'Prototypes and design systems for your team.',
   modules: {
     canvas: true,
     diagrams: true,
