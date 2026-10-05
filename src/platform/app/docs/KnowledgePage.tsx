@@ -13,9 +13,12 @@ import DocumentationNavItem from './DocumentationNavItem';
 import { markdownPath } from './referenceLinks';
 import { NotFound } from '@/platform/app/shell/App';
 
-function GuidanceBranch({ label, path, active = false, children }: { label: string; path: string; active?: boolean; children: ReactNode }) {
-  const [open, setOpen] = useState(true);
+const guidanceExpansion = new Map<string, boolean>();
+
+function GuidanceBranch({ label, path, active = false, defaultExpanded = false, children }: { label: string; path: string; active?: boolean; defaultExpanded?: boolean; children: ReactNode }) {
+  const [open, setOpen] = useState(() => guidanceExpansion.get(path) ?? (active || defaultExpanded));
   useEffect(() => { if (active) setOpen(true); }, [active]);
+  useEffect(() => { guidanceExpansion.set(path, open); }, [path, open]);
   return <Collapsible open={open} onOpenChange={setOpen}>
     <CollapsibleTrigger title={path} className="mx-1 flex h-7 w-[calc(100%-8px)] items-center gap-1.5 rounded-md px-2 text-left text-[12px] font-medium hover:bg-sidebar-foreground/5"><ChevronDown aria-hidden="true" className={'size-3.5 shrink-0 text-muted-foreground transition-transform ' + (open ? '' : '-rotate-90')} /><span className="truncate">{label}</span></CollapsibleTrigger>
     <CollapsibleContent className="space-y-0.5 pl-3">{children}</CollapsibleContent>
@@ -31,16 +34,16 @@ export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
   const selected = sections.find(p => p.id === contentId(id ?? '', page ?? ''));
   if (!owner || (page && page !== 'reference' && !selected)) return <NotFound />;
   const ownerTree = (navOwner: typeof owners[number]) => <GuidanceBranch key={navOwner.id} label={navOwner.label} path={navOwner.root + '/'} active={id === navOwner.id}>
-    {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source === '/' + navOwner.root.slice(4) + '/README.md').map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label="Overview" />)}
-    {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source.startsWith('/' + navOwner.root.slice(4) + '/') && !r.source.endsWith('/README.md')).map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label={r.title} />)}
-    {manifest.systemContent.filter(proto => proto.owner?.id === navOwner.id && (proto.artifacts.length > 0 || selected?.id === proto.id)).map(proto => <FileTree key={proto.id} proto={proto} current={selected?.id === proto.id && slug ? findArtifact(proto, slug) : undefined} embedded branch={{ label: proto.title, path: navOwner.root + '/' + proto.title.toLowerCase() + '/', active: selected?.id === proto.id, defaultExpanded: true }} />)}
+    {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source === '/' + navOwner.root.slice(4) + '/README.md').map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label="README.md" />)}
+    {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source.startsWith('/' + navOwner.root.slice(4) + '/') && !r.source.endsWith('/README.md')).map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label={r.source.split('/').at(-1)!} />)}
+    {manifest.systemContent.filter(proto => proto.owner?.id === navOwner.id && (proto.artifacts.length > 0 || selected?.id === proto.id)).map(proto => <FileTree key={proto.id} proto={proto} current={selected?.id === proto.id && slug ? findArtifact(proto, slug) : undefined} embedded fileNames branch={{ label: proto.title.toLowerCase() + '/', path: navOwner.root + '/' + proto.title.toLowerCase() + '/', active: selected?.id === proto.id, defaultExpanded: selected?.id === proto.id }} />)}
   </GuidanceBranch>;
   return <div className="flex min-h-0 flex-1">
     <SectionNav label="Documentation">
       <DocumentationHeader reference />
       <NavList>
         {owners.filter(o => o.kind === 'platform').map(navOwner => ownerTree(navOwner))}
-        <GuidanceBranch label="Modules" path="src/modules/" active={owner.kind === 'module'}>
+        <GuidanceBranch defaultExpanded label="Modules" path="src/modules/" active={owner.kind === 'module'}>
           {owners.filter(o => o.kind === 'module').map(navOwner => ownerTree(navOwner))}
         </GuidanceBranch>
       </NavList>

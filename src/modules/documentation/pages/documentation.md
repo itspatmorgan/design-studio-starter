@@ -15,9 +15,9 @@ The Guide introduces setup, everyday capabilities, and collaboration. These chap
 
 ## Context & Skills
 
-The file tree shows **Platform**, followed by **Modules** and each enabled module. Each branch’s **Overview** displays its README. **Context** holds knowledge and requirements. **Skills** holds task procedures. The browser displays the original repository files, so editing here updates the same source your agent reads.
+The file tree shows **Platform**, followed by **Modules** and each enabled module. Each branch’s **README.md** displays its entry document. **context/** holds knowledge and requirements. **skills/** holds task procedures. Only the current location opens automatically; expand other folders when needed. The tree remembers your choices while browsing. The browser displays the original repository files, so editing here updates the same source your agent reads.
 
-Platform technical documents appear under **Platform → Context**, alongside its other shared knowledge. They explain configuration, file types, source editing, dependencies, checks, and publishing. Module READMEs own capability contracts. Systems own product, brand, and design knowledge.
+Platform technical documents appear under **Platform → context/**, alongside its other shared knowledge. They explain configuration, file types, source editing, dependencies, checks, and publishing. Module READMEs own capability contracts. Systems own product, brand, and design knowledge.
 
 A README is the entry point into an owner's context. Technical contracts are context too. A skill links to relevant context and explains how to complete a task; it does not need to repeat the contract.
 
@@ -29,4 +29,4 @@ For example, the Prototypes README defines permitted dependencies. Its build-pro
 
 Read [Responsibilities](/documentation/context/platform.core/context/contracts-and-instructions) for ownership or [Agent context](/documentation/guide/agent-context) for discovery. Listing a file does not prove an agent has read it.
 
-Use navigation for the [shared source workflow](/documentation/guide/home#working-with-files). Owner overviews expose source editing without rename or delete actions. Context and skills retain their own file operations.
+Use navigation for the [shared source workflow](/documentation/guide/home#working-with-files). README entries expose source editing without rename or delete actions. Context and skills retain their own file operations.

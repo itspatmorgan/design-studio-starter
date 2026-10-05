@@ -174,15 +174,18 @@ type TreeNavigation = {
   folderCommand: { version: number; expanded: boolean };
   onFoldersExpanded: (open: boolean) => void;
 };
-type FileTreeProps = { proto: Prototype; current: Artifact | undefined; embedded?: boolean; contentIcon?: ReactNode; branch?: { label: string; path: string; active: boolean; defaultExpanded?: boolean }; navigation?: TreeNavigation };
+type FileTreeProps = { proto: Prototype; current: Artifact | undefined; embedded?: boolean; fileNames?: boolean; contentIcon?: ReactNode; branch?: { label: string; path: string; active: boolean; defaultExpanded?: boolean }; navigation?: TreeNavigation };
+
+const guidanceBranchState = new Map<string, boolean>();
 
 const systemFolderState = new Map<string, { closed: Set<string>; commandVersion: number }>();
 
-export default function FileTree({ proto, current, embedded = false, contentIcon, branch, navigation }: FileTreeProps) {
+export default function FileTree({ proto, current, embedded = false, fileNames = false, contentIcon, branch, navigation }: FileTreeProps) {
   const { files, reload } = useFileTree(proto);
   const treeScope = proto.contributorKey + ":" + proto.id;
-  const [expanded, setExpanded] = useState(branch?.defaultExpanded ?? branch?.active ?? true);
+  const [expanded, setExpanded] = useState(() => (fileNames ? guidanceBranchState.get(proto.id) : undefined) ?? (branch?.defaultExpanded ?? branch?.active ?? true));
   useEffect(() => { if (branch?.active) setExpanded(true); }, [branch?.active]);
+  useEffect(() => { if (fileNames) guidanceBranchState.set(proto.id, expanded); }, [fileNames, proto.id, expanded]);
   const branchExpanded = navigation?.expanded ?? expanded;
   const changeExpanded = navigation?.onExpandedChange ?? setExpanded;
   const me = useMe();
@@ -484,7 +487,7 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
           if (skill) return <Fragment key={node.path}>
             {rowMenu(node.path, node, <Link {...artifactLink(proto, skill)} {...keyProps(node)} aria-current={current && within(current.path, node.path) ? 'page' : undefined} style={indent(depth)} className={cn(row, navRowState(Boolean(current && within(current.path, node.path))))}>
               {contentIcon ?? <HugeiconsIcon icon={fileTypeModules[skill.fileType]?.icon ?? CodeIcon} size={14} className="shrink-0 text-muted-foreground" />}
-              <span className="min-w-0 flex-1 truncate" title={repoPath(proto, skill.path)}>{artifactLabel(skill.path, proto)}</span>
+              <span className="min-w-0 flex-1 truncate" title={repoPath(proto, skill.path)}>{fileNames ? node.name : artifactLabel(skill.path, proto)}</span>
             </Link>)}
             {createField(node.path, depth)}
           </Fragment>;
@@ -498,7 +501,7 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
                   <CollapsibleTrigger draggable={false} {...keyProps(node)} style={indent(depth)}
                     className={cn(row, 'text-left font-medium text-sidebar-foreground hover:bg-sidebar-foreground/5')}>
                     <HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !open && '-rotate-90')} />
-                    <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{artifactLabel(node.name)}</span>
+                    <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{fileNames ? node.name : artifactLabel(node.name)}</span>
                   </CollapsibleTrigger>
                 ))}
               </DragRow>
@@ -515,7 +518,7 @@ export default function FileTree({ proto, current, embedded = false, contentIcon
       // rest of the app; the file name is in the tooltip and the rename field. Other files, shown
       // with Show all files (in the header's … menu), keep their real names, since they open in your editor.
       const label = item
-        ? <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{artifactLabel(node.path, proto)}</span>
+        ? <span className="min-w-0 flex-1 truncate" title={live ? node.name : undefined}>{fileNames ? node.name : artifactLabel(node.path, proto)}</span>
         : <FileName name={node.name} />;
       // Items open in the app.
       if (item) {

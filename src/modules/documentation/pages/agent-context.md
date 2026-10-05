@@ -10,7 +10,7 @@ Ask for the result you want. Your agent uses skills for the task and context to 
 
 ## Find guidance
 
-Every owner has a README entry point, context for knowledge and requirements, and skills for tasks. Documentation’s Context & Skills browser displays platform and module files. The file tree shows Platform and all enabled modules together. Start with a branch’s Overview, then read relevant context or skills. For product and design guidance, open Systems and select the relevant system. Its Context and Skills appear beside Theme and Components.
+Every owner has a README entry point, context for knowledge and requirements, and skills for tasks. Documentation’s Context & Skills browser displays platform and module files. The file tree shows Platform and all enabled modules together. Start with a branch’s README.md, then read relevant context or skills. For product and design guidance, open Systems and select the relevant system. Its Context and Skills appear beside Theme and Components.
 
 The platform’s detailed configuration, file-format, and runtime requirements are technical context. They appear alongside principles, personas, and working guidance in Platform → Context. They are part of the same knowledge model as principles and personas.
 
