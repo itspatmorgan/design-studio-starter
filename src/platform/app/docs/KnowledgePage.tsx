@@ -16,7 +16,7 @@ export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
   const { owner: id, page, _splat: slug } = useParams({ strict: false }) as { owner?: string; page?: string; _splat?: string };
   const manifest = useManifest();
   const navigate = useNavigate();
-  const owners = [...new Map(manifest.systemContent.filter(p => p.owner).map(p => [p.owner!.id, p.owner!])).values()];
+  const owners = [...new Map(manifest.systemContent.filter(p => p.owner && p.owner.kind !== 'system').map(p => [p.owner!.id, p.owner!])).values()];
   const owner = owners.find(o => o.id === id);
   const sections = manifest.systemContent.filter(p => p.owner?.id === id);
   const selected = sections.find(p => p.id === contentId(id ?? '', page ?? ''));
@@ -36,7 +36,6 @@ export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
         {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source === '/' + owner.root.slice(4) + '/README.md').map(r => <DocumentationNavItem key={r.source} href={`/documentation/context/${id}`} path={'src' + r.source} label="Overview" />)}
         {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source.startsWith('/' + owner.root.slice(4) + '/') && !r.source.endsWith('/README.md')).map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label={r.title} />)}
         {sections.map(proto => <FileTree key={proto.id} proto={proto} current={page && slug ? findArtifact(proto, slug) : undefined} embedded branch={{ label: proto.title, path: `${owner.root}/${proto.title.toLowerCase()}/`, active: selected?.id === proto.id, defaultExpanded: true }} />)}
-        {owner.kind === 'system' && <Link to={`/systems/${id}` as never} className="block px-3 py-2 text-sm text-muted-foreground">Components and theme</Link>}
       </NavList>
     </SectionNav>
     <main className="flex min-h-0 min-w-0 flex-1 flex-col">

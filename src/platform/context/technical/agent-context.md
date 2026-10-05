@@ -10,7 +10,7 @@ Design Studio maintains file-based context and skills. The host discovers skill 
 
 Every owner starts with its README, followed by Context and Skills. The [platform README](../../README.md) indexes shared knowledge. Its detailed technical documents live in `context/technical/`, while `core/` and `app/` contain implementation. Modules and systems keep their own README, context, and relevant skills. A skill is optional when no distinct task procedure is needed.
 
-The Documentation surface offers Guide and Context and Skills. The latter reads original owner files at `/documentation/context/<owner>`. Systems pages link to that same reader; they do not maintain a second context tree. Legacy Reference, Knowledge, and system-content URLs redirect while preserving source mode and anchors.
+The Documentation surface offers Guide and Context and Skills. The latter reads original platform and module files at `/documentation/context/<owner>`. Each system exposes its own Context and Skills beside Theme and Components at `/systems/<id>/`. The scopes use shared readers and file operations without copying source files. Legacy Reference, Knowledge, and system-content URLs redirect while preserving source mode and anchors.
 
 ## Entry and platform baseline
 

@@ -7,7 +7,7 @@ module: systems
 toc: true
 ---
 
-Systems brings together the components, styles, and knowledge used by your prototypes. Use the selector to switch between systems. Its navigation shows theme and components. The Context and skills link opens that system’s knowledge in Documentation.
+Systems brings together the components, styles, and knowledge used by your prototypes. Use the selector to switch between systems. Its navigation shows Context, Skills, Theme, and Components for the selected system.
 
 The Resources toolbar searches across the tree and expands or collapses all folders. Search reveals matches without losing your previous expansion choices. Context, Skills, Theme, and Components start open. Guidance appears above the toolkit, and each guidance group has its own **New** action.
 
@@ -78,4 +78,4 @@ Each skill appears once in navigation and opens its instructions. In source mode
 
 A prototype uses its assigned system's knowledge along with platform working context and its own local intent. Files being visible here does not automatically load them into an agent conversation. The [Agent context chapter](/documentation/guide/agent-context) diagrams how the agent chooses instructions.
 
-Use Documentation’s Context & Skills browser to find platform, module, and system knowledge. Keep your product context in its product system. System knowledge follows Studio's appearance; UI examples follow the system's supported color modes.
+Use Documentation’s Context & Skills browser for platform and module knowledge. Use the selected system’s Context and Skills for product and design guidance. Keep your product context in its product system. System knowledge follows Studio's appearance; UI examples follow the system's supported color modes.

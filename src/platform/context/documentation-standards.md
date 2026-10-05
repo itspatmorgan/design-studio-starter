@@ -16,7 +16,7 @@ Documentation is part of the platform. Keep it accurate as behavior changes. Thi
 | Skills | Describe a task-specific procedure and when it applies. |
 | `AGENTS.md` | Provide essential project instructions and route agents to relevant context. |
 
-Documentation has two reading choices: Guide provides a curated introduction, and Context and Skills displays original files organized by owner. Human chapters live only in `src/modules/documentation/pages/`. Platform, module, and system context preserve knowledge under their respective owners. Context and Skills access remains available when the optional Documentation module is disabled.
+Documentation has two reading choices: Guide provides a curated introduction, and Context and Skills displays original platform and module files. Systems exposes system context and skills alongside its toolkit. Human chapters live only in `src/modules/documentation/pages/`. Platform, module, and system context preserve knowledge under their respective owners. Context and Skills access remains available when the optional Documentation module is disabled.
 
 The [Responsibilities](technical/contracts-and-instructions.md) foundation defines the system of record: context includes technical contracts, knowledge, and standing requirements; skills own procedures.
 

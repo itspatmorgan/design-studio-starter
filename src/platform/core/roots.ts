@@ -1,5 +1,5 @@
 // Owner guidance lives in platform, module, or system context/ and skills/ folders.
-// It opens at /documentation/context/<owner>/<section>.
+// Platform and module guidance opens under /documentation/context; system guidance under /systems.
 // The reserved system-content key adapts these files to the shared file APIs, not a contributor.
 // This file has no imports, so Node scripts can load it directly.
 
@@ -41,7 +41,7 @@ export const isSectionKey = (key: string) => key === SYSTEM_CONTENT_KEY || key =
 // An item's address in the app, up to its id and without a base path: "/prototypes/patrick/hello-world"
 // for a prototype, "/examples/sample" for a section item.
 export const addressOf = (contributor: string, id: string) =>
-  contributor === SYSTEM_CONTENT_KEY ? `/documentation/context/${contentParts(id).system}/${contentParts(id).section}` : isSectionKey(contributor) ? `/${contributor}/${id}` : `/${PROTOTYPES_KEY}/${contributor}/${id}`;
+  contributor === SYSTEM_CONTENT_KEY ? `${contentParts(id).system === 'platform.core' || contentParts(id).system.startsWith('module.') ? '/documentation/context' : '/systems'}/${contentParts(id).system}/${contentParts(id).section}` : isSectionKey(contributor) ? `/${contributor}/${id}` : `/${PROTOTYPES_KEY}/${contributor}/${id}`;
 
 // Reads an item's address back: who or what holds it, its id, and the path after it. It also reads the
 // older form of a prototype's address, "/patrick/hello-world/…", so links saved before prototypes moved

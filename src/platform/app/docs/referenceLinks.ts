@@ -21,16 +21,17 @@ const movedSkills: Record<string, string> = {
   "document-component": "module.systems/skills/document-component"
 };
 const coreDocuments = new Set(['checks', 'source', 'publishing', 'fileTypes', 'diagrams', 'contracts-and-instructions', 'assets', 'stack', 'agent-context', 'config']);
-const ownerPath = (id: string) => '/documentation/context/' + id;
+const ownerPath = (id: string) => (id === 'platform.core' || id.startsWith('module.') ? '/documentation/context/' : '/systems/') + id;
+const guidancePath = (target: string) => { const [id, ...rest] = target.split('/'); return ownerPath(id) + (rest.length ? '/' + rest.join('/') : ''); };
 
 export function migratedGuidancePath(path: string): string | null {
   const rule = path.match(/^\/systems\/studio\/rules\/([^/]+?)(?:\.md)?$/);
   if (rule && movedRules[rule[1]]) {
     const target = movedRules[rule[1]];
-    return '/documentation/context/' + target;
+    return guidancePath(target);
   }
   const skill = path.match(/^\/systems\/studio\/skills\/([^/]+)(\/.*)?$/);
-  if (skill && movedSkills[skill[1]]) return '/documentation/context/' + movedSkills[skill[1]] + (skill[2] ?? '').replace(/\.md$/, '');
+  if (skill && movedSkills[skill[1]]) return guidancePath(movedSkills[skill[1]]) + (skill[2] ?? '').replace(/\.md$/, '');
   const context = path.match(/^\/systems\/studio\/context\/(principles|personas)(?:\.md)?$/);
   if (context) return ownerPath('platform.core') + '/context/' + context[1];
   if (path === '/systems/marketing/rules/marketing-design' || path === '/systems/marketing/rules/marketing-design.md') return ownerPath('marketing') + '/context/design';
@@ -39,9 +40,11 @@ export function migratedGuidancePath(path: string): string | null {
     const result = markdownPath(path.slice('/documentation/reference'.length));
     return result === path.slice('/documentation/reference'.length) ? null : result;
   }
-  if (path.startsWith('/knowledge/')) return path.replace('/knowledge/', '/documentation/context/');
+  if (path.startsWith('/knowledge/')) return guidancePath(path.slice('/knowledge/'.length)).replace(/\.md$/, '');
+  const oldSystemBrowser = path.match(/^\/documentation\/context\/([^/]+)(\/.*)?$/);
+  if (oldSystemBrowser && oldSystemBrowser[1] !== 'platform.core' && !oldSystemBrowser[1].startsWith('module.')) return ownerPath(oldSystemBrowser[1]) + (oldSystemBrowser[2] ?? '').replace(/\.md$/, '');
   const system = path.match(/^\/systems\/([^/]+)\/(context|skills)(\/.*)?$/);
-  if (system) return ownerPath(system[1]) + '/' + system[2] + (system[3] ?? '').replace(/\.md$/, '');
+  if (system && path.endsWith('.md')) return path.replace(/\.md$/, '');
   return null;
 }
 

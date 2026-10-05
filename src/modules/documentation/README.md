@@ -1,6 +1,6 @@
 # Documentation contract
 
-The Documentation module owns the human Guide at `/documentation/guide`. The shared platform owns the Context and Skills browser at `/documentation/context/<owner>`. Guide chapters explain using Studio; the browser displays original README, context, and skill files.
+The Documentation module owns the human Guide at `/documentation/guide`. The shared platform owns the platform and module Context and Skills browser at `/documentation/context/<owner>`. Guide chapters explain using Studio; the browser displays original README, context, and skill files.
 
 ## Guide chapters
 
@@ -12,15 +12,15 @@ Invalid metadata produces a local warning and fails strict builds. Source mode k
 
 ## Context and Skills sources
 
-The shared browser uses registered owners from the manifest: Platform, enabled modules, and registered systems. Each owner's Overview renders its canonical README when present; without one it displays discovered context and skills. Additional top-level module contracts remain accessible under that owner.
+The shared browser uses registered owners from the manifest: Platform and enabled modules. Each owner's Overview renders its canonical README when present; without one it displays discovered context and skills. Additional top-level module contracts remain accessible under that owner.
 
-A full-width Studio select switches between Platform, modules, and systems using their names. Context, Skills, and their folders start expanded; people can collapse them while browsing.
+A full-width Studio select switches between Platform and modules using their names. Context, Skills, and their folders start expanded; people can collapse them while browsing.
 
 Platform knowledge lives in `src/platform/context/`, including detailed requirements under `technical/`. Module and system context and skills live under their respective owners. Component API pages remain beside components and are exposed by Systems.
 
 The browser uses the same source inventory and file readers as system content. Skills retain their file picker for supporting references, scripts, and assets. Generated harness adapters are discovery outputs and have no separately authored procedure.
 
-Legacy Reference, Knowledge, and system-content URLs redirect to the canonical browser. Redirects preserve source mode and anchors. They do not create another documentation source.
+Legacy Reference and Knowledge URLs redirect to the appropriate scope. System guidance opens in Systems at `/systems/<id>/context` or `/systems/<id>/skills`. Redirects preserve source mode and anchors. They do not create another documentation source.
 
 ## Availability and search
 

@@ -37,4 +37,4 @@ Detailed technical context lives in `context/technical/`:
 
 Each module and system has its own README entry point, context, and relevant skills. A README is technical context at the owner's front door. Skills consult authoritative context rather than copying contracts.
 
-The Documentation surface offers a curated Guide and an owner-based Context and Skills browser. The browser displays these original files. Generated harness entries route agents back to the canonical skills.
+The Documentation surface offers a curated Guide and a platform and module Context and Skills browser. The browser displays these original files. System context and skills appear within each system’s UI alongside its components and theme. Generated harness entries route agents back to the canonical skills.

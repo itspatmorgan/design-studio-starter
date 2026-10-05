@@ -25,7 +25,7 @@ test('owner overviews retain original sources, related guidance, and capability 
     const core = groups.find(g=>g.id==='core');
     assert.deepEqual(core.references.map(r=>r.source), ['/platform/README.md'], 'technical Context is read through its own tree');
     assert.deepEqual(core.references[0].related.map(r=>r.title), ['module.example · Context · Configure']);
-    assert.equal(groups.find(g=>g.id==='system.product').references[0].source,'/systems/product/README.md');
+    assert.ok(!groups.some(g=>g.id==='system.product'),'system files belong to Systems, not platform documentation');
     const example=groups.find(g=>g.id==='example');
     assert.equal(example.references.find(r=>r.source.endsWith('/README.md')).related.length,1);
     assert.equal(example.references.find(r=>r.source.endsWith('/extra.md')).related.length,1,'fenced examples and remote links add no related guidance');

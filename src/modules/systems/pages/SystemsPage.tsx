@@ -1,9 +1,14 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Link, useNavigate, useParams, useSearch } from '@tanstack/react-router';
-import { ChevronDown, Compass, Blocks, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, Search, ChevronsDownUp, ChevronsUpDown, X, type LucideIcon } from 'lucide-react';
+import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
+import { ChevronDown, Compass, Blocks, NotebookText, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, Search, ChevronsDownUp, ChevronsUpDown, X, type LucideIcon } from 'lucide-react';
 import { Input } from '@/systems/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
+import { artifactLabel, findArtifact } from '@/platform/app/data/manifest';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/systems/studio/components/collapsible';
+import FileTree from '@/modules/prototypes/viewer/FileTree';
+import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
+import SystemContentPage from '../content/SystemContentPage';
+import type { Prototype } from '@/platform/app/data/types';
 import { NavHeader, NavList, NavTitle, SectionNav } from '@/platform/app/shell/nav';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/systems/studio/components/select';
 import { NotFound } from '@/platform/app/shell/App';
@@ -76,11 +81,14 @@ const PAGE_ICONS: Record<string, LucideIcon> = {
   intro: Compass, colors: SwatchBook, typography: Type, radius: SquareRoundCorner,
   shadows: Layers2, spacing: Ruler, motion: MoveRight, effects: Sparkles, tokens: Braces, icons: Smile,
 };
+const CONTENT_ICONS: Record<string, LucideIcon> = { context: NotebookText, skills: WandSparkles };
 const navIcon = (Icon: LucideIcon) => <Icon aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />;
 
 // Different Systems routes mount separate page instances. Keep tree choices for the session.
 const systemTreeState = new Map<string, {
   openGroups: Record<string, boolean>;
+  folderCommand: { version: number; expanded: boolean };
+  foldersExpanded: Record<string, boolean>;
 }>();
 
 // A fixed system folder and its readable contents. Page changes preserve branch state.
@@ -103,30 +111,38 @@ function TreeAction({ label, onClick, disabled = false, children }: { label: str
 function SystemNav({ system, components, tokens, page }: { system: SystemId; components: SystemComponentDoc[]; tokens: ThemeToken[]; page?: string }) {
   const navigate = useNavigate();
   const params = useParams({ strict: false }) as { _splat?: string };
+  const manifest = useManifest();
   const source = system === PLATFORM_ID ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
   const foundations = TOKEN_PAGES.filter((p) => p.id === 'typography' || tokens.some((t) => t.group === p.group));
   const savedTree = systemTreeState.get(system);
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => savedTree?.openGroups ?? { theme: true, components: true });
-  useEffect(() => { systemTreeState.set(system, { openGroups }); }, [system, openGroups]);
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => savedTree?.openGroups ?? { context: true, skills: true, theme: true, components: true });
+  const [folderCommand, setFolderCommand] = useState(() => savedTree?.folderCommand ?? { version: 0, expanded: true });
+  const [foldersExpanded, setFoldersExpanded] = useState<Record<string, boolean>>(() => savedTree?.foldersExpanded ?? {});
+  useEffect(() => { systemTreeState.set(system, { openGroups, folderCommand, foldersExpanded }); }, [system, openGroups, folderCommand, foldersExpanded]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
   const searchRef = useRef<HTMLInputElement>(null);
   useEffect(() => { if (searchOpen) searchRef.current?.focus(); }, [searchOpen]);
   const q = query.trim().toLowerCase();
   const matches = (label: string) => !q || label.toLowerCase().includes(q);
-  const activeGroup = page && (foundations.some(p => p.id === page) || page === 'icons' ? 'theme' : components.some(c => c.slug === page) ? 'components' : undefined);
+  const activeGroup = page && (Object.hasOwn(SYSTEM_CONTENT_SECTIONS, page) ? page : foundations.some(p => p.id === page) || page === 'icons' ? 'theme' : components.some(c => c.slug === page) ? 'components' : undefined);
   useEffect(() => { if (activeGroup) setOpenGroups(prev => ({ ...prev, [activeGroup]: true })); }, [activeGroup, page, params._splat]);
   const groupOpen = (id: string) => Boolean(q) || openGroups[id];
   const changeGroup = (id: string, open: boolean) => { if (!q) setOpenGroups(prev => ({ ...prev, [id]: open })); };
-  const allExpanded = Object.values(openGroups).every(Boolean);
+  const allExpanded = Object.values(openGroups).every(Boolean) && Object.values(foldersExpanded).every(Boolean);
   const toggleAll = () => {
     const expanded = !allExpanded;
-    setOpenGroups({ theme: expanded, components: expanded });
+    setOpenGroups({ context: expanded, skills: expanded, theme: expanded, components: expanded });
+    setFolderCommand(prev => ({ version: prev.version + 1, expanded }));
   };
+  const contentSections = Object.entries(SYSTEM_CONTENT_SECTIONS).flatMap(([id, section]) => {
+    const proto = manifest.systemContent.find(p => p.id === contentId(system, id));
+    return proto ? [{ id, section, proto }] : [];
+  });
   const matchingFoundations = foundations.filter(p => matches('Theme') || matches(p.label));
   const matchingComponents = components.filter(c => matches('Components') || matches(c.title));
   const iconsMatch = SYSTEMS[system].icons && (matches('Theme') || matches('Icons'));
-  const anyMatch = matches('Overview') || matchingFoundations.length > 0 || iconsMatch || matchingComponents.length > 0;
+  const anyMatch = matches('Overview') || matchingFoundations.length > 0 || iconsMatch || matchingComponents.length > 0 || contentSections.some(({ section, proto }) => matches(section.title) || proto.artifacts.some(a => matches(artifactLabel(a.path, proto)) || matches(a.path)));
   const file = (id: string | undefined, label: string) => {
     const path = sourcePath(system, id, components);
     return path && <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={path} label={label} className={id ? undefined : 'h-7'} icon={navIcon(id && components.some((c) => c.slug === id) ? Blocks : PAGE_ICONS[id ?? 'intro'] ?? Blocks)} reveal={() => systemSourceRequest('reveal', path)} />;
@@ -135,7 +151,6 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
     <SectionNav label="Systems">
       <NavHeader>
         <NavTitle>Systems</NavTitle>
-        <Link to={`/documentation/context/${system}` as never} className="px-1 text-xs text-muted-foreground hover:underline">Context and skills</Link>
         <div className="mt-2 px-1">
           <Select items={SYSTEM_CHOICES} value={system} onValueChange={(value) => {
             if (value && value !== system) void navigate({ to: '/systems/$system' as never, params: { system: value } as never });
@@ -173,6 +188,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
       </div>
       <NavList>
         {matches('Overview') && file(undefined, 'Overview')}
+        {contentSections.map(({ id, section, proto }) => <FileTree key={proto.id} proto={proto} current={page === id && params._splat ? findArtifact(proto, params._splat) : undefined} embedded contentIcon={navIcon(CONTENT_ICONS[id])} branch={{ label: section.title, path: source.dir + id + '/', active: page === id }} navigation={{ query: matches(section.title) ? '' : q, searching: Boolean(q), expanded: groupOpen(id), onExpandedChange: open => changeGroup(id, open), folderCommand, onFoldersExpanded: open => setFoldersExpanded(prev => prev[id] === open ? prev : { ...prev, [id]: open }) }} />)}
         {(matchingFoundations.length > 0 || iconsMatch || matches('Theme')) && <SystemBranch label="Theme" path={source.theme} open={groupOpen('theme')} onOpenChange={open => changeGroup('theme', open)}>
           {matchingFoundations.map(p => file(p.id, p.label))}
           {iconsMatch && file('icons', 'Icons')}
@@ -228,19 +244,20 @@ export default function SystemsPage() {
 
   const manifest = useManifest();
   const manifestSystem = manifest.systems[system];
+  const selected = manifest.systemContent.find((p) => p.id === contentId(system, params.page ?? '')) as Prototype | undefined;
   const components = manifestSystem?.components ?? [];
   const tokens = manifestSystem?.tokens ?? [];
   const search = useSearch({ strict: false }) as { mode?: 'source' };
   const editing = import.meta.env.DEV && search.mode === 'source';
-  const path = sys ? sourcePath(system, params.page, components) : null;
-  const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(path), editing);
+  const path = sys && !selected ? sourcePath(system, params.page, components) : null;
+  const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(path), editing && !selected);
   const editable = components.find((c) => c.slug === params.page);
-  const content = sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page }) : null;
+  const content = selected ? <SystemContentPage key={selected.id + '/' + (params._splat ?? '')} proto={selected} slug={params._splat} /> : sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page }) : null;
   if (!sys || !content) return <NotFound />;
   return (
     <div className="flex min-h-0 flex-1">
       <SystemNav system={system} components={components} tokens={tokens} page={params.page} key={system} />
-      {editing && path ? (
+      {selected ? <main className="flex min-h-0 min-w-0 flex-1 flex-col">{content}</main> : editing && path ? (
         <main className="flex min-h-0 min-w-0 flex-1 flex-col"><Suspense fallback={<p className="p-4 text-sm">Loading editor…</p>}>{editable && ComponentEditor ? <ComponentEditor key={system + '/' + editable.slug} system={system} component={editable} onDone={toggle} /> : SystemSourceEditor && <SystemSourceEditor path={path} onDone={toggle} />}</Suspense></main>
       ) : (
         <main ref={mainRef} className="min-w-0 flex-1 overflow-y-auto">

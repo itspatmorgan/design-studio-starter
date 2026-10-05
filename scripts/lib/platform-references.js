@@ -35,8 +35,6 @@ export function platformReferences({ root, modules, enabled, systemContent }) {
     const links = related.filter((item) => item.targets.some((target) => references.some((ref) => target === ref.source)) || declared.some((d) => item.source === `/modules/${id}/${d.path}` || item.source.startsWith(`/modules/${id}/${d.path.endsWith('/') ? d.path : d.path + '/'}`)));
     return { id, label, enabled: on, references, related: links.map(({ title, href }) => ({ title, href })) };
   };
-  const systems = [...new Map(systemContent.filter(s => s.owner?.kind === 'system').map(s => [s.owner.id, s.owner])).values()];
   return [group('core', 'Platform', '/platform', true),
-    ...modules.slice().sort((a,b) => a.label.localeCompare(b.label)).map((m) => group(m.id, m.label, `/modules/${m.id}`, enabled.includes(m.id), m.instructions)),
-    ...systems.map(s => group('system.' + s.id, s.label, '/' + s.root.slice(4), true))];
+    ...modules.slice().sort((a,b) => a.label.localeCompare(b.label)).map((m) => group(m.id, m.label, `/modules/${m.id}`, enabled.includes(m.id), m.instructions))];
 }

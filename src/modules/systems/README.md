@@ -108,13 +108,13 @@ Only these system source files and discovered component files are accessible thr
 
 ## Navigation and organization
 
-The selected system has one toolkit navigation tree, ordered Overview, Theme, and Components. Overview opens the system’s overview source. Theme and Components start expanded. A Context and Skills shortcut opens this system’s README and original guidance in the shared Documentation browser. Branches use disclosure chevrons; individual pages use icons to distinguish their type.
+The selected system has one navigation tree, ordered Overview, Context, Skills, Theme, and Components. Overview opens the system’s overview source. Context, Skills, Theme, and Components start expanded. Context and Skills read this system’s original guidance files. Branches use disclosure chevrons; individual pages use icons to distinguish their type.
 
-The Resources toolbar searches toolkit navigation and provides an expand-all or collapse-all action. Search matches navigation names and file paths, temporarily revealing matching branches. Clearing search restores their previous expansion state. Context and Skills file creation belongs to the shared browser.
+The Resources toolbar searches all system navigation and provides an expand-all or collapse-all action. Search matches navigation names and file paths, temporarily revealing matching branches. Clearing search restores their previous expansion state. Context and Skills provide creation actions in their own branches.
 
 Theme contains token pages generated from the system’s theme file. Its navigation actions expose that source. Component items group their documentation, examples, and runtime source without presenting category metadata as filesystem folders.
 
-In Documentation, Context shows original file and folder trees. Skills shows one entry per skill, opening its required `<name>/SKILL.md`; it does not repeat the skill as a folder and a document. Its source editor provides a file picker for the entry file and supporting references, scripts, assets, or other files inside the skill folder. Text files use the shared editor; other assets can be opened externally. Switching files protects unsaved edits. Direct links to supporting documents remain available.
+In Systems, Context shows original file and folder trees. Skills shows one entry per skill, opening its required `<name>/SKILL.md`; it does not repeat the skill as a folder and a document. Its source editor provides a file picker for the entry file and supporting references, scripts, assets, or other files inside the skill folder. Text files use the shared editor; other assets can be opened externally. Switching files protects unsaved edits. Direct links to supporting documents remain available.
 
 Local menus support creation, source editing, rename, move, and recoverable deletion within each section’s rules. A skill entry’s Rename and Delete actions operate on its whole folder, preserving the required entry-file name and the skill’s supporting files. Its New actions create supporting files or folders. Drag operations are scoped to their owning tree: they cannot move a file into another system or another content section. Component and theme menus retain source inspection actions; structural changes to their code require updating imports and related documentation through the agent or editor.
 
@@ -138,7 +138,7 @@ A system’s guidance applies to its product and design domain. Platform and mod
 
 A system owns four parts: theme, components, context, and skills. Context and skills live directly in their system folders.
 
-Documentation exposes these files at `/documentation/context/<id>/context/<file>` and `/documentation/context/<id>/skills/<skill>/SKILL`. Older Systems context and skill links redirect there. The shared source editor and file operations use explicit system and section identifiers. Content remains platform-styled even for a single-mode product system.
+Systems exposes these files at `/systems/<id>/context/<file>` and `/systems/<id>/skills/<skill>/SKILL`. Saved links from the combined Documentation browser redirect here. The shared source editor and file operations use explicit system and section identifiers. Content remains platform-styled even for a single-mode product system.
 
 The repository's `AGENTS.md` supplies platform operating instructions and routes prototype work to its assigned system's `AGENTS.md`. System-local instructions link to relevant context and skills. System knowledge supplements platform constraints; it does not override runtime dependency boundaries. Different systems may use the same skill folder name because their source paths remain distinct. Discovery does not imply a harness automatically loads these files.
 

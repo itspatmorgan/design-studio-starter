@@ -8,7 +8,7 @@ setSections(['examples']);
 test('a prototype opens under /prototypes, a section item under its section', () => {
   assert.equal(addressOf('patrick', 'hello-world'), '/prototypes/patrick/hello-world');
   assert.equal(addressOf('examples', 'sample'), '/examples/sample');
-  assert.equal(addressOf('system-content', 'studio:rules'), '/documentation/context/studio/rules');
+  assert.equal(addressOf('system-content', 'studio:rules'), '/systems/studio/rules');
   assert.equal(isSectionKey('patrick'), false);
   assert.equal(isSectionKey('systems'), true);
 });
@@ -27,7 +27,7 @@ test('files are still found by contributor and id', () => {
 });
 
 test('SystemContent Context addresses resolve to the docs folder', () => {
-  assert.equal(addressOf('system-content', 'product:context'), '/documentation/context/product/context');
+  assert.equal(addressOf('system-content', 'product:context'), '/systems/product/context');
   assert.deepEqual(parseAddress('/systems/product/context/personas'), { contributor: 'system-content', id: 'product:context', rest: ['personas'] });
   assert.equal(rootOf('system-content', 'product:context'), 'systems/product/context');
 });
