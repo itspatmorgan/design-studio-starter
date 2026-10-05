@@ -17,6 +17,13 @@ import { NotFound } from '@/platform/app/shell/App';
 
 const guidanceExpansion = new Map<string, boolean>();
 
+function GuidanceSection({ label, children }: { label: string; children: ReactNode }) {
+  return <section aria-label={label} className="space-y-0.5 [&+section]:mt-4">
+    <h2 className="flex h-7 items-center px-3 text-[12px] font-semibold text-muted-foreground">{label}</h2>
+    {children}
+  </section>;
+}
+
 function GuidanceBranch({ label, path, active = false, defaultExpanded = false, searching = false, children }: { label: string; path: string; active?: boolean; defaultExpanded?: boolean; searching?: boolean; children: ReactNode }) {
   const [open, setOpen] = useState(() => guidanceExpansion.get(path) ?? (active || defaultExpanded));
   useEffect(() => { if (active) setOpen(true); }, [active]);
@@ -47,10 +54,13 @@ export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
     const docs = references(navOwner.root).filter(r => ownerMatch || matches(r.title) || matches(r.source));
     const branches = manifest.systemContent.filter(proto => proto.owner?.id === navOwner.id && (proto.artifacts.length > 0 || selected?.id === proto.id) && (ownerMatch || matches(proto.title) || proto.artifacts.some(a => matches(a.path) || matches(artifactLabel(a.path, proto)))));
     if (q && !docs.length && !branches.length) return null;
-    return <GuidanceBranch key={navOwner.id} label={navOwner.label} path={navOwner.root + '/'} active={id === navOwner.id} searching={Boolean(q)}>
+    const content = <>
       {docs.map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label={r.source.endsWith('/README.md') ? 'README' : r.title} />)}
       {branches.map(proto => <FileTree key={proto.id} proto={proto} current={selected?.id === proto.id && slug ? findArtifact(proto, slug) : undefined} embedded rememberExpansion externalFilter={{ query: ownerMatch || matches(proto.title) ? '' : q, searching: Boolean(q) }} branch={{ label: proto.title, path: navOwner.root + '/' + proto.title.toLowerCase() + '/', active: selected?.id === proto.id, defaultExpanded: selected?.id === proto.id }} />)}
-    </GuidanceBranch>;
+    </>;
+    return navOwner.kind === 'platform'
+      ? <GuidanceSection key={navOwner.id} label={navOwner.label}>{content}</GuidanceSection>
+      : <GuidanceBranch key={navOwner.id} label={navOwner.label} path={navOwner.root + '/'} active={id === navOwner.id} searching={Boolean(q)}>{content}</GuidanceBranch>;
   };
   const platformBranches = owners.filter(o => o.kind === 'platform').map(ownerTree).filter(Boolean);
   const moduleBranches = owners.filter(o => o.kind === 'module').map(ownerTree).filter(Boolean);
@@ -69,9 +79,9 @@ export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
       </div>
       <NavList>
         {platformBranches}
-        {moduleBranches.length > 0 && <GuidanceBranch searching={Boolean(q)} defaultExpanded label="Modules" path="src/modules/" active={owner.kind === 'module'}>
+        {moduleBranches.length > 0 && <GuidanceSection label="Modules">
           {moduleBranches}
-        </GuidanceBranch>}
+        </GuidanceSection>}
         {!platformBranches.length && !moduleBranches.length && <p className="px-3 py-2 text-[13px] text-muted-foreground">No matching resources</p>}
       </NavList>
     </SectionNav>
