@@ -6,7 +6,7 @@ The pilot targets macOS with a supported local code harness. It does not establi
 
 ## Ownership and setup
 
-The default location is `~/Design Studios/My Design Studio`. The user can choose another visible folder. The plugin cache contains the setup tools; it does not contain the user's studio.
+The default location is `~/Developer/My Design Studio`. The user can choose another visible folder. The plugin cache contains the setup tools; it does not contain the user's studio.
 
 [Create studio](skills/create-studio/SKILL.md) owns first-time setup. [Open studio](skills/open-studio/SKILL.md) owns reopening existing work. These procedures delegate contributor registration and product configuration to the downloaded repository's instructions.
 
