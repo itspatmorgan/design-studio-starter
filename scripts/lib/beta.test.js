@@ -215,12 +215,12 @@ test('shared documentation catalog covers Guide and Reference and keeps damaged 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-documentation-catalog-'));
   try {
     const chapter = 'src/modules/documentation/pages/index.md';
-    const readme = 'src/modules/prototypes/README.md';
+    const readme = 'src/modules/prototypes/reference.md';
     for (const file of [chapter, readme]) {
       fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
       fs.writeFileSync(path.join(root, file), '# Source');
     }
-    const manifest = { guide: [{ slug: 'prototypes', source: '/modules/prototypes/README.md' }], platformReferences: [{ id: 'documentation', enabled: true, references: [] }, { id: 'prototypes', enabled: true, references: [{ source: '/modules/prototypes/README.md' }] }] };
+    const manifest = { guide: [{ slug: 'index', source: '/modules/documentation/pages/index.md' }], platformReferences: [{ id: 'documentation', enabled: true, references: [] }, { id: 'prototypes', enabled: true, references: [{ source: '/modules/prototypes/reference.md' }] }] };
     const allowed = documentationSources(root, manifest);
     assert.ok(allowed.includes(chapter));
     assert.equal(allowed.filter((file) => file === readme).length, 1);
@@ -231,6 +231,7 @@ test('shared documentation catalog covers Guide and Reference and keeps damaged 
     fs.writeFileSync(path.join(root, chapter), '---\ntitle: broken');
     assert.equal(sourceFile(root, documentationSources(root, manifest), { action: 'read', path: chapter }).body.content, '---\ntitle: broken');
     manifest.platformReferences[0].enabled = false;
+    manifest.guide = [];
     assert.ok(!documentationSources(root, manifest).includes(chapter));
     assert.equal(sourceFile(root, allowed, { action: 'read', path: '../../README.md' }).status, 404);
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
@@ -304,6 +305,10 @@ test('standalone diagrams are discovered by both extensions and disabling preser
       if (fs.existsSync('src/modules/document/type.ts')) assert.ok(prototype.artifacts.some(i=>i.fileType==='document'));
       else assert.equal(prototype.artifacts.some(i=>i.fileType==='document'), false);
       assert.ok(manifest.platformReferences.find(g=>g.id==='diagrams')?.references.length);
+      if (manifest.guide.length) {
+        assert.ok(manifest.guide.some(p=>p.slug==='diagrams' && p.source==='/modules/documentation/pages/diagrams.md'));
+        assert.ok(manifest.guide.every(p=>p.source?.startsWith('/modules/documentation/pages/')));
+      }
       fs.writeFileSync(config,editModulesFlag(fs.readFileSync(config,'utf8'),'diagrams',false));
     `], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
     // A fresh process observes the changed module configuration.
@@ -319,6 +324,7 @@ test('standalone diagrams are discovered by both extensions and disabling preser
       else assert.equal(prototype.artifacts.some(i=>i.fileType==='document'), false);
       assert.ok(fs.existsSync('src/prototypes/patrick/feedback-inbox/test-flow.mermaid'));
       assert.equal(manifest.platformReferences.find(g=>g.id==='diagrams')?.references.length,0);
+      assert.equal(manifest.guide.some(p=>p.slug==='diagrams'),false);
     `], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });

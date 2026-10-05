@@ -142,3 +142,14 @@ Systems exposes these files at `/systems/<id>/context/<file>`, `rules/<file>`, a
 The repository's `AGENTS.md` supplies platform operating instructions and routes prototype work to its assigned system's `AGENTS.md`. System-local instructions link to relevant context, rules, and skills. System knowledge supplements platform constraints; it does not override runtime dependency boundaries. Different systems may use the same skill folder name because their source paths remain distinct. Discovery does not imply a harness automatically loads these files.
 
 Module packs declare supplied platform files with `instructions: [{ path, when }]` and provide them under `instructions/` in the pack. Installation places them in the matching `src/systems/studio/` content folder. System packs carry their context, rules, skills, and `AGENTS.md` alongside their components. Removal must account for incoming references to system content.
+
+## Implementation files
+
+The design systems pages, at `/systems`: what each system has, its tokens, and a page per component. Required. The systems themselves are
+folders in `src/systems/<id>/`, which are your content.
+
+- `module.ts`, `app.tsx`: who it is, its rail button and routes.
+- `spec.ts`: what a `system.ts` declares (`SystemSpec`) and the check for it.
+- `sources.ts`, `docs.ts`, `scaffold.ts`, `themeTokens.ts`: where a component came from, how its docs and props are read, the starter docs a new component gets, and the theme's tokens.
+- `pages/`, `data/`: the Systems pages and the loaders behind them (browser).
+- `node/`: finding systems, building their docs and props, and `pnpm component-docs` (Node).

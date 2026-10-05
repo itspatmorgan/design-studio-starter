@@ -1,62 +1,46 @@
----
-title: "Documentation"
-description: "Find human guidance and detailed platform contracts."
-section: "Studio"
-order: 14
-toc: true
-slug: "documentation"
----
+# Documentation contract
 
-# Documentation
+The Documentation module owns the human Guide at `/documentation/guide`. The shared platform owns Reference at `/documentation/reference`. Guide chapters explain using Studio; Reference displays the technical contracts in their original source files.
 
-Documentation has two tabs: **Guide** and **Reference**.
+## Guide chapters
 
-## Guide
+All human chapters live in `src/modules/documentation/pages/*.md`. Module READMEs are not Guide sources. Each chapter requires `title` and numeric `order` frontmatter. Optional `description` supplies a summary; optional `section` groups chapters in navigation. The filename supplies its URL slug; `index.md` opens at the Guide root.
 
-The Guide introduces the main surfaces and essential concepts. Read what is useful now; you do not need to finish it before making a prototype.
+A chapter about a capability declares `module: <id>`. Discovery includes it only when that module is installed and enabled. Disabling or removing the capability preserves the chapter file but hides it from navigation, search, and direct reading routes. Chapters without a module association remain available whenever the Guide is enabled.
 
-## Reference
+Invalid chapter metadata produces a local warning and fails a strict build. Locally, source mode keeps malformed chapters repairable. Guide previous/next navigation follows the discovered reading order.
 
-Reference exposes the documentation beside the platform code. **Understand Studio** explains responsibilities and agent context. **Operate Studio** covers configuration, editing, assets, checks, and publishing. **Capabilities** covers individual modules. **Extend Studio** holds developer contracts and the tech stack. Navigation labels match the titles of the pages they open.
+## Reference sources
 
-Your agent can consult these files for implementation details. You can inspect them when you want to understand how something works, but they are not required reading for everyday design work.
+Reference discovers top-level Markdown under `src/platform/core/`, the shared `src/modules/README.md` contract, and enabled modules’ folders. Module documents contain technical requirements and implementation details. They do not also supply human chapters.
 
-## How it relates to Systems
+Core pages use `referenceSection` (`understand`, `operate`, or `extend`) and optional numeric `referenceOrder`. Unclassified core pages appear under Extend Studio. Capability documents use their canonical titles. A module with one contract displays one navigation item; additional contracts stay under their owning module.
 
-Reference presents the technical system of record: core contracts define shared platform behavior, and module contracts define individual capabilities. These files can state requirements as well as explain how things work.
+Related operating instructions are selected per document from system-content links. A module's primary contract (`README.md` or `reference.md`) also includes its declared instructions. The source path and related links appear under About this reference. Availability does not establish that an agent read a file.
 
-The Studio system supplies the operating instructions for working in that environment. Its **Rules** direct agent behavior, **Skills** provide procedures, and **Context** explains Design Studio's intent. They link to the technical contracts rather than maintaining a second definition of them.
+## Availability and search
 
-For example, a prototype contract defines permitted dependencies. The Studio workflow rule tells an agent to read that contract, preserve your work, and verify the result. Your assigned product system adds its own context and conventions within these boundaries.
+Disabling or removing Documentation hides the Guide and its rail entry. Reference discovery and direct access remain available through the shared platform. Prototype Documents is independent of both readers.
 
-Read [Platform and system responsibilities](/documentation/reference/platform/core/contracts-and-instructions.md) for the ownership model, or [Agent context](/documentation/guide/agent-context) for the reading flow. [Systems](/documentation/guide/systems) exposes each system's components, foundations, context, rules, and skills.
+The command palette lists discovered Reference pages and enabled Guide chapters, labeled by reading mode. Search matches titles and source paths, not full document text.
 
-Use navigation for the [shared source workflow](/documentation/guide/home#working-with-files). Platform documentation does not offer rename or delete actions in these menus.
+## Source access
 
-## For developers
+Guide and Reference each edit their own complete source document. They never edit another reading mode’s source implicitly. Navigation provides Edit source, Open in editor, Reveal in Finder, Copy link, and Copy path where local permissions allow them. Platform documentation has no rename or delete actions in these menus.
 
-Documentation opens at `/documentation` and combines a curated **Guide** at `/documentation/guide` with complete **Reference** at `/documentation/reference`. Guide chapters introduce the studio to people. References describe capabilities, boundaries, and implementation contracts available to people and agents. You do not need to read or change them to begin creating.
+The [shared editor](../../platform/core/source.md) supplies keyboard controls, version checks, and unsaved-change handling. Published pages support reading and copying without repository editing or operating-system actions.
 
-Follow the [Documentation standards](../../systems/studio/rules/documentation-standards.md) when changing Guide or Reference content.
+Source access is limited to indexed documentation and local Guide Markdown, including malformed chapters that need repair. Removing a capability removes its contracts from the allowlist; retained Guide files stay locally repairable.
 
-Use the two sidebar tabs to switch reading modes. Reference groups documents by purpose under **Understand Studio**, **Operate Studio**, **Capabilities**, and **Extend Studio**. Each module opens its README; additional contracts appear beneath their owning module. Modules with no supplied documentation are omitted. Navigation labels match the page titles: module names in Reference, surface names in the Guide. Both presentations use the same source file.
+## Implementation
 
-The Reference overview answers essential operating questions and links to the authoritative pages. Each document has a collapsed **About this reference** section with its source path and system context and instructions linked to that specific document. Visibility does not mean an agent automatically reads a reference. Related links are selected per source document; module READMEs also include their declared operating instructions.
+- `module.ts`, `app.tsx`: module identity, rail entry, and Guide routes.
+- `pages/*.md`: human chapters, ordered and filtered by their metadata.
+- `GuideLayout.tsx`, `GuidePage.tsx`, `loadGuide.ts`: Guide navigation and reading.
+- `src/platform/app/docs/References.tsx`: shared Reference navigation and overview.
+- `scripts/build/build-manifest.js`: Guide discovery and validation.
+- `scripts/lib/platform-references.js`: contract indexing and related instructions.
+- `scripts/build/remark-title-from-heading.js`: extracts opening Markdown headings without hiding document sections.
+- `src/platform/app/docs/DocumentationEditor.tsx`, `documentationSource.ts`, `scripts/build/files/source.js`: local allowlisted source editing.
 
-The optional module uses `documentation` for its folder, declaration ID, configuration key, and public section key. Disable it through studio commands to hide the Guide and its rail entry. Reference discovery and direct access belong to the shared platform and remain available when this module is disabled or removed. The command palette includes Reference pages and enabled Guide chapters, labeled by reading mode. Search matches page titles and source paths; it does not search the full document text. Prototype Documents is independent of both reading modes.
-
-Right-click a file in either reading mode for **Edit source**, **Open in editor**, **Reveal in Finder**, **Copy link**, and **Copy path**. Use **⌘' / Ctrl+'** to toggle the selected file between its rendered view and source; **⌘S / Ctrl+S** saves. Returning with unsaved changes requires confirmation. Source editing opens from navigation, with no separate Edit button on the page. Local edits use the [shared platform editor](../../platform/core/source.md) and detect external changes before saving. Guide chapter edits preserve the complete underlying README. Platform documentation has no rename or delete actions in these menus. Published pages support copying links and paths; local editing and operating-system actions are unavailable.
-
-- `module.ts`: who it is and its section.
-- `app.tsx`: its rail button and routes.
-- `pages/*.md`: the Guide's own pages, about the app as a whole, in the order their `order` frontmatter gives. Add a page by adding a file.
-- A page for a module or file type is that folder's `README.md`, when it opens with Guide frontmatter: the Guide shows it down to a `## For developers` heading (`scripts/lib/guide-pages.js` finds them, `scripts/build/remark-readme-guide.js` trims them). Removing the folder removes the page.
-- `src/platform/app/docs/DocumentationHeader.tsx`, `References.tsx`: the shared Documentation heading, Reference navigation, and reference metadata.
-- `scripts/lib/platform-references.js`: indexes the same top-level core and enabled-module Markdown set as the shared reader. Related guidance comes from system content links and module declarations.
-- Core Markdown uses `referenceSection` (`understand`, `operate`, or `extend`) and numeric `referenceOrder` frontmatter. Unclassified core pages appear under Extend Studio. Capability navigation retains its module hierarchy.
-- `GuideLayout.tsx`, `GuidePage.tsx`, `loadGuide.ts`: the sidebar, reader, and enabled-page previous/next navigation.
-- Diagrams are fenced `mermaid` blocks in the Markdown pages, rendered by the shared platform reader.
-
-- `src/platform/app/docs/DocumentationNavItem.tsx`, `src/platform/app/shell/FileActionItems.tsx`: shared file-menu actions, also used by system context and prototype navigation.
-- `src/platform/app/docs/DocumentationEditor.tsx`, `documentationSource.ts`, `scripts/build/files/source.js`: local reference source access, limited to indexed documentation, with version and size checks.
-- Guide and Reference share `DocumentationEditor.tsx` and the documentation source endpoint. Standalone chapters remain repairable when their metadata is invalid. Published builds omit the editor.
+Follow [Documentation standards](../../systems/studio/rules/documentation-standards.md) for writing policy and the [Maintain documentation skill](../../systems/studio/skills/maintain-documentation/SKILL.md) for verification.

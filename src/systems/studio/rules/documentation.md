@@ -5,12 +5,12 @@ Documentation offers a curated Guide for people and full Reference from platform
 Follow the [documentation standard](documentation-standards.md) and [Maintain documentation skill](../skills/maintain-documentation/SKILL.md).
 
 - Keep Reference content beside the platform code it describes. The shared reader discovers core contracts and enabled modules’ top-level Markdown.
-- Put platform-wide chapters in `src/modules/documentation/pages/`.
+- Put all human chapters in `src/modules/documentation/pages/`.
 - Organize the Guide around setup, the main app surfaces, and collaboration. Keep it concise for people working with agents.
-- Put a main surface's human chapter in its module README, so removal also removes the chapter. Supporting artifact types can remain in Reference and be introduced together in Prototypes.
-- For module implementation details, use the README's `## For developers` section or directly linked module references.
+- Keep human workflows in the Guide. A capability chapter declares `module: <id>` so discovery hides it when the module is disabled or removed.
+- Keep one technical contract with each module. Use its README or reference document for requirements and implementation details; do not expose a second document that repeats the Guide.
 - Use frontmatter with `title`, `description`, `order`, and `section`. Set `toc: true` when useful.
-- Use `slug` to preserve a README chapter's address when its module ID differs.
+- A Guide chapter’s filename supplies its URL slug. Keep established chapter filenames when moving content.
 - Write plain Markdown with short sentences. Explain unfamiliar terms on first use.
 - Describe the environment without prescribing a team's design process.
 - Use visual aids only when they explain a relationship or action more clearly.

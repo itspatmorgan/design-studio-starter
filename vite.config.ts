@@ -9,7 +9,6 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkHtmlAsText from './scripts/build/remark-html-as-text.js';
 import remarkTitleFromHeading from './scripts/build/remark-title-from-heading.js';
-import remarkReadmeGuide from './scripts/build/remark-readme-guide.js';
 import rehypeSlug from 'rehype-slug';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeMermaid from './scripts/build/rehype-mermaid.js';
@@ -31,12 +30,12 @@ import { ENABLED_MODULES, PROTOTYPE_DIRS } from './scripts/lib/modules.js';
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const prototypeFolders = ['prototypes', ...PROTOTYPE_DIRS.map((dir: string) => path.basename(dir))].map(escapeRegExp).join('|');
 
-// References use the same plain-Markdown pipeline, with the full README retained.
+// References use the same plain-Markdown pipeline, without hiding any document sections.
 function markdown(reference = false) {
   const plugin = mdx({
     format: 'md',
     providerImportSource: '@mdx-js/react',
-    remarkPlugins: [remarkFrontmatter, ...(reference ? [remarkTitleFromHeading, () => remarkReadmeGuide({ full: true })] : [remarkReadmeGuide, remarkTitleFromHeading]), remarkMdxFrontmatter, remarkGfm, remarkHtmlAsText],
+    remarkPlugins: [remarkFrontmatter, remarkTitleFromHeading, remarkMdxFrontmatter, remarkGfm, remarkHtmlAsText],
     rehypePlugins: [rehypeSlug, rehypeMermaid, rehypeFileEmbeds, [rehypePrettyCode, { theme: { light: documentCodeTheme('light'), dark: documentCodeTheme('dark') }, keepBackground: false }]],
   });
   const transform = plugin.transform;

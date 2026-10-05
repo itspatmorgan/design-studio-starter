@@ -26,6 +26,10 @@ export function ReferenceLayout() {
         {foundationGroup('operate', 'Operate Studio')}
         {modules.length > 0 && <NavGroup heading="Capabilities">
           {modules.map((group) => {
+            if (group.references.length === 1) {
+              const ref = group.references[0];
+              return <DocumentationNavItem key={group.id} href={referenceHref(ref.source)} path={'src' + ref.source} label={ref.title} />;
+            }
             const readme = group.references.find((ref) => ref.source.endsWith('/README.md'));
             const contracts = group.references.filter((ref) => ref !== readme);
             return <div key={group.id}>

@@ -3,11 +3,9 @@ title: "Prototypes"
 description: "Explore ideas with artifacts that work together."
 section: "Studio"
 order: 11
+module: prototypes
 toc: true
-slug: "prototypes"
 ---
-
-# Prototypes
 
 A prototype is a workspace for an idea. It brings interactive screens and supporting context together, without affecting other prototypes.
 
@@ -77,17 +75,3 @@ The assigned system stays with the prototype in the app. To try another system, 
 Keeping the same system creates an ordinary copy. Choosing another system asks you to confirm a rebuild copy. Systems rarely translate directly; components, styles, and some behavior may need to be reconstructed. The original stays unchanged so you can compare the result.
 
 A rebuild copy keeps its current system until your agent migrates it. Its sidebar shows **Rebuild needed** and the target. Select **Copy rebuild instructions** and paste them into your coding agent. Creating the copy does not start an agent or convert its code automatically. The agent updates the assignment and clears the notice after verifying the rebuild.
-
-## For developers
-
-Read the [module contract](reference.md) for file structure and implementation details.
-
-The Prototypes module: the gallery at `/prototypes`, and the viewer every prototype, module artifact and system context section opens in. Required. The prototypes themselves are in `src/prototypes/<person>/<id>/`, which are your content.
-
-- `module.ts`, `app.tsx`: who it is, its rail button, the `/prototypes` route, its front-page block, and its palette entries. A prototype opens through the platform's artifact routes (`src/platform/app/router.tsx`).
-- `gallery/`: the gallery, a prototype's card, and the New prototype dialog (browser).
-- `viewer/`: a prototype's layout, navigation and file tree, its menus and dialogs (browser). Source editing uses the [shared platform editor](../../platform/core/source.md).
-- `src/platform/app/source/ArtifactSource.tsx`: adapts prototype and system context access to the shared editor.
-- `node/create.js`: `pnpm new`, and what the New prototype button runs (Node).
-
-Agent contract: `src/systems/studio/rules/prototype-workflow.md`.

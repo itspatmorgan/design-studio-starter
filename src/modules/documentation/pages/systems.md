@@ -3,11 +3,9 @@ title: "Systems"
 description: "Browse the materials and knowledge for your work."
 section: "Studio"
 order: 12
+module: systems
 toc: true
-slug: "systems"
 ---
-
-# Systems
 
 Systems brings together the components, styles, and knowledge used by your prototypes. Use the selector to switch between systems. One navigation tree shows the selected system’s theme, components, context, rules, and skills.
 
@@ -83,16 +81,3 @@ Each skill appears once in navigation and opens its instructions. In source mode
 A prototype uses its assigned system's knowledge along with platform operating rules and its own local intent. Files being visible here does not automatically load them into an agent conversation. The [Agent context chapter](/documentation/guide/agent-context) diagrams how the agent chooses instructions.
 
 Studio contains Design Studio's own context and instructions. Keep your product context in its product system. System knowledge follows Studio's appearance; UI examples follow the system's supported color modes.
-
-## For developers
-
-Read the [module contract](reference.md) for file structure and implementation details.
-
-The design systems pages, at `/systems`: what each system has, its tokens, and a page per component. Required. The systems themselves are
-folders in `src/systems/<id>/`, which are your content.
-
-- `module.ts`, `app.tsx`: who it is, its rail button and routes.
-- `spec.ts`: what a `system.ts` declares (`SystemSpec`) and the check for it.
-- `sources.ts`, `docs.ts`, `scaffold.ts`, `themeTokens.ts`: where a component came from, how its docs and props are read, the starter docs a new component gets, and the theme's tokens.
-- `pages/`, `data/`: the Systems pages and the loaders behind them (browser).
-- `node/`: finding systems, building their docs and props, and `pnpm component-docs` (Node).

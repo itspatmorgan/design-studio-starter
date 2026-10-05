@@ -1,6 +1,6 @@
 // Keeps the manifest live during `pnpm dev`, without reloading the page.
 //
-// Vite already watches every file. When something under src/prototypes/, a module's content folder, src/platform/, src/systems/, src/modules/documentation/pages/, or a README that is a Guide page
+// Vite already watches every file. When something under src/prototypes/, a module's content folder, src/platform/, src/systems/, src/modules/documentation/pages/, or a module contract
 // changes (from the app, an agent, or your editor), this rebuilds the manifest in-process
 // and pushes it to the app over Vite's dev connection. The app swaps it in and refreshes
 // only the routes that use it (see router.tsx), so the open view and scroll position stay.
@@ -11,7 +11,6 @@ import { buildManifest } from './build-manifest.js';
 import { FILE_TYPES, fileTypeOf } from '../lib/file-types.js';
 import { ENABLED_MODULES, PROTOTYPE_DIRS } from '../lib/modules.js';
 import { CONTRIBUTORS_DIR, CONTRIBUTORS_FILE } from '../lib/contributors.js';
-import { README_FILES } from '../lib/guide-pages.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -40,8 +39,6 @@ const inside = (dir, file) => file === dir || file.startsWith(dir + path.sep);
 function relevant(file, kind) {
   if (file === CONTRIBUTORS_FILE || inside(CONTRIBUTORS_DIR, file) || file === AGENTS) return true;
   if (GUIDE && inside(GUIDE, file)) return file.endsWith('.md');
-  // A README that is a Guide page: its frontmatter and title are in the manifest.
-  if (GUIDE && path.basename(file) === 'README.md' && README_FILES().includes(file)) return true;
   if (inside(SYSTEM_CONTENT, file)) return kind !== 'change' || file.endsWith('.md');
   if (file.endsWith('.md') && /src[\\/](?:platform[\\/]core|modules)[\\/]/.test(file)) return true;
   // A system's component docs: files coming and going, and edits to the ones that describe a component
@@ -58,7 +55,7 @@ export default function manifestWatch() {
     name: 'prototype-manifest-watch',
     apply: 'serve',
     configureServer(server) {
-      server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, SYSTEM_CONTENT, ...(GUIDE ? [GUIDE, ...README_FILES()] : []), SYSTEMS, CONTRIBUTORS_FILE, CONTRIBUTORS_DIR, AGENTS]);
+      server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, SYSTEM_CONTENT, ...(GUIDE ? [GUIDE] : []), SYSTEMS, CONTRIBUTORS_FILE, CONTRIBUTORS_DIR, AGENTS]);
       let timer = null;
       // Every file that changed since the last build, even ones that don't ask for a rebuild: the next one tells the
       // build which prototypes to look at again, so an edit that waited for it is never missed.

@@ -1,45 +1,10 @@
-# Diagrams
+# Diagram contract
 
-Diagrams adds standalone Mermaid files to prototypes. Use them to explain a flow, responsibility, dependency, or other relationship that helps someone understand the prototype. Each diagram has its own navigation entry and can appear as a live preview on a canvas. Standalone diagrams fill the prototype viewer and scale to fit its available space while preserving their proportions.
+A standalone diagram is one plain Mermaid diagram in a `.mermaid` or `.mmd` file, without Markdown fences. The file-type declaration supplies its editor language and preview surfaces; the shared renderer validates syntax when opened. Invalid diagrams remain available for source repair.
 
-## Create and edit
+The optional module owns standalone files. Markdown Mermaid fences remain a shared-reader capability when this module is disabled or removed. Follow the [file-type contract](../../platform/core/fileTypes.md) for discovery, embeds, and disabled-file behavior.
 
-Ask your agent to create a diagram, or select **New** (+), then **New diagram**, in the prototype’s Artifacts row. New diagrams use `.mermaid`. The module also opens `.mmd` files.
-
-A file contains one diagram in plain Mermaid syntax, without Markdown fences:
-
-```text
-flowchart LR
-  accTitle: Review feedback
-  accDescr: Feedback is reviewed, then addressed or kept for later.
-  feedback[Feedback] --> review{Review}
-  review -->|Act| task[Create a task]
-  review -->|Later| backlog[Keep for review]
-```
-
-Include an accessible title and description where the selected diagram type supports them. Use the diagram type that communicates the relationship clearly. All diagram types supported by the installed Mermaid renderer are available.
-
-Right-click the file and select **Edit source** to edit it. Save with Command+S on macOS or Ctrl+S elsewhere, then select **Done**. Edits made by your agent or external editor also update the open diagram locally. Invalid syntax displays an error. Use the file menu’s **Edit source** action to inspect and repair it. Standalone diagrams have no separate source toggle.
-
-The source editor highlights `.mermaid` and `.mmd` files with the same Flexoki colors as code. Mermaid fences in Markdown source use this highlighting too. Highlighting covers common diagram types; unsupported syntax remains editable and does not limit rendering.
-
-Published diagrams and other contributors’ files are read-only. Source access on local files uses the file menu.
-
-## Share the same visual language
-
-Standalone diagrams and Mermaid fences in Markdown share the same renderer, accessibility behavior, and platform theme. They use platform neutrals and Flexoki accents rather than the prototype design-system theme. See [Diagrams and code](/documentation/reference/platform/core/diagrams.md) for examples and customization.
-
-Use a document fence when a diagram belongs inside written context. Use a standalone diagram when it should be independently navigable or arranged on a canvas. Link to it from documents with a relative path, such as `[Feedback flow](feedback-flow.mermaid)`. To render the same source inside a prototype document, place `![Feedback flow](feedback-flow.mermaid)` on its own line. The embed uses the canvas preview and provides an **Open diagram** link; changes to the source update both presentations. File embeds stay within the current prototype.
-
-Excalidraw’s Mermaid import can turn copied source into editable canvas shapes. That creates a separate artifact; changes do not synchronize between Mermaid source and the imported shapes.
-
-## Optional capability
-
-Disabling or removing Diagrams preserves prototype source files as plain files and hides them from normal artifact navigation. Canvas links become unavailable until the module is enabled again. The prototype opens on the next available artifact in navigation order.
-
-Mermaid fences in the system context, Documentation, and prototype Documents keep working without Diagrams. Documents and Canvases are separate optional modules.
-
-## For developers
+## Implementation
 
 - `module.ts`: optional module identity and agent routing.
 - `type.ts`: `.mermaid` and `.mmd` extensions, plain text editing, new-file template, and canvas preview capability.

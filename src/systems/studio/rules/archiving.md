@@ -7,4 +7,4 @@ Read the prototype contract's [archiving and deployment definition](../../../mod
 - Check active links before archiving and resolve warnings about excluded targets.
 - Apply the [contributor scope rule](contributor-scope.md).
 
-The [Prototypes chapter](../../../modules/prototypes/README.md#make-changes-safely) explains the local controls.
+The [Prototypes chapter](../../../modules/documentation/pages/prototypes.md#make-changes-safely) explains the local controls when the Guide is enabled.

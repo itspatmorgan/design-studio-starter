@@ -11,15 +11,14 @@ Documentation is part of the platform. Keep it accurate as behavior changes. Thi
 | Location | Purpose |
 | --- | --- |
 | Guide | Explain capabilities, defaults, boundaries, and setup choices to people. |
-| Module README | Own the module's Guide chapter and developer orientation. |
+| Module contract (README or reference) | Own that capability’s technical requirements and implementation details. |
 | Core contract | Define shared technical interfaces, behavior, and boundaries. |
-| Module reference | Define that capability's file, API, configuration, dependency, and lifecycle contracts. |
 | system context Context | Preserve curated knowledge for people, agents, or both. |
 | system context Rules | State standing requirements for agent behavior. |
 | system context Skills | Describe a task-specific procedure and when it applies. |
 | `AGENTS.md` | Provide essential project instructions and route agents to relevant context. |
 
-Documentation has two reading modes: Guide provides a curated introduction, and Reference exposes full module documentation and core contracts from their original files. The system context holds studio context and agent instructions. Reference access remains available when the optional Documentation module is disabled.
+Documentation has two reading modes: Guide provides a curated introduction, and Reference exposes module and core contracts from their original files. Human chapters live only in `src/modules/documentation/pages/`. The system context holds studio context and agent instructions. Reference access remains available when the optional Documentation module is disabled.
 
 The [Platform and system responsibilities](../../../platform/core/contracts-and-instructions.md) foundation defines the system of record: core and module contracts own technical requirements; Studio rules own agent operating policy; context owns intent; skills own procedures.
 
@@ -29,7 +28,7 @@ Organize the Guide around the main app surfaces. Introduce essential concepts an
 
 Code defines implemented behavior. Documentation explains that behavior and the intended constraints. If they disagree, identify whether the implementation or the documentation needs correction.
 
-Keep module details with their module. This lets removal also remove the related documentation. Keep shared standards in the system context.
+Keep technical contracts with their module. Associate its Guide chapter through `module: <id>` so disabling or removal hides the human chapter without relocating its source. Keep shared standards in the system context.
 
 File-backed navigation follows the [shared source workflow](../../../platform/core/source.md). Expose source editing through navigation and the common keyboard toggle. Keep source-file mappings explicit for generated pages or pages backed by several files.
 

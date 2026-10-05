@@ -21,7 +21,7 @@ Source editing is available during local development. Published pages retain the
 
 Each module maps its navigation items to real files and supplies file access and permissions. Prototype ownership, system context constraints, and platform file allowlists continue to apply. The editor does not grant permission or infer a prototype from a platform document.
 
-Guide and Reference edit the complete underlying Markdown file, including README developer sections hidden from the Guide. Systems components expose Page, Examples, and Component file tabs. Systems overview and icon pages expose their overview source; generated foundation pages expose their theme CSS. A system without an overview source exposes its declaration instead. Skills expose a file picker for `SKILL.md` and supporting files, preserving the skill’s directory structure.
+Guide chapters and Reference contracts have separate source files. Each reader edits its own complete Markdown document. Systems components expose Page, Examples, and Component file tabs. Systems overview and icon pages expose their overview source; generated foundation pages expose their theme CSS. A system without an overview source exposes its declaration instead. Skills expose a file picker for `SKILL.md` and supporting files, preserving the skill’s directory structure.
 
 ## Implementation
 

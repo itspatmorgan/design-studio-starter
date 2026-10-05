@@ -296,13 +296,3 @@ test('a menu\'s items are grouped: what doesn\'t apply is dropped, and groups ar
   assert.deepEqual(menuGroups([[false], [], [null, 'link'], [false]]), [['link']]);
   assert.deepEqual(menuGroups([[false], []]), []);
 });
-
-test('a README that is a Guide page shows down to "For developers", without its title line', async () => {
-  const { default: plugin } = await import('../../../scripts/build/remark-readme-guide.js');
-  const node = (type: string, depth?: number, text = '') => ({ type, depth, children: [{ type: 'text', value: text }] });
-  const tree = () => ({ type: 'root', children: [{ type: 'yaml', value: 'title: x' }, node('heading', 1, 'Canvases'), node('paragraph'), node('heading', 2, 'Make one'), node('heading', 2, 'For developers'), node('paragraph'), node('heading', 3, 'The model')] });
-  const run = (file: string) => { const t = tree(); plugin()(t, { path: file }); return t.children.map((n: { type: string; depth?: number }) => `${n.type}${n.depth ?? ''}`); };
-  assert.deepEqual(run('/repo/src/modules/canvas/README.md'), ['yaml', 'paragraph', 'heading2']);
-  // Other Markdown files are left alone.
-  assert.equal(run('/repo/src/modules/documentation/pages/questions.md').length, 7);
-});

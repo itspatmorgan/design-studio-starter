@@ -180,7 +180,7 @@ test('platform reference discovery preserves ownership and excludes unavailable 
     const groups = platformReferences({root,modules,enabled:['example'],systemContent});
     const example = groups.find((g) => g.id === 'example');
     assert.deepEqual(example.references.map((r: { source: string }) => r.source), ['/modules/example/README.md','/modules/example/reference.md']);
-    assert.equal(example.references[0].title, 'Example');
+    assert.equal(example.references[0].title, 'Example capability');
     assert.equal(example.references[1].title, 'Example contract');
     assert.deepEqual(example.related.map((r: { href: string }) => r.href), ['/systems/studio/rules/example','/systems/studio/skills/example/SKILL']);
     assert.equal(example.related[1].title, 'studio · Skills · Example');

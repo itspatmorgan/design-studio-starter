@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 // The Guide in the app: its rail button and its routes (/documentation/guide and /documentation/guide/<page>). The pages are in
-// src/modules/documentation/pages/ and in the READMEs of modules and file types, listed in the manifest.
+// src/modules/documentation/pages/ with availability and order recorded in the manifest.
 import { createRoute, notFound } from '@tanstack/react-router';
 import { BookOpen01Icon } from '@hugeicons/core-free-icons';
 import { APP_NAME } from '@/platform/app/data/config';
@@ -12,13 +12,14 @@ import { loadGuidePage } from './loadGuide';
 const GuidePage = lazy(() => import('./GuidePage'));
 const GuideLayout = lazy(() => import('./GuideLayout'));
 
-// Loads a Guide page before it renders, like views. /documentation/guide opens index.md. A page that is a README says where it is in the manifest.
+// Loads a Guide page before it renders, like views. /documentation/guide opens index.md. Each chapter has its own Guide source.
 async function guideLoader(slug: string, mode?: 'source') {
   const page = (await loadManifest()).guide.find((p) => p.slug === slug);
   if (import.meta.env.DEV && mode === 'source') {
     const path = 'src' + (page?.source ?? `/modules/documentation/pages/${slug}.md`);
     return { slug, source: { path }, title: page?.title ?? slug, pageTitle: [page?.title ?? slug, 'Source', APP_NAME].join(' — ') };
   }
+  if (!page) throw notFound();
   const mod = await loadGuidePage(slug, page?.source);
   if (!mod) throw notFound();
   const { title, description, toc } = mod.frontmatter ?? {};

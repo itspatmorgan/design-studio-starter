@@ -23,6 +23,6 @@ When the person asks to add or change platform documentation, read [src/systems/
 <!-- /studio:modules -->
 
 Use pnpm for project commands. Resolve the contributor before editing prototypes. Follow the scope and prototype rules above.
-The human documentation is the Guide at `/documentation/guide`. Module chapters live in module READMEs.
+The human documentation is the Guide at `/documentation/guide`. Human chapters live in `src/modules/documentation/pages/`. Module documents own technical contracts.
 For component, theme, or pop-up changes, read [src/systems/studio/rules/systems.md](src/systems/studio/rules/systems.md).
 The app uses TanStack Router. For routing work, use its [official documentation](https://tanstack.com/router/latest/docs/framework/react/overview).

@@ -99,3 +99,15 @@ The [prototype workflow rule](../../systems/studio/rules/prototype-workflow.md) 
 ## Gallery system filter
 
 `/prototypes?system=<id>` filters the gallery by the resolved system assignment. The active filter is visible and can be cleared. Title and contributor search (`q`) combines with the system filter and preserves it when typing or clearing search. Archived prototypes remain in their separate gallery section; the system overview counts and previews only active prototypes.
+
+## Implementation files
+
+The Prototypes module: the gallery at `/prototypes`, and the viewer every prototype, module artifact and system context section opens in. Required. The prototypes themselves are in `src/prototypes/<person>/<id>/`, which are your content.
+
+- `module.ts`, `app.tsx`: who it is, its rail button, the `/prototypes` route, its front-page block, and its palette entries. A prototype opens through the platform's artifact routes (`src/platform/app/router.tsx`).
+- `gallery/`: the gallery, a prototype's card, and the New prototype dialog (browser).
+- `viewer/`: a prototype's layout, navigation and file tree, its menus and dialogs (browser). Source editing uses the [shared platform editor](../../platform/core/source.md).
+- `src/platform/app/source/ArtifactSource.tsx`: adapts prototype and system context access to the shared editor.
+- `node/create.js`: `pnpm new`, and what the New prototype button runs (Node).
+
+Agent contract: `src/systems/studio/rules/prototype-workflow.md`.

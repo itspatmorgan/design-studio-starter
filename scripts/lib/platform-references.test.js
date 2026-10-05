@@ -29,6 +29,9 @@ test('reference instructions follow the specific source and omit examples and ex
     const example = groups.find(g => g.id === 'example');
     assert.equal(example.references.find(r => r.source.endsWith('/README.md')).related.length, 1);
     assert.equal(example.references.find(r => r.source.endsWith('/reference.md')).related.length, 0, 'declarations orient the module, not every contract');
+    fs.rmSync(path.join(root, 'src/modules/example/README.md'));
+    const soleContract = platformReferences({root, modules, enabled: ['example'], systemContent}).find(g => g.id === 'example');
+    assert.equal(soleContract.references[0].related.length, 1, 'the sole module contract retains declared operating instructions');
     const disabled = platformReferences({root, modules, enabled: [], systemContent}).find(g => g.id === 'example');
     assert.deepEqual(disabled.references, [], 'disabled capabilities have no reading or search targets');
   } finally { fs.rmSync(root, {recursive: true, force: true}); }

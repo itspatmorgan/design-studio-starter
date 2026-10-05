@@ -102,7 +102,7 @@ The manifest scans declared content sections. Vite supplies file globs and theme
 
 `pnpm baseline removal <id>` checks physical removal. Optional-module verification should also cover disabling and retained content.
 
-A module's README owns its human Guide chapter and developer orientation. Rules state agent requirements. Skills sequence tasks. Link to contracts instead of copying them.
+A module owns one technical contract in its README or reference document. Human workflows live in `src/modules/documentation/pages/`, where a chapter declares `module: <id>` to follow that capability’s availability. Rules state agent requirements. Skills sequence tasks. Link to contracts instead of copying them.
 
 ## Customization and updates
 

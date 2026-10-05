@@ -26,11 +26,10 @@ export function platformReferences({ root, modules, enabled, systemContent }) {
     const references = on && fs.existsSync(dir) ? fs.readdirSync(dir, { withFileTypes: true }).filter((entry) => entry.isFile() && entry.name.endsWith('.md')).sort((a,b) => a.name === 'README.md' ? -1 : b.name === 'README.md' ? 1 : a.name.localeCompare(b.name)).map((entry) => {
       const source = `${folder}/${entry.name}`;
       const text = fs.readFileSync(path.join(dir, entry.name), 'utf8');
-      // Module READMEs can also supply Guide chapters. Reference names
-      // the module itself; other documents retain their own canonical titles.
+      // Every contract retains its canonical document title.
       const fm = frontmatter(text);
-      const ownLinks = related.filter(item => item.targets.includes(source) || (entry.name === 'README.md' && declared.some(d => item.source === `/systems/studio/${d.path}` || item.source.startsWith(`/systems/studio/${d.path.endsWith('/') ? d.path : d.path + '/'}`))));
-      return { source, title: entry.name === 'README.md' && id !== 'core' ? label : fm?.title ?? text.match(/^#\s+(.+)$/m)?.[1] ?? entry.name,
+      const ownLinks = related.filter(item => item.targets.includes(source) || ((entry.name === 'README.md' || (entry.name === 'reference.md' && !fs.existsSync(path.join(dir, 'README.md')))) && declared.some(d => item.source === `/systems/studio/${d.path}` || item.source.startsWith(`/systems/studio/${d.path.endsWith('/') ? d.path : d.path + '/'}`))));
+      return { source, title: fm?.title ?? text.match(/^#\s+(.+)$/m)?.[1] ?? entry.name,
         related: ownLinks.map(({ title, href }) => ({ title, href })),
         ...(id === 'core' ? { section: ['understand', 'operate', 'extend'].includes(fm?.referenceSection) ? fm.referenceSection : 'extend' } : {}),
         ...(id === 'core' && Number.isFinite(fm?.referenceOrder) ? { order: fm.referenceOrder } : {}) };
