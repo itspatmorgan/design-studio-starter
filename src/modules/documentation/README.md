@@ -12,9 +12,9 @@ Invalid metadata produces a local warning and fails strict builds. Source mode k
 
 ## Context and Skills sources
 
-The shared browser uses registered owners from the manifest: Platform and enabled modules. Each owner's `README.md` entry renders its canonical README when present; without one it displays discovered context and skills. Additional top-level module contracts remain accessible under that owner.
+The shared browser uses registered owners from the manifest: Platform and enabled modules. Each owner's README entry renders its canonical README when present; without one it displays discovered context and skills. Additional top-level module contracts remain accessible under that owner.
 
-One file tree shows Platform followed by Modules. Every enabled module appears as its own branch, with `README.md` and its available `context/` and `skills/`. Empty sections are omitted unless opened directly. The current owner opens automatically; context and skills start collapsed until selected. Other module branches start collapsed. Modules starts open. Manual expansion choices persist while browsing, and selecting a location reveals its branch. File labels use repository filenames; skill entries use their bundle folder names. There is no scope selector.
+One file tree shows Platform followed by Modules. Every enabled module appears as its own branch, with README and its available Context and Skills. Empty sections are omitted unless opened directly. The current owner opens automatically; context and skills start collapsed until selected. Other module branches start collapsed. Modules starts open. Manual expansion choices persist while browsing, and selecting a location reveals its branch. Files and skills use human-readable names. README is labeled explicitly, and tooltips expose source paths. There is no scope selector.
 
 Platform knowledge lives in `src/platform/context/`, with knowledge and technical requirements at the same level. Module and system context and skills live under their respective owners. Component API pages remain beside components and are exposed by Systems.
 
