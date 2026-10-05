@@ -9,7 +9,7 @@ referenceOrder: 20
 
 ## Change configuration
 
-Open **Studio settings** from the gear icon or search while running Studio locally. Contributors can inspect settings. Admins can edit basic configuration, optional module states, and Admin assignments. Contributor profiles are read-only in this page.
+Open **Studio settings** from the gear icon or search while running Studio locally. Contributors can inspect settings. Admins can edit basic configuration and optional module states. Contributor profiles and assigned role badges are read-only in this page. Assign team Admins through the configuration command below.
 
 Saving writes repository files, synchronizes module-owned agent instructions, and restarts the development server. Stale configuration or contributor snapshots are rejected. Reload settings before retrying a conflicting save. Settings and its editing API are excluded from the published viewing site.
 
@@ -25,7 +25,7 @@ For manually edited module configuration, run `pnpm studio sync` to refresh agen
 
 Studio has two local roles: Contributor and Admin. Registered people are Contributors by default. In team use, `admins` must contain at least one registered contributor key; several Admins are supported. In personal use, the resolved local contributor is automatically an Admin. Unregistered identities cannot save settings.
 
-The settings server checks the current role before applying each save. Only existing Admins can change team Admin assignments through the UI. Saving cannot remove the last team Admin. These roles guide local behavior. They do not authenticate people, grant GitHub permissions, or override prototype ownership. Existing section-specific artifact policies remain separate.
+The settings server checks the current role before applying each save. Only existing Admins can save shared settings. The API still validates Admin assignments in its configuration payload; saving cannot remove the last team Admin. These roles guide local behavior. They do not authenticate people, grant GitHub permissions, or override prototype ownership. Existing section-specific artifact policies remain separate.
 
 Use `pnpm studio configure --admins sam,alex --yes` to assign team Admins. This repository command also supports initial setup and recovery when no local Admin can use the UI. CLI commands and direct file edits remain available to people and agents with repository access. GitHub review and CI permission rules remain separate.
 

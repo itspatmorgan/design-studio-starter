@@ -18,11 +18,11 @@ Prototype-local components and styles give you room to experiment without changi
 
 Open **Studio settings** from the local navigation’s gear icon or search. View the studio’s configuration, installed modules, and contributors.
 
-Contributors own their prototypes. Admins also edit shared settings, switch optional modules on or off, and assign other Admins. Team studios need at least one Admin and can have several. In personal use, your local contributor is automatically an Admin.
+Contributors own their prototypes. Admins also edit shared settings and switch optional modules on or off. Team studios need at least one Admin and can have several. In personal use, your local contributor is automatically an Admin.
 
 Saving settings updates local files and restarts the studio. Existing prototypes keep their systems when the default changes. Disabling a module retains its files and content.
 
-Contributor profiles are read-only here. Ask your agent to register or update a profile. Local roles do not grant repository access or override prototype ownership. Settings administration is excluded from the published site. See [Studio configuration](/documentation/reference/platform/core/config.md) for file structure and command details.
+Contributor profiles and assigned roles are read-only here. Ask your agent to register or update a profile or assign team Admins. Local roles do not grant repository access or override prototype ownership. Settings administration is excluded from the published site. See [Studio configuration](/documentation/reference/platform/core/config.md) for file structure and command details.
 
 ## Share through Git
 

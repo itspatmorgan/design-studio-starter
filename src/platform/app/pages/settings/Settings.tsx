@@ -4,7 +4,6 @@ import { Button } from '@/systems/studio/components/button';
 import { Input } from '@/systems/studio/components/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/systems/studio/components/select';
 import { Switch } from '@/systems/studio/components/switch';
-import { Checkbox } from '@/systems/studio/components/checkbox';
 import { Label } from '@/systems/studio/components/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/systems/studio/components/dialog';
 import { Badge } from '@/systems/studio/components/badge';
@@ -115,15 +114,15 @@ export default function Settings() {
             <Switch id={`module-${module.id}`} aria-describedby={`module-${module.id}-description`} checked={draft.modules[module.id]} disabled={disabled || !module.optional || (!module.compatible && !draft.modules[module.id])} onCheckedChange={(checked) => update({ modules: { ...draft.modules, [module.id]: checked } })} />
           </div>)}</div>
         </Section>
-        <Section id="contributors" title="Contributors" description={draft.usage === 'personal' ? 'In personal use, your local contributor automatically has Admin capabilities.' : 'Contributors own their prototypes. Admins also manage shared settings. Choose at least one Admin.'}>
+        <Section id="contributors" title="Contributors" description={draft.usage === 'personal' ? 'Your local contributor is an Admin.' : 'Contributors create prototypes. Admins manage shared settings.'}>
           <ul className="divide-y divide-border">{snapshot.contributors.map((person) => {
             const admin = draft.usage === 'personal' ? person.key === snapshot.actor : draft.admins?.includes(person.key);
             return <li key={person.key} className="flex flex-wrap items-center justify-between gap-3 py-4 first:pt-0 last:pb-0">
               <div><Link to={'/prototypes' as never} search={{ q: person.key } as never} className="text-sm font-medium hover:underline">{person.name}</Link>{person.key === snapshot.actor && <span className="ml-2 text-xs text-muted-foreground">You</span>}<p className="mt-1 text-xs text-muted-foreground">{person.key}{person.github && ` · @${person.github}`}</p></div>
-              {draft.usage === 'team' && editable ? <div className="flex items-center gap-2"><Checkbox id={`admin-${person.key}`} checked={Boolean(admin)} disabled={disabled} onCheckedChange={(checked) => update({ admins: checked ? [...(draft.admins ?? []), person.key] : (draft.admins ?? []).filter((key) => key !== person.key) })} /><Label htmlFor={`admin-${person.key}`}>Admin<span className="sr-only"> for {person.name}</span></Label></div> : <span className="text-xs text-muted-foreground">{admin ? 'Admin' : 'Contributor'}</span>}
+              <Badge variant="secondary">{admin ? 'Admin' : 'Contributor'}</Badge>
             </li>;
           })}</ul>
-          <p className="text-xs text-muted-foreground">Ask your agent to add or update contributor profiles. Roles guide local behavior and do not grant repository access or change prototype ownership.</p>
+          <p className="mt-6 text-xs leading-relaxed text-muted-foreground">Ask your agent to update profiles or assigned roles. Roles do not grant repository access or change prototype ownership.</p>
         </Section>
         {editable && <div className="space-y-3">
           {adminProblems(draft, snapshot.contributors.map((person) => person.key)).length > 0 && <p role="alert" className="text-sm text-destructive">Team use requires at least one registered Admin.</p>}
