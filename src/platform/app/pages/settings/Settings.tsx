@@ -21,7 +21,7 @@ type Snapshot = {
 
 function Section({ id, title, description, children }: { id: string; title: string; description: string; children: ReactNode }) {
   return <section id={id} aria-labelledby={`${id}-title`}>
-    <Card className="[--card-spacing:var(--spacing-6)]">
+    <Card className="bg-muted/40 ring-0 [--card-spacing:var(--spacing-6)]">
       <CardHeader><h2 id={`${id}-title`} className="text-base font-semibold">{title}</h2><CardDescription>{description}</CardDescription></CardHeader>
       <CardContent>{children}</CardContent>
     </Card>
