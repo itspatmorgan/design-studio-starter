@@ -29,6 +29,9 @@
 [data-rehype-pretty-code-figure] code span { color: var(--shiki-light); }
 .dark [data-rehype-pretty-code-figure] code span { color: var(--shiki-dark); }
 
+/* The shell owns scrolling; keep the document and navigation anchored to the viewport. */
+html, body { height: 100%; overflow: clip; }
+#root { position: fixed; inset: 0; overflow: clip; }
 html { color-scheme: light; }
 html.dark { color-scheme: dark; }
 

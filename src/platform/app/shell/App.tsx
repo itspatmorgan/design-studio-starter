@@ -25,9 +25,9 @@ export default function App() {
       <SectionNavContext.Provider value={sectionNav.open}>
         <SectionNavPresenceContext.Provider value={registerNav}>
           <CommandPaletteProvider>
-            <div className="flex h-screen overflow-hidden">
+            <div className="flex h-dvh overflow-hidden">
               {!standaloneApp && <MainNav colorMode={colorMode} onToggleColorMode={toggleColorMode} sectionNav={navs > 0 ? sectionNav : null} />}
-              <div className="flex min-w-0 flex-1 flex-col overflow-auto">
+              <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-auto overscroll-contain">
                 <Outlet />
               </div>
             </div>
