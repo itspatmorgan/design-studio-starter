@@ -1,7 +1,7 @@
 /* Design Studio brand on curated Untitled UI theme tokens. */
-@import "@fontsource-variable/plus-jakarta-sans";
+@import "@fontsource-variable/geist";
 .marketing-theme {
-  --font-sans: "Plus Jakarta Sans Variable", sans-serif;
+  --font-sans: "Geist Variable", sans-serif;
   --font-heading: var(--font-sans);
   --font-mono: ui-monospace, SFMono-Regular, monospace;
   --font-weight-normal: 400;

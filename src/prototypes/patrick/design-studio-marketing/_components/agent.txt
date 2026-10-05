@@ -31,7 +31,7 @@ Open the repository in your existing editor or coding agent, and run Studio alon
 
 A prototype keeps views, diagrams, canvases, and documents together. Its assigned system supplies the theme, components, context, rules, and skills.
 
-This marketing project uses the Marketing system: Plus Jakarta Sans, warm neutrals, and adapted Untitled UI components. Captured product examples use a separate Product system. Studio supplies the shared artifact tools.
+This marketing project uses the Marketing system: Geist, warm neutrals, and adapted Untitled UI components. Captured product examples use a separate Product system. Studio supplies the shared artifact tools.
 
 ## Reference
 
