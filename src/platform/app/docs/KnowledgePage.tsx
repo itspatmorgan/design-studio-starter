@@ -4,7 +4,7 @@ import { useManifest } from '@/platform/app/data/useManifest';
 import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
 import { artifactLabel, findArtifact } from '@/platform/app/data/manifest';
 import { SectionNav, NavHeader, NavList } from '@/platform/app/shell/nav';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/systems/studio/components/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/systems/studio/components/select';
 import FileTree from '@/modules/prototypes/viewer/FileTree';
 import SystemContentPage from '@/modules/systems/content/SystemContentPage';
 import DocumentationHeader from './DocumentationHeader';
@@ -28,7 +28,12 @@ export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
         <div className="px-1">
           <Select items={owners.map(o => ({ value: o.id, label: o.label }))} value={id} onValueChange={value => { if (value) void navigate({ to: `/documentation/context/${value}` as never }); }}>
             <SelectTrigger aria-label="Context and skills" className="w-full min-w-0"><SelectValue className="min-w-0 truncate" /></SelectTrigger>
-            <SelectContent align="start">{owners.map(o => <SelectItem key={o.id} value={o.id}>{o.label}</SelectItem>)}</SelectContent>
+            <SelectContent align="start">
+              {([{ kind: 'platform', label: 'Platform' }, { kind: 'module', label: 'Modules' }] as const).map(group => <SelectGroup key={group.kind}>
+                <SelectLabel>{group.label}</SelectLabel>
+                {owners.filter(o => o.kind === group.kind).map(o => <SelectItem key={o.id} value={o.id}>{o.label}</SelectItem>)}
+              </SelectGroup>)}
+            </SelectContent>
           </Select>
         </div>
       </NavHeader>

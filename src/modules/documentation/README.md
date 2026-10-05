@@ -14,7 +14,7 @@ Invalid metadata produces a local warning and fails strict builds. Source mode k
 
 The shared browser uses registered owners from the manifest: Platform and enabled modules. Each owner's Overview renders its canonical README when present; without one it displays discovered context and skills. Additional top-level module contracts remain accessible under that owner.
 
-A full-width Studio select switches between Platform and modules using their names. Context, Skills, and their folders start expanded; people can collapse them while browsing.
+A full-width grouped Studio select separates Platform and Modules, with each option using its name. Context, Skills, and their folders start expanded; people can collapse them while browsing.
 
 Platform knowledge lives in `src/platform/context/`, including detailed requirements under `technical/`. Module and system context and skills live under their respective owners. Component API pages remain beside components and are exposed by Systems.
 
