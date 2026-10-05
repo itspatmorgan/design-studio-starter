@@ -90,7 +90,7 @@ export function LandingPage({ version }: { version: 1 | 2 | 3 }) {
             {version !== 3 && <figure className="mt-6">{version === 1 ? <StudioPreview /> : <StudioOwnership kind={1} />}<figcaption className="mt-3 text-sm text-text-tertiary">An example of how your prototypes and design system come together.</figcaption></figure>}
           </section>
         </main>
-        <footer className="pb-12"><p className="text-sm leading-relaxed text-text-tertiary">This marketing demo uses its own Marketing system: Geist, warm neutrals, and Untitled UI.</p><div className="mt-4 flex flex-wrap gap-6"><ResourceLink href="/systems/marketing">Marketing system</ResourceLink><ResourceLink href={repository}>GitHub</ResourceLink></div></footer>
+        {version !== 3 && <footer className="pb-12"><p className="text-sm leading-relaxed text-text-tertiary">This marketing demo uses its own Marketing system: Geist, warm neutrals, and Untitled UI.</p><div className="mt-4 flex flex-wrap gap-6"><ResourceLink href="/systems/marketing">Marketing system</ResourceLink><ResourceLink href={repository}>GitHub</ResourceLink></div></footer>}
   </>;
   const brand = <a href="#" className="flex items-center gap-3 text-lg font-semibold"><StudioMark small={version === 3} />Design Studio</a>;
   return <div className={`min-h-full bg-bg-primary font-sans text-text-primary ${version > 1 ? styles.websiteArt : ""}`}>
