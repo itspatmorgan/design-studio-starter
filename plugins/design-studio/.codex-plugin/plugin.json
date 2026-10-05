@@ -1,0 +1,37 @@
+{
+  "name": "design-studio",
+  "version": "0.1.0-experiment.2",
+  "description": "Create and refine prototypes with Design Studio. Setup is handled for you, and all code stays in a visible folder on your computer.",
+  "author": {
+    "name": "Patrick Morgan"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/itspatmorgan/design-studio-starter",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Design Studio",
+    "shortDescription": "Your ideas, made tangible.",
+    "longDescription": "A local design environment for designers and product managers. Create prototypes, sketch on canvases, and keep product context alongside your work. ChatGPT handles setup and technical steps. You own every file. Requires a supported local code harness; GitHub is optional. Experimental private package.",
+    "developerName": "Patrick Morgan",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Create a local studio",
+      "Open an existing studio",
+      "Build prototypes"
+    ],
+    "defaultPrompt": [
+      "Create my Design Studio.",
+      "Open my Design Studio.",
+      "Help me prototype an idea in Design Studio."
+    ],
+    "composerIcon": "./assets/logo.svg",
+    "composerIconDark": "./assets/logo-dark.svg",
+    "logo": "./assets/logo.svg",
+    "logoDark": "./assets/logo-dark.svg"
+  },
+  "extensions": {
+    "com.openai": {
+      "onboardingSkill": "./skills/create-studio/SKILL.md"
+    }
+  }
+}
