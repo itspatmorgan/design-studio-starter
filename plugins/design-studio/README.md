@@ -41,13 +41,13 @@ They are test instructions for maintainers. The intended designer experience use
 | Setup | Dependencies installed and personal studio configuration applied. |
 | Preview | Local preview opened at port 5183; home and Feedback Inbox rendered. |
 | Repeat setup | Existing studio name and configuration preserved. |
-| Automated checks | Eight bootstrap tests, sixteen canonical and plugin skill validators, and platform build checks. The restructure passes 196 platform tests and type checks. |
+| Automated checks | Eight bootstrap tests, sixteen canonical and plugin skill validators, and platform build checks. The restructure passes 197 platform tests and type checks. |
 | Fresh conversation | Second-host fresh chat selected create-studio, created and configured the studio, and opened its preview. The person confirmed setup worked. |
 | Native plugin UI | Person supplied screenshots of both native lists. Separate composer and listing assets are installed; final optical balance still needs visual confirmation. |
 | Local workspace handoff | On October 5, 2026, the person opened the documented folder link. The new chat ran in `~/Developer/My Design Studio` and read local rules, configuration, and Guide content before answering. Persistent sidebar registration remains unverified. |
 | Portable project skills | Canonical platform and enabled-module skills generate `.agents/skills` entries for Codex and Cursor and `.claude/skills` links for Claude Code. Automated tests cover canonical references, idempotence, collisions, preservation, and capability removal. Native Claude Code and Cursor activation remain unverified. |
-| Knowledge browser | Platform and module Context and Skills render in the local app. A saved workflow link redirected to its new owner; source editing opened the canonical module skill. |
-| Installer revision | Experiment .8 pins restructure commit `36c3c2e6c49c6d3523c95079ea4b6b9b094beb6a`. A fresh local-source checkout regenerated all 13 project skills successfully. The revision must be pushed to the public source remote before a fresh GitHub install can work. Existing studios follow their own current instructions and are not migrated by reopening. |
+| Knowledge browser | Documentation displays original platform, module, and system READMEs, Context, and Skills. Technical platform documents live under Context → Technical. Browser QA checked owner selection, README and technical source editors, legacy Reference source mode and anchors, Systems navigation, and the Guide diagram. |
+| Installer revision | Experiment .8 pins restructure commit `2c0cdd52d5f7b1cd6e984ebf3269365664d8d795`. A fresh local-source checkout regenerated all 13 project skills successfully. The revision must be pushed to the public source remote before a fresh GitHub install can work. Existing studios follow their own current instructions and are not migrated by reopening. |
 | Clean computer | Missing-tool installation, interrupted downloads, and permission prompts still need end-to-end testing. |
 | Public discoverability | Submission, eligibility, review, and listing are separate release work. No public package was submitted. |
 | Team use | GitHub publishing, joining a team, authentication, and concurrent work remain outside this pilot. Existing repository contributor procedures provide the starting point. |
