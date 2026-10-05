@@ -3,11 +3,15 @@
 For a new studio or first-time kit configuration, follow [src/systems/studio/skills/initialize-studio/SKILL.md](src/systems/studio/skills/initialize-studio/SKILL.md). For someone joining an existing studio, follow [src/systems/studio/skills/setup-contributor/SKILL.md](src/systems/studio/skills/setup-contributor/SKILL.md). Missing dependencies alone do not mean the studio needs initialization.
 When setting up or replacing the prototype design system, follow [src/systems/studio/skills/setup-design-system/SKILL.md](src/systems/studio/skills/setup-design-system/SKILL.md).
 
-When working on Design Studio itself, read [Studio system instructions](src/systems/studio/AGENTS.md), then [Principles](src/systems/studio/context/principles.md) and [Personas](src/systems/studio/context/personas.md). These describe the platform, not the product being prototyped.
+When working on Design Studio itself, read [Studio system instructions](src/systems/studio/AGENTS.md). That entry point requires the platform's Principles and Personas and selects further Studio instructions.
 
 At the start of every session, read:
 - [src/systems/studio/rules/prototype-workflow.md](src/systems/studio/rules/prototype-workflow.md)
 - [src/systems/studio/rules/contributor-scope.md](src/systems/studio/rules/contributor-scope.md)
+
+Within a conversation, reuse instructions already read while their contents remain available and unchanged. Retrieve missing or stale instructions after compaction or file changes, and follow additional routes when the task scope changes. Keep all required reads and re-read source files before editing them.
+
+Use targeted searches and bounded source reads for discovery. Read applicable rules and skill procedures in full; follow their required references. Save verbose check output to a local temporary log. Wait for the command's final exit status, inspect failure diagnostics and warnings, and report a concise result with the relevant details and log path. Run all required checks.
 
 When the person wants to set a prototype or view aside, or keep it out of the deployed site, read [src/systems/studio/rules/archiving.md](src/systems/studio/rules/archiving.md).
 When the person asks to add or change system context, rules, or skills, read [src/systems/studio/rules/system-content.md](src/systems/studio/rules/system-content.md).

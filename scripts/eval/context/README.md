@@ -1,6 +1,6 @@
 # Agent context efficiency investigation
 
-Investigated on 2026-10-04 against `6d4e5c7`. This is an evaluation plan and offline audit, not a new platform contract or an instruction to load during routine work. A six-run CLI pilot has since completed; see [Pilot results](pilot-results.md). Its browser limitations prevent an end-to-end equivalence claim. Production routing and operating requirements remain unchanged.
+Investigated on 2026-10-04 against `6d4e5c7`. This is an evaluation plan and offline audit, not a new platform contract or an instruction to load during routine work. A six-run CLI pilot has since completed; see [Pilot results](pilot-results.md). Its browser limitations prevent an end-to-end equivalence claim. The [authorized follow-up](pilot-results.md#authorized-follow-up) records subsequent targeted instruction maintenance; mandatory context and checks remain required.
 
 ## Recommendation
 
@@ -138,4 +138,4 @@ OpenAI recommends evaluating activation, resulting artifacts, command behavior, 
 
 Established: file sizes, declared routing structure, inspected implementation, available local CLI flags, and a repeatable comparison design. Source-size measurements run without model calls.
 
-The [six-run pilot](pilot-results.md) records live processing usage, timing, captured shell output, task-essential reads, and independent artifact checks. B captured less shell output but did not meet the total-input saving target. Browser and permission limitations left every run incomplete for the end-to-end gate. Peak-window reduction, stable latency improvement, and equivalent agent operation remain unestablished. C has not been tested. Keep production startup rules unchanged and repair the harness before repeating the comparison.
+The [six-run pilot](pilot-results.md) records live processing usage, timing, captured shell output, task-essential reads, and independent artifact checks. B captured less shell output but did not meet the total-input saving target. Browser and permission limitations left every run incomplete for the end-to-end gate. Peak-window reduction, stable latency improvement, and equivalent agent operation remain unestablished. C has not been tested. The user declined further trials and authorized conservative maintenance described in the [follow-up](pilot-results.md#authorized-follow-up). Mandatory startup context remains required; the full B candidate was not adopted.

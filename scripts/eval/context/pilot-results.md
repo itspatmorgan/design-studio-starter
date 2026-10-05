@@ -2,7 +2,7 @@
 
 Run on 2026-10-04 from `36442b6`. Six isolated CLI trials completed: one A/B pair each for None checkout styling, a Marketing dialog, and a platform action label. **Do not adopt variant B from this pilot.** It did not meet the proposed total-input saving threshold, and the trial agents could not complete rendered verification.
 
-The [machine-readable results](pilot-results.json) contain exact usage, timing, fixture revisions, captured output sizes, scope checks, and independent verification. The [evaluation plan](README.md) defines the variants and quality gates. Production instructions and runtime behavior remain unchanged.
+The [machine-readable results](pilot-results.json) contain exact usage, timing, fixture revisions, captured output sizes, scope checks, and independent verification. The [evaluation plan](README.md) defines the variants and quality gates. The pilot did not change production instructions or runtime behavior.
 
 ## Measured results
 
@@ -68,3 +68,7 @@ Peak-window usage, compaction boundaries, and exact documentation-token attribut
 5. Verify any successful candidate in desktop multi-turn work. Measure retrieval after changed files and compaction, rather than assuming first-turn savings persist.
 
 The useful signal here is smaller captured command output, especially retained build logs. Exact model-visible output still needs instrumentation. The pilot does not establish reduced context-window occupancy, equivalent end-to-end operation, or a reason to relax current startup requirements.
+
+## Authorized follow-up
+
+After reviewing the results, the user declined further trials and authorized targeted maintenance. Root instructions now route Studio context through one entry point, reuse unchanged instruction text while it remains available, and retain verbose check logs locally. The Guide and routing contract describe these agent practices. Mandatory context, assignment resolution, source refresh before edits, and verification remain required. The complete B candidate was not adopted. No further live comparison or quantified performance improvement is claimed.

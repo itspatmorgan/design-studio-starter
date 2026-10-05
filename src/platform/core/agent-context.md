@@ -16,6 +16,8 @@ The repository's `AGENTS.md` is the entry point. It routes every session to the 
 
 Task conditions route to additional rules and skills. Working on Studio also requires its system entry point, Principles, and Personas. Product instructions do not replace platform operating rules.
 
+The Studio entry point owns the routes to Principles and Personas. Root instructions link to that entry point without repeating those context routes. The repository's [operating instructions](../../../AGENTS.md) also define reuse of available instruction text and handling of verbose check logs. These are agent practices; Studio does not cache conversation context or truncate tool output itself.
+
 Enabled module declarations supply conditional instructions through their `instructions` entries. `agentsBlock` in `modules/pack.ts` generates the root `studio:modules` block. The Studio CLI synchronizes that block when it changes module registration or availability. After manually editing module configuration, run `pnpm studio sync`. A build does not synchronize this block.
 
 Module instructions are routes with task conditions. They do not load every enabled module's instructions into every conversation.

@@ -63,6 +63,8 @@ Your coding agent's host decides how it discovers the repository's `AGENTS.md`. 
 
 Files shown in Resources are available to read. Their presence does not mean they were added to a conversation. Likewise, system skills are not automatically installed in every agent host.
 
+Repository instructions ask the agent to reuse unchanged instructions already available in the conversation and retain full check logs locally. Required context and checks still apply. Your agent host controls how much conversation context remains available; Studio does not manage that window.
+
 When you add important system knowledge, ask the agent to connect it to the system's instructions. When you manually change module configuration, run `pnpm studio sync` to refresh the repository's task routes.
 
 ## Check the routing
