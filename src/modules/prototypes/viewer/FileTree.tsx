@@ -174,19 +174,19 @@ type TreeNavigation = {
   folderCommand: { version: number; expanded: boolean };
   onFoldersExpanded: (open: boolean) => void;
 };
-type FileTreeProps = { proto: Prototype; current: Artifact | undefined; embedded?: boolean; rememberExpansion?: boolean; contentIcon?: ReactNode; branch?: { label: string; path: string; active: boolean; defaultExpanded?: boolean }; navigation?: TreeNavigation };
+type FileTreeProps = { proto: Prototype; current: Artifact | undefined; embedded?: boolean; rememberExpansion?: boolean; externalFilter?: { query: string; searching: boolean }; contentIcon?: ReactNode; branch?: { label: string; path: string; active: boolean; defaultExpanded?: boolean }; navigation?: TreeNavigation };
 
 const guidanceBranchState = new Map<string, boolean>();
 
 const systemFolderState = new Map<string, { closed: Set<string>; commandVersion: number }>();
 
-export default function FileTree({ proto, current, embedded = false, rememberExpansion = false, contentIcon, branch, navigation }: FileTreeProps) {
+export default function FileTree({ proto, current, embedded = false, rememberExpansion = false, externalFilter, contentIcon, branch, navigation }: FileTreeProps) {
   const { files, reload } = useFileTree(proto);
   const treeScope = proto.contributorKey + ":" + proto.id;
   const [expanded, setExpanded] = useState(() => (rememberExpansion ? guidanceBranchState.get(proto.id) : undefined) ?? (branch?.defaultExpanded ?? branch?.active ?? true));
   useEffect(() => { if (branch?.active) setExpanded(true); }, [branch?.active]);
   useEffect(() => { if (rememberExpansion) guidanceBranchState.set(proto.id, expanded); }, [rememberExpansion, proto.id, expanded]);
-  const branchExpanded = navigation?.expanded ?? expanded;
+  const branchExpanded = externalFilter?.searching || (navigation?.expanded ?? expanded);
   const changeExpanded = navigation?.onExpandedChange ?? setExpanded;
   const me = useMe();
   const router = useRouter();
@@ -220,11 +220,11 @@ export default function FileTree({ proto, current, embedded = false, rememberExp
   const filterRef = useRef<HTMLInputElement>(null);
   useEffect(() => { if (filterOpen) filterRef.current?.focus(); }, [filterOpen]);
 
-  const q = (navigation?.query ?? filter).trim().toLowerCase();
-  const shown = q ? filterNodes(nodes, q, navigation ? proto : undefined) : nodes;
+  const q = (externalFilter?.query ?? navigation?.query ?? filter).trim().toLowerCase();
+  const shown = q ? filterNodes(nodes, q, navigation || externalFilter ? proto : undefined) : nodes;
   const dirs = isSkills ? [] : allDirs(nodes);
   // While filtering, every folder with a match shows open.
-  const isOpen = (d: string) => Boolean(q) || Boolean(navigation?.searching) || !closed.has(d);
+  const isOpen = (d: string) => Boolean(q) || Boolean(navigation?.searching) || Boolean(externalFilter?.searching) || !closed.has(d);
   const allOpen = dirs.every((d) => !closed.has(d));
   const dirSignature = dirs.join('\0');
   useEffect(() => {
@@ -564,7 +564,7 @@ export default function FileTree({ proto, current, embedded = false, rememberExp
       <div className={cn("flex h-7 shrink-0 items-center justify-between gap-1 pr-0.5", branch ? "mx-1 rounded-md pl-2 hover:bg-sidebar-foreground/5" : "pl-2.5")}>
         {branch ? <button type="button" aria-expanded={branchExpanded} onClick={() => changeExpanded(!branchExpanded)} title={branch.path} className="flex h-full min-w-0 flex-1 items-center gap-1.5 text-left text-[12px] font-medium leading-tight"><HugeiconsIcon icon={ArrowDown01Icon} size={14} className={cn('shrink-0 text-muted-foreground transition-transform', !branchExpanded && '-rotate-90')} /><span className="truncate">{branch.label}</span></button> : <p className="min-w-0 flex-1 truncate text-[12px] font-semibold leading-none">{showAll || proto.contributorKey === SYSTEM_CONTENT_KEY ? 'Files' : 'Artifacts'}</p>}
         {/* Shown while the pointer is over the list or focus is in it, so the heading stays quiet. */}
-        {!navigation && <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
+        {!navigation && !externalFilter && <div className={cn('flex items-center gap-0.5 transition-opacity', !filterOpen && 'opacity-0 group-hover/tree:opacity-100 group-focus-within/tree:opacity-100')}>
           <IconButton label="Filter" pressed={filterOpen} onClick={() => { setExpanded(true); setFilterOpen((o) => !o); }}>
             <HugeiconsIcon icon={Search01Icon} size={14} />
           </IconButton>
@@ -601,7 +601,7 @@ export default function FileTree({ proto, current, embedded = false, rememberExp
         })()}
       </div>
       <div hidden={branch && !branchExpanded} className={branch ? "pl-5" : undefined}>
-      {!navigation && filterOpen && (
+      {!navigation && !externalFilter && filterOpen && (
         <div className="relative shrink-0 px-1">
           <Input
             ref={filterRef}

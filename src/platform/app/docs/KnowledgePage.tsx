@@ -1,6 +1,8 @@
-import { useEffect, useState, type ReactNode } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { ChevronDown, Search, X } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/systems/studio/components/collapsible';
+import { Input } from '@/systems/studio/components/input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
 import { Link, useParams } from '@tanstack/react-router';
 import { useManifest } from '@/platform/app/data/useManifest';
 import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
@@ -15,12 +17,12 @@ import { NotFound } from '@/platform/app/shell/App';
 
 const guidanceExpansion = new Map<string, boolean>();
 
-function GuidanceBranch({ label, path, active = false, defaultExpanded = false, children }: { label: string; path: string; active?: boolean; defaultExpanded?: boolean; children: ReactNode }) {
+function GuidanceBranch({ label, path, active = false, defaultExpanded = false, searching = false, children }: { label: string; path: string; active?: boolean; defaultExpanded?: boolean; searching?: boolean; children: ReactNode }) {
   const [open, setOpen] = useState(() => guidanceExpansion.get(path) ?? (active || defaultExpanded));
   useEffect(() => { if (active) setOpen(true); }, [active]);
   useEffect(() => { guidanceExpansion.set(path, open); }, [path, open]);
-  return <Collapsible open={open} onOpenChange={setOpen}>
-    <CollapsibleTrigger title={path} className="mx-1 flex h-7 w-[calc(100%-8px)] items-center gap-1.5 rounded-md px-2 text-left text-[12px] font-medium hover:bg-sidebar-foreground/5"><ChevronDown aria-hidden="true" className={'size-3.5 shrink-0 text-muted-foreground transition-transform ' + (open ? '' : '-rotate-90')} /><span className="truncate">{label}</span></CollapsibleTrigger>
+  return <Collapsible open={searching || open} onOpenChange={setOpen}>
+    <CollapsibleTrigger title={path} className="mx-1 flex h-7 w-[calc(100%-8px)] items-center gap-1.5 rounded-md px-2 text-left text-[12px] font-medium hover:bg-sidebar-foreground/5"><ChevronDown aria-hidden="true" className={'size-3.5 shrink-0 text-muted-foreground transition-transform ' + (searching || open ? '' : '-rotate-90')} /><span className="truncate">{label}</span></CollapsibleTrigger>
     <CollapsibleContent className="space-y-0.5 pl-3">{children}</CollapsibleContent>
   </Collapsible>;
 }
@@ -28,24 +30,49 @@ function GuidanceBranch({ label, path, active = false, defaultExpanded = false, 
 export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
   const { owner: id, page, _splat: slug } = useParams({ strict: false }) as { owner?: string; page?: string; _splat?: string };
   const manifest = useManifest();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const searchRef = useRef<HTMLInputElement>(null);
+  useEffect(() => { if (searchOpen) searchRef.current?.focus(); }, [searchOpen]);
+  const q = query.trim().toLowerCase();
+  const matches = (label: string) => !q || label.toLowerCase().includes(q);
   const owners = [...new Map(manifest.systemContent.filter(p => p.owner && p.owner.kind !== 'system').map(p => [p.owner!.id, p.owner!])).values()];
   const owner = owners.find(o => o.id === id);
   const sections = manifest.systemContent.filter(p => p.owner?.id === id);
   const selected = sections.find(p => p.id === contentId(id ?? '', page ?? ''));
   if (!owner || (page && page !== 'reference' && !selected)) return <NotFound />;
-  const ownerTree = (navOwner: typeof owners[number]) => <GuidanceBranch key={navOwner.id} label={navOwner.label} path={navOwner.root + '/'} active={id === navOwner.id}>
-    {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source === '/' + navOwner.root.slice(4) + '/README.md').map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label="README" />)}
-    {manifest.platformReferences.flatMap(g => g.references).filter(r => r.source.startsWith('/' + navOwner.root.slice(4) + '/') && !r.source.endsWith('/README.md')).map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label={r.title} />)}
-    {manifest.systemContent.filter(proto => proto.owner?.id === navOwner.id && (proto.artifacts.length > 0 || selected?.id === proto.id)).map(proto => <FileTree key={proto.id} proto={proto} current={selected?.id === proto.id && slug ? findArtifact(proto, slug) : undefined} embedded rememberExpansion branch={{ label: proto.title, path: navOwner.root + '/' + proto.title.toLowerCase() + '/', active: selected?.id === proto.id, defaultExpanded: selected?.id === proto.id }} />)}
-  </GuidanceBranch>;
+  const references = (root: string) => manifest.platformReferences.flatMap(g => g.references).filter(r => r.source.startsWith('/' + root.slice(4) + '/'));
+  const ownerTree = (navOwner: typeof owners[number]) => {
+    const ownerMatch = matches(navOwner.label) || matches(navOwner.root) || (navOwner.kind === 'module' && matches('Modules'));
+    const docs = references(navOwner.root).filter(r => ownerMatch || matches(r.title) || matches(r.source));
+    const branches = manifest.systemContent.filter(proto => proto.owner?.id === navOwner.id && (proto.artifacts.length > 0 || selected?.id === proto.id) && (ownerMatch || matches(proto.title) || proto.artifacts.some(a => matches(a.path) || matches(artifactLabel(a.path, proto)))));
+    if (q && !docs.length && !branches.length) return null;
+    return <GuidanceBranch key={navOwner.id} label={navOwner.label} path={navOwner.root + '/'} active={id === navOwner.id} searching={Boolean(q)}>
+      {docs.map(r => <DocumentationNavItem key={r.source} href={markdownPath(r.source)} path={'src' + r.source} label={r.source.endsWith('/README.md') ? 'README' : r.title} />)}
+      {branches.map(proto => <FileTree key={proto.id} proto={proto} current={selected?.id === proto.id && slug ? findArtifact(proto, slug) : undefined} embedded rememberExpansion externalFilter={{ query: ownerMatch || matches(proto.title) ? '' : q, searching: Boolean(q) }} branch={{ label: proto.title, path: navOwner.root + '/' + proto.title.toLowerCase() + '/', active: selected?.id === proto.id, defaultExpanded: selected?.id === proto.id }} />)}
+    </GuidanceBranch>;
+  };
+  const platformBranches = owners.filter(o => o.kind === 'platform').map(ownerTree).filter(Boolean);
+  const moduleBranches = owners.filter(o => o.kind === 'module').map(ownerTree).filter(Boolean);
   return <div className="flex min-h-0 flex-1">
     <SectionNav label="Documentation">
       <DocumentationHeader reference />
+      <div className="shrink-0 px-3 pt-3">
+        <div className="flex h-7 items-center justify-between pl-2">
+          <p className="text-[12px] font-semibold">Resources</p>
+          <Tooltip><TooltipTrigger render={<button type="button" aria-label="Search" aria-pressed={searchOpen} onClick={() => { setSearchOpen(open => !open); setQuery(''); }} className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-sidebar-foreground/5" />}><Search className="size-3.5" /></TooltipTrigger><TooltipContent>Search</TooltipContent></Tooltip>
+        </div>
+        {searchOpen && <div className="relative mt-1">
+          <Input ref={searchRef} aria-label="Search context and skills" placeholder="Search context and skills" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') { event.stopPropagation(); if (query) setQuery(''); else setSearchOpen(false); } }} className="h-8 pr-8 text-[13px] shadow-none" />
+          {query && <button type="button" aria-label="Clear search" onClick={() => { setQuery(''); searchRef.current?.focus(); }} className="absolute right-1 top-0.5 inline-flex size-7 items-center justify-center rounded-md text-muted-foreground"><X className="size-3.5" /></button>}
+        </div>}
+      </div>
       <NavList>
-        {owners.filter(o => o.kind === 'platform').map(navOwner => ownerTree(navOwner))}
-        <GuidanceBranch defaultExpanded label="Modules" path="src/modules/" active={owner.kind === 'module'}>
-          {owners.filter(o => o.kind === 'module').map(navOwner => ownerTree(navOwner))}
-        </GuidanceBranch>
+        {platformBranches}
+        {moduleBranches.length > 0 && <GuidanceBranch searching={Boolean(q)} defaultExpanded label="Modules" path="src/modules/" active={owner.kind === 'module'}>
+          {moduleBranches}
+        </GuidanceBranch>}
+        {!platformBranches.length && !moduleBranches.length && <p className="px-3 py-2 text-[13px] text-muted-foreground">No matching resources</p>}
       </NavList>
     </SectionNav>
     <main className="flex min-h-0 min-w-0 flex-1 flex-col">
