@@ -12,7 +12,7 @@ Continue on `codex/chatgpt-plugin-experiment`. Read the repository's `AGENTS.md`
 
 The plugin package is `plugins/design-studio`; the private marketplace is `.agents/plugins/marketplace.json`. The current package is `0.1.0-experiment.8`. Local installation succeeded with Codex CLI 0.137.0 on the first host and 0.151.0 on the second. Both portable and compatibility manifests are present. The compatibility manifest is generated from the portable manifest.
 
-The bootstrap revision must include the committed Context and Skills restructure. Inspect `REVISION` in the helper and ensure that commit is pushed to the public source before distributing experiment .8. It creates a full local repository without a remote and preserves existing studios.
+The bootstrap pins the Context and Skills restructure at `36c3c2e6c49c6d3523c95079ea4b6b9b094beb6a`. Inspect `REVISION` in the helper and ensure that commit is pushed to the public source before distributing experiment .8. It creates a full local repository without a remote and preserves existing studios.
 
 ## What does not transfer through Git
 
