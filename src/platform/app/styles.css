@@ -2,7 +2,7 @@
 @import "tailwindcss";
 @import "../../systems/studio/styles/theme.css";
 /* @studio:system-themes */
-/* Explicit shared component-animation extensions; not system foundation defaults. */
+/* Explicit shared component-animation extensions; not system theme defaults. */
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 /* @studio:tailwind-theme */

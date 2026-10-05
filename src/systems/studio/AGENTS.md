@@ -1,6 +1,6 @@
 # Studio system instructions
 
-This is the required Studio system, supplied and maintained with platform releases. Its foundations and components support the application; its context, rules, and skills guide operating and maintaining Studio, including infrastructure and modules.
+This is the required Studio system, supplied and maintained with platform releases. Its theme and components support the application; its context, rules, and skills guide operating and maintaining Studio, including infrastructure and modules.
 
 When changing platform requirements or deciding where guidance belongs, read [Platform and system responsibilities](../../platform/core/contracts-and-instructions.md). Core and module contracts own technical requirements. This system owns operating policy, intent, and task procedures.
 

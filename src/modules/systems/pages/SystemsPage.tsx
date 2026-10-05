@@ -32,11 +32,11 @@ const ComponentEditor = import.meta.env.DEV ? lazy(() => import('./ComponentEdit
 
 const SystemSourceEditor = import.meta.env.DEV ? lazy(() => import('./SystemSourceEditor')) : null;
 
-// Systems: a selector for design systems, and one page per foundation and component,
+// Systems: a selector for design systems, and one page per theme category and component,
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
 // Every system is treated the same, the app's own (Studio) included. What only its people can write
 // comes from src/systems/<id>/intro.tsx: overview summaries, optional additional content, and icons. The rest comes from its files: a component page for each component in its components
-// folder (src/modules/systems/docs.ts), and a foundations page for each kind of token its theme
+// folder (src/modules/systems/docs.ts), and a theme page for each kind of token its theme
 // defines (src/modules/systems/themeTokens.ts). Prototype systems appear in the selector, followed by Studio.
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
 const introOf = (id: string): SystemIntro => intros[`/systems/${id}/intro.tsx`]?.default ?? {};
@@ -64,7 +64,7 @@ function sourcePath(system: string, page: string | undefined, components: System
   return source.theme;
 }
 
-// The foundations pages: page id and name, for each kind of token a theme can define.
+// The theme pages: page id and name, for each kind of token a theme can define.
 const TOKEN_PAGES: { id: string; label: string; group: TokenGroup }[] = [
   { id: 'colors', label: 'Colors', group: 'colors' },
   { id: 'typography', label: 'Typography', group: 'typography' },
@@ -76,7 +76,7 @@ const TOKEN_PAGES: { id: string; label: string; group: TokenGroup }[] = [
   { id: 'tokens', label: 'Other tokens', group: 'other' },
 ];
 
-// Stable semantic icons distinguish system guidance and foundation pages from source files.
+// Stable semantic icons distinguish system guidance and theme pages from source files.
 const PAGE_ICONS: Record<string, LucideIcon> = {
   intro: Compass, colors: SwatchBook, typography: Type, radius: SquareRoundCorner,
   shadows: Layers2, spacing: Ruler, motion: MoveRight, effects: Sparkles, tokens: Braces, icons: Smile,

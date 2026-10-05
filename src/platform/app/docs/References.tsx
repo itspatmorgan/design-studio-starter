@@ -63,7 +63,7 @@ export function ReferenceIndex() {
   const questions = [
     {
       title: 'What can I change?',
-      description: 'Your prototypes are your working area. Systems, configuration, and platform code are shared foundations; coordinate changes with the maintainer.',
+      description: 'Your prototypes are your working area. Systems, configuration, and platform code are shared capabilities; coordinate changes with the maintainer.',
       links: [
         { title: 'Platform and system responsibilities', href: ref('contracts-and-instructions') },
         { title: 'Contributor scope', href: '/systems/studio/rules/contributor-scope' },

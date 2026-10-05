@@ -4,7 +4,7 @@
 //   <NavList>
 //     <NavGroup>                          a group with no heading
 //       <Link className={navLinkClass} …>Introduction</Link>
-//     <NavGroup heading="Foundations">…
+//     <NavGroup heading="Theme">…
 import type { CSSProperties, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { navIndent, navRow, navRowState } from '@/platform/app/shell/nav/navRow';

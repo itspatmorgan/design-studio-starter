@@ -47,7 +47,7 @@ Your assigned design system supplies components and styles. You can also explore
 ```mermaid
 %%{init: {"flowchart": {"nodeSpacing": 20, "rankSpacing": 30, "subGraphTitleMargin": {"top": 10, "bottom": 15}}}}%%
 flowchart TB
-  accTitle: A prototype's local scope and reusable foundations
+  accTitle: A prototype's local scope and reusable dependencies
   accDescr: A prototype contains interactive views, local helpers, and optional documents, diagrams, and canvases. Its code can reuse its assigned design system, independent shared utilities, installed packages, and public libraries from enabled modules. Other prototypes, other design systems, and private platform code are outside its dependency boundary.
   subgraph prototype[One prototype — local experiment]
     direction TB

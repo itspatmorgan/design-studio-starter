@@ -1,7 +1,7 @@
 @import "@fontsource-variable/inter";
 
 :root, .studio-theme {
-  /* Declared inventory: omitted foundations are outside this system. */
+  /* Declared inventory: omitted theme tokens are outside this system. */
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   font-family: var(--font-sans);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;

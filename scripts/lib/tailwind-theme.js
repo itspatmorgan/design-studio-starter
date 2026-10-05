@@ -1,4 +1,4 @@
-// System declarations are inventories. Tailwind supplies syntax, never undeclared foundations.
+// System declarations are inventories. Tailwind supplies syntax, never undeclared theme tokens.
 import postcss from 'postcss';
 import selectorParser from 'postcss-selector-parser';
 const semantic = /^(?:background|foreground|card(?:-foreground)?|popover(?:-foreground)?|primary(?:-foreground)?|secondary(?:-foreground)?|muted(?:-foreground)?|accent(?:-foreground)?|destructive|border|input|ring|chart-\d+|sidebar(?:-[\w-]+)?)$/;
@@ -21,7 +21,7 @@ export function tailwindThemeProblems(code, { file, themeClass, styling }) {
   const problems = [];
   for (const [name, value] of [...base, ...modes]) {
     if (!base.has(name)) problems.push(`${file}: ${name} is only declared in dark mode; declare its base value on .${themeClass}.`);
-    if (/^(inherit|unset|revert|revert-layer)$/.test(value)) problems.push(`${file}: ${name} cannot inherit a foundation from outside the system.`);
+    if (/^(inherit|unset|revert|revert-layer)$/.test(value)) problems.push(`${file}: ${name} cannot inherit a theme token from outside the system.`);
     for (const match of value.matchAll(/var\(\s*(--[\w-]+)/g)) {
       if (!match[1].startsWith('--tw-') && (match[1] === name || !base.has(match[1]))) problems.push(`${file}: ${name} references ${match[1]} without an independent declaration on .${themeClass}.`);
     }

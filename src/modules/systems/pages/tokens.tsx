@@ -1,4 +1,4 @@
-// The foundations pages other than Colors, built from the tokens a prototype system's theme.css
+// The theme pages other than Colors, built from the tokens a prototype system's theme.css
 // defines (src/modules/systems/themeTokens.ts): typography, radius, shadows, spacing, and everything else.
 // Each token is drawn with its own value (`var(--name)`), inside the system's theme class, and its
 // value is read live, so the pages follow the color mode and the theme file.

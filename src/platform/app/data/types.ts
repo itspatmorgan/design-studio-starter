@@ -67,7 +67,7 @@ export type Manifest = {
 };
 
 // Authored overview copy, optional additional content, and icon examples live in src/systems/<id>/intro.tsx.
-// Inventory metrics and foundation/component pages come from the system's files.
+// Inventory metrics and theme/component pages come from the system's files.
 export type SystemIntro = { summary?: string; overview?: SystemOverviewSummary; intro?: ReactNode; icons?: DesignSystem['icons'] };
 
 export type SystemOverviewSummary = { guidance?: string; code?: string; starter?: boolean };

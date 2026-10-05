@@ -33,7 +33,7 @@ export async function themeUsageProblems(systems, filesBySystem) {
   for (const s of systems) for (const [n, e] of utilityTokens(s.inventory.base)) tokens.set(n, e);
   const inline = [...tokens].filter(([n]) => !/^--(?:breakpoint|container)-/.test(n)).map(([n, e]) => `  ${n}: var(${e.ref});`).join('\n');
   // The default catalog is used only to recognize unsupported named utility requests.
-  // It never reaches application CSS or any system's foundation pages.
+  // It never reaches application CSS or any system's theme pages.
   const compiler = await compile(defaults + `\n@theme inline {\n${inline}\n}\n@tailwind utilities;`);
   const dependencies = new Map();
   const requests = systems.filter(s => s.styling === 'tailwind').flatMap(system => filesBySystem(system).map(file => ({ system, file, candidates: literalCandidates(fs.readFileSync(file, 'utf8'), file) })));

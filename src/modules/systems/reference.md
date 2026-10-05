@@ -28,9 +28,9 @@ The starter Product system uses shadcn/ui on Base UI. `components.json` controls
 
 `colorModes` declares supported modes: `['light']`, `['dark']`, or `['light', 'dark']`. This field is required; omission fails validation. Declare a single mode explicitly to protect a system that supports only that mode. Empty, duplicate, and unknown modes fail validation.
 
-Studio follows the global mode. Rendered views, their document/canvas embeds, and Systems foundation previews and component examples resolve that mode against their system's capabilities. Unsupported global modes use the first supported mode. Documents, diagrams, canvas chrome, and source editors keep Studio's mode.
+Studio follows the global mode. Rendered views, their document/canvas embeds, and Systems theme previews and component examples resolve that mode against their system's capabilities. Unsupported global modes use the first supported mode. Documents, diagrams, canvas chrome, and source editors keep Studio's mode.
 
-The shared `ThemeScope` sets `data-color-mode` and CSS `color-scheme` on the system boundary. Pop-ups stay inside it. Dark tokens use `.<theme-class>[data-color-mode="dark"]`; never use an ancestor `.dark` selector for system styles. Tailwind `dark:` utilities respect a local light boundary. Tailwind systems explicitly declare their runtime foundations on the system boundary. Foundation and component pages use the selected system's mode, including their background, headings, token tables, and component examples. The shared Overview, navigation, system knowledge, and source editors remain in Studio's scope; optional additional overview content retains the selected system's theme. The Overview’s Code section calls out supported modes using ColorModeSupport, which reads the declaration from system.ts.
+The shared `ThemeScope` sets `data-color-mode` and CSS `color-scheme` on the system boundary. Pop-ups stay inside it. Dark tokens use `.<theme-class>[data-color-mode="dark"]`; never use an ancestor `.dark` selector for system styles. Tailwind `dark:` utilities respect a local light boundary. Tailwind systems explicitly declare their theme tokens on the system boundary. Theme and component pages use the selected system's mode, including their background, headings, token tables, and component examples. The shared Overview, navigation, system knowledge, and source editors remain in Studio's scope; optional additional overview content retains the selected system's theme. The Overview’s Code section calls out supported modes using ColorModeSupport, which reads the declaration from system.ts.
 
 The starter Product system and new system scaffolds declare both modes and include light and dark tokens. For a light-only system such as Sublime, declare `colorModes: ['light']`; for a dark-only system, declare `colorModes: ['dark']`. Its rendered content then keeps that mode regardless of Studio's toggle.
 
@@ -68,9 +68,9 @@ Missing pages, examples, or required page fields normally produce warnings. `doc
 
 The [document-component skill](../../systems/studio/skills/document-component/SKILL.md) owns the scaffolding and documentation procedure.
 
-## Foundations
+## Theme
 
-Foundation pages come from custom properties in the theme. No separate foundation-page files are required. Preview geometry belongs to the documentation renderer, so omitted system utilities cannot collapse swatches or samples. Samples use the selected system’s live token values. Spacing and container widths appear separately.
+Theme pages come from custom properties in the theme. No separate theme-page files are required. Preview geometry belongs to the documentation renderer, so omitted system utilities cannot collapse swatches or samples. Samples use the selected system’s live token values. Spacing and container widths appear separately.
 
 | Token family | Page |
 | --- | --- |
@@ -81,9 +81,9 @@ Foundation pages come from custom properties in the theme. No separate foundatio
 | Color values | Colors |
 | Remaining tokens | Other tokens |
 
-A system's theme is its declared inventory. Declare only the foundations it provides, including values matching upstream defaults. Omission intentionally excludes a token or an entire family. Studio and Product follow the same contract: neither receives the rest of Tailwind's catalog. Foundation pages show declarations from the theme entry point, including mode overrides; generated resets and utility mappings are not documentation tokens.
+A system's theme is its declared inventory. Declare only the theme tokens it provides, including values matching upstream defaults. Omission intentionally excludes a token or an entire family. Studio and Product follow the same contract: neither receives the rest of Tailwind's catalog. Theme pages show declarations from the theme entry point, including mode overrides; generated resets and utility mappings are not documentation tokens.
 
-Declare `styling: 'tailwind'` or `styling: 'custom'` in `system.ts`. Tailwind declarations live directly on the unconditional system boundary in `styles/theme.css`; dark mode overrides those base values. Missing referenced tokens, inherited foundations, and dark-only declarations fail validation. There is no full-catalog completeness requirement. Adding a token is an intentional system change, alongside any component or example that needs it.
+Declare `styling: 'tailwind'` or `styling: 'custom'` in `system.ts`. Tailwind declarations live directly on the unconditional system boundary in `styles/theme.css`; dark mode overrides those base values. Missing referenced tokens, inherited theme tokens, and dark-only declarations fail validation. There is no full-catalog completeness requirement. Adding a token is an intentional system change, alongside any component or example that needs it.
 
 The CSS build resets Tailwind's built-in theme and generates utility mappings from registered system inventories. Theme-backed utilities are available only within systems declaring their dependencies. CSS `@scope` boundaries stop selectors at other systems, including nested embeds; generated boundary resets separately stop inherited custom properties. Utilities apply to the theme boundary itself and its descendants. This uses modern browser support for [`@scope`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@scope) (Baseline March 2026). Layout utilities such as `flex` and `overflow-hidden` remain available. Arbitrary CSS values remain authoring tools, not automatically documented system tokens. The named `rounded-full` choice also requires an explicit `--radius-full` declaration, even though Tailwind normally implements it as a built-in constant. Product declares square corners and a full radius for circular avatars and rounded bars.
 
@@ -101,7 +101,7 @@ Systems declaring `styling: 'custom'` are exempt from the Tailwind vocabulary co
 
 Systems uses the [shared platform source workflow](../../platform/core/source.md). Right-click a navigation item for file actions, or use **⌘' / Ctrl+'** to toggle source. **⌘S / Ctrl+S** saves; the toggle or **Done** returns to rendering with unsaved-change protection. Source editors remain in Studio's color mode.
 
-Component pages open their Page, Examples, and Component file tabs. Overview and Icons open the system's overview source (`intro.tsx`). A missing overview source opens `system.ts`. Generated foundation pages open the system's theme CSS. There is no separate editable file for each token-family page.
+Component pages open their Page, Examples, and Component file tabs. Overview and Icons open the system's overview source (`intro.tsx`). A missing overview source opens `system.ts`. Generated theme pages open the system's theme CSS. There is no separate editable file for each token-family page.
 
 Only these system source files and discovered component files are accessible through the local Systems source endpoint. Menus provide edit, external editor, reveal, and copying actions without rename or delete.
 
@@ -115,7 +115,7 @@ Theme contains token pages generated from the system’s theme file. Its navigat
 
 Context and Rules show their file and folder trees. Skills shows one entry per skill, opening its required `<name>/SKILL.md`; it does not repeat the skill as a folder and a document. Its source editor provides a file picker for the entry file and supporting references, scripts, assets, or other files inside the skill folder. Text files use the shared editor; other assets can be opened externally. Switching files protects unsaved edits. Direct links to supporting documents remain available.
 
-Local menus support creation, source editing, rename, move, and recoverable deletion within each section’s rules. A skill entry’s Rename and Delete actions operate on its whole folder, preserving the required entry-file name and the skill’s supporting files. Its New actions create supporting files or folders. Drag operations are scoped to their owning tree: they cannot move a file into another system or another content section. Component and foundation menus retain source inspection actions; structural changes to their code require updating imports and related documentation through the agent or editor.
+Local menus support creation, source editing, rename, move, and recoverable deletion within each section’s rules. A skill entry’s Rename and Delete actions operate on its whole folder, preserving the required entry-file name and the skill’s supporting files. Its New actions create supporting files or folders. Drag operations are scoped to their owning tree: they cannot move a file into another system or another content section. Component and theme menus retain source inspection actions; structural changes to their code require updating imports and related documentation through the agent or editor.
 
 ## System choice
 
@@ -135,7 +135,7 @@ The [contracts and operating instructions foundation](../../platform/core/contra
 
 A system’s guidance applies to its domain, not just its components. Studio rules cover Studio modules, architecture, documentation, and collaboration; product rules can cover terminology, accessibility, business requirements, and workflows.
 
-A system owns five parts: foundations, components, context, rules, and skills. The latter three live directly in `src/systems/<id>/context/`, `rules/`, and `skills/`; the built-in Studio system uses `src/systems/studio/` with the same folders. No separate Handbook module or global content collection is required.
+A system owns five parts: theme, components, context, rules, and skills. The latter three live directly in `src/systems/<id>/context/`, `rules/`, and `skills/`; the built-in Studio system uses `src/systems/studio/` with the same folders. No separate Handbook module or global content collection is required.
 
 Systems exposes these files at `/systems/<id>/context/<file>`, `rules/<file>`, and `skills/<skill>/SKILL`. The shared source editor and file operations use explicit system and section identifiers. Content remains platform-styled even for a single-mode product system.
 

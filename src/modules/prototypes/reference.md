@@ -80,7 +80,7 @@ Public module libraries are accessed through `@module/<id>` only. Private platfo
 
 These requirements apply to indirect and type-only dependencies. Dynamic imports use literal paths so checks can resolve them. Shared utilities cannot depend on prototypes, systems, or platform code.
 
-Prototype styles use Tailwind classes or CSS Modules with local selectors. Plain CSS imports, `:global`, and CSS `@import` are not supported in prototype code. Assigned system tokens follow the [system styling contract](../systems/reference.md#foundations).
+Prototype styles use Tailwind classes or CSS Modules with local selectors. Plain CSS imports, `:global`, and CSS `@import` are not supported in prototype code. Assigned system tokens follow the [system styling contract](../systems/reference.md#theme).
 
 ## Archiving and deployment
 

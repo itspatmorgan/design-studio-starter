@@ -10,19 +10,19 @@ Design Studio brings your prototypes, design system, and team context into one w
 
 You do not need to understand the whole platform to begin. Start with the sample prototype, then ask your coding agent to help create your own.
 
-## Your work and shared foundations
+## Your work and shared capabilities
 
-Your prototypes are independent working areas. Systems and platform capabilities support the whole studio. Coordinate changes to these shared foundations with your team.
+Your prototypes are independent working areas. Systems and platform capabilities support the whole studio. Coordinate changes to these shared capabilities with your team.
 
 ```mermaid
 %%{init: {"flowchart": {"nodeSpacing": 20, "rankSpacing": 30, "subGraphTitleMargin": {"top": 10, "bottom": 15}}}}%%
 flowchart TB
   accTitle: Studio ownership and safe working areas
-  accDescr: Platform infrastructure composes modules that provide studio capabilities. Each system owns foundations, components, context, rules, and skills. Contributor-owned prototypes use an assigned system and contain artifacts for local experiments.
+  accDescr: Platform infrastructure composes modules that provide studio capabilities. Each system owns theme, components, context, rules, and skills. Contributor-owned prototypes use an assigned system and contain artifacts for local experiments.
   platform[Platform infrastructure]
   modules[Modules<br/>Studio capabilities]
   subgraph system[System scope]
-    ui[Foundations<br/>and components]
+    ui[Theme<br/>and components]
     knowledge[Context, Rules,<br/>and Skills]
   end
   subgraph yours[Prototype scope: your experiments]

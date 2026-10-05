@@ -1,7 +1,7 @@
 /* __LABEL__'s light and dark themes. Tokens stay inside .__ID__-theme; the local
    data-color-mode boundary selects dark mode. Replace these neutral values with your own. */
 .__ID__-theme {
-  /* Declared inventory: omitted foundations are outside this system. */
+  /* Declared inventory: omitted theme tokens are outside this system. */
   --font-sans: ui-sans-serif, system-ui, sans-serif;
   font-family: var(--font-sans);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;

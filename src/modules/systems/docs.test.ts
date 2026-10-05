@@ -246,7 +246,7 @@ test('a theme\'s tokens: scoped light and dark values, sorted into groups', asyn
   assert.deepEqual(themeTokens('.x { --a: red }', 'brand-theme'), []);
 });
 
-test('the shipped systems explicitly own every foundation family', async () => {
+test('the shipped systems explicitly own every theme token family', async () => {
   const { themeTokens } = await import('./themeTokens.ts');
   const css = fs.readFileSync(path.resolve(import.meta.dirname, '../../systems/product/styles/theme.css'), 'utf8');
   const tokens = themeTokens(css, 'product-theme');
@@ -265,7 +265,7 @@ test('the shipped systems explicitly own every foundation family', async () => {
   assert.ok(tokens.filter((t) => t.group === 'colors' && !t.name.startsWith('--color-')).every((t) => t.subgroup && t.dark));
 });
 
-test('the supplied foundation inventories are curated and utilities use their declarations', async () => {
+test('the supplied theme token inventories are curated and utilities use their declarations', async () => {
   const { compile } = await import('tailwindcss');
   const { inventories } = await import('../../../scripts/build/vite-css-plugin.js');
   const { themeAdapter } = await import('../../../scripts/lib/tailwind-theme.js');

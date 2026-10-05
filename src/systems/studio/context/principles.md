@@ -26,9 +26,9 @@ Modularity, composability, extensibility, and scalability are product qualities 
 
 ## Declare what the system provides
 
-Make platform capabilities and system choices explicit, even when they match starter defaults. Discovery finds available files; declarations determine registration, activation, supported surfaces, and operating policy. Required capability decisions should be identified by validation rather than silently inferred. Foundation declarations define a curated inventory: omitted tokens are intentionally outside the system and must not leak in from upstream defaults or another system.
+Make platform capabilities and system choices explicit, even when they match starter defaults. Discovery finds available files; declarations determine registration, activation, supported surfaces, and operating policy. Required capability decisions should be identified by validation rather than silently inferred. Theme token declarations define a curated inventory: omitted tokens are intentionally outside the system and must not leak in from upstream defaults or another system.
 
-**In practice:** scaffolds write useful defaults as concrete declarations. Keep those declarations readable, validate them, and generate documentation from the same source. This applies to modules, systems, artifact capabilities, and visual foundations.
+**In practice:** scaffolds write useful defaults as concrete declarations. Keep those declarations readable, validate them, and generate documentation from the same source. This applies to modules, systems, artifact capabilities, and themes.
 
 ## Let the human direct and the agent execute
 

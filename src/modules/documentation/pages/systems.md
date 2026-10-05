@@ -62,7 +62,7 @@ Ask your agent to import your components, tokens, fonts, and supported color mod
 
 System files are shared team content. Coordinate changes with your maintainer. The studio configuration command records omitted assignments before changing the default, preserving existing choices. Direct configuration edits do not perform that step. Explicit system and None assignments remain unchanged.
 
-Foundations are generated from its theme file; component pages combine documentation, examples, and component source. Source is available through navigation, using the [shared file workflow](/documentation/guide/home#working-with-files). Component pages offer separate source tabs for documentation, examples, and component code.
+Theme pages are generated from its theme file; component pages combine documentation, examples, and component source. Source is available through navigation, using the [shared file workflow](/documentation/guide/home#working-with-files). Component pages offer separate source tabs for documentation, examples, and component code.
 
 ## Context, rules, and skills
 

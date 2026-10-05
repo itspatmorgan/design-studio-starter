@@ -1,4 +1,4 @@
-// __LABEL__ on the Systems page: what it is, and how its theme is set up. Its components and foundations pages come from
+// __LABEL__ on the Systems page: what it is, and how its theme is set up. Its components and theme pages come from
 // its files (components/, styles/theme.css).
 import type { SystemIntro } from '@/platform/app/data/types';
 
