@@ -8,6 +8,24 @@ toc: true
 
 Ask for the result you want. Your agent uses skills for the task and context to make decisions that fit your work.
 
+## Find guidance
+
+Every owner has a README entry point, context for knowledge and requirements, and skills for tasks. Documentation’s Context & Skills browser displays these original files together. Select Platform, a module, or a system; start with Overview, then read relevant context or skills.
+
+The platform’s detailed configuration, file-format, and runtime requirements are technical context. They appear under Context → Technical. They are part of the same knowledge model as principles and personas.
+
+```mermaid
+flowchart TD
+  accTitle: Find context and skills by owner
+  accDescr: Platform, modules, and systems each have a README entry point, context, and optional skills. Documentation reads those original files. Harness entries expose the skills to agents.
+  owners[Choose an owner: Platform, Module, or System] --> readme[README: start here]
+  readme --> context[Context: knowledge and requirements]
+  readme --> skills[Skills: task procedures]
+  context --> browser[Documentation: reads original files]
+  skills --> browser
+  skills --> harness[Codex, Claude Code, and Cursor: generated skill entries]
+```
+
 ## Context and skills
 
 Context includes product knowledge, personas, principles, and standing conventions. Skills explain how to accomplish a task and verify it. Both have an owner:
@@ -38,4 +56,4 @@ Ask your agent to refresh skill exposure after adding skills or changing availab
 
 Ask your agent which system applies and which instructions it used. Check the resulting work as well as that explanation. Automated checks find broken links and invalid structures; they do not prove correct agent decisions.
 
-See [Agent context routing](/documentation/reference/platform/core/agent-context.md) for technical details.
+See [Agent context routing](/documentation/context/platform.core/context/technical/agent-context) for technical details.

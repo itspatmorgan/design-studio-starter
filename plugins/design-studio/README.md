@@ -73,6 +73,6 @@ Official reference: [Codex plugins](https://developers.openai.com/codex/plugins/
 
 ## Guidance ownership in experiment .8
 
-The platform and each enabled module own their context and skills beside implementation. Systems own product and design context and specialized skills. Technical module contracts use `README.md`; procedures link to them. See [agent context routing](../../src/platform/core/agent-context.md) for native adapter ownership and compatibility routes.
+The platform and each enabled module own their context and skills beside implementation. Systems own product and design context and specialized skills. Technical module contracts use `README.md`; procedures link to them. See [agent context routing](../../src/platform/context/technical/agent-context.md) for native adapter ownership and compatibility routes.
 
 Preparation and development startup synchronize native project skills. Modified or unrelated adapters are preserved with a diagnostic. The plugin contains only host installation, reopening, and workspace-use entry points, so it does not carry a stale copy of every operating procedure.

@@ -14,7 +14,7 @@ Your local Home greets you by name and highlights your prototypes. Your contribu
 
 A published Home uses the studio name, an optional tagline, and shared work. Published prototypes remain interactive, but repository editing is available only locally. Updates appear when a new build is published.
 
-Use **Search the studio** or **⌘K / Ctrl+K** to find work. Documentation has its own Guide and Reference navigation.
+Use **Search the studio** or **⌘K / Ctrl+K** to find work. Documentation offers Guide and Context & Skills navigation.
 
 ## Working with files
 

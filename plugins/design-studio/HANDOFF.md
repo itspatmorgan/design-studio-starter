@@ -33,7 +33,7 @@ The original host used helper and browser tests. On the second host, a fresh plu
 
 ## Architecture now implemented
 
-Platform context and skills live in `src/platform/`; module guidance lives under its owning module; system guidance is product and design specific. There are two guidance categories: Context and Skills. Module technical contracts use `README.md`. The local app exposes platform/module browsing at `/knowledge/platform.core`, and compatibility redirects preserve saved links.
+Platform context and skills live in `src/platform/`; module guidance lives under its owning module; system guidance is product and design specific. There are two guidance categories: Context and Skills. Every owner has a `README.md` entry point, plus `context/` and optional `skills/`. Platform technical documents live in `src/platform/context/technical/`; `core/` contains code. The local app exposes platform/module browsing at `/documentation/context/platform.core`, and compatibility redirects preserve saved links.
 
 `pnpm studio sync` emits managed Codex/Cursor project entries and Claude Code links from canonical sources. Module disable/remove operations refresh exposure. Adapter tests cover preservation and canonical resource resolution. The use-studio plugin entry point delegates operation to the workspace. Native registration and task activation still require live host checks.
 

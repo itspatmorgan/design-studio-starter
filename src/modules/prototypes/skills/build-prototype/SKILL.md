@@ -22,7 +22,7 @@ Read the [prototype contract](../../README.md) when creating or reorganizing pro
 
 ## Dependencies and styles
 
-Follow the [static asset convention](../../../../platform/core/assets.md) when adding images, logos, fonts, or shared static files.
+Follow the [static asset convention](../../../../platform/context/technical/assets.md) when adding images, logos, fonts, or shared static files.
 
 Follow the prototype contract's [dependency boundaries](../../README.md#dependency-boundaries). Use permitted dependencies and local styles; fix boundary errors instead of bypassing checks.
 
@@ -32,7 +32,7 @@ Keep experiments local until an authorized shared change moves them into the sys
 
 - Read rendering errors before changing code. Fix type and boundary errors rather than suppressing them.
 - Run `pnpm build` before committing completed work. Inspect the rendered result when changing views.
-- Follow the [Asset Guard](../../../../platform/core/assets.md#asset-guard). Compress oversized assets instead of bypassing the check.
+- Follow the [Asset Guard](../../../../platform/context/technical/assets.md#asset-guard). Compress oversized assets instead of bypassing the check.
 - Commit finished work with a concise message. Push only when the person asks to share.
 
-A push runs repository checks. Publishing depends on the repository's deployment workflow; see [Publishing](../../../../platform/core/publishing.md).
+A push runs repository checks. Publishing depends on the repository's deployment workflow; see [Publishing](../../../../platform/context/technical/publishing.md).

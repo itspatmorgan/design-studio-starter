@@ -8,6 +8,6 @@ export default {
   id: 'systems',
   label: 'Systems',
   version: '0.1.0',
-  description: 'Theme, components, context, rules, and skills for prototypes.',
+  description: 'Theme, components, context, and skills for prototypes.',
   section: { key: 'systems', folder: 'src/systems', policy: 'open' },
 } satisfies ModuleSpec;

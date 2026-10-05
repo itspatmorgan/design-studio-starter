@@ -27,10 +27,10 @@ import type { Artifact, Manifest, Prototype } from '@/platform/app/data/types';
 import { TAB_ID } from '@/platform/app/data/files';
 import { moduleApps } from '@/platform/app/modules';
 import { APP_NAME } from '@/platform/app/data/config';
-import { migratedGuidancePath } from '@/platform/app/docs/referenceLinks';
+import { migratedGuidancePath, markdownPath } from '@/platform/app/docs/referenceLinks';
 import { loadReference } from '@/platform/app/docs/loadReference';
 import MarkdownPage from '@/platform/app/docs/MarkdownPage';
-import { ReferenceLayout, ReferenceIndex, AboutReference } from '@/platform/app/docs/References';
+import { AboutReference } from '@/platform/app/docs/References';
 
 
 function LoadError({ error, reset }: { error: unknown; reset: () => void }) {
@@ -44,7 +44,7 @@ function LoadError({ error, reset }: { error: unknown; reset: () => void }) {
 
 const rootRoute = createRootRoute({
   beforeLoad: ({ location }) => {
-    const moved = migratedGuidancePath(location.pathname);
+    const moved = migratedGuidancePath(location.pathname) ?? (markdownPath(location.pathname) !== location.pathname ? markdownPath(location.pathname) : null);
     if (moved) throw redirect({ to: moved as never, search: location.search as never, hash: location.hash, replace: true });
   },
   loader: () => loadManifest(),
@@ -73,39 +73,37 @@ const settingsRoute = createRoute({
 
 const documentationRoute = createRoute({ getParentRoute: () => rootRoute, path: 'documentation', beforeLoad: async () => {
   const { guide } = await loadManifest();
-  throw redirect({ to: (guide.length ? '/documentation/guide' : '/documentation/reference') as never, replace: true });
+  throw redirect({ to: (guide.length ? '/documentation/guide' : '/documentation/context/platform.core') as never, replace: true });
 } });
 
-// References and their local file actions remain available without the optional Guide.
+// Owner guidance and local file actions remain available without the optional Guide.
 const DocumentationEditor = import.meta.env.DEV ? lazy(() => import('@/platform/app/docs/DocumentationEditor')) : null;
-const referencesRoute = createRoute({ getParentRoute: () => rootRoute, path: 'documentation/reference', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }), component: ReferenceLayout });
-const referenceIndexRoute = createRoute({ getParentRoute: () => referencesRoute, path: '/', head: () => ({ meta: [{ title: 'Reference — ' + APP_NAME }] }), component: ReferenceIndex });
-const referenceRoute = createRoute({
-  getParentRoute: () => referencesRoute,
-  path: '$',
-  loaderDeps: ({ search }) => ({ mode: search.mode }),
-  loader: async ({ params, deps }) => {
-    const path = '/' + (params._splat ?? '');
-    const manifest = await loadManifest();
-    const group = manifest.platformReferences.find((g) => g.references.some((ref) => ref.source === path));
-    if (import.meta.env.DEV && deps.mode === 'source') {
-      if (!group) throw notFound();
-      return { editing: true as const, path, title: 'Source' };
-    }
-    const mod = await loadReference(path);
-    if (!mod) throw notFound();
-    const title = group?.references.find((ref) => ref.source === path)?.title ?? mod.frontmatter?.title;
-    return { editing: false as const, Component: mod.default, frontmatter: { ...mod.frontmatter, title }, path, group, title };
-  },
-  head: ({ loaderData }) => ({ meta: [{ title: [loaderData?.title, 'Reference', APP_NAME].filter(Boolean).join(' — ') }] }),
-  component: () => {
-    const data = referenceRoute.useLoaderData();
-    const { rendered } = useSourceView(import.meta.env.DEV, data.editing);
-    if (data.editing) return DocumentationEditor && <Suspense fallback={null}><DocumentationEditor path={'src' + data.path} /></Suspense>;
-    return <div ref={rendered} tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none [&>div]:min-h-0"><MarkdownPage Component={data.Component} frontmatter={data.frontmatter} docKey={data.path} base={'/documentation/reference' + data.path.slice(0, data.path.lastIndexOf('/'))} footer={<AboutReference source={data.path} group={data.group} />} /></div>;
-  },
-  notFoundComponent: NotFound,
-});
+const KnowledgePage = lazy(() => import('@/platform/app/docs/KnowledgePage'));
+const contextRoute = createRoute({ getParentRoute: () => rootRoute, path: 'documentation/context', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }) });
+const contextIndexRoute = createRoute({ getParentRoute: () => contextRoute, path: '/', beforeLoad: () => { throw redirect({ to: '/documentation/context/platform.core' as never, replace: true }); } });
+async function ownerDocument(ownerId: string, file: string, mode?: 'source') {
+  const manifest = await loadManifest();
+  const owner = manifest.systemContent.find(p => p.owner?.id === ownerId)?.owner;
+  if (!owner) throw notFound();
+  const source = '/' + owner.root.slice(4) + '/' + file;
+  const group = manifest.platformReferences.find(g => g.references.some(r => r.source === source));
+  if (!group) { if (file === 'README.md') return null; throw notFound(); }
+  if (import.meta.env.DEV && mode === 'source') return { editing: true as const, path: source, title: 'Source' };
+  const mod = await loadReference(source);
+  if (!mod) throw notFound();
+  const title = group.references.find(r => r.source === source)?.title ?? mod.frontmatter?.title;
+  return { editing: false as const, Component: mod.default, frontmatter: { ...mod.frontmatter, title }, path: source, group, title };
+}
+function OwnerDocument({ data }: { data: Awaited<ReturnType<typeof ownerDocument>> }) {
+  const { rendered } = useSourceView(import.meta.env.DEV && Boolean(data), Boolean(data?.editing));
+  if (!data) return null;
+  if (data.editing) return DocumentationEditor && <Suspense fallback={null}><DocumentationEditor path={'src' + data.path} /></Suspense>;
+  return <div ref={rendered} tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none"><MarkdownPage Component={data.Component} frontmatter={data.frontmatter} docKey={data.path} base={data.path.slice(0, data.path.lastIndexOf('/'))} footer={<AboutReference source={data.path} group={data.group} />} /></div>;
+}
+const ownerRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner', loaderDeps: ({ search }) => ({ mode: search.mode }), loader: ({ params, deps }) => ownerDocument(params.owner, 'README.md', deps.mode), component: () => { const data = ownerRoute.useLoaderData(); return <Suspense fallback={null}><KnowledgePage overview={data && <OwnerDocument data={data} />} /></Suspense>; } });
+const ownerReferenceRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/reference/$', loaderDeps: ({ search }) => ({ mode: search.mode }), loader: ({ params, deps }) => ownerDocument(params.owner, params._splat ?? '', deps.mode), component: () => <Suspense fallback={null}><KnowledgePage overview={<OwnerDocument data={ownerReferenceRoute.useLoaderData()} />} /></Suspense> });
+const contextPageRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/$page', component: () => <Suspense fallback={null}><KnowledgePage /></Suspense> });
+const contextItemRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/$page/$', component: () => <Suspense fallback={null}><KnowledgePage /></Suspense> });
 
 // ?mode=source shows an item's text instead of the item (dev only): "Edit source" in its file menu.
 type ItemSearch = { mode?: 'source' };
@@ -227,7 +225,7 @@ const sectionItemSplatRoute = createRoute({
 // The app's own routes are typed, so links to them are checked. The modules' routes (Systems, the
 // system content, the Guide, in src/modules/<id>/app.tsx) are added at run time, and the types leave
 // them out: a link to one is written loosely.
-const coreRoutes = [homeRoute, documentationRoute, referencesRoute.addChildren([referenceIndexRoute, referenceRoute]), prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]), sectionItemRoute.addChildren([sectionItemIndexRoute, sectionItemSplatRoute])] as const;
+const coreRoutes = [homeRoute, documentationRoute, contextRoute.addChildren([contextIndexRoute, ownerRoute, ownerReferenceRoute, contextPageRoute, contextItemRoute]), prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]), sectionItemRoute.addChildren([sectionItemIndexRoute, sectionItemSplatRoute])] as const;
 const routeTree = rootRoute.addChildren([...coreRoutes, ...(import.meta.env.DEV ? [settingsRoute] : []), ...moduleApps.flatMap(({ app }) => app.routes?.(rootRoute) ?? [])] as unknown as typeof coreRoutes);
 
 export const router = createRouter({

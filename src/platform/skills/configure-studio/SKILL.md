@@ -17,7 +17,7 @@ Collect unresolved studio name, personal or team use, contributor identity, desi
 
 1. Inspect the contributor, current studio configuration, systems, prototypes, and system context. Resume from actual state rather than restarting completed setup.
 2. Follow [setup-contributor](../setup-contributor/SKILL.md) in **registration-only mode**. Return here after identity and registration verification.
-3. Preview studio choices with `pnpm studio configure`. Team use requires at least one registered Admin key through `--admins key,key`. Assign the first studio owner during new-team setup; preserve existing Admins when resuming. Personal use derives Admin access from local contributor identity. Apply confirmed choices with `--yes` and restart the server when needed. The [configuration contract](../../core/config.md) owns role behavior.
+3. Preview studio choices with `pnpm studio configure`. Team use requires at least one registered Admin key through `--admins key,key`. Assign the first studio owner during new-team setup; preserve existing Admins when resuming. Personal use derives Admin access from local contributor identity. Apply confirmed choices with `--yes` and restart the server when needed. The [configuration contract](../../context/technical/config.md) owns role behavior.
 4. Follow [setup-design-system](../../../modules/systems/skills/setup-design-system/SKILL.md) for the chosen kit. Reuse its representative prototype for final verification.
 5. Use the [maintain-context skill](../maintain-context/SKILL.md) to curate supplied context in the selected product system. Preserve the platform personas, principles, and skills. Keep unresolved materials explicit.
 

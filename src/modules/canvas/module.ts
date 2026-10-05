@@ -1,6 +1,6 @@
 import type { ModuleSpec } from '../../platform/core/api.ts';
 
-// The canvas file type: an .excalidraw file is a page to arrange views, documents, and notes on (src/platform/core/fileTypes.md).
+// The canvas file type: an .excalidraw file is a page to arrange views, documents, and notes on (src/platform/context/technical/file-types.md).
 export default {
   lib: false,
   id: 'canvas',

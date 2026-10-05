@@ -4,7 +4,7 @@ Read [working context](src/platform/context/working-in-studio.md) at the start o
 
 Before editing prototypes, resolve the contributor with `node scripts/cli/resolve-contributor.js`. Resolve the assigned system from prototype metadata and configuration: explicit `system: null` means no system; only omission uses the default. Read the assigned system's `AGENTS.md` and relevant context. For a pending rebuild, read the target system too and preserve the original.
 
-For platform product or architecture decisions, read [Principles](src/platform/context/principles.md) and [Personas](src/platform/context/personas.md). For Studio interface work, read [Studio instructions](src/systems/studio/AGENTS.md).
+Start with the [platform README](src/platform/README.md) to locate shared context, skills, and implementation. For platform product or architecture decisions, read [Principles](src/platform/context/principles.md) and [Personas](src/platform/context/personas.md). For Studio interface work, read [Studio instructions](src/systems/studio/AGENTS.md).
 
 Skills are owned by the platform, enabled modules, and registered systems. Inspect their names and descriptions, then read applicable procedures and supporting files. The generated project skill adapters expose the same canonical sources to coding harnesses. A system skill applies only to that system's assigned prototypes or explicit system maintenance.
 
@@ -27,4 +27,4 @@ When the person asks to import or document a system component, read [src/modules
 
 Use pnpm for project commands. Reuse instructions already read while available and unchanged; retrieve missing or stale instructions after compaction or file changes. Re-read source files before editing them. Use targeted searches and bounded reads; read applicable skill procedures in full. Save verbose check output to a temporary log, inspect final exit status and warnings, and report concise results with its path.
 
-The human Guide lives in `src/modules/documentation/pages/`; technical requirements live in module READMEs and core documents. Update affected guidance with platform behavior changes. For routing work, consult [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview).
+The human Guide lives in `src/modules/documentation/pages/`; technical requirements live in owner READMEs and context documents. Update affected guidance with platform behavior changes. For routing work, consult [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview).

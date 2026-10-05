@@ -1,6 +1,5 @@
 ---
-referenceSection: operate
-referenceOrder: 60
+title: "Diagrams and code"
 ---
 
 # Diagrams and code

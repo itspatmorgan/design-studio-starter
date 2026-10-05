@@ -58,7 +58,7 @@ const titleOf = (id) => id.split('-').map((w) => w.charAt(0).toUpperCase() + w.s
 const slug = (text) => text.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/^[^a-z]+/, '');
 
 // ---- places that must never be deleted, whatever a pack or a flag says
-const PROTECTED = new Set(['src', 'src/platform', 'src/modules', 'src/prototypes', 'src/lib', `src/systems/${PLATFORM_ID}`, `src/systems/${PLATFORM_ID}/rules`, `src/systems/${PLATFORM_ID}/context`, `src/systems/${PLATFORM_ID}/skills`, 'src/systems', 'src/types']);
+const PROTECTED = new Set(['src', 'src/platform', 'src/modules', 'src/prototypes', 'src/lib', `src/systems/${PLATFORM_ID}`, `src/systems/${PLATFORM_ID}/context`, `src/systems/${PLATFORM_ID}/skills`, 'src/systems', 'src/types']);
 function removable(relative) {
   const clean = path.posix.normalize(relative.replace(/\/$/, ''));
   if (!relative || clean.startsWith('..') || clean.startsWith('/') || !clean.startsWith('src/') || PROTECTED.has(clean)) throw new Error(`Refusing to delete ${relative}.`);

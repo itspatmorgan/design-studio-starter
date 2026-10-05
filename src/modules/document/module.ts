@@ -1,6 +1,6 @@
 import type { ModuleSpec } from '../../platform/core/api.ts';
 
-// The document file type: a .md file is a written page in a prototype (src/platform/core/fileTypes.md).
+// The document file type: a .md file is a written page in a prototype (src/platform/context/technical/file-types.md).
 export default {
   lib: false,
   id: 'document',

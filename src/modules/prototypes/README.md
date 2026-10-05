@@ -13,7 +13,7 @@ Views are `.tsx` or `.jsx` files with a default-exported React component. New vi
 
 Folders organize files at any depth. A file or folder starting with `_` is a helper. Helper contents do not become navigation artifacts.
 
-Enabled file types determine other artifacts. Documents and canvases require their respective modules. Assets remain ordinary files. Follow the [static asset convention](../../platform/core/assets.md) for their ownership, locations, and imports.
+Enabled file types determine other artifacts. Documents and canvases require their respective modules. Assets remain ordinary files. Follow the [static asset convention](../../platform/context/technical/assets.md) for their ownership, locations, and imports.
 
 Two artifacts cannot share a URL, such as `main.tsx` and `main.md` in one folder.
 
@@ -94,7 +94,7 @@ Individual artifacts and folders have no separate archival status. Organizing th
 
 Module checks enforce runtime dependency boundaries through `scripts/lib/scope.js` and validate prototype styles. Manifest checks validate metadata and artifact structure. These checks do not enforce every agent operating instruction.
 
-The [build-prototype skill](skills/build-prototype/SKILL.md) requires verification before committing. The [Asset Guard](../../platform/core/assets.md#asset-guard) owns the staged-file size limit.
+The [build-prototype skill](skills/build-prototype/SKILL.md) requires verification before committing. The [Asset Guard](../../platform/context/technical/assets.md#asset-guard) owns the staged-file size limit.
 
 ## Gallery system filter
 
@@ -106,7 +106,7 @@ The Prototypes module: the gallery at `/prototypes`, and the viewer every protot
 
 - `module.ts`, `app.tsx`: who it is, its rail button, the `/prototypes` route, its front-page block, and its palette entries. A prototype opens through the platform's artifact routes (`src/platform/app/router.tsx`).
 - `gallery/`: the gallery, a prototype's card, and the New prototype dialog (browser).
-- `viewer/`: a prototype's layout, navigation and file tree, its menus and dialogs (browser). Source editing uses the [shared platform editor](../../platform/core/source.md).
+- `viewer/`: a prototype's layout, navigation and file tree, its menus and dialogs (browser). Source editing uses the [shared platform editor](../../platform/context/technical/source.md).
 - `src/platform/app/source/ArtifactSource.tsx`: adapts prototype and system context access to the shared editor.
 - `node/create.js`: `pnpm new`, and what the New prototype button runs (Node).
 

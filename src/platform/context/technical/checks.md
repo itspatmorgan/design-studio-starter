@@ -1,6 +1,5 @@
 ---
-referenceSection: operate
-referenceOrder: 70
+title: "Checks and fixes"
 ---
 
 # Checks and fixes

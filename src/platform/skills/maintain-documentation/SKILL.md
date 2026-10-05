@@ -5,7 +5,7 @@ description: "Create, revise, or audit platform guides, module documentation, an
 
 ## Establish scope
 
-Read the [documentation standard](../../context/documentation-standards.md) and [ownership foundation](../../core/contracts-and-instructions.md). Use maintain-context when authoring context or skills.
+Read the [documentation standard](../../context/documentation-standards.md) and [ownership foundation](../../context/technical/contracts-and-instructions.md). Use maintain-context when authoring context or skills.
 
 For Guide chapters when Documentation is enabled, also read the [write-guide skill](../../../modules/documentation/skills/write-guide/SKILL.md). For component pages, use [document-component](../../../modules/systems/skills/document-component/SKILL.md).
 

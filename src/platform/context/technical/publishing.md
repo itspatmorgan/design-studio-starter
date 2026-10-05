@@ -1,6 +1,5 @@
 ---
-referenceSection: operate
-referenceOrder: 80
+title: "Publishing"
 ---
 
 # Publishing

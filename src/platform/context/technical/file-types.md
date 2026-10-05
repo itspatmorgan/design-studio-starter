@@ -1,6 +1,5 @@
 ---
-referenceSection: extend
-referenceOrder: 35
+title: "File-type contract"
 ---
 
 # File-type contract
@@ -45,7 +44,7 @@ The app record is `Artifact`, and a loaded `Prototype` holds an `artifacts` coll
 
 An `Embed` in `open.tsx` supplies a read-only preview for documents and canvases. Core resolves references and uses this contract without importing individual modules. The required `embedSurfaces` array explicitly permits `document`, `canvas`, both, or neither (`[]`). Omission never enables a surface. Types without a preview on that surface appear as cards. Canvas restricts its preview to documents, keeping canvas nesting bounded.
 
-Prototype documents use `![Description](relative/file.ext)` on its own line. The shared Markdown reader resolves the exact file within the same prototype, renders the registered preview or card, and provides an Open link. Inline references stay links. Missing or disabled types show an unavailable message. Ordinary image formats retain Markdown image behavior.
+Prototype documents use `![Description](../../core/relative/file.ext)` on its own line. The shared Markdown reader resolves the exact file within the same prototype, renders the registered preview or card, and provides an Open link. Inline references stay links. Missing or disabled types show an unavailable message. Ordinary image formats retain Markdown image behavior.
 
 Preview surfaces use the shared `EmbedFrame`: rounded corners and a full-width gray header link that darkens and reveals Open on hover or keyboard focus. Header text is never underlined. Preview contents are inert; interaction happens after opening the file.
 
@@ -53,7 +52,7 @@ A loader uses `import.meta.glob(['/__studio_globs__/*'])`. Vite replaces the pla
 
 ## Lifecycle
 
-Follow the [module contract](../../modules/README.md) for installation, disabling, removal, and dependency boundaries.
+Follow the [module contract](modules.md) for installation, disabling, removal, and dependency boundaries.
 
 Disabling a prototype file type preserves its files as plain files. Normal navigation hides them unless Show all files is selected.
 

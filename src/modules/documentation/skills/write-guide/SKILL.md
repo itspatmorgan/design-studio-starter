@@ -5,11 +5,11 @@ description: "Create or revise human Guide chapters for Design Studio. Use only 
 
 # Documentation
 
-Documentation offers a curated Guide for people and full Reference from platform contracts. The Guide describes capabilities, defaults, and boundaries. Keep agent requirements in owning context and task procedures in skills.
+Documentation offers a curated Guide for people; the shared Context and Skills browser displays owner files. The Guide describes capabilities, defaults, and boundaries. Keep agent requirements in owning context and task procedures in skills.
 
 Follow the [documentation standard](../../../../platform/context/documentation-standards.md) and [Maintain documentation skill](../../../../platform/skills/maintain-documentation/SKILL.md).
 
-- Keep Reference content beside the platform code it describes. The shared reader discovers core contracts and enabled modules’ top-level Markdown.
+- Keep technical context with its owner. Shared platform contracts live in platform/context/technical; module READMEs hold capability contracts. The browser displays original files.
 - Put all human chapters in `src/modules/documentation/pages/`.
 - Organize the Guide around setup, the main app surfaces, and collaboration. Keep it concise for people working with agents.
 - Keep human workflows in the Guide. A capability chapter declares `module: <id>` so discovery hides it when the module is disabled or removed.

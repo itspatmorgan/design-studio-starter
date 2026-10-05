@@ -3,7 +3,7 @@ name: maintain-context
 description: Add or revise shared context and skills for the Design Studio platform, a module, or an assigned design system.
 ---
 
-Read [documentation standards](../../context/documentation-standards.md) and [agent context routing](../../core/agent-context.md).
+Read [documentation standards](../../context/documentation-standards.md) and [agent context routing](../../context/technical/agent-context.md).
 
 Choose the owner before writing:
 - Platform knowledge and cross-module operating tasks belong in `src/platform/context/` and `skills/`.

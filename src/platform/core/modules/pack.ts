@@ -125,7 +125,7 @@ export const AGENTS_START = '<!-- studio:modules -->';
 export const AGENTS_END = '<!-- /studio:modules -->';
 
 // The lines AGENTS.md gets for the modules that are on: "When the person ..., read [rule](path)." for each systemContent
-// entry with a `when`. They are what routes an agent to a module's rules, so a module that's off isn't mentioned.
+// entry with a `when`. They are what routes an agent to a module's context and skills, so a module that's off isn't mentioned.
 export function agentsBlock(modules: readonly Partial<ModuleSpec>[], _platformId: string = 'studio'): string {
   const lines = modules.flatMap((m) => (m.instructions ?? []).filter((h) => h.when).map((h) => {
     const target = `src/modules/${m.id}/${h.path}`;

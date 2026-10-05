@@ -41,6 +41,6 @@ The demo content is a starting point. Ask your agent to work through this checkl
 - **Replace the starter systems.** Adapt or replace Product and Marketing, or remove either system you do not need. Bring your own components, styles, and product context. Keep Studio and one default prototype system; see [Systems](/documentation/guide/systems#bring-your-own-system).
 - **Choose your modules.** Turn off optional capabilities you do not need in Studio settings.
 - **Configure your repository and deployment.** Review `.github/workflows/scope-check.yml`, branch rules, and repository permissions. Configure publishing for your host; template copies run checks but do not deploy automatically.
-- **Verify before publishing.** Run `pnpm build`, deploy `dist/`, and test a direct prototype link and reload. [Publishing](/documentation/reference/platform/core/publishing.md) covers base paths, routing, and access settings.
+- **Verify before publishing.** Run `pnpm build`, deploy `dist/`, and test a direct prototype link and reload. [Publishing](/documentation/reference/platform/context/technical/publishing.md) covers base paths, routing, and access settings.
 
 Starter cleanup is a maintainer change for a new studio. If you are joining an existing studio, preserve its shared setup and other contributors' work.

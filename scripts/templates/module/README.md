@@ -4,8 +4,10 @@ A module for Design Studio. It adds a page at `/__ID__` and a button for it on t
 
 - `module.ts` says what it is and what it adds.
 - `app.tsx` is the page and the rail button.
-- `instructions/rules/__ID__.md` is what an agent should know before changing it. It is installed into `src/systems/studio/rules/`,
-  and AGENTS.md routes agents to it while the module is on.
+- `context/` holds knowledge and requirements for this capability.
+- [Use __LABEL__](skills/use-__ID__/SKILL.md) is its task procedure. AGENTS.md routes agents to it while the module is enabled.
+
+This README is the entry point and technical contract. The shared Context and Skills browser reads the original module files. See the [module contract](../../platform/context/technical/modules.md) for extension details.
 
 To use it in another Design Studio, publish this folder as a git repository and run `pnpm studio add <address>` there.
 To check it before that, run `pnpm check`.

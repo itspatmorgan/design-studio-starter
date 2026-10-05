@@ -11,25 +11,24 @@ Documentation is part of the platform. Keep it accurate as behavior changes. Thi
 | Location | Purpose |
 | --- | --- |
 | Guide | Explain capabilities, defaults, boundaries, and setup choices to people. |
-| Module README | Own that capability’s technical requirements and implementation details. |
-| Core contract | Define shared technical interfaces, behavior, and boundaries. |
+| Owner README | Introduce the owner and index its context and skills; a module README holds its main technical contract. |
 | Context | Preserve knowledge, intent, and standing requirements under its platform, module, or system owner. |
 | Skills | Describe a task-specific procedure and when it applies. |
 | `AGENTS.md` | Provide essential project instructions and route agents to relevant context. |
 
-Documentation has two reading modes: Guide provides a curated introduction, and Reference exposes module and core contracts from their original files. Human chapters live only in `src/modules/documentation/pages/`. Platform, module, and system context preserve knowledge under their respective owners. Reference access remains available when the optional Documentation module is disabled.
+Documentation has two reading choices: Guide provides a curated introduction, and Context and Skills displays original files organized by owner. Human chapters live only in `src/modules/documentation/pages/`. Platform, module, and system context preserve knowledge under their respective owners. Context and Skills access remains available when the optional Documentation module is disabled.
 
-The [Responsibilities](../core/contracts-and-instructions.md) foundation defines the system of record: core and module contracts own technical requirements; context owns knowledge and operating requirements; skills own procedures.
+The [Responsibilities](technical/contracts-and-instructions.md) foundation defines the system of record: context includes technical contracts, knowledge, and standing requirements; skills own procedures.
 
 Give each contract one authoritative location. Other documents can summarize its purpose, then link to it. Do not copy requirements, schemas, or procedures into multiple locations.
 
-Organize the Guide around the main app surfaces. Introduce essential concepts and everyday capabilities for people working with agents. Keep detailed commands, file contracts, and troubleshooting in Reference. A supporting module does not need a separate Guide chapter.
+Organize the Guide around the main app surfaces. Introduce essential concepts and everyday capabilities for people working with agents. Keep detailed commands, file contracts, and troubleshooting in technical context. A supporting module does not need a separate Guide chapter.
 
 Code defines implemented behavior. Documentation explains that behavior and the intended constraints. If they disagree, identify whether the implementation or the documentation needs correction.
 
 Keep technical contracts with their module. Associate its Guide chapter through `module: <id>` so disabling or removal hides the human chapter without relocating its source. Keep shared standards in platform context.
 
-File-backed navigation follows the [shared source workflow](../core/source.md). Expose source editing through navigation and the common keyboard toggle. Keep source-file mappings explicit for generated pages or pages backed by several files.
+File-backed navigation follows the [shared source workflow](technical/source.md). Expose source editing through navigation and the common keyboard toggle. Keep source-file mappings explicit for generated pages or pages backed by several files.
 
 ## Write clearly
 
@@ -51,7 +50,7 @@ Agent instructions should be direct and task-specific. Keep skill descriptions p
 
 Use a table for comparisons or mappings. Use a diagram when relationships or sequence are difficult to explain in text.
 
-Use fenced `mermaid` blocks for diagrams in platform Markdown. The shared reader renders them in the Guide, system context, reference pages, and prototype Documents. Include `accTitle` and `accDescr` for accessible descriptions. Keep the text in the document so people and agents can review and revise it.
+Use fenced `mermaid` blocks for diagrams in platform Markdown. The shared reader renders them in the Guide, system context, owner overviews, and prototype Documents. Include `accTitle` and `accDescr` for accessible descriptions. Keep the text in the document so people and agents can review and revise it.
 
 Use screenshots only when the interface itself matters and the document location supports them. Include useful text descriptions and keep visuals current.
 

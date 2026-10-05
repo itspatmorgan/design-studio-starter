@@ -10,6 +10,7 @@ A prototype system lives in `src/systems/<id>/` and contains:
 | --- | --- |
 | `system.ts` | Label, unique theme class, documentation mode, component sources, and origin. |
 | `components/` | Runtime components and their documentation files. |
+| `README.md` | Entry point for this system’s context, skills, and toolkit. |
 | `AGENTS.md` | Routes agent work to this system’s knowledge. |
 | `context/`, `skills/` | System-owned knowledge and agent instructions. |
 | `assets/` | Optional system-owned fonts, logos, and images. |
@@ -22,7 +23,7 @@ The Overview uses a shared Studio presentation for purpose, authored summaries, 
 
 The Studio system lives in `src/systems/studio/` with the same structure as other systems. Its `system.ts` declares `role: 'platform'`; other systems explicitly declare `role: 'prototype'`. Exactly one installed system must declare that role. Discovery resolves the application system by role, independently of its folder name. It must be registered and cannot be removed or assigned to prototypes. Its documentation mode is `off`. Every system explicitly declares `role`, `styling`, `colorModes`, `docs`, and `origin`. Platform infrastructure remains under `src/platform/`.
 
-Follow the [static asset convention](../../platform/core/assets.md) for system assets and font loading.
+Follow the [static asset convention](../../platform/context/technical/assets.md) for system assets and font loading.
 
 The starter Product system uses shadcn/ui on Base UI. `components.json` controls the CLI destination. A replacement system may use another library.
 
@@ -38,7 +39,7 @@ The starter Product system and new system scaffolds declare both modes and inclu
 
 System runtime code may depend on its own runtime files, independent shared utilities, installed packages, and enabled public module libraries through `@module/<id>`. Other systems, prototype files, private platform implementation, and documentation adapters are outside its runtime boundary. Indirect and type-only dependencies follow the same requirements. Dynamic imports use literal paths.
 
-Theme selectors and imported stylesheets stay under the system's unique theme class or its descendants. Keyframe names use the theme class followed by a dash. Font-face registration is permitted and follows the [static asset convention](../../platform/core/assets.md#scope-and-fonts).
+Theme selectors and imported stylesheets stay under the system's unique theme class or its descendants. Keyframe names use the theme class followed by a dash. Font-face registration is permitted and follows the [static asset convention](../../platform/context/technical/assets.md#scope-and-fonts).
 
 Pop-ups render within the themed container. Starter Base UI portals pass `usePortalContainer()` as their `container`. This preserves system styling and local color-mode behavior.
 
@@ -99,7 +100,7 @@ Systems declaring `styling: 'custom'` are exempt from the Tailwind vocabulary co
 
 ## Source editing
 
-Systems uses the [shared platform source workflow](../../platform/core/source.md). Right-click a navigation item for file actions, or use **⌘' / Ctrl+'** to toggle source. **⌘S / Ctrl+S** saves; the toggle or **Done** returns to rendering with unsaved-change protection. Source editors remain in Studio's color mode.
+Systems uses the [shared platform source workflow](../../platform/context/technical/source.md). Right-click a navigation item for file actions, or use **⌘' / Ctrl+'** to toggle source. **⌘S / Ctrl+S** saves; the toggle or **Done** returns to rendering with unsaved-change protection. Source editors remain in Studio's color mode.
 
 Component pages open their Page, Examples, and Component file tabs. Overview and Icons open the system's overview source (`intro.tsx`). A missing overview source opens `system.ts`. Generated theme pages open the system's theme CSS. There is no separate editable file for each token-family page.
 
@@ -107,13 +108,13 @@ Only these system source files and discovered component files are accessible thr
 
 ## Navigation and organization
 
-The selected system has one persistent navigation tree, ordered Overview, Context, Skills, Theme, and Components. Overview opens the system’s overview source. Context, Skills, Theme, and Components start expanded. Opening a page expands its owning branch and folders and preserves the other branches’ state while navigating the selected system. Branches and folders use disclosure chevrons without category icons; individual pages and artifacts use icons to distinguish their type.
+The selected system has one toolkit navigation tree, ordered Overview, Theme, and Components. Overview opens the system’s overview source. Theme and Components start expanded. A Context and Skills shortcut opens this system’s README and original guidance in the shared Documentation browser. Branches use disclosure chevrons; individual pages use icons to distinguish their type.
 
-The Resources toolbar provides search across all sections and an expand-all or collapse-all action for branches and nested folders. Search matches navigation names and file paths, temporarily revealing matching branches and folders. Clearing search restores their previous expansion state. Creation actions remain beside Context and Skills so their destination is clear.
+The Resources toolbar searches toolkit navigation and provides an expand-all or collapse-all action. Search matches navigation names and file paths, temporarily revealing matching branches. Clearing search restores their previous expansion state. Context and Skills file creation belongs to the shared browser.
 
 Theme contains token pages generated from the system’s theme file. Its navigation actions expose that source. Component items group their documentation, examples, and runtime source without presenting category metadata as filesystem folders.
 
-Context shows their file and folder trees. Skills shows one entry per skill, opening its required `<name>/SKILL.md`; it does not repeat the skill as a folder and a document. Its source editor provides a file picker for the entry file and supporting references, scripts, assets, or other files inside the skill folder. Text files use the shared editor; other assets can be opened externally. Switching files protects unsaved edits. Direct links to supporting documents remain available.
+In Documentation, Context shows original file and folder trees. Skills shows one entry per skill, opening its required `<name>/SKILL.md`; it does not repeat the skill as a folder and a document. Its source editor provides a file picker for the entry file and supporting references, scripts, assets, or other files inside the skill folder. Text files use the shared editor; other assets can be opened externally. Switching files protects unsaved edits. Direct links to supporting documents remain available.
 
 Local menus support creation, source editing, rename, move, and recoverable deletion within each section’s rules. A skill entry’s Rename and Delete actions operate on its whole folder, preserving the required entry-file name and the skill’s supporting files. Its New actions create supporting files or folders. Drag operations are scoped to their owning tree: they cannot move a file into another system or another content section. Component and theme menus retain source inspection actions; structural changes to their code require updating imports and related documentation through the agent or editor.
 
@@ -131,13 +132,13 @@ Studio is maintained with Studio and excluded from prototype choices, default-sy
 
 ## System knowledge and agent routing
 
-The [contracts and operating instructions foundation](../../platform/core/contracts-and-instructions.md) distinguishes technical contracts from operating policy, intent, and procedures.
+The [contracts and operating instructions foundation](../../platform/context/technical/contracts-and-instructions.md) distinguishes technical contracts from operating policy, intent, and procedures.
 
 A system’s guidance applies to its product and design domain. Platform and modules own their operating knowledge and procedures.
 
 A system owns four parts: theme, components, context, and skills. Context and skills live directly in their system folders.
 
-Systems exposes these files at `/systems/<id>/context/<file>`, `skills/<skill>/SKILL`. The shared source editor and file operations use explicit system and section identifiers. Content remains platform-styled even for a single-mode product system.
+Documentation exposes these files at `/documentation/context/<id>/context/<file>` and `/documentation/context/<id>/skills/<skill>/SKILL`. Older Systems context and skill links redirect there. The shared source editor and file operations use explicit system and section identifiers. Content remains platform-styled even for a single-mode product system.
 
 The repository's `AGENTS.md` supplies platform operating instructions and routes prototype work to its assigned system's `AGENTS.md`. System-local instructions link to relevant context and skills. System knowledge supplements platform constraints; it does not override runtime dependency boundaries. Different systems may use the same skill folder name because their source paths remain distinct. Discovery does not imply a harness automatically loads these files.
 

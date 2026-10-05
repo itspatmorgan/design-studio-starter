@@ -4,7 +4,7 @@ import { FileActionItems } from '@/platform/app/shell/FileActionItems';
 //
 // In `pnpm dev`, it's the prototype's real files and folders, live from the dev server
 // (data/files.ts). It shows what you open and organize: items (views, at any depth; see
-// src/platform/core/fileTypes.md) and their folders. Everything else in the folder (meta.json, which the header
+// src/platform/context/technical/file-types.md) and their folders. Everything else in the folder (meta.json, which the header
 // edits; _helpers; images and other files) is hidden until you choose Show all
 // files (in the header's … menu), and then opens in your editor. In your own prototypes you can also create, rename (F2), move
 // (drag and drop), arrange (drag, or Move up and down), and delete (to the Trash) files and folders, like a file browser, and

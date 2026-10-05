@@ -166,8 +166,8 @@ test('platform reference discovery preserves ownership and excludes unavailable 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-references-'));
   const write = (file: string, text: string) => { fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true }); fs.writeFileSync(path.join(root, file), text); };
   try {
-    write('src/platform/core/fileTypes.md', '# File-type contract');
-    write('src/modules/README.md', '# Module contract');
+    write('src/platform/context/technical/file-types.md', '# File-type contract');
+    write('src/platform/context/technical/modules.md', '# Module contract');
     write('src/modules/example/README.md', '---\ntitle: "Example capability"\n---\n# Example');
     write('src/modules/example/reference.md', '# Example contract');
     write('src/modules/example/internal/notes.md', '# Internal notes');
@@ -181,7 +181,7 @@ test('platform reference discovery preserves ownership and excludes unavailable 
     assert.deepEqual(example.references.map((r: { source: string }) => r.source), ['/modules/example/README.md','/modules/example/reference.md']);
     assert.equal(example.references[0].title, 'Example capability');
     assert.equal(example.references[1].title, 'Example contract');
-    assert.deepEqual(example.related.map((r: { href: string }) => r.href), ['/systems/studio/context/example','/systems/studio/skills/example/SKILL']);
+    assert.deepEqual(example.related.map((r: { href: string }) => r.href), ['/documentation/context/studio/context/example','/documentation/context/studio/skills/example/SKILL']);
     assert.equal(example.related[1].title, 'studio · Skills · Example');
     assert.deepEqual(groups.find((g) => g.id === 'off').references, []);
     assert.equal(groups.find((g) => g.id === 'off').enabled, false);

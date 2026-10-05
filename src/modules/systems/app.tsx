@@ -6,14 +6,13 @@ import { Shapes01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem } from '@/systems/studio/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
 import { ItemRow } from '@/platform/app/items/ItemRow';
-import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS, SYSTEM_SPECS } from '@/modules/systems/data/systems';
+import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
 import { APP_NAME } from '@/platform/app/data/config';
 import { artifactLabel, artifactLink } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 
 // Loaded on first visit, so it isn't in the main bundle:
 // https://tanstack.com/router/latest/docs/framework/react/guide/code-splitting
-const KnowledgePage = lazy(() => import('@/modules/systems/pages/KnowledgePage'));
 const SystemsPage = lazy(() => import('@/modules/systems/pages/SystemsPage'));
 const systemsTitle = (...parts: (string | undefined)[]) =>
   [...parts.filter(Boolean).map((p) => artifactLabel(p!)), 'Systems', APP_NAME].join(' — ');
@@ -34,8 +33,8 @@ function SystemsPlaces({ go }: PaletteContext) {
 
 function SystemFiles({ manifest, go }: PaletteContext) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  return <>{manifest.systemContent.filter((section) => section.owner?.kind === 'system' && SYSTEM_SPECS[section.system!]?.role !== 'platform' && section.artifacts.length).map((section) =>
-    <CommandGroup key={section.id} heading={PROTOTYPE_SYSTEMS[section.system!]?.label + ' · ' + section.title}>
+  return <>{manifest.systemContent.filter((section) => section.artifacts.length).map((section) =>
+    <CommandGroup key={section.id} heading={section.owner?.label + ' · ' + section.title}>
       {section.artifacts.map((item) => { const link = artifactLink(section, item); return <CommandItem key={item.path} value={section.system + ' ' + section.title + ' ' + item.path} disabled={pathname === link.to} onSelect={() => go(link)}>{artifactLabel(item.path)}</CommandItem>; })}
     </CommandGroup>)}</>;
 }
@@ -58,9 +57,7 @@ export default {
   order: 20,
   routes: (root) => {
     const systemsRoute = createRoute({ getParentRoute: () => root, path: 'systems', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }) });
-    const knowledgeRoute = createRoute({ getParentRoute: () => root, path: 'knowledge', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }) });
-    const knowledgeRoutes = ['$owner', '$owner/$page', '$owner/$page/$'].map(path => createRoute({ getParentRoute: () => knowledgeRoute, path, component: () => <Suspense fallback={null}><KnowledgePage /></Suspense> }));
-    return [knowledgeRoute.addChildren(knowledgeRoutes), systemsRoute.addChildren([
+    return [systemsRoute.addChildren([
       createRoute({
         getParentRoute: () => systemsRoute,
         path: '/',

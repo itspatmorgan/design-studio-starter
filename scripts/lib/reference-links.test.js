@@ -1,26 +1,27 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { markdownPath } from '../../src/platform/app/docs/referenceLinks.ts';
+import { markdownPath, migratedGuidancePath } from '../../src/platform/app/docs/referenceLinks.ts';
 import globs from '../build/vite-globs-plugin.js';
 import { ENABLED_MODULES } from './modules.js';
 import titleFromHeading from '../build/remark-title-from-heading.js';
 
-test('repository links resolve from SystemContent and between references', () => {
+test('owner README and relative context links use the same browser', () => {
   const resolve = (href, base) => markdownPath(new URL(href, `http://doc${base}/`).pathname);
-  assert.equal(resolve('../../../../modules/systems/README.md', '/systems/studio/context'), '/documentation/reference/modules/systems/README.md');
-  assert.equal(resolve('README.md', '/documentation/reference/modules/systems'), '/documentation/reference/modules/systems/README.md');
-  assert.equal(resolve('../../../../systems/studio/context/systems.md', '/documentation/reference/modules/systems'), '/systems/studio/context/systems');
+  assert.equal(resolve('../../../../modules/systems/README.md', '/systems/studio/context'), '/documentation/context/module.systems');
+  assert.equal(resolve('README.md', '/modules/systems'), '/documentation/context/module.systems');
+  assert.equal(resolve('../../systems/studio/context/writing.md', '/modules/systems'), '/documentation/context/studio/context/writing');
   assert.equal(resolve('./main.tsx', '/prototypes/patrick/example'), '/prototypes/patrick/example/main.tsx');
-  assert.equal(markdownPath('/documentation/guide/systemContent'), '/documentation/guide/systemContent');
   assert.equal(markdownPath('/modules/documentation/pages/prototypes.md'), '/documentation/guide/prototypes');
   assert.equal(markdownPath('/modules/documentation/pages/index.md'), '/documentation/guide');
+  assert.equal(markdownPath('/systems/product/README.md'), '/documentation/context/product');
+  assert.equal(markdownPath('/platform/README.md'), '/documentation/context/platform.core');
 });
 
-test('reference glob is limited to platform Markdown and enabled modules', () => {
+test('overview discovery uses original owner READMEs and enabled module documents', () => {
   const result = globs().transform("const pages = import.meta.glob(['/__studio_references__/*'])", '/src/platform/app/docs/loadReference.ts');
   assert.ok(result);
   const patterns = JSON.parse(result.code.slice('const pages = import.meta.glob('.length, -1));
-  assert.deepEqual(patterns, ['/platform/core/*.md', '/modules/README.md', ...ENABLED_MODULES.map((m) => `/modules/${m.id}/*.md`)]);
+  assert.deepEqual(patterns, ['/platform/README.md', '/systems/*/README.md', ...ENABLED_MODULES.map((m) => `/modules/${m.id}/*.md`)]);
 });
 
 test('contracts render every section and extract only the opening title', () => {
@@ -29,17 +30,27 @@ test('contracts render every section and extract only the opening title', () => 
   const tree = { children: [heading(1, 'System contract'), ...sections] };
   titleFromHeading()(tree, { basename: 'README.md' });
   assert.equal(tree.children[0].type, 'yaml');
-  assert.deepEqual(tree.children.slice(1), sections, 'the reader must not truncate contract sections');
+  assert.deepEqual(tree.children.slice(1), sections);
 });
 
-test('repository Context links resolve to the Context reader', () => {
-  assert.equal(markdownPath('/platform/context/personas.md'), '/knowledge/platform.core/context/personas');
-  assert.equal(markdownPath('/systems/studio/context/documentation-standards'), '/systems/studio/context/documentation-standards');
+test('technical context and skill source links resolve without a duplicate Reference reader', () => {
+  assert.equal(markdownPath('/platform/context/personas.md'), '/documentation/context/platform.core/context/personas');
+  assert.equal(markdownPath('/platform/context/technical/file-types.md'), '/documentation/context/platform.core/context/technical/file-types');
+  assert.equal(markdownPath('/modules/prototypes/skills/build-prototype/SKILL.md'), '/documentation/context/module.prototypes/skills/build-prototype/SKILL');
 });
 
-test('saved links follow guidance and contract migrations', () => {
-  assert.equal(markdownPath('/systems/studio/rules/prototype-workflow'), '/knowledge/module.prototypes/skills/build-prototype/SKILL');
-  assert.equal(markdownPath('/systems/studio/context/principles.md'), '/knowledge/platform.core/context/principles');
-  assert.equal(markdownPath('/systems/studio/skills/setup-design-system/SKILL.md'), '/knowledge/module.systems/skills/setup-design-system/SKILL');
-  assert.equal(markdownPath('/documentation/reference/modules/systems/reference.md'), '/documentation/reference/modules/systems/README.md');
+test('saved Reference, Knowledge, and system guidance links follow both migrations', () => {
+  const cases = {
+    '/systems/studio/rules/prototype-workflow': '/documentation/context/module.prototypes/skills/build-prototype/SKILL',
+    '/systems/studio/context/principles.md': '/documentation/context/platform.core/context/principles',
+    '/systems/studio/skills/setup-design-system/SKILL.md': '/documentation/context/module.systems/skills/setup-design-system/SKILL',
+    '/documentation/reference/modules/systems/reference.md': '/documentation/context/module.systems',
+    '/documentation/reference/platform/core/fileTypes.md': '/documentation/context/platform.core/context/technical/file-types',
+    '/documentation/reference/modules/README.md': '/documentation/context/platform.core/context/technical/modules',
+    '/documentation/reference': '/documentation/context/platform.core',
+    '/knowledge/platform.core/context/personas': '/documentation/context/platform.core/context/personas',
+    '/systems/product/context/accessibility': '/documentation/context/product/context/accessibility',
+  };
+  for (const [from,to] of Object.entries(cases)) assert.equal(migratedGuidancePath(from),to,from);
+  assert.equal(migratedGuidancePath('/documentation/context/platform.core/context/personas'), null);
 });

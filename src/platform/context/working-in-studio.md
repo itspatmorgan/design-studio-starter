@@ -9,6 +9,6 @@ Resolve the target prototype's assigned system before edits. Explicit `system: n
 
 Honor enabled module declarations. A visible file or skill does not enable an unavailable capability. Use the owning module's technical contract before changing formats, dependencies, or lifecycle behavior. Product guidance cannot relax platform boundaries.
 
-Run `pnpm build` before committing completed changes. Fix reported type, boundary, and asset errors rather than suppressing checks. Inspect rendered results for interface or prototype changes. Follow the [asset convention and guard](../core/assets.md).
+Run `pnpm build` before committing completed changes. Fix reported type, boundary, and asset errors rather than suppressing checks. Inspect rendered results for interface or prototype changes. Follow the [asset convention and guard](technical/assets.md).
 
-Commit finished work with a concise message. Push only when requested. Sharing and [publishing](../core/publishing.md) are separate actions.
+Commit finished work with a concise message. Push only when requested. Sharing and [publishing](technical/publishing.md) are separate actions.

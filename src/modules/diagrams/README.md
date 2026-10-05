@@ -2,7 +2,7 @@
 
 A standalone diagram is one plain Mermaid diagram in a `.mermaid` or `.mmd` file, without Markdown fences. The file-type declaration supplies its editor language and preview surfaces; the shared renderer validates syntax when opened. Invalid diagrams remain available for source repair.
 
-The optional module owns standalone files. Markdown Mermaid fences remain a shared-reader capability when this module is disabled or removed. Follow the [file-type contract](../../platform/core/fileTypes.md) for discovery, embeds, and disabled-file behavior.
+The optional module owns standalone files. Markdown Mermaid fences remain a shared-reader capability when this module is disabled or removed. Follow the [file-type contract](../../platform/context/technical/file-types.md) for discovery, embeds, and disabled-file behavior.
 
 ## Implementation
 
