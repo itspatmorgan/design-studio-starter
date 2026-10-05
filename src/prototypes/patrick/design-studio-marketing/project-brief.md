@@ -7,9 +7,9 @@ description: Three complete marketing directions using the Marketing system.
 
 Introduce Design Studio, demonstrate its artifact surfaces, and help visitors run their own copy. Every version tells the same complete story: introduction, examples, template-first install, usage, and reference.
 
-This prototype uses **Marketing**: Geist, warm neutrals, and adapted Untitled UI components. Captured product examples use a separate Product system. Studio supplies the shared artifact tools.
+This prototype uses **Marketing**: Geist, warm neutrals, and adapted Untitled UI components. The self-contained demo examples are rendered in code using the same Marketing system. Studio supplies the shared artifact tools.
 
-Follow the [Marketing design rule](/systems/marketing/rules/marketing-design). Screenshots stay within this project; motion previews can replace them when a useful recording is available.
+Follow the [Marketing design rule](/systems/marketing/rules/marketing-design). Examples stay within this project and use HTML, CSS, and SVG instead of screenshot assets. The inbox demonstrates local selection and status changes; the other previews illustrate artifact surfaces.
 
 ## Review directions
 

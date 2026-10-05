@@ -2,21 +2,17 @@ import type { ReactNode } from 'react';
 import { ArrowUpRight } from '@untitledui/icons';
 import { Button } from '@/systems/marketing/components/button';
 import { Tabs } from '@/systems/marketing/components/tabs';
-import viewPreview from '../assets/demo-view.jpg';
-import diagramPreview from '../assets/demo-diagram.jpg';
-import canvasPreview from '../assets/demo-canvas.jpg';
-import documentPreview from '../assets/demo-document.jpg';
-import homePreview from '../assets/demo-home.png';
+import { ArtifactPreview, StudioPreview } from './demo-previews';
 import agentMarkdown from './agent.txt?raw';
 import styles from './landing.module.css';
 
 const repository = 'https://github.com/itspatmorgan/design-studio-starter';
 const examples = [
-  { id: 'view', label: 'View', image: viewPreview, alt: 'Feedback Inbox interface built with the Product system.', text: 'Build a working interface with your own components.' },
-  { id: 'diagram', label: 'Diagram', image: diagramPreview, alt: 'Mermaid diagram of the feedback review flow.', text: 'Make the system and its flows easier to understand.' },
-  { id: 'canvas', label: 'Canvas', image: canvasPreview, alt: 'Breadboard canvas with an embedded diagram and editable drawing.', text: 'Explore ideas and arrange references on an open canvas.' },
-  { id: 'document', label: 'Document', image: documentPreview, alt: 'Project context document with connected exploration artifacts.', text: 'Keep the reasoning and references alongside the work.' },
-];
+  { id: 'view', label: 'View', text: 'Build a working interface with your own components.' },
+  { id: 'diagram', label: 'Diagram', text: 'Make the system and its flows easier to understand.' },
+  { id: 'canvas', label: 'Canvas', text: 'Explore ideas and arrange references on an open canvas.' },
+  { id: 'document', label: 'Document', text: 'Keep the reasoning and references alongside the work.' },
+] as const;
 function StudioMark({ small = false }: { small?: boolean }) {
   return <svg viewBox="0 0 40 32" className={small ? styles.smallMark : "h-8 w-10"} aria-hidden="true" fill="currentColor"><path d="M0 0h11v32H0zM15 0h3a16 16 0 0 1 0 32h-3z" /></svg>;
 }
@@ -58,10 +54,10 @@ export function LandingPage({ version }: { version: 1 | 2 | 3 }) {
             <Tabs defaultSelectedKey={version === 2 ? 'canvas' : 'view'} className="mt-6">
               <Tabs.List aria-label="Artifact examples">{examples.map(item => <Tabs.Item key={item.id} id={item.id}>{version === 3 && item.id === 'view' ? 'Interactive prototype' : item.label}</Tabs.Item>)}</Tabs.List>
               {examples.map(item => <Tabs.Panel key={item.id} id={item.id} className="pt-5">
-                <figure><img src={item.image} alt={item.alt} className={styles.preview} width={item.id === 'document' ? 1456 : 1280} height={item.id === 'document' ? 799 : 720} /><figcaption className="mt-4 text-md text-text-secondary">{item.text}</figcaption></figure>
+                <figure><ArtifactPreview kind={item.id} /><figcaption className="mt-4 text-md text-text-secondary">{item.text}</figcaption></figure>
               </Tabs.Panel>)}
             </Tabs>
-            <p className="mt-3 text-sm text-text-tertiary">Captured previews from the included Product example.</p>
+            <p className="mt-3 text-sm text-text-tertiary">Self-contained examples rendered in code. Try selecting and resolving feedback in the inbox.</p>
           </section>
           <section id="install" className="py-16 md:py-20">
             <h2 className="text-display-sm font-medium tracking-tight">Run your own studio.</h2>
@@ -88,7 +84,7 @@ export function LandingPage({ version }: { version: 1 | 2 | 3 }) {
             <h2 className="text-display-sm font-medium tracking-tight">Make it yours.</h2>
             <p className="mt-5 max-w-2xl text-md leading-relaxed text-text-tertiary">Open your repository folder in the editor or coding agent you already use, and run Studio alongside it. Ask your agent to configure your studio, bring your design system, or start a prototype. Review the results in your browser.</p>
             <div className="mt-4"><ResourceLink href="/documentation/guide/getting-started">Follow the setup guide</ResourceLink></div>
-            <figure className="mt-6"><img src={homePreview} alt="Studio home welcomes Patrick and lists his prototypes and design systems." className={styles.preview} width={1456} height={799} /><figcaption className="mt-3 text-sm text-text-tertiary">Captured Studio home after contributor setup. Your own name, prototypes, and systems appear here.</figcaption></figure>
+            <figure className="mt-6"><StudioPreview /><figcaption className="mt-3 text-sm text-text-tertiary">An example of how your prototypes and design system come together.</figcaption></figure>
           </section>
         </main>
         <footer className="pb-12"><p className="text-sm leading-relaxed text-text-tertiary">This marketing demo uses its own Marketing system: Geist, warm neutrals, and Untitled UI.</p><div className="mt-4 flex flex-wrap gap-6"><ResourceLink href="/systems/marketing">Marketing system</ResourceLink><ResourceLink href={repository}>GitHub</ResourceLink></div></footer>

@@ -1,4 +1,4 @@
-.preview { display: block; width: 100%; height: auto; border: 1px solid var(--color-border-primary); border-radius: var(--radius-lg); }
+.preview { display: block; width: 100%; overflow: hidden; background: var(--color-bg-secondary); border: 1px solid var(--color-border-primary); border-radius: var(--radius-lg); }
 .code { margin-top: var(--spacing-5); padding: var(--spacing-5); overflow-x: auto; border-radius: var(--radius-lg); background: var(--color-bg-secondary); font-family: var(--font-mono); font-size: var(--text-sm); line-height: 1.8; }
 .markdown { white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: var(--text-sm); line-height: 1.8; color: var(--color-text-primary); }
 .hero { padding: 4rem 0 5rem; }
@@ -20,3 +20,38 @@
 .steps p { margin: 0.75rem 0; font-size: var(--text-md); line-height: 1.6; color: var(--color-text-tertiary); }
 .steps p code { font-family: var(--font-mono); font-size: 0.875em; color: var(--color-text-secondary); }
 @media (max-width: 640px) { .hero { padding: 3rem 0 4rem; } .hero3 { grid-template-columns: 1fr; } .hero3 .geometry { max-height: 16rem; } }
+.preview h3 { margin: 0 0 0.75rem; font-size: var(--text-xl); font-weight: 500; letter-spacing: var(--tracking-tight); }
+.preview h4 { margin: 1rem 0 0.75rem; font-size: var(--text-md); font-weight: 600; }
+.preview p, .preview li { font-size: var(--text-sm); line-height: 1.7; }
+.preview p { margin: 0 0 1rem; }
+.preview small, .demoMuted { color: var(--color-text-tertiary); font-size: var(--text-sm); }
+.inboxDemo { display: grid; grid-template-columns: 1fr 1fr; min-height: 22rem; }
+.inboxDemo > div, .feedbackDetail { padding: 2rem; }
+.feedbackList { display: grid; gap: 0.5rem; margin-top: 1.5rem; }
+.feedbackRow { display: grid; gap: 0.375rem; padding: 0.875rem 1rem; text-align: left; font: inherit; font-size: var(--text-sm); background: transparent; color: inherit; border: 1px solid transparent; border-radius: var(--radius-md); cursor: pointer; }
+.feedbackRow[aria-pressed="true"] { background: var(--color-bg-primary); border-color: var(--color-border-primary); }
+.feedbackRow:hover { background: var(--color-bg-primary_hover); }
+.feedbackRow:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+.feedbackDetail { background: var(--color-bg-primary); border-left: 1px solid var(--color-border-primary); }
+.feedbackDetail > p:last-child { margin-top: 1.5rem; }
+.demoBadge { display: inline-block; padding: 0.25rem 0.625rem; border: 1px solid var(--color-border-primary); border-radius: var(--radius-full); font-size: var(--text-xs); }
+.diagramDemo { min-height: 22rem; padding: 2rem; display: grid; align-content: center; }
+.diagramDemo svg { width: 100%; height: auto; margin: 1rem 0; }
+.canvasDemo { padding: 2rem; min-height: 22rem; background-image: radial-gradient(var(--color-border-primary) 1px, transparent 1px); background-size: 16px 16px; }
+.canvasCards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 2rem 0; }
+.canvasNote { padding: 1.25rem; background: var(--color-bg-primary); border: 1px solid var(--color-border-primary); border-radius: var(--radius-md); }
+.canvasNote:nth-child(2) { transform: translateY(1rem); }
+.documentDemo { max-width: 36rem; margin: 2rem auto; padding: 2rem; background: var(--color-bg-primary); border: 1px solid var(--color-border-primary); border-radius: var(--radius-md); }
+.documentDemo ul { padding-left: 1.25rem; list-style: disc; margin: 1rem 0; }
+.documentCallout { padding: 1rem; background: var(--color-bg-secondary); border-radius: var(--radius-md); font-size: var(--text-sm); line-height: 1.7; }
+.studioDemo { padding: 2rem; }
+.studioCards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+.studioCards article { padding: 1.5rem; background: var(--color-bg-primary); border: 1px solid var(--color-border-primary); border-radius: var(--radius-md); }
+@media (max-width: 640px) {
+  .inboxDemo, .canvasCards, .studioCards { grid-template-columns: 1fr; }
+  .inboxDemo > div, .feedbackDetail, .diagramDemo, .canvasDemo, .studioDemo { padding: 1.25rem; }
+  .feedbackDetail { border-left: 0; border-top: 1px solid var(--color-border-primary); }
+  .canvasNote:nth-child(2) { transform: none; }
+  .documentDemo { margin: 1rem; padding: 1.25rem; }
+  .diagramDemo { min-height: 16rem; }
+}
