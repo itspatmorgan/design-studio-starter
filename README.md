@@ -20,12 +20,27 @@ Open the local URL printed by Vite. You can explore the starter before configuri
 
 ## Learn more
 
-The Guide at `/documentation/guide` introduces setup, the app surfaces, and collaboration. Detailed platform contracts live in Reference at `/documentation/reference`.
+The Guide at `/documentation/guide` introduces setup, the app surfaces, and collaboration. Original platform and module instructions appear in Context & Skills at `/documentation/context/platform.core`. System guidance stays in Systems.
 
 - [Introduction](src/modules/documentation/pages/index.md) — how the studio works.
 - [Collaborate](src/modules/documentation/pages/collaborate.md) — ownership and sharing work.
 - [Modules](src/platform/context/modules.md) — customize and extend your studio.
 - [Tech stack](src/platform/context/stack.md) — what's under the hood.
+
+## Starter repository publishing
+
+The [Checks workflow](.github/workflows/scope-check.yml) publishes successful pushes to `main` only in `itspatmorgan/design-studio-starter`. Copies run checks without publishing; configure your own deployment when needed.
+
+The starter repository uses GitHub Pages with **GitHub Actions** as its publishing source. Its configured site inherits `itspatmorgan.com` from the account’s user site and publishes at `/design-studio-starter/`; its custom-domain field is empty.
+
+The workflow obtains the Pages base path and passes it to the build as `STUDIO_BASE_PATH`. To preview this repository’s subpath locally:
+
+```sh
+STUDIO_BASE_PATH=/design-studio-starter/ pnpm build
+STUDIO_BASE_PATH=/design-studio-starter/ pnpm preview
+```
+
+See [Publishing](src/platform/context/publishing.md) for portable hosting, direct-link routing, and access requirements.
 
 ## Project status
 

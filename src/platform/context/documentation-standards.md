@@ -6,19 +6,11 @@ toc: true
 
 Documentation is part of the platform. Keep it accurate as behavior changes. This standard applies to the Guide, module documentation, system content, and agent instructions.
 
-## Choose the authoritative location
+## Author for the right reader
 
-| Location | Purpose |
-| --- | --- |
-| Guide | Explain capabilities, defaults, boundaries, and setup choices to people. |
-| Owner README | Introduce the owner and index its context and skills; a module README holds its main technical contract. |
-| Context | Preserve knowledge, intent, and standing requirements under its platform, module, or system owner. |
-| Skills | Describe a task-specific procedure and when it applies. |
-| `AGENTS.md` | Provide essential project instructions and route agents to relevant context. |
+Choose the authoritative location using [Responsibilities](contracts-and-instructions.md). Use [Agent context routing](agent-context.md) for discovery and generated harness entries.
 
 Documentation has two reading choices: Guide provides a curated introduction, and Context and Skills displays original platform and module files. Systems exposes system context and skills alongside its toolkit. Human chapters live only in `src/modules/documentation/pages/`. Platform, module, and system context preserve knowledge under their respective owners. Context and Skills access remains available when the optional Documentation module is disabled.
-
-The [Responsibilities](contracts-and-instructions.md) foundation defines the system of record: context includes technical contracts, knowledge, and standing requirements; skills own procedures.
 
 Give each contract one authoritative location. Other documents can summarize its purpose, then link to it. Do not copy requirements, schemas, or procedures into multiple locations.
 
@@ -26,7 +18,7 @@ Organize the Guide around the main app surfaces. Introduce essential concepts an
 
 Code defines implemented behavior. Documentation explains that behavior and the intended constraints. If they disagree, identify whether the implementation or the documentation needs correction.
 
-Keep technical contracts with their module. Associate its Guide chapter through `module: <id>` so disabling or removal hides the human chapter without relocating its source. Keep shared standards in platform context.
+Associate a capability’s Guide chapter through `module: <id>` so disabling or removal hides the human chapter without relocating its source. Keep shared standards in platform context.
 
 File-backed navigation follows the [shared source workflow](source.md). Expose source editing through navigation and the common keyboard toggle. Keep source-file mappings explicit for generated pages or pages backed by several files.
 
@@ -44,6 +36,8 @@ Use ASD-STE100-inspired language with flexibility for our [personas](personas.md
 - Describe what the environment provides. Leave each team free to choose its design process.
 - State assumptions, limitations, and missing input. Do not present planned capabilities as available features.
 
+Context documents use a frontmatter `title` and start their body without a duplicate H1. Use H2 headings for sections. A skill keeps its required `name` and `description`; its optional opening H1 names the task, such as “Use Canvas.” READMEs may use an opening H1 without frontmatter. The reader suppresses a matching opening H1 when a frontmatter title is present.
+
 Agent instructions should be direct and task-specific. Keep skill descriptions precise enough to select the right task. Put substantial conditional details in linked references.
 
 ## Use visual aids deliberately
@@ -54,7 +48,7 @@ Use fenced `mermaid` blocks for diagrams in platform Markdown. The shared reader
 
 Use screenshots only when the interface itself matters and the document location supports them. Include useful text descriptions and keep visuals current.
 
-Follow the [maintain-context skill](../skills/maintain-context/SKILL.md) for its image convention. A visual aid should clarify the content, not repeat it.
+Store images under the owning scope’s assets using the [asset convention](assets.md). Link to them from the document and include useful alternative text. A visual aid should clarify the content, not repeat it.
 
 ## Update with the platform
 

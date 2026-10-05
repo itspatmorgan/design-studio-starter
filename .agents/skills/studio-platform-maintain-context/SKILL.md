@@ -1,6 +1,6 @@
 ---
 name: studio-platform-maintain-context
-description: "Add or revise shared context and skills for the Design Studio platform, a module, or an assigned design system."
+description: "Create or revise canonical context documents and task skills for the platform, a module, or an assigned system. Use maintain-documentation for READMEs, Guide coordination, or a guidance audit."
 ---
 
 <!-- studio:generated-skill -->

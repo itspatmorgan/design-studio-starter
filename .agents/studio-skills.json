@@ -11,7 +11,7 @@
     },
     ".agents/skills/studio-platform-maintain-context/SKILL.md": {
       "kind": "file",
-      "hash": "bfcf4f6584b201732bbef7a05d46da8b028481993db502d93eaa0bb7f462737f"
+      "hash": "1cbfba719dbe91597b52f7a516e48699120c809192e54807432fb81bf1e7fa1e"
     },
     ".claude/skills/studio-platform-maintain-context": {
       "kind": "link",
@@ -19,7 +19,7 @@
     },
     ".agents/skills/studio-platform-maintain-documentation/SKILL.md": {
       "kind": "file",
-      "hash": "b9424adb2239078cf4f2a1ce00b90b883130ebd096df64884274dba19a728ade"
+      "hash": "c1df4fd4a3c5d20214ac9b1decc0fc1309da5c8a4339129d1e297f313e8cb4ee"
     },
     ".claude/skills/studio-platform-maintain-documentation": {
       "kind": "link",

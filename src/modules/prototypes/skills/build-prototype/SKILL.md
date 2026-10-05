@@ -3,7 +3,7 @@ name: build-prototype
 description: "Create or edit a Design Studio prototype view using its assigned system. Use for implementation of interactive screens and flows."
 ---
 
-# Prototype workflow
+# Build Prototype
 
 Read the [prototype contract](../../README.md) when creating or reorganizing prototype files, metadata, or links, and before changing runtime dependencies or styles. It owns these technical requirements.
 

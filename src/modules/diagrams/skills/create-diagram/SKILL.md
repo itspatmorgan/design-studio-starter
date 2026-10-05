@@ -3,7 +3,7 @@ name: create-diagram
 description: "Create or edit standalone Mermaid diagrams in a Design Studio prototype. Use only when Diagrams is enabled."
 ---
 
-# Diagrams
+# Create Diagram
 
 This skill applies to standalone prototype diagrams when Diagrams is enabled. Read the [module README](../../README.md) for file and rendering behavior.
 

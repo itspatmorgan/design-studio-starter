@@ -8,11 +8,11 @@ Design Studio has two kinds of agent guidance: context and skills. Both belong t
 
 ## Choose the system of record
 
-| Owner | Context | Skills |
-| --- | --- | --- |
-| Platform | Design Studio principles, personas, shared working requirements, and technical context. | Cross-module tasks such as configuring a studio, contributor setup, module management, and documentation maintenance. |
-| Module | Capability knowledge and the module README's authoritative technical requirements. | Tasks using or maintaining that capability. |
-| System | Product, brand, audience, design, component usage, and writing conventions. | Domain-specific tasks for that system. |
+| Owner | Canonical root | Context | Skills |
+| --- | --- | --- | --- |
+| Platform | `src/platform/` | Design Studio principles, personas, shared working requirements, and technical context. | Cross-module tasks such as configuring a studio, contributor setup, module management, and documentation maintenance. |
+| Module | `src/modules/<id>/` | Capability knowledge and the module README's authoritative technical requirements. | Tasks using or maintaining that capability. |
+| System | `src/systems/<id>/` | Product, brand, audience, design, component usage, and writing conventions. | Domain-specific tasks for that system. |
 
 Context can describe facts, rationale, or standing requirements. Label requirements clearly; a context document is not necessarily optional advice. Skills define task triggers, required input, procedures, supporting resources, and completion criteria. Keep short relevant constraints in the skill when they do not need an independent shared document.
 
@@ -30,4 +30,4 @@ Update implementation, authoritative technical context, affected skills, and Gui
 
 Platform guidance lives in `src/platform/context/` and `skills/`. Module guidance lives beside its implementation. Studio's own system retains application design guidance and its interface toolkit; it does not own platform operating procedures.
 
-Run `pnpm studio sync` after changing skill metadata or capability availability. It refreshes task routes and generated project skill adapters. Follow [agent context routing](agent-context.md) for discovery and system resolution, and [maintain-documentation](../skills/maintain-documentation/SKILL.md) for verification.
+Use [Maintain Context](../skills/maintain-context/SKILL.md) to author context and skills. Use [Maintain Documentation](../skills/maintain-documentation/SKILL.md) to revise READMEs and audit consistency. [Documentation standards](documentation-standards.md) defines writing and metadata; [Agent context routing](agent-context.md) owns discovery and synchronization behavior.

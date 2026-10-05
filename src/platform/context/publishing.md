@@ -2,8 +2,6 @@
 title: "Publishing"
 ---
 
-# Publishing
-
 Hosting is optional. You can create prototypes locally and collaborate through Git before publishing a site.
 
 Publish when people need a shared viewing URL. The studio maintainer chooses the host, access requirements, and release process.
@@ -24,18 +22,14 @@ Interactive views still run in the browser. The published site does not provide 
 
 ## Choose a deployment process
 
-The starter provides a portable build. The Checks workflow publishes successful pushes to `main` only in `itspatmorgan/design-studio-starter`.
+The platform provides a portable static build. Configure a publishing workflow for the chosen host. Repository-specific deployment configuration belongs in the root `README.md`.
 
-That repository uses GitHub Pages with **GitHub Actions** as its publishing source. It inherits `itspatmorgan.com` from the account's user site and publishes at `/design-studio-starter/`. Leave its custom-domain field empty.
-
-The workflow reads the Pages base path and passes it to the build through `STUDIO_BASE_PATH`. The build normalizes its trailing slash. Local commands use `/` by default. To preview a subpath deployment locally, run:
+For a host that serves the app below a URL prefix, pass that prefix through `STUDIO_BASE_PATH`. The build normalizes its trailing slash; local commands use `/` by default. For example:
 
 ```sh
-STUDIO_BASE_PATH=/design-studio-starter/ pnpm build
-STUDIO_BASE_PATH=/design-studio-starter/ pnpm preview
+STUDIO_BASE_PATH=/my-studio/ pnpm build
+STUDIO_BASE_PATH=/my-studio/ pnpm preview
 ```
-
-Copies of the starter run repository checks without publishing. Configure your own publishing workflow when your team is ready to share a site.
 
 Choose a host that can serve the static files in `dist/`. Your team configures how that host receives a build, who can access the site, and when updates are published.
 
@@ -53,7 +47,7 @@ The router also contains guidance for hash-based URLs when a host cannot provide
 
 ## Review the published content
 
-Review what the build includes before uploading it. system context, prototype data, and bundled source may contain information you do not want to distribute.
+Review what the build includes before uploading it. System context, prototype data, and bundled source may contain information you do not want to distribute.
 
 The starter does not provide built-in sign-in or access control. Configure access at the hosting layer when your studio contains private work.
 

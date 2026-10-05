@@ -1,13 +1,13 @@
 ---
 name: maintain-documentation
-description: "Create, revise, or audit platform guides, module documentation, and system context or skills. Check documentation affected by platform changes."
+description: "Revise owner READMEs, coordinate Guide updates, or audit consistency across contracts, context, and skills after platform changes. Use maintain-context to author context or task procedures."
 ---
 
 ## Establish scope
 
 Read the [documentation standard](../../context/documentation-standards.md) and [ownership foundation](../../context/contracts-and-instructions.md). Use maintain-context when authoring context or skills.
 
-For Guide chapters when Documentation is enabled, also read the [write-guide skill](../../../modules/documentation/skills/write-guide/SKILL.md). For component pages, use [document-component](../../../modules/systems/skills/document-component/SKILL.md).
+For Guide chapter edits when Documentation is enabled, follow the [write-guide skill](../../../modules/documentation/skills/write-guide/SKILL.md). For component pages, use [document-component](../../../modules/systems/skills/document-component/SKILL.md).
 
 Identify the audience, requested outcome, and affected behavior. Preserve current user edits. Limit a focused update to relevant documents.
 

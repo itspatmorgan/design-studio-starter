@@ -2,8 +2,6 @@
 title: "Assets and fonts"
 ---
 
-# Assets and fonts
-
 Keep fonts, logos, images, and other static files with the scope that owns them. Asset folders are ordinary directories; they need no registration.
 
 ## Locations

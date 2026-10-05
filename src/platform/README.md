@@ -6,8 +6,8 @@ The platform connects prototypes, modules, and design systems. Start here to fin
 
 - [Principles](context/principles.md) and [Personas](context/personas.md): product direction and intended users.
 - [Working in Studio](context/working-in-studio.md) and [Contributor scope](context/contributor-scope.md): standing requirements for agent work and preserving ownership.
-- [Documentation standards](context/documentation-standards.md): writing and source ownership.
-- [Responsibilities](context/contracts-and-instructions.md) and [Agent context routing](context/agent-context.md): how context and skills are owned, discovered, and read.
+- [Documentation standards](context/documentation-standards.md): writing, metadata, and verification.
+- [Responsibilities](context/contracts-and-instructions.md) and [Agent context routing](context/agent-context.md): ownership and discovery, respectively.
 
 All platform knowledge and requirements live together in `context/`:
 
@@ -29,7 +29,15 @@ All platform knowledge and requirements live together in `context/`:
 - [Setup contributor](skills/setup-contributor/SKILL.md): join an existing studio.
 - [Manage modules](skills/manage-modules/SKILL.md): install or change capability availability.
 - [Maintain context](skills/maintain-context/SKILL.md): author shared knowledge and procedures.
-- [Maintain documentation](skills/maintain-documentation/SKILL.md): revise or audit guidance.
+- [Maintain documentation](skills/maintain-documentation/SKILL.md): revise READMEs, coordinate Guide updates, and audit consistency.
+
+## Maintain the instruction set
+
+Choose the owner, edit its canonical context or skill, and update its README and callers. Synchronize project skill exposure after skill or availability changes, then validate the result. The browser and generated harness entries consume these files; they are not separate authoring locations.
+
+- **Responsibilities** defines ownership and authoritative locations.
+- **Documentation standards** defines writing and metadata.
+- **Agent context routing** defines discovery and synchronization.
 
 ## Implementation
 

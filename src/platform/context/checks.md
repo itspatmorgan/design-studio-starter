@@ -2,8 +2,6 @@
 title: "Checks and fixes"
 ---
 
-# Checks and fixes
-
 Checks help keep the shared studio consistent. Give your agent the warning or error so it can identify the cause.
 
 ## Where checks run
@@ -29,15 +27,13 @@ See [Collaborate](/documentation/guide/collaborate) for how these checks fit the
 | File exceeds the size limit | Reduce the asset before committing. |
 | Type check fails | Give your agent the error and ask it to correct the code. |
 
-See [Collaborate](/documentation/guide/collaborate) for review paths and [Prototype files and boundaries](/documentation/reference/modules/prototypes/README.md#dependency-boundaries) for permitted dependencies.
+See [Collaborate](/documentation/guide/collaborate) for review paths and [Prototype files and boundaries](/documentation/context/module.prototypes#dependency-boundaries) for permitted dependencies.
 
 ## Keep files small
 
 The [Asset Guard](assets.md#asset-guard) blocks oversized files before commit and in CI. Its convention defines the size limit and exception handling.
 
-Use WebP or compressed JPEG for images. Export them at the size needed. Ask your agent to reduce an oversized asset.
-
-Git history retains committed file versions. Removing an oversized file later does not remove its earlier versions from history.
+Follow the guard’s linked guidance to reduce a flagged asset before committing.
 
 ## Protect the shared repository
 

@@ -3,7 +3,7 @@ name: manage-modules
 description: "Create, install, enable, disable, or remove Design Studio modules and systems through the Studio CLI."
 ---
 
-# Modules
+# Manage Modules
 
 Read the [module contract](../../context/modules.md) before creating, installing, disabling, or removing modules or systems.
 

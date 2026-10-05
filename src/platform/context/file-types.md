@@ -2,8 +2,6 @@
 title: "File-type contract"
 ---
 
-# File-type contract
-
 An artifact is a navigable piece of prototype work backed by a file, such as a view, document, diagram, or canvas. Folders organize artifacts; helpers, metadata, and other assets remain supporting files.
 
 A file type is the module capability declared by `type.ts` that recognizes and renders those files. Enabled types determine how artifacts are discovered, created, opened, and embedded.
@@ -34,7 +32,7 @@ Other prototype files remain plain files. Underscore helpers are excluded from n
 | `open.tsx` | Icon, loader, page, and optional live `Embed`. |
 | `loader.ts` | Production file globs and its own HMR acceptance. |
 
-`type.ts` imports only `../../core/fileTypes.ts`, because Node loads it directly.
+`type.ts` imports only `../../platform/core/fileTypes.ts`, because Node loads it directly.
 
 `preview`, `inPrototype`, `inSystemContent`, and `fallback` are required booleans. `inPrototype: true` permits prototype artifacts; `inSystemContent: true` permits system knowledge files. Omission fails validation. A `fallback` type opens other system context text files without claiming extensions.
 
@@ -44,7 +42,7 @@ The app record is `Artifact`, and a loaded `Prototype` holds an `artifacts` coll
 
 An `Embed` in `open.tsx` supplies a read-only preview for documents and canvases. Core resolves references and uses this contract without importing individual modules. The required `embedSurfaces` array explicitly permits `document`, `canvas`, both, or neither (`[]`). Omission never enables a surface. Types without a preview on that surface appear as cards. Canvas restricts its preview to documents, keeping canvas nesting bounded.
 
-Prototype documents use `![Description](../core/relative/file.ext)` on its own line. The shared Markdown reader resolves the exact file within the same prototype, renders the registered preview or card, and provides an Open link. Inline references stay links. Missing or disabled types show an unavailable message. Ordinary image formats retain Markdown image behavior.
+Prototype documents use `![Description](./relative/file.ext)` on its own line. The shared Markdown reader resolves the exact file within the same prototype, renders the registered preview or card, and provides an Open link. Inline references stay links. Missing or disabled types show an unavailable message. Ordinary image formats retain Markdown image behavior.
 
 Preview surfaces use the shared `EmbedFrame`: rounded corners and a full-width gray header link that darkens and reveals Open on hover or keyboard focus. Header text is never underlined. Preview contents are inert; interaction happens after opening the file.
 

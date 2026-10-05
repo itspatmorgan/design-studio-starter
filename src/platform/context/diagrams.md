@@ -2,13 +2,11 @@
 title: "Diagrams and code"
 ---
 
-# Diagrams and code
-
 Mermaid blocks render automatically in the Guide, system context, reference pages, and prototype Documents. Write standard Mermaid syntax inside a fenced `mermaid` code block. Use the full view's source control to read or copy the diagram text.
 
 The starter uses platform neutrals for structural diagrams and Flexoki accents for categories and chart series. Document code and the source editor share those accents. Change the platform's light or dark mode to preview both appearances.
 
-Standalone prototype diagrams use the optional [Diagrams module](/documentation/reference/modules/diagrams/README.md). They share this renderer and theme; Markdown fences remain available when that module is disabled.
+Standalone prototype diagrams use the optional [Diagrams module](/documentation/context/module.diagrams). They share this renderer and theme; Markdown fences remain available when that module is disabled.
 
 ## Flowchart
 

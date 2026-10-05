@@ -3,7 +3,7 @@ name: use-canvas
 description: "Create or edit a Design Studio canvas containing views, diagrams, documents, notes, and arrows. Use only when Canvas is enabled."
 ---
 
-# Canvases
+# Use Canvas
 
 This skill applies when Canvases is enabled. The [module README](../../README.md) describes rendering and storage.
 

@@ -3,7 +3,7 @@ name: write-document
 description: "Create or edit Markdown documents inside a Design Studio prototype. Use only when Documents is enabled; shared system context and Guide chapters have separate owners."
 ---
 
-# Documents
+# Write Document
 
 This skill applies to prototype Markdown when Documents is enabled. Format and rendering are described in the [module README](../../README.md).
 

@@ -2,8 +2,6 @@
 title: "Module contract"
 ---
 
-# Module contract
-
 A module is a folder in `src/modules/<id>/` with a `module.ts` declaration. The platform discovers declarations without a separate registry.
 
 Modules are copied into the repository. They are not downloaded or loaded as plugins at runtime.

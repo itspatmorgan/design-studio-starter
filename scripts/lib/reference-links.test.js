@@ -33,6 +33,34 @@ test('contracts render every section and extract only the opening title', () => 
   assert.deepEqual(tree.children.slice(1), sections);
 });
 
+test('frontmatter titles suppress only a matching opening H1', () => {
+  for (const value of ['title: Studio configuration', 'title: "Studio configuration"', "title: 'Studio configuration'", 'title: >\n  Studio configuration']) {
+    const yaml = { type: 'yaml', value };
+    const section = { type: 'heading', depth: 2, children: [{ type: 'text', value: 'Settings' }] };
+    const tree = { children: [yaml, { type: 'heading', depth: 1, children: [{ type: 'text', value: 'Studio ' }, { type: 'emphasis', children: [{ type: 'text', value: 'configuration' }] }] }, section] };
+    titleFromHeading()(tree, { basename: 'config.md' });
+    assert.deepEqual(tree.children, [yaml, section]);
+  }
+});
+
+test('frontmatter titles preserve differing and non-opening headings', () => {
+  const yaml = { type: 'yaml', value: 'title: Overview' };
+  const heading = { type: 'heading', depth: 1, children: [{ type: 'text', value: 'Details' }] };
+  const paragraph = { type: 'paragraph', children: [{ type: 'text', value: 'Introduction' }] };
+  for (const body of [[heading], [paragraph, { ...heading, children: [{ type: 'text', value: 'Overview' }] }]]) {
+    const tree = { children: [yaml, ...body] };
+    titleFromHeading()(tree, { basename: 'example.md' });
+    assert.deepEqual(tree.children, [yaml, ...body]);
+  }
+});
+
+test('skill names supply task titles when no heading is present', () => {
+  const tree = { children: [{ type: 'yaml', value: 'name: use-canvas\ndescription: Create a canvas.' }, { type: 'paragraph', children: [{ type: 'text', value: 'Instructions' }] }] };
+  titleFromHeading()(tree, { basename: 'SKILL.md' });
+  assert.match(tree.children[0].value, /title: "Use canvas"/);
+  assert.equal(tree.children[1].type, 'paragraph');
+});
+
 test('technical context and skill source links resolve without a duplicate Reference reader', () => {
   assert.equal(markdownPath('/platform/context/personas.md'), '/documentation/context/platform.core/context/personas');
   assert.equal(markdownPath('/platform/context/file-types.md'), '/documentation/context/platform.core/context/file-types');

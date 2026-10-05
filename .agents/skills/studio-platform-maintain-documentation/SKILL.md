@@ -1,6 +1,6 @@
 ---
 name: studio-platform-maintain-documentation
-description: "Create, revise, or audit platform guides, module documentation, and system context or skills. Check documentation affected by platform changes."
+description: "Revise owner READMEs, coordinate Guide updates, or audit consistency across contracts, context, and skills after platform changes. Use maintain-context to author context or task procedures."
 ---
 
 <!-- studio:generated-skill -->

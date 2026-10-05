@@ -1,4 +1,7 @@
-# Contributor scope
+---
+title: Contributor scope
+description: Contributor ownership, authorization for shared changes, and identity checks.
+---
 
 Resolve the contributor with `node scripts/cli/resolve-contributor.js` before editing prototype content.
 

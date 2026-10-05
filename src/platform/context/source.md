@@ -2,8 +2,6 @@
 title: "Editing and saving"
 ---
 
-# Editing and saving
-
 Source editing is a shared platform capability used by Prototypes, Systems, and Documentation. It has no separate module, route section, or navigation entry.
 
 ## File workflow
@@ -24,9 +22,9 @@ Guide chapters and owner README documents have separate source files. Each reade
 
 ## Implementation
 
-- `source/SourceEditor.tsx`: shared CodeMirror editor, syntax selection, save state, route blocking, and external-change handling. Its `SourceAccess` contract supplies a repository path, read/write callbacks, and editability.
-- `source/useSourceView.ts`: shared source URL state (`?mode=source`), keyboard toggle, and return focus.
-- `source/sourceTheme.ts`, `markdownSource.ts`, `mermaidSource.ts`: shared Flexoki highlighting, including Mermaid fences in Markdown. CSS theme files also receive syntax highlighting.
+- `src/platform/core/source/SourceEditor.tsx`: shared CodeMirror editor, syntax selection, save state, route blocking, and external-change handling. Its `SourceAccess` contract supplies a repository path, read/write callbacks, and editability.
+- `src/platform/core/source/useSourceView.ts`: shared source URL state (`?mode=source`), keyboard toggle, and return focus.
+- `src/platform/core/source/sourceTheme.ts`, `markdownSource.ts`, `mermaidSource.ts`: shared Flexoki highlighting, including Mermaid fences in Markdown. CSS theme files also receive syntax highlighting.
 - `src/platform/app/source/ArtifactSource.tsx`: prototype and system context access adapter.
 - `src/platform/app/shell/FileNavItem.tsx` and `FileActionItems.tsx`: file-backed navigation and common actions. File trees use the same actions with their own structure.
 - `scripts/build/files/source.js`: versioned, size-limited access to explicitly allowlisted Documentation and Systems files. Prototype and system context access retain their existing file policies.
