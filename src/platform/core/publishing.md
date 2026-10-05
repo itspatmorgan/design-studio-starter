@@ -25,7 +25,18 @@ Interactive views still run in the browser. The published site does not provide 
 
 ## Choose a deployment process
 
-The starter provides a portable build, without a deployment workflow. Pushing to GitHub runs repository checks. It does not publish the site.
+The starter provides a portable build. The Checks workflow publishes successful pushes to `main` only in `itspatmorgan/design-studio-starter`.
+
+That repository uses GitHub Pages with **GitHub Actions** as its publishing source. It inherits `itspatmorgan.com` from the account's user site and publishes at `/design-studio-starter/`. Leave its custom-domain field empty.
+
+The workflow reads the Pages base path and passes it to the build through `STUDIO_BASE_PATH`. Local commands use `/` by default. To preview a subpath deployment locally, run:
+
+```sh
+STUDIO_BASE_PATH=/design-studio-starter/ pnpm build
+STUDIO_BASE_PATH=/design-studio-starter/ pnpm preview
+```
+
+Copies of the starter run repository checks without publishing. Configure your own publishing workflow when your team is ready to share a site.
 
 Choose a host that can serve the static files in `dist/`. Your team configures how that host receives a build, who can access the site, and when updates are published.
 
@@ -36,6 +47,8 @@ Ask your agent to help configure the chosen host when you are ready. Supply the 
 The app uses browser-history URLs, such as `/prototypes/alex/feedback-inbox`. Configure the host to serve `index.html` for app paths that do not identify an asset.
 
 Test a direct prototype URL and reload it. Opening the front page alone does not verify routing.
+
+The build also copies `index.html` to `404.html` for hosts such as GitHub Pages. This loads the app for missing paths, but the HTTP response remains a 404. Hosts with rewrite support can return `index.html` with a successful response instead.
 
 The router also contains guidance for hash-based URLs when a host cannot provide these rewrites. This is a code change, not a studio configuration option.
 

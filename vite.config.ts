@@ -58,6 +58,7 @@ const moduleLibs = ENABLED_MODULES.filter((m: { lib?: boolean }) => m.lib).map((
 
 export default defineConfig({
   root: 'src',
+  base: process.env.STUDIO_BASE_PATH || '/',
   publicDir: '../public',
   css: { postcss: { plugins: [scopedUtilities()] } },
   build: { outDir: '../dist', emptyOutDir: true },

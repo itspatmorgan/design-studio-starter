@@ -30,4 +30,4 @@ Keep experiments local until an authorized shared change moves them into the sys
 - Follow the [Asset Guard](../../../platform/core/assets.md#asset-guard). Compress oversized assets instead of bypassing the check.
 - Commit finished work with a concise message. Push only when the person asks to share.
 
-A push runs repository checks. It does not publish a site.
+A push runs repository checks. Publishing depends on the repository's deployment workflow; see [Publishing](../../../platform/core/publishing.md).
