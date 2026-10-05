@@ -1,6 +1,6 @@
 {
   "name": "design-studio",
-  "version": "0.1.0-experiment.4",
+  "version": "0.1.0-experiment.5",
   "description": "Create and refine prototypes with Design Studio. Setup is handled for you, and all code stays in a visible folder on your computer.",
   "author": {
     "name": "Patrick Morgan"
@@ -24,8 +24,8 @@
       "Open my Design Studio.",
       "Help me prototype an idea in Design Studio."
     ],
-    "composerIcon": "./assets/logo.svg",
-    "composerIconDark": "./assets/logo-dark.svg",
+    "composerIcon": "./assets/composer-icon.svg",
+    "composerIconDark": "./assets/composer-icon-dark.svg",
     "logo": "./assets/logo.svg",
     "logoDark": "./assets/logo-dark.svg"
   },
