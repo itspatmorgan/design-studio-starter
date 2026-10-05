@@ -1,6 +1,6 @@
 ---
 title: "Customize your studio"
-description: "Start with your work, then extend the studio through systems and modules."
+description: "Configure Studio settings, then extend the studio through systems and modules."
 section: "Begin"
 order: 3
 toc: true
@@ -27,7 +27,21 @@ Create prototypes and use the assigned system's components. Keep experimental he
 
 ## Configure the studio
 
-Choose your studio identity, default system, and enabled optional modules through studio commands. Configuration changes do not require edits to the application shell. See [Studio configuration](/documentation/reference/platform/core/config.md).
+Open **Studio settings** from the gear icon in local navigation, or search for it. Registered contributors can view the page; Admins can edit shared settings. Settings are available while running Studio locally.
+
+| Section | What you can do |
+| --- | --- |
+| General | Change the studio name, personal or team use, optional tagline, and default design system. |
+| Modules | Turn installed optional modules on or off. Required modules stay enabled. |
+| Contributors | View registered profiles and role badges. Select a name to browse that contributor's prototypes. |
+
+Changing the default system preserves existing prototypes' system choices. Disabling a module keeps its files and content, so you can enable it again later.
+
+Choose **Save changes** at the bottom of the page to apply your edits. Studio saves to your local repository and restarts to apply the configuration. **Discard** resets unsaved edits. If someone or your agent changes the configuration while you are editing, reload settings before trying again.
+
+A save does not share changes with your team or publish the site. Follow your team's [Git workflow](/documentation/guide/collaborate#share-through-git) to share them.
+
+Ask your agent to register or update contributor profiles, assign team Admins, install or remove modules, or bring in a design system. [Collaboration](/documentation/guide/collaborate#studio-settings-and-roles) explains roles. [Studio configuration](/documentation/reference/platform/core/config.md) supplies the file and command contract.
 
 ## Add a system
 

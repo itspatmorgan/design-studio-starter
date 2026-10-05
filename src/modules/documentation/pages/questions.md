@@ -26,7 +26,7 @@ Asset Guard checks asset sizes before commits and in repository checks to catch 
 
 ## Can we change the starter?
 
-Yes. You own the repository. Ask your agent to preview changes to the studio name, defaults, or optional modules before applying them. Detailed contracts live in [Reference](/documentation/reference); you do not need to read them to start.
+Yes. Admins can change the studio name, defaults, and enabled optional modules in [Studio settings](/documentation/guide/customize#configure-the-studio). You own the repository, so you can also ask your agent to adapt systems or add capabilities. Detailed contracts live in [Reference](/documentation/reference); you do not need to read them to start.
 
 ## What if something breaks?
 

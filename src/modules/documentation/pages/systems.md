@@ -60,7 +60,7 @@ A system declares whether it supports light mode, dark mode, or both. Systems wi
 
 Ask your agent to import your components, tokens, fonts, and supported color modes. You can keep the starter while exploring and replace it later.
 
-System files are shared team content. Coordinate changes with your maintainer. The studio configuration command records omitted assignments before changing the default, preserving existing choices. Direct configuration edits do not perform that step. Explicit system and None assignments remain unchanged.
+System files are shared team content. Coordinate changes with your maintainer. Admins can choose an installed default system in [Studio settings](/documentation/guide/customize#configure-the-studio). Saving there, or asking your agent to use the studio configuration command, preserves existing prototypes' system choices, including None. Direct configuration edits do not provide that protection.
 
 Theme pages are generated from its theme file; component pages combine documentation, examples, and component source. Source is available through navigation, using the [shared file workflow](/documentation/guide/home#working-with-files). Component pages offer separate source tabs for documentation, examples, and component code.
 
