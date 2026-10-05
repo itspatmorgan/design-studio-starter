@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import CONFIG from '../../studio.config.ts';
 import { isEnabled } from '../../src/platform/core/config.ts';
-import { compatible, itemFolders, moduleProblems, sectionKeys } from '../../src/platform/core/modules/index.ts';
+import { compatible, CORE_PAGE_KEYS, itemFolders, moduleProblems, sectionKeys } from '../../src/platform/core/modules/index.ts';
 import { setSections } from '../../src/platform/core/roots.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -29,7 +29,7 @@ export const ENABLED_MODULES = Object.values(MODULES).filter((m) => m && isEnabl
 export { CONFIG, isEnabled };
 
 // App page addresses (/examples, /documentation, ...), so they can't be a contributor's folder.
-export const SECTION_KEYS = new Set(sectionKeys(Object.values(MODULES).filter(Boolean)));
+export const SECTION_KEYS = new Set([...CORE_PAGE_KEYS, ...sectionKeys(Object.values(MODULES).filter(Boolean))]);
 
 // Absolute folders of the modules that hold prototype-shaped folders, one per id (src/examples/), and the
 // system content's. src/prototypes/, where the folders are grouped by person, is the Prototypes module's own and isn't listed.

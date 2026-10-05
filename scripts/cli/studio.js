@@ -28,7 +28,8 @@ import { systemProblems } from '../../src/modules/systems/spec.ts';
 import { MODULES, ENABLED_MODULES, CONFIG } from '../lib/modules.js';
 import { PLATFORM_ID, SYSTEM_SPECS, PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from '../../src/modules/systems/node/systems.js';
 import { configProblems } from '../../src/platform/core/config.ts';
-import { applySetupChanges, editStudioConfig, pinImplicitSystems } from '../lib/studio-setup.js';
+import { applySetupChanges, editStudioConfig } from '../lib/studio-setup.js';
+import { planSettings } from '../lib/studio-settings.js';
 import { resolveContributor } from './resolve-contributor.js';
 import { fetchSource, walk } from '../lib/fetch-source.js';
 import { loadContributors } from '../lib/contributors.js';
@@ -47,7 +48,7 @@ for (let i = 0; i < rest.length; i++) {
   const a = rest[i];
   if (a === '--') continue;
   if (['--yes', '--content', '--force', '--allow-license', '--json'].includes(a)) flags[a.slice(2)] = true;
-  else if (['--path', '--id', '--label', '--out', '--name', '--tagline', '--usage', '--system'].includes(a)) { flags[a.slice(2)] = rest[++i]; if (flags[a.slice(2)] === undefined) fail(`${a} needs a value.`); }
+  else if (['--path', '--id', '--label', '--out', '--name', '--tagline', '--usage', '--system', '--admins'].includes(a)) { flags[a.slice(2)] = rest[++i]; if (flags[a.slice(2)] === undefined) fail(`${a} needs a value.`); }
   else if (a.startsWith('--')) fail(`Unknown option ${a}.`);
   else positional.push(a);
 }
@@ -107,13 +108,8 @@ function setEnabled(id, on) {
   if (!id || !spec) fail(`No module has the id "${id ?? ''}". Installed: ${Object.keys(MODULES).join(', ')}.`);
   if (!on && !spec.optional) fail(`The ${id} module can't be turned off yet; other parts of the app still use it.`);
   if (on && !compatible(spec)) fail(`The ${id} module needs platform ${spec.requires} or newer, and this is ${PLATFORM_VERSION}.`);
-  const file = rel('studio.config.ts');
-  const text = fs.readFileSync(file, 'utf8');
-  const next = editModulesFlag(text, id, on);
-  if (next === null) fail(`I couldn't edit studio.config.ts. Set it by hand: modules: { ${id}: ${on} }.`);
-  if (next === text) { say(`The ${id} module is already ${on ? 'on' : 'off'}.`); return; }
-  fs.writeFileSync(file, next);
-  syncInFreshProcess();
+  const plan = planSettings({ root: ROOT, modules: Object.values(MODULES), systems: SYSTEM_IDS, platformId: PLATFORM_ID, contributors: loadContributors(), changes: { modules: { [id]: on } } });
+  applySetupChanges(plan.edits);
   say(`${spec.label} is ${on ? 'on' : 'off'}. ${on ? '' : 'Its files are still there; turn it on again any time. '}Restart the dev server for it to take effect.`);
 }
 
@@ -394,17 +390,13 @@ function check() {
 function configure() {
   const changes = Object.fromEntries(['name', 'tagline', 'usage'].filter((key) => flags[key] !== undefined).map((key) => [key, flags[key]]));
   if (flags.system !== undefined) changes.defaultSystem = flags.system;
-  if (!Object.keys(changes).length) fail('Usage: pnpm studio configure --name "My Studio" --usage personal|team --system <id> [--tagline "..."] [--yes]');
-  const problems = configProblems({ ...CONFIG, ...changes }, Object.values(MODULES), SYSTEM_IDS, PLATFORM_ID);
-  if (problems.length) fail(problems.join('\n'));
-  const file = rel('studio.config.ts');
-  const before = fs.readFileSync(file, 'utf8');
-  const next = editStudioConfig(before, changes);
-  const pins = changes.defaultSystem && changes.defaultSystem !== DEFAULT_SYSTEM ? pinImplicitSystems(ROOT, DEFAULT_SYSTEM, Object.values(MODULES)) : [];
+  if (flags.admins !== undefined) changes.admins = flags.admins.split(',').map((key) => key.trim()).filter(Boolean);
+  if (!Object.keys(changes).length) fail('Usage: pnpm studio configure --name "My Studio" --usage personal|team --system <id> [--tagline "..."] [--admins key,key] [--yes]');
+  const plan = planSettings({ root: ROOT, modules: Object.values(MODULES), systems: SYSTEM_IDS, platformId: PLATFORM_ID, contributors: loadContributors(), changes });
   say(JSON.stringify(changes, null, 2));
-  for (const pin of pins) say(`Keep ${path.relative(ROOT, pin.file)} on ${DEFAULT_SYSTEM}.`);
+  for (const pin of plan.pins) say(`Keep ${path.relative(ROOT, pin.file)} on ${DEFAULT_SYSTEM}.`);
   if (!flags.yes) { say('Nothing written. Apply these choices with --yes.'); return; }
-  applySetupChanges([...pins, { file, before, after: next }]);
+  applySetupChanges(plan.edits);
   say('Updated studio.config.ts. Restart the dev server.');
 }
 
@@ -416,7 +408,7 @@ function status() {
     modules: { enabled: ENABLED_MODULES.map((module) => module.id), disabled: Object.keys(MODULES).filter((id) => !ENABLED_MODULES.some((module) => module.id === id)) },
     systems: CONFIG.systems,
     systemContentPlaceholders: systemContent.filter((file) => fs.existsSync(rel(file)) && fs.readFileSync(rel(file), 'utf8').includes('**Placeholder.**')),
-    problems: configProblems(CONFIG, Object.values(MODULES), SYSTEM_IDS, PLATFORM_ID),
+    problems: configProblems(CONFIG, Object.values(MODULES), SYSTEM_IDS, PLATFORM_ID, Object.keys(loadContributors())),
   };
   if (flags.json) say(JSON.stringify(report, null, 2));
   else {

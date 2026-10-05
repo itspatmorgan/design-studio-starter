@@ -23,7 +23,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pathToFileURL } from 'node:url';
 import { PLATFORM_VERSION, compatible, listProblems } from '../../src/platform/core/modules/index.ts';
-import { configProblems } from '../../src/platform/core/config.ts';
+import { adminProblems, configProblems } from '../../src/platform/core/config.ts';
 import { CONFIG, MODULES, ENABLED_MODULES, SECTION_KEYS, PROTOTYPE_DIRS, declarationProblems } from '../lib/modules.js';
 import { PLATFORM_ID, SYSTEM_SPECS, PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS, systemDeclarationProblems } from '../../src/modules/systems/node/systems.js';
 import { changesFromLock } from '../lib/lock.js';
@@ -66,6 +66,7 @@ for (const m of specs) {
 
 const { contributors: contributorMap, twice, problems: contributorProblems } = readContributors();
 const contributors = Object.keys(contributorMap);
+problems.push(...adminProblems(CONFIG, contributors).filter((problem) => !problems.includes(problem)));
 problems.push(...contributorProblems, ...twice.map((k) => `"${k}" is in contributors.json and also has its own file, contributors/${k}.json. Keep one.`));
 const protoDir = path.join(ROOT, 'src', 'prototypes');
 const folders = fs.existsSync(protoDir) ? fs.readdirSync(protoDir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name) : [];

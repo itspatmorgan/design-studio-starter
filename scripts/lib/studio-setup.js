@@ -11,27 +11,47 @@ export function editStudioConfig(text, changes) {
   while (object && (ts.isSatisfiesExpression(object) || ts.isAsExpression(object) || ts.isParenthesizedExpression(object))) object = object.expression;
   if (!object || !ts.isObjectLiteralExpression(object) || source.parseDiagnostics.length) throw new Error('Configuration must default-export an object. Edit custom computed configurations in your editor.');
   if (object.properties.some(ts.isSpreadAssignment)) throw new Error('Configure a plain object without spreads so the applied values are unambiguous.');
-  const names = object.properties.map((property) => property.name?.getText(source));
-  if (new Set(names).size !== names.length) throw new Error('Remove duplicate configuration properties before configuring the studio.');
-  const remaining = new Map(Object.entries(changes));
-  const literal = (value) => Array.isArray(value)
-    ? ts.factory.createArrayLiteralExpression(value.map((id) => ts.factory.createStringLiteral(id)))
-    : ts.factory.createStringLiteral(value);
-  const properties = object.properties.map((property) => {
-    const key = property.name && (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)) ? property.name.text : null;
-    if (!remaining.has(key)) return property;
-    if (!ts.isPropertyAssignment(property)) throw new Error(`Configure ${key} as a plain property first.`);
-    const value = remaining.get(key); remaining.delete(key);
-    return ts.factory.updatePropertyAssignment(property, property.name, literal(value));
-  });
-  for (const [key, value] of remaining) properties.push(ts.factory.createPropertyAssignment(key, literal(value)));
-  const updated = ts.factory.updateObjectLiteralExpression(object, properties);
-  const result = ts.transform(source, [(context) => {
-    const visit = (node) => node === object ? updated : ts.visitEachChild(node, visit, context);
-    return (node) => ts.visitNode(node, visit);
-  }]);
-  try { return ts.createPrinter({ newLine: ts.NewLineKind.LineFeed }).printFile(result.transformed[0]); }
-  finally { result.dispose(); }
+  const checkNames = (object) => {
+    const names = object.properties.map((property) => property.name && (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)) ? property.name.text : property.name?.getText(source));
+    if (new Set(names).size !== names.length) throw new Error('Remove duplicate configuration properties before configuring the studio.');
+  };
+  checkNames(object);
+  const literal = (value) => {
+    if (typeof value === 'boolean') return value ? ts.factory.createTrue() : ts.factory.createFalse();
+    if (Array.isArray(value)) return ts.factory.createArrayLiteralExpression(value.map((id) => ts.factory.createStringLiteral(id)));
+    if (value && typeof value === 'object') return ts.factory.createObjectLiteralExpression(Object.entries(value).map(([key, next]) => ts.factory.createPropertyAssignment(ts.factory.createStringLiteral(key), literal(next))));
+    return ts.factory.createStringLiteral(value);
+  };
+  const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+  const valueText = (value) => printer.printNode(ts.EmitHint.Expression, literal(value), source);
+  const edits = [];
+  function patchObject(object, values) {
+    if (!ts.isObjectLiteralExpression(object) || object.properties.some(ts.isSpreadAssignment)) throw new Error('Configure modules as a plain object without spreads.');
+    checkNames(object);
+    const remaining = new Map(Object.entries(values));
+    for (const property of object.properties) {
+      const key = property.name && (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)) ? property.name.text : null;
+      if (!remaining.has(key)) continue;
+      if (!ts.isPropertyAssignment(property)) throw new Error(`Configure ${key} as a plain property first.`);
+      const value = remaining.get(key); remaining.delete(key);
+      if (value && typeof value === 'object' && !Array.isArray(value)) patchObject(property.initializer, value);
+      else edits.push({ start: property.initializer.getStart(source), end: property.initializer.end, text: valueText(value) });
+    }
+    if (!remaining.size) return;
+    const close = object.end - 1;
+    const closeLine = text.slice(text.lastIndexOf('\n', close) + 1, close);
+    const fields = [...remaining].map(([key, value]) => `${/^[A-Za-z_]\w*$/.test(key) ? key : JSON.stringify(key)}: ${valueText(value)},`);
+    if (/^[ \t]*$/.test(closeLine)) {
+      const first = object.properties[0]?.getStart(source) ?? object.getStart(source);
+      const firstLine = text.slice(text.lastIndexOf('\n', first) + 1, first);
+      const indent = /^[ \t]+$/.test(firstLine) ? firstLine : closeLine + '  ';
+      edits.push({ start: close - closeLine.length, end: close - closeLine.length, text: fields.map((field) => indent + field + '\n').join('') });
+    } else edits.push({ start: close, end: close, text: ' ' + fields.join(' ') + ' ' });
+    const last = object.properties.at(-1);
+    if (last && !object.properties.hasTrailingComma) edits.push({ start: last.end, end: last.end, text: ',' });
+  }
+  patchObject(object, changes);
+  return edits.sort((a, b) => b.start - a.start).reduce((result, edit) => result.slice(0, edit.start) + edit.text + result.slice(edit.end), text);
 }
 
 // Preserve existing content's chosen system when the studio's default changes, including disabled modules.

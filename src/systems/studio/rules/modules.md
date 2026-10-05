@@ -10,7 +10,7 @@ Read the [module contract](../../../modules/README.md) before creating, installi
 - Do not manually edit `studio.lock.json`, the generated module routing in `AGENTS.md`, or config module flags. Use studio commands.
 - Do not bypass required-module constraints or unresolved dependencies with `--force`.
 - If the license check rejects a source, obtain the person's decision before using `--allow-license`.
-- Restart the dev server after configuration, module installation, or system installation changes. Ordinary component edits update during development.
+- Restart the dev server after CLI configuration, module installation, or system installation changes. Saving in local Studio settings restarts it automatically. Ordinary component edits update during development.
 - Use the configuration command to change the default system. Preserve existing prototypes until intentional migration.
 - Keep module imports within the public API and explicit framework entrypoints. Do not bypass private-platform checks.
 - Apply the [contributor scope rule](contributor-scope.md) to shared changes.

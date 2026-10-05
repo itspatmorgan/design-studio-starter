@@ -72,6 +72,7 @@ export default function CommandPaletteDialog({ open, setOpen, returnFocus }: { o
   
             <CommandGroup heading="Places">
               <CommandItem value="home overview" disabled={onHome} onSelect={() => go({ to: '/' })}>Home</CommandItem>
+              {import.meta.env.DEV && <CommandItem value="studio settings configuration modules contributors admins" onSelect={() => go({ to: '/settings' } as never)}>Studio settings</CommandItem>}
               {moduleApps.map(({ spec, app }) => app.places && <app.places key={spec.id} {...context} />)}
             </CommandGroup>
 

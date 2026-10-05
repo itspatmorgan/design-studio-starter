@@ -8,6 +8,7 @@
 // server.ts may rely on. It is 0.x while the contract can still change; a module says the oldest one it works
 // with in `requires`.
 export const PLATFORM_VERSION = '0.1.0';
+export const CORE_PAGE_KEYS = ['settings'] as const;
 
 export type ModuleSpec = {
   id: string;        // the folder's name
@@ -126,6 +127,7 @@ export function listProblems(specs: readonly ModuleSpec[]): string[] {
   const dirs = new Map<string, string>();
   for (const m of specs) {
     if (!m.section) continue;
+    if ((CORE_PAGE_KEYS as readonly string[]).includes(m.section.key)) problems.push(`The ${m.id} module uses the reserved core page key "${m.section.key}". Give it another section key.`);
     const byKey = keys.get(m.section.key);
     if (byKey) problems.push(`The ${byKey} and ${m.id} modules both use the section key "${m.section.key}". Give one of them another.`);
     else keys.set(m.section.key, m.id);

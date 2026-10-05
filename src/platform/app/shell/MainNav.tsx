@@ -1,6 +1,6 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  Moon02Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Sun01Icon,
+  Moon02Icon, PanelLeftCloseIcon, PanelLeftOpenIcon, Search01Icon, Sun01Icon, Settings01Icon,
 } from '@hugeicons/core-free-icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
 import { cn } from '@/lib/utils';
@@ -97,6 +97,7 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
         </RailButton>
       )}
       {moduleLinks('bottom')}
+      {import.meta.env.DEV && <RailLink to={'/settings' as never} label="Studio settings" active={pathname === '/settings'}><HugeiconsIcon icon={Settings01Icon} size={16} /></RailLink>}
       <RailButton label={colorMode === 'dark' ? 'Light mode' : 'Dark mode'} onClick={onToggleColorMode}>
         <HugeiconsIcon icon={colorMode === 'dark' ? Sun01Icon : Moon02Icon} size={16} />
       </RailButton>

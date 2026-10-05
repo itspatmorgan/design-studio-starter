@@ -50,6 +50,8 @@ Every module declares `optional` and `lib` as booleans. Omission cannot silently
 
 A section can declare a content folder, prototype-shaped items, contributor grouping, editing policy, and standalone published views.
 
+The core page key `settings` is reserved. Modules and contributors cannot use it as a section or contributor key.
+
 Use the TypeScript declaration for exact fields. See the [file-type contract](../platform/core/fileTypes.md) for file capabilities.
 
 Design systems are content in `src/systems/`, not platform modules. Their [contract](systems/reference.md) defines system structure.

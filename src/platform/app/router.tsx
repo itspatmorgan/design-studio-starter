@@ -57,6 +57,15 @@ const homeRoute = createRoute({
   component: Home,
 });
 
+const Settings = import.meta.env.DEV ? lazy(() => import('@/platform/app/pages/settings/Settings')) : null;
+const settingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: 'settings',
+  beforeLoad: () => { if (!import.meta.env.DEV) throw notFound(); },
+  head: () => ({ meta: [{ title: 'Studio settings — ' + APP_NAME }] }),
+  component: () => Settings && <Suspense fallback={null}><Settings /></Suspense>,
+});
+
 const documentationRoute = createRoute({ getParentRoute: () => rootRoute, path: 'documentation', beforeLoad: async () => {
   const { guide } = await loadManifest();
   throw redirect({ to: (guide.length ? '/documentation/guide' : '/documentation/reference') as never, replace: true });
@@ -214,7 +223,7 @@ const sectionItemSplatRoute = createRoute({
 // system content, the Guide, in src/modules/<id>/app.tsx) are added at run time, and the types leave
 // them out: a link to one is written loosely.
 const coreRoutes = [homeRoute, documentationRoute, referencesRoute.addChildren([referenceIndexRoute, referenceRoute]), prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]), sectionItemRoute.addChildren([sectionItemIndexRoute, sectionItemSplatRoute])] as const;
-const routeTree = rootRoute.addChildren([...coreRoutes, ...moduleApps.flatMap(({ app }) => app.routes?.(rootRoute) ?? [])] as unknown as typeof coreRoutes);
+const routeTree = rootRoute.addChildren([...coreRoutes, ...(import.meta.env.DEV ? [settingsRoute] : []), ...moduleApps.flatMap(({ app }) => app.routes?.(rootRoute) ?? [])] as unknown as typeof coreRoutes);
 
 export const router = createRouter({
   routeTree,

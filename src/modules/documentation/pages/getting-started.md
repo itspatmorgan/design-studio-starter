@@ -26,6 +26,8 @@ The starter is ready to explore as soon as it runs. Try the Feedback Inbox sampl
 
 When you want to adapt the environment, open the repository with your coding agent and ask it to configure your studio. It can help with the studio name, personal or team use, contributor identity, optional modules, design system, and system context. Bring your own system source and product context when you have them; you can also keep the starter system while exploring.
 
+After contributor setup, Admins can change basic choices in **Studio settings** from the local gear icon. Team setup assigns at least one Admin. In personal use, your local contributor is automatically an Admin.
+
 If you are joining an existing studio, ask your agent to set you up as a contributor. It should preserve the studio's shared configuration and content.
 
 Configuration can continue after first run. Personal local use does not require GitHub or hosting. For collaboration through GitHub, use an account with access to the repository.

@@ -1,9 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { configProblems, isEnabled, type StudioConfig } from './config.ts';
+import { adminProblems, configProblems, isEnabled, studioRole, type StudioConfig } from './config.ts';
 
 const modules = [{ id: 'documentation', optional: true }, { id: 'prototypes', optional: false }];
-const config: StudioConfig = { name: 'Studio', usage: 'team', modules: { documentation: true, prototypes: true }, systems: ['studio', 'product'], defaultSystem: 'product' };
+const config: StudioConfig = { name: 'Studio', usage: 'team', admins: ['sam'], modules: { documentation: true, prototypes: true }, systems: ['studio', 'product'], defaultSystem: 'product' };
 const problems = (changes: Record<string, unknown>) => configProblems({ ...config, ...changes }, modules, ['product']).join('\n');
 
 test('an explicit configuration is complete', () => {
@@ -53,4 +53,19 @@ test('required application registration follows the resolved platform role id', 
   assert.deepEqual(configProblems(custom, modules, ['product'], 'custom-studio'), []);
   assert.match(configProblems({ ...custom, systems: ['product'] }, modules, ['product'], 'custom-studio').join(' '), /must include custom-studio/);
   assert.match(configProblems({ ...custom, defaultSystem: 'custom-studio' }, modules, ['product'], 'custom-studio').join(' '), /no system has that id/);
+});
+
+test('team Admin assignments require unique registered contributors', () => {
+  for (const admins of [undefined, [], ['sam', 'sam'], ['Invalid'], 'sam', [42]]) assert.ok(adminProblems({ usage: 'team', admins } as Partial<StudioConfig>).length);
+  assert.deepEqual(adminProblems({ usage: 'team', admins: ['sam', 'alex'] }, ['sam', 'alex']), []);
+  assert.match(adminProblems({ usage: 'team', admins: ['missing'] }, ['sam']).join(' '), /not a registered contributor/);
+  assert.deepEqual(adminProblems({ usage: 'personal' }, ['sam']), []);
+});
+
+test('local roles derive personal Admin access and never recognize unregistered identities', () => {
+  assert.equal(studioRole(config, 'sam', ['sam', 'alex']), 'admin');
+  assert.equal(studioRole(config, 'alex', ['sam', 'alex']), 'contributor');
+  assert.equal(studioRole(config, 'sam', []), null);
+  assert.equal(studioRole(config, null, ['sam']), null);
+  assert.equal(studioRole({ usage: 'personal' }, 'alex', ['alex']), 'admin');
 });

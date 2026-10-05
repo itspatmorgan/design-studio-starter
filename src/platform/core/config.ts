@@ -6,6 +6,8 @@ export type StudioConfig = {
   name: string;
   // Explicit onboarding mode; contributor ownership is identical in both modes.
   usage: 'personal' | 'team';
+  // Local settings administrators. Team studios require at least one registered key.
+  admins?: readonly string[];
   // One line on the front page of the deployed site, under the name, that tells a visitor what this is: "Our team's
   // prototypes and design systems." Left out, there's no line.
   tagline?: string;
@@ -19,13 +21,14 @@ export type StudioConfig = {
 
 // What is wrong with a config, each as a sentence that says what to fix. `modules` is the installed
 // modules and whether each can be turned off, and `systems` the installed design systems' ids.
-export function configProblems(config: unknown, modules: readonly { id: string; optional?: boolean }[], systems?: readonly string[], platformId: string = 'studio'): string[] {
+export function configProblems(config: unknown, modules: readonly { id: string; optional?: boolean }[], systems?: readonly string[], platformId: string = 'studio', contributors?: readonly string[]): string[] {
   const where = 'studio.config.ts';
   if (!config || typeof config !== 'object') return [`${where} must export a config as its default.`];
   const c = config as Partial<StudioConfig>;
   const problems: string[] = [];
   if (typeof c.name !== 'string' || !c.name.trim()) problems.push(`${where}: add a name, what the app calls itself.`);
   if (!c.usage || !['personal', 'team'].includes(c.usage)) problems.push(`${where}: usage should be personal or team.`);
+  problems.push(...adminProblems(c, contributors));
   if (c.tagline !== undefined && (typeof c.tagline !== 'string' || c.tagline.length > 140)) problems.push(`${where}: tagline should be one short line of text, under 140 characters.`);
   if (typeof c.defaultSystem !== 'string' || !c.defaultSystem) problems.push(`${where}: declare defaultSystem explicitly.`);
   else if (systems && !systems.includes(c.defaultSystem)) {
@@ -60,3 +63,19 @@ export function configProblems(config: unknown, modules: readonly { id: string; 
 
 // Activation requires an explicit true; omission cannot grant a capability.
 export const isEnabled = (config: Partial<StudioConfig>, id: string) => config.modules?.[id] === true;
+
+export function adminProblems(config: Partial<StudioConfig>, contributors?: readonly string[]): string[] {
+  const { admins } = config;
+  if (admins === undefined && config.usage !== 'team') return [];
+  if (!Array.isArray(admins) || (config.usage === 'team' && !admins.length) ||
+    admins.some((key) => typeof key !== 'string' || !/^[a-z0-9][a-z0-9-]*$/.test(key)) || new Set(admins).size !== admins.length) {
+    return ['studio.config.ts: admins must list unique contributor keys; team use requires at least one Admin.'];
+  }
+  return contributors ? admins.filter((key) => !contributors.includes(key)).map((key) => `studio.config.ts: Admin "${key}" is not a registered contributor.`) : [];
+}
+
+// Local workflow roles only. This does not grant repository access or override artifact ownership.
+export function studioRole(config: Partial<StudioConfig>, key: string | null, contributors: readonly string[]): 'admin' | 'contributor' | null {
+  if (!key || !contributors.includes(key)) return null;
+  return config.usage === 'personal' || config.admins?.includes(key) ? 'admin' : 'contributor';
+}

@@ -19,6 +19,7 @@ import importGuard from './scripts/build/vite-import-guard-plugin.js';
 import manifestWatch from './scripts/build/vite-manifest-watch-plugin.js';
 import spa404 from './scripts/build/vite-spa-404-plugin.js';
 import files from './scripts/build/vite-files-plugin.js';
+import settings from './scripts/build/vite-settings-plugin.js';
 import markdownRefresh from './scripts/build/vite-markdown-refresh-plugin.js';
 import systemProps from './src/modules/systems/node/props-plugin.js';
 import globs from './scripts/build/vite-globs-plugin.js';
@@ -87,6 +88,7 @@ export default defineConfig({
     globs(),
     moduleEntries(),
     manifestWatch(),
+    settings(),
     files(),
     systemProps(),
     spa404(),

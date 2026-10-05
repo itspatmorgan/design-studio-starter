@@ -42,6 +42,10 @@ test('section keys skip modules with no section', () => {
   assert.deepEqual(sectionKeys([examples, { optional: false, lib: false, id: 'x', label: 'X', version: '0.1.0' }]), ['examples']);
 });
 
+test('modules cannot replace the core settings page', () => {
+  assert.match(listProblems([{ ...examples, section: { key: 'settings' } }]).join(' '), /reserved core page key/);
+});
+
 test('a policy must be one a section can have', () => {
   assert.deepEqual(moduleProblems({ ...examples, section: { key: 'examples', folder: 'src/examples', policy: 'maintainers' } }, 'examples'), []);
   assert.match(moduleProblems({ ...examples, section: { key: 'examples', folder: 'src/examples', policy: 'owner' as 'open' } }, 'examples')[0], /section\.policy/);
