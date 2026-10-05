@@ -87,7 +87,7 @@ export function LandingPage({ version }: { version: 1 | 2 | 3 }) {
             <h2 className="text-display-sm font-medium tracking-tight">Make it yours.</h2>
             <p className="mt-5 max-w-2xl text-md leading-relaxed text-text-tertiary">Open your repository folder in the editor or coding agent you already use, and run Studio alongside it. Ask your agent to configure your studio, bring your design system, or start a prototype. Review the results in your browser.</p>
             <div className="mt-4"><ResourceLink href="/documentation/guide/getting-started">Follow the setup guide</ResourceLink></div>
-            <figure className="mt-6">{version === 1 ? <StudioPreview /> : <StudioOwnership kind={1} />}<figcaption className="mt-3 text-sm text-text-tertiary">An example of how your prototypes and design system come together.</figcaption></figure>
+            {version !== 3 && <figure className="mt-6">{version === 1 ? <StudioPreview /> : <StudioOwnership kind={1} />}<figcaption className="mt-3 text-sm text-text-tertiary">An example of how your prototypes and design system come together.</figcaption></figure>}
           </section>
         </main>
         <footer className="pb-12"><p className="text-sm leading-relaxed text-text-tertiary">This marketing demo uses its own Marketing system: Geist, warm neutrals, and Untitled UI.</p><div className="mt-4 flex flex-wrap gap-6"><ResourceLink href="/systems/marketing">Marketing system</ResourceLink><ResourceLink href={repository}>GitHub</ResourceLink></div></footer>
