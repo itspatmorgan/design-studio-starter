@@ -1,59 +1,48 @@
 ---
 title: Agent context
-description: How your agent finds skills and the right product knowledge.
-section: Begin
+description: Where instructions live and how people and agents use them.
+section: Agents
 order: 4
 toc: true
 ---
 
-Ask for the result you want. Your agent uses skills for the task and context to make decisions that fit your work.
+Design Studio keeps its instructions in the repository you own. Context explains what the agent needs to know. Skills explain how to perform a task. The plugin helps the agent enter that repository; the repository supplies the current working guidance.
 
-## Find guidance
+This section explains the agent system from several viewpoints. Discovery makes guidance available; the agent still needs to select and read relevant sources.
 
-Every owner has a README entry point, context for knowledge and requirements, and skills for tasks. Documentation’s Context & Skills browser displays platform and module files. The file tree shows Platform and all enabled modules together. Start with a branch’s README, then read relevant context or skills. For product and design guidance, open Systems and select the relevant system. Its Context and Skills appear beside Theme and Components.
+| Chapter | What it explains |
+| --- | --- |
+| This page | Source ownership and where people can inspect it. |
+| [Plugin and workspace](/documentation/guide/agent-plugin) | Entering a studio and handing off to its procedures. |
+| [Skill discovery](/documentation/guide/agent-skills) | Generated entries and harness discovery. |
+| [Task context](/documentation/guide/agent-task-context) | Selecting guidance for the current request and system. |
+| [Maintaining guidance](/documentation/guide/agent-maintenance) | Authoring and curating the canonical instruction set. |
 
-The platform’s detailed configuration, file-format, and runtime requirements are technical context. They appear alongside principles, personas, and working guidance in Platform → Context. They are part of the same knowledge model as principles and personas.
+## Sources and readers
+
+Platform, modules, and systems follow the same authoring pattern: a README, context documents, and task skills. The platform is the shared foundation; it follows this pattern without being an installable module.
+
+| Owner | Canonical root | What belongs there |
+| --- | --- | --- |
+| Platform | `src/platform/` | Studio principles, personas, working requirements, shared contracts, and cross-module procedures. |
+| Module | `src/modules/<id>/` | A capability's contract and procedures, such as building prototypes or using canvases. |
+| System | `src/systems/<id>/` | Product, brand, audience, component usage, and writing guidance for that system. |
+
+Within each root, `README.md` introduces the owner and indexes its sources. A module README also holds its main technical contract. `context/*.md` holds knowledge and standing requirements. `skills/<task>/SKILL.md` holds a task procedure, with supporting files inside that skill's folder when needed. An owner does not need context documents or skills without a useful subject or distinct task.
 
 ```mermaid
 flowchart TD
-  accTitle: Find context and skills by owner
-  accDescr: Platform, modules, and systems each have a README entry point, context, and optional skills. Documentation reads platform and module files; Systems reads system context and skills. Harness entries expose the skills to agents.
-  owners[Choose an owner: Platform, Module, or System] --> readme[README: start here]
-  readme --> context[Context: knowledge and requirements]
-  readme --> skills[Skills: task procedures]
-  context --> browser[Read original files: Documentation or Systems]
-  skills --> browser
-  skills --> harness[Codex, Claude Code, and Cursor: generated skill entries]
+  accTitle: One authored source with several consumers
+  accDescr: Platform, modules, and systems own canonical README, context, and skill files. Human readers and agent discovery use those sources without creating independently authored copies.
+  owners[Platform, modules, and systems] --> sources[Canonical README, context, and skills]
+  sources --> browser[Studio readers: original documents]
+  sources --> routes[Agent entry points and skill discovery]
+  browser --> people[People inspect and edit sources]
+  routes --> agent[Agent reads relevant canonical sources]
 ```
 
-## Context and skills
+**Documentation → Context & Skills** lists platform and enabled module documents directly beneath their owners. Modules collapse; there is no Context or Skills folder layer in this navigation. The document type appears on hover or keyboard focus. Source editing changes the underlying file.
 
-Context includes product knowledge, personas, principles, and standing conventions. Skills explain how to accomplish a task and verify it. Both have an owner:
+**Systems** keeps each system's Context and Skills beside Theme and Components. Studio's own system supplies the application's toolkit and UI conventions. Your product system supplies your team's product guidance.
 
-| Owner | Examples |
-| --- | --- |
-| Platform | Studio setup, collaboration, and shared working requirements. |
-| Module | Building a prototype, using a canvas, or writing a document. |
-| System | Product audiences, brand direction, writing conventions, and specialized design tasks. |
-
-The platform and modules keep their own guidance. Studio's design system supplies the application's interface toolkit and writing conventions. Your product system owns your team's product guidance.
-
-## Which system applies?
-
-Your prototype's assignment selects its product guidance. An explicit None assignment uses local components and styling. Only an omitted assignment follows the studio default. Changing the system you browse does not change the assignment.
-
-An agent editing a Marketing prototype reads Marketing guidance alongside platform requirements and the relevant module skill. It should not use Product guidance unless the request calls for it. A pending system rebuild also requires the requested target system's guidance while preserving the original exploration.
-
-## Skill discovery
-
-Studio exposes project skills to Codex, Claude Code, and Cursor when the repository is prepared. The plugin helps create or reopen the studio and continue in its working folder. The project supplies the current operating procedures.
-
-Skills are considered by name and description. Their full instructions and supporting references are read when relevant. Files visible in navigation are available; visibility does not prove an agent has read them.
-
-Ask your agent to refresh skill exposure after adding skills or changing available modules. It uses `pnpm studio sync`. Open a new session or refresh the host if its skill list has not updated.
-
-## Verify context selection
-
-Ask your agent which system applies and which instructions it used. Check the resulting work as well as that explanation. Automated checks find broken links and invalid structures; they do not prove correct agent decisions.
-
-See [Agent context routing](/documentation/context/platform.core/context/agent-context) for technical details.
+The **Guide** explains the system to people. It links to authoritative sources rather than becoming another technical contract. See [Responsibilities](/documentation/context/platform.core/context/contracts-and-instructions) for the ownership foundation.

@@ -76,6 +76,6 @@ Expand a folder to read, add, or edit its files. Other folders stay available as
 
 Each skill appears once in navigation and opens its instructions. In source mode, use the file picker to browse its `SKILL.md` and supporting files. Rename or delete a skill through its navigation menu to act on the whole skill, including its supporting files.
 
-A prototype uses its assigned system's knowledge along with platform working context and its own local intent. Files being visible here does not automatically load them into an agent conversation. The [Agent context chapter](/documentation/guide/agent-context) diagrams how the agent chooses instructions.
+A prototype uses its assigned system's knowledge along with platform working context and its own local intent. Files being visible here does not automatically load them into an agent conversation. The [Task context chapter](/documentation/guide/agent-task-context) diagrams how the agent chooses instructions.
 
 Use Documentation’s Context & Skills browser for platform and module knowledge. Use the selected system’s Context and Skills for product and design guidance. Keep your product context in its product system. System knowledge follows Studio's appearance; UI examples follow the system's supported color modes.

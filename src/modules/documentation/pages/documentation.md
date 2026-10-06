@@ -27,6 +27,6 @@ Systems brings together a selected system’s Context, Skills, Theme, and Compon
 
 For example, the Prototypes README defines permitted dependencies. Its build-prototype skill directs the agent through implementation and verification. Your assigned system supplies product context within those boundaries.
 
-Read [Responsibilities](/documentation/context/platform.core/context/contracts-and-instructions) for ownership or [Agent context](/documentation/guide/agent-context) for discovery. Listing a file does not prove an agent has read it.
+Read [Responsibilities](/documentation/context/platform.core/context/contracts-and-instructions) for ownership or [Skill discovery](/documentation/guide/agent-skills) for discovery. Listing a file does not prove an agent has read it.
 
 Use navigation for the [shared source workflow](/documentation/guide/home#working-with-files). Each instruction document offers source editing and access to its underlying file. This navigation has no creation, moving, renaming, or deletion controls.
