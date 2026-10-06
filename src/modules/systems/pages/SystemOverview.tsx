@@ -1,5 +1,8 @@
 import { Link } from '@tanstack/react-router';
 import { ArrowUpRight } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Archive02Icon } from '@hugeicons/core-free-icons';
+import { Alert, AlertTitle, AlertDescription } from '@/systems/studio/components/alert';
 import { useManifest } from '@/platform/app/data/useManifest';
 import { systemUsage, prototypeLink } from '@/platform/app/data/manifest';
 import { contentId } from '@/platform/core/roots';
@@ -35,7 +38,11 @@ export default function SystemOverview({ system, sys, components, tokens }: {
   return <>
     <PageHeader title={sys.label} description={sys.summary ?? `The guidance and code included in ${sys.label}.`} />
     <SystemReferenceNotice system={system} />
-    {spec.status === 'archived' && <p className="mb-6 rounded-md border bg-muted/40 p-4 text-sm">Archived system. Its files remain available locally and are excluded from deployment. Restore it from the system menu to use it again.</p>}
+    {spec.status === 'archived' && <Alert variant="info" role="note" className="mb-6 p-4">
+      <HugeiconsIcon icon={Archive02Icon} />
+      <AlertTitle>This system is archived</AlertTitle>
+      <AlertDescription>Files are kept locally and excluded from deployment. Choose Restore system from the system menu to use it again.</AlertDescription>
+    </Alert>}
     {!platform && spec.status === 'active' && !components.length && import.meta.env.DEV && <SystemSetup system={system} />}
     {platform && <p className="mb-6 text-[13px] text-muted-foreground">Required application system</p>}
     {sys.overview?.starter && <aside className="mb-8 rounded-lg border border-border bg-background p-4" aria-label="Starter design system">
