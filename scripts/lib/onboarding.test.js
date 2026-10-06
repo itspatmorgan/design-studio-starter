@@ -45,7 +45,7 @@ test('local personal setup resumes, then a second clone joins a team without cha
       fs.mkdirSync(path.join(dir, folder), { recursive: true });
     }
     fs.cpSync(path.join(root, 'src/systems/studio'), path.join(dir, 'src/systems/studio'), { recursive: true });
-    fs.writeFileSync(path.join(dir, 'studio.config.ts'), `import type { StudioConfig } from './src/platform/core/config.ts';\nexport default { name: 'Fixture Studio', usage: 'team', welcomeDismissed: false, admins: ['patrick'], tagline: 'Fixture', modules: ${JSON.stringify(Object.fromEntries(fs.readdirSync(path.join(dir, 'src/modules')).filter((id) => fs.existsSync(path.join(dir, 'src/modules', id, 'module.ts'))).map((id) => [id, id !== 'documentation'])))}, systems: ['studio'], defaultSystem: 'product' } satisfies StudioConfig;\n`);
+    fs.writeFileSync(path.join(dir, 'studio.config.ts'), `import type { StudioConfig } from './src/platform/core/config.ts';\nexport default { name: 'Fixture Studio', usage: 'team', admins: ['patrick'], tagline: 'Fixture', modules: ${JSON.stringify(Object.fromEntries(fs.readdirSync(path.join(dir, 'src/modules')).filter((id) => fs.existsSync(path.join(dir, 'src/modules', id, 'module.ts'))).map((id) => [id, id !== 'documentation'])))}, systems: ['studio'], defaultSystem: 'product' } satisfies StudioConfig;\n`);
     run(dir, 'scripts/cli/studio.js', 'create-system', 'product', '--label', 'Product', '--yes');
     const declared = () => readDeclaration(fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8')).value;
     assert.deepEqual(declared().systems, ['studio', 'product']);

@@ -6,7 +6,7 @@ export type StudioConfig = {
   name: string;
   // Explicit onboarding mode; contributor ownership is identical in both modes.
   usage: 'personal' | 'team';
-  // Required when Onboarding is enabled. Starts false; first display sets true.
+  // Deprecated: accepted for older configs, ignored by Welcome. Progress belongs to contributor profiles.
   welcomeDismissed?: boolean;
   // Local settings administrators. Team studios require at least one registered key.
   admins?: readonly string[];
@@ -30,8 +30,6 @@ export function configProblems(config: unknown, modules: readonly { id: string; 
   const problems: string[] = [];
   if (typeof c.name !== 'string' || !c.name.trim()) problems.push(`${where}: add a name, what the app calls itself.`);
   if (!c.usage || !['personal', 'team'].includes(c.usage)) problems.push(`${where}: usage should be personal or team.`);
-  if (c.welcomeDismissed !== undefined && typeof c.welcomeDismissed !== 'boolean') problems.push(`${where}: welcomeDismissed should be true or false.`);
-  if (c.modules?.onboarding === true && c.welcomeDismissed === undefined) problems.push(`${where}: declare welcomeDismissed as false or true when Onboarding is enabled.`);
   problems.push(...adminProblems(c, contributors));
   if (c.tagline !== undefined && (typeof c.tagline !== 'string' || c.tagline.length > 140)) problems.push(`${where}: tagline should be one short line of text, under 140 characters.`);
   if (typeof c.defaultSystem !== 'string' || !c.defaultSystem) problems.push(`${where}: declare defaultSystem explicitly.`);

@@ -2,8 +2,8 @@
 const completed = new Set<string>();
 const claims = new Map<string, Promise<boolean>>();
 type StorageSource = () => Pick<Storage, 'getItem' | 'setItem'>;
-export function progressKey(base: string) {
-  return `design-studio:onboarding:${base}:v2`;
+export function progressKey(base: string, contributor: string | null = null) {
+  return `design-studio:onboarding:${base}:${contributor ?? 'unregistered'}:v3`;
 }
 
 export function isComplete(key: string, storage: StorageSource = () => localStorage) {
@@ -28,8 +28,8 @@ export function claimIntroduction(key: string) {
       body: JSON.stringify({ action: 'claim' }),
     }).then(async response => {
       if (!response.ok) throw new Error('Welcome state unavailable');
-      const result = await response.json() as { show: boolean };
-      return result.show === true;
+      const result = await response.json() as { show: boolean | null };
+      return typeof result.show === 'boolean' ? result.show : !isComplete(key);
     }).catch(() => !isComplete(key));
     claims.set(key, claim);
   }

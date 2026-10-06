@@ -20,5 +20,4 @@ export default {
   systems: ['studio', 'product', 'marketing'],
   defaultSystem: 'product',   // the design system a prototype uses when its meta.json doesn't name one
   admins: ["patrick"],
-  welcomeDismissed: false,
 } satisfies StudioConfig;

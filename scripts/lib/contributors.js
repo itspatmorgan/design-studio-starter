@@ -30,6 +30,9 @@ export function readContributors() {
     if (key in contributors) twice.push(key);
     contributors[key] = entry;
   }
+  for (const [key, entry] of Object.entries(contributors)) {
+    if (entry?.welcomeDismissed !== undefined && typeof entry.welcomeDismissed !== 'boolean') problems.push(`Contributor "${key}": welcomeDismissed must be true or false.`);
+  }
   return { contributors, twice, problems };
 }
 

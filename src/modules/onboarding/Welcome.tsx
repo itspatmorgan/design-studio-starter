@@ -6,6 +6,7 @@ import { Button } from '@/systems/studio/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/systems/studio/components/dialog';
 import { APP_NAME } from '@/platform/core/api';
 import { useManifest } from '@/platform/app/data/useManifest';
+import { useMe } from '@/platform/app/data/files';
 import { prototypeLink } from '@/platform/app/data/manifest';
 import { claimIntroduction, complete, progressKey, recordIntroduction } from './progress';
 import { ArtifactPreview, SystemPreview } from './ConceptPreview';
@@ -21,9 +22,11 @@ const steps = [
 export default function Welcome() {
   const manifest = useManifest();
   const navigate = useNavigate();
-  const key = progressKey(import.meta.env.BASE_URL);
+  const me = useMe();
+  const key = progressKey(import.meta.env.BASE_URL, me);
   const [open, setOpen] = useState(false);
   useEffect(() => {
+    if (me === undefined) return;
     let active = true;
     void claimIntroduction(key).then(show => {
       if (!active) return;
@@ -31,7 +34,7 @@ export default function Welcome() {
       if (show) recordIntroduction(key);
     });
     return () => { active = false; };
-  }, [key]);
+  }, [key, me]);
   const [step, setStep] = useState(0);
   const examples = manifest.prototypes.filter(p => p.status !== 'archived' && p.contributorKey === 'patrick' && ['feedback-inbox', 'design-studio-marketing'].includes(p.id)).sort((a, b) => Number(b.system === 'product') - Number(a.system === 'product'));
   const finish = () => { complete(key); setOpen(false); };

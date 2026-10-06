@@ -6,7 +6,7 @@ order: 2.5
 module: onboarding
 ---
 
-When your studio first opens, a short introduction appears over the home page. Move through it at your own pace, or choose **Skip introduction** to start exploring. It explains the concepts below.
+When you first open the home page as a registered contributor, a short introduction appears. Each teammate gets their own introduction. You can also explore before registering. Move through it at your own pace, or choose **Skip introduction** to start exploring. It explains the concepts below.
 
 ## Bring an idea to life
 
