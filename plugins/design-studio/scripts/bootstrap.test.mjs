@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { test } from 'node:test';
-import { createStudio, destinationPath, inspectStudio, checkInitialConfiguration, RECEIPT } from './bootstrap.mjs';
+import { createStudio, destinationPath, inspectStudio, checkInitialConfiguration, ensureClaudeEntry, RECEIPT } from './bootstrap.mjs';
 
 function fixture(t) {
   const temp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'studio-plugin-test-')));
@@ -52,10 +52,26 @@ test('refuses cache paths, relative paths, linked destinations and parents', (t)
   const options = fixture(t);
   assert.throws(() => destinationPath('relative/studio'));
   assert.throws(() => destinationPath('/Users/designer/.codex/plugins/studio'));
+  assert.throws(() => destinationPath('/Users/designer/.claude/plugins/studio'));
+  assert.throws(() => destinationPath('/Users/designer/.cursor/plugins/studio'));
   const linked = path.join(options.temp, 'linked');
   fs.symlinkSync(options.source, linked);
   assert.throws(() => createStudio({ ...options, destination: linked }));
   assert.throws(() => createStudio({ ...options, destination: path.join(linked, 'new-studio') }));
+});
+
+test('Claude entry imports shared instructions and preserves custom entries', (t) => {
+  const options = fixture(t);
+  createStudio(options);
+  ensureClaudeEntry(options.destination);
+  const entry = path.join(options.destination, 'CLAUDE.md');
+  assert.equal(fs.readFileSync(entry, 'utf8'), '@AGENTS.md\n');
+  fs.writeFileSync(entry, '# Design Studio\n\nRead and follow [repository instructions](AGENTS.md) before work. Project skills route to their canonical sources.\n');
+  ensureClaudeEntry(options.destination);
+  assert.equal(fs.readFileSync(entry, 'utf8'), '@AGENTS.md\n');
+  fs.writeFileSync(entry, 'Personal instructions\n@AGENTS.md\n');
+  ensureClaudeEntry(options.destination);
+  assert.equal(fs.readFileSync(entry, 'utf8'), 'Personal instructions\n@AGENTS.md\n');
 });
 
 test('failed fetch leaves no destination or staging folder', (t) => {

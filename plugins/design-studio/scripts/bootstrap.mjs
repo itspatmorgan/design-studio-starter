@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
 export const SOURCE = 'https://github.com/itspatmorgan/design-studio-starter.git';
-export const REVISION = '2c0cdd52d5f7b1cd6e984ebf3269365664d8d795';
+export const REVISION = '5a685c2bee285c1e85b0e537304742ec92af77f6';
 export const RECEIPT = 'design-studio.local.json';
 const REQUIRED = ['AGENTS.md', 'package.json', 'pnpm-lock.yaml', 'mise.toml', 'studio.config.ts', 'src/systems/studio/AGENTS.md'];
 
@@ -22,7 +22,7 @@ function run(command, args, cwd, live = false) {
 export function destinationPath(value) {
   if (!value || !path.isAbsolute(value)) throw new Error('Choose an absolute folder path on this computer.');
   const destination = path.resolve(value);
-  if (destination === path.parse(destination).root || destination.split(path.sep).some((part) => ['.codex', '.agents', '.git', 'node_modules'].includes(part))) {
+  if (destination === path.parse(destination).root || destination.split(path.sep).some((part) => ['.codex', '.agents', '.claude', '.cursor', '.git', 'node_modules'].includes(part))) {
     throw new Error('Choose a visible folder outside plugin caches, Git internals, and dependency folders.');
   }
   return destination;
@@ -85,6 +85,19 @@ export function checkInitialConfiguration(studio) {
   }
 }
 
+// Older pinned starters only ask Claude to read instructions. Import the shared source,
+// and never replace a person's existing Claude instructions.
+export function ensureClaudeEntry(destination) {
+  const file = path.join(destination, 'CLAUDE.md');
+  const legacy = '# Design Studio\n\nRead and follow [repository instructions](AGENTS.md) before work. Project skills route to their canonical sources.\n';
+  if (fs.existsSync(file) && fs.lstatSync(file).isFile() && !fs.lstatSync(file).isSymbolicLink() && fs.readFileSync(file, 'utf8') === legacy) {
+    fs.writeFileSync(file, '@AGENTS.md\n');
+    return;
+  }
+  try { fs.writeFileSync(file, '@AGENTS.md\n', { flag: 'wx' }); }
+  catch (error) { if (error.code !== 'EEXIST') throw error; }
+}
+
 export function prepareStudio(value) {
   const studio = inspectStudio(value);
   checkInitialConfiguration(studio);
@@ -100,6 +113,7 @@ export function prepareStudio(value) {
     fs.writeFileSync(path.join(destination, RECEIPT), JSON.stringify(receipt, null, 2) + '\n');
   }
   run('mise', ['exec', 'pnpm@12', '--', 'pnpm', 'studio', 'sync'], studio.destination, true);
+  ensureClaudeEntry(studio.destination);
   return inspectStudio(value);
 }
 

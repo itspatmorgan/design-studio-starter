@@ -22,6 +22,7 @@ test('project exposure keeps canonical resources, unique owner names, and workin
   assert.equal(new Set(catalog.map(s => s.name)).size, 3);
   assert.equal(syncSkillAdapters(root, catalog).warnings.length, 0);
   assert.equal(syncSkillAdapters(root, catalog).changed, 0);
+  assert.equal(fs.readFileSync(path.join(root, 'CLAUDE.md'), 'utf8'), '@AGENTS.md\n');
   for (const s of catalog) {
     const entry = path.join(root, '.agents/skills', s.name, 'SKILL.md');
     const text = fs.readFileSync(entry, 'utf8');
@@ -35,7 +36,9 @@ test('project exposure keeps canonical resources, unique owner names, and workin
 
 test('disabled and removed capability exposure is removed while user entries and modifications survive', t => {
   const { root, catalog, write } = fixture(t);
+  write('CLAUDE.md', 'My project instructions');
   syncSkillAdapters(root, catalog);
+  assert.equal(fs.readFileSync(path.join(root, 'CLAUDE.md'), 'utf8'), 'My project instructions');
   const edited = '.agents/skills/studio-system-marketing-review/SKILL.md';
   write(edited, 'User edited this entry');
   write('.agents/skills/personal/SKILL.md', 'Personal skill');

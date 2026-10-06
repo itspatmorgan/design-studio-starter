@@ -13,6 +13,7 @@ Skills are owned by the platform, enabled modules, and registered systems. Inspe
 - For module or system installation, creation, availability, or removal, use [manage-modules](src/platform/skills/manage-modules/SKILL.md).
 - For shared context or skills, use [maintain-context](src/platform/skills/maintain-context/SKILL.md).
 - For documentation creation, revision, or audits, use [maintain-documentation](src/platform/skills/maintain-documentation/SKILL.md).
+- For an explicit design-system review, use [check-design-system](src/platform/skills/check-design-system/SKILL.md).
 
 <!-- studio:modules -->
 When the person asks for a canvas (a page of views, documents, and notes arranged together), read [src/modules/canvas/skills/use-canvas/SKILL.md](src/modules/canvas/skills/use-canvas/SKILL.md).

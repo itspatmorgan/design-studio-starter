@@ -1,52 +1,50 @@
-# Continue the plugin experiment
+# Test Design Studio on another computer
 
-## Product intent
+The shared package is `0.1.0-experiment.10`. Its pinned starter snapshot is `5a685c2bee285c1e85b0e537304742ec92af77f6`, which includes Welcome onboarding, shared project skills, and Check Design System. Existing studios are preserved and are not upgraded automatically.
 
-Make Design Studio discoverable through ChatGPT and handle setup for nontechnical designers and product managers. The intended experience is to install the plugin, ask “Create my Design Studio,” and open the studio inside the local code harness.
+## Get the current package
 
-Every studio must live in an obvious, ordinary folder on the user's computer. The complete repository and files belong to the user and remain usable without the plugin. GitHub is optional for individual use; team setup is a separate flow to investigate.
+In an existing clean checkout on `main`, run:
 
-## Branch and current state
+```sh
+git pull --ff-only
+```
 
-Continue on `codex/chatgpt-plugin-experiment`. Read the repository's `AGENTS.md` before making changes, then read the [experiment report](README.md) for the technical contracts, installation commands, results, and release gates.
+For a new checkout:
 
-The plugin package is `plugins/design-studio`; the private marketplace is `.agents/plugins/marketplace.json`. The current package is `0.1.0-experiment.8`. Local installation succeeded with Codex CLI 0.137.0 on the first host and 0.151.0 on the second. Both portable and compatibility manifests are present. The compatibility manifest is generated from the portable manifest.
+```sh
+git clone https://github.com/itspatmorgan/design-studio-starter.git
+cd design-studio-starter
+```
 
-The bootstrap pins the Context and Skills restructure at `2c0cdd52d5f7b1cd6e984ebf3269365664d8d795`. Inspect `REVISION` in the helper and ensure that commit is pushed to the public source before distributing experiment .8. It creates a full local repository without a remote and preserves existing studios.
+Read the [plugin README](README.md) for installation commands. The plugin folder is `plugins/design-studio` inside this checkout. Record the checkout commit and harness version for each test. Use a separate, previously unused destination folder for each harness so an existing studio cannot hide a setup failure.
 
-## What does not transfer through Git
+## Test each harness
 
-The previous computer's plugin installation, marketplace registration, mise trust, dependencies, running server, and test studio are local state. Recreate them on the new computer using the report's maintainer installation steps. Use the new checkout's absolute path when registering the marketplace.
+- **Codex:** add this checkout as the local plugin marketplace and install the current Design Studio package. If an older experiment is installed, refresh or replace that installation using the plugin controls. Confirm the installed version is experiment .10, then start a fresh chat.
+- **Claude Code:** run `claude --plugin-dir /absolute/path/to/design-studio-starter/plugins/design-studio`, then invoke `/design-studio:create-studio`. This local test does not change global plugin registrations. Repository marketplace installation can be checked afterward.
+- **Cursor:** use Customize → From GitHub Repository, import `itspatmorgan/design-studio-starter`, and install Design Studio. Confirm the current package loads, then start a fresh agent chat.
 
-The old test studio was `~/Design Studios/Plugin Experiment`, served on loopback port 5183. That folder and server are not part of this branch. No user prototypes were created or edited as part of the experiment.
+Ask each agent: “Create my Design Studio in [your chosen new folder]. Handle setup and opening it for me.” The person should not need to clone the studio or run its setup commands themselves.
 
-## Verification already completed
+For each harness, check:
 
-- Eight bootstrap tests passed, including preservation and linked-path refusal.
-- All sixteen canonical and plugin skills passed the skill-creator validator.
-- The platform build passed with 196 tests and type checks. Vite reported its existing large-bundle warning.
-- The installed helper downloaded the public starter, prepared personal configuration, reopened it without changing settings, and launched the preview.
-- The studio home and Feedback Inbox rendered in the in-app browser.
-- Existing Corepack shadowed pnpm initially. The helper now uses `mise exec pnpm@12` explicitly; the corrected preparation used pnpm 12.9.1.
+1. The agent creates complete source in the requested visible folder and opens its local preview.
+2. Welcome appears. Explore its concepts, then open the Product example.
+3. Continue with the agent in the owned studio folder. Confirm project skills are available and the contributor is resolved before prototype edits.
+4. Ask for a small prototype using the Product system. Check that it uses that system and opens successfully.
+5. Close and reopen the studio with the plugin. The prototype remains and Welcome does not repeat in the same browser origin.
 
-The original host used helper and browser tests. On the second host, a fresh plugin chat completed setup and preview opening. The studio was moved to `~/Developer/My Design Studio`, and a documented folder link opened a new chat there. That chat read local rules, configuration, and Guide content. See the [experiment report](README.md) for current results.
+Record what the agent did, where it needed human help, and any unclear step. For skill discovery, note whether skills appear in the harness’s UI and whether the agent actually uses the appropriate procedure.
 
-## Architecture now implemented
+| Harness | Package/version | Setup + Welcome | Workspace + skills | First prototype | Reopen | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Codex | Pending | Pending | Pending | Pending | Pending | |
+| Claude Code | Pending | Pending | Pending | Pending | Pending | |
+| Cursor | Pending | Pending | Pending | Pending | Pending | |
 
-Platform context and skills live in `src/platform/`; module guidance lives under its owning module; system guidance is product and design specific. There are two guidance categories: Context and Skills. Every owner has a `README.md` entry point, plus `context/` and optional `skills/`. Platform technical documents live in `src/platform/context/`; `core/` contains code. The local app exposes platform/module browsing at `/documentation/context/platform.core`, and compatibility redirects preserve saved links.
+## Follow-up checks
 
-`pnpm studio sync` emits managed Codex/Cursor project entries and Claude Code links from canonical sources. Module disable/remove operations refresh exposure. Adapter tests cover preservation and canonical resource resolution. The use-studio plugin entry point delegates operation to the workspace. Native registration and task activation still require live host checks.
+Try [direct setup](../../SETUP.md) without an installed plugin. Then check occupied ports, interrupted setup, an unrelated existing destination, and preservation after plugin removal or updates. Clean-computer prerequisite installation is still a separate gate if this computer already has the required tools. Windows and Linux remain unverified.
 
-## Next experiment
-
-1. Test the revised setup-to-handoff sequence in a fresh plugin chat. Confirm it offers the folder link and that continued work uses the studio folder.
-2. Verify final logo balance in both native lists and color modes.
-3. Test reopening after restart, uninstall preservation, and updates that preserve edits. Workspace opening and persistent sidebar registration are separate results.
-4. Record clean-machine prerequisites and recovery behavior. Investigate public discovery and the separate team workflow after the local journey is proved.
-5. Test Claude Code and Cursor adapters while preserving the shared bootstrap and repository context.
-
-Native Codex UI automation was unavailable on the previous computer, so those UI results remain unverified. No public submission was made. Commit locally under repository instructions. Push or publish only with current user authorization; this handoff does not supply it.
-
-## Suggested continuation prompt
-
-“Continue the Design Studio plugin experiment on this branch. Read AGENTS.md, plugins/design-studio/HANDOFF.md, and plugins/design-studio/README.md. Test the revised setup-to-handoff flow, reopening after restart, and clean-machine setup. Preserve the requirement that users own the complete repo on their computer. Keep unverified host behavior explicit.”
+Automated checks and a prepared studio do not prove these native journeys. Record actual results in the [release readiness table](README.md#release-readiness). Public directory submission remains separate from this test package.

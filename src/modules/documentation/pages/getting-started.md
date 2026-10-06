@@ -1,16 +1,26 @@
 ---
 title: "Set up"
-description: "Run the starter locally, then configure it when you are ready."
+description: "Ask your coding agent to open your studio, then make it your own."
 section: "Begin"
 order: 2
 toc: true
 ---
 
-Start the template from your terminal. You can explore the working starter before you configure it or ask an agent to change anything.
+Your coding agent can handle downloading and opening Design Studio for you. You can explore the sample before personalizing it.
+
+## Ask your agent to set it up
+
+Open a local coding tool such as ChatGPT/Codex, Claude Code, or Cursor. Copy the request from [Set up with your agent](https://github.com/itspatmorgan/design-studio-starter/blob/main/SETUP.md) into its chat.
+
+The agent prepares a studio in your user Developer folder and opens a preview. It may ask for permission to create the folder or install a missing tool. When it finishes, continue working in the studio folder it shows you.
+
+Native Design Studio plugins are being tested. If you already have the experimental plugin, ask: “Create my Design Studio.” Public directory installation will be available after release.
+
+If you already have a studio, ask your agent to open it. If you are joining a team, ask it to help you join the team's existing studio.
 
 ## Run the starter
 
-Create a repository from this GitHub template, clone your copy, then move into its directory. Install [mise](https://mise.jdx.dev/installing-mise.html) if needed. From the repository directory, run:
+For people who prefer terminal setup: create a repository from this GitHub template, clone your copy, then move into its directory. Install [mise](https://mise.jdx.dev/installing-mise.html) if needed. From the repository directory, run:
 
 ```sh
 mise install

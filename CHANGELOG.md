@@ -1,5 +1,12 @@
 # Changelog
 
+## Portable setup preparation
+
+- One experimental plugin package exposes the same create, open, and use skills to Codex, Claude Code, and Cursor through generated host manifests.
+- Direct setup provides a request for the coding agent to handle downloading and opening the studio without a manual clone.
+- Claude's entry point imports the shared repository instructions. Existing personal guidance is preserved.
+- Experiment .10 installs a tested integration snapshot with Welcome onboarding, shared harness guidance, and Check Design System. Native host journeys and public distribution remain release gates.
+
 ## Welcome onboarding
 
 - A default-enabled, optional Onboarding module welcomes people on their first local home-page visit, with a short interactive dialog introducing systems and prototype artifacts, sample prototypes, and guidance for making a prototype or setting up a system with their agent.
