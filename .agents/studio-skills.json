@@ -1,6 +1,14 @@
 {
   "schema": 1,
   "files": {
+    ".agents/skills/studio-platform-check-system-adherence/SKILL.md": {
+      "kind": "file",
+      "hash": "a3ffbfdfc2d59d90d63cea5461d3f86c867a9a968e6b80d48541149ad83b0aa6"
+    },
+    ".claude/skills/studio-platform-check-system-adherence": {
+      "kind": "link",
+      "hash": "da21c916885486f42bd790c52570e666f0016f82cf7a3cfcedfb2d6e0d6f5208"
+    },
     ".agents/skills/studio-platform-configure-studio/SKILL.md": {
       "kind": "file",
       "hash": "8d11d005e4698753e0175b5c8ea5cc6939cef0422149c482170a06616c9bc204"
