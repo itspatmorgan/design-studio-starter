@@ -36,7 +36,7 @@ export default function Welcome() {
       <div className="min-h-64">
         {step === 0 && <div className="space-y-4">
           <AgentSketch />
-          <p className="text-sm leading-relaxed text-muted-foreground">Describe what you want to explore in your agent’s chat. Your agent builds it; you try the result here and guide what happens next.</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">Describe what you want to explore in your agent’s chat. Your agent builds it. Try the result here and guide what happens next.</p>
           <p className="text-sm leading-relaxed text-muted-foreground">Bring your design judgment and product knowledge. Your agent handles the code.</p>
         </div>}
         {step === 1 && <ArtifactPreview />}
