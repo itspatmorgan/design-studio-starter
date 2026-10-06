@@ -6,7 +6,7 @@ order: 2
 toc: true
 ---
 
-Your coding agent can handle downloading and opening Design Studio for you. You can explore the sample before personalizing it.
+Your coding agent can handle downloading and opening Design Studio for you. The bundled systems and prototypes are examples for learning. Explore them first, then customize, replace, or remove them to fit your needs.
 
 ## Ask your agent to set it up
 
@@ -32,7 +32,7 @@ mise exec -- pnpm dev
 
 ## Explore, then configure
 
-The starter is ready to explore as soon as it runs. Try the Feedback Inbox sample and browse the Guide at `/documentation/guide`. You do not need to choose a studio name, personal or team use, or a design system before your first run.
+The starter is ready to explore as soon as it runs. Product and Marketing are example systems. Feedback Inbox and Design Studio Marketing are example prototypes that show how those systems work. Try their screens and artifacts, then browse the Guide at `/documentation/guide`. You do not need to choose a studio name, personal or team use, or a design system before your first run.
 
 When you want to adapt the environment, open the repository with your coding agent and ask it to configure your studio. It can help with the studio name, personal or team use, contributor identity, optional modules, design system, and system context. Bring your own system source and product context when you have them; you can also keep the starter system while exploring.
 
@@ -44,7 +44,7 @@ Configuration can continue after first run. Personal local use does not require 
 
 ## Make it your own
 
-The demo content is a starting point. Ask your agent to work through this checklist when you want a blank slate:
+The examples demonstrate what Studio can do. They are meant to be customized, replaced, or removed as you make the studio your own. Ask your agent to help with this checklist:
 
 - **Set your studio identity.** Choose your name, tagline, personal or team use, contributors, and Admins in [studio configuration](/documentation/guide/customize#configure-the-studio).
 - **Delete the example prototypes.** Remove Feedback Inbox and Design Studio Marketing, both owned by `patrick`, and their unused demo assets.

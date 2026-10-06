@@ -11,4 +11,6 @@ In studios with native project skills, inspect the relevant platform, enabled mo
 
 For prototype work, resolve contributor identity and metadata assignment. Explicit `system: null` means no system; only an omitted assignment follows the configured default. For a pending rebuild, include the target system's guidance and preserve the original. The browser's selected system does not change assignment.
 
+When introducing a fresh starter, clearly identify any remaining Product and Marketing systems and Feedback Inbox and Design Studio Marketing prototypes as learning examples. Explain that the person can customize, replace, or remove them to fit their needs. Do not assume these examples remain unchanged in an existing studio, and do not remove work without a request.
+
 Check module availability before offering its features. Load only the relevant product context, complete the task using the studio's tools, and perform its required checks and rendered review. Explain the result in ordinary design language and leave the person a working preview. Sharing and publishing require their own request.

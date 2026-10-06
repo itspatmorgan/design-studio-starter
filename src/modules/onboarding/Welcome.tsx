@@ -48,8 +48,9 @@ export default function Welcome() {
           <p className="text-sm leading-relaxed text-muted-foreground">Share your idea with your agent and let it handle the code. Then explore the result here and use your design judgment to guide what comes next.</p>
         </div>}
         {step === 1 && <ArtifactPreview />}
-        {step === 2 && <SystemPreview />}
+        {step === 2 && <div className="space-y-4"><SystemPreview /><p className="text-sm leading-relaxed text-muted-foreground">The starter’s Product and Marketing systems are examples for learning. Customize or replace them with your own components, styles, and product knowledge, or remove the ones you don’t need.</p></div>}
         {step === 3 && <div className="space-y-4">
+          {!!examples.length && <p className="text-sm leading-relaxed text-muted-foreground">Feedback Inbox and Design Studio Marketing are example prototypes for learning. After exploring, ask your agent to customize, replace, or remove them to fit your own needs.</p>}
           {!!examples.length && <div className="flex flex-wrap gap-2">{examples.map(p => <Button key={p.id} variant="outline" onClick={() => { finish(); void navigate(prototypeLink(p)); }}>{p.system === 'product' ? 'Product example' : p.system === 'marketing' ? 'Marketing example' : p.title}<HugeiconsIcon icon={ArrowRight01Icon} /></Button>)}</div>}
           <div className="space-y-4 rounded-xl border bg-muted/30 p-5">
             <p className="text-sm font-medium">When you’re ready to make something, work with your agent to:</p>

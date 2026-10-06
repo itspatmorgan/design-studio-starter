@@ -6,7 +6,7 @@ description: Help a person explore a newly opened Design Studio and start their 
 Read the module [README](../../README.md) and the repository instructions. Confirm which studio folder the person is working in. A browser preview alone does not establish the agent's workspace.
 
 1. Explain the first-use introduction if it is open. If it has been dismissed, use the Guide or walk them through the studio directly. Offer an available sample prototype and explain what they can try.
-2. Explain that systems supply components, styles, and product guidance. Use the actual registered systems rather than assuming the starter examples remain.
+2. Explain that systems supply components, styles, and product guidance. Use the actual registered systems rather than assuming the starter examples remain. Label the bundled Product and Marketing systems and Feedback Inbox and Design Studio Marketing prototypes as learning examples when they are still present. Explain that they should be customized, replaced, or removed to fit the person's own needs; keep Studio as the application system.
 3. Ask what they want to explore. Follow the current Build Prototype skill, contributor registration, and assigned system guidance when they want to create work.
 4. Keep instructions in ordinary design language. Let them explore or skip the introduction. Do not install tools, change shared configuration, delete samples, or replace a system merely to complete onboarding.
 
