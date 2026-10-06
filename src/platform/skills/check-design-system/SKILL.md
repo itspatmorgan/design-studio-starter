@@ -1,9 +1,9 @@
 ---
-name: check-system-adherence
-description: "Audit a Design Studio surface against its applicable design system and report findings for human review before any fixes. Use for an explicit system-adherence review of Studio UI, prototypes, or system previews."
+name: check-design-system
+description: "Audit a Design Studio surface against its applicable design system and report findings for human review before any fixes. Use for an explicit design-system review of Studio UI, prototypes, or system previews."
 ---
 
-# Check System Adherence
+# Check Design System
 
 Review the requested surface against its actual system, combining source checks with rendered evidence. This skill always audits and reports first. Do not change implementation, system guidance, or configuration during the audit, even when the initial request includes fixes. Present the report and wait for the human's response before implementing corrections.
 
@@ -39,13 +39,13 @@ Use the resolved system's guidance rather than applying starter conventions to e
 
 Run `pnpm check` from the target checkout and save output to a temporary log. It checks registered systems, recognized literal theme utilities, CSS constraints, and runtime dependency boundaries. Attribute diagnostics to the requested surface; distinguish unrelated repository failures.
 
-Do not claim this command proves visual adherence. Dynamic classes, arbitrary values, inline SVG styles, component choice, icons, and writing still need review. An arbitrary value or custom illustration is not automatically a violation: assess its purpose and the system's guidance. Systems declaring custom styling need their own conventions, not Tailwind token requirements.
+Do not claim this command proves that the rendered design follows its system. Dynamic classes, arbitrary values, inline SVG styles, component choice, icons, and writing still need review. An arbitrary value or custom illustration is not automatically a violation: assess its purpose and the system's guidance. Systems declaring custom styling need their own conventions, not Tailwind token requirements.
 
 Reuse existing validators rather than creating a second token inventory or a blanket ban on custom components. Do not add tokens, switch assignments, replace a toolkit, or weaken checks merely to make an audit pass.
 
 ## Inspect the rendered result
 
-When a runnable surface and browser tools are available, capture its initial state before assessing visual adherence. Compare the result with the actual system components and theme, not memory of an upstream library.
+When a runnable surface and browser tools are available, capture its initial state before comparing the rendered design with its system. Compare the result with the actual system components and theme, not memory of an upstream library.
 
 Exercise relevant controls, focus states, and pop-ups. Review every declared color mode and relevant responsive layouts when available and within authorized testing scope. Pay particular attention to nested system boundaries and pop-ups that can lose their theme.
 

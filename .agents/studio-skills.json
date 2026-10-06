@@ -1,13 +1,13 @@
 {
   "schema": 1,
   "files": {
-    ".agents/skills/studio-platform-check-system-adherence/SKILL.md": {
+    ".agents/skills/studio-platform-check-design-system/SKILL.md": {
       "kind": "file",
-      "hash": "6be5e49dd11b77f0d1e343ae9cbe4bbfcb3afcf97460bb1c3d94f9d2605f403c"
+      "hash": "8bce93957e37e415e610bdc5b1989d05f95989325f7da18be35996595c071ff5"
     },
-    ".claude/skills/studio-platform-check-system-adherence": {
+    ".claude/skills/studio-platform-check-design-system": {
       "kind": "link",
-      "hash": "da21c916885486f42bd790c52570e666f0016f82cf7a3cfcedfb2d6e0d6f5208"
+      "hash": "0a68ba6c797b51cd3d5fd5d98d3906d91ad7a32010a59bd1ef5b22576ea47396"
     },
     ".agents/skills/studio-platform-configure-studio/SKILL.md": {
       "kind": "file",
