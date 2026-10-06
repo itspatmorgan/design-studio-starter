@@ -5,6 +5,7 @@
 // and pushes it to the app over Vite's dev connection. The app swaps it in and refreshes
 // only the routes that use it (see router.tsx), so the open view and scroll position stay.
 // Bursts of changes, like moving a folder, are batched into one update.
+import fs from 'node:fs';
 import path from 'node:path';
 import { knowledgeOwners, skillCatalog, syncSkillAdapters } from '../lib/agent-skills.js';
 import { SYSTEM_SPECS } from '../../src/modules/systems/node/systems.js';
@@ -57,6 +58,7 @@ export default function manifestWatch() {
     name: 'prototype-manifest-watch',
     apply: 'serve',
     configureServer(server) {
+      if (!fs.existsSync(path.join(ROOT, '.studio-system-operation'))) buildManifest();
       server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, SYSTEM_CONTENT, ...(GUIDE ? [GUIDE] : []), SYSTEMS, CONTRIBUTORS_FILE, CONTRIBUTORS_DIR, AGENTS]);
       let timer = null;
       // Every file that changed since the last build, even ones that don't ask for a rebuild: the next one tells the
@@ -64,6 +66,7 @@ export default function manifestWatch() {
       const touched = new Set();
       const flush = () => {
         timer = null;
+        if (fs.existsSync(path.join(ROOT, '.studio-system-operation'))) { timer = setTimeout(flush, BATCH_MS); return; }
         const { manifest } = buildManifest({ touched: [...touched] });
         if ([...touched].some(file => /[\\/]skills(?:[\\/]|$)/.test(file))) {
           try {

@@ -3,13 +3,13 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import { duplicatePrototype } from '@/platform/app/data/files';
 import { prototypeLink, setManifest } from '@/platform/app/data/manifest';
 import type { PrototypeInfo } from '@/platform/app/data/types';
-import { PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
+import { ACTIVE_PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
 import { Button } from '@/systems/studio/components/button';
 import { Input } from '@/systems/studio/components/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/systems/studio/components/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/systems/studio/components/dialog';
 
-export const systemLabel = (id: string | null) => id === null ? 'No system — custom styling' : PROTOTYPE_SYSTEMS[id]?.label ?? id;
+export const systemLabel = (id: string | null) => id === null ? 'No system — custom styling' : ACTIVE_PROTOTYPE_SYSTEMS[id]?.label ?? id;
 
 type Props = { proto: PrototypeInfo; open: boolean; onOpenChange: (open: boolean) => void };
 export default function DuplicatePrototypeDialog({ proto, open, onOpenChange }: Props) {
@@ -53,9 +53,9 @@ export default function DuplicatePrototypeDialog({ proto, open, onOpenChange }: 
           <label className="grid gap-1.5 text-sm font-medium">Title<Input value={title} onChange={(e) => setTitle(e.target.value)} required autoFocus /></label>
           <div className="grid gap-1.5">
             <label id="duplicate-system-label" className="text-sm font-medium">System</label>
-            <Select items={[...Object.entries(PROTOTYPE_SYSTEMS).map(([value, spec]) => ({ value, label: spec.label })), { value: '__none', label: 'No system — custom styling' }]} value={system} onValueChange={(value) => { if (value) setSystem(value); }}>
+            <Select items={[...Object.entries(ACTIVE_PROTOTYPE_SYSTEMS).map(([value, spec]) => ({ value, label: spec.label })), { value: '__none', label: 'No system — custom styling' }]} value={system} onValueChange={(value) => { if (value) setSystem(value); }}>
               <SelectTrigger aria-labelledby="duplicate-system-label" className="w-full"><SelectValue /></SelectTrigger>
-              <SelectContent>{Object.entries(PROTOTYPE_SYSTEMS).map(([id, spec]) => <SelectItem key={id} value={id}>{spec.label}</SelectItem>)}<SelectItem value="__none">No system — custom styling</SelectItem></SelectContent>
+              <SelectContent>{Object.entries(ACTIVE_PROTOTYPE_SYSTEMS).map(([id, spec]) => <SelectItem key={id} value={id}>{spec.label}</SelectItem>)}<SelectItem value="__none">No system — custom styling</SelectItem></SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">{rebuild ? 'Choosing a different system creates a copy for your agent to rebuild. It does not convert the existing code.' : 'Copies the existing artifacts, components, and styles.'}</p>
           </div>

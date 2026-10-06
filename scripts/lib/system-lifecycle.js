@@ -1,0 +1,132 @@
+// System lifecycle plans are shared by the CLI and local UI. Source ownership stays explicit.
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import { readDeclaration } from '../../src/platform/core/modules/pack.ts';
+import { editStudioConfig, applySetupChanges } from './studio-setup.js';
+import { snapshotFiles, repairText } from './artifact-moves.js';
+import { canonicalDirectory } from './safe-paths.js';
+
+export const systemSlug = text => text.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/^[^a-z]+/, '');
+const json = value => JSON.stringify(value, null, 2) + '\n';
+const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
+const edit = (file, after) => ({ file, before: fs.readFileSync(file, 'utf8'), after });
+export function prototypeMetadata(root) {
+  // Includes disabled module content and archived prototypes, without following symlinks.
+  return [...snapshotFiles(path.join(root, 'src'))].filter(([file]) => file.endsWith('/meta.json') && !file.startsWith('systems/')).map(([file]) => {
+    const absolute = path.join(root, 'src', file);
+    return { file: absolute, meta: read(absolute) };
+  }).filter(({ meta }) => typeof meta.title === 'string');
+}
+export function systemDependents(root, id, defaultSystem) {
+  return prototypeMetadata(root).filter(({ meta }) => (meta.system === undefined ? defaultSystem : meta.system) === id || meta.rebuild?.targetSystem === id);
+}
+export function unavailablePrototypeRoots(root) {
+  return prototypeMetadata(root).filter(({ meta }) => typeof meta.system === 'string' && meta.systemMissing?.id === meta.system && typeof meta.systemMissing?.label === 'string' && !fs.existsSync(path.join(root, 'src/systems', meta.system, 'system.ts'))).map(({ file }) => path.dirname(file));
+}
+export function planSystemLifecycle(root, config, action, id, { name, restorePrototypes = false } = {}) {
+  if (!/^[a-z][a-z0-9-]*$/.test(id ?? '') || !config.systems.includes(id)) throw new Error('Choose a registered system.');
+  const dir = path.join(root, 'src/systems', id), file = path.join(dir, 'system.ts');
+  if (!canonicalDirectory(dir, root) || !fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) throw new Error('This system must use regular source files.');
+  const declaration = readDeclaration(fs.readFileSync(file, 'utf8'));
+  if ('error' in declaration) throw new Error(declaration.error);
+  const spec = declaration.value;
+  if (spec.role !== 'prototype') throw new Error('Studio is maintained by the platform. Its identity and availability are protected.');
+  const dependents = systemDependents(root, id, config.defaultSystem);
+  const edits = [];
+  let nextId = id;
+  let move = null, remove = null;
+  if (action === 'rename') {
+    if (typeof name !== 'string' || !name.trim() || name.trim().length > 120 || /[\n\r<>`$\\]/.test(name)) throw new Error('Use a plain name between 1 and 120 characters.');
+    nextId = systemSlug(name);
+    if (!nextId) throw new Error('Include a letter in the system name.');
+    const nextDir = path.join(root, 'src/systems', nextId);
+    if (nextId !== id && (fs.existsSync(nextDir) || Object.hasOwn(config.modules ?? {}, nextId))) throw new Error('A system or module already uses this name.');
+    // Preserve the independently declared theme scope: its CSS contract is not the folder identity.
+    edits.push(edit(file, editStudioConfig(fs.readFileSync(file, 'utf8'), { label: name.trim() })));
+    if (nextId !== id) {
+      move = { from: dir, to: nextDir };
+      const configFile = path.join(root, 'studio.config.ts');
+      edits.push(edit(configFile, editStudioConfig(fs.readFileSync(configFile, 'utf8'), { systems: config.systems.map(value => value === id ? nextId : value), defaultSystem: config.defaultSystem === id ? nextId : config.defaultSystem })));
+      for (const { file, meta } of prototypeMetadata(root)) {
+        let changed = false;
+        if ((meta.system === undefined ? config.defaultSystem : meta.system) === id) { meta.system = nextId; changed = true; }
+        if (meta.rebuild?.targetSystem === id) { meta.rebuild.targetSystem = nextId; changed = true; }
+        if (meta.archivedBySystem === id) { meta.archivedBySystem = nextId; changed = true; }
+        if (changed) edits.push(edit(file, json(meta)));
+      }
+      // Resolve relative imports/Markdown links against actual files, and system aliases/URLs against the old identity.
+      const before = snapshotFiles(root);
+      const prefix = `src/systems/${id}/`, target = `src/systems/${nextId}/`;
+      const review = [];
+      const moves = new Map([...before.keys()].filter(file => file.startsWith(prefix)).map(file => [file, target + file.slice(prefix.length)]));
+      for (const relative of before.keys()) {
+        if (!/\.(?:[cm]?[jt]sx?|md|css|json|excalidraw)$/.test(relative) || ['package-lock.json', 'pnpm-lock.yaml', 'studio.lock.json'].includes(relative) || relative.startsWith('public/') || relative.startsWith('dist/')) continue;
+        const absolute = path.join(root, relative), existing = edits.find(change => change.file === absolute);
+        const content = existing?.after ?? fs.readFileSync(absolute, 'utf8');
+        let next = repairText(content, relative, moves.get(relative) ?? relative, before, moves, [`/systems/${id}`, `/systems/${nextId}`]);
+        // Exact path prefixes include source examples and declared package destinations.
+        for (const [from, to] of [[`@/systems/${id}/`, `@/systems/${nextId}/`], [prefix, target], [`/systems/${id}/`, `/systems/${nextId}/`]]) {
+          next = next.replace(new RegExp(`(?<![A-Za-z0-9_:/.-])${from}`, 'g'), () => to);
+        }
+        if (new RegExp(String.raw`(?<![A-Za-z0-9_:/.-])(?:src/|@/|/)systems/${id}(?=[/\s"')\]#?]|$)`).test(next)) review.push(moves.get(relative) ?? relative);
+        if (next !== content) { if (existing) existing.after = next; else edits.push(edit(absolute, next)); }
+      }
+      const declarationEdit = edits.find(change => change.file === file);
+      declarationEdit.after = editStudioConfig(declarationEdit.after, { renameReview: review });
+    }
+  } else if (action === 'archive') {
+    if (id === config.defaultSystem) throw new Error('Choose another default system before archiving this one.');
+    if (spec.status !== 'active') throw new Error('This system is already archived.');
+    edits.push(edit(file, editStudioConfig(fs.readFileSync(file, 'utf8'), { status: 'archived' })));
+    for (const { file, meta } of dependents) {
+      if (meta.status === 'archived') continue;
+      meta.system = meta.system === undefined ? config.defaultSystem : meta.system;
+      meta.status = 'archived'; meta.archivedBySystem = id;
+      edits.push(edit(file, json(meta)));
+    }
+  } else if (action === 'restore') {
+    if (spec.status !== 'archived') throw new Error('This system is already active.');
+    edits.push(edit(file, editStudioConfig(fs.readFileSync(file, 'utf8'), { status: 'active' })));
+    for (const { file, meta } of prototypeMetadata(root)) {
+      if (meta.archivedBySystem !== id) continue;
+      if (restorePrototypes && !meta.systemMissing) delete meta.status;
+      delete meta.archivedBySystem;
+      edits.push(edit(file, json(meta)));
+    }
+  } else if (action === 'delete') {
+    if (id === config.defaultSystem) throw new Error('Choose another default system before deleting this one.');
+    remove = dir;
+    const configFile = path.join(root, 'studio.config.ts');
+    edits.push(edit(configFile, editStudioConfig(fs.readFileSync(configFile, 'utf8'), { systems: config.systems.filter(value => value !== id) })));
+    for (const { file, meta } of dependents) {
+      // Keep the exact old assignment and code. Missing-system prototypes cannot render or deploy until rebuilt.
+      if ((meta.system === undefined ? config.defaultSystem : meta.system) === id) {
+        meta.system = id; meta.systemMissing = { id, label: spec.label };
+      }
+      if (meta.rebuild?.targetSystem === id) delete meta.rebuild;
+      if (meta.archivedBySystem === id) delete meta.archivedBySystem;
+      edits.push(edit(file, json(meta)));
+    }
+  } else throw new Error('Unknown system lifecycle action.');
+  return { id: nextId, action, edits, move, remove, prototypes: dependents.length, references: edits.length - 1 };
+}
+
+export function applySystemLifecycle(plan, finish = () => {}) {
+  let temporary;
+  applySetupChanges(plan.edits);
+  try {
+    if (plan.move) fs.renameSync(plan.move.from, plan.move.to);
+    if (plan.remove) {
+      temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-system-delete-'));
+      fs.renameSync(plan.remove, path.join(temporary, 'system'));
+    }
+    finish();
+  } catch (error) {
+    if (plan.move && fs.existsSync(plan.move.to)) fs.renameSync(plan.move.to, plan.move.from);
+    if (temporary && fs.existsSync(path.join(temporary, 'system'))) fs.renameSync(path.join(temporary, 'system'), plan.remove);
+    applySetupChanges(plan.edits.map(change => ({ ...change, before: change.after, after: change.before })));
+    throw error;
+  } finally { if (temporary) fs.rmSync(temporary, { recursive: true, force: true }); }
+  return { id: plan.id, prototypes: plan.prototypes, references: plan.references };
+}

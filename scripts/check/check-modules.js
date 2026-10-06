@@ -33,6 +33,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const problems = declarationProblems();
 const specs = Object.values(MODULES).filter((m) => m && typeof m === 'object');
 problems.push(...listProblems(specs), ...configProblems(CONFIG, specs, SYSTEM_IDS, PLATFORM_ID), ...systemDeclarationProblems());
+if (SYSTEM_SPECS[DEFAULT_SYSTEM]?.status !== 'active') problems.push('The default system must be active.');
 if (!SYSTEM_IDS.length) problems.push('There is no design system in src/systems/. Prototypes need one to build with: add one with pnpm studio create-system.');
 if (SYSTEM_IDS.length > 1 && !CONFIG.defaultSystem) problems.push(`There are ${SYSTEM_IDS.length} design systems (${SYSTEM_IDS.join(', ')}), so say which one prototypes use when their meta.json names none: add defaultSystem: '${SYSTEM_IDS.includes('product') ? 'product' : SYSTEM_IDS[0]}', to studio.config.ts.`);
 for (const id of SYSTEM_IDS) {
@@ -85,6 +86,7 @@ for (const file of [...sourceFiles(path.join(ROOT, 'src')), ...sourceFiles(path.
   const own = path.relative(MODULES_DIR, file).split(path.sep);
   const inside = ids.includes(own[0]) ? own[0] : null;
   const rel = path.relative(ROOT, file);
+  if (runtimePolicy.scopeOf(file)?.missing) continue;
   const dependencies = importsOf(fs.readFileSync(file, 'utf8'), file);
   const browserModule = inside && !/\/(?:node\/|cli\.ts$|server\.ts$|check\.ts$)/.test(rel);
   if ((runtimePolicy.scopeOf(file) || browserModule) && dependencies.some((i) => i.source === null)) problems.push(`${rel}: computed imports cannot be checked; use literal import paths.`);

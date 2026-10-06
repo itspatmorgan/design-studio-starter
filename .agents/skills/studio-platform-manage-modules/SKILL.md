@@ -1,6 +1,6 @@
 ---
 name: studio-platform-manage-modules
-description: "Create, install, enable, disable, or remove Design Studio modules and systems through the Studio CLI."
+description: "Create, install, enable, disable, or remove modules; create, rename, archive, restore, or delete systems through the Studio CLI."
 ---
 
 <!-- studio:generated-skill -->

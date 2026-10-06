@@ -4,6 +4,7 @@ import type { SystemSpec } from '../../modules/systems/spec.ts';
 // (pnpm studio create-system). A prototype picks one with "system" in its meta.json; without it, the one named by
 // the explicitly configured defaultSystem in studio.config.ts.
 export default {
+  status: 'active',
   role: 'prototype',
   label: 'Product',
   themeClass: 'product-theme',

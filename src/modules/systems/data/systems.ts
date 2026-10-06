@@ -18,3 +18,5 @@ export const PROTOTYPE_SYSTEMS = Object.fromEntries(Object.entries(SYSTEM_SPECS)
 
 // The system a prototype uses when its meta.json doesn't say: the explicitly configured studio.config.ts defaultSystem.
 export const DEFAULT_SYSTEM: string = CONFIG.defaultSystem;
+
+export const ACTIVE_PROTOTYPE_SYSTEMS = Object.fromEntries(Object.entries(PROTOTYPE_SYSTEMS).filter(([, spec]) => spec.status === 'active'));

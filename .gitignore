@@ -9,3 +9,5 @@ public/prototypes/artifacts/
 !.env.example
 !.env.*.example
 *.tsbuildinfo
+
+.studio-system-operation

@@ -3,6 +3,7 @@ import type { SystemSpec } from '../../modules/systems/spec.ts';
 // Studio's supplied toolkit and operating guidance. Prototype systems remain independent.
 export default {
   label: 'Studio',
+  status: 'active',
   role: 'platform',
   themeClass: 'studio-theme',
   styling: 'tailwind',

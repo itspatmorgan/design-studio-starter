@@ -6,6 +6,7 @@ import { systemLabel } from './DuplicatePrototypeDialog';
 
 export default function PrototypeRebuildNotice({ proto }: { proto: PrototypeInfo }) {
   const request = proto.rebuild;
+  if (proto.systemMissing) return <div className="mb-3 rounded-md border bg-sidebar-accent/40 p-2.5 text-sm"><p className="font-medium">System deleted</p><p className="mt-1 text-muted-foreground">{proto.systemMissing.label} is unavailable. Rebuild this prototype with another system before rendering or publishing.</p><Button size="sm" variant="outline" className="mt-2" onClick={() => void navigator.clipboard.writeText(`Rebuild ${repoPath(proto, '')} with an active system I select. Its ${proto.systemMissing!.label} system was deleted. Preserve existing intent and source. Read AGENTS.md and the build-prototype skill. Migrate components, theme and meta.json system together. Remove systemMissing only after validation and visual review.`).then(() => toast.add({ title: 'Rebuild instructions copied' }), () => toast.add({ type: 'error', title: 'Could not copy instructions.' }))}>Copy rebuild instructions</Button></div>;
   if (!request) return null;
   async function copy() {
     const target = request!.targetSystem;

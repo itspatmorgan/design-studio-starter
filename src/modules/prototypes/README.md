@@ -26,6 +26,8 @@ Two artifacts cannot share a URL, such as `main.tsx` and `main.md` in one folder
 | `system` | Installed prototype system ID, or `null` for no system (custom styling). Omission uses the explicitly configured `defaultSystem`. Creation saves the chosen value. |
 | `rebuild` | Optional pending migration: `targetSystem` is an installed ID or `null`; `source` is `src/prototypes/<contributor>/<id>`. Current `system` remains the runtime boundary until migration. |
 | `order` | Relative file and folder paths placed first within their folder, in sequence. |
+| `archivedBySystem` | System ID that archived this prototype; used to offer restoration only for work archived together. |
+| `systemMissing` | `{ id, label }` for a deleted assigned system. Preserve source and assignment; rendering and deployment wait for a rebuild. Remove this field after migrating code and assignment together. |
 | `status` | `active` or `archived`. Omission means active. |
 
 Remaining artifacts sort alphabetically, files before folders. Use `order` to reorder, rather than renaming files.

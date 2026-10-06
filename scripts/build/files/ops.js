@@ -10,7 +10,8 @@ import { afterChange, parentOf, parseOrder, place, withFolderOrder } from '../..
 import { scaffold } from '../../../src/modules/systems/node/scaffold-docs.js';
 import { opProblem } from '../../../src/modules/systems/content/rules.ts';
 import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/modules/systems/content/skills.ts';
-import { TRASH, readOrder, readTree, resolveInside, validName } from './paths.js';
+import { ROOT, TRASH, readOrder, readTree, resolveInside, validName } from './paths.js';
+import { readDeclaration } from '../../../src/platform/core/modules/pack.ts';
 import { prototypeAddress, repairReferences, snapshotFiles } from '../../lib/artifact-moves.js';
 
 // The contents of a new file: its file type's template, by extension (src/modules/<type>/type.ts).
@@ -117,7 +118,14 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     if (status !== undefined) {
       const next = parseStatus(status);
       if (!next) throw new Error(`A status is one of: ${STATUSES.join(', ')}.`);
-      if (next === 'active') delete meta.status; else meta.status = next;
+      if (next === 'active' && typeof meta.system === 'string') {
+        const file = path.join(ROOT, 'src/systems', meta.system, 'system.ts');
+        if (fs.existsSync(file)) {
+          const declaration = readDeclaration(fs.readFileSync(file, 'utf8'));
+          if (!('error' in declaration) && declaration.value.status === 'archived') throw new Error('Restore this prototype’s system before restoring the prototype.');
+        }
+      }
+      if (next === 'active') { delete meta.status; delete meta.archivedBySystem; } else meta.status = next;
     }
     fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
     return {};

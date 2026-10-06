@@ -6,7 +6,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Add01Icon } from '@hugeicons/core-free-icons';
 import { createPrototype, useMe } from '@/platform/app/data/files';
 import { prototypeLink, setManifest } from '@/platform/app/data/manifest';
-import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
+import { DEFAULT_SYSTEM, ACTIVE_PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
 import { Button } from '@/systems/studio/components/button';
 import { Input } from '@/systems/studio/components/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/systems/studio/components/select';
@@ -65,9 +65,9 @@ function NewPrototype() {
             </label>
             <div className="grid gap-1.5">
               <label id="prototype-system-label" className="text-sm font-medium">System</label>
-              <Select items={[...Object.entries(PROTOTYPE_SYSTEMS).map(([value, spec]) => ({ value, label: spec.label })), { value: '__none', label: 'No system — custom styling' }]} value={system} onValueChange={(value) => { if (value) setSystem(value); }}>
+              <Select items={[...Object.entries(ACTIVE_PROTOTYPE_SYSTEMS).map(([value, spec]) => ({ value, label: spec.label })), { value: '__none', label: 'No system — custom styling' }]} value={system} onValueChange={(value) => { if (value) setSystem(value); }}>
                 <SelectTrigger aria-labelledby="prototype-system-label" className="w-full"><SelectValue /></SelectTrigger>
-                <SelectContent>{Object.entries(PROTOTYPE_SYSTEMS).map(([id, spec]) => <SelectItem key={id} value={id}>{spec.label}</SelectItem>)}<SelectItem value="__none">No system — custom styling</SelectItem></SelectContent>
+                <SelectContent>{Object.entries(ACTIVE_PROTOTYPE_SYSTEMS).map(([id, spec]) => <SelectItem key={id} value={id}>{spec.label}</SelectItem>)}<SelectItem value="__none">No system — custom styling</SelectItem></SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">{system === '__none' ? 'Start with your own components and CSS. No existing system library or theme is assigned.' : 'Provides components, styles, and guidance for this prototype.'}</p>
             </div>

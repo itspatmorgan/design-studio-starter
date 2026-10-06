@@ -19,6 +19,8 @@ export type DocsMode = 'warn' | 'strict' | 'off';
 
 export type SystemSpec = {
   role: 'platform' | 'prototype';
+  status: 'active' | 'archived';
+  renameReview?: readonly string[]; // references that require an agent review after renaming
   label: string;               // "Product"
   // The class its theme is set under, like "product-theme". Its styles/theme.css may set values only under
   // this class, so it can't leak into the app UI or another system.
@@ -44,6 +46,8 @@ export function systemProblems(spec: unknown, folder: string): string[] {
   if (!spec || typeof spec !== 'object') return [`${where} must export a system as its default.`];
   const s = spec as Partial<SystemSpec>;
   const problems: string[] = [];
+  if (!['active', 'archived'].includes(s.status ?? '')) problems.push(`${where}: status must explicitly be active or archived.`);
+  if (s.role === 'platform' && s.status !== 'active') problems.push(`${where}: the platform system must stay active.`);
   if (!s.role || !['platform', 'prototype'].includes(s.role)) problems.push(where + ": role must be 'platform' or 'prototype'.");
   if (typeof s.label !== 'string' || !s.label.trim()) problems.push(`${where}: add a label, the name people see.`);
   if (typeof s.themeClass !== 'string' || !CLASS.test(s.themeClass)) problems.push(`${where}: themeClass should be a CSS class name like "${folder}-theme".`);

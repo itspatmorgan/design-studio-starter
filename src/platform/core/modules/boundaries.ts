@@ -38,6 +38,7 @@ export const MODULE_PLATFORM_ENTRIES: readonly string[] = [
   'src/platform/app/shell/nav/index',
   'src/platform/app/source/ArtifactSource',
   'src/platform/core/api',
+  'src/platform/core/declarations',
   'src/platform/core/fileTypes',
   'src/platform/core/modules/index',
   'src/platform/core/order',

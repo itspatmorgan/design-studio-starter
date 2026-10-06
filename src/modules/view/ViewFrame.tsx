@@ -5,6 +5,7 @@ import { useState, type ComponentType } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { PortalContext } from '@/lib/portal';
 import ViewError from '@/modules/prototypes/viewer/ViewError';
+import MissingSystem from '@/modules/prototypes/viewer/MissingSystem';
 import EmptyView from './EmptyView';
 import './lofi.css';
 
@@ -13,8 +14,9 @@ import './lofi.css';
 // and so does a new Component (the file was fixed, in dev).
 // `lofi` is a view that says so in its file (type.ts): the override in lofi.css puts it in grayscale with handwritten type.
 // `empty` is set for a view that hasn't been built yet (src/lib/emptyView.ts): the platform's own page shows, not in the system's theme.
-export default function ViewFrame({ Component, viewKey, themeClass, empty, lofi = false }: { Component: ComponentType; viewKey: string; themeClass: string; empty?: { path: string | null }; lofi?: boolean }) {
+export default function ViewFrame({ Component, viewKey, themeClass, empty, missingSystem, lofi = false }: { Component: ComponentType; viewKey: string; themeClass: string; empty?: { path: string | null }; lofi?: boolean; missingSystem?: string }) {
   const [portal, setPortal] = useState<HTMLElement | null>(null);
+  if (missingSystem) return <MissingSystem label={missingSystem} />;
   if (empty) return <div className="bg-background text-foreground min-w-0 flex-1 overflow-auto"><EmptyView path={empty.path} /></div>;
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">

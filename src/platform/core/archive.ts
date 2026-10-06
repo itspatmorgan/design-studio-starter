@@ -15,10 +15,10 @@ export const parseStatus = (value: unknown): Status | null =>
 // What the deployed site keeps: every prototype that isn't archived. `archived` lists what was left
 // out as paths in the app's file globs ("/prototypes/patrick/checkout/**"), for
 // scripts/build/vite-globs-plugin.js.
-type Proto = { id: string; contributorKey: string; status?: Status };
+type Proto = { id: string; contributorKey: string; status?: Status; systemMissing?: unknown };
 export function forDeploy<P extends Proto>(prototypes: P[]) {
-  const kept = prototypes.filter((p) => p.status !== 'archived');
-  const archived = prototypes.filter((p) => p.status === 'archived').map((p) => `/${rootOf(p.contributorKey, p.id)}/**`);
+  const kept = prototypes.filter((p) => p.status !== 'archived' && !p.systemMissing);
+  const archived = prototypes.filter((p) => p.status === 'archived' || !!p.systemMissing).map((p) => `/${rootOf(p.contributorKey, p.id)}/**`);
   return { kept, archived };
 }
 

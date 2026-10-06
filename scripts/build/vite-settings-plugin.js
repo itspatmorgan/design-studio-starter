@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MODULES } from '../lib/modules.js';
@@ -13,17 +14,20 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 
 export default function settings() {
   const configFile = path.join(ROOT, 'studio.config.ts');
+  let restartTimer;
   return {
     name: 'studio-settings',
     apply: 'serve',
     async hotUpdate({ file, server }) {
-      if (file !== configFile) return;
-      await server.restart();
+      if (file !== configFile && !/src[\\/]systems[\\/][^\\/]+[\\/]system\.ts$/.test(file)) return;
+      while (fs.existsSync(path.join(ROOT, '.studio-system-operation'))) await new Promise(resolve => setTimeout(resolve, 100));
+      clearTimeout(restartTimer);
+      restartTimer = setTimeout(() => void server.restart().catch(error => server.config.logger.error(error.message)), 200);
       return [];
     },
     configureServer(server) {
       // Own configuration updates so settings saves trigger one restart.
-      server.config.configFileDependencies = server.config.configFileDependencies.filter(file => file !== configFile);
+      server.config.configFileDependencies = server.config.configFileDependencies.filter(file => file !== configFile && !/src[\\/]systems[\\/][^\\/]+[\\/]system\.ts$/.test(file));
       server.watcher.add(configFile);
       server.middlewares.use('/__studio/settings', async (req, res) => {
         if (!sameOrigin(req)) return send(res, 403, { error: 'Only the app can use this.' });

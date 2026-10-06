@@ -7,6 +7,7 @@ import { emptyView } from '@/lib/emptyView';
 import { views } from './loader';
 
 export async function loadView({ proto, item }: ArtifactContext) {
+  if (proto.systemMissing) return { Component: () => null, viewKey: `${proto.contributorKey}/${proto.id}/${item.path}`, themeClass: 'prototype-unstyled', missingSystem: proto.systemMissing.label };
   const file = { contributor: proto.contributorKey, prototype: proto.id, path: item.path };
   const mod = await views.load(file, { inManifest: true });
   if (!mod) return undefined;

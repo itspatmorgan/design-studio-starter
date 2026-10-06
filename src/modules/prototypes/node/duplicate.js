@@ -36,7 +36,7 @@ export function duplicatePrototype({ key, id, title, system }) {
   const meta = JSON.parse(fs.readFileSync(path.join(from, 'meta.json'), 'utf8'));
   const sourceSystem = meta.system === undefined ? DEFAULT_SYSTEM : meta.system;
   const targetSystem = system === undefined ? sourceSystem : system;
-  for (const assigned of [sourceSystem, targetSystem]) if (assigned !== null && !Object.hasOwn(PROTOTYPE_SYSTEMS, assigned)) throw new Error('Choose an installed prototype system, or no system.');
+  for (const assigned of [sourceSystem, targetSystem]) if (assigned !== null && (!Object.hasOwn(PROTOTYPE_SYSTEMS, assigned) || PROTOTYPE_SYSTEMS[assigned].status !== 'active')) throw new Error('Choose an installed prototype system, or no system.');
   const now = new Date();
   meta.title = title;
   meta.created = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;

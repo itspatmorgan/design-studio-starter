@@ -1,15 +1,16 @@
 ---
 name: manage-modules
-description: "Create, install, enable, disable, or remove Design Studio modules and systems through the Studio CLI."
+description: "Create, install, enable, disable, or remove modules; create, rename, archive, restore, or delete systems through the Studio CLI."
 ---
 
 # Manage Modules
 
 Read the [module contract](../../context/modules.md) before creating, installing, disabling, or removing modules or systems.
 
-- Declare every installed module's enabled state and every installed system in `studio.config.ts`. Discovery does not grant activation. Modules declare `optional` and `lib`; systems declare role, styling contract, modes, docs policy, and origin.
+- Declare every installed module's enabled state and every installed system in `studio.config.ts`. Discovery does not grant activation. Modules declare `optional` and `lib`; systems declare status, role, styling contract, modes, docs policy, and origin.
 - Run commands for the person. Use CLI help and previews for current arguments and proposed file changes.
 - Preview `add`, `remove`, and `create-*` before applying them with `--yes`.
+- For system lifecycle changes, read the [Systems contract](../../../modules/systems/README.md#system-lifecycle). Preview `rename-system`, `archive-system`, `restore-system`, or `delete-system` before `--yes`. Rename repairs local references automatically. Archive preserves source and archives associated active prototypes. Delete permanently removes system source; retained prototypes need a rebuild. Choose another default before archive or deletion, and resolve whether restoration includes associated prototypes.
 - Apply already-authorized choices without asking again. Ask for unresolved source, scope, or destructive choices.
 - Treat installed modules as trusted code, not sandboxed data. Review the source and proposed dependencies before installation.
 - Do not manually edit `studio.lock.json`, the generated module routing in `AGENTS.md`, or config module flags. Use studio commands.

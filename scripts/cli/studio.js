@@ -1,3 +1,4 @@
+import { planSystemLifecycle, applySystemLifecycle } from '../lib/system-lifecycle.js';
 import { moduleConsumers } from '../lib/imports.js';
 // pnpm studio <command>: add, remove, turn on or off, and make modules and design systems. For your agent: designers
 // ask in plain words and the agent runs these. Every command that changes files says what it will do first, and
@@ -48,7 +49,7 @@ const flags = {}; const positional = [];
 for (let i = 0; i < rest.length; i++) {
   const a = rest[i];
   if (a === '--') continue;
-  if (['--yes', '--content', '--force', '--allow-license', '--json', '--check'].includes(a)) flags[a.slice(2)] = true;
+  if (['--yes', '--content', '--force', '--allow-license', '--json', '--check', '--restore-prototypes'].includes(a)) flags[a.slice(2)] = true;
   else if (['--path', '--id', '--label', '--out', '--name', '--tagline', '--usage', '--system', '--admins'].includes(a)) { flags[a.slice(2)] = rest[++i]; if (flags[a.slice(2)] === undefined) fail(`${a} needs a value.`); }
   else if (a.startsWith('--')) fail(`Unknown option ${a}.`);
   else positional.push(a);
@@ -250,6 +251,36 @@ async function add() {
 }
 
 
+function lifecycle(action) {
+  const plan = planSystemLifecycle(ROOT, CONFIG, action, positional[0], { name: flags.label, restorePrototypes: Boolean(flags['restore-prototypes']) });
+  say(`${action} system ${positional[0]}${plan.id !== positional[0] ? ` → ${plan.id}` : ''}. ${plan.prototypes} associated prototype(s); ${plan.edits.length} file update(s).`);
+  if (action === 'delete') say('Permanently deletes the system source. Associated prototypes retain their code and require a system rebuild before rendering or deployment.');
+  if (action === 'archive') say('Retains source; archives associated active prototypes and excludes the system from deployment and new selections.');
+  if (!flags.yes) { say('Preview only. Apply with --yes.'); return; }
+  const marker = rel('.studio-system-operation');
+  const markerFd = fs.openSync(marker, 'wx'); fs.closeSync(markerFd);
+  const lockBefore = fs.existsSync(rel('studio.lock.json')) ? fs.readFileSync(rel('studio.lock.json'), 'utf8') : null;
+  try {
+    const result = applySystemLifecycle(plan, () => {
+      const lock = readLock();
+      const entry = lock.systems[positional[0]];
+      if (entry && action === 'rename' && plan.id !== positional[0]) {
+        delete lock.systems[positional[0]];
+        lock.systems[plan.id] = { ...entry, files: Object.fromEntries(Object.entries(entry.files ?? {}).map(([file, hash]) => [file.replace(`src/systems/${positional[0]}/`, `src/systems/${plan.id}/`), hash])) };
+      }
+      if (action === 'delete') delete lock.systems[positional[0]];
+      writeLock(lock);
+      const problem = checkInFreshProcess();
+      if (problem) throw new Error(problem);
+      syncInFreshProcess();
+    });
+    say(JSON.stringify(result));
+  } catch (error) {
+    if (lockBefore === null) fs.rmSync(rel('studio.lock.json'), { force: true }); else fs.writeFileSync(rel('studio.lock.json'), lockBefore);
+    throw error;
+  } finally { fs.rmSync(marker, { force: true }); }
+}
+
 function remove() {
   const [id] = positional;
   if (!id) fail('Usage: pnpm studio remove <module|system> [--content] [--yes] [--force]');
@@ -439,6 +470,7 @@ const commands = {
   configure, status,
   list, check, sync: () => { say(syncAgents() ? 'Updated AGENTS.md.' : 'AGENTS.md is up to date.'); syncSkills(); },
   enable: () => setEnabled(positional[0], true), disable: () => setEnabled(positional[0], false),
+  'rename-system': () => lifecycle('rename'), 'archive-system': () => lifecycle('archive'), 'restore-system': () => lifecycle('restore'), 'delete-system': () => lifecycle('delete'),
   add, remove, 'create-module': () => create('module'), 'create-system': () => create('system'),
 };
 if (!command || !Object.hasOwn(commands, command)) {

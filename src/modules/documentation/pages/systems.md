@@ -13,7 +13,11 @@ The Resources toolbar searches across the tree and expands or collapses all fold
 
 Overview summarizes the selected system’s instructions, components, theme, and local assets. Counts show what is included; navigation provides the full inventory. The usage section shows active prototypes, previews up to three recent examples, and links to the complete filtered collection. Studio explains its application role instead. Product and Marketing are starter kits to replace with your team’s systems.
 
-The menu beside the system name lets you copy its overview link or, locally, open its folder in your editor or Finder. Admins can rename prototype systems without changing their links, or choose **Set as default** for future prototypes. Existing prototypes keep their current systems. **Remove system** checks dependencies before allowing removal: choose another default and resolve any prototype assignments or other references first. Removed systems are saved in Studio trash; use **Removed systems** on the Systems index to restore one. Studio’s identity and availability are maintained by the platform.
+The menu beside the system name lets you copy its link or open its folder locally. Admins can **Rename** a system; Studio updates its folder, assignments, and references automatically and confirms with a brief toast. **Set as default** changes the choice for future prototypes while preserving existing assignments.
+
+**Archive system** preserves its files and archives the associated active prototypes. The system becomes unavailable for new prototypes, and all archived work leaves the deployment build. Use **Archived systems** on the index to restore a system, with an option to restore the prototypes archived alongside it. Prototypes already archived remain archived.
+
+**Delete system** permanently removes its files. The confirmation lists affected prototypes: their source stays, but they need another system and a rebuild before rendering or publishing. Copy rebuild instructions from their sidebar. There is no Studio recovery copy; Git can recover only previously committed files. Choose another default before archiving or deleting the current default. Studio’s identity and availability remain protected.
 
 ## Prototype systems and Studio
 

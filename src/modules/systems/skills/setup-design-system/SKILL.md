@@ -45,13 +45,13 @@ The command preserves existing system choices. Migrate retained prototypes by up
 
 If cleanup is authorized, inspect all dependencies of each system being retired, including Product or Marketing. Include sample content and disabled modules.
 
-Preserve recoverable copies when replacing content. Update shadcn destinations before removing Product. Preview removal and resolve dependencies instead of using `--force`.
+Preserve recoverable copies when replacing content. Use the [system lifecycle](../../README.md#system-lifecycle) to archive or permanently delete a retired system. Update shadcn destinations before deleting Product. Preview changes and resolve dependencies instead of using `--force`.
 
 Do not remove another person's work merely because a contributor joined. Explain proposed starter cleanup and obtain unresolved choices.
 
 ## Completion
 
-Register the system in `studio.config.ts.systems`. Explicitly declare its role, styling contract, supported `colorModes`, documentation policy, and origin in `system.ts`; omitted choices fail validation. Declare the system's chosen theme token inventory, including choices matching upstream defaults. Omitted tokens and families stay unavailable; do not fill the upstream catalog. Adjust components and examples to the selected inventory, and check their utility use. Custom systems use their own scoped CSS vocabulary. Query names and thresholds must be declared; shared names currently require matching thresholds, while unique names or scoped CSS queries support system-specific thresholds.
+Register the system in `studio.config.ts.systems`. Explicitly declare its status, role, styling contract, supported `colorModes`, documentation policy, and origin in `system.ts`; omitted choices fail validation. Declare the system's chosen theme token inventory, including choices matching upstream defaults. Omitted tokens and families stay unavailable; do not fill the upstream catalog. Adjust components and examples to the selected inventory, and check their utility use. Custom systems use their own scoped CSS vocabulary. Query names and thresholds must be declared; shared names currently require matching thresholds, while unique names or scoped CSS queries support system-specific thresholds.
 
 Declare `['light']` or `['dark']` explicitly for a single-mode system. Scope dark tokens to `.<theme-class>[data-color-mode="dark"]`, and keep pop-ups within the system boundary. Verify that a single-mode system keeps its mode when Studio toggles.
 

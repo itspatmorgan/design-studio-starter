@@ -23,7 +23,7 @@ export function createPrototype({ title, key, system = DEFAULT_SYSTEM }) {
   const slug = slugify(title);
   if (!slug) throw new Error('Use at least one letter or number in the title.');
   if (!key) throw new Error("You're not set up as a contributor yet. Ask your agent to add you.");
-  if (system !== null && !Object.hasOwn(PROTOTYPE_SYSTEMS, system)) throw new Error('Choose an installed prototype system, or null for no system.');
+  if (system !== null && (!Object.hasOwn(PROTOTYPE_SYSTEMS, system) || PROTOTYPE_SYSTEMS[system].status !== 'active')) throw new Error('Choose an installed prototype system, or null for no system.');
   const dest = path.join(ROOT, 'src', 'prototypes', key, slug);
   if (fs.existsSync(dest)) throw new Error(`You already have a prototype named “${title}”. Choose a different title.`);
 

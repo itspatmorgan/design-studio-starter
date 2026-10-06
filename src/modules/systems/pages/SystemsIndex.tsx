@@ -11,8 +11,9 @@ import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '
 import { Badge } from '@/systems/studio/components/badge';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/systems/studio/components/empty';
 import { DEFAULT_SYSTEM, SYSTEM_SPECS } from '../data/systems';
+import SystemActionToast from './SystemActionToast';
 import NewSystemButton from './NewSystemDialog';
-import RemovedSystems from './RemovedSystems';
+import ArchivedSystems from './ArchivedSystems';
 
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
 export default function SystemsIndex() {
@@ -20,7 +21,7 @@ export default function SystemsIndex() {
   const navigate = useNavigate();
   const { q = '' } = useSearch({ strict: false }) as { q?: string };
   const setSearch = (value: string) => void navigate({ to: '/systems' as never, search: { q: value || undefined } as never, replace: true });
-  const items = Object.entries(SYSTEM_SPECS).map(([id, spec]) => {
+  const items = Object.entries(SYSTEM_SPECS).filter(([, spec]) => spec.status === 'active').map(([id, spec]) => {
     const intro = intros[`/systems/${id}/intro.tsx`]?.default;
     return { id, spec, description: intro?.summary ?? (spec.role === 'platform' ? 'The toolkit for Design Studio’s interface.' : 'Components, theme, assets, and guidance for your prototypes.') };
   }).sort((a, b) => Number(a.spec.role === 'platform') - Number(b.spec.role === 'platform') || Number(b.id === DEFAULT_SYSTEM) - Number(a.id === DEFAULT_SYSTEM) || a.spec.label.localeCompare(b.spec.label));
@@ -32,7 +33,7 @@ export default function SystemsIndex() {
     return `Used by ${count} ${count === 1 ? 'prototype' : 'prototypes'}`;
   };
   return <main className="mx-auto w-full max-w-5xl px-6 pt-12 pb-8">
-    <header className="mb-6">
+    <SystemActionToast /><header className="mb-6">
       <h1 className="text-2xl font-semibold tracking-tight text-foreground">Systems</h1>
       <div className="mt-0.5 flex flex-wrap items-center justify-between gap-4">
         <p className="min-w-0 text-sm leading-8 text-muted-foreground">Explore your systems or create one for your prototypes.</p>
@@ -45,6 +46,6 @@ export default function SystemsIndex() {
       </div>
     </header>
     {filtered.length ? <Collection items={filtered} keyOf={item => item.id} card={item => <CollectionCard link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} title={<span className="flex min-h-5 items-center gap-2"><span>{item.spec.label}</span>{defaultBadge(item)}</span>} description={item.description} meta={usage(item)} />} row={item => <ItemRow link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} title={item.spec.label} meta={<span className="flex items-center gap-2">{defaultBadge(item)}{usage(item)}</span>} />} /> : <Empty className="border border-dashed py-16"><EmptyHeader><EmptyMedia variant="icon"><HugeiconsIcon icon={Shapes01Icon} /></EmptyMedia><EmptyTitle>No matching systems</EmptyTitle><EmptyDescription>Try a different search.</EmptyDescription></EmptyHeader><Link to={'/systems' as never} search={{} as never} className="text-sm hover:underline">View all systems</Link></Empty>}
-    <RemovedSystems />
+    <ArchivedSystems />
   </main>;
 }

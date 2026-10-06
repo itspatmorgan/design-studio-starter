@@ -30,6 +30,7 @@ export default function ViewEmbed({ proto, item, width, height }: EmbedProps) {
   if (loaded === 'failed') return <Unavailable>This view couldn't load.</Unavailable>;
   if (!loaded) return <Unavailable>Loading…</Unavailable>;
   const { Component, themeClass, viewKey, empty, lofi } = loaded;
+  if (loaded.missingSystem) return <Unavailable>This prototype needs a rebuild because its system was deleted.</Unavailable>;
   if (empty) return <Unavailable>This view is empty.</Unavailable>;
   const scale = width / EMBED_VIEWPORT_WIDTH;
   return (

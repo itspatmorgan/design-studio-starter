@@ -7,7 +7,7 @@ import { knowledgeOwners, skillCatalog } from '../lib/agent-skills.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES } from '../../src/modules/systems/node/systems.js';
+import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES, SYSTEM_SPECS, refreshSystems } from '../../src/modules/systems/node/systems.js';
 import { PLATFORM_ID } from '../../src/modules/systems/node/systems.js';
 import { isHelper, artifactSlug } from '../../src/platform/core/fileTypes.ts';
 import { SYSTEM_CONTENT_KEY, SYSTEM_CONTENT_SECTIONS, rootOf, contentId, systemRoot } from '../../src/platform/core/roots.ts';
@@ -144,7 +144,8 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
   errors += checkArtifacts(dir, artifacts, out, { contributor: contributorKey, id });
   // "system" (optional) is the design system it builds with, one of the folders in src/systems/.
   const system = meta.system === undefined ? DEFAULT_SYSTEM : meta.system;
-  if (system !== null && !(typeof system === 'string' && Object.hasOwn(PROTOTYPE_SYSTEMS, system))) return skip(`has "system": "${system}", which isn't a folder in src/systems/ (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`);
+  if (meta.systemMissing !== undefined && (!meta.systemMissing || typeof meta.systemMissing !== 'object' || meta.systemMissing.id !== system || typeof meta.systemMissing.label !== 'string' || !meta.systemMissing.label || Object.hasOwn(PROTOTYPE_SYSTEMS, system))) return skip('has invalid systemMissing metadata; retain the deleted ID and label until the prototype is rebuilt');
+  if (!meta.systemMissing && system !== null && !(typeof system === 'string' && Object.hasOwn(PROTOTYPE_SYSTEMS, system))) return skip(`has "system": "${system}", which isn't a folder in src/systems/ (${Object.keys(PROTOTYPE_SYSTEMS).join(', ')})`);
   const rebuild = meta.rebuild;
   if (rebuild !== undefined && (!rebuild || typeof rebuild !== 'object' ||
     !(rebuild.targetSystem === null || typeof rebuild.targetSystem === 'string' && Object.hasOwn(PROTOTYPE_SYSTEMS, rebuild.targetSystem)) ||
@@ -162,6 +163,7 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
       contributor: maintained ? maintainers.map((k) => contributors[k]?.name ?? k).join(', ') : contributors[contributorKey]?.name ?? '',
       ...(!maintained && typeof contributors[contributorKey]?.github === 'string' && contributors[contributorKey].github.trim() && { contributorGithub: contributors[contributorKey].github.trim() }),
       created: meta.created ?? null, system, artifacts,
+      ...(meta.systemMissing && { systemMissing: meta.systemMissing }),
       ...(rebuild !== undefined && { rebuild }),
       ...(maintained && { maintainers }),
       ...(status === 'archived' && { status }),
@@ -233,6 +235,7 @@ function writeManifest(manifest) {
 // how many prototypes there are. `archived` in the result lists what deploy
 // leaves out, as paths in the app's file globs (scripts/build/vite-globs-plugin.js).
 export function buildManifest({ deploy = false, write = true, quiet = false, touched: touchedPaths } = {}) {
+  refreshSystems();
   // Only trusted if every path is inside this repo as this script sees it. A path spelled another way (a linked folder)
   // could look unrelated to a prototype that did change, so then nothing is assumed unchanged.
   const touched = touchedPaths?.every((f) => path.resolve(f).startsWith(ROOT + path.sep)) ? touchedPaths.map((f) => path.resolve(f)) : undefined;
@@ -289,6 +292,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   const maps = {};
   for (const owner of knowledgeOwners(ENABLED_MODULES, SYSTEM_SOURCES)) {
     const system = owner.id;
+    if (deploy && owner.kind === 'system' && SYSTEM_SPECS[system]?.status === 'archived') continue;
     const base = path.join(ROOT, owner.root);
     for (const [section, { title, description }] of Object.entries(SYSTEM_CONTENT_SECTIONS)) {
       const dir = path.join(base, section);
@@ -338,6 +342,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   const systems = {};
   for (const [id, sys] of Object.entries(SYSTEM_SOURCES)) {
     const dir = path.join(ROOT, sys.components);
+    if (deploy && SYSTEM_SPECS[id]?.status === 'archived') continue;
     const { components, problems } = systemDocs(dir);
     const themeFile = path.join(ROOT, sys.theme);
     const tokens = fs.existsSync(themeFile) ? themeTokens(fs.readFileSync(themeFile, 'utf8'), sys.scope) : [];

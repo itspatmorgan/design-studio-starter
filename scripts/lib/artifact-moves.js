@@ -120,6 +120,9 @@ export function repairText(text, oldFile, newFile, before, moves, address) {
     for (const change of changes.sort((a, b) => b.start - a.start)) text = text.slice(0, change.start) + change.value + text.slice(change.end);
     return text;
   }
+  if (oldFile.endsWith('.css')) return text
+    .replace(/(url\(\s*['"]?)([^'")\s]+)(['"]?\s*\))/g, (_, lead, value, tail) => lead + relativeTarget(value) + tail)
+    .replace(/(@import\s+['"])([^'"]+)(['"])/g, (_, lead, value, tail) => lead + relativeTarget(value) + tail);
   if (oldFile.endsWith('.md')) {
     // Markdown destinations and reference definitions; leave prose and code fences alone.
     const blocks = text.split(/(^```[^\n]*\n[\s\S]*?^```[^\n]*$|^~~~[^\n]*\n[\s\S]*?^~~~[^\n]*$)/m);

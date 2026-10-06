@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { readDeclaration as readSystemDeclaration } from '../../src/platform/core/modules/pack.ts';
 import { configProblems, studioRole } from '../../src/platform/core/config.ts';
 import { compatible } from '../../src/platform/core/modules/index.ts';
 import { agentsBlock, applyAgentsBlock, readDeclaration } from '../../src/platform/core/modules/pack.ts';
@@ -35,6 +36,11 @@ export function planSettings({ root, modules, systems, platformId, contributors,
   if (Object.hasOwn(changes, 'modules')) {
     if (!changes.modules || typeof changes.modules !== 'object' || Array.isArray(changes.modules)) throw new SettingsError('Module states must be an object.');
     next.modules = { ...current.config.modules, ...changes.modules };
+  }
+  const systemFile = path.join(root, 'src/systems', next.defaultSystem ?? '', 'system.ts');
+  if (fs.existsSync(systemFile)) {
+    const spec = readSystemDeclaration(fs.readFileSync(systemFile, 'utf8'));
+    if (!('error' in spec) && spec.value.status === 'archived') throw new SettingsError('Restore the system before selecting it as the default.');
   }
   const problems = configProblems(next, modules, systems, platformId, Object.keys(contributors));
   for (const module of modules) {
