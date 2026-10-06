@@ -1,15 +1,50 @@
-# Continue portable setup testing
+# Test Design Studio on another computer
 
-The Context and Skills foundation is merged into main. Portable setup work continues on `codex/portable-studio-setup`. Read repository instructions and the [plugin README](README.md) for authoritative setup behavior and release gates.
+The shared package is `0.1.0-experiment.10`. Its pinned starter snapshot is `5a685c2bee285c1e85b0e537304742ec92af77f6`, which includes Welcome onboarding, shared project skills, and Check Design System. Existing studios are preserved and are not upgraded automatically.
 
-Experiment .9 has one set of create/open/use skills and one bootstrap, with generated Codex, Claude Code, and Cursor manifests. It pins public main commit `7c2ddf1c5bf79bb778827a4eaff2498ca96adae3`. Direct setup starts from [SETUP.md](../../SETUP.md). Existing studios are preserved; no plugin operation upgrades them automatically.
+## Get the current package
 
-The next native checks are:
+In an existing clean checkout on `main`, run:
 
-1. Run Claude with the local `--plugin-dir` test, invoke create-studio, and confirm preview, owned workspace, project skill discovery, and first prototype.
-2. After the manifests are pushed, import the repository through Cursor's Customize UI and repeat that journey.
-3. Install experiment .9 in a fresh Codex chat and test its current pinned snapshot and handoff.
-4. Try the direct setup request without a plugin. Confirm the agent handles downloading and setup rather than asking the person to clone or run commands.
-5. Test reopening, occupied ports, restart, removal, updates, and interrupted setup. Clean-computer prerequisite installation remains a separate gate.
+```sh
+git pull --ff-only
+```
 
-CLI schema checks, local fixture tests, and a prepared studio on a machine with installed tools do not prove these native journeys. Record results in the plugin README. Push, publish, or submit only with current authorization. Do not copy operating skills into the plugin; they belong to the owned studio.
+For a new checkout:
+
+```sh
+git clone https://github.com/itspatmorgan/design-studio-starter.git
+cd design-studio-starter
+```
+
+Read the [plugin README](README.md) for installation commands. The plugin folder is `plugins/design-studio` inside this checkout. Record the checkout commit and harness version for each test. Use a separate, previously unused destination folder for each harness so an existing studio cannot hide a setup failure.
+
+## Test each harness
+
+- **Codex:** add this checkout as the local plugin marketplace and install the current Design Studio package. If an older experiment is installed, refresh or replace that installation using the plugin controls. Confirm the installed version is experiment .10, then start a fresh chat.
+- **Claude Code:** run `claude --plugin-dir /absolute/path/to/design-studio-starter/plugins/design-studio`, then invoke `/design-studio:create-studio`. This local test does not change global plugin registrations. Repository marketplace installation can be checked afterward.
+- **Cursor:** use Customize → From GitHub Repository, import `itspatmorgan/design-studio-starter`, and install Design Studio. Confirm the current package loads, then start a fresh agent chat.
+
+Ask each agent: “Create my Design Studio in [your chosen new folder]. Handle setup and opening it for me.” The person should not need to clone the studio or run its setup commands themselves.
+
+For each harness, check:
+
+1. The agent creates complete source in the requested visible folder and opens its local preview.
+2. Welcome appears. Explore its concepts, then open the Product example.
+3. Continue with the agent in the owned studio folder. Confirm project skills are available and the contributor is resolved before prototype edits.
+4. Ask for a small prototype using the Product system. Check that it uses that system and opens successfully.
+5. Close and reopen the studio with the plugin. The prototype remains and Welcome does not repeat in the same browser origin.
+
+Record what the agent did, where it needed human help, and any unclear step. For skill discovery, note whether skills appear in the harness’s UI and whether the agent actually uses the appropriate procedure.
+
+| Harness | Package/version | Setup + Welcome | Workspace + skills | First prototype | Reopen | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Codex | Pending | Pending | Pending | Pending | Pending | |
+| Claude Code | Pending | Pending | Pending | Pending | Pending | |
+| Cursor | Pending | Pending | Pending | Pending | Pending | |
+
+## Follow-up checks
+
+Try [direct setup](../../SETUP.md) without an installed plugin. Then check occupied ports, interrupted setup, an unrelated existing destination, and preservation after plugin removal or updates. Clean-computer prerequisite installation is still a separate gate if this computer already has the required tools. Windows and Linux remain unverified.
+
+Automated checks and a prepared studio do not prove these native journeys. Record actual results in the [release readiness table](README.md#release-readiness). Public directory submission remains separate from this test package.

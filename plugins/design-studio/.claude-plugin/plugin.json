@@ -1,6 +1,6 @@
 {
   "name": "design-studio",
-  "version": "0.1.0-experiment.9",
+  "version": "0.1.0-experiment.10",
   "description": "Create and refine prototypes with Design Studio. Setup is handled for you, and all code stays in a visible folder on your computer.",
   "author": {
     "name": "Patrick Morgan"

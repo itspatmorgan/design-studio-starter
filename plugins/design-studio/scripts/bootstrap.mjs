@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
 export const SOURCE = 'https://github.com/itspatmorgan/design-studio-starter.git';
-export const REVISION = '7c2ddf1c5bf79bb778827a4eaff2498ca96adae3';
+export const REVISION = '5a685c2bee285c1e85b0e537304742ec92af77f6';
 export const RECEIPT = 'design-studio.local.json';
 const REQUIRED = ['AGENTS.md', 'package.json', 'pnpm-lock.yaml', 'mise.toml', 'studio.config.ts', 'src/systems/studio/AGENTS.md'];
 

@@ -18,7 +18,7 @@ The default studio folder is `~/Developer/My Design Studio`. The person can choo
 
 Preparation trusts the inspected studio's mise configuration, installs pinned tools and dependencies, applies first-run personal defaults, and synchronizes project skills. The receipt `design-studio.local.json` records setup state and is excluded locally from Git. Repeating setup preserves existing configuration and work. Unrelated folders, linked metadata, invalid receipts, and modified initial settings are refused rather than overwritten.
 
-Experiment .9 pins the merged foundation at `7c2ddf1c5bf79bb778827a4eaff2498ca96adae3`. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
+Experiment .10 pins the tested, publicly available integration snapshot at `5a685c2bee285c1e85b0e537304742ec92af77f6`. It includes portable setup, Welcome onboarding, and Check Design System. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
 
 ## Packaging and ownership
 
@@ -69,7 +69,7 @@ Official references: [OpenAI packaging](https://developers.openai.com/plugins/bu
 
 | Evidence | Status |
 | --- | --- |
-| Codex private installation and first-run setup | Previously confirmed on two hosts; experiment .9 needs a fresh native test. |
+| Codex private installation and first-run setup | Previously confirmed on two hosts; experiment .10 needs a fresh native test. |
 | Visible source and workspace handoff | Person confirmed the Codex folder link opens a chat in the owned studio. Persistent sidebar registration remains unverified. |
 | Shared package checks | Eleven plugin/bootstrap tests cover pinning, preservation, linked paths, receipts, Claude entries, generated manifests, and marketplace resolution. |
 | Claude package and marketplace schema | Installed Claude Code 2.1.152 validator accepts both. Live setup/activation remains pending. |
