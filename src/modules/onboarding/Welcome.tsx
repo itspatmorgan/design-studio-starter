@@ -24,7 +24,7 @@ export default function Welcome() {
   const key = progressKey(import.meta.env.BASE_URL);
   const [open, setOpen] = useState(() => !isComplete(key));
   const [step, setStep] = useState(0);
-  const examples = manifest.prototypes.filter(p => p.status !== 'archived' && p.contributorKey === 'patrick' && ['feedback-inbox', 'design-studio-marketing'].includes(p.id));
+  const examples = manifest.prototypes.filter(p => p.status !== 'archived' && p.contributorKey === 'patrick' && ['feedback-inbox', 'design-studio-marketing'].includes(p.id)).sort((a, b) => Number(b.system === 'product') - Number(a.system === 'product'));
   const finish = () => { complete(key); setOpen(false); };
   return <Dialog open={open} onOpenChange={value => { if (!value) finish(); }}>
     <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto gap-6 p-6 sm:max-w-xl sm:p-8" showCloseButton={false}>
