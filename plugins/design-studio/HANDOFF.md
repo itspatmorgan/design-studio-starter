@@ -1,6 +1,6 @@
 # Test Design Studio on another computer
 
-The shared package is `0.1.0-experiment.11`. It adds numbered default installs (Design Studio, Design Studio 2, and so on) and clearer local-file messaging. Its pinned starter snapshot is `5a685c2bee285c1e85b0e537304742ec92af77f6`, which includes Welcome onboarding, shared project skills, and Check Design System. Existing studios are preserved and are not upgraded automatically.
+The shared package is `0.1.0-experiment.12`. Its pinned starter snapshot is `b6fc5d9c790671da5a27810a08ff9e05de700474`, which includes the latest canvas loading, editor fallback, automatic link repair, and configuration-backed Welcome fixes. New installs use a smaller working-studio package. Numbered default installs and local-file messaging remain. Existing studios are preserved and are not upgraded automatically.
 
 ## Get the current package
 
@@ -21,7 +21,7 @@ Read the [plugin README](README.md) for installation commands. The plugin folder
 
 ## Test each harness
 
-- **Codex:** add this checkout as the local plugin marketplace and install the current Design Studio package. If an older experiment is installed, refresh or replace that installation using the plugin controls. Confirm the installed version is experiment .11, then start a fresh chat.
+- **Codex:** add this checkout as the local plugin marketplace and install the current Design Studio package. If an older experiment is installed, refresh or replace that installation using the plugin controls. Confirm the installed version is experiment .12, then start a fresh chat.
 - **Claude Code plugin:** follow the local registration procedure in [SETUP.md](../../SETUP.md#claude-code-local-plugin-instructions), then test in Claude Desktop’s Code view with Local selected. Verify the plugin commands before asking it to create a studio. Keep unrelated work repositories out of this test.
 - **Cursor plugin:** follow [local plugin installation](../../SETUP.md#cursor-local-plugin-instructions), reload the app, and verify its skills in Customize before starting a fresh local Agent chat.
 - **Direct from source:** use [the plugin-free request](../../SETUP.md#4-direct-from-the-source-repository) in a local desktop agent without Design Studio installed.

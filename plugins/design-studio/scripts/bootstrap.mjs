@@ -6,7 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { packageStarter } from './starter-package.mjs';
 
 export const SOURCE = 'https://github.com/itspatmorgan/design-studio-starter.git';
-export const REVISION = '5a685c2bee285c1e85b0e537304742ec92af77f6';
+export const REVISION = 'b6fc5d9c790671da5a27810a08ff9e05de700474';
 export const RECEIPT = 'design-studio.local.json';
 const REQUIRED = ['AGENTS.md', 'package.json', 'pnpm-lock.yaml', 'mise.toml', 'studio.config.ts', 'src/systems/studio/AGENTS.md'];
 

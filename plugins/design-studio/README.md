@@ -10,7 +10,7 @@ The primary audience uses Codex desktop, Claude Desktop’s local Code view, and
 
 [Set up Design Studio](../../SETUP.md) owns the four user paths: Codex plugin, Claude Code plugin, Cursor plugin, and direct from the source repository. Repository catalogs are installation metadata; they do not imply a reviewed directory listing. Keep terminal commands in agent or maintainer instructions.
 
-Before the first release, publish a tested starter revision, update the bootstrap pin to it, and test native setup with the newly packaged starter, including direct-source setup. The current pin still precedes recent local fixes. Codex setup has passed; the person reports Claude Desktop and Cursor setup working well before this packaging refactor. Reopen and work-preservation checks remain separate evidence. The pilot targets macOS; Windows, Linux, and clean-computer prerequisite installation remain unverified.
+The current package pins the published starter with the latest local workflow fixes. Before the first release, test native setup with the newly packaged starter, including direct-source setup. Codex setup has passed; the person reports Claude Desktop and Cursor setup working well before this packaging refactor. Reopen and work-preservation checks remain separate evidence. The pilot targets macOS; Windows, Linux, and clean-computer prerequisite installation remain unverified.
 
 ## One setup flow
 
@@ -26,7 +26,7 @@ The default name and folder are **Design Studio** and `~/Developer/Design Studio
 
 Preparation trusts the inspected studio's mise configuration, installs pinned tools and dependencies, applies first-run personal defaults, and synchronizes project skills. The receipt `design-studio.local.json` records setup state and is excluded locally from Git. Repeating setup preserves existing configuration and work. Unrelated folders, linked metadata, invalid receipts, and modified initial settings are refused rather than overwritten.
 
-Experiment .11 pins the tested, publicly available integration snapshot at `5a685c2bee285c1e85b0e537304742ec92af77f6`. It includes portable setup, Welcome onboarding, and Check Design System. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
+Experiment .12 pins the tested, publicly available starter at `b6fc5d9c790671da5a27810a08ff9e05de700474`. It includes smoother canvas loading, editor fallbacks, automatic link repair, configuration-backed Welcome dismissal, learning-example guidance, and consolidated harness generation. New installs use the working-studio package. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
 
 ## Packaging and ownership
 
@@ -98,7 +98,7 @@ Official references: [Claude Desktop](https://code.claude.com/docs/en/desktop), 
 | Working-studio packaging | Existing public pin packaged successfully. A local source fixture passed the full exported-studio build and displayed Welcome in a disposable preview using existing dependencies. Native desktop setup with this layout and clean-computer preparation remain pending. |
 | Direct setup request | Implemented; first-run agent journey remains pending. |
 | Clean computer | Missing tools, permission prompts, and interrupted prerequisite installation remain pending. The current host already has dependencies. |
-| First release distribution | Local/repository installs planned; updated public starter pin and remaining native tests are gates. |
+| First release distribution | Local/repository installs supported by experiment .12 and its updated public starter pin; remaining native tests are gates. |
 | Reviewed public directories | Later stage. Submission, review, and listing remain pending. |
 | Team use | Separate onboarding and sharing tests are pending. |
 
