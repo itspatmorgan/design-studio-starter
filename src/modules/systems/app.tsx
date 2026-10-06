@@ -33,7 +33,7 @@ function SystemsPlaces({ go }: PaletteContext) {
 
 function SystemFiles({ manifest, go }: PaletteContext) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  return <>{manifest.systemContent.filter((section) => section.artifacts.length).map((section) =>
+  return <>{manifest.systemContent.filter((section) => section.owner?.kind === 'system' && section.system != null && section.system in PROTOTYPE_SYSTEMS && section.artifacts.length).map((section) =>
     <CommandGroup key={section.id} heading={section.owner?.label + ' · ' + section.title}>
       {section.artifacts.map((item) => { const link = artifactLink(section, item); return <CommandItem key={item.path} value={section.system + ' ' + section.title + ' ' + item.path} disabled={pathname === link.to} onSelect={() => go(link)}>{artifactLabel(item.path)}</CommandItem>; })}
     </CommandGroup>)}</>;

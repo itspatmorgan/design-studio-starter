@@ -1,4 +1,3 @@
-import { markdownPath } from '@/platform/app/docs/referenceLinks';
 // The ⌘K palette's dialog. It loads shortly after the app starts (CommandPalette.tsx), so cmdk
 // isn't in the main bundle.
 import { Fragment, type RefObject } from 'react';
@@ -82,9 +81,6 @@ export default function CommandPaletteDialog({ open, setOpen, returnFocus }: { o
               <CommandItem value="context skills documentation" onSelect={() => go({ to: '/documentation/context/$owner', params: { owner: 'platform.core' } })}>Context and skills</CommandItem>
               {manifest.guide.map(page => <CommandItem key={'guide:' + page.slug} value={'guide ' + page.title + ' ' + (page.source ?? page.slug)} onSelect={() => go({ to: '/documentation/guide' + (page.slug === 'index' ? '' : '/' + page.slug) } as never)}>
                 <span className="truncate">{page.title}</span><span className="ml-auto text-xs text-muted-foreground">Guide</span>
-              </CommandItem>)}
-              {manifest.platformReferences.flatMap(group => group.references).map(page => <CommandItem key={page.source} value={'context ' + page.title + ' ' + page.source} onSelect={() => go({ to: markdownPath(page.source) } as never)}>
-                <span className="truncate">{page.title}</span><span className="ml-auto text-xs text-muted-foreground">Context</span>
               </CommandItem>)}
             </CommandGroup>
 
