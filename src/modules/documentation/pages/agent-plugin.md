@@ -1,36 +1,45 @@
 ---
 title: Plugin and workspace
-description: How Create, Open, and Use Studio hand off to repository procedures.
+description: Start a studio, return to your work, and make it your own.
 section: Agents
 order: 24
 toc: true
 ---
 
-The installed plugin owns three entry skills. They are separate from the repository's operating skills and stay out of the Studio instruction browser.
+The Design Studio plugin helps your agent get your studio running. Your studio is a folder on your computer containing your prototypes, design systems, and shared guidance.
 
-| Plugin skill | Responsibility |
+## Start or return to your studio
+
+Ask your agent in plain language:
+
+| What you want | What to ask |
 | --- | --- |
-| Create Studio | Get the starter, prepare its dependencies, launch it, and hand off to its working folder. |
-| Open Studio | Locate and reopen an existing studio, preserving its work and configuration. |
-| Use Studio | Establish the target repository and follow its current task procedures. |
+| Start a new studio | “Create a Design Studio for me.” |
+| Return to existing work | “Open my Design Studio.” |
+| Explore an idea | “Use my studio to prototype a new onboarding flow.” |
+
+The plugin helps the agent create or open the studio. Once you are working there, the agent uses the studio's own guidance to build and refine your ideas.
 
 ```mermaid
 flowchart TD
-  accTitle: Plugin entry and repository operation
-  accDescr: Create and Open Studio establish a working repository. Use Studio delegates work to that repository. An agent can also enter the repository directly without the plugin.
-  create[Plugin: Create Studio] --> workspace[Working studio repository]
-  reopen[Plugin: Open Studio] --> workspace
-  direct[Open the folder directly in a harness] --> workspace
-  use[Plugin: Use Studio] --> workspace
-  workspace --> entry[Read repository instructions]
-  entry --> configure[Repository: Configure Studio]
-  entry --> tasks[Repository: relevant platform, module, or system skill]
+  accTitle: From opening Studio to exploring an idea
+  accDescr: You ask the agent to create or open a studio. The plugin helps it get the studio running. The agent then uses the studio's guidance to work on your idea, and you review the result.
+  ask[Ask to create or open Studio] --> plugin[Plugin helps get Studio running]
+  plugin --> work[Agent works on your idea]
+  guidance[Your studio's context and skills] --> work
+  work --> review[Review in Studio]
 ```
 
-## Create versus configure
+## Make it your own
 
-**Create Studio** makes the environment available for exploration. **Configure Studio** personalizes an already-running environment: studio identity, contributor registration, design system, and product context. Configuration is a task selected when needed, rather than a prerequisite for every session.
+Creating a studio gives you a place to start. Configuring it makes that place fit your team: its name, people, design system, and product knowledge.
 
-The plugin delegates contributor registration to the repository's procedure instead of maintaining its own copy. **Setup Contributor** also handles someone joining an existing studio. These workflows resume from existing state.
+You can begin exploring, then ask your agent to help personalize the studio. For example:
 
-You can work in the repository without the plugin. The plugin's installation and permission requirements are separate from project skill discovery.
+> Help me set this studio up for our team. We want to use our components and add context about our customers.
+
+If you are joining a team's existing studio, ask your agent to help you join it. See [Set up](/documentation/guide/getting-started) for getting started and [Customize your studio](/documentation/guide/customize) for making it your own.
+
+## Use another coding agent
+
+You can also work with Studio in Claude Code or Cursor. Open your studio's folder in the coding tool you want to use, then ask its agent to help you continue. Your prototypes and shared guidance stay with your studio.

@@ -1,32 +1,28 @@
 ---
 title: Documentation
-description: Read the Guide or inspect platform and module context and skills.
+description: Learn how to use Studio and explore the guidance available to your agent.
 section: Studio
 order: 14
 module: documentation
 toc: true
 ---
 
-Documentation covers the platform and its modules. It has two reading choices: **Guide** and **Context & Skills**.
+Documentation has two reading choices: **Guide** and **Context & Skills**.
 
 ## Guide
 
-The Guide introduces setup, everyday capabilities, and collaboration. These chapters are written for people working with agents. Read what is useful now; you do not need to finish it before making a prototype.
+The Guide helps you get started, explore ideas, and work with your agent. Read the chapters that are useful for what you want to do next.
+
+The [Agents section](/documentation/guide/agent-context) explains how shared knowledge and task instructions help your agent make work that fits your product.
 
 ## Context & Skills
 
-The file tree shows **Platform**, followed by **Modules** and each enabled module. Each branch’s **README** displays its entry document. README, context documents, and skills appear directly beneath their owner. Icons and type labels distinguish them. Modules collapse; the current module opens automatically. The tree remembers your choices while browsing. The browser displays the original repository files, so editing here updates the same source your agent reads.
+Use **Context & Skills** when you want to explore Studio's instructions in more detail. **Platform** covers Studio as a whole. **Modules** covers capabilities such as prototypes, documents, and canvases. Each **README** introduces that part of Studio.
 
-Platform technical documents appear under **Platform**, alongside its other shared knowledge. They explain configuration, file types, source editing, dependencies, checks, and publishing. Module READMEs own capability contracts. Systems own product, brand, and design knowledge.
+These documents provide detailed guidance for your agent. You can browse them to understand how a capability works, or ask your agent to explain what is relevant to your task.
 
-A README is the entry point into an owner's context. Technical contracts are context too. A skill links to relevant context and explains how to complete a task; it does not need to repeat the contract.
+## Your team's guidance
 
-## How it relates to Systems
+Open **Systems** to find the context and skills for your product or brand, alongside its styles and components. This is where you can review your team's audience, principles, and design standards.
 
-Systems brings together a selected system’s Context, Skills, Theme, and Components. Product, brand, and design guidance stays there. Documentation contains the shared platform requirements and module procedures used alongside that system guidance.
-
-For example, the Prototypes README defines permitted dependencies. Its build-prototype skill directs the agent through implementation and verification. Your assigned system supplies product context within those boundaries.
-
-Read [Responsibilities](/documentation/context/platform.core/context/contracts-and-instructions) for ownership or [Skill discovery](/documentation/guide/agent-skills) for discovery. Listing a file does not prove an agent has read it.
-
-Use navigation for the [shared source workflow](/documentation/guide/home#working-with-files). Each instruction document offers source editing and access to its underlying file. This navigation has no creation, moving, renaming, or deletion controls.
+To refine guidance, ask your agent or use **Edit source** on the document. See [Maintaining guidance](/documentation/guide/agent-maintenance) for deciding what to save and how to keep it useful.

@@ -63,7 +63,7 @@ sequenceDiagram
 
 This shows one iteration. Checks can fail, and the agent may need clarification before it builds.
 
-The [Agents section](/documentation/guide/agent-context) explains source ownership, plugin handoff, skill discovery, task context, and maintaining guidance. Each chapter includes a focused diagram.
+The [Agents section](/documentation/guide/agent-context) explains how to give your agent useful direction and shared knowledge, then refine both through your work.
 
 Give the agent your goals, constraints, and feedback. You can work visually while it handles code and technical details.
 

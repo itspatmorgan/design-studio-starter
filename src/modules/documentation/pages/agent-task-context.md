@@ -1,35 +1,45 @@
 ---
 title: Task context
-description: How the agent chooses platform, module, and assigned-system guidance.
+description: Give your agent clear direction and connect it to the right product guidance.
 section: Agents
 order: 26
 toc: true
 ---
 
-For prototype work, the prototype's assignment selects product guidance. The browser's selected system does not set the assignment or load context into the conversation.
+A useful request describes what you want to explore, who it is for, and what matters most. Your agent can combine that direction with the guidance already saved in your studio.
+
+## Start with the outcome
+
+For example:
+
+> Prototype a checkout for first-time customers. Make delivery costs clear before payment. Use our Product system and show both the happy path and a declined-card state.
+
+This gives the agent an audience, a design priority, a system to use, and the states you want to review. You can also point it to research, a reference, or an existing prototype.
 
 ```mermaid
 flowchart TD
-  accTitle: Selecting guidance for a prototype task
-  accDescr: A prototype task uses repository working requirements, contributor and assignment resolution, a relevant enabled module skill, and the assigned system's guidance before implementation and verification.
-  request[Request: build a checkout prototype] --> baseline[Repository instructions and working requirements]
-  baseline --> resolve[Resolve contributor and prototype assignment]
-  resolve --> capability[Relevant enabled module skill: Build Prototype]
-  resolve --> domain[Assigned system entry point and relevant context]
-  capability --> work[Implement and verify the requested prototype]
-  domain --> work
+  accTitle: What helps an agent build the right prototype
+  accDescr: Your request describes the goal, audience, and states to explore. The prototype's system provides product knowledge, styles, and components. Studio skills help the agent build a result for your review.
+  request[Your goal, audience, and states] --> work[Agent builds the prototype]
+  system[Product guidance, styles, and components] --> work
+  skill[Studio skills] --> work
+  work --> review[Try the flow and give feedback]
 ```
 
-## Assignment selects the system
+## Use the right system
 
-| Prototype assignment | Product guidance |
-| --- | --- |
-| An explicit system ID | That registered system. |
-| Explicit None (`system: null`) | Local components and styling; no assigned system. |
-| Assignment omitted | The configured default system. |
+Each prototype can use a system that brings together its components, styles, and product guidance. A marketing exploration may use your Marketing system, while an in-product flow uses your Product system.
 
-For example, a Marketing prototype uses the Prototypes module's skill alongside Marketing context. Product system guidance does not apply merely because it exists in the repository. A pending rebuild also needs the target system's guidance while preserving the original exploration.
+Tell the agent which system you want when you create the prototype. For existing work, it should follow the prototype's assigned system. If you are unsure, ask:
 
-## Other tasks
+> Which system does this prototype use?
 
-Other tasks select different sources. Changing Studio's interface uses platform guidance and the Studio system. Adding a brand-writing skill belongs to that brand's system. Platform principles and personas apply to platform product and architecture decisions, not as substitutes for your product's audience.
+Browse the system in **Systems** to review its guidance. To change an existing prototype's system, ask the agent to help with that change.
+
+## Refine through feedback
+
+Try the prototype and describe what should improve:
+
+> The delivery step feels too busy. Keep the cost visible, but simplify the choices and explain the recommended option.
+
+Keep feedback about this exploration in the task. If you discover a principle that should apply across your product, ask the agent to save it as shared context. See [Maintaining guidance](/documentation/guide/agent-maintenance).

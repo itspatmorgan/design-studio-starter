@@ -1,36 +1,42 @@
 ---
 title: Skill discovery
-description: How canonical skills become discoverable in coding harnesses.
+description: How your agent finds instructions for the work you ask it to do.
 section: Agents
 order: 25
 toc: true
 ---
 
-Canonical skills remain under their owners. Synchronization creates small project entries that point back to those procedures. These generated entries contain discovery metadata and routing guidance; they do not own another implementation of the task.
+A skill is a set of instructions for a particular task. Studio includes skills for work such as building prototypes, writing documents, and creating diagrams.
+
+Describe the result you want. Your agent can choose the relevant skill; you do not need to know its name.
+
+## From a request to a skill
+
+Suppose you ask:
+
+> Create a diagram showing how a customer goes from choosing a plan to completing payment.
+
+The diagram skill gives the agent instructions for creating that kind of work in Studio. Your product context helps it describe the right experience.
 
 ```mermaid
 flowchart TD
-  accTitle: Canonical skills and generated harness entries
-  accDescr: Studio sync inventories platform skills, enabled module skills, and registered system skills. It creates agents entries for Codex and Cursor and Claude links to those entries. Both lead back to the canonical procedure.
-  canonical[Platform, enabled module, and registered system skills] --> sync[Studio sync]
-  sync --> adapters[Generated .agents/skills entries]
-  adapters --> codex[Codex and Cursor project discovery]
-  sync --> claudeLinks[Generated .claude/skills links]
-  claudeLinks --> adapters
-  claudeLinks --> claude[Claude Code project discovery]
-  codex --> read[Agent follows entry to canonical SKILL.md]
-  claude --> read
-  read --> references[Relevant context and supporting resources]
+  accTitle: How the agent uses a skill
+  accDescr: You describe the result you want. The agent chooses a relevant skill, reads its instructions and related context, then creates work for you to review.
+  ask[Describe what you want] --> choose[Agent chooses a relevant skill]
+  choose --> read[Reads instructions and useful context]
+  read --> build[Creates work for you to review]
 ```
 
-## Available versus read
+## Understand what guided the result
 
-The intended reading sequence is progressive:
+If you want to understand a result, ask:
 
-1. The harness exposes skill names and descriptions for selection.
-2. The agent reads the selected skill's procedure.
-3. The agent follows references needed for that task.
+> Which guidance did you use, and how did it shape this design?
 
-Context documents are not individually registered as skills, and Studio does not inject every context file into every conversation. Root `AGENTS.md` supplies essential requirements and routes. A system's `AGENTS.md`, when present, selects its relevant guidance. Module declarations can add conditional task routes to the root entry point.
+This can help you decide whether to refine your request, update shared context, or ask for a different approach.
 
-The host's discovery behavior still needs verification in the installed harness. Generated files prove that entries exist; they do not prove that a host registered them or that an agent read them. See [Agent context routing](/documentation/context/platform.core/context/agent-context) for the exact exposure and validation contracts.
+You can read Studio's skills in **Documentation → Context & Skills**. Skills specific to your product or brand are in **Systems**. See [Agent context](/documentation/guide/agent-context) for how skills and context work together.
+
+## After adding a skill
+
+Ask your agent to make a new skill available in your coding tool as part of creating it. If it does not appear in the tool's skill list, try a new chat or ask the agent to check the setup.

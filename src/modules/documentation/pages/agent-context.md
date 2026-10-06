@@ -1,48 +1,48 @@
 ---
 title: Agent context
-description: Where instructions live and how people and agents use them.
+description: Give your agent the knowledge it needs to make work that fits your product.
 section: Agents
 order: 23
 toc: true
 ---
 
-Design Studio keeps its instructions in the repository you own. Context explains what the agent needs to know. Skills explain how to perform a task. The plugin helps the agent enter that repository; the repository supplies the current working guidance.
+Your agent can build a prototype from a description. To make it feel like your product, it also needs to understand your customers, your goals, and your team's design standards.
 
-This section explains the agent system from several viewpoints. Discovery makes guidance available; the agent still needs to select and read relevant sources.
+Design Studio keeps that shared knowledge alongside your work. You can review it, refine it, and ask your agent to use it as you explore ideas.
 
-| Chapter | What it explains |
-| --- | --- |
-| This page | Source ownership and where people can inspect it. |
-| [Plugin and workspace](/documentation/guide/agent-plugin) | Entering a studio and handing off to its procedures. |
-| [Skill discovery](/documentation/guide/agent-skills) | Generated entries and harness discovery. |
-| [Task context](/documentation/guide/agent-task-context) | Selecting guidance for the current request and system. |
-| [Maintaining guidance](/documentation/guide/agent-maintenance) | Authoring and curating the canonical instruction set. |
+## Context and skills
 
-## Sources and readers
+**Context** explains what matters. It might describe who your product serves, how your brand sounds, or which design principles guide your team.
 
-Platform, modules, and systems follow the same authoring pattern: a README, context documents, and task skills. The platform is the shared foundation; it follows this pattern without being an installable module.
-
-| Owner | Canonical root | What belongs there |
-| --- | --- | --- |
-| Platform | `src/platform/` | Studio principles, personas, working requirements, shared contracts, and cross-module procedures. |
-| Module | `src/modules/<id>/` | A capability's contract and procedures, such as building prototypes or using canvases. |
-| System | `src/systems/<id>/` | Product, brand, audience, component usage, and writing guidance for that system. |
-
-Within each root, `README.md` introduces the owner and indexes its sources. A module README also holds its main technical contract. `context/*.md` holds knowledge and standing requirements. `skills/<task>/SKILL.md` holds a task procedure, with supporting files inside that skill's folder when needed. An owner does not need context documents or skills without a useful subject or distinct task.
+**Skills** explain how to do something in Studio, such as build a prototype or create a diagram. Your agent uses the relevant skill to carry out your request.
 
 ```mermaid
 flowchart TD
-  accTitle: One authored source with several consumers
-  accDescr: Platform, modules, and systems own canonical README, context, and skill files. Human readers and agent discovery use those sources without creating independently authored copies.
-  owners[Platform, modules, and systems] --> sources[Canonical README, context, and skills]
-  sources --> browser[Studio readers: original documents]
-  sources --> routes[Agent entry points and skill discovery]
-  browser --> people[People inspect and edit sources]
-  routes --> agent[Agent reads relevant canonical sources]
+  accTitle: Your direction, context, and skills guide the work
+  accDescr: You describe the result you want. Product context helps the agent make design decisions, and skills help it carry out the task. You review the resulting work.
+  direction[Your direction] --> agent[Agent builds the idea]
+  context[Context: what matters] --> agent
+  skills[Skills: how to do the task] --> agent
+  agent --> review[You review and refine]
 ```
 
-**Documentation → Context & Skills** lists platform and enabled module documents directly beneath their owners. Modules collapse; there is no Context or Skills folder layer in this navigation. The document type appears on hover or keyboard focus. Source editing changes the underlying file.
+For example, ask for a sign-up flow for your product. Your audience context helps the agent choose what to explain. Your writing guidance shapes the copy. The prototype skill helps it build a flow you can try.
 
-**Systems** keeps each system's Context and Skills beside Theme and Components. Studio's own system supplies the application's toolkit and UI conventions. Your product system supplies your team's product guidance.
+## Where to find guidance
 
-The **Guide** explains the system to people. It links to authoritative sources rather than becoming another technical contract. See [Responsibilities](/documentation/context/platform.core/context/contracts-and-instructions) for the ownership foundation.
+Open **Systems** and choose your product's system to find its **Context** and **Skills**. This is where your team's audience, principles, and design guidance belong. A system brings this knowledge together with the styles and components your prototypes use.
+
+Open **Documentation → Context & Skills** to explore guidance about Studio and its capabilities. Each **README** introduces that part of Studio. You can browse these documents when you want to understand how something works.
+
+To update shared guidance, ask your agent. For example:
+
+> Add this to our product's writing guidance: use short, direct sentences and explain unfamiliar terms.
+
+## Explore the Agents section
+
+| Chapter | What you can learn |
+| --- | --- |
+| [Plugin and workspace](/documentation/guide/agent-plugin) | Start or reopen a studio with your agent. |
+| [Skill discovery](/documentation/guide/agent-skills) | Understand how your agent finds help for a task. |
+| [Task context](/documentation/guide/agent-task-context) | Give your agent useful direction for a prototype. |
+| [Maintaining guidance](/documentation/guide/agent-maintenance) | Keep shared knowledge useful as your product changes. |

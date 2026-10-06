@@ -1,31 +1,46 @@
 ---
 title: Maintaining guidance
-description: How to author, curate, expose, and verify the instruction set.
+description: Keep your team's shared knowledge clear, useful, and current.
 section: Agents
 order: 27
 toc: true
 ---
 
-Ask your agent to make changes in the source that owns the guidance. The browser provides reading and source access; generated harness entries point back to those canonical files.
+Shared guidance helps your agent make consistent decisions across prototypes. Keep it focused on what your team wants the agent to know or do repeatedly.
+
+## Decide what to save
+
+| What you want to keep | Where it fits |
+| --- | --- |
+| Who your customers are and what they need | Audience context in your product's system. |
+| Principles, brand voice, or design standards | Context in the relevant system. |
+| A repeatable task, such as reviewing copy against your standards | A skill in the relevant system. |
+| A decision specific to one exploration | A document or note with that prototype. |
+
+You can ask your agent to organize the guidance for you:
+
+> Save these customer insights as context in our Product system. Check the existing audience document first and update it where appropriate.
+
+## Review and refine
+
+Open your system's **Context** and **Skills** to read the current guidance. Ask the agent to revise it, or use **Edit source** to change the document yourself.
+
+When adding guidance, look for an existing document that covers the subject. Keeping related knowledge together makes it easier to review and update. Give a different subject its own document when that makes it clearer.
 
 ```mermaid
 flowchart TD
-  accTitle: Maintain canonical guidance and refresh its consumers
-  accDescr: Choose the owner, edit the canonical source, update its README and callers, refresh exposure for skill or availability changes, and verify the result. Consumers do not become new authoring locations.
-  choose[Choose the owner and existing source] --> edit[Edit canonical context or skill]
-  edit --> index[Update README and affected callers]
-  index --> refresh[Refresh exposure for skill or availability changes]
-  refresh --> verify[Check links, metadata, rendering, and behavior]
+  accTitle: Keep shared guidance useful
+  accDescr: Review what the team already knows, update the relevant context or skill, then use it in a prototype and refine it based on the result.
+  review[Review existing guidance] --> update[Update what matters]
+  update --> use[Use it in a prototype]
+  use --> learn[Review the result and refine]
+  learn --> review
 ```
 
-Use **Maintain Context** to author context and task procedures. Use **Maintain Documentation** to revise READMEs, coordinate Guide updates, or audit consistency. **Write Guide** owns Guide chapter edits when Documentation is enabled.
+## Learn from the work
 
-Keep each fact, requirement, or procedure in one authoritative source and link to it from consumers. Split a document when subjects have distinct purposes or readers; avoid adding another note that repeats the same guidance.
+If a result misses the mark, explain why and ask the agent to review the guidance it used. A useful correction might be:
 
-## Refresh and verify
+> Our audience knows the industry but is new to this product. Update the onboarding guidance to reflect that, then revise this flow.
 
-After skill or capability-availability changes, ask your agent to run `pnpm studio sync`. It refreshes managed project entries while preserving user-authored files. Development startup also synchronizes. A build validates the sources without rewriting adapters. Refresh the harness or start a new session when its skill list has not updated.
-
-Edit canonical files, not generated `.agents/skills/` entries or `.claude/skills/` links. The plugin's entry skills are maintained with the plugin; a studio's task procedures are maintained in that studio.
-
-For authoring details, use [Documentation standards](/documentation/context/platform.core/context/documentation-standards). To check actual behavior, ask the agent which skill, system, and sources it used, then review its resulting work. The browser inventory and automated checks do not record or prove conversation reads.
+For a team, agree on changes to shared principles and standards together. Keep the guidance current as your understanding of customers and your product grows.
