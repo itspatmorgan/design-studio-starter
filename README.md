@@ -4,6 +4,8 @@ An open-source starter kit for your own design environment. Work with a coding a
 
 Made for designers and product managers, working individually or with a team. Bring your own design system, customize the studio, and own the code and everything you create.
 
+Created by [Patrick Morgan](https://itspatmorgan.com). Visit the [Design Studio landing page](https://itspatmorgan.com/design-studio) for an introduction.
+
 ## Get started
 
 Choose one of four paths in [Set up Design Studio](SETUP.md): **Codex plugin**, **Claude Code plugin**, **Cursor plugin**, or **direct from the source repository**. Use your desktop app and a local session. The agent handles technical setup and opens a studio in a visible folder on your computer. Personal use does not require a GitHub account.
@@ -53,6 +55,15 @@ See [Publishing](src/platform/context/publishing.md) for portable hosting, direc
 Early beta, focused on local workflows: prototypes, canvases, documents, design systems, and system-owned context. See the [Changelog](CHANGELOG.md) for platform release history.
 
 For bugs, ideas, and pull requests, see [Contributing](CONTRIBUTING.md). For the intended environment and private vulnerability reporting, see [Security](SECURITY.md).
+
+## Follow the work
+
+Follow Patrick’s writing about design, technology, and creative work at [Unknown Arts](https://www.unknownarts.com/).
+
+- [Personal website](https://itspatmorgan.com)
+- [Design Studio](https://itspatmorgan.com/design-studio)
+- [Source on GitHub](https://github.com/itspatmorgan/design-studio-starter)
+- [X](https://x.com/itspatmorgan) and [LinkedIn](https://www.linkedin.com/in/itspatmorgan)
 
 ## License
 

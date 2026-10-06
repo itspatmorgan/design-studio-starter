@@ -2,13 +2,15 @@
 
 This experimental package helps a local coding agent create, open, and use Design Studio. A designer asks “Create my Design Studio.” The agent handles downloading and preparation, opens a preview, and helps them continue in the owned studio folder.
 
+Created by [Patrick Morgan](https://itspatmorgan.com). The plugin homepage is the [Design Studio landing page](https://itspatmorgan.com/design-studio); its source is [design-studio-starter on GitHub](https://github.com/itspatmorgan/design-studio-starter). Follow Patrick’s writing at [Unknown Arts](https://www.unknownarts.com/) and find him on [X](https://x.com/itspatmorgan) and [LinkedIn](https://www.linkedin.com/in/itspatmorgan).
+
 ## Staged release
 
 The primary audience uses Codex desktop, Claude Desktop’s local Code view, and Cursor. The first release will use each tool’s supported local or repository plugin installation. Public-directory submissions and reviews are a later distribution stage, not a prerequisite for the first release.
 
 [Set up Design Studio](../../SETUP.md) owns the four user paths: Codex plugin, Claude Code plugin, Cursor plugin, and direct from the source repository. Repository catalogs are installation metadata; they do not imply a reviewed directory listing. Keep terminal commands in agent or maintainer instructions.
 
-Before the first release, publish a tested starter revision, update the bootstrap pin to it, and complete the remaining Cursor and direct-source tests. The current pin still precedes recent local fixes. Codex setup has passed; the person reports Claude Desktop setup working well. Reopen and work-preservation checks remain separate evidence. The pilot targets macOS; Windows, Linux, and clean-computer prerequisite installation remain unverified.
+Before the first release, publish a tested starter revision, update the bootstrap pin to it, and complete the remaining direct-source test. The current pin still precedes recent local fixes. Codex setup has passed; the person reports Claude Desktop and Cursor setup working well. Reopen and work-preservation checks remain separate evidence. The pilot targets macOS; Windows, Linux, and clean-computer prerequisite installation remain unverified.
 
 ## One setup flow
 
@@ -89,7 +91,7 @@ Official references: [Claude Desktop](https://code.claude.com/docs/en/desktop), 
 | Shared package checks | Thirteen plugin/bootstrap tests cover numbered default installs, pinning, preservation, linked paths, receipts, Claude entries, generated manifests, and marketplace resolution. |
 | Claude package and marketplace schema | Installed Claude Code 2.1.285 validator accepts both. This is schema evidence only. |
 | Claude Desktop local Code journey | Local installation and desktop command discovery verified October 6, 2026. Person reports setup working well. Repository import, reopen, and work-preservation checks remain pending. |
-| Cursor package | Follows current official format. Repository import and live activation remain pending. |
+| Cursor local plugin setup | Person reports setup working well on this Mac. Repository import, reopen, and work-preservation checks remain pending. |
 | Starter revision | Public merged revision downloaded and prepared successfully in a disposable QA folder. Its home rendered in the browser; flat context, current instruction reader, project skills, and Claude import were verified. This host already has prerequisite tools. |
 | Direct setup request | Implemented; first-run agent journey remains pending. |
 | Clean computer | Missing tools, permission prompts, and interrupted prerequisite installation remain pending. The current host already has dependencies. |
