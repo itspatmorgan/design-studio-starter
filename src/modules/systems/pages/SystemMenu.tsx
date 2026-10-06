@@ -29,6 +29,8 @@ export default function SystemMenu({ system }: { system: string }) {
   const [checking, setChecking] = useState(false);
   const [allowed, setAllowed] = useState(false);
   const dependents = [...manifest.prototypes, ...Object.values(manifest.sections).flat()].filter(proto => proto.system === system || proto.rebuild?.targetSystem === system);
+  const archiveTargets = dependents.filter(proto => proto.status !== 'archived');
+  const defaultArchive = dialog === 'archive' && system === DEFAULT_SYSTEM;
 
   async function run(action: string) {
     try {
@@ -39,6 +41,7 @@ export default function SystemMenu({ system }: { system: string }) {
   }
   async function openAction(action: 'archive' | 'restore' | 'delete') {
     setDialog(action); setError(''); setAllowed(false); setChecking(true);
+    if (action === 'archive' && system === DEFAULT_SYSTEM) { setChecking(false); return; }
     try { await systemRequest(`${action}-check`, system); setAllowed(true); }
     catch (e) { setError((e as Error).message); }
     finally { setChecking(false); }
@@ -80,12 +83,29 @@ export default function SystemMenu({ system }: { system: string }) {
           <label className="grid gap-1.5 text-sm font-medium">Name<Input name="name" defaultValue={spec.label} required maxLength={120} autoFocus /></label>
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
           <DialogFooter><Button type="button" variant="outline" disabled={busy} onClick={() => setDialog(null)}>Cancel</Button><Button type="submit" disabled={busy}>{busy ? 'Saving' : 'Save'}</Button></DialogFooter>
-        </form> : <>
-          <DialogHeader><DialogTitle>{dialog === 'archive' ? 'Archive' : dialog === 'restore' ? 'Restore' : 'Delete'} {spec.label}?</DialogTitle><DialogDescription>{dialog === 'archive' ? 'This system and its associated active prototypes will be archived. Their files stay in the repository and are excluded from deployment. This system will no longer be available for new prototypes.' : dialog === 'restore' ? 'Make this system available for new prototypes again. Choose whether to restore the prototypes archived with it.' : 'Permanently delete this system’s source files and registration. Associated prototypes keep their files but cannot render or deploy until rebuilt with another system. There is no Studio recovery copy. Uncommitted system files cannot be recovered through Git.'}</DialogDescription></DialogHeader>
+        </form> : dialog === 'archive' ? <>
+          <DialogHeader>
+            <DialogTitle>{defaultArchive ? `${spec.label} is the default system` : `Archive ${spec.label}?`}</DialogTitle>
+            <DialogDescription>{defaultArchive ? `Set another system as the default before archiving ${spec.label}.` : 'Files stay in your repository. Archived items are excluded from deployment, and this system becomes unavailable for new prototypes.'}</DialogDescription>
+          </DialogHeader>
+          {!defaultArchive && <>
+            {checking && <p role="status" className="text-sm text-muted-foreground">Checking dependencies</p>}
+            {error && <p role="alert" className="text-sm text-destructive whitespace-pre-line">{error}</p>}
+            {!error && archiveTargets.length > 0 && <div className="grid gap-2 text-sm">
+              <p className="font-medium">Also archives {archiveTargets.length} {archiveTargets.length === 1 ? 'prototype' : 'prototypes'}</p>
+              <ul className="max-h-48 list-disc overflow-auto pl-5">{archiveTargets.map(proto => <li key={`${proto.contributorKey}/${proto.id}`}><Link {...prototypeLink(proto)} className="underline">{proto.title}</Link></li>)}</ul>
+            </div>}
+          </>}
+          <DialogFooter>
+            <Button variant="outline" disabled={busy} onClick={() => setDialog(null)}>{defaultArchive ? 'Close' : 'Cancel'}</Button>
+            {!defaultArchive && <Button disabled={busy || checking || !allowed} onClick={() => void save()}>{busy ? 'Archiving' : 'Archive system'}</Button>}
+          </DialogFooter>
+        </> : <>
+          <DialogHeader><DialogTitle>{dialog === 'restore' ? 'Restore' : 'Delete'} {spec.label}?</DialogTitle><DialogDescription>{dialog === 'restore' ? 'Make this system available for new prototypes again. Choose whether to restore the prototypes archived with it.' : 'Permanently delete this system’s source files and registration. Associated prototypes keep their files but cannot render or deploy until rebuilt with another system. There is no Studio recovery copy. Uncommitted system files cannot be recovered through Git.'}</DialogDescription></DialogHeader>
           {checking && <p role="status" className="text-sm text-muted-foreground">Checking system dependencies</p>}
           {error && <p role="alert" className="text-sm text-destructive whitespace-pre-line">{error}</p>}
           {dependents.length > 0 && <div className="grid gap-2 text-sm"><p>These prototypes depend on {spec.label}.</p><ul className="max-h-48 list-disc overflow-auto pl-5">{dependents.map(proto => <li key={`${proto.contributorKey}/${proto.id}`}><Link {...prototypeLink(proto)} className="underline">{proto.title}</Link>{proto.status === 'archived' ? ' (archived)' : ''}{proto.rebuild?.targetSystem === system ? ' (pending rebuild)' : ''}</li>)}</ul></div>}
-          <DialogFooter><Button variant="outline" disabled={busy} onClick={() => setDialog(null)}>Cancel</Button>{dialog === 'restore' && <Button disabled={busy || checking || !allowed} onClick={() => void save(undefined, true)}>Restore system and prototypes</Button>}<Button variant={dialog === 'restore' ? 'outline' : 'destructive'} disabled={busy || checking || !allowed} onClick={() => void save(undefined, false)}>{busy ? 'Working' : dialog === 'archive' ? 'Archive system' : dialog === 'restore' ? 'Restore system only' : 'Delete system'}</Button></DialogFooter>
+          <DialogFooter><Button variant="outline" disabled={busy} onClick={() => setDialog(null)}>Cancel</Button>{dialog === 'restore' && <Button disabled={busy || checking || !allowed} onClick={() => void save(undefined, true)}>Restore system and prototypes</Button>}<Button variant={dialog === 'restore' ? 'outline' : 'destructive'} disabled={busy || checking || !allowed} onClick={() => void save(undefined, false)}>{busy ? 'Working' : dialog === 'restore' ? 'Restore system only' : 'Delete system'}</Button></DialogFooter>
         </>}
       </DialogContent>
     </Dialog>
