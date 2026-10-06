@@ -15,6 +15,12 @@ export function manifestOutputs(portable) {
     ['.cursor-plugin/plugin.json', { ...identity, skills: './skills/', logo: './assets/logo.svg' }],
     ['../../.claude-plugin/marketplace.json', marketplace],
     ['../../.cursor-plugin/marketplace.json', marketplace],
+    ['../../.agents/plugins/marketplace.json', {
+      name: marketplace.name,
+      interface: { displayName: 'Design Studio Experiment' },
+      plugins: [{ name: identity.name, source: { source: 'local', path: marketplace.plugins[0].source },
+        policy: { installation: 'AVAILABLE', authentication: 'ON_INSTALL' }, category: ui.category }],
+    }],
   ]);
 }
 
@@ -25,7 +31,7 @@ export function syncManifests(check = false) {
     const content = JSON.stringify(value, null, 2) + '\n';
     if (check) {
       if (!fs.existsSync(file) || fs.readFileSync(file, 'utf8') !== content) throw new Error(`Generated manifest is stale: ${file}`);
-    } else {
+    } else if (!fs.existsSync(file) || fs.readFileSync(file, 'utf8') !== content) {
       fs.mkdirSync(path.dirname(file), { recursive: true });
       fs.writeFileSync(file, content);
       console.log(`Updated ${file}`);

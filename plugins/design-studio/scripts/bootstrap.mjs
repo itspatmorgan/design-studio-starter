@@ -3,6 +3,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import { packageStarter } from './starter-package.mjs';
 
 export const SOURCE = 'https://github.com/itspatmorgan/design-studio-starter.git';
 export const REVISION = '5a685c2bee285c1e85b0e537304742ec92af77f6';
@@ -82,6 +83,13 @@ export function createStudio({ destination: value, name = 'Design Studio', sourc
     run('git', ['checkout', '-B', 'main', 'FETCH_HEAD'], staging);
     if (run('git', ['rev-parse', 'HEAD'], staging) !== revision) throw new Error('Downloaded starter did not match the pinned revision.');
     verifyFiles(staging);
+    const files = run('git', ['ls-files', '-z'], staging).split('\0').filter(Boolean);
+    packageStarter(staging, files);
+    // Only this fresh staging checkout is repackaged. Existing studios return above.
+    fs.rmSync(path.join(staging, '.git'), { recursive: true, force: true });
+    run('git', ['init', '--initial-branch=main', staging]);
+    run('git', ['add', '--all'], staging);
+    run('git', ['-c', 'user.name=Design Studio Setup', '-c', 'user.email=setup@design-studio.local', '-c', 'core.hooksPath=/dev/null', 'commit', '-m', `Create Design Studio from ${revision}`], staging);
     const receipt = { schema: 1, product: 'design-studio', source, revision, name: name.trim(), prepared: false };
     fs.writeFileSync(path.join(staging, RECEIPT), JSON.stringify(receipt, null, 2) + '\n', { flag: 'wx' });
     fs.appendFileSync(path.join(staging, '.git/info/exclude'), `\n/${RECEIPT}\n`);

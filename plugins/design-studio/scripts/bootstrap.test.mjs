@@ -20,11 +20,13 @@ function fixture(t) {
   return { temp, source, revision: git('rev-parse', 'HEAD'), destination: path.join(temp, 'My studio; literal $name') };
 }
 
-test('creates visible source at pinned commit without an upstream remote', (t) => {
+test('creates packaged visible source from pinned commit without an upstream remote', (t) => {
   const options = fixture(t);
   const result = createStudio({ ...options, name: 'My studio' });
   assert.equal(result.existing, false);
-  assert.equal(execFileSync('git', ['rev-parse', 'HEAD'], { cwd: options.destination, encoding: 'utf8' }).trim(), options.revision);
+  assert.equal(result.revision, options.revision);
+  assert.match(execFileSync('git', ['log', '-1', '--format=%s'], { cwd: options.destination, encoding: 'utf8' }), new RegExp(options.revision));
+  assert.equal(execFileSync('git', ['status', '--porcelain'], { cwd: options.destination, encoding: 'utf8' }).trim(), '');
   assert.equal(execFileSync('git', ['remote'], { cwd: options.destination, encoding: 'utf8' }).trim(), '');
   assert.ok(fs.existsSync(path.join(options.destination, 'src/systems/studio/AGENTS.md')));
   assert.equal(inspectStudio(options.destination).name, 'My studio');

@@ -44,12 +44,15 @@ const safeParent = (dir, root) => {
 const exists = file => { try { return fs.lstatSync(file); } catch (e) { if (e.code === 'ENOENT') return null; throw e; } };
 
 // Manage only exact generated entries. Modified, colliding, and unrelated files are preserved.
-export function syncSkillAdapters(root, catalog) {
+export function syncSkillAdapters(root, catalog, { check = false } = {}) {
   // Migrate the starter's known, dangling legacy adapters without following or deleting their targets.
   for (const rel of ['.agents/skills', '.claude/skills']) {
     const abs = path.join(root, rel);
     if (!canonicalDirectory(path.dirname(abs), root)) { if (exists(path.dirname(abs))) throw new Error(`${rel}: unsafe adapter parent.`); }
-    if (exists(abs)?.isSymbolicLink() && fs.readlinkSync(abs) === '../src/systems/platform/skills' && !fs.existsSync(abs)) fs.unlinkSync(abs);
+    if (exists(abs)?.isSymbolicLink() && fs.readlinkSync(abs) === '../src/systems/platform/skills' && !fs.existsSync(abs)) {
+      if (check) throw new Error(`${rel}: legacy adapter needs synchronization.`);
+      fs.unlinkSync(abs);
+    }
   }
   const receiptPath = path.join(root, '.agents/studio-skills.json');
   for (const dir of ['.agents', '.agents/skills', '.claude', '.claude/skills']) {
@@ -106,6 +109,10 @@ export function syncSkillAdapters(root, catalog) {
     if (before === undefined || hash(before) !== old.hash) { warnings.push(`Preserved modified obsolete adapter ${rel}.`); continue; }
     operations.push({ rel, kind: 'remove' });
   }
+  const receipt = JSON.stringify({ schema: 1, files }, null, 2) + '\n';
+  const receiptChanged = !exists(receiptPath) || fs.readFileSync(receiptPath, 'utf8') !== receipt;
+  const claude = path.join(root, 'CLAUDE.md');
+  if (check) return { changed: operations.length + Number(receiptChanged) + Number(!exists(claude)), warnings };
   // All collision and path checks finish before writes.
   for (const op of operations) {
     const abs = path.join(root, op.rel);
@@ -119,9 +126,7 @@ export function syncSkillAdapters(root, catalog) {
     }
   }
   fs.mkdirSync(path.dirname(receiptPath), { recursive: true });
-  const receipt = JSON.stringify({ schema: 1, files }, null, 2) + '\n';
-  if (!exists(receiptPath) || fs.readFileSync(receiptPath, 'utf8') !== receipt) fs.writeFileSync(receiptPath, receipt);
-  const claude = path.join(root, 'CLAUDE.md');
+  if (receiptChanged) fs.writeFileSync(receiptPath, receipt);
   if (!exists(claude)) fs.writeFileSync(claude, '@AGENTS.md\n');
   return { changed: operations.length, warnings };
 }

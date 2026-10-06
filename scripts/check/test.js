@@ -3,7 +3,7 @@
 import { globSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
-const files = [...globSync(['src/platform/**/*.test.ts', 'src/modules/**/*.test.ts', 'scripts/**/*.test.js'])].sort();
+const files = [...globSync(['src/platform/**/*.test.ts', 'src/modules/**/*.test.ts', 'scripts/**/*.test.js', 'plugins/design-studio/scripts/*.test.mjs'])].sort();
 if (!files.length) throw new Error('No platform tests were found.');
 const result = spawnSync(process.execPath, ['--test', ...files], { stdio: 'inherit' });
 if (result.error) throw result.error;

@@ -40,7 +40,17 @@ Canonical sources remain under platform, module, and system `skills/` folders. S
 
 The generated receipt `.agents/studio-skills.json` tracks exact managed contents. Sync preserves unrelated and modified entries and reports collisions. Obsolete unmodified entries are removed when capabilities disappear. Do not edit generated entries; edit their canonical skill and synchronize. Cursor can also discover Claude-compatible directories; its actual selector behavior must be checked in the installed host.
 
+`pnpm studio sync --check` inspects routing, adapters, and their receipt without writing. Missing or stale generated entries and preserved collisions fail the check. Custom `CLAUDE.md` files and unrelated skills remain user-owned. No `.cursor/skills` copy is needed.
+
 Local project exposure does not require a global plugin. The Design Studio plugin supplies create, open, and use entry points; operation uses the target repository's current procedures. Plugin installation and host permissions remain separate from project skill discovery.
+
+## Plugin distribution and installed studios
+
+The maintainer repository contains one plugin package at `plugins/design-studio`. Its root `plugin.json` owns identity and OpenAI interface metadata. Generated host manifests and repository catalogs adapt that definition to each harness. Keep compatibility manifests until native tests establish that removing them preserves installation, discovery, and updates.
+
+Run `pnpm harness:sync` to regenerate plugin metadata and synchronize project routing and skills. `pnpm harness:check` checks both without writing. In an installed studio without the plugin package, these commands inspect only project guidance. `pnpm studio sync` remains the command used during capability changes and development startup.
+
+The shared installer selects working-studio contents through `starter-package.mjs`. New studios retain app code, examples, dependency configuration, project instructions, and skill adapters. They omit plugin distribution files, repository publishing workflows, and maintainer evaluations. The installer writes a studio-specific README and creates a clean local Git baseline with no remote. The local receipt records the original source revision; it is not the new repository's HEAD. Existing studios are never repackaged. All three plugins and agent-assisted direct-source setup use this same selection. Manual template copies retain the complete maintainer repository.
 
 Host conventions: [Codex skills](https://learn.chatgpt.com/docs/build-skills), [Claude Code skills](https://code.claude.com/docs/en/skills), [Cursor skills](https://cursor.com/docs/skills).
 

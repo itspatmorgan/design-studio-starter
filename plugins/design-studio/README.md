@@ -10,7 +10,7 @@ The primary audience uses Codex desktop, Claude Desktop’s local Code view, and
 
 [Set up Design Studio](../../SETUP.md) owns the four user paths: Codex plugin, Claude Code plugin, Cursor plugin, and direct from the source repository. Repository catalogs are installation metadata; they do not imply a reviewed directory listing. Keep terminal commands in agent or maintainer instructions.
 
-Before the first release, publish a tested starter revision, update the bootstrap pin to it, and complete the remaining direct-source test. The current pin still precedes recent local fixes. Codex setup has passed; the person reports Claude Desktop and Cursor setup working well. Reopen and work-preservation checks remain separate evidence. The pilot targets macOS; Windows, Linux, and clean-computer prerequisite installation remain unverified.
+Before the first release, publish a tested starter revision, update the bootstrap pin to it, and test native setup with the newly packaged starter, including direct-source setup. The current pin still precedes recent local fixes. Codex setup has passed; the person reports Claude Desktop and Cursor setup working well before this packaging refactor. Reopen and work-preservation checks remain separate evidence. The pilot targets macOS; Windows, Linux, and clean-computer prerequisite installation remain unverified.
 
 ## One setup flow
 
@@ -38,7 +38,9 @@ Experiment .11 pins the tested, publicly available integration snapshot at `5a68
 | Claude Code | `.claude-plugin/plugin.json` | `.claude-plugin/marketplace.json` |
 | Cursor | `.cursor-plugin/plugin.json` | `.cursor-plugin/marketplace.json` |
 
-All hosts load the same `skills/` and `scripts/`; no procedural copies are maintained. Regenerate after identity changes with `node plugins/design-studio/scripts/sync-manifest.mjs`. Use `--check` to detect stale generated files without writing. The OpenAI marketplace retains its existing host policy fields.
+All hosts load the same `skills/` and `scripts/`; no procedural copies are maintained. Run `pnpm harness:sync` after identity or guidance changes. `pnpm harness:check` checks all generated host manifests, catalogs, and project adapters without writing. The OpenAI marketplace retains its existing host policy fields. The portable definition owns shared identity; generated files are not authoring sources.
+
+[starter-package.mjs](scripts/starter-package.mjs) declares the working-studio contents for every agent-assisted setup path. New studios omit this plugin package, distribution catalogs, publishing workflows, and maintainer evaluations. They retain project skills, app code, examples, tool configuration, and local verification commands. Their [README](scripts/starter-readme.md) explains local ownership and customization. Each receives a new local Git baseline; its setup receipt records the pinned source revision. Existing studios are not repackaged. Manual GitHub template copies still contain the full repository.
 
 Plugin entry skills stay outside the Studio instruction browser. The owned repository exposes platform, enabled-module, and assigned-system procedures through project skill adapters. Its `CLAUDE.md` imports `AGENTS.md`, and `.claude/skills` links the same entries used by Codex and Cursor. The helper replaces only the exact older generated Claude entry with the import; custom entries are preserved. See [Agent context routing](../../src/platform/context/agent-context.md).
 
@@ -47,7 +49,7 @@ Plugin entry skills stay outside the Studio instruction browser. The owned repos
 These are experiment commands, not the designer-facing installation experience:
 
 ```sh
-node plugins/design-studio/scripts/sync-manifest.mjs --check
+pnpm harness:check
 node --test plugins/design-studio/scripts/*.test.mjs
 pnpm build
 ```
@@ -88,11 +90,12 @@ Official references: [Claude Desktop](https://code.claude.com/docs/en/desktop), 
 | --- | --- |
 | Codex private installation and first-run setup | Person confirmed experiment .11 creation, numbered default installs, local-file messaging, workspace handoff, and first prototype on this Mac. |
 | Visible source and workspace handoff | Person confirmed the Codex folder link opens a chat in the owned studio. Persistent sidebar registration remains unverified. |
-| Shared package checks | Thirteen plugin/bootstrap tests cover numbered default installs, pinning, preservation, linked paths, receipts, Claude entries, generated manifests, and marketplace resolution. |
+| Shared package checks | Plugin/bootstrap tests cover numbered default installs, source pinning, starter selection, preservation, linked paths, receipts, Claude entries, generated manifests, and marketplace resolution. |
 | Claude package and marketplace schema | Installed Claude Code 2.1.285 validator accepts both. This is schema evidence only. |
 | Claude Desktop local Code journey | Local installation and desktop command discovery verified October 6, 2026. Person reports setup working well. Repository import, reopen, and work-preservation checks remain pending. |
 | Cursor local plugin setup | Person reports setup working well on this Mac. Repository import, reopen, and work-preservation checks remain pending. |
 | Starter revision | Public merged revision downloaded and prepared successfully in a disposable QA folder. Its home rendered in the browser; flat context, current instruction reader, project skills, and Claude import were verified. This host already has prerequisite tools. |
+| Working-studio packaging | Existing public pin packaged successfully. A local source fixture passed the full exported-studio build and displayed Welcome in a disposable preview using existing dependencies. Native desktop setup with this layout and clean-computer preparation remain pending. |
 | Direct setup request | Implemented; first-run agent journey remains pending. |
 | Clean computer | Missing tools, permission prompts, and interrupted prerequisite installation remain pending. The current host already has dependencies. |
 | First release distribution | Local/repository installs planned; updated public starter pin and remaining native tests are gates. |

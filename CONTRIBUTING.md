@@ -15,10 +15,13 @@ Create a branch in your fork and submit a pull request to `main`. Changes to the
 ```sh
 pnpm install --frozen-lockfile
 pnpm check
+pnpm harness:check
 pnpm build
 ```
 
 The build runs tests, type checks, and production validation. Keep committed files below 750 KB. Include useful tests for behavior changes, and update the Guide or agent instructions when a workflow changes.
+
+Run `pnpm harness:sync` after changing plugin identity or canonical project skills. It generates all three host manifests and catalogs, then synchronizes project routing and skill adapters. Edit canonical sources instead of generated files. See [Agent context routing](src/platform/context/agent-context.md) for ownership and installed-studio packaging.
 
 Use fictional sample data. Do not commit credentials, local environment files, proprietary design-system code, or company information you do not have permission to share. Check both files and commit history before publishing your own studio.
 

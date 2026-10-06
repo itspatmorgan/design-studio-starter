@@ -47,6 +47,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: jdx/mise-action@v2
       - run: pnpm install --frozen-lockfile
+      - run: pnpm harness:check
       - name: Configure Pages
         if: github.repository == 'itspatmorgan/design-studio-starter' && github.event_name == 'push' && github.ref == 'refs/heads/main'
         id: pages

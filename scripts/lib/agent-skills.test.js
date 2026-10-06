@@ -73,3 +73,21 @@ test('legacy dangling links migrate, and malformed skill metadata prevents expos
   write('src/platform/skills/review/SKILL.md', '---\nname: other\ndescription: Review\n---');
   assert.throws(() => skillCatalog(root, owners), /have to match/);
 });
+
+test('read-only checks detect missing, stale, and modified entries without writing', t => {
+  const { root, catalog, write } = fixture(t);
+  assert.ok(syncSkillAdapters(root, catalog, { check: true }).changed > 0);
+  assert.ok(!fs.existsSync(path.join(root, '.agents')));
+  assert.ok(!fs.existsSync(path.join(root, 'CLAUDE.md')));
+  syncSkillAdapters(root, catalog);
+  assert.equal(syncSkillAdapters(root, catalog, { check: true }).changed, 0);
+  const receipt = fs.readFileSync(path.join(root, '.agents/studio-skills.json'), 'utf8');
+  const entry = '.agents/skills/studio-platform-review/SKILL.md';
+  write(entry, 'My modified instructions');
+  const result = syncSkillAdapters(root, catalog, { check: true });
+  assert.ok(result.warnings.length);
+  assert.equal(fs.readFileSync(path.join(root, entry), 'utf8'), 'My modified instructions');
+  assert.equal(fs.readFileSync(path.join(root, '.agents/studio-skills.json'), 'utf8'), receipt);
+  assert.ok(syncSkillAdapters(root, catalog.slice(0, 1), { check: true }).changed > 0);
+  assert.ok(fs.existsSync(path.join(root, '.claude/skills/studio-module-canvas-review')));
+});

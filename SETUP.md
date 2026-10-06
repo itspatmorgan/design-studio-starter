@@ -2,7 +2,7 @@
 
 Choose one of four paths: Codex plugin, Claude Code plugin, Cursor plugin, or direct from the source repository. Use the desktop app and a local session so the agent can create files and run Studio on your computer.
 
-The first release is planned around local and repository plugin installation. You do not need to wait for a listing in a reviewed public directory. The package is currently experimental; Cursor and direct-source journeys still need live verification. Organization policies may limit plugin installation. If your tool cannot load a plugin, use the direct-source path below.
+The first release is planned around local and repository plugin installation. You do not need to wait for a listing in a reviewed public directory. The package is currently experimental; direct-source setup and the newly packaged starter still need native journey verification. Organization policies may limit plugin installation. If your tool cannot load a plugin, use the direct-source path below.
 
 ## 1. Codex plugin
 
@@ -37,6 +37,8 @@ No plugin is required. In any supported local desktop coding agent, give it this
 > Help me install Design Studio from https://github.com/itspatmorgan/design-studio-starter. Read its SETUP.md and follow the linked create-studio instructions. Handle downloading, setup, and opening it for me. Save my studio in my user Developer folder. Preserve anything already there. Show me the running studio and help me continue working in its folder.
 
 If you prefer manual setup, create your own repository with **Use this template** on GitHub, or download or clone the source. Open that folder in your coding app and ask the agent to follow the repository's setup instructions there. Manual terminal commands are in the [README](README.md#get-started).
+
+All four agent-assisted paths create the same working-studio package. Plugin publishing files remain in the setup tooling. Manual template copies or clones include the complete maintainer repository.
 
 ## What happens after setup
 

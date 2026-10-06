@@ -13,7 +13,7 @@ import { moduleConsumers } from '../lib/imports.js';
 //   create-module <id> [--label <name>] [--out <folder>]
 //   create-system <id> [--label <name>] [--out <folder>]
 //                                     start a new one; with --out, as a pack in that folder to publish
-//   sync                              rewrite the module lines in AGENTS.md
+//   sync [--check]                    synchronize routing and project skills; --check never writes
 //   check                             pnpm check, and what has changed from the original of a module you added
 // Dry runs read declarations as data. --yes trusts the source: its checks run after packages install.
 import { execFileSync } from 'node:child_process';
@@ -48,12 +48,13 @@ const flags = {}; const positional = [];
 for (let i = 0; i < rest.length; i++) {
   const a = rest[i];
   if (a === '--') continue;
-  if (['--yes', '--content', '--force', '--allow-license', '--json'].includes(a)) flags[a.slice(2)] = true;
+  if (['--yes', '--content', '--force', '--allow-license', '--json', '--check'].includes(a)) flags[a.slice(2)] = true;
   else if (['--path', '--id', '--label', '--out', '--name', '--tagline', '--usage', '--system', '--admins'].includes(a)) { flags[a.slice(2)] = rest[++i]; if (flags[a.slice(2)] === undefined) fail(`${a} needs a value.`); }
   else if (a.startsWith('--')) fail(`Unknown option ${a}.`);
   else positional.push(a);
 }
 const ID = /^[a-z][a-z0-9-]*$/;
+if (flags.check && command !== 'sync') fail('--check is supported only with sync.');
 const titleOf = (id) => id.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 const slug = (text) => text.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/^[^a-z]+/, '');
 
@@ -75,16 +76,21 @@ function removeEmptyParents(abs) {
 // ---- AGENTS.md
 function syncAgents() {
   const file = rel('AGENTS.md');
-  if (!fs.existsSync(file)) return false;
+  if (!fs.existsSync(file)) {
+    if (flags.check) throw new Error('AGENTS.md is missing. Restore project instructions before checking routing.');
+    return false;
+  }
   const text = fs.readFileSync(file, 'utf8');
   const next = applyAgentsBlock(text, agentsBlock(ENABLED_MODULES, PLATFORM_ID));
   if (next === text) return false;
+  if (flags.check) throw new Error('AGENTS.md module routing is stale. Run pnpm studio sync.');
   fs.writeFileSync(file, next);
   return true;
 }
 const syncSkills = () => {
-  const result = syncSkillAdapters(ROOT, skillCatalog(ROOT, knowledgeOwners(ENABLED_MODULES, SYSTEM_SPECS)));
+  const result = syncSkillAdapters(ROOT, skillCatalog(ROOT, knowledgeOwners(ENABLED_MODULES, SYSTEM_SPECS)), { check: Boolean(flags.check) });
   for (const warning of result.warnings) say(warning);
+  if (flags.check && (result.changed || result.warnings.length)) throw new Error('Project skill adapters need review or synchronization. Run pnpm studio sync.');
   say(`Project skills synchronized (Codex, Cursor, Claude Code; ${result.changed} changes).`);
 };
 const syncInFreshProcess = () => run('node', ['scripts/cli/studio.js', 'sync']);

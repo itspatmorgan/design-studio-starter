@@ -42,7 +42,7 @@ Record what the agent did, where it needed human help, and any unclear step. For
 | --- | --- | --- | --- | --- | --- | --- |
 | Codex | experiment .11 | Person confirmed setup and numbered installs | Person confirmed folder handoff | Passed | Verify against updated starter pin | |
 | Claude Desktop Code | experiment .11, locally registered | Person reports setup working well on 2026-10-06 | Plugin commands verified; folder controls inspected | Pending | Pending | Downloaded older pinned starter. Use a separate test studio and preserve unrelated workspaces. |
-| Cursor | Pending | Pending | Pending | Pending | Pending | Local directory install is the first-release path. |
+| Cursor | experiment .11 | Person reports setup working well on 2026-10-06 | Verify against packaged starter | Pending | Pending | Local directory install is the first-release path. |
 | Direct from source | No plugin | Pending | Pending | Pending | Pending | |
 
 ## Follow-up checks
@@ -50,3 +50,5 @@ Record what the agent did, where it needed human help, and any unclear step. For
 Create two studios without specifying names or paths. Verify numbered default folders, the local-files explanation, and preservation of the first studio. Reopen by the known folder and resume interrupted setup without allocating another number. Then try [direct setup](../../SETUP.md) without an installed plugin. Check occupied ports, an unrelated existing destination, and preservation after plugin removal or updates. Clean-computer prerequisite installation is still a separate gate if this computer already has the required tools. Windows and Linux remain unverified.
 
 Automated checks and a prepared studio do not prove these native journeys. Record actual results in the [release readiness table](README.md#release-readiness). Public directory submission remains separate from this test package.
+
+After the packaging refactor, repeat native setup using a fresh destination. Verify the studio contains app code, examples, project skill adapters, and its own README, with no plugin distribution catalogs or publishing workflows. Its setup receipt identifies the source revision; its Git HEAD is a new local baseline. Keep the generated compatibility manifests until installation, discovery, and updates are tested without them.
