@@ -39,7 +39,7 @@ test('local personal setup resumes, then a second clone joins a team without cha
     copy(root, dir);
     // Own the fixture data: a team's real contributors, systems and prototypes are arbitrary.
     fs.rmSync(path.join(dir, 'contributors'), { recursive: true, force: true });
-    fs.writeFileSync(path.join(dir, 'contributors.json'), JSON.stringify({ patrick: { name: 'Patrick Morgan', email: '', github: '' } }));
+    fs.writeFileSync(path.join(dir, 'contributors.json'), JSON.stringify({ patrick: { name: 'Patrick Morgan', email: '', github: '', welcomeDismissed: false } }));
     for (const folder of ['src/prototypes', 'src/systems']) {
       fs.rmSync(path.join(dir, folder), { recursive: true, force: true });
       fs.mkdirSync(path.join(dir, folder), { recursive: true });
@@ -99,7 +99,11 @@ test('local personal setup resumes, then a second clone joins a team without cha
     run(dir, 'scripts/cli/studio.js', 'configure', '--name', 'Personal Studio', '--usage', 'personal', '--yes');
     const join = ['--key', 'sam', '--name', 'Sam Solo', '--email', 'sam@gmail.com', '--yes'];
     assert.doesNotMatch(run(dir, 'scripts/cli/setup-contributor.js', ...join), /Warning:/);
-    const contributor = fs.readFileSync(path.join(dir, 'contributors/sam.json'), 'utf8');
+    const profile = path.join(dir, 'contributors/sam.json');
+    const registered = JSON.parse(fs.readFileSync(profile, 'utf8'));
+    assert.equal(registered.welcomeDismissed, false);
+    fs.writeFileSync(profile, JSON.stringify({ ...registered, welcomeDismissed: true }));
+    const contributor = fs.readFileSync(profile, 'utf8');
     assert.match(run(dir, 'scripts/cli/setup-contributor.js', ...join), /already/);
     assert.equal(fs.readFileSync(path.join(dir, 'contributors/sam.json'), 'utf8'), contributor);
     assert.equal(run(dir, 'scripts/cli/resolve-contributor.js').trim(), 'sam');

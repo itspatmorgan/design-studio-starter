@@ -147,7 +147,7 @@ function fixture(count) {
   const dir = scratchCopy(`fixture-${count}`);
   const people = Math.max(1, Math.round(Math.sqrt(count) / 2));
   const contributors = JSON.parse(fs.readFileSync(path.join(dir, 'contributors.json'), 'utf8'));
-  for (let p = 0; p < people; p++) contributors[`person${p}`] = { name: `Person ${p}`, github: `person${p}`, email: '' };
+  for (let p = 0; p < people; p++) contributors[`person${p}`] = { name: `Person ${p}`, github: `person${p}`, email: '', welcomeDismissed: false };
   fs.writeFileSync(path.join(dir, 'contributors.json'), JSON.stringify(contributors, null, 2));
   for (let i = 0; i < count; i++) {
     const who = `person${i % people}`;

@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { claimWelcome } from './node/progress.js';
 import server from './server.ts';
+import check from './check.ts';
 import { claimIntroduction, recordIntroduction } from './progress.ts';
 
 test('onboarding completion persists and does not cross base paths', () => {
@@ -34,8 +35,8 @@ const fixture = (t: { after: (fn: () => void) => void }) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-welcome-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, 'contributors'));
-  fs.writeFileSync(path.join(root, 'contributors.json'), JSON.stringify({ owner: { name: 'Owner', extra: 'keep' } }));
-  fs.writeFileSync(path.join(root, 'contributors/newcomer.json'), JSON.stringify({ name: 'Newcomer', email: 'new@example.test', custom: { keep: true } }));
+  fs.writeFileSync(path.join(root, 'contributors.json'), JSON.stringify({ owner: { name: 'Owner', extra: 'keep', welcomeDismissed: false } }));
+  fs.writeFileSync(path.join(root, 'contributors/newcomer.json'), JSON.stringify({ name: 'Newcomer', email: 'new@example.test', custom: { keep: true }, welcomeDismissed: false }));
   return root;
 };
 
@@ -75,7 +76,7 @@ test('invalid, duplicate, unknown and linked profiles are preserved', t => {
   const root = fixture(t);
   const file = path.join(root, 'contributors/newcomer.json');
   fs.writeFileSync(file, '{"name":"Newcomer","welcomeDismissed":"yes"}');
-  assert.throws(() => claimWelcome(root, 'newcomer'), /true or false/);
+  assert.throws(() => claimWelcome(root, 'newcomer'), /false or true/);
   assert.match(fs.readFileSync(file, 'utf8'), /"yes"/);
   assert.throws(() => claimWelcome(root, '../elsewhere'), /Invalid contributor/);
   assert.throws(() => claimWelcome(root, 'unknown'), /not registered/);
@@ -119,4 +120,23 @@ test('unregistered claims use browser fallback while registered claims use profi
   const registered = progressKey('/unregistered-fallback/', 'newcomer');
   complete(registered);
   assert.equal(await claimIntroduction(registered), true);
+});
+
+test('missing declarations fail validation and runtime without changing the profile', t => {
+  const root = fixture(t);
+  assert.deepEqual(check({ root }), []);
+  const file = path.join(root, 'contributors/newcomer.json');
+  const source = '{"name":"Newcomer"}';
+  fs.writeFileSync(file, source);
+  assert.match(check({ root }).join(' '), /newcomer.*declare welcomeDismissed explicitly/);
+  assert.throws(() => claimWelcome(root, 'newcomer'), /declare.*explicitly/i);
+  assert.equal(fs.readFileSync(file, 'utf8'), source);
+  fs.writeFileSync(file, '{"name":"Newcomer","welcomeDismissed":true}');
+  assert.deepEqual(check({ root }), []);
+  assert.equal(claimWelcome(root, 'newcomer'), false);
+});
+
+test('a missing profile declaration cannot activate browser fallback', async t => {
+  t.mock.method(globalThis, 'fetch', async () => new Response(JSON.stringify({ error: 'Declare welcomeDismissed.' }), { status: 422 }));
+  assert.equal(await claimIntroduction(progressKey('/invalid-declaration/', 'newcomer')), false);
 });

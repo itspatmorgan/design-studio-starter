@@ -10,17 +10,18 @@ Each contributor’s first local home-page visit opens a four-step dialog over H
 
 It does not create work, install dependencies, or register contributors. Its only profile change records whether that contributor has already seen the introduction.
 
-Before the first automatic display for a registered contributor, the local server sets `welcomeDismissed: true` on their profile in `contributors/<key>.json` or their legacy `contributors.json` entry. It preserves other fields and contributor entries. An absent flag or `false` means the introduction has not been shown. New registration needs no progress flag. Only the server-resolved contributor can claim their introduction; the request cannot choose a contributor or file.
+Before the first automatic display for a registered contributor, the local server sets `welcomeDismissed: true` on their profile in `contributors/<key>.json` or their legacy `contributors.json` entry. It preserves other fields and contributor entries. Every registered contributor must declare the boolean explicitly when Onboarding is enabled. `false` means the introduction has not been shown; `true` keeps it dismissed. New registration writes `welcomeDismissed: false`. Missing or invalid declarations fail module validation and the display claim; browser fallback does not activate Welcome for an invalid declaration. Only the server-resolved contributor can claim their introduction; the request cannot choose a contributor or file.
 
 Welcome opens automatically once per contributor per studio, even if they leave before finishing or skipping. Restarts, different preview ports, browser changes, and introduction revisions do not reset it. Committing the profile carries that person's progress to other checkouts without dismissing Welcome for teammates. Set that contributor's flag to `false` to show it again after reloading.
 
-Before registration, exploration uses browser completion without changing profiles. Browser fallback is also used if profile persistence is unavailable, and is keyed by contributor identity. It may repeat when browser origins change. The previous studio-level flag and empty marker are ignored and left untouched: neither identifies who saw Welcome. Existing contributors without profile progress receive the introduction once under the new behavior.
+Before registration, exploration uses browser completion without changing profiles. Browser fallback is also used if profile persistence is unavailable, and is keyed by contributor identity. It may repeat when browser origins change. The previous studio-level flag and empty marker are ignored and left untouched: neither identifies who saw Welcome. Older profiles must add an explicit `welcomeDismissed: false` or `true` through a reviewable profile edit. Their missing field is a configuration error, not a first-use default.
 
 The module uses the application's `localOnly` extension, so published viewing sites have no onboarding dialog. Disabling or removing the module removes these contributions and retains contributor profile flags and browser fallback. It has no runtime dependency on optional Documentation.
 
 ## Ownership
 
 - `module.ts` declares the optional capability.
+- `check.ts` requires explicit contributor progress declarations while the module is enabled.
 - `app.tsx` adds the local first-visit home contribution without navigation.
 - `Welcome.tsx` owns the dialog, steps, dismissal, and text.
 - `ConceptPreview.tsx` owns the interactive system and artifact explanations.

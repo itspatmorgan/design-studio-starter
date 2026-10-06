@@ -17,7 +17,7 @@ If configure-studio calls this skill, use **registration-only mode**. Do not con
 2. For GitHub sharing, determine the person's username. Let the person complete interactive authentication if needed.
 3. Preview `pnpm join`. Supply explicit `--key`, `--name`, `--email`, and optional `--github` flags when detection is unsuitable.
 4. Apply confirmed registration with `--yes`. Do not overwrite another entry to resolve a collision.
-5. Run `node scripts/cli/resolve-contributor.js`. Verify the expected key.
+5. Run `node scripts/cli/resolve-contributor.js`. Verify the expected key. New registration must explicitly write `welcomeDismissed: false`; preserve an existing contributor’s declared progress. When Onboarding is enabled, report a missing declaration and correct it through a reviewable profile edit rather than assuming a default.
 
 Personal local use accepts a personal email and needs no GitHub account. GitHub CI needs the contributor's username before sharing there.
 

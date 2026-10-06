@@ -82,7 +82,7 @@ if (problems.length) {
   process.exit(1);
 }
 
-const entry = { name, github, email };
+const entry = { name, github, email, welcomeDismissed: false };
 console.log(`${yes ? 'Adding' : 'Proposed'} contributors/${key}.json:\n${JSON.stringify(entry, null, 2)}`);
 if (!yes) console.log('Name and email come from your Git config, and the GitHub username from the GitHub CLI, unless passed as flags.');
 console.log(`Your folder will be src/prototypes/${key}/.`);

@@ -26,9 +26,9 @@ Modularity, composability, extensibility, and scalability are product qualities 
 
 ## Declare what the system provides
 
-Make platform capabilities and system choices explicit, even when they match starter defaults. Discovery finds available files; declarations determine registration, activation, supported surfaces, and operating policy. Required capability decisions should be identified by validation rather than silently inferred. Theme token declarations define a curated inventory: omitted tokens are intentionally outside the system and must not leak in from upstream defaults or another system.
+Make behavioral configuration explicit across the platform, including studio settings, contributor profiles, capabilities, and system choices, even when it matches starter defaults. Designers and product managers should be able to discover what controls their experience by reading the configuration. Do not hide a setting or activate behavior through omission. Discovery finds available files; declarations determine registration, activation, supported surfaces, and operating policy. Validation must identify missing required declarations rather than silently infer a default. Theme token declarations define a curated inventory: omitted tokens are intentionally outside the system and must not leak in from upstream defaults or another system.
 
-**In practice:** scaffolds write useful defaults as concrete declarations. Keep those declarations readable, validate them, and generate documentation from the same source. This applies to modules, systems, artifact capabilities, and themes.
+**In practice:** scaffolds and registration commands write useful defaults as concrete declarations, such as `welcomeDismissed: false` on a new contributor's profile. Keep those declarations readable, validate them, and generate documentation from the same source. Introduce new required fields through explicit, reviewable configuration changes. This applies to contributor preferences, modules, systems, artifact capabilities, and themes.
 
 ## Let the human direct and the agent execute
 

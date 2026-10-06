@@ -2,6 +2,7 @@
   "patrick": {
     "name": "Patrick Morgan",
     "github": "itspatmorgan",
-    "email": ""
+    "email": "",
+    "welcomeDismissed": false
   }
 }

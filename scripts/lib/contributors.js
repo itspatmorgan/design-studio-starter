@@ -17,15 +17,17 @@ const readJson = (file) => {
 };
 
 // Every contributor by key, and the keys defined in both places, which `pnpm check` reports.
-export function readContributors() {
-  const contributors = fs.existsSync(CONTRIBUTORS_FILE) ? readJson(CONTRIBUTORS_FILE) : {};
+export function readContributors(root = ROOT) {
+  const registry = path.join(root, 'contributors.json');
+  const directory = path.join(root, 'contributors');
+  const contributors = fs.existsSync(registry) ? readJson(registry) : {};
   const twice = [];
   const problems = [];
-  const files = fs.existsSync(CONTRIBUTORS_DIR) ? fs.readdirSync(CONTRIBUTORS_DIR).filter((f) => f.endsWith('.json')).sort() : [];
+  const files = fs.existsSync(directory) ? fs.readdirSync(directory).filter((f) => f.endsWith('.json')).sort() : [];
   for (const file of files) {
     const key = file.slice(0, -5);
     if (!KEY.test(key)) { problems.push(`contributors/${file}: a contributor's key is lowercase letters, numbers, and dashes.`); continue; }
-    const entry = readJson(path.join(CONTRIBUTORS_DIR, file));
+    const entry = readJson(path.join(directory, file));
     if (!entry || typeof entry !== 'object' || Array.isArray(entry)) { problems.push(`contributors/${file} should be { "name": ..., "github": ..., "email": ... }.`); continue; }
     if (key in contributors) twice.push(key);
     contributors[key] = entry;

@@ -27,6 +27,8 @@ export function claimIntroduction(key: string) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'claim' }),
     }).then(async response => {
+      // Invalid declarations must be corrected, never interpreted as first-use defaults.
+      if (response.status === 422) return false;
       if (!response.ok) throw new Error('Welcome state unavailable');
       const result = await response.json() as { show: boolean | null };
       return typeof result.show === 'boolean' ? result.show : !isComplete(key);

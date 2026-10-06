@@ -10,6 +10,13 @@ export default {
     if (request.action !== 'claim' || Object.keys(request).some(key => key !== 'action')) {
       return { status: 400, body: { error: 'Invalid Welcome request.' } };
     }
-    return { body: { show: claimWelcome(root, me) } };
+    try {
+      return { body: { show: claimWelcome(root, me) } };
+    } catch (error) {
+      if (error instanceof Error && 'status' in error && error.status === 422) {
+        return { status: 422, body: { error: error.message } };
+      }
+      throw error;
+    }
   },
 } satisfies ModuleServer;

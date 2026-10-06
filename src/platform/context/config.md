@@ -10,7 +10,7 @@ Open **Studio settings** from the gear icon or search while running Studio local
 
 Saving writes repository files, synchronizes module-owned agent instructions, and restarts the development server. Stale configuration or contributor snapshots are rejected. Reload settings before retrying a conflicting save. Settings and its editing API are excluded from the published viewing site.
 
-Welcome records its first display on the resolved contributor’s profile with optional `welcomeDismissed: true`. An absent flag or `false` means they have not seen it. Each contributor gets the introduction independently; progress updates do not change studio settings or restart the server. See the [Onboarding contract](../../modules/onboarding/README.md) for fallback and legacy behavior.
+Welcome records its first display on the resolved contributor’s profile with `welcomeDismissed: true`. When Onboarding is enabled, every contributor must explicitly declare this boolean. Registration writes `false`; missing declarations are validation errors. Each contributor gets the introduction independently; progress updates do not change studio settings or restart the server. See the [Onboarding contract](../../modules/onboarding/README.md) for fallback and legacy behavior.
 
 You can also ask your agent to configure the studio. The configuration command previews changes before applying them. The CLI and settings API share validation, source editing, assignment preservation, and module instruction synchronization.
 

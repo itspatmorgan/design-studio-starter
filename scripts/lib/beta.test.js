@@ -77,7 +77,7 @@ test('create and rename preserve addresses, file errors recover, and system remo
     // CLI operations need a registered identity independent of the host's Git config.
     fs.rmSync(path.join(dir, 'contributors'), { recursive: true, force: true });
     fs.writeFileSync(path.join(dir, 'contributors.json'), JSON.stringify({
-      patrick: { name: 'Test Maintainer', email: 'maintainer@example.test', github: '' },
+      patrick: { name: 'Test Maintainer', email: 'maintainer@example.test', github: '', welcomeDismissed: false },
     }));
     const script = `
       import fs from 'node:fs';

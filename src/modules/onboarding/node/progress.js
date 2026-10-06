@@ -25,7 +25,9 @@ export function claimWelcome(root, contributor) {
   if (individual && inRoster) throw new Error('Contributor is registered in two files. Keep one.');
   const entry = individual?.value ?? (inRoster ? roster.value[contributor] : null);
   if (!entry || typeof entry !== 'object' || Array.isArray(entry)) throw new Error('Contributor is not registered.');
-  if (entry.welcomeDismissed !== undefined && typeof entry.welcomeDismissed !== 'boolean') throw new Error('Contributor welcomeDismissed must be true or false.');
+  if (typeof entry.welcomeDismissed !== 'boolean') {
+    throw Object.assign(new Error('Declare contributor welcomeDismissed explicitly as false or true.'), { status: 422 });
+  }
   if (entry.welcomeDismissed === true) return false;
   const file = individual ? profile : registry;
   const { source, value } = individual ?? roster;
