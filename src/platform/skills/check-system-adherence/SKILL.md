@@ -1,11 +1,11 @@
 ---
 name: check-system-adherence
-description: "Audit a Design Studio surface for adherence to its applicable design system: Studio UI, prototype views, or system components and previews. Use for an explicit system-adherence review, not general UX critique or system installation."
+description: "Audit a Design Studio surface against its applicable design system and report findings for human review before any fixes. Use for an explicit system-adherence review of Studio UI, prototypes, or system previews."
 ---
 
 # Check System Adherence
 
-Review the requested surface against its actual system, combining source checks with rendered evidence. Default to reporting findings. Change implementation only when fixes are requested or already authorized.
+Review the requested surface against its actual system, combining source checks with rendered evidence. This skill always audits and reports first. Do not change implementation, system guidance, or configuration during the audit, even when the initial request includes fixes. Present the report and wait for the human's response before implementing corrections.
 
 ## Resolve the surface
 
@@ -47,7 +47,7 @@ Reuse existing validators rather than creating a second token inventory or a bla
 
 When a runnable surface and browser tools are available, capture its initial state before assessing visual adherence. Compare the result with the actual system components and theme, not memory of an upstream library.
 
-Exercise relevant controls, focus states, and pop-ups. Review every declared color mode and relevant responsive layouts when available and within authorized testing scope. Pay particular attention to nested system boundaries and pop-ups that can lose their theme. Follow platform working context for any edits and their required checks.
+Exercise relevant controls, focus states, and pop-ups. Review every declared color mode and relevant responsive layouts when available and within authorized testing scope. Pay particular attention to nested system boundaries and pop-ups that can lose their theme.
 
 If a state, mode, or viewport cannot be tested, name it as unverified. Source inspection is useful evidence, but does not establish rendered contrast, layout, keyboard behavior, or native host behavior. Do not silently alter the person's saved preferences to complete testing.
 
@@ -59,4 +59,8 @@ Explain the result in plain language. Include:
 - Concrete findings ordered by impact, each with a file or rendered-state location, the relevant convention, and a recommended correction.
 - Automated results and log location, visual states inspected, and unverified coverage.
 
-Separate confirmed violations from consistency suggestions and missing system guidance. A clean result means no deviations found within the stated coverage, not certification of the entire studio. If fixes were authorized, preserve existing work, verify the corrected result, and follow [Working in Studio](../../context/working-in-studio.md) before committing.
+Separate demonstrated deviations from consistency suggestions and missing system guidance. Convention departures may be intentional; include any known rationale and avoid assuming every deviation needs correction. Keep enforced platform boundary failures distinct from design conventions.
+
+Give each finding a stable identifier so the human can approve a proposed correction, reject it and retain the current design, or clarify intent. A clean result means no deviations found within the stated coverage, not certification of the entire studio.
+
+End with the report and request review. Wait for the human's response. Implement only corrections approved after the report; preserve rejected findings and clarified exceptions. Do not rewrite shared conventions to record an exception unless that change is separately approved. Follow [Working in Studio](../../context/working-in-studio.md) when performing approved work.

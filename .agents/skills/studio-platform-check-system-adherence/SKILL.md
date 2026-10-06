@@ -1,6 +1,6 @@
 ---
 name: studio-platform-check-system-adherence
-description: "Audit a Design Studio surface for adherence to its applicable design system: Studio UI, prototype views, or system components and previews. Use for an explicit system-adherence review, not general UX critique or system installation."
+description: "Audit a Design Studio surface against its applicable design system and report findings for human review before any fixes. Use for an explicit system-adherence review of Studio UI, prototypes, or system previews."
 ---
 
 <!-- studio:generated-skill -->

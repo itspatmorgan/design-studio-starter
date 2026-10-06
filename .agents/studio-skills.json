@@ -3,7 +3,7 @@
   "files": {
     ".agents/skills/studio-platform-check-system-adherence/SKILL.md": {
       "kind": "file",
-      "hash": "a3ffbfdfc2d59d90d63cea5461d3f86c867a9a968e6b80d48541149ad83b0aa6"
+      "hash": "6be5e49dd11b77f0d1e343ae9cbe4bbfcb3afcf97460bb1c3d94f9d2605f403c"
     },
     ".claude/skills/studio-platform-check-system-adherence": {
       "kind": "link",
