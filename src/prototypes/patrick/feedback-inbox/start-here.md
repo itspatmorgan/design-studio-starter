@@ -8,13 +8,11 @@ This sample is a small feedback tracker and an introduction to the studio. The v
 
 ## Take a short tour
 
-### 1. Explore the idea
+### 1. See the handoff
 
-Start with [Project context](explore/project-context.md): the problem, the people it serves, decisions, and open questions. It embeds the [Feedback flow](explore/feedback-flow.mermaid), a low-fidelity screen, and the Breadboard canvas from their original files.
+Open [Eng handoff](eng-handoff.excalidraw). It arranges live screens and states with notes for engineering. Open an embedded screen using its header; edit the original and its previews follow.
 
-Open [Breadboard](explore/breadboard.excalidraw) to compare a live diagram with the same flow converted into editable Excalidraw shapes. The live embed follows the Mermaid source; the converted sketch is independent. Try moving a shape or adding a note.
-
-The [Lofi inbox](explore/lofi-inbox.tsx) shows the working inbox in grayscale with handwritten type. It demonstrates how you can discuss layout before polish.
+Try dragging a view or diagram from the navigation onto a canvas. Documents appear as link cards. A canvas includes files from its own prototype, keeping the example self-contained.
 
 ### 2. Try the app
 
@@ -28,11 +26,13 @@ The **States** folder groups examples by screen. Open [Inbox / Empty](states/inb
 
 These are small views that reuse the app screens with a chosen starting state. They let you discuss a specific situation without clicking through the app to reproduce it. Try comparing **New feedback** with **Validation error**.
 
-### 4. See the handoff
+### 4. Explore the discovery references
 
-Open [Eng handoff](handoff/eng-handoff.excalidraw). It arranges live screens and states with notes for engineering. Open an embedded screen using its header; edit the original and its previews follow.
+Read [Project context](discovery/project-context.md): the problem, the people it serves, decisions, and open questions. It embeds the [Feedback flow](discovery/feedback-flow.mermaid), a low-fidelity screen, and the Breadboard canvas from their original files.
 
-Try dragging a view or diagram from the navigation onto a canvas. Documents appear as link cards. A canvas includes files from its own prototype, keeping the example self-contained.
+Open [Breadboard](discovery/breadboard.excalidraw) to compare a live diagram with the same flow converted into editable Excalidraw shapes. The live embed follows the Mermaid source; the converted sketch is independent. Try moving a shape or adding a note.
+
+The [Lofi inbox](discovery/lofi-inbox.tsx) shows the working inbox in grayscale with handwritten type. It demonstrates how you can discuss layout before polish.
 
 ## How this example works
 
@@ -49,7 +49,7 @@ Previews reference the original artifact files. Their headers open those files f
 
 Right-click a file and choose **Edit source** to see its text. While running locally, save edits with Command+S on macOS or Ctrl+S elsewhere, then select **Done**. Try changing a heading in the inbox, or a label in the diagram, and check its previews.
 
-The Lofi inbox has `/** @lofi */` at the top of its source. That marker changes its appearance while preserving components and behavior. **Make lofi** and **Make hi-fi** in a view's menu toggle it; the Explore folder is only an organizing choice.
+The Lofi inbox has `/** @lofi */` at the top of its source. That marker changes its appearance while preserving components and behavior. **Make lofi** and **Make hi-fi** in a view's menu toggle it; the Discovery folder is only an organizing choice.
 
 Shared screen code lives in `app/_components`. Underscore folders contain helpers and stay out of normal navigation. Use **Show all files** in the prototype's **…** menu to inspect them. **Reveal in Finder** shows the same folder on disk.
 
@@ -57,6 +57,6 @@ Shared screen code lives in `app/_components`. Underscore folders contain helper
 
 Ask your agent to change something concrete: “add a due date to feedback,” “explore a different inbox layout,” or “put the empty state beside the main screen on the handoff canvas.” Point it at Project context so the changes have a reason behind them.
 
-For more detail, open the [Guide](/documentation/guide). The [system context](/systems/studio/context) holds the team's shared context; this prototype holds context specific to the feedback tracker.
+For more detail, open the [Guide](/documentation/guide). The [system context](/systems/product/context) holds the team's shared context; this prototype holds context specific to the feedback tracker.
 
 When you're ready, create your own prototype from the Prototypes page. You can keep this sample as a reference, archive it to leave it out of the deployed site, or delete it from its **…** menu.
