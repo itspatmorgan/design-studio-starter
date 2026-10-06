@@ -2,6 +2,8 @@
 
 The shared package is `0.1.0-experiment.12`. Its pinned starter snapshot is `b6fc5d9c790671da5a27810a08ff9e05de700474`, which includes the latest canvas loading, editor fallback, automatic link repair, and configuration-backed Welcome fixes. New installs use a smaller working-studio package. Numbered default installs and local-file messaging remain. Existing studios are preserved and are not upgraded automatically.
 
+The current development branch has later contributor-level Welcome, system-curation guidance, and separate asset pages. Those changes are not in the experiment .12 starter pin. Before testing them through the four installation paths, publish a tested starter revision and update the package pin. Record the downloaded revision from `design-studio.local.json`; the plugin version alone does not identify the studio code.
+
 ## Get the current package
 
 In an existing clean checkout on `main`, run:
@@ -37,6 +39,23 @@ For each harness, check:
 5. Close and reopen the studio with the plugin. The prototype remains and Welcome does not repeat after a server restart or a preview-port change.
 
 Record what the agent did, where it needed human help, and any unclear step. For skill discovery, note whether skills appear in the harness’s UI and whether the agent actually uses the appropriate procedure.
+
+## Test the path to your own system
+
+After the first prototype, use a disposable studio to test these requests with its coding agent. Record agent decisions and the rendered result separately from command success.
+
+| Request | Review |
+| --- | --- |
+| Designer: “Help me create a system with these components and visual choices for this prototype.” | The agent imports the chosen subset, preserves APIs, and verifies the theme and states. It keeps examples until asked to remove them. |
+| Product manager: “Help me prototype a customer feedback dashboard with a system that fits it.” | The agent identifies screens, interactions, and a small supporting kit. It asks focused questions about missing intent and avoids installing a component catalog. |
+| Existing product: “Assess how we can bring our React components and theme into this studio.” | The agent traces the selected subset, theme, fonts, icons, and application dependencies. It reports evidence and proposed adaptations before migration. Assessment does not alter production code. |
+| Follow-up: “Import the agreed subset.” | The agent preserves the component API and exact theme, or identifies unresolved differences. Compare matching content, state, viewport, and mode with source examples. Reject service-shim chains as a shortcut. |
+| Assets: “Bring in these fonts, custom icons, and shared images.” | The correct asset pages show local files and previews. Fonts and icons work in the actual system, beyond their Studio previews. Package dependencies remain explicit. |
+| Joining contributor: “Help me join this team's studio.” | Shared configuration and existing work stay intact. The new profile explicitly declares `welcomeDismissed: false`, receives Welcome independently, and can create work in its own folder. |
+
+Use real supplied product source for the import trial. A synthetic fixture can verify platform mechanics, but cannot prove production fidelity. Empty context and skills folders are valid; the agent should not invent product knowledge or install a skills catalog.
+
+## Recorded native journeys
 
 | Harness | Package/version | Setup + Welcome | Workspace + skills | First prototype | Reopen | Notes |
 | --- | --- | --- | --- | --- | --- | --- |

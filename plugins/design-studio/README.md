@@ -96,11 +96,12 @@ Official references: [Claude Desktop](https://code.claude.com/docs/en/desktop), 
 | Cursor local plugin setup | Person reports setup working well on this Mac. Repository import, reopen, and work-preservation checks remain pending. |
 | Starter revision | Public merged revision downloaded and prepared successfully in a disposable QA folder. Its home rendered in the browser; flat context, current instruction reader, project skills, and Claude import were verified. This host already has prerequisite tools. |
 | Working-studio packaging | Existing public pin packaged successfully. A local source fixture passed the full exported-studio build and displayed Welcome in a disposable preview using existing dependencies. Native desktop setup with this layout and clean-computer preparation remain pending. |
+| Latest setup changes | Local revision `b2f74787db1aec4a4d9576121a90b0b6ba66fb72` packaged and passed its full build on October 6, 2026: 228 included tests, typecheck, and Vite. Browser review verified Welcome and dismissal after reload; fixture checks verified independent contributor progress, missing-declaration rejection, project skills, and repeat-create preservation. This used installed host dependencies and pinned tools, not clean-computer preparation or a native agent journey. The public starter pin still predates these changes. |
 | Direct setup request | Implemented; first-run agent journey remains pending. |
 | Clean computer | Missing tools, permission prompts, and interrupted prerequisite installation remain pending. The current host already has dependencies. |
 | First release distribution | Local/repository installs supported by experiment .12 and its updated public starter pin; remaining native tests are gates. |
 | Reviewed public directories | Later stage. Submission, review, and listing remain pending. |
-| Team use | Separate onboarding and sharing tests are pending. |
+| Team use | Disposable package checks verified a second contributor's explicit Welcome flag and preserved the first profile and shared configuration. Native join, first prototype, and sharing tests remain pending. |
 
 For each entry path, verify the full journey: discover or obtain instructions, install/invoke, create the owned folder, open its preview, continue in that folder, and create a first prototype using its current context. Then reopen after restart and confirm plugin removal and updates preserve user work. Check failures with missing tools, an occupied preview port, an interrupted setup, an existing unrelated destination, and a custom instruction entry.
 

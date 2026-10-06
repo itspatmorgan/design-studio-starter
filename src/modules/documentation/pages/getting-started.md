@@ -51,13 +51,16 @@ Configuration can continue after first run. Personal local use does not require 
 
 ## Make it your own
 
-The examples demonstrate what Studio can do. They are meant to be customized, replaced, or removed as you make the studio your own. Ask your agent to help with this checklist:
+The examples demonstrate what Studio can do. Keep them while exploring, then choose what fits your work. Ask your agent to help with the next step you need:
 
 - **Set your studio identity.** Choose your name, tagline, personal or team use, contributors, and Admins in [studio configuration](/documentation/guide/customize#configure-the-studio).
-- **Delete the example prototypes.** Remove Feedback Inbox and Design Studio Marketing, both owned by `patrick`, and their unused demo assets.
-- **Replace the starter systems.** Adapt or replace Product and Marketing, or remove either system you do not need. Bring your own components, styles, and product context. Keep Studio and one default prototype system; see [Systems](/documentation/guide/systems#bring-your-own-system).
+- **Make your first prototype.** Describe what you want to make. Your agent can use an existing system to give you a working example of your own.
+- **Choose your system.** Keep or adapt Product and Marketing, curate a small kit for your first prototype, or assess your existing React components and theme. See [Systems](/documentation/guide/systems#bring-your-own-system). Add your team's context when you have it.
+- **Decide what examples to keep.** Keep, customize, or remove Feedback Inbox and Design Studio Marketing. Remove unused sample systems only after checking which prototypes use them. Keep Studio and one default prototype system.
 - **Choose your modules.** Turn off optional capabilities you do not need in Studio settings.
-- **Configure your repository and deployment.** Review `.github/workflows/scope-check.yml`, branch rules, and repository permissions. Configure publishing for your host; template copies run checks but do not deploy automatically.
-- **Verify before publishing.** Run `pnpm build`, deploy `dist/`, and test a direct prototype link and reload. [Publishing](/documentation/reference/platform/context/publishing.md) covers base paths, routing, and access settings.
+
+When you are ready to collaborate through a shared repository, review branch rules and repository permissions with your maintainer. Full template copies include `.github/workflows/scope-check.yml`; agent-created working studios omit publishing workflows.
+
+When you want a shared viewing URL, ask your agent to help with publishing. Run `pnpm build`, deploy `dist/`, and test a direct prototype link and reload. [Publishing](/documentation/reference/platform/context/publishing.md) covers base paths, routing, and access settings.
 
 Starter cleanup is a maintainer change for a new studio. If you are joining an existing studio, preserve its shared setup and other contributors' work.
