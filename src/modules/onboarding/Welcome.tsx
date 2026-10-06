@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { ArrowRight } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { ArrowRight01Icon } from '@hugeicons/core-free-icons';
 import { Button } from '@/systems/studio/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/systems/studio/components/dialog';
 import { APP_NAME } from '@/platform/core/api';
@@ -41,7 +42,7 @@ export default function Welcome() {
         {step === 1 && <ArtifactPreview />}
         {step === 2 && <SystemPreview />}
         {step === 3 && <div className="space-y-4">
-          {!!examples.length && <div className="flex flex-wrap gap-2">{examples.map(p => <Button key={p.id} variant="outline" onClick={() => { finish(); void navigate(prototypeLink(p)); }}>{p.title}<ArrowRight /></Button>)}</div>}
+          {!!examples.length && <div className="flex flex-wrap gap-2">{examples.map(p => <Button key={p.id} variant="outline" onClick={() => { finish(); void navigate(prototypeLink(p)); }}>{p.title}<HugeiconsIcon icon={ArrowRight01Icon} /></Button>)}</div>}
           <div className="space-y-4 rounded-xl border bg-muted/30 p-5">
             <p className="text-sm font-medium">When you’re ready to make something, work with your agent to:</p>
             <div className="space-y-1">
@@ -59,7 +60,7 @@ export default function Welcome() {
         <Button variant="ghost" size="sm" onClick={finish}>Skip introduction</Button>
         <div className="flex gap-2">
           {step > 0 && <Button variant="ghost" onClick={() => setStep(step - 1)}>Back</Button>}
-          <Button onClick={() => step === steps.length - 1 ? finish() : setStep(step + 1)}>{step === 0 ? 'Show me around' : step === steps.length - 1 ? 'Explore my studio' : 'Next'}<ArrowRight /></Button>
+          <Button onClick={() => step === steps.length - 1 ? finish() : setStep(step + 1)}>{step === 0 ? 'Show me around' : step === steps.length - 1 ? 'Explore my studio' : 'Next'}<HugeiconsIcon icon={ArrowRight01Icon} /></Button>
         </div>
       </div>
     </DialogContent>

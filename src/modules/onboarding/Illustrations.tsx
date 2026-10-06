@@ -32,9 +32,9 @@ export function AgentSketch() {
 export function SystemSketch({ selected }: { selected: number }) {
   const labels = ['Theme + components', 'Context', 'Skills'];
   return <svg viewBox="0 0 440 155" className="h-32 w-full text-foreground" role="img" aria-label="Theme and components, context, and skills work together to guide your prototypes.">
-    {labels.map((label, i) => <g key={label} opacity={selected === i ? 1 : .4}>
+    {labels.map((label, i) => <g key={label}>
       <rect x="18" y={12 + i * 45} width="238" height="36" rx="4" fill={paper} stroke={selected === i ? ink : border} />
-      <text x="32" y={35 + i * 45} fill={ink} fontSize="13">{label}</text>
+      <text x="32" y={35 + i * 45} fill={selected === i ? ink : muted} fontSize="13">{label}</text>
     </g>)}
     <path d="M256 30H284V120H256M256 75H314" stroke="currentColor" opacity=".3" fill="none" />
     <rect x="314" y="49" width="108" height="54" rx="4" fill={paper} stroke={border} />
