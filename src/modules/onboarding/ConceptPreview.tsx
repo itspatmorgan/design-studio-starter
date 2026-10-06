@@ -9,13 +9,13 @@ const systemParts = [
   { title: 'Skills', kind: 'skills', description: 'Instructions that help your agent carry out tasks in the way your team wants.', example: 'Write in your brand’s voice, or follow a familiar design pattern.' },
 ];
 const artifacts = [
-  { module: 'view', title: 'Views', kind: 'view', description: 'Working screens you can click through to explore how an idea feels.', example: 'Try filtering an inbox or opening a message.' },
-  { module: 'document', title: 'Documents', kind: 'document', description: 'The brief, notes, and decisions that explain what you’re exploring and why.', example: 'Keep the problem and audience alongside your screens.' },
-  { module: 'diagrams', title: 'Diagrams', kind: 'diagrams', description: 'Flows that help you and your team see how the experience fits together.', example: 'Follow a message from arrival to review to resolution.' },
-  { module: 'canvas', title: 'Canvases', kind: 'canvas', description: 'An open space to sketch, compare, and arrange your artifacts and notes together.', example: 'Put your screens beside a flow and discuss the whole idea.' },
+  { module: 'view', title: 'Views', kind: 'view', description: 'Explore how your idea feels with working screens, from filtering an inbox to opening a message. Views are saved as React code you can reuse in other React projects.' },
+  { module: 'document', title: 'Documents', kind: 'document', description: 'Keep your brief, notes, and decisions alongside your screens so the thinking stays with the work. Documents use Markdown, a plain text format that many writing tools support.' },
+  { module: 'diagrams', title: 'Diagrams', kind: 'diagrams', description: 'Show how an experience fits together, from a message arriving to its resolution. Diagrams use Mermaid, a text format you can edit and display in other compatible tools.' },
+  { module: 'canvas', title: 'Canvases', kind: 'canvas', description: 'Arrange screens, notes, and flows together to explore the whole idea. Canvases use Excalidraw files, so you can also open their drawings in Excalidraw.' },
 ].filter(type => CONFIG.modules[type.module] === true);
 
-type Choice = { title: string; kind: string; description: string; example: string };
+type Choice = { title: string; kind: string; description: string; example?: string };
 function ConceptPreview({ choices, label, id, system = false }: { choices: Choice[]; label: string; id: string; system?: boolean }) {
   const [index, setIndex] = useState(0);
   const choice = choices[index];
@@ -27,7 +27,7 @@ function ConceptPreview({ choices, label, id, system = false }: { choices: Choic
     <div id={id} className="space-y-3 rounded-xl border bg-muted/30 p-4" aria-live="polite" aria-atomic="true">
       {system ? <SystemSketch selected={index} /> : <ArtifactSketch kind={choice.kind} />}
       <p className="text-sm leading-relaxed text-muted-foreground">{choice.description}</p>
-      <p className="text-xs leading-relaxed text-muted-foreground">{choice.example}</p>
+      {choice.example && <p className="text-xs leading-relaxed text-muted-foreground">{choice.example}</p>}
     </div>
   </div>;
 }
