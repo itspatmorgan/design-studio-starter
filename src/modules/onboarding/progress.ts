@@ -1,5 +1,6 @@
-// Completion is a browser preference, not contributor registration or setup state.
+// Browser completion provides a fallback for unavailable local persistence.
 const completed = new Set<string>();
+const claims = new Map<string, Promise<boolean>>();
 type StorageSource = () => Pick<Storage, 'getItem' | 'setItem'>;
 export function progressKey(base: string) {
   return `design-studio:onboarding:${base}:v2`;
@@ -15,4 +16,27 @@ export function complete(key: string, storage: StorageSource = () => localStorag
   completed.add(key);
   try { storage().setItem(key, 'complete'); return true; }
   catch { return false; }
+}
+
+// Share the initial request across StrictMode effect replay. Disk state survives origins and restarts.
+export function claimIntroduction(key: string) {
+  let claim = claims.get(key);
+  if (!claim) {
+    claim = fetch('/__studio/onboarding/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'claim' }),
+    }).then(async response => {
+      if (!response.ok) throw new Error('Welcome state unavailable');
+      const result = await response.json() as { show: boolean };
+      return result.show === true;
+    }).catch(() => !isComplete(key));
+    claims.set(key, claim);
+  }
+  return claim;
+}
+
+export function recordIntroduction(key: string) {
+  claims.set(key, Promise.resolve(false));
+  complete(key);
 }

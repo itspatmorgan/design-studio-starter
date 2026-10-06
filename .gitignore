@@ -9,3 +9,4 @@ public/prototypes/artifacts/
 !.env.example
 !.env.*.example
 *.tsbuildinfo
+.design-studio-welcome-dismissed

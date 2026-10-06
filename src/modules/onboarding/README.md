@@ -10,9 +10,9 @@ The first local home-page visit opens a four-step dialog over Home: Welcome, Pro
 
 It does not create work, install dependencies, register contributors, or change configuration.
 
-Completion is a local browser preference scoped by origin, base path, and onboarding version. It is not a repository or contributor setting. Changing browsers or clearing browser data shows Welcome again. Different studios served at the same origin and base path share this preference; a future studio identity can refine that scope. If storage is unavailable, the page still works, but completion lasts only until the page is reloaded.
+Before the first automatic display, the local server records `.design-studio-welcome-dismissed` in the studio's root folder. This empty marker is ignored by Git. Welcome opens automatically only once for that local studio, even if the person leaves before finishing or skipping. Restarts, different preview ports, browser changes, and introduction revisions do not reset it. Each studio folder has its own marker; it is not a contributor setting or shared team file. Older studios without a marker can show Welcome once after this update. If local persistence is unavailable, browser completion remains a fallback; changing origins can then show Welcome again.
 
-The module uses the application's `localOnly` extension, so published viewing sites have no onboarding dialog. Disabling or removing the module removes these contributions and retains the browser preference. It has no runtime dependency on optional Documentation.
+The module uses the application's `localOnly` extension, so published viewing sites have no onboarding dialog. Disabling or removing the module removes these contributions and retains the local marker and browser fallback. It has no runtime dependency on optional Documentation.
 
 ## Ownership
 
@@ -21,7 +21,8 @@ The module uses the application's `localOnly` extension, so published viewing si
 - `Welcome.tsx` owns the dialog, steps, dismissal, and text.
 - `ConceptPreview.tsx` owns the interactive system and artifact explanations.
 - `Illustrations.tsx` adapts lightweight line drawings from the creator’s marketing site to Studio theme colors and human-readable labels.
-- `progress.ts` handles the browser preference without repository writes.
+- `progress.ts` handles the initial display request and browser fallback.
+- `server.ts` exposes the same-origin local display claim; `node/progress.js` reserves the fixed marker exclusively without overwriting files.
 - [Use onboarding](skills/use-onboarding/SKILL.md) guides an agent helping a person take their first steps.
 
 Keep installation in the setup entry points and configuration in the platform Configure Studio skill. Onboarding complements both with an introduction after launch. This is a first scaffold to refine through designer feedback, not a complete guided tour or task-completion tracker.

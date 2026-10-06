@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowRight01Icon } from '@hugeicons/core-free-icons';
@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/systems
 import { APP_NAME } from '@/platform/core/api';
 import { useManifest } from '@/platform/app/data/useManifest';
 import { prototypeLink } from '@/platform/app/data/manifest';
-import { complete, isComplete, progressKey } from './progress';
+import { claimIntroduction, complete, progressKey, recordIntroduction } from './progress';
 import { ArtifactPreview, SystemPreview } from './ConceptPreview';
 import { AgentSketch } from './Illustrations';
 
@@ -22,7 +22,16 @@ export default function Welcome() {
   const manifest = useManifest();
   const navigate = useNavigate();
   const key = progressKey(import.meta.env.BASE_URL);
-  const [open, setOpen] = useState(() => !isComplete(key));
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    let active = true;
+    void claimIntroduction(key).then(show => {
+      if (!active) return;
+      setOpen(show);
+      if (show) recordIntroduction(key);
+    });
+    return () => { active = false; };
+  }, [key]);
   const [step, setStep] = useState(0);
   const examples = manifest.prototypes.filter(p => p.status !== 'archived' && p.contributorKey === 'patrick' && ['feedback-inbox', 'design-studio-marketing'].includes(p.id)).sort((a, b) => Number(b.system === 'product') - Number(a.system === 'product'));
   const finish = () => { complete(key); setOpen(false); };
