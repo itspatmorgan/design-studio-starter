@@ -2,7 +2,7 @@
 
 This experimental package helps a local coding agent create, open, and use Design Studio. A designer asks “Create my Design Studio.” The agent handles downloading and preparation, opens a preview, and helps them continue in the owned studio folder.
 
-Public directory submission has not happened. Native Claude Code and Cursor setup journeys still need testing. The pilot targets macOS; Windows and Linux remain unverified.
+Public directory submission has not happened. Claude Desktop’s local Code view and Cursor setup journeys still need testing. The primary audience uses desktop apps; CLI commands are maintainer tools or an explicitly chosen alternative. The pilot targets macOS; Windows and Linux remain unverified.
 
 ## One setup flow
 
@@ -51,7 +51,16 @@ codex plugin marketplace add /absolute/path/to/this/repository
 codex plugin add design-studio@design-studio-experiment
 ```
 
-Local Claude validation and testing:
+Claude Desktop pilot journey:
+
+1. Open **Customize → Plugins → Add plugin → Add marketplace**. Add `itspatmorgan/design-studio-starter` once the current package is pushed. The inspected macOS app accepts a GitHub owner/repo or Git URL.
+2. Install Design Studio, then start a **Code** session with **Local** selected. Use **No folder** for initial setup when available. Ask “Create my Design Studio.”
+3. Verify the source folder and preview, then follow [Host handoff](skills/create-studio/references/host-handoff.md) to continue in that exact folder.
+4. Create a first prototype, restart, and reopen the same studio. Remove disposable test installs after verification.
+
+The marketplace dialog and folder selector were inspected in the desktop app on October 6, 2026. Plugin installation, skill activation, folder handoff, and setup have not yet passed a live Claude Desktop test. A package validator or CLI session does not prove this journey.
+
+Local Claude maintainer validation and optional CLI testing:
 
 ```sh
 claude plugin validate --strict plugins/design-studio
@@ -63,16 +72,17 @@ In that Claude session, invoke `/design-studio:create-studio`. This tests the pa
 
 Cursor supports repository marketplace imports through Customize → From GitHub Repository. That test requires the new `.cursor-plugin/marketplace.json` to be pushed first. Then install Design Studio and ask it to create a studio. A valid manifest alone does not prove import, activation, or handoff.
 
-Official references: [OpenAI packaging](https://developers.openai.com/plugins/build/plugins), [Claude plugins](https://code.claude.com/docs/en/plugins-reference), [Claude marketplaces](https://code.claude.com/docs/en/plugin-marketplaces), [Cursor plugins](https://cursor.com/docs/reference/plugins), [Cursor skills and imports](https://cursor.com/docs/skills).
+Official references: [Claude Desktop](https://code.claude.com/docs/en/desktop), [OpenAI packaging](https://developers.openai.com/plugins/build/plugins), [Claude plugins](https://code.claude.com/docs/en/plugins-reference), [Claude marketplaces](https://code.claude.com/docs/en/plugin-marketplaces), [Cursor plugins](https://cursor.com/docs/reference/plugins), [Cursor skills and imports](https://cursor.com/docs/skills).
 
 ## Release readiness
 
 | Evidence | Status |
 | --- | --- |
-| Codex private installation and first-run setup | Person confirmed experiment .10 setup on this Mac. Experiment .11 adds numbered default names and clearer local-file messaging; fresh native testing remains pending. |
+| Codex private installation and first-run setup | Person confirmed experiment .11 creation, numbered default installs, local-file messaging, workspace handoff, and first prototype on this Mac. |
 | Visible source and workspace handoff | Person confirmed the Codex folder link opens a chat in the owned studio. Persistent sidebar registration remains unverified. |
 | Shared package checks | Thirteen plugin/bootstrap tests cover numbered default installs, pinning, preservation, linked paths, receipts, Claude entries, generated manifests, and marketplace resolution. |
-| Claude package and marketplace schema | Installed Claude Code 2.1.152 validator accepts both. Live setup/activation remains pending. |
+| Claude package and marketplace schema | Installed Claude Code 2.1.285 validator accepts both. This is schema evidence only. |
+| Claude Desktop local Code journey | Marketplace import and local folder controls inspected on October 6, 2026. Installation, activation, setup, preview, and handoff remain pending. |
 | Cursor package | Follows current official format. Repository import and live activation remain pending. |
 | Starter revision | Public merged revision downloaded and prepared successfully in a disposable QA folder. Its home rendered in the browser; flat context, current instruction reader, project skills, and Claude import were verified. This host already has prerequisite tools. |
 | Direct setup request | Implemented; first-run agent journey remains pending. |

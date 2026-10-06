@@ -23,14 +23,24 @@ When the installed `cursor --help` supports folder opening, run `cursor --new-wi
 
 Verify the selected folder before declaring the handoff complete. The installed project skills supply current procedures; plugin skills handle entry and setup. Never install an editor extension as a substitute for the plugin.
 
-## Claude Code
+## Claude Desktop — Code
 
-For a terminal session, use the host's persistent terminal to start `claude` with the studio folder as its working directory. Do not send an automatic task to a second agent or assume changing one shell's directory changes the current session's project. If the current host cannot open an interactive session, provide the full folder path and guide the person to open that local project in Claude Code. Then offer the same first question as above.
+Use the Claude desktop app's **Code** view with **Local** selected. This is the primary Claude journey for designers and product managers. The agent handles commands; the person should not need a terminal.
+
+For first-time setup, a new local session can start with **No folder** if that option is available. Preserve an existing session's selected project. After creating the studio, show its absolute folder path. Guide the person to start a new local Code session, use the folder selector's **Open folder…**, and select that exact studio folder. Keep worktree isolation off for this setup journey so continued work uses the owned studio itself. Do not change an existing session's worktree setting.
+
+Offer: “What can I do with this studio, and which design systems are available?” The person sends it in the new session. Verify the selected folder before declaring the handoff complete. Do not invent a Claude deep link or assume a shell directory change moves the desktop session.
+
+Use the desktop preview capability to start and inspect Studio from its selected folder. If launch configuration is needed, follow the current [desktop preview documentation](https://code.claude.com/docs/en/desktop#configure-preview-servers) and the studio's documented pnpm commands. Preserve existing launch entries. A preview started from a parent folder does not establish the studio as the session's project.
 
 The studio's `CLAUDE.md` imports its shared `AGENTS.md`; `.claude/skills` exposes its current procedures. Read the shared instructions explicitly if an older studio has no Claude entry point. Preserve existing personal instruction files.
+
+### Optional terminal workflow
+
+Use this only when the person explicitly chooses the CLI. Start `claude` in a persistent terminal with the studio folder as its working directory. Do not send an automatic task to a second agent or assume changing one shell's directory changes another session's project.
 
 ## Verify each handoff
 
 A successful launch command proves only that a launch was requested. Verify the folder from the host UI, the new chat's reported working directory, or the person's observation. Claude Code and Cursor handoff journeys still need live testing. Never send them Codex links.
 
-References: [Claude Code CLI](https://code.claude.com/docs/en/cli-reference), [Claude project instructions](https://code.claude.com/docs/en/memory). Check the installed Cursor CLI's help before using its folder-opening flags.
+References: [Claude Desktop](https://code.claude.com/docs/en/desktop), [Claude Code CLI](https://code.claude.com/docs/en/cli-reference), [Claude project instructions](https://code.claude.com/docs/en/memory). Check the installed Cursor CLI's help before using its folder-opening flags.
