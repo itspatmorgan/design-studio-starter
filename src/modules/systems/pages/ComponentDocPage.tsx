@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { MDXContent } from 'mdx/types';
+import { useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowDown01Icon } from '@hugeicons/core-free-icons';
 import { Button } from '@/systems/studio/components/button';
@@ -8,8 +8,8 @@ import { CodeBlock, PageHeader, SystemFrame } from '@/modules/systems/pages/foun
 import { Prose } from '@/platform/app/docs/Prose';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/systems/studio/components/collapsible';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/systems/studio/components/table';
-import { loadComponentDoc, loadExamples, loadExamplesSource, loadProps, useDocsVersion, type Example } from '@/modules/systems/data/loadDocs';
-import type { ComponentPropsDoc, PropDoc, SystemComponentDoc } from '@/modules/systems/docs';
+import { useDocsVersion, type ComponentPageData } from '@/modules/systems/data/loadDocs';
+import type { PropDoc, SystemComponentDoc } from '@/modules/systems/docs';
 import { shadcnDocsUrl } from '@/modules/systems/sources';
 import type { DesignSystem } from '@/platform/app/data/types';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -18,7 +18,7 @@ import ViewError from '@/modules/prototypes/viewer/ViewError';
 // One component's page in the Systems section, built from its files: the title and description
 // and the Markdown page, then live examples, then its props read from the code. Whatever the
 // component doesn't have yet is left out, with a note on the file to add.
-type Loaded = { doc?: MDXContent; examples?: Example[]; source?: string; props?: ComponentPropsDoc[] };
+
 
 // The page's Markdown headings match the page's own sections (18px, under the 26px title), not the
 // 21px h2 the small prose size gives.
@@ -104,29 +104,19 @@ function webLink(url: string | null) {
 // `origin`
 // is where the system's components come from: 'shadcn' links the page to that component's shadcn/ui
 // docs, unless its frontmatter gives a link of its own.
-export function ComponentDocPage({ system, sys, component, origin }: { system: string; sys: DesignSystem; component: SystemComponentDoc; origin: 'shadcn' | null }) {
+export function ComponentDocPage({ sys, component, origin, loaded }: { sys: DesignSystem; component: SystemComponentDoc; loaded: ComponentPageData; origin: 'shadcn' | null }) {
   const { source, examples, doc } = component.files;
-  const [loaded, setLoaded] = useState<Loaded>({});
-  const [errors, setErrors] = useState<string[]>([]);
+  const errors = loaded.errors;
   const [retry, setRetry] = useState(0);
+  const router = useRouter();
   const version = useDocsVersion();
+  const previousVersion = useRef(version);
   useEffect(() => {
-    let current = true;
-    setLoaded({});
-    setErrors([]);
-    const settle = <T,>(load: (() => Promise<T> | undefined) | null, key: keyof Loaded) => {
-      if (!load) return;
-      Promise.resolve().then(load).then((value) => {
-        if (value === undefined) throw new Error('The file is missing.');
-        if (current) setLoaded((l) => ({ ...l, [key]: value }));
-      }).catch((error: unknown) => { if (current) setErrors((previous) => [...previous, `${key}: ${error instanceof Error ? error.message : String(error)}`]); });
-    };
-    settle(doc ? () => loadComponentDoc(system, doc) : null, 'doc');
-    settle(examples ? () => loadExamples(system, examples) : null, 'examples');
-    settle(examples ? () => loadExamplesSource(system, examples) : null, 'source');
-    settle(source ? () => loadProps(system, source) : null, 'props');
-    return () => { current = false; };
-  }, [system, source, examples, doc, version, retry]);
+    if (previousVersion.current !== version) {
+      previousVersion.current = version;
+      void router.invalidate();
+    }
+  }, [version, router]);
 
   const stem = (source ?? component.name).replace(/^.*\//, '').replace(/\.[jt]sx$/, '');
   const docsLink = webLink(component.docsUrl) ?? webLink(origin === 'shadcn' && source ? shadcnDocsUrl(stem) : null);
@@ -148,7 +138,7 @@ export function ComponentDocPage({ system, sys, component, origin }: { system: s
           ) : undefined}
         />
       </div>
-      {errors.length > 0 && <div role="alert" className="space-y-2 rounded-md border border-border p-3 text-sm"><p>Some component files couldn't load.</p>{errors.map((error) => <p key={error} className="text-muted-foreground">{error}</p>)}<Button variant="outline" size="sm" onClick={() => setRetry((value) => value + 1)}>Try again</Button></div>}
+      {errors.length > 0 && <div role="alert" className="space-y-2 rounded-md border border-border p-3 text-sm"><p>Some component files couldn't load.</p>{errors.map((error) => <p key={error} className="text-muted-foreground">{error}</p>)}<Button variant="outline" size="sm" onClick={() => { setRetry((value) => value + 1); void router.invalidate(); }}>Try again</Button></div>}
       {Doc ? <ErrorBoundary resetKeys={[Doc, retry]} FallbackComponent={ViewError}><Prose className={PAGE_PROSE}><Doc /></Prose></ErrorBoundary> : !doc && <Note>No page yet. Add <code>{stem}.md</code> next to the component to describe it and say when to use it.</Note>}
 
       <Section title="Examples">

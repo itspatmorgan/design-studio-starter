@@ -1,7 +1,7 @@
 import { useEffect, useState, type ComponentType } from 'react';
 import type { MDXContent } from 'mdx/types';
 import { SYSTEMS_KEY } from '@/platform/core/roots';
-import { exampleNames, type ComponentPropsDoc } from '@/modules/systems/docs';
+import { exampleNames, type ComponentPropsDoc, type SystemComponentDoc } from '@/modules/systems/docs';
 
 // A component's docs files in a system (src/systems/<system>/components/, or src/systems/studio/components/; see
 // src/modules/systems/docs.ts): its examples, the examples file's text, and its Markdown page.
@@ -68,4 +68,28 @@ if (import.meta.hot) {
   state.globs = globs;
   state.listeners.forEach((notify) => notify());
   import.meta.hot.accept();
+}
+
+// Resolve every section before the router publishes the next component page.
+// Failures stay reviewable alongside successfully loaded sections.
+export type ComponentPageData = {
+  doc?: MDXContent; examples?: Example[]; source?: string; props?: ComponentPropsDoc[]; errors: string[];
+};
+export async function loadComponentPage(system: string, component: SystemComponentDoc): Promise<ComponentPageData> {
+  const data: ComponentPageData = { errors: [] };
+  const { doc, examples, source } = component.files;
+  const requests: [Exclude<keyof ComponentPageData, 'errors'>, (() => Promise<unknown> | undefined)][] = [];
+  if (doc) requests.push(['doc', () => loadComponentDoc(system, doc)]);
+  if (examples) requests.push(['examples', () => loadExamples(system, examples)], ['source', () => loadExamplesSource(system, examples)]);
+  if (source) requests.push(['props', () => loadProps(system, source)]);
+  await Promise.all(requests.map(async ([key, load]) => {
+    try {
+      const value = await load();
+      if (value === undefined) throw new Error('The file is missing.');
+      Object.assign(data, { [key]: value });
+    } catch (error) {
+      data.errors.push(`${key}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }));
+  return data;
 }

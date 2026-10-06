@@ -8,7 +8,7 @@ import { HomeSection } from '@/platform/app/items/HomeSection';
 import { ItemRow } from '@/platform/app/items/ItemRow';
 import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
 import { APP_NAME } from '@/platform/app/data/config';
-import { artifactLabel } from '@/platform/app/data/manifest';
+import { artifactLabel, loadManifest } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 
 // Loaded on first visit, so it isn't in the main bundle:
@@ -16,6 +16,17 @@ import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 const SystemsPage = lazy(() => import('@/modules/systems/pages/SystemsPage'));
 const systemsTitle = (...parts: (string | undefined)[]) =>
   [...parts.filter(Boolean).map((p) => artifactLabel(p!)), 'Systems', APP_NAME].join(' — ');
+
+async function loadSystemPage(params: { system: string; page?: string; _splat?: string }, mode?: 'source') {
+  // Preload the layout too, so its initial Suspense boundary does not flash blank.
+  await import('./pages/SystemsPage');
+  if (mode === 'source' || params._splat) return null;
+  const manifest = await loadManifest();
+  const component = manifest.systems[params.system]?.components.find(item => item.slug === params.page);
+  if (!component) return null;
+  const { loadComponentPage } = await import('./data/loadDocs');
+  return { componentKey: params.system + '/' + component.slug, componentData: await loadComponentPage(params.system, component) };
+}
 
 function SystemsPlaces({ go }: PaletteContext) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -53,7 +64,7 @@ export default {
   rail: 'top',
   order: 20,
   routes: (root) => {
-    const systemsRoute = createRoute({ getParentRoute: () => root, path: 'systems', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }) });
+    const systemsRoute = createRoute({ getParentRoute: () => root, path: 'systems', component: () => <Suspense fallback={null}><SystemsPage /></Suspense>, validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }) });
     return [systemsRoute.addChildren([
       createRoute({
         getParentRoute: () => systemsRoute,
@@ -64,20 +75,23 @@ export default {
         getParentRoute: () => systemsRoute,
         path: '$system',
         head: ({ params }) => ({ meta: [{ title: systemsTitle(params.system) }] }),
-        component: () => <Suspense fallback={null}><SystemsPage /></Suspense>,
+        loaderDeps: ({ search }) => ({ mode: search.mode }),
+        loader: ({ params, deps }) => loadSystemPage(params, deps.mode),
       }),
       createRoute({
         getParentRoute: () => systemsRoute,
         path: '$system/$page',
         beforeLoad: ({ params }) => { if (params.page === 'assets') throw redirect({ to: '/systems/$system/$page' as never, params: { system: params.system, page: 'fonts' } as never, replace: true }); },
         head: ({ params }) => ({ meta: [{ title: systemsTitle(params.page, params.system) }] }),
-        component: () => <Suspense fallback={null}><SystemsPage /></Suspense>,
+        loaderDeps: ({ search }) => ({ mode: search.mode }),
+        loader: ({ params, deps }) => loadSystemPage(params, deps.mode),
       }),
       createRoute({
         getParentRoute: () => systemsRoute,
         path: '$system/$page/$',
         head: ({ params }) => ({ meta: [{ title: systemsTitle(params._splat?.split('/').pop(), params.page, params.system) }] }),
-        component: () => <Suspense fallback={null}><SystemsPage /></Suspense>,
+        loaderDeps: ({ search }) => ({ mode: search.mode }),
+        loader: ({ params, deps }) => loadSystemPage(params, deps.mode),
       }),
     ])];
   },

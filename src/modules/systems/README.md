@@ -43,6 +43,10 @@ Theme selectors and imported stylesheets stay under the system's unique theme cl
 
 Pop-ups render within the themed container. Starter Base UI portals pass `usePortalContainer()` as their `container`. This preserves system styling and local color-mode behavior.
 
+## Page loading
+
+The Systems layout remains mounted across its child routes. Component route loaders resolve documentation, examples, example source, and props together before displaying the next page. Intent preloading starts this work when navigating links. Successful sections remain available when another file fails; the page reports failures and offers retry. Source mode skips component loading so broken files remain repairable. Live documentation changes invalidate route data. Scroll resets before paint when changing pages.
+
 ## Component pages
 
 A component can use a folder named for it:
@@ -100,7 +104,7 @@ Systems declaring `styling: 'custom'` are exempt from the Tailwind vocabulary co
 
 ## Assets browser
 
-Assets lists local files in `assets/` for the selected registered system. Its navigation contains Fonts, Icons, and Images pages, even when empty. Icons combines local icons with the declared library’s existing examples. There is no combined Assets page. Files under `icons/` appear as Icons; other image files appear as Images. Supported extensions are SVG, PNG, JPG, JPEG, WebP, AVIF, GIF, ICO, WOFF, WOFF2, TTF, and OTF. The browser and Overview's local-asset count use the same inventory. Package files are not counted as local assets.
+Assets lists local files in `assets/` for the selected registered system. Its navigation contains Fonts, Icons, and Images pages, even when empty. Icons combines local icons with the declared library’s existing examples. There is no combined Assets page. Pages with no local files and no configured icon library use Studio’s Empty component with guidance for adding material. Files under `icons/` appear as Icons; other image files appear as Images. Supported extensions are SVG, PNG, JPG, JPEG, WebP, AVIF, GIF, ICO, WOFF, WOFF2, TTF, and OTF. The browser and Overview's local-asset count use the same inventory. Package files are not counted as local assets.
 
 Type pages use `/systems/<id>/fonts`, `/systems/<id>/icons`, and `/systems/<id>/images`. Individual previews append the asset’s relative path to its type page. Previous asset preview links remain readable; the previous Assets index redirects to Fonts. Images render through image elements rather than inline SVG execution. Font previews load only the selected font under a unique temporary family and remove it on navigation. Previews use Studio's appearance and do not activate assets in a system theme. Unknown files show Not Found. Assets have no text-source editor or structural file actions; use the agent or repository editor to add and maintain them.
 

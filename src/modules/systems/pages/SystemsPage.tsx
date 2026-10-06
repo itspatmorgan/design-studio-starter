@@ -1,5 +1,5 @@
-import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Link, useNavigate, useParams, useSearch } from '@tanstack/react-router';
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { Link, useNavigate, useSearch, useRouterState } from '@tanstack/react-router';
 import { ChevronDown, Compass, Blocks, NotebookText, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, Image, Search, ChevronsDownUp, ChevronsUpDown, X, type LucideIcon } from 'lucide-react';
 import { Input } from '@/systems/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
@@ -26,6 +26,7 @@ import FileNavItem from '@/platform/app/shell/FileNavItem';
 import { sourceOf } from '../sources';
 import { PLATFORM_ID, PLATFORM_SOURCE } from '../data/systems';
 import { systemSourceRequest } from './systemSource';
+import type { ComponentPageData } from '../data/loadDocs';
 import SystemOverview from './SystemOverview';
 import SystemAssets from './SystemAssets';
 import { systemAssets } from '../data/assets';
@@ -114,7 +115,7 @@ function TreeAction({ label, onClick, disabled = false, children }: { label: str
 // system selector, then the open system's pages under their headings.
 function SystemNav({ system, components, tokens, page }: { system: SystemId; components: SystemComponentDoc[]; tokens: ThemeToken[]; page?: string }) {
   const navigate = useNavigate();
-  const params = useParams({ strict: false }) as { _splat?: string };
+  const params = useRouterState({ select: state => state.matches.at(-1)?.params }) as { _splat?: string };
   const manifest = useManifest();
   const source = system === PLATFORM_ID ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
   const foundations = TOKEN_PAGES.filter((p) => p.id === 'typography' || tokens.some((t) => t.group === p.group));
@@ -210,8 +211,8 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
 }
 
 // One page of a system, or null if the system doesn't have it.
-function SystemPage({ system, sys, components, tokens, origin, page, assetPath }: {
-  system: SystemId; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[]; origin: 'shadcn' | null; page?: string; assetPath?: string;
+function SystemPage({ system, sys, components, tokens, origin, page, assetPath, pageData }: {
+  system: SystemId; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[]; origin: 'shadcn' | null; page?: string; assetPath?: string; pageData?: { componentKey: string; componentData: ComponentPageData } | null;
 }) {
   const has = (group: TokenGroup) => tokens.some((t) => t.group === group);
   switch (page) {
@@ -243,17 +244,18 @@ function SystemPage({ system, sys, components, tokens, origin, page, assetPath }
       return <SystemAssets system={system} sys={sys} kind="Icons" path={assetPath} />;
   }
   const found = components.find((c) => c.slug === page);
-  return found ? <ComponentDocPage system={system} sys={sys} component={found} origin={origin} /> : null;
+  return found && pageData?.componentKey === system + '/' + found.slug ? <ComponentDocPage key={pageData.componentKey} sys={sys} component={found} origin={origin} loaded={pageData.componentData} /> : null;
 }
 
 export default function SystemsPage() {
   // The router's types leave out the modules' routes, so say what this module's routes carry.
-  const params = useParams({ strict: false }) as { system?: string; page?: string; _splat?: string };
+  const params = useRouterState({ select: state => state.matches.at(-1)?.params }) as { system?: string; page?: string; _splat?: string };
   const system = params.system as SystemId;
   const sys = SYSTEMS[system];
   const mainRef = useRef<HTMLElement>(null);
-  useEffect(() => { mainRef.current?.scrollTo({ top: 0 }); }, [system, params.page, params._splat]);
+  useLayoutEffect(() => { mainRef.current?.scrollTo({ top: 0 }); }, [system, params.page, params._splat]);
 
+  const pageData = useRouterState({ select: state => state.matches.at(-1)?.loaderData }) as { componentKey: string; componentData: ComponentPageData } | null | undefined;
   const manifest = useManifest();
   const manifestSystem = manifest.systems[system];
   const selected = manifest.systemContent.find((p) => p.id === contentId(system, params.page ?? '')) as Prototype | undefined;
@@ -264,7 +266,7 @@ export default function SystemsPage() {
   const path = sys && !selected && !params._splat ? sourcePath(system, params.page, components) : null;
   const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(path), editing && !selected);
   const editable = components.find((c) => c.slug === params.page);
-  const content = selected ? <SystemContentPage key={selected.id + '/' + (params._splat ?? '')} proto={selected} slug={params._splat} /> : sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page, assetPath: params._splat }) : null;
+  const content = editing && path ? <></> : selected ? <SystemContentPage key={selected.id + '/' + (params._splat ?? '')} proto={selected} slug={params._splat} /> : sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page, assetPath: params._splat, pageData }) : null;
   if (!sys || !content) return <NotFound />;
   return (
     <div className="flex min-h-0 flex-1">

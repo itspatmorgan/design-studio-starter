@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router';
 import type { DesignSystem } from '@/platform/app/data/types';
 import { NotFound } from '@/platform/app/shell/App';
 import { IconsPage, PageHeader } from './foundations';
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/systems/studio/components/empty';
 import { ThemeScope } from '../ThemeScope';
 import { assetLink, systemAssets, type SystemAsset } from '../data/assets';
 
@@ -44,6 +45,8 @@ export default function SystemAssets({ system, sys, kind, path }: { system: stri
   }
   if (!kind) return <NotFound />;
   const items = assets.filter(asset => asset.kind === kind);
+  const empty = !items.length && !(kind === 'Icons' && sys.icons);
+  const guidance = `Ask your agent to add your system’s ${kind.toLowerCase()} and connect them to your theme or components. Package assets remain dependencies and are not listed as local files.`;
   return <>
     <PageHeader title={kind} description={kind === 'Icons' && sys.icons ? `This system uses ${sys.icons.library}.` : `${kind} owned by ${sys.label}.`} />
     {items.length ? <ul className="space-y-2">{items.map(asset => <li key={asset.path}>
@@ -51,8 +54,8 @@ export default function SystemAssets({ system, sys, kind, path }: { system: stri
         {kind !== 'Fonts' && <img src={asset.url} alt="" loading="lazy" className="size-10 shrink-0 object-contain" />}
         <span className="min-w-0 break-all text-sm">{asset.path}</span>
       </Link>
-    </li>)}</ul> : !(kind === 'Icons' && sys.icons) && <p className="text-sm text-muted-foreground">No local {kind.toLowerCase()} have been added.</p>}
-    <p className="my-6 text-sm leading-6 text-foreground/80">Ask your agent to add your system’s {kind.toLowerCase()} and connect them to your theme or components. Package assets remain dependencies and are not listed as local files.</p>
+    </li>)}</ul> : empty && <Empty><EmptyHeader><EmptyTitle>No local {kind.toLowerCase()} yet</EmptyTitle><EmptyDescription>{guidance}</EmptyDescription></EmptyHeader></Empty>}
+    {!empty && <p className="my-6 text-sm leading-6 text-foreground/80">{guidance}</p>}
     {kind === 'Icons' && sys.icons && <ThemeScope themeClass={sys.scopeClass}><IconsPage icons={sys.icons} /></ThemeScope>}
   </>;
 }
