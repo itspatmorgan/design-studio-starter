@@ -6,7 +6,7 @@ Onboarding welcomes designers and product managers after their studio opens. It 
 
 The first local home-page visit opens a four-step dialog over Home: Welcome, Prototypes, Systems, and Make it yours. The system and artifact steps let people select a concept to see a short explanation and example. Only enabled artifact types appear. The final step focuses on exploring available starter prototypes, then explains two paths with the agent: make a prototype with an existing system, or set up a system of your own. Removed or archived samples are omitted.
 
-**Explore my studio**, **Skip introduction**, Escape, backdrop dismissal, and opening a sample all record completion and close the introduction. It has no rail item, search entry, standalone page, or route. Later visits go directly to the studio. The Guide retains the concepts for later reading.
+**Explore my studio**, **Skip introduction**, Escape, backdrop dismissal, and opening a sample all record completion and close the introduction. Finishing with **Explore my studio** adds a brief fade, shrink, and lift as the studio is revealed. Reduced-motion preferences disable dialog animation. Other dismissal paths use the standard dialog exit. It has no rail item, search entry, standalone page, or route. Later visits go directly to the studio. The Guide retains the concepts for later reading.
 
 It does not create work, install dependencies, register contributors, or change configuration.
 
@@ -18,7 +18,7 @@ The module uses the application's `localOnly` extension, so published viewing si
 
 - `module.ts` declares the optional capability.
 - `app.tsx` adds the local first-visit home contribution without navigation.
-- `Welcome.tsx` owns the dialog, steps, dismissal, and text.
+- `Welcome.tsx` owns the dialog, steps, dismissal, and text. `Welcome.module.css` owns its completion animation.
 - `ConceptPreview.tsx` owns the interactive system and artifact explanations.
 - `Illustrations.tsx` adapts lightweight line drawings from the creator’s marketing site to Studio theme colors and human-readable labels.
 - `progress.ts` handles the browser preference without repository writes.

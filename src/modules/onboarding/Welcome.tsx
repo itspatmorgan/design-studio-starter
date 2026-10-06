@@ -10,6 +10,7 @@ import { prototypeLink } from '@/platform/app/data/manifest';
 import { complete, isComplete, progressKey } from './progress';
 import { ArtifactPreview, SystemPreview } from './ConceptPreview';
 import { AgentSketch } from './Illustrations';
+import styles from './Welcome.module.css';
 
 const steps = [
   { title: `Welcome to ${APP_NAME}`, description: 'A place to turn product ideas into working prototypes you can explore, discuss, and refine.' },
@@ -24,10 +25,11 @@ export default function Welcome() {
   const key = progressKey(import.meta.env.BASE_URL);
   const [open, setOpen] = useState(() => !isComplete(key));
   const [step, setStep] = useState(0);
+  const [completing, setCompleting] = useState(false);
   const examples = manifest.prototypes.filter(p => p.status !== 'archived' && p.contributorKey === 'patrick' && ['feedback-inbox', 'design-studio-marketing'].includes(p.id)).sort((a, b) => Number(b.system === 'product') - Number(a.system === 'product'));
   const finish = () => { complete(key); setOpen(false); };
   return <Dialog open={open} onOpenChange={value => { if (!value) finish(); }}>
-    <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto gap-6 p-6 sm:max-w-xl sm:p-8" showCloseButton={false}>
+    <DialogContent className={`${styles.dialog} max-h-[calc(100dvh-2rem)] overflow-y-auto gap-6 p-6 sm:max-w-xl sm:p-8`} data-completing={completing || undefined} showCloseButton={false}>
       <p className="text-xs font-medium text-muted-foreground" aria-live="polite">{step + 1} of {steps.length}</p>
       <div className="space-y-3" aria-live="polite" aria-atomic="true">
         <DialogTitle className="text-2xl font-semibold leading-tight tracking-tight">{steps[step].title}</DialogTitle>
@@ -59,7 +61,7 @@ export default function Welcome() {
         <Button variant="ghost" onClick={finish}>Skip introduction</Button>
         <div className="flex gap-2">
           {step > 0 && <Button variant="ghost" onClick={() => setStep(step - 1)}>Back</Button>}
-          <Button onClick={() => step === steps.length - 1 ? finish() : setStep(step + 1)}>{step === 0 ? 'Show me around' : step === steps.length - 1 ? 'Explore my studio' : 'Next'}<HugeiconsIcon icon={ArrowRight01Icon} /></Button>
+          <Button onClick={() => { if (step === steps.length - 1) { setCompleting(true); finish(); } else setStep(step + 1); }}>{step === 0 ? 'Show me around' : step === steps.length - 1 ? 'Explore my studio' : 'Next'}<HugeiconsIcon icon={ArrowRight01Icon} /></Button>
         </div>
       </div>
     </DialogContent>
