@@ -39,7 +39,7 @@ Record what the agent did, where it needed human help, and any unclear step. For
 
 | Harness | Package/version | Setup + Welcome | Workspace + skills | First prototype | Reopen | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| Codex | Pending | Pending | Pending | Pending | Pending | |
+| Codex | experiment .10 confirmed | Person reported successful setup on 2026-10-06; Welcome details not separately recorded | Pending | Pending | Pending | Codex CLI 0.137.0; checkout 291e657. Feedback: explain local file ownership, the exact destination, and the Developer folder. Shared create-studio wording updated afterward; revised wording needs a fresh native test. |
 | Claude Code | Pending | Pending | Pending | Pending | Pending | |
 | Cursor | Pending | Pending | Pending | Pending | Pending | |
 
