@@ -55,7 +55,7 @@ export default function Welcome() {
           </div>
         </div>}
       </div>
-      <div className="flex items-center justify-between gap-3 border-t pt-5">
+      <div className="flex items-center justify-between gap-3 pt-2">
         <Button variant="ghost" onClick={finish}>Skip introduction</Button>
         <div className="flex gap-2">
           {step > 0 && <Button variant="ghost" onClick={() => setStep(step - 1)}>Back</Button>}
