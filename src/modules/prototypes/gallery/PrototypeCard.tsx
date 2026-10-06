@@ -23,13 +23,13 @@ export default function PrototypeCard({ prototype: p }: { prototype: PrototypeIn
 }
 
 // A prototype's row, in the gallery's list view and on the front page. `byline` adds who made it.
-export function PrototypeRow({ prototype: p, byline = true }: { prototype: PrototypeInfo; byline?: boolean }) {
+export function PrototypeRow({ prototype: p, byline = true, showCreated = false }: { prototype: PrototypeInfo; byline?: boolean; showCreated?: boolean }) {
   return (
     <ItemRow
       link={prototypeLink(p)}
       icon={Layers01Icon}
       title={p.title}
-      meta={byline ? nameOf(p).split(' ')[0] : undefined}
+      meta={byline || (showCreated && p.created) ? <>{byline && nameOf(p).split(' ')[0]}{showCreated && p.created && <span>{byline && ' · '}{formatDate(p.created)}</span>}</> : undefined}
       archived={p.status === 'archived'}
       menu={<PrototypeCardMenu proto={p} inline />}
     />

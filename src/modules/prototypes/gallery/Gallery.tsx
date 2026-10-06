@@ -91,7 +91,7 @@ export default function Gallery() {
       .sort(newestFirst);
     // Archived prototypes show here, below the rest. The deployed site leaves them out.
     const list = (ps: PrototypeInfo[]) => (
-      <Collection items={ps} keyOf={(p) => `${p.contributorKey}/${p.id}`} card={(p) => <PrototypeCard prototype={p} />} row={(p) => <PrototypeRow prototype={p} />} />
+      <Collection items={ps} keyOf={(p) => `${p.contributorKey}/${p.id}`} card={(p) => <PrototypeCard prototype={p} />} row={(p) => <PrototypeRow prototype={p} showCreated />} />
     );
     const active = prototypes.filter((p) => p.status !== 'archived');
     const archived = prototypes.filter((p) => p.status === 'archived');
