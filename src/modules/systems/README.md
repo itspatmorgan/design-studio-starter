@@ -130,7 +130,9 @@ Local menus support creation, source editing, rename, move, and recoverable dele
 
 ## System choice
 
-The Systems navigation uses a grouped selector: Prototype systems contains installed prototype systems, with the configured default first; Studio contains Studio’s own system. Entering /systems opens the default prototype system; switching systems opens its overview. Explicit system URLs keep their selected system.
+Entering `/systems` opens a collection with search and the shared cards/list preference. Cards show descriptions, component counts, active prototype usage, and a Default system, Prototype system, or Application system label. The default prototype system appears first; Studio appears last. Opening a system shows its named resource navigation, with no system selector or back link. The main Systems navigation returns to the collection. Explicit system URLs still open their selected system.
+
+Locally, registered Admins can use **New system** to name and create a scaffold. The module’s `create` server route resolves the current actor and configuration, enforces Admin access, and delegates registration and validation to `studio create-system`. Creation preserves the default and existing content; configuration changes restart the dev server. Prototype systems with no components show a setup panel on their local Overview, offering copyable prompts for targeted curation or assessment of existing React product code. The prompts identify the system’s repository path. Empty context, skills, or assets alone do not trigger this panel. Published sites have no creation action or setup panel.
 
 `meta.json.system` selects a prototype's system; explicit `null` selects no system. Only omission uses the studio default. The [prototype contract](../prototypes/README.md#metadata) owns the metadata definition.
 

@@ -6,6 +6,7 @@ import { contentId } from '@/platform/core/roots';
 import { ThemeScope } from '../ThemeScope';
 import { SYSTEM_SPECS, PLATFORM_ID } from '../data/systems';
 import { systemAssets } from '../data/assets';
+import SystemSetup from './SystemSetup';
 import { isSkillFile } from '../content/rules';
 import type { DesignSystem } from '@/platform/app/data/types';
 import type { SystemComponentDoc } from '../docs';
@@ -32,6 +33,7 @@ export default function SystemOverview({ system, sys, components, tokens }: {
 
   return <>
     <PageHeader title={`${sys.label} system`} description={sys.summary ?? `The guidance and code included in ${sys.label}.`} />
+    {!platform && !components.length && import.meta.env.DEV && <SystemSetup system={system} />}
     {platform && <p className="mb-6 text-[13px] text-muted-foreground">Required application system</p>}
     {sys.overview?.starter && <aside className="mb-8 rounded-lg border border-border bg-background p-4" aria-label="Starter design system">
       <p className="mb-1 text-sm font-semibold">Replace this starter with your team’s design system</p>

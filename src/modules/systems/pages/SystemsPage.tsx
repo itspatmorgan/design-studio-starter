@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
-import { Link, useNavigate, useSearch, useRouterState } from '@tanstack/react-router';
+import { Link, useSearch, useRouterState } from '@tanstack/react-router';
 import { ChevronDown, Compass, Blocks, NotebookText, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, Image, Search, ChevronsDownUp, ChevronsUpDown, X, type LucideIcon } from 'lucide-react';
 import { Input } from '@/systems/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
@@ -10,7 +10,6 @@ import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
 import SystemContentPage from '../content/SystemContentPage';
 import type { Prototype } from '@/platform/app/data/types';
 import { NavHeader, NavList, NavTitle, SectionNav } from '@/platform/app/shell/nav';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/systems/studio/components/select';
 import { NotFound } from '@/platform/app/shell/App';
 import { ColorTokens, PageHeader } from '@/modules/systems/pages/foundations';
 import { OtherTokens, RadiusTokens, ShadowTokens, SpacingTokens, TypographyTokens } from '@/modules/systems/pages/tokens';
@@ -20,7 +19,7 @@ import type { DesignSystem, SystemIntro } from '@/platform/app/data/types';
 import type { SystemComponentDoc } from '@/modules/systems/docs';
 import type { ThemeToken, TokenGroup } from '@/modules/systems/themeTokens';
 import { ThemeScope } from '@/modules/systems/ThemeScope';
-import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS, SYSTEM_SPECS } from '@/modules/systems/data/systems';
+import { PROTOTYPE_SYSTEMS, SYSTEM_SPECS } from '@/modules/systems/data/systems';
 import { useSourceView } from '@/platform/core/source/useSourceView';
 import FileNavItem from '@/platform/app/shell/FileNavItem';
 import { sourceOf } from '../sources';
@@ -36,12 +35,12 @@ const ComponentEditor = import.meta.env.DEV ? lazy(() => import('./ComponentEdit
 
 const SystemSourceEditor = import.meta.env.DEV ? lazy(() => import('./SystemSourceEditor')) : null;
 
-// Systems: a selector for design systems, and one page per theme category and component,
+// Systems: one page per theme category and component,
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
 // Every system is treated the same, the app's own (Studio) included. What only its people can write
 // comes from src/systems/<id>/intro.tsx: overview summaries, optional additional content, and icons. The rest comes from its files: a component page for each component in its components
 // folder (src/modules/systems/docs.ts), and a theme page for each kind of token its theme
-// defines (src/modules/systems/themeTokens.ts). Prototype systems appear in the selector, followed by Studio.
+// defines (src/modules/systems/themeTokens.ts).
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
 const introOf = (id: string): SystemIntro => intros[`/systems/${id}/intro.tsx`]?.default ?? {};
 const PROTOTYPE_SPECS: Record<string, DesignSystem> = Object.fromEntries(Object.entries(SYSTEM_SPECS).map(([id, spec]) => [id, {
@@ -49,10 +48,6 @@ const PROTOTYPE_SPECS: Record<string, DesignSystem> = Object.fromEntries(Object.
 }]));
 const SYSTEMS: Record<string, DesignSystem> = PROTOTYPE_SPECS;
 const platform = SYSTEMS[PLATFORM_ID];
-const SYSTEM_CHOICES = [
-  ...Object.entries(PROTOTYPE_SPECS).filter(([id]) => id !== PLATFORM_ID).sort(([a], [b]) => a === DEFAULT_SYSTEM ? -1 : b === DEFAULT_SYSTEM ? 1 : a.localeCompare(b)),
-  [PLATFORM_ID, platform] as const,
-].map(([value, spec]) => ({ value, label: spec.label }));
 type SystemId = string;
 
 
@@ -111,10 +106,8 @@ function TreeAction({ label, onClick, disabled = false, children }: { label: str
   </Tooltip>;
 }
 
-// The Systems navigation, built from the shared pieces (shell/nav/): the section's name, the
-// system selector, then the open system's pages under their headings.
+// The system navigation uses the shared pieces (shell/nav/): its name and pages under their headings.
 function SystemNav({ system, components, tokens, page }: { system: SystemId; components: SystemComponentDoc[]; tokens: ThemeToken[]; page?: string }) {
-  const navigate = useNavigate();
   const params = useRouterState({ select: state => state.matches.at(-1)?.params }) as { _splat?: string };
   const manifest = useManifest();
   const source = system === PLATFORM_ID ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
@@ -155,28 +148,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   return (
     <SectionNav label="Systems">
       <NavHeader>
-        <NavTitle>Systems</NavTitle>
-        <div className="mt-2 px-1">
-          <Select items={SYSTEM_CHOICES} value={system} onValueChange={(value) => {
-            if (value && value !== system) void navigate({ to: '/systems/$system' as never, params: { system: value } as never });
-          }}>
-            <SelectTrigger aria-label="System" className="w-full min-w-0">
-              <SelectValue className="min-w-0 truncate" />
-            </SelectTrigger>
-            <SelectContent align="start">
-              <SelectGroup>
-                <SelectLabel>Prototype systems</SelectLabel>
-                {SYSTEM_CHOICES.filter((choice) => choice.value !== PLATFORM_ID).map((choice) => (
-                  <SelectItem key={choice.value} value={choice.value}>{choice.label}</SelectItem>
-                ))}
-              </SelectGroup>
-              <SelectGroup>
-                <SelectLabel>Studio</SelectLabel>
-                <SelectItem value={PLATFORM_ID}>{platform.label}</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
+        <NavTitle>{SYSTEMS[system].label}</NavTitle>
       </NavHeader>
       <div className="shrink-0 px-3 pt-3">
         <div className="flex h-7 items-center justify-between pl-2">

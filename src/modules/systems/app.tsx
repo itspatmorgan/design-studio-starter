@@ -1,12 +1,12 @@
 import { lazy, Suspense } from 'react';
 // Systems in the app: its rail button, its routes (/systems, /systems/<system>, /systems/<system>/<page>),
 // and prototype systems in the ⌘K palette. The pages are in src/modules/systems/pages/.
-import { createRoute, redirect, useRouterState } from '@tanstack/react-router';
+import { createRoute, Outlet, redirect, useRouterState } from '@tanstack/react-router';
 import { Shapes01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/systems/studio/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
 import { ItemRow } from '@/platform/app/items/ItemRow';
-import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
+import { PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
 import { APP_NAME } from '@/platform/app/data/config';
 import { artifactLabel, loadManifest } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
@@ -14,6 +14,11 @@ import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 // Loaded on first visit, so it isn't in the main bundle:
 // https://tanstack.com/router/latest/docs/framework/react/guide/code-splitting
 const SystemsPage = lazy(() => import('@/modules/systems/pages/SystemsPage'));
+const SystemsIndex = lazy(() => import('./pages/SystemsIndex'));
+function SystemsLayout() {
+  const system = useRouterState({ select: state => (state.matches.at(-1)?.params as { system?: string })?.system });
+  return <Suspense fallback={null}>{system ? <SystemsPage /> : <Outlet />}</Suspense>;
+}
 const systemsTitle = (...parts: (string | undefined)[]) =>
   [...parts.filter(Boolean).map((p) => artifactLabel(p!)), 'Systems', APP_NAME].join(' — ');
 
@@ -64,12 +69,14 @@ export default {
   rail: 'top',
   order: 20,
   routes: (root) => {
-    const systemsRoute = createRoute({ getParentRoute: () => root, path: 'systems', component: () => <Suspense fallback={null}><SystemsPage /></Suspense>, validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }) });
+    const systemsRoute = createRoute({ getParentRoute: () => root, path: 'systems', component: SystemsLayout, validateSearch: (search: Record<string, unknown>): { mode?: 'source'; q?: string } => ({ mode: search.mode === 'source' ? 'source' : undefined, q: typeof search.q === 'string' && search.q ? search.q : undefined }) });
     return [systemsRoute.addChildren([
       createRoute({
         getParentRoute: () => systemsRoute,
         path: '/',
-        beforeLoad: () => { throw redirect({ to: '/systems/$system' as never, params: { system: DEFAULT_SYSTEM } as never, replace: true }); },
+        head: () => ({ meta: [{ title: `Systems — ${APP_NAME}` }] }),
+        loader: () => import('./pages/SystemsIndex'),
+        component: () => <Suspense fallback={null}><SystemsIndex /></Suspense>,
       }),
       createRoute({
         getParentRoute: () => systemsRoute,

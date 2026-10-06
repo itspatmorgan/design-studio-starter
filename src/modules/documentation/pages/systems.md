@@ -7,7 +7,7 @@ module: systems
 toc: true
 ---
 
-Systems brings together the components, styles, and knowledge used by your prototypes. Use the selector to switch between systems. Its navigation shows Context, Skills, Theme, Assets, and Components for the selected system.
+Systems brings together the components, styles, and knowledge used by your prototypes. Open Systems to see your systems as cards or a list. Search by name or description. Labels identify the default prototype system and Studio’s application system. Open a system to browse Context, Skills, Theme, Assets, and Components. Click Systems in the main navigation to return to the collection.
 
 The Resources toolbar searches across the tree and expands or collapses all folders. Search reveals matches without losing your previous expansion choices. Context, Skills, Theme, Assets, and Components start open. Guidance appears above the toolkit, and each guidance group has its own **New** action.
 
@@ -57,6 +57,8 @@ Theme shows the colors, typography, radius, shadows, spacing, motion, and effect
 A system declares whether it supports light mode, dark mode, or both. Systems with one mode keep that appearance in their pages, prototype views, and embeds while Studio follows its global toggle.
 
 ## Bring your own system
+
+In your local studio, an Admin can click **New system** on the Systems index and give it a name. This creates a scaffold with a starting theme and preserves the current default and existing prototypes. Its overview offers two copyable prompts: **Curate a toolkit** or **Bring my product system**. Paste one into your coding agent’s chat to continue setup. In personal use, your registered contributor is the Admin.
 
 You can keep the starter while exploring, adapt it, or create a separate system. Removing sample systems and prototypes is your choice.
 

@@ -8,6 +8,7 @@
 // A module's section declares its policy (src/platform/core/modules/index.ts); a contributor's key matches no
 // module, so it is "owner". The server still checks every request: the app only hides what you can't do.
 // Has only type imports, so Node scripts and the app can both load it.
+export { studioRole } from './config.ts';
 import { SYSTEM_CONTENT_KEY } from './roots.ts';
 import type { ModuleSpec } from './modules/index.ts';
 
