@@ -1,37 +1,35 @@
 import { useState } from 'react';
-import { FileText, GitBranch, Layout, Layers, MousePointer2, Sparkles } from 'lucide-react';
 import { Button } from '@/systems/studio/components/button';
 import { CONFIG } from '@/platform/core/api';
+import { ArtifactSketch, SystemSketch } from './Illustrations';
 
 const systemParts = [
-  { title: 'Toolkit', icon: Layers, description: 'Theme and components give your prototypes their look and reusable building blocks.', example: 'Colors · Typography · Buttons · Forms' },
-  { title: 'Context', icon: FileText, description: 'Your audience, product, and design principles help your agent make decisions that fit.', example: 'Personas · Product goals · Design principles' },
-  { title: 'Skills', icon: Sparkles, description: 'Skills guide your agent through tasks specific to your system.', example: 'Write in your brand’s voice · Apply your design patterns' },
+  { title: 'Theme & components', kind: 'toolkit', description: 'The colors, type, and reusable components that make your prototypes look and feel like your product.', example: 'Use your team’s buttons, forms, and other building blocks.' },
+  { title: 'Context', kind: 'context', description: 'What your agent should know about your product, your audience, and your design principles.', example: '“Our users review feedback every morning. Help them find what needs attention.”' },
+  { title: 'Skills', kind: 'skills', description: 'Instructions that help your agent carry out tasks in the way your team wants.', example: 'Write in your brand’s voice, or follow a familiar design pattern.' },
 ];
 const artifacts = [
-  { module: 'view', title: 'Views', icon: MousePointer2, description: 'Interactive screens to click through and try.', example: 'An inbox screen with filters, messages, and an open conversation.' },
-  { module: 'document', title: 'Documents', icon: FileText, description: 'Briefs, notes, and decisions that explain your idea.', example: 'A brief describing who the inbox is for and what they need.' },
-  { module: 'diagrams', title: 'Diagrams', icon: GitBranch, description: 'Flows and relationships that make an idea easier to follow.', example: 'New message → Review → Reply → Resolve' },
-  { module: 'canvas', title: 'Canvases', icon: Layout, description: 'Arrange screens, documents, diagrams, and notes together.', example: 'A shared space to compare screens alongside your brief and flow.' },
+  { module: 'view', title: 'Views', kind: 'view', description: 'Working screens you can click through to explore how an idea feels.', example: 'Try filtering an inbox or opening a message.' },
+  { module: 'document', title: 'Documents', kind: 'document', description: 'The brief, notes, and decisions that explain what you’re exploring and why.', example: 'Keep the problem and audience alongside your screens.' },
+  { module: 'diagrams', title: 'Diagrams', kind: 'diagrams', description: 'Flows that help you and your team see how the experience fits together.', example: 'Follow a message from arrival to review to resolution.' },
+  { module: 'canvas', title: 'Canvases', kind: 'canvas', description: 'An open space to sketch, compare, and arrange your artifacts and notes together.', example: 'Put your screens beside a flow and discuss the whole idea.' },
 ].filter(type => CONFIG.modules[type.module] === true);
 
-type Choice = { title: string; icon: typeof Layers; description: string; example: string };
-function ConceptPreview({ choices, label, id }: { choices: Choice[]; label: string; id: string }) {
+type Choice = { title: string; kind: string; description: string; example: string };
+function ConceptPreview({ choices, label, id, system = false }: { choices: Choice[]; label: string; id: string; system?: boolean }) {
   const [index, setIndex] = useState(0);
   const choice = choices[index];
   if (!choice) return null;
-  const Icon = choice.icon;
   return <div className="space-y-4">
     <div role="group" aria-label={label} className="flex flex-wrap gap-2">
       {choices.map((item, i) => <Button key={item.title} variant={index === i ? 'secondary' : 'ghost'} size="sm" aria-pressed={index === i} aria-controls={id} onClick={() => setIndex(i)}>{item.title}</Button>)}
     </div>
-    <div id={id} className="space-y-4 rounded-xl border bg-muted/30 p-5" aria-live="polite" aria-atomic="true">
-      <Icon className="size-6" aria-hidden="true" />
-      <p className="font-medium">{choice.title}</p>
+    <div id={id} className="space-y-3 rounded-xl border bg-muted/30 p-4" aria-live="polite" aria-atomic="true">
+      {system ? <SystemSketch selected={index} /> : <ArtifactSketch kind={choice.kind} />}
       <p className="text-sm leading-relaxed text-muted-foreground">{choice.description}</p>
-      <p className="rounded-lg border bg-background p-3 text-sm">{choice.example}</p>
+      <p className="text-xs leading-relaxed text-muted-foreground">{choice.example}</p>
     </div>
   </div>;
 }
-export const SystemPreview = () => <ConceptPreview choices={systemParts} label="Explore the parts of a system" id="onboarding-system-preview" />;
+export const SystemPreview = () => <ConceptPreview choices={systemParts} label="Explore the parts of a system" id="onboarding-system-preview" system />;
 export const ArtifactPreview = () => <ConceptPreview choices={artifacts} label="Explore prototype artifacts" id="onboarding-artifact-preview" />;
