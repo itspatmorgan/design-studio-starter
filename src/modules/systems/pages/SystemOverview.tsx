@@ -5,6 +5,7 @@ import { systemUsage, prototypeLink } from '@/platform/app/data/manifest';
 import { contentId } from '@/platform/core/roots';
 import { ThemeScope } from '../ThemeScope';
 import { SYSTEM_SPECS, PLATFORM_ID } from '../data/systems';
+import { systemAssets } from '../data/assets';
 import { isSkillFile } from '../content/rules';
 import type { DesignSystem } from '@/platform/app/data/types';
 import type { SystemComponentDoc } from '../docs';
@@ -45,8 +46,8 @@ export default function SystemOverview({ system, sys, components, tokens }: {
         {sys.overview?.guidance ? <p className="text-sm leading-6 text-foreground/80">{sys.overview.guidance}</p> : !guidanceCount && <p className="text-sm leading-6 text-foreground/80">No system instructions have been added yet.</p>}
       </section>
       <section className="min-w-0 rounded-xl bg-muted/40 p-6" aria-labelledby="system-code">
-        <h2 id="system-code" className={sectionHeading}>Code</h2>
-        <Metrics items={[{ label: 'Components', count: components.length }, { label: 'Theme tokens', count: new Set(tokens.map(token => token.name)).size }]} />
+        <h2 id="system-code" className={sectionHeading}>Toolkit</h2>
+        <Metrics items={[{ label: 'Components', count: components.length }, { label: 'Theme tokens', count: new Set(tokens.map(token => token.name)).size }, { label: 'Local assets', count: systemAssets(system).length }]} />
         {sys.overview?.code && <p className="text-sm leading-6 text-foreground/80">{sys.overview.code}</p>}
         <div className="mt-4 text-xs text-muted-foreground"><ColorModeSupport modes={spec.colorModes} /></div>
       </section>

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
-import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
+import { Link, useNavigate, useParams, useSearch } from '@tanstack/react-router';
 import { ChevronDown, Compass, Blocks, NotebookText, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, Search, ChevronsDownUp, ChevronsUpDown, X, type LucideIcon } from 'lucide-react';
 import { Input } from '@/systems/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
@@ -27,6 +27,9 @@ import { sourceOf } from '../sources';
 import { PLATFORM_ID, PLATFORM_SOURCE } from '../data/systems';
 import { systemSourceRequest } from './systemSource';
 import SystemOverview from './SystemOverview';
+import SystemAssets from './SystemAssets';
+import { assetLink, systemAssets } from '../data/assets';
+import { navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
 
 const ComponentEditor = import.meta.env.DEV ? lazy(() => import('./ComponentEditor').then((module) => ({ default: module.ComponentEditor }))) : null;
 
@@ -55,6 +58,7 @@ type SystemId = string;
 // Map a rendered Systems page to its actual source files.
 function sourcePath(system: string, page: string | undefined, components: SystemComponentDoc[]) {
   const source = system === PLATFORM_ID ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
+  if (page === 'assets') return null;
   if (!page || page === 'icons') return intros['/systems/' + system + '/intro.tsx'] ? source.dir + 'intro.tsx' : source.dir + 'system.ts';
   const component = components.find((c) => c.slug === page);
   if (component) {
@@ -115,7 +119,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   const source = system === PLATFORM_ID ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
   const foundations = TOKEN_PAGES.filter((p) => p.id === 'typography' || tokens.some((t) => t.group === p.group));
   const savedTree = systemTreeState.get(system);
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => savedTree?.openGroups ?? { context: true, skills: true, theme: true, components: true });
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => savedTree?.openGroups ?? { context: true, skills: true, theme: true, assets: true, components: true });
   const [folderCommand, setFolderCommand] = useState(() => savedTree?.folderCommand ?? { version: 0, expanded: true });
   const [foldersExpanded, setFoldersExpanded] = useState<Record<string, boolean>>(() => savedTree?.foldersExpanded ?? {});
   useEffect(() => { systemTreeState.set(system, { openGroups, folderCommand, foldersExpanded }); }, [system, openGroups, folderCommand, foldersExpanded]);
@@ -125,14 +129,14 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   useEffect(() => { if (searchOpen) searchRef.current?.focus(); }, [searchOpen]);
   const q = query.trim().toLowerCase();
   const matches = (label: string) => !q || label.toLowerCase().includes(q);
-  const activeGroup = page && (Object.hasOwn(SYSTEM_CONTENT_SECTIONS, page) ? page : foundations.some(p => p.id === page) || page === 'icons' ? 'theme' : components.some(c => c.slug === page) ? 'components' : undefined);
+  const activeGroup = page && (Object.hasOwn(SYSTEM_CONTENT_SECTIONS, page) ? page : page === 'assets' || page === 'icons' ? 'assets' : foundations.some(p => p.id === page) ? 'theme' : components.some(c => c.slug === page) ? 'components' : undefined);
   useEffect(() => { if (activeGroup) setOpenGroups(prev => ({ ...prev, [activeGroup]: true })); }, [activeGroup, page, params._splat]);
   const groupOpen = (id: string) => Boolean(q) || openGroups[id];
   const changeGroup = (id: string, open: boolean) => { if (!q) setOpenGroups(prev => ({ ...prev, [id]: open })); };
   const allExpanded = Object.values(openGroups).every(Boolean) && Object.values(foldersExpanded).every(Boolean);
   const toggleAll = () => {
     const expanded = !allExpanded;
-    setOpenGroups({ context: expanded, skills: expanded, theme: expanded, components: expanded });
+    setOpenGroups({ context: expanded, skills: expanded, theme: expanded, assets: expanded, components: expanded });
     setFolderCommand(prev => ({ version: prev.version + 1, expanded }));
   };
   const contentSections = Object.entries(SYSTEM_CONTENT_SECTIONS).flatMap(([id, section]) => {
@@ -141,8 +145,10 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   });
   const matchingFoundations = foundations.filter(p => matches('Theme') || matches(p.label));
   const matchingComponents = components.filter(c => matches('Components') || matches(c.title));
-  const iconsMatch = SYSTEMS[system].icons && (matches('Theme') || matches('Icons'));
-  const anyMatch = matches('Overview') || matchingFoundations.length > 0 || iconsMatch || matchingComponents.length > 0 || contentSections.some(({ section, proto }) => matches(section.title) || proto.artifacts.some(a => matches(artifactLabel(a.path, proto)) || matches(a.path)));
+  const iconsMatch = SYSTEMS[system].icons && (matches('Assets') || matches('Icons'));
+  const matchingAssets = systemAssets(system).filter(asset => matches('Assets') || matches(asset.path) || matches(asset.kind));
+  const assetsMatch = matches('Assets') || matchingAssets.length > 0;
+  const anyMatch = matches('Overview') || assetsMatch || matchingFoundations.length > 0 || iconsMatch || matchingComponents.length > 0 || contentSections.some(({ section, proto }) => matches(section.title) || proto.artifacts.some(a => matches(artifactLabel(a.path, proto)) || matches(a.path)));
   const file = (id: string | undefined, label: string) => {
     const path = sourcePath(system, id, components);
     return path && <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={path} label={label} className={id ? undefined : 'h-7'} icon={navIcon(id && components.some((c) => c.slug === id) ? Blocks : PAGE_ICONS[id ?? 'intro'] ?? Blocks)} reveal={() => systemSourceRequest('reveal', path)} />;
@@ -189,9 +195,13 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
       <NavList>
         {matches('Overview') && file(undefined, 'Overview')}
         {contentSections.map(({ id, section, proto }) => <FileTree key={proto.id} proto={proto} current={page === id && params._splat ? findArtifact(proto, params._splat) : undefined} embedded contentIcon={navIcon(CONTENT_ICONS[id])} branch={{ label: section.title, path: source.dir + id + '/', active: page === id }} navigation={{ query: matches(section.title) ? '' : q, searching: Boolean(q), expanded: groupOpen(id), onExpandedChange: open => changeGroup(id, open), folderCommand, onFoldersExpanded: open => setFoldersExpanded(prev => prev[id] === open ? prev : { ...prev, [id]: open }) }} />)}
-        {(matchingFoundations.length > 0 || iconsMatch || matches('Theme')) && <SystemBranch label="Theme" path={source.theme} open={groupOpen('theme')} onOpenChange={open => changeGroup('theme', open)}>
+        {(matchingFoundations.length > 0 || matches('Theme')) && <SystemBranch label="Theme" path={source.theme} open={groupOpen('theme')} onOpenChange={open => changeGroup('theme', open)}>
           {matchingFoundations.map(p => file(p.id, p.label))}
-          {iconsMatch && file('icons', 'Icons')}
+        </SystemBranch>}
+        {(assetsMatch || iconsMatch) && <SystemBranch label="Assets" path={source.dir + 'assets/'} open={groupOpen('assets')} onOpenChange={open => changeGroup('assets', open)}>
+          {assetsMatch && <Link to={`/systems/${system}/assets` as never} activeOptions={{ exact: true, includeSearch: false }} className={navLinkClass} style={navLinkStyle}>{navIcon(Layers2)}All assets</Link>}
+          {iconsMatch && file('icons', 'Icon library')}
+          {matchingAssets.map(asset => <Link key={asset.path} to={assetLink(system, asset.path) as never} title={asset.path} activeOptions={{ exact: true, includeSearch: false }} className={navLinkClass} style={navLinkStyle}>{navIcon(asset.kind === 'Fonts' ? Type : Smile)}<span className="truncate">{asset.path}</span></Link>)}
         </SystemBranch>}
         {(matchingComponents.length > 0 || matches('Components')) && <SystemBranch label="Components" path={source.components} open={groupOpen('components')} onOpenChange={open => changeGroup('components', open)}>
           {matchingComponents.map(c => file(c.slug, c.title))}
@@ -204,13 +214,15 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
 }
 
 // One page of a system, or null if the system doesn't have it.
-function SystemPage({ system, sys, components, tokens, origin, page }: {
-  system: SystemId; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[]; origin: 'shadcn' | null; page?: string;
+function SystemPage({ system, sys, components, tokens, origin, page, assetPath }: {
+  system: SystemId; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[]; origin: 'shadcn' | null; page?: string; assetPath?: string;
 }) {
   const has = (group: TokenGroup) => tokens.some((t) => t.group === group);
   switch (page) {
     case undefined:
       return <SystemOverview system={system} sys={sys} components={components} tokens={tokens} />;
+    case 'assets':
+      return <SystemAssets system={system} sys={sys} path={assetPath} />;
     case 'colors':
       return has('colors') ? <><PageHeader title="Colors" description="Every color token in the theme. Values reflect this system's active mode." /><ColorTokens tokens={tokens} /></> : null;
     case 'typography':
@@ -240,7 +252,7 @@ export default function SystemsPage() {
   const system = params.system as SystemId;
   const sys = SYSTEMS[system];
   const mainRef = useRef<HTMLElement>(null);
-  useEffect(() => { mainRef.current?.scrollTo({ top: 0 }); }, [system, params.page]);
+  useEffect(() => { mainRef.current?.scrollTo({ top: 0 }); }, [system, params.page, params._splat]);
 
   const manifest = useManifest();
   const manifestSystem = manifest.systems[system];
@@ -252,7 +264,7 @@ export default function SystemsPage() {
   const path = sys && !selected ? sourcePath(system, params.page, components) : null;
   const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(path), editing && !selected);
   const editable = components.find((c) => c.slug === params.page);
-  const content = selected ? <SystemContentPage key={selected.id + '/' + (params._splat ?? '')} proto={selected} slug={params._splat} /> : sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page }) : null;
+  const content = selected ? <SystemContentPage key={selected.id + '/' + (params._splat ?? '')} proto={selected} slug={params._splat} /> : sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page, assetPath: params._splat }) : null;
   if (!sys || !content) return <NotFound />;
   return (
     <div className="flex min-h-0 flex-1">
@@ -261,7 +273,7 @@ export default function SystemsPage() {
         <main className="flex min-h-0 min-w-0 flex-1 flex-col"><Suspense fallback={<p className="p-4 text-sm">Loading editor…</p>}>{editable && ComponentEditor ? <ComponentEditor key={system + '/' + editable.slug} system={system} component={editable} onDone={toggle} /> : SystemSourceEditor && <SystemSourceEditor path={path} onDone={toggle} />}</Suspense></main>
       ) : (
         <main ref={mainRef} className="min-w-0 flex-1 overflow-y-auto">
-          <ThemeScope themeClass={params.page ? sys.scopeClass : platform.scopeClass} className="min-h-full bg-background text-foreground">
+          <ThemeScope themeClass={params.page && params.page !== 'assets' ? sys.scopeClass : platform.scopeClass} className="min-h-full bg-background text-foreground">
             <div ref={rendered} tabIndex={-1} className="mx-auto w-full max-w-3xl px-8 py-10 outline-none" data-testid={`${system}-set`}>{content}</div>
           </ThemeScope>
         </main>

@@ -7,11 +7,11 @@ module: systems
 toc: true
 ---
 
-Systems brings together the components, styles, and knowledge used by your prototypes. Use the selector to switch between systems. Its navigation shows Context, Skills, Theme, and Components for the selected system.
+Systems brings together the components, styles, and knowledge used by your prototypes. Use the selector to switch between systems. Its navigation shows Context, Skills, Theme, Assets, and Components for the selected system.
 
-The Resources toolbar searches across the tree and expands or collapses all folders. Search reveals matches without losing your previous expansion choices. Context, Skills, Theme, and Components start open. Guidance appears above the toolkit, and each guidance group has its own **New** action.
+The Resources toolbar searches across the tree and expands or collapses all folders. Search reveals matches without losing your previous expansion choices. Context, Skills, Theme, Assets, and Components start open. Guidance appears above the toolkit, and each guidance group has its own **New** action.
 
-Overview summarizes the selected system’s instructions, components, and theme. Counts show what is included; navigation provides the full inventory. The usage section shows active prototypes, previews up to three recent examples, and links to the complete filtered collection. Studio explains its application role instead. Product and Marketing are starter kits to replace with your team’s systems.
+Overview summarizes the selected system’s instructions, components, theme, and local assets. Counts show what is included; navigation provides the full inventory. The usage section shows active prototypes, previews up to three recent examples, and links to the complete filtered collection. Studio explains its application role instead. Product and Marketing are starter kits to replace with your team’s systems.
 
 ## Prototype systems and Studio
 
@@ -70,7 +70,7 @@ You do not need to write product context or install additional skills before sta
 
 Fonts, custom icons, logos, and images shared by your product belong to its system. Your agent can place local files in that system's `assets/` folder or connect an asset package. An image used by only one prototype can stay with that prototype.
 
-The current Systems navigation shows Theme and Components, including the configured icon library. There is no dedicated Assets browser yet. Ask your agent to inspect or add your system's files. Supplying actual fonts and icons helps preserve your product's appearance.
+Open Assets to browse local fonts, icons, and images, or explore the system's configured icon library. Select a file to preview it. Empty groups show what you can add. Ask your agent to bring in your files and connect them to your theme or components. Package fonts remain package dependencies; they are not listed as local files. Supplying actual fonts and icons helps preserve your product's appearance.
 
 System files are shared team content. Coordinate changes with your maintainer. Admins can choose an installed default system in [Studio settings](/documentation/guide/customize#configure-the-studio). Saving there, or asking your agent to use the studio configuration command, preserves existing prototypes' system choices, including None. Direct configuration edits do not provide that protection.
 
