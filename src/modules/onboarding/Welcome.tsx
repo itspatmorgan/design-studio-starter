@@ -50,7 +50,7 @@ export default function Welcome() {
             </div>
             <div className="space-y-1">
               <h3 className="text-sm font-medium">Set up your own system</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">Start with the included components from shadcn/ui and Untitled UI. Your agent can also help bring in and adapt your team’s custom components.</p>
+              <p className="text-sm leading-relaxed text-muted-foreground">Design Studio supports shadcn/ui and Untitled UI out of the box, making them good sources for components to bring into your system. Your agent can also help adapt your team’s custom components.</p>
             </div>
           </div>
         </div>}
