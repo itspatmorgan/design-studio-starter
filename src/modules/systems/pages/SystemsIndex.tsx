@@ -4,8 +4,6 @@ import { Cancel01Icon, Search01Icon, Shapes01Icon } from '@hugeicons/core-free-i
 import { Collection, ViewToggle } from '@/platform/app/items/Collection';
 import { CollectionCard } from '@/platform/app/items/CollectionCard';
 import { ItemRow } from '@/platform/app/items/ItemRow';
-import { useManifest } from '@/platform/app/data/useManifest';
-import { systemUsage } from '@/platform/app/data/manifest';
 import type { SystemIntro } from '@/platform/app/data/types';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/systems/studio/components/input-group';
 import { Badge } from '@/systems/studio/components/badge';
@@ -15,7 +13,6 @@ import NewSystemButton from './NewSystemDialog';
 
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
 export default function SystemsIndex() {
-  const manifest = useManifest();
   const navigate = useNavigate();
   const { q = '' } = useSearch({ strict: false }) as { q?: string };
   const setSearch = (value: string) => void navigate({ to: '/systems' as never, search: { q: value || undefined } as never, replace: true });
@@ -23,17 +20,13 @@ export default function SystemsIndex() {
     const intro = intros[`/systems/${id}/intro.tsx`]?.default;
     return { id, spec, description: intro?.summary ?? (spec.role === 'platform' ? 'The toolkit for Design Studio’s interface.' : 'Components, theme, assets, and guidance for your prototypes.') };
   }).sort((a, b) => Number(a.spec.role === 'platform') - Number(b.spec.role === 'platform') || Number(b.id === DEFAULT_SYSTEM) - Number(a.id === DEFAULT_SYSTEM) || a.spec.label.localeCompare(b.spec.label));
-  const filtered = items.filter(item => [item.id, item.spec.label, item.description, item.spec.role === 'platform' ? 'Application system' : 'Prototype system', item.id === DEFAULT_SYSTEM ? 'Default' : ''].some(value => value.toLowerCase().includes(q.trim().toLowerCase())));
-  const meta = (item: typeof items[number]) => {
-    const components = manifest.systems[item.id]?.components.length ?? 0;
-    const prototypes = systemUsage(manifest.prototypes, item.id).count;
-    return <><Badge variant="secondary">{item.spec.role === 'platform' ? 'Application system' : item.id === DEFAULT_SYSTEM ? 'Default system' : 'Prototype system'}</Badge><span>{components} {components === 1 ? 'component' : 'components'}{item.spec.role === 'prototype' && ` · ${prototypes} ${prototypes === 1 ? 'prototype' : 'prototypes'}`}</span></>;
-  };
+  const filtered = items.filter(item => [item.id, item.spec.label, item.description, item.id === DEFAULT_SYSTEM ? 'Default' : ''].some(value => value.toLowerCase().includes(q.trim().toLowerCase())));
+  const meta = (item: typeof items[number]) => item.id === DEFAULT_SYSTEM ? <Badge variant="secondary">Default</Badge> : undefined;
   return <main className="mx-auto w-full max-w-5xl px-6 pt-12 pb-8">
     <header className="mb-6">
       <h1 className="text-2xl font-semibold tracking-tight text-foreground">Systems</h1>
       <div className="mt-0.5 flex flex-wrap items-center justify-between gap-4">
-        <p className="min-w-0 text-sm leading-8 text-muted-foreground">Components, theme, assets, and guidance for your work.</p>
+        <p className="min-w-0 text-sm leading-8 text-muted-foreground">Explore your systems or create one for your prototypes.</p>
         <div className="flex flex-wrap items-center gap-2">
           <form role="search" onSubmit={event => event.preventDefault()} className={q ? 'w-64' : 'w-36 focus-within:w-64 transition-[width] duration-200 motion-reduce:transition-none'}>
             <InputGroup><InputGroupAddon><HugeiconsIcon icon={Search01Icon} /></InputGroupAddon><InputGroupInput aria-label="Search systems" placeholder="Search" value={q} onChange={event => setSearch(event.target.value)} />{q && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-xs" aria-label="Clear search" onClick={() => setSearch('')}><HugeiconsIcon icon={Cancel01Icon} /></InputGroupButton></InputGroupAddon>}</InputGroup>
@@ -42,6 +35,6 @@ export default function SystemsIndex() {
         </div>
       </div>
     </header>
-    {filtered.length ? <Collection items={filtered} keyOf={item => item.id} card={item => <CollectionCard link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} title={item.spec.label} description={item.description} meta={<span className="flex flex-wrap items-center gap-2">{meta(item)}</span>} />} row={item => <ItemRow link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} title={item.spec.label} meta={<span className="flex flex-wrap items-center gap-2">{meta(item)}</span>} />} /> : <Empty className="border border-dashed py-16"><EmptyHeader><EmptyMedia variant="icon"><HugeiconsIcon icon={Shapes01Icon} /></EmptyMedia><EmptyTitle>No matching systems</EmptyTitle><EmptyDescription>Try a different search.</EmptyDescription></EmptyHeader><Link to={'/systems' as never} search={{} as never} className="text-sm hover:underline">View all systems</Link></Empty>}
+    {filtered.length ? <Collection items={filtered} keyOf={item => item.id} card={item => <CollectionCard link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} title={item.spec.label} description={item.description} meta={meta(item)} />} row={item => <ItemRow link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} title={item.spec.label} meta={meta(item)} />} /> : <Empty className="border border-dashed py-16"><EmptyHeader><EmptyMedia variant="icon"><HugeiconsIcon icon={Shapes01Icon} /></EmptyMedia><EmptyTitle>No matching systems</EmptyTitle><EmptyDescription>Try a different search.</EmptyDescription></EmptyHeader><Link to={'/systems' as never} search={{} as never} className="text-sm hover:underline">View all systems</Link></Empty>}
   </main>;
 }

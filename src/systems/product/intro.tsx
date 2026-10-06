@@ -1,7 +1,7 @@
 import type { SystemIntro } from '@/platform/app/data/types';
 
 export default {
-  summary: 'A starting point for product prototypes, with a distinct interface toolkit and visual style.',
+  summary: 'An example system for prototyping product interfaces. Adapt it or replace it with your own.',
   overview: {
     starter: true,
     guidance: "No product-specific context or skills have been added yet. Bring in your product’s terminology, workflows, and requirements as you develop this system.",

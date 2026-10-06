@@ -1,7 +1,7 @@
 
 import type { SystemIntro } from '@/platform/app/data/types';
 export default {
-  summary: 'Components, theme, and brand guidance for public-facing pages, built from a small Untitled UI subset.',
+  summary: 'An example system for prototyping marketing pages. Adapt it or replace it with your own.',
   overview: {
     starter: true,
     guidance: "Brand, library, and design context, guide public-facing Design Studio pages. This system does not currently include skills.",
