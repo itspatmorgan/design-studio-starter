@@ -20,6 +20,8 @@ Use **Search the studio** or **⌘K / Ctrl+K** to find work. Documentation offer
 
 Across the studio, navigation exposes the files behind what you see. Locally, right-click an item for **Edit source**, **Open in editor**, **Reveal in Finder**, or copying its link or path. Available actions depend on the file and your scope.
 
+**Open in editor** uses an installed code editor, such as Cursor or Visual Studio Code. If one is unavailable, Studio shows the file in Finder and explains the fallback. You can always use **Edit source** inside Studio without installing another editor.
+
 Use **⌘' / Ctrl+'** to switch between source and rendering. **⌘S / Ctrl+S** saves; **Done** or the toggle returns you to the rendered result. Unsaved changes require confirmation before leaving.
 
 **⌘; / Ctrl+;** opens or closes the navigation. You can also ask your agent to edit the same files in your coding environment.

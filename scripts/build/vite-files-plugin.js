@@ -1,4 +1,7 @@
 import { SYSTEM_SOURCES } from '../../src/modules/systems/node/systems.js';
+import { editorFile, openEditor } from './files/editor.js';
+import { watchMoves } from './files/watch-moves.js';
+import { canonicalDirectory } from '../lib/safe-paths.js';
 import { documentationSources, sourceFile } from './files/source.js';
 // The file layer behind the prototype navigation's file tree, during `pnpm dev` only.
 // (The deployed site is static, so this doesn't exist there.)
@@ -27,7 +30,7 @@ import { documentationSources, sourceFile } from './files/source.js';
 //   POST /__studio/prototype-delete { contributor, prototype }   move a prototype you own to the Trash
 //     It replies with the new path and the updated manifest, so the app can follow a renamed view.
 //
-// Opening a file in your editor uses Vite's built-in /__open-in-editor.
+// POST /__studio/editor opens an installed editor or explains its Finder fallback.
 // When anything under src/prototypes/ is added or removed, it sends "studio:files" with the
 // prototypes that changed, so an open file tree refreshes itself.
 //
@@ -59,6 +62,7 @@ import { canChange, ownerError, owns } from './files/policy.js';
 import { SYSTEM_CONTENT_NOTE, reveal, runOp, runSystemOp, trash } from './files/ops.js';
 
 export default function filesPlugin() {
+  let moves;
   return {
     name: 'studio-files',
     apply: 'serve',
@@ -68,6 +72,7 @@ export default function filesPlugin() {
     // the file itself and let its importers, like those lists, update as usual. Edits to a
     // file are left to Vite's normal hot reload.
     hotUpdate({ type, file, modules }) {
+      if (type !== 'update') moves?.flush();
       if (type === 'update' || !(file.startsWith(PROTOS + path.sep) || PROTOTYPE_SECTIONS.some((s) => file.startsWith(s.dir + path.sep)) || file.startsWith(SYSTEM_CONTENT + path.sep) || systemOf(file))) return;
       for (const m of modules) if (m.file === file) this.environment.moduleGraph.invalidateModule(m);
       return modules.filter((m) => m.file !== file);
@@ -84,11 +89,25 @@ export default function filesPlugin() {
         server.ws.send({ type: 'custom', event: 'studio:identity', data: {} });
       };
       for (const event of ['add', 'change', 'unlink']) server.watcher.on(event, identityChanged);
+      const folders = (dir) => {
+        try { return fs.readdirSync(dir, { withFileTypes: true }).filter(entry => entry.isDirectory() && !entry.name.startsWith('.')).map(entry => path.join(dir, entry.name)).filter(folder => canonicalDirectory(folder, ROOT)); }
+        catch { return []; }
+      };
+      moves = watchMoves(server, () => [
+        ...folders(PROTOS).flatMap(person => folders(person).map(dir => ({ dir, contributor: path.basename(person), address: `/prototypes/${path.basename(person)}/${path.basename(dir)}` }))),
+        ...PROTOTYPE_SECTIONS.flatMap(section => folders(section.dir).map(dir => ({ dir, contributor: section.key, address: `/${section.key}/${path.basename(dir)}` }))),
+      ].filter(scope => fs.existsSync(path.join(scope.dir, 'meta.json')) && owns(scope.contributor, me(), scope.dir)));
 
       server.middlewares.use('/__studio', async (req, res, next) => {
         try {
           if (!sameOrigin(req)) return send(res, 403, { error: 'Only the app can use this.' });
           const url = new URL(req.url ?? '/', 'http://localhost');
+          if (req.method === 'POST' && url.pathname === '/editor') {
+            const file = editorFile(ROOT, (await readJson(req)).path);
+            if (!file) return send(res, 404, { error: 'This source file no longer exists.' });
+            try { return send(res, 200, await openEditor(file, { reveal })); }
+            catch { return send(res, 500, { error: "Couldn't open an editor or Finder. Use Edit source in Studio, or copy the file path." }); }
+          }
           if (req.method === 'GET' && url.pathname === '/files') {
             const dir = prototypeDir(url.searchParams.get('contributor'), url.searchParams.get('prototype'));
             if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
@@ -126,10 +145,16 @@ export default function filesPlugin() {
             // Contributor scope: you can change only your own folder (and the system content's, for review).
             if (!canChange(body.contributor, me(), dir)) return send(res, 403, { error: ownerError(body.contributor, me()) });
             try {
+              moves.flush();
               const result = body.contributor === SYSTEMS_KEY ? runSystemOp(body.prototype, body) : runOp(dir, body, body.contributor === SYSTEM_CONTENT_KEY ? contentSection(body.prototype) : null);
+              moves.capture();
               const { manifest } = buildManifest();
               // Other tabs update now; the tab that asked (X-Studio-Tab) handles it from the reply.
               publishManifest(server, manifest, req.headers['x-studio-tab']);
+              if (result.movedPaths?.length) {
+                const address = body.contributor === SYSTEM_CONTENT_KEY ? null : PROTOTYPE_SECTIONS.some(section => section.key === body.contributor) ? `/${body.contributor}/${body.prototype}` : `/prototypes/${body.contributor}/${body.prototype}`;
+                if (address) server.ws.send({ type: 'custom', event: 'studio:moves', data: result.movedPaths.map(([from, to]) => ({ from: address + '/' + from.replace(/\.[^./]+$/, '').split('/').map(encodeURIComponent).join('/'), to: address + '/' + to.replace(/\.[^./]+$/, '').split('/').map(encodeURIComponent).join('/') })) });
+              }
               return send(res, 200, { ...result, manifest });
             } catch (e) {
               return send(res, 400, { error: e.message });
@@ -165,6 +190,8 @@ export default function filesPlugin() {
             if (!owns(contributor, me(), dir)) return send(res, 403, { error: ownerError(contributor, me()) });
             try {
               const { id, manifest } = renamePrototype({ key: contributor, id: prototype, title });
+              moves.flush();
+              moves.capture();
               publishManifest(server, manifest, req.headers['x-studio-tab']);
               return send(res, 200, { prototype: id, manifest });
             } catch (e) {
@@ -202,14 +229,14 @@ export default function filesPlugin() {
               ...(manifest.systems[id]?.components ?? []).flatMap((component) => Object.values(component.files).filter(Boolean).map((file) => source.components + '/' + file)),
             ]);
             const result = sourceFile(ROOT, allowed, await readJson(req));
-            if (result.reveal) reveal(result.reveal);
+            if (result.reveal) await reveal(result.reveal);
             return send(res, result.status ?? 200, result.body);
           }
           if (req.method === 'POST' && url.pathname === '/documentation') {
             const manifest = buildManifest({ write: false, quiet: true }).manifest;
             const allowed = documentationSources(ROOT, manifest);
             const result = sourceFile(ROOT, allowed, await readJson(req));
-            if (result.reveal) reveal(result.reveal);
+            if (result.reveal) await reveal(result.reveal);
             return send(res, result.status ?? 200, result.body);
           }
           if (req.method === 'POST' && url.pathname === '/reveal') {
@@ -217,7 +244,7 @@ export default function filesPlugin() {
             const dir = prototypeDir(contributor, prototype);
             const file = dir && resolveInside(dir, rel ?? '');
             if (!file) return send(res, 404, { error: 'This file no longer exists.' });
-            reveal(file);
+            await reveal(file);
             return send(res, 200, { ok: true });
           }
           next();

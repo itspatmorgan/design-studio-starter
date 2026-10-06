@@ -56,7 +56,7 @@ export function renamePrototype({ key, id, title }) {
   const to = path.join(ROOT, 'src', 'prototypes', key, slug);
   if (rename && fs.existsSync(to)) throw new Error(`You already have a prototype in a folder called “${slug}”. Choose a different title.`);
   meta.title = title;
-  if (rename) moveWithLinks(from, to, meta, personAddress(key, id), `/prototypes/${key}/${slug}`);
+  if (rename) moveWithLinks(from, to, meta, personAddress(key, id), `/prototypes/${key}/${slug}`, `/prototypes/${key}/${id}`);
   else fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
   return { id: rename ? slug : id, manifest: buildManifest().manifest };
 }

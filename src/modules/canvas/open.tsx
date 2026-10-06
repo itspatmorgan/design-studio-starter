@@ -3,7 +3,7 @@ import { lazy } from 'react';
 import { CanvasIcon } from '@hugeicons/core-free-icons';
 import type { FileTypeModule } from '@/platform/app/data/fileTypeModule';
 import type { Artifact, Prototype } from '@/platform/app/data/types';
-import { readSource } from '@/platform/app/data/files';
+import { preloadIdentity, readSource } from '@/platform/app/data/files';
 import { canvasFiles } from './loader';
 import { rootOf } from '@/platform/core/roots';
 
@@ -20,6 +20,7 @@ export default {
     const [file] = await Promise.all([
       import.meta.env.DEV ? readSource(proto, item.path) : canvasFiles[key]?.().then((content) => ({ content, version: '' })),
       preload(),
+      import.meta.env.DEV ? preloadIdentity() : undefined,
     ]);
     return file && { proto, item, text: file.content, version: file.version };
   },

@@ -23,6 +23,8 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an artifact.
 - **Agents** use the tools in tools.ts, live in the open canvas or on the file (src/modules/canvas/skills/use-canvas/SKILL.md).
 - **Dev:** edits save to the file through the same file layer as the Source view, and changes made to the
   file from outside (an agent) are taken in live. **Deployed:** the committed file, read-only.
+- **Opening:** the route prepares the canvas code, text, and local contributor identity before mounting. Development pre-bundles Excalidraw and the UI primitives used by embedded views to avoid dependency-discovery reloads on first opening. A loading status stays visible until the opening camera has painted.
+- **Moved embeds:** the prototype file layer repairs known moves in stored links and increments changed element versions so an open canvas can merge the update. See [Links and renaming](../prototypes/README.md#links-and-renaming) for scope and limits.
 
 ### Where things are
 

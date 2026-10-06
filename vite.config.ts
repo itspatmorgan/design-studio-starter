@@ -68,6 +68,10 @@ export default defineConfig({
   // then fails with "Unrecognized extension value". Listing them bundles them together at start.
   optimizeDeps: {
     include: [
+      // Canvas is lazy; discover its dependency at startup so first opening doesn't restart the page.
+      ...(ENABLED_MODULES.some((module: { id: string }) => module.id === 'canvas') ? ['@excalidraw/excalidraw'] : []),
+      // Embedded prototype views discover these deep imports after the canvas first paints.
+      '@base-ui/react/**',
       '@codemirror/state', '@codemirror/view', '@codemirror/commands', '@codemirror/autocomplete', '@codemirror/language',
       '@codemirror/search', '@codemirror/lang-javascript', '@codemirror/lang-markdown', '@codemirror/lang-yaml',
       '@lezer/common', '@lezer/highlight', '@lezer/markdown',

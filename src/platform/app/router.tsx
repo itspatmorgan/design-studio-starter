@@ -254,6 +254,13 @@ declare module '@tanstack/react-router' {
 // invalidate() reruns the loaders, so lists and navigation update without a page reload.
 // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#using-routerinvalidate
 if (import.meta.hot) {
+  import.meta.hot.on('studio:moves', (moves: { from: string; to: string }[]) => {
+    const current = router.state.location;
+    const prefix = import.meta.env.BASE_URL.replace(/\/$/, '');
+    const path = current.pathname.slice(prefix.length);
+    const move = moves.find(move => path === move.from) ?? moves.find(move => path.startsWith(move.from + '/'));
+    if (move) void router.navigate({ to: (move.to + path.slice(move.from.length)) as never, search: current.search as never, hash: current.hash, replace: true });
+  });
   window.addEventListener('studio:views', () => router.invalidate());
   import.meta.hot.on('studio:manifest', ({ manifest, origin }: { manifest: Manifest; origin?: string }) => {
     if (origin === TAB_ID) return; // this tab made the change and already applied it

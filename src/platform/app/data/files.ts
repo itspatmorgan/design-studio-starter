@@ -7,6 +7,7 @@ import { SYSTEMS_KEY, rootOf } from '@/platform/core/roots';
 import { MODULES } from '@/platform/app/data/modules';
 import { canChange, canOwn, policyFor } from '@/platform/core/permissions';
 import type { Status } from '@/platform/core/archive';
+import { toast } from '@/systems/studio/components/toast';
 
 export type FileNode = { name: string; path: string; dir: boolean; children?: FileNode[] };
 
@@ -43,40 +44,57 @@ export function useFileTree(proto: PrototypeInfo) {
 // prototype's folder for an empty `file`).
 export const repoPath = (p: PrototypeInfo, file: string) => `src/${rootOf(p.contributorKey, p.id)}${file ? `/${file}` : ''}`;
 
-// Opens a file in your code editor, with Vite's built-in /__open-in-editor.
-// It uses $LAUNCH_EDITOR or the editor already running: https://github.com/yyx990803/launch-editor
-// Vite finds the file from the folder the dev server was started in (the repo root), so the path is
-// the full repo path, src/ included: without it the editor is never told to open anything.
+// Every entry point gets the same checked response and visible fallback/failure.
+export async function openRepositoryFile(path: string) {
+  try {
+    const res = await fetch('/__studio/editor', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path }) });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error ?? "Couldn't open this file. Use Edit source or copy its path.");
+    if (!body.opened) toast.add({ title: body.message });
+  } catch (error) {
+    toast.add({ type: 'error', title: error instanceof Error ? error.message : "Couldn't open this file." });
+  }
+}
+
 export function openInEditor(p: PrototypeInfo, file: string) {
-  fetch(`/__open-in-editor?file=${encodeURIComponent(repoPath(p, file))}`);
+  return openRepositoryFile(repoPath(p, file));
 }
 
 // Shows a file in Finder (or your system's file browser).
-export function revealInFinder(p: PrototypeInfo, file: string) {
-  fetch('/__studio/reveal', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contributor: p.contributorKey, prototype: p.id, path: file }),
-  });
+export async function revealInFinder(p: PrototypeInfo, file: string) {
+  try {
+    const res = await fetch('/__studio/reveal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contributor: p.contributorKey, prototype: p.id, path: file }),
+    });
+    if (!res.ok) throw new Error((await res.json()).error ?? "Couldn't show this file in Finder.");
+  } catch (error) {
+    toast.add({ type: 'error', title: error instanceof Error ? error.message : "Couldn't show this file in Finder." });
+  }
 }
+
+// Canvas loads identity before mounting, avoiding a read-only toolbar flash.
+export const preloadIdentity = () => meRequest ??= fetch('/__studio/me').then((r) => { if (!r.ok) throw new Error('Identity unavailable'); return r.json() as Promise<Who>; }).catch(() => ({ key: null, name: null })).then(who => { resolvedWho = who; return who; });
 
 // Who you are, from the dev server: your contributors.json key and name, both null on the deployed site or if
 // you're not a contributor. The name is undefined while the dev server hasn't answered yet.
 type Who = { key: string | null; name: string | null | undefined };
 let meRequest: Promise<Who> | undefined;
+let resolvedWho: Who | undefined;
 const identityListeners = new Set<() => void>();
 if (import.meta.hot) {
-  const changed = () => { meRequest = undefined; identityListeners.forEach((reload) => reload()); };
+  const changed = () => { meRequest = undefined; resolvedWho = undefined; identityListeners.forEach((reload) => reload()); };
   import.meta.hot.on('studio:identity', changed);
   import.meta.hot.dispose(() => import.meta.hot?.off('studio:identity', changed));
 }
 function useWho(): Who {
-  const [who, setWho] = useState<Who>({ key: null, name: import.meta.hot ? undefined : null });
+  const [who, setWho] = useState<Who>(() => resolvedWho ?? { key: null, name: import.meta.hot ? undefined : null });
   useEffect(() => {
     if (!import.meta.hot) return;
     let live = true;
     const reload = () => {
-      const request = meRequest ??= fetch('/__studio/me').then((r) => { if (!r.ok) throw new Error('Identity unavailable'); return r.json() as Promise<Who>; }).catch(() => ({ key: null, name: null }));
+      const request = preloadIdentity();
       void request.then((next) => { if (live && request === meRequest) setWho(next); });
     };
     identityListeners.add(reload);

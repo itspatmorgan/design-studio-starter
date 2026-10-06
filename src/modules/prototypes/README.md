@@ -54,7 +54,11 @@ Changing the title in the app also renames the prototype folder to its slug. Dir
 
 Renaming changes shared URLs. Relative document links survive a prototype-folder rename.
 
-The app rewrites links to the prototype's own address in its Markdown and canvas files. Direct file changes must update those links explicitly.
+The app repairs internal references when files or folders are renamed or moved: local literal imports and exports, literal view navigation paths, Markdown link destinations, and canvas element links. Moving a source file also rebases its relative references. Prototype renaming and duplication rewrite self-address links in view code, Markdown, and canvases.
+
+While the dev server is running, the same repair follows unambiguous filesystem renames in prototypes owned by the current contributor or maintained section items. It recognizes unique filesystem identities; copies, deleted targets, cross-prototype moves, and ambiguous replacements are not guessed. The currently open artifact follows a detected move. Repairs never change another prototype or an external URL.
+
+Moves made while the server is stopped, dynamically assembled paths, and incoming links from other prototypes still need an agent to update and verify them. Keep the server running while organizing files when automatic repair is wanted.
 
 Use TanStack Router's `Link` for view navigation. See its [navigation documentation](https://tanstack.com/router/latest/docs/framework/react/guide/navigation).
 

@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
+import { promisify } from 'node:util';
 import { FILE_TYPES, fileTypeOf, systemContentTypeOf } from '../../lib/file-types.js';
 import { STATUSES, parseStatus } from '../../../src/platform/core/archive.ts';
 import { afterChange, parentOf, parseOrder, place, withFolderOrder } from '../../../src/platform/core/order.ts';
@@ -10,6 +11,7 @@ import { scaffold } from '../../../src/modules/systems/node/scaffold-docs.js';
 import { opProblem } from '../../../src/modules/systems/content/rules.ts';
 import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/modules/systems/content/skills.ts';
 import { TRASH, readOrder, readTree, resolveInside, validName } from './paths.js';
+import { prototypeAddress, repairReferences, snapshotFiles } from '../../lib/artifact-moves.js';
 
 // The contents of a new file: its file type's template, by extension (src/modules/<type>/type.ts).
 // Files of no type start empty.
@@ -126,7 +128,12 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     const from = inside(rel);
     if (!from || from === fs.realpathSync(dir) || rel === 'meta.json') throw new Error('That file was moved or deleted.');
     let current = rel;
-    if (typeof to === 'string' && to !== parentOf(rel)) current = runOp(dir, { op: 'move', path: rel, to }).path;
+    let movedPaths = [];
+    if (typeof to === 'string' && to !== parentOf(rel)) {
+      const moved = runOp(dir, { op: 'move', path: rel, to });
+      current = moved.path;
+      movedPaths = moved.movedPaths ?? [];
+    }
     const folder = parentOf(current);
     const where = inside(folder);
     if (!where || !fs.statSync(where).isDirectory()) throw new Error('That folder was moved or deleted.');
@@ -137,7 +144,7 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
     meta.order = withFolderOrder(parseOrder(meta.order) ?? [], folder, place(siblings, current, before ?? ''));
     fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
-    return { path: current };
+    return { path: current, movedPaths };
   }
   const source = inside(rel);
   if (!source || source === fs.realpathSync(dir)) throw new Error('That file was moved or deleted.');
@@ -155,12 +162,17 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     }
     if (target === source) return { path: rel };
     if (fs.existsSync(target)) throw new Error(`Something named “${path.basename(target)}” already exists there.`);
+    const beforeMove = section ? null : snapshotFiles(dir);
     fs.renameSync(source, target);
     const next = relOf(target);
+    let movedPaths = [];
+    try {
+      if (beforeMove) movedPaths = [...repairReferences(dir, beforeMove, snapshotFiles(dir), prototypeAddress(dir)).moves];
+    } catch (error) { fs.renameSync(target, source); throw error; }
     // A skill's name is its folder's name: keep the two together.
     if (section === 'skills' && op === 'rename' && !rel.includes('/')) renameSkillInFile(path.join(target, SKILL_FILE), path.basename(target));
     fixOrder(dir, rel, op === 'rename' ? next : null);
-    return { path: next };
+    return { path: next, movedPaths };
   }
   if (op === 'delete') {
     const where = trash(source);
@@ -183,7 +195,8 @@ export function runSystemOp(system, { op, component }) {
 
 // Show a file in the system file browser.
 export function reveal(file) {
-  if (process.platform === 'darwin') execFile('open', ['-R', file]);
-  else if (process.platform === 'win32') execFile('explorer', [`/select,${file}`]);
-  else execFile('xdg-open', [path.dirname(file)]);
+  const run = promisify(execFile);
+  if (process.platform === 'darwin') return run('/usr/bin/open', ['-R', file], { timeout: 5000 });
+  if (process.platform === 'win32') return run('explorer', [`/select,${file}`], { timeout: 5000 });
+  return run('xdg-open', [fs.statSync(file).isDirectory() ? file : path.dirname(file)], { timeout: 5000 });
 }

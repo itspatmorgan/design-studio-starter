@@ -114,9 +114,10 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
   const [revealed, setRevealed] = useState(false);
   useEffect(() => {
     if (!api) return undefined;
-    requestAnimationFrame(() => requestAnimationFrame(() => setRevealed(true)));
+    let second = 0;
+    const first = requestAnimationFrame(() => { second = requestAnimationFrame(() => setRevealed(true)); });
     const timer = window.setTimeout(() => setRevealed(true), 120);
-    return () => window.clearTimeout(timer);
+    return () => { window.clearTimeout(timer); cancelAnimationFrame(first); cancelAnimationFrame(second); };
   }, [api]);
 
   useEffect(() => {
@@ -221,6 +222,7 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
       data-items-only={itemsOnly ? '' : undefined}
       data-controls-hidden={controlsHidden ? '' : undefined}
     >
+      {!revealed && <div role="status" className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">Opening canvas</div>}
       <div className="absolute inset-0 transition-opacity duration-150" style={{ opacity: revealed || !initialData ? 1 : 0 }}>
         {initialData && (
           <Excalidraw

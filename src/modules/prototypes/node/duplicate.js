@@ -47,7 +47,7 @@ export function duplicatePrototype({ key, id, title, system }) {
   fs.mkdirSync(to);
   try {
     fs.cpSync(from, to, { recursive: true, force: false, errorOnExist: true, filter: file => file === from || !excluded.has(path.basename(file)) });
-    moveWithLinks(to, to, meta, personAddress(key, id), `/prototypes/${key}/${slug}`);
+    moveWithLinks(to, to, meta, personAddress(key, id), `/prototypes/${key}/${slug}`, `/prototypes/${key}/${id}`);
     return { id: slug, manifest: buildManifest().manifest };
   } catch (error) {
     fs.rmSync(to, { recursive: true, force: true });

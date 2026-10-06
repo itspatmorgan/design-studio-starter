@@ -8,6 +8,8 @@ Source editing is a shared platform capability used by Prototypes, Systems, and 
 
 Right-click a file-backed navigation item to **Edit source** or **View source** when read-only. Its menu also exposes **Open in editor**, **Reveal in Finder**, **Copy link**, and **Copy path**. Module-specific actions such as renaming remain subject to that module's permissions.
 
+**Open in editor** checks installed Cursor, Visual Studio Code, VSCodium, Zed, and Sublime Text applications or executables. A supported `LAUNCH_EDITOR` name takes priority. On macOS it opens the application directly, so its terminal command need not be installed. If none can open, it reveals the file and explains that **Edit source** is available inside Studio. Launch and reveal failures are visible. The same-origin server action accepts only existing, non-hidden source files or folders under `src/`, without symlinks or traversal.
+
 Locally, **⌘' / Ctrl+'** toggles the selected page between rendering and source. The editor receives focus when opened; returning focuses the rendered content. **⌘S / Ctrl+S** saves. **Done** also returns to the rendered view. **⌘; / Ctrl+;** toggles navigation in either view.
 
 Returning or navigating away with unsaved changes requires confirmation. External edits reload clean editors and offer a conflict choice when local changes are unsaved. Saving checks the version read from disk before writing.

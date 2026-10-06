@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@/systems/studio/components/context-menu';
 import { FileActionItems } from '@/platform/app/shell/FileActionItems';
+import { openRepositoryFile } from '@/platform/app/data/files';
 import { navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
 
 export default function FileNavItem({ href, path, label, nested = false, icon, detail, className, reveal }: { href: string; path: string; label: string; nested?: boolean; icon?: ReactNode; detail?: string; className?: string; reveal: () => Promise<unknown> }) {
@@ -16,7 +17,7 @@ export default function FileNavItem({ href, path, label, nested = false, icon, d
       <FileActionItems path={path} href={new URL(import.meta.env.BASE_URL.replace(/\/$/, '') + href, window.location.origin).href}
         sourceShortcut={local}
         edit={local ? () => { void navigate({ to: href as never, search: { mode: 'source' } as never }); } : undefined}
-        open={local ? () => { void fetch('/__open-in-editor?file=' + encodeURIComponent(path)); } : undefined}
+        open={local ? () => openRepositoryFile(path) : undefined}
         reveal={local ? reveal : undefined} />
     </ContextMenuContent>
   </ContextMenu>;

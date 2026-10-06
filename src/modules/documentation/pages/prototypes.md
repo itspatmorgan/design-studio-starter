@@ -42,6 +42,8 @@ Right-click a view and choose **Make lofi** to explore in grayscale with handwri
 
 ## Make changes safely
 
+When you rename or move files inside a prototype, Studio repairs known links, embeds, and local code imports automatically. Keep Studio running when moving files in Finder or your editor so it can follow the move. Other prototypes remain unchanged. If a target was deleted, a move happened while Studio was closed, or a link was built dynamically in code, ask your agent to repair it.
+
 Your assigned design system supplies components and styles. You can also explore local alternatives inside the prototype. Those experiments stay separate from the shared system.
 
 ```mermaid
