@@ -10,7 +10,7 @@ When your studio first opens, a short introduction appears over the home page. M
 
 ## Bring an idea to life
 
-Describe what you want to explore in your coding agent’s chat. Your agent builds it; you try the result in Design Studio and guide what happens next. Bring your design judgment and product knowledge. Your agent handles the code.
+Share your idea with your agent and let it handle the code. Then explore the result here and use your design judgment to guide what comes next.
 
 ## Keep the whole idea together
 
@@ -23,9 +23,9 @@ A **prototype** holds the screens, the flow, and the thinking behind an idea. It
 
 Open an example prototype. Try its screens, then use its navigation to explore the supporting artifacts.
 
-## Build on a system that fits
+## Give your prototypes a shared foundation
 
-A **system** gives your prototypes a shared design toolkit and gives your agent guidance about your product. You can use the same system across many prototypes.
+A **system** brings your design toolkit and product knowledge together, helping your agent build prototypes that feel like your product. You can use the same system across many prototypes.
 
 - **Theme and components** supply the colors, type, and reusable building blocks that make prototypes feel like your product.
 - **Context** describes your product, audience, and design principles so your agent can make decisions that fit.
@@ -40,7 +40,7 @@ Your studio is fully customizable. After exploring the examples, work with your 
 Start by exploring an example. When you’re ready to make something, work with your agent in the studio folder to:
 
 - **Try your own prototype.** Describe an idea and who it’s for. Use an existing system to build a first version you can try and refine.
-- **Set up your own system.** Bring your team’s components and product context. Adapt an example system or replace it with your own.
+- **Set up your own system.** Design Studio supports shadcn/ui and Untitled UI out of the box. Your agent can help bring their components into your system or adapt your team’s custom components.
 
 See [Customize your studio](/documentation/guide/customize) for more ideas.
 

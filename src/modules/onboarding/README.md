@@ -4,7 +4,7 @@ Onboarding welcomes designers and product managers after their studio opens. It 
 
 ## Behavior
 
-The first local home-page visit opens a four-step dialog over Home: Welcome, Prototypes, Systems, and Make it yours. The system and artifact steps let people select a concept to see a short explanation and example. Only enabled artifact types appear. The final step focuses on exploring available starter prototypes, then explains two paths with the agent: make a prototype with an existing system, or set up a system of your own. Removed or archived samples are omitted.
+The first local home-page visit opens a four-step dialog over Home: Welcome, Prototypes, Systems, and Start by exploring. The system and artifact steps let people select a concept to see a short explanation and example. Only enabled artifact types appear. The final step focuses on exploring available starter prototypes, then explains two paths with the agent: make a prototype with an existing system, or set up a system of your own. Removed or archived samples are omitted.
 
 **Explore my studio**, **Skip introduction**, Escape, backdrop dismissal, and opening a sample all record completion and close the introduction. It has no rail item, search entry, standalone page, or route. Later visits go directly to the studio. The Guide retains the concepts for later reading.
 
