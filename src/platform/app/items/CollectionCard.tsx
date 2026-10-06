@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 // a link from manifest.ts (prototypeLink). `menu` is drawn beside the link, not inside it (PrototypeCardMenu), so the card
 // sits in a "card-wrap" group.
 export function CollectionCard({ link, icon, title, description, meta, archived, menu }: {
-  link: object; icon: IconSvgElement; title: string; description?: string; meta?: ReactNode; archived?: boolean; menu?: ReactNode;
+  link: object; icon: IconSvgElement; title: ReactNode; description?: string; meta?: ReactNode; archived?: boolean; menu?: ReactNode;
 }) {
   return (
     <div className="group/card-wrap relative h-full">

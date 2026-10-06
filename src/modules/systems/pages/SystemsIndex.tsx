@@ -4,6 +4,8 @@ import { Cancel01Icon, Search01Icon, Shapes01Icon } from '@hugeicons/core-free-i
 import { Collection, ViewToggle } from '@/platform/app/items/Collection';
 import { CollectionCard } from '@/platform/app/items/CollectionCard';
 import { ItemRow } from '@/platform/app/items/ItemRow';
+import { useManifest } from '@/platform/app/data/useManifest';
+import { systemUsage } from '@/platform/app/data/manifest';
 import type { SystemIntro } from '@/platform/app/data/types';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/systems/studio/components/input-group';
 import { Badge } from '@/systems/studio/components/badge';
@@ -13,6 +15,7 @@ import NewSystemButton from './NewSystemDialog';
 
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
 export default function SystemsIndex() {
+  const manifest = useManifest();
   const navigate = useNavigate();
   const { q = '' } = useSearch({ strict: false }) as { q?: string };
   const setSearch = (value: string) => void navigate({ to: '/systems' as never, search: { q: value || undefined } as never, replace: true });
@@ -21,7 +24,12 @@ export default function SystemsIndex() {
     return { id, spec, description: intro?.summary ?? (spec.role === 'platform' ? 'The toolkit for Design Studio’s interface.' : 'Components, theme, assets, and guidance for your prototypes.') };
   }).sort((a, b) => Number(a.spec.role === 'platform') - Number(b.spec.role === 'platform') || Number(b.id === DEFAULT_SYSTEM) - Number(a.id === DEFAULT_SYSTEM) || a.spec.label.localeCompare(b.spec.label));
   const filtered = items.filter(item => [item.id, item.spec.label, item.description, item.id === DEFAULT_SYSTEM ? 'Default' : ''].some(value => value.toLowerCase().includes(q.trim().toLowerCase())));
-  const meta = (item: typeof items[number]) => item.id === DEFAULT_SYSTEM ? <Badge variant="secondary">Default</Badge> : undefined;
+  const defaultBadge = (item: typeof items[number]) => item.id === DEFAULT_SYSTEM ? <Badge variant="secondary">Default</Badge> : undefined;
+  const usage = (item: typeof items[number]) => {
+    if (item.spec.role !== 'prototype') return undefined;
+    const count = systemUsage(manifest.prototypes, item.id).count;
+    return `Used by ${count} ${count === 1 ? 'prototype' : 'prototypes'}`;
+  };
   return <main className="mx-auto w-full max-w-5xl px-6 pt-12 pb-8">
     <header className="mb-6">
       <h1 className="text-2xl font-semibold tracking-tight text-foreground">Systems</h1>
@@ -35,6 +43,6 @@ export default function SystemsIndex() {
         </div>
       </div>
     </header>
-    {filtered.length ? <Collection items={filtered} keyOf={item => item.id} card={item => <CollectionCard link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} title={item.spec.label} description={item.description} meta={meta(item)} />} row={item => <ItemRow link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} title={item.spec.label} meta={meta(item)} />} /> : <Empty className="border border-dashed py-16"><EmptyHeader><EmptyMedia variant="icon"><HugeiconsIcon icon={Shapes01Icon} /></EmptyMedia><EmptyTitle>No matching systems</EmptyTitle><EmptyDescription>Try a different search.</EmptyDescription></EmptyHeader><Link to={'/systems' as never} search={{} as never} className="text-sm hover:underline">View all systems</Link></Empty>}
+    {filtered.length ? <Collection items={filtered} keyOf={item => item.id} card={item => <CollectionCard link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} title={<span className="flex min-h-5 items-center gap-2"><span>{item.spec.label}</span>{defaultBadge(item)}</span>} description={item.description} meta={usage(item)} />} row={item => <ItemRow link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} title={item.spec.label} meta={<span className="flex items-center gap-2">{defaultBadge(item)}{usage(item)}</span>} />} /> : <Empty className="border border-dashed py-16"><EmptyHeader><EmptyMedia variant="icon"><HugeiconsIcon icon={Shapes01Icon} /></EmptyMedia><EmptyTitle>No matching systems</EmptyTitle><EmptyDescription>Try a different search.</EmptyDescription></EmptyHeader><Link to={'/systems' as never} search={{} as never} className="text-sm hover:underline">View all systems</Link></Empty>}
   </main>;
 }

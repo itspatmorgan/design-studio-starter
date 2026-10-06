@@ -7,7 +7,7 @@ module: systems
 toc: true
 ---
 
-Systems brings together the components, styles, and knowledge used by your prototypes. Open Systems to see your systems as cards or a list. Search by name or description. A **Default** badge identifies the system used for new prototypes unless you choose another. Studio is the system used for Design Studio’s interface and is maintained by the platform. Open a system to browse Context, Skills, Theme, Assets, and Components. Click Systems in the main navigation to return to the collection.
+Systems brings together the components, styles, and knowledge used by your prototypes. Open Systems to see your systems as cards or a list. Search by name or description. A **Default** badge identifies the system used for new prototypes unless you choose another. Each prototype system shows how many active prototypes use it. Studio is the system used for Design Studio’s interface and is maintained by the platform. Open a system to browse Context, Skills, Theme, Assets, and Components. Click Systems in the main navigation to return to the collection.
 
 The Resources toolbar searches across the tree and expands or collapses all folders. Search reveals matches without losing your previous expansion choices. Context, Skills, Theme, Assets, and Components start open. Guidance appears above the toolkit, and each guidance group has its own **New** action.
 
