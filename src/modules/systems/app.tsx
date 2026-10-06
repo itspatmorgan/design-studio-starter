@@ -69,6 +69,7 @@ export default {
       createRoute({
         getParentRoute: () => systemsRoute,
         path: '$system/$page',
+        beforeLoad: ({ params }) => { if (params.page === 'assets') throw redirect({ to: '/systems/$system/$page' as never, params: { system: params.system, page: 'fonts' } as never, replace: true }); },
         head: ({ params }) => ({ meta: [{ title: systemsTitle(params.page, params.system) }] }),
         component: () => <Suspense fallback={null}><SystemsPage /></Suspense>,
       }),

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import type { DesignSystem } from '@/platform/app/data/types';
 import { NotFound } from '@/platform/app/shell/App';
-import { PageHeader } from './foundations';
+import { IconsPage, PageHeader } from './foundations';
+import { ThemeScope } from '../ThemeScope';
 import { assetLink, systemAssets, type SystemAsset } from '../data/assets';
 
 function FontPreview({ asset }: { asset: SystemAsset }) {
@@ -27,13 +28,13 @@ function FontPreview({ asset }: { asset: SystemAsset }) {
   </div>;
 }
 
-export default function SystemAssets({ system, sys, path }: { system: string; sys: DesignSystem; path?: string }) {
+export default function SystemAssets({ system, sys, kind, path }: { system: string; sys: DesignSystem; kind?: SystemAsset['kind']; path?: string }) {
   const assets = systemAssets(system);
   if (path) {
     const asset = assets.find(item => item.path === path);
-    if (!asset) return <NotFound />;
+    if (!asset || (kind && asset.kind !== kind)) return <NotFound />;
     return <>
-      <Link to={`/systems/${system}/assets` as never} className="mb-4 inline-block text-sm hover:underline">All assets</Link>
+      <Link to={`/systems/${system}/${asset.kind.toLowerCase()}` as never} className="mb-4 inline-block text-sm hover:underline">{asset.kind}</Link>
       <PageHeader title={asset.path.split('/').pop()!} description={asset.path} />
       <div className="rounded-xl border border-border bg-muted/40 p-6">
         {asset.kind === 'Fonts' ? <FontPreview asset={asset} /> : <img src={asset.url} alt={asset.path} className="mx-auto max-h-[24rem] max-w-full object-contain" />}
@@ -41,26 +42,17 @@ export default function SystemAssets({ system, sys, path }: { system: string; sy
       <p className="mt-4 break-all text-xs text-muted-foreground">{`src/systems/${system}/assets/${asset.path}`}</p>
     </>;
   }
+  if (!kind) return <NotFound />;
+  const items = assets.filter(asset => asset.kind === kind);
   return <>
-    <PageHeader title="Assets" description={`Fonts, icons, and shared images owned by ${sys.label}.`} />
-    <p className="mb-6 text-sm leading-6 text-foreground/80">Ask your agent to add your product’s fonts, icons, logos, and shared images to this system. Adding a file makes it available here; your theme and components choose how to use it.</p>
-    {sys.icons && <section className="mb-6 rounded-xl bg-muted/40 p-6">
-      <h2 className="mb-2 text-lg font-semibold">Icon library</h2>
-      <p className="mb-3 text-sm text-muted-foreground">{sys.icons.library} supplies this system’s package icons.</p>
-      <Link to={`/systems/${system}/icons` as never} className="text-sm hover:underline">Explore icons</Link>
-    </section>}
-    <div className="space-y-6">{(['Fonts', 'Icons', 'Images'] as const).map(kind => {
-      const items = assets.filter(asset => asset.kind === kind);
-      return <section key={kind}>
-        <h2 className="mb-3 text-lg font-semibold">{kind}</h2>
-        {items.length ? <ul className="space-y-2">{items.map(asset => <li key={asset.path}>
-          <Link to={assetLink(system, asset.path) as never} className="flex items-center gap-4 rounded-lg border border-border px-4 py-3 hover:bg-muted">
-            {kind !== 'Fonts' && <img src={asset.url} alt="" loading="lazy" className="size-10 shrink-0 object-contain" />}
-            <span className="min-w-0 break-all text-sm">{asset.path}</span>
-          </Link>
-        </li>)}</ul> : <p className="text-sm text-muted-foreground">No local {kind.toLowerCase()} have been added.</p>}
-      </section>;
-    })}</div>
-    <p className="mt-8 text-xs leading-5 text-muted-foreground">This browser shows local image and font files. Fonts and other assets provided by packages remain package dependencies; ask your agent to inspect those sources.</p>
+    <PageHeader title={kind} description={kind === 'Icons' && sys.icons ? `This system uses ${sys.icons.library}.` : `${kind} owned by ${sys.label}.`} />
+    {items.length ? <ul className="space-y-2">{items.map(asset => <li key={asset.path}>
+      <Link to={assetLink(system, asset) as never} className="flex items-center gap-4 rounded-lg border border-border px-4 py-3 hover:bg-muted">
+        {kind !== 'Fonts' && <img src={asset.url} alt="" loading="lazy" className="size-10 shrink-0 object-contain" />}
+        <span className="min-w-0 break-all text-sm">{asset.path}</span>
+      </Link>
+    </li>)}</ul> : !(kind === 'Icons' && sys.icons) && <p className="text-sm text-muted-foreground">No local {kind.toLowerCase()} have been added.</p>}
+    <p className="my-6 text-sm leading-6 text-foreground/80">Ask your agent to add your system’s {kind.toLowerCase()} and connect them to your theme or components. Package assets remain dependencies and are not listed as local files.</p>
+    {kind === 'Icons' && sys.icons && <ThemeScope themeClass={sys.scopeClass}><IconsPage icons={sys.icons} /></ThemeScope>}
   </>;
 }

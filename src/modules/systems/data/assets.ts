@@ -10,4 +10,4 @@ export function systemAssets(system: string): SystemAsset[] {
     return { path, url, kind } as SystemAsset;
   }).sort((a, b) => a.path.localeCompare(b.path));
 }
-export const assetLink = (system: string, path: string) => `/systems/${system}/assets/${path.split('/').map(encodeURIComponent).join('/')}`;
+export const assetLink = (system: string, asset: SystemAsset) => `/systems/${system}/${asset.kind.toLowerCase()}/${asset.path.split('/').map(encodeURIComponent).join('/')}`;

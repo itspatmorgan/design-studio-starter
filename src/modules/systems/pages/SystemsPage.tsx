@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams, useSearch } from '@tanstack/react-router';
-import { ChevronDown, Compass, Blocks, NotebookText, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, Search, ChevronsDownUp, ChevronsUpDown, X, type LucideIcon } from 'lucide-react';
+import { ChevronDown, Compass, Blocks, NotebookText, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, Image, Search, ChevronsDownUp, ChevronsUpDown, X, type LucideIcon } from 'lucide-react';
 import { Input } from '@/systems/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
 import { artifactLabel, findArtifact } from '@/platform/app/data/manifest';
@@ -12,7 +12,7 @@ import type { Prototype } from '@/platform/app/data/types';
 import { NavHeader, NavList, NavTitle, SectionNav } from '@/platform/app/shell/nav';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/systems/studio/components/select';
 import { NotFound } from '@/platform/app/shell/App';
-import { ColorTokens, IconsPage, PageHeader } from '@/modules/systems/pages/foundations';
+import { ColorTokens, PageHeader } from '@/modules/systems/pages/foundations';
 import { OtherTokens, RadiusTokens, ShadowTokens, SpacingTokens, TypographyTokens } from '@/modules/systems/pages/tokens';
 import { ComponentDocPage } from '@/modules/systems/pages/ComponentDocPage';
 import { useManifest } from '@/platform/app/data/useManifest';
@@ -28,7 +28,7 @@ import { PLATFORM_ID, PLATFORM_SOURCE } from '../data/systems';
 import { systemSourceRequest } from './systemSource';
 import SystemOverview from './SystemOverview';
 import SystemAssets from './SystemAssets';
-import { assetLink, systemAssets } from '../data/assets';
+import { systemAssets } from '../data/assets';
 import { navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
 
 const ComponentEditor = import.meta.env.DEV ? lazy(() => import('./ComponentEditor').then((module) => ({ default: module.ComponentEditor }))) : null;
@@ -58,7 +58,7 @@ type SystemId = string;
 // Map a rendered Systems page to its actual source files.
 function sourcePath(system: string, page: string | undefined, components: SystemComponentDoc[]) {
   const source = system === PLATFORM_ID ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
-  if (page === 'assets') return null;
+  if (page === 'assets' || page === 'fonts' || page === 'images') return null;
   if (!page || page === 'icons') return intros['/systems/' + system + '/intro.tsx'] ? source.dir + 'intro.tsx' : source.dir + 'system.ts';
   const component = components.find((c) => c.slug === page);
   if (component) {
@@ -129,7 +129,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   useEffect(() => { if (searchOpen) searchRef.current?.focus(); }, [searchOpen]);
   const q = query.trim().toLowerCase();
   const matches = (label: string) => !q || label.toLowerCase().includes(q);
-  const activeGroup = page && (Object.hasOwn(SYSTEM_CONTENT_SECTIONS, page) ? page : page === 'assets' || page === 'icons' ? 'assets' : foundations.some(p => p.id === page) ? 'theme' : components.some(c => c.slug === page) ? 'components' : undefined);
+  const activeGroup = page && (Object.hasOwn(SYSTEM_CONTENT_SECTIONS, page) ? page : ['assets', 'fonts', 'icons', 'images'].includes(page) ? 'assets' : foundations.some(p => p.id === page) ? 'theme' : components.some(c => c.slug === page) ? 'components' : undefined);
   useEffect(() => { if (activeGroup) setOpenGroups(prev => ({ ...prev, [activeGroup]: true })); }, [activeGroup, page, params._splat]);
   const groupOpen = (id: string) => Boolean(q) || openGroups[id];
   const changeGroup = (id: string, open: boolean) => { if (!q) setOpenGroups(prev => ({ ...prev, [id]: open })); };
@@ -145,10 +145,8 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   });
   const matchingFoundations = foundations.filter(p => matches('Theme') || matches(p.label));
   const matchingComponents = components.filter(c => matches('Components') || matches(c.title));
-  const iconsMatch = SYSTEMS[system].icons && (matches('Assets') || matches('Icons'));
-  const matchingAssets = systemAssets(system).filter(asset => matches('Assets') || matches(asset.path) || matches(asset.kind));
-  const assetsMatch = matches('Assets') || matchingAssets.length > 0;
-  const anyMatch = matches('Overview') || assetsMatch || matchingFoundations.length > 0 || iconsMatch || matchingComponents.length > 0 || contentSections.some(({ section, proto }) => matches(section.title) || proto.artifacts.some(a => matches(artifactLabel(a.path, proto)) || matches(a.path)));
+  const assetPages = [{ id: 'fonts', label: 'Fonts', icon: Type }, { id: 'icons', label: 'Icons', icon: Smile }, { id: 'images', label: 'Images', icon: Image }].filter(item => matches('Assets') || matches(item.label) || systemAssets(system).some(asset => asset.kind === item.label && matches(asset.path)));
+  const anyMatch = matches('Overview') || assetPages.length > 0 || matchingFoundations.length > 0 || matchingComponents.length > 0 || contentSections.some(({ section, proto }) => matches(section.title) || proto.artifacts.some(a => matches(artifactLabel(a.path, proto)) || matches(a.path)));
   const file = (id: string | undefined, label: string) => {
     const path = sourcePath(system, id, components);
     return path && <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={path} label={label} className={id ? undefined : 'h-7'} icon={navIcon(id && components.some((c) => c.slug === id) ? Blocks : PAGE_ICONS[id ?? 'intro'] ?? Blocks)} reveal={() => systemSourceRequest('reveal', path)} />;
@@ -198,10 +196,8 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
         {(matchingFoundations.length > 0 || matches('Theme')) && <SystemBranch label="Theme" path={source.theme} open={groupOpen('theme')} onOpenChange={open => changeGroup('theme', open)}>
           {matchingFoundations.map(p => file(p.id, p.label))}
         </SystemBranch>}
-        {(assetsMatch || iconsMatch) && <SystemBranch label="Assets" path={source.dir + 'assets/'} open={groupOpen('assets')} onOpenChange={open => changeGroup('assets', open)}>
-          {assetsMatch && <Link to={`/systems/${system}/assets` as never} activeOptions={{ exact: true, includeSearch: false }} className={navLinkClass} style={navLinkStyle}>{navIcon(Layers2)}All assets</Link>}
-          {iconsMatch && file('icons', 'Icon library')}
-          {matchingAssets.map(asset => <Link key={asset.path} to={assetLink(system, asset.path) as never} title={asset.path} activeOptions={{ exact: true, includeSearch: false }} className={navLinkClass} style={navLinkStyle}>{navIcon(asset.kind === 'Fonts' ? Type : Smile)}<span className="truncate">{asset.path}</span></Link>)}
+        {assetPages.length > 0 && <SystemBranch label="Assets" path={source.dir + 'assets/'} open={groupOpen('assets')} onOpenChange={open => changeGroup('assets', open)}>
+          {assetPages.map(item => item.id === 'icons' && SYSTEMS[system].icons ? file('icons', 'Icons') : <Link key={item.id} to={`/systems/${system}/${item.id}` as never} activeOptions={{ includeSearch: false }} className={navLinkClass} style={navLinkStyle}>{navIcon(item.icon)}{item.label}</Link>)}
         </SystemBranch>}
         {(matchingComponents.length > 0 || matches('Components')) && <SystemBranch label="Components" path={source.components} open={groupOpen('components')} onOpenChange={open => changeGroup('components', open)}>
           {matchingComponents.map(c => file(c.slug, c.title))}
@@ -223,6 +219,10 @@ function SystemPage({ system, sys, components, tokens, origin, page, assetPath }
       return <SystemOverview system={system} sys={sys} components={components} tokens={tokens} />;
     case 'assets':
       return <SystemAssets system={system} sys={sys} path={assetPath} />;
+    case 'fonts':
+      return <SystemAssets system={system} sys={sys} kind="Fonts" path={assetPath} />;
+    case 'images':
+      return <SystemAssets system={system} sys={sys} kind="Images" path={assetPath} />;
     case 'colors':
       return has('colors') ? <><PageHeader title="Colors" description="Every color token in the theme. Values reflect this system's active mode." /><ColorTokens tokens={tokens} /></> : null;
     case 'typography':
@@ -240,7 +240,7 @@ function SystemPage({ system, sys, components, tokens, origin, page, assetPath }
     case 'tokens':
       return has('other') ? <><PageHeader title="Other tokens" description="Everything else the theme defines." /><OtherTokens tokens={tokens} /></> : null;
     case 'icons':
-      return sys.icons ? <><PageHeader title="Icons" description={`This system uses ${sys.icons.library}.`} /><IconsPage icons={sys.icons} /></> : null;
+      return <SystemAssets system={system} sys={sys} kind="Icons" path={assetPath} />;
   }
   const found = components.find((c) => c.slug === page);
   return found ? <ComponentDocPage system={system} sys={sys} component={found} origin={origin} /> : null;
@@ -261,7 +261,7 @@ export default function SystemsPage() {
   const tokens = manifestSystem?.tokens ?? [];
   const search = useSearch({ strict: false }) as { mode?: 'source' };
   const editing = import.meta.env.DEV && search.mode === 'source';
-  const path = sys && !selected ? sourcePath(system, params.page, components) : null;
+  const path = sys && !selected && !params._splat ? sourcePath(system, params.page, components) : null;
   const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(path), editing && !selected);
   const editable = components.find((c) => c.slug === params.page);
   const content = selected ? <SystemContentPage key={selected.id + '/' + (params._splat ?? '')} proto={selected} slug={params._splat} /> : sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page, assetPath: params._splat }) : null;
@@ -273,7 +273,7 @@ export default function SystemsPage() {
         <main className="flex min-h-0 min-w-0 flex-1 flex-col"><Suspense fallback={<p className="p-4 text-sm">Loading editor…</p>}>{editable && ComponentEditor ? <ComponentEditor key={system + '/' + editable.slug} system={system} component={editable} onDone={toggle} /> : SystemSourceEditor && <SystemSourceEditor path={path} onDone={toggle} />}</Suspense></main>
       ) : (
         <main ref={mainRef} className="min-w-0 flex-1 overflow-y-auto">
-          <ThemeScope themeClass={params.page && params.page !== 'assets' ? sys.scopeClass : platform.scopeClass} className="min-h-full bg-background text-foreground">
+          <ThemeScope themeClass={params.page && !['assets', 'fonts', 'icons', 'images'].includes(params.page) ? sys.scopeClass : platform.scopeClass} className="min-h-full bg-background text-foreground">
             <div ref={rendered} tabIndex={-1} className="mx-auto w-full max-w-3xl px-8 py-10 outline-none" data-testid={`${system}-set`}>{content}</div>
           </ThemeScope>
         </main>

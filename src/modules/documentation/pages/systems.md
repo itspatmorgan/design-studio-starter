@@ -70,7 +70,7 @@ You do not need to write product context or install additional skills before sta
 
 Fonts, custom icons, logos, and images shared by your product belong to its system. Your agent can place local files in that system's `assets/` folder or connect an asset package. An image used by only one prototype can stay with that prototype.
 
-Open Assets to browse local fonts, icons, and images, or explore the system's configured icon library. Select a file to preview it. Empty groups show what you can add. Ask your agent to bring in your files and connect them to your theme or components. Package fonts remain package dependencies; they are not listed as local files. Supplying actual fonts and icons helps preserve your product's appearance.
+Under Assets, open Fonts, Icons, or Images. Icons also shows the system’s configured icon library. Select a local file to preview it. Empty pages show what you can add. Ask your agent to bring in your files and connect them to your theme or components. Package fonts remain package dependencies; they are not listed as local files. Supplying actual fonts and icons helps preserve your product's appearance.
 
 System files are shared team content. Coordinate changes with your maintainer. Admins can choose an installed default system in [Studio settings](/documentation/guide/customize#configure-the-studio). Saving there, or asking your agent to use the studio configuration command, preserves existing prototypes' system choices, including None. Direct configuration edits do not provide that protection.
 
