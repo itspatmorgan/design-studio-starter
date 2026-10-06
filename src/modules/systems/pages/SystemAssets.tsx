@@ -47,7 +47,16 @@ export default function SystemAssets({ system, sys, kind, path }: { system: stri
   if (!kind) return <NotFound />;
   const items = assets.filter(asset => asset.kind === kind);
   const empty = !items.length && !(kind === 'Icons' && sys.icons);
-  const guidance = `Ask your agent to add your system’s ${kind.toLowerCase()} and connect them to your theme or components. Package assets remain dependencies and are not listed as local files.`;
+  const description = {
+    Fonts: 'Fonts for your system’s typography.',
+    Icons: 'Icons for your system’s interface.',
+    Images: 'Logos and shared images for your prototypes.',
+  }[kind];
+  const packageNote = {
+    Fonts: 'Fonts supplied by packages won’t appear in this local file collection.',
+    Icons: 'Icons supplied by packages won’t appear in this local file collection.',
+    Images: 'Images supplied by packages won’t appear in this local file collection.',
+  }[kind];
   const Icon = { Fonts: Type, Icons: Smile, Images: Image }[kind];
   const emptyDescription = {
     Fonts: 'Ask your agent to bring in your product’s font files and connect them to this system’s theme.',
@@ -55,7 +64,11 @@ export default function SystemAssets({ system, sys, kind, path }: { system: stri
     Images: 'Ask your agent to add logos and shared images for prototypes using this system.',
   }[kind];
   return <>
-    <PageHeader title={kind} description={kind === 'Icons' && sys.icons ? `This system uses ${sys.icons.library}.` : `${kind} owned by ${sys.label}.`} />
+    <PageHeader title={kind} description={description} />
+    <div className="mb-6 space-y-2 text-sm leading-6 text-foreground/80">
+      {kind === 'Icons' && sys.icons && <p>This system uses {sys.icons.library}.</p>}
+      <p>{packageNote}</p>
+    </div>
     {items.length ? <ul className="space-y-2">{items.map(asset => <li key={asset.path}>
       <Link to={assetLink(system, asset) as never} className="flex items-center gap-4 rounded-lg border border-border px-4 py-3 hover:bg-muted">
         {kind !== 'Fonts' && <img src={asset.url} alt="" loading="lazy" className="size-10 shrink-0 object-contain" />}
@@ -68,8 +81,7 @@ export default function SystemAssets({ system, sys, kind, path }: { system: stri
         <EmptyDescription>{emptyDescription}</EmptyDescription>
       </EmptyHeader>
     </Empty>}
-    {empty && <p className="mt-4 text-xs text-muted-foreground">Assets provided by packages are not listed as local files.</p>}
-    {!empty && <p className="my-6 text-sm leading-6 text-foreground/80">{guidance}</p>}
+    {!empty && <p className="my-6 text-sm leading-6 text-foreground/80">{emptyDescription}</p>}
     {kind === 'Icons' && sys.icons && <ThemeScope themeClass={sys.scopeClass}><IconsPage icons={sys.icons} /></ThemeScope>}
   </>;
 }
