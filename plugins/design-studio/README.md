@@ -6,7 +6,7 @@ Public directory submission has not happened. Native Claude Code and Cursor setu
 
 ## One setup flow
 
-The default studio folder is `~/Developer/My Design Studio`. The person can choose another visible folder. Complete source stays there, outside plugin caches, and remains usable after plugin removal. Personal use needs no GitHub account. The installer creates a local Git repository without a remote.
+The default name and folder are **Design Studio** and `~/Developer/Design Studio`. Additional default installs use the first available **Design Studio 2**, **Design Studio 3**, and so on. The helper's read-only `choose` command selects the name and destination; `create` receives both and reserves the folder exclusively. Explicit names and locations take precedence. Resuming setup or reopening uses the known destination. People can change the studio name later. Complete source stays in the visible local folder, outside plugin caches, and remains usable after plugin removal. Personal use needs no GitHub account. The installer creates a local Git repository without a remote.
 
 - [Create studio](skills/create-studio/SKILL.md) owns first-time setup.
 - [Open studio](skills/open-studio/SKILL.md) reopens existing work without reinitializing it.
@@ -18,7 +18,7 @@ The default studio folder is `~/Developer/My Design Studio`. The person can choo
 
 Preparation trusts the inspected studio's mise configuration, installs pinned tools and dependencies, applies first-run personal defaults, and synchronizes project skills. The receipt `design-studio.local.json` records setup state and is excluded locally from Git. Repeating setup preserves existing configuration and work. Unrelated folders, linked metadata, invalid receipts, and modified initial settings are refused rather than overwritten.
 
-Experiment .10 pins the tested, publicly available integration snapshot at `5a685c2bee285c1e85b0e537304742ec92af77f6`. It includes portable setup, Welcome onboarding, and Check Design System. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
+Experiment .11 pins the tested, publicly available integration snapshot at `5a685c2bee285c1e85b0e537304742ec92af77f6`. It includes portable setup, Welcome onboarding, and Check Design System. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
 
 ## Packaging and ownership
 
@@ -69,9 +69,9 @@ Official references: [OpenAI packaging](https://developers.openai.com/plugins/bu
 
 | Evidence | Status |
 | --- | --- |
-| Codex private installation and first-run setup | Previously confirmed on two hosts; experiment .10 needs a fresh native test. |
+| Codex private installation and first-run setup | Person confirmed experiment .10 setup on this Mac. Experiment .11 adds numbered default names and clearer local-file messaging; fresh native testing remains pending. |
 | Visible source and workspace handoff | Person confirmed the Codex folder link opens a chat in the owned studio. Persistent sidebar registration remains unverified. |
-| Shared package checks | Eleven plugin/bootstrap tests cover pinning, preservation, linked paths, receipts, Claude entries, generated manifests, and marketplace resolution. |
+| Shared package checks | Thirteen plugin/bootstrap tests cover numbered default installs, pinning, preservation, linked paths, receipts, Claude entries, generated manifests, and marketplace resolution. |
 | Claude package and marketplace schema | Installed Claude Code 2.1.152 validator accepts both. Live setup/activation remains pending. |
 | Cursor package | Follows current official format. Repository import and live activation remain pending. |
 | Starter revision | Public merged revision downloaded and prepared successfully in a disposable QA folder. Its home rendered in the browser; flat context, current instruction reader, project skills, and Claude import were verified. This host already has prerequisite tools. |

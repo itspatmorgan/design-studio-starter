@@ -1,6 +1,6 @@
 # Test Design Studio on another computer
 
-The shared package is `0.1.0-experiment.10`. Its pinned starter snapshot is `5a685c2bee285c1e85b0e537304742ec92af77f6`, which includes Welcome onboarding, shared project skills, and Check Design System. Existing studios are preserved and are not upgraded automatically.
+The shared package is `0.1.0-experiment.11`. It adds numbered default installs (Design Studio, Design Studio 2, and so on) and clearer local-file messaging. Its pinned starter snapshot is `5a685c2bee285c1e85b0e537304742ec92af77f6`, which includes Welcome onboarding, shared project skills, and Check Design System. Existing studios are preserved and are not upgraded automatically.
 
 ## Get the current package
 
@@ -21,7 +21,7 @@ Read the [plugin README](README.md) for installation commands. The plugin folder
 
 ## Test each harness
 
-- **Codex:** add this checkout as the local plugin marketplace and install the current Design Studio package. If an older experiment is installed, refresh or replace that installation using the plugin controls. Confirm the installed version is experiment .10, then start a fresh chat.
+- **Codex:** add this checkout as the local plugin marketplace and install the current Design Studio package. If an older experiment is installed, refresh or replace that installation using the plugin controls. Confirm the installed version is experiment .11, then start a fresh chat.
 - **Claude Code:** run `claude --plugin-dir /absolute/path/to/design-studio-starter/plugins/design-studio`, then invoke `/design-studio:create-studio`. This local test does not change global plugin registrations. Repository marketplace installation can be checked afterward.
 - **Cursor:** use Customize → From GitHub Repository, import `itspatmorgan/design-studio-starter`, and install Design Studio. Confirm the current package loads, then start a fresh agent chat.
 
@@ -45,6 +45,6 @@ Record what the agent did, where it needed human help, and any unclear step. For
 
 ## Follow-up checks
 
-Try [direct setup](../../SETUP.md) without an installed plugin. Then check occupied ports, interrupted setup, an unrelated existing destination, and preservation after plugin removal or updates. Clean-computer prerequisite installation is still a separate gate if this computer already has the required tools. Windows and Linux remain unverified.
+Create two studios without specifying names or paths. Verify numbered default folders, the local-files explanation, and preservation of the first studio. Reopen by the known folder and resume interrupted setup without allocating another number. Then try [direct setup](../../SETUP.md) without an installed plugin. Check occupied ports, an unrelated existing destination, and preservation after plugin removal or updates. Clean-computer prerequisite installation is still a separate gate if this computer already has the required tools. Windows and Linux remain unverified.
 
 Automated checks and a prepared studio do not prove these native journeys. Record actual results in the [release readiness table](README.md#release-readiness). Public directory submission remains separate from this test package.

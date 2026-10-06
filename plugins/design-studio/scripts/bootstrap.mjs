@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
@@ -50,7 +51,21 @@ export function inspectStudio(value) {
   return { ...receipt, destination, existing: true };
 }
 
-export function createStudio({ destination: value, name = 'My Design Studio', source = SOURCE, revision = REVISION }) {
+// Selection is read-only; createStudio reserves the chosen folder exclusively.
+export function chooseStudioLocation({ parent = path.join(os.homedir(), 'Developer') } = {}) {
+  const folder = destinationPath(parent);
+  for (let number = 1; ; number += 1) {
+    const name = number === 1 ? 'Design Studio' : `Design Studio ${number}`;
+    const destination = destinationPath(path.join(folder, name));
+    try { fs.lstatSync(destination); }
+    catch (error) {
+      if (error.code === 'ENOENT') return { name, destination };
+      throw error;
+    }
+  }
+}
+
+export function createStudio({ destination: value, name = 'Design Studio', source = SOURCE, revision = REVISION }) {
   const destination = destinationPath(value);
   if (!name.trim() || name.length > 120) throw new Error('Choose a studio name between 1 and 120 characters.');
   if (!/^[0-9a-f]{40}$/.test(revision)) throw new Error('The starter revision must be a complete commit hash.');
@@ -126,16 +141,21 @@ export function startStudio(value, port = '5173') {
 function main() {
   const [command, ...args] = process.argv.slice(2);
   if (!command || command === '--help') {
-    console.log('Usage: node bootstrap.mjs create|inspect|prepare|start --destination <absolute-folder> [--name <name>] [--port <port>]\nMaintainer fixtures only: create --source <absolute-local-repo> --revision <40-character-commit>.\nGit and Node are prerequisites. prepare/start also require mise. No GitHub account is needed.');
+    console.log('Usage: node bootstrap.mjs choose [--parent <absolute-folder>]\n       node bootstrap.mjs create|inspect|prepare|start --destination <absolute-folder> [--name <name>] [--port <port>]\nchoose selects Design Studio, Design Studio 2, etc. in ~/Developer without creating files.\nMaintainer fixtures only: create --source <absolute-local-repo> --revision <40-character-commit>.\nGit and Node are prerequisites. prepare/start also require mise. No GitHub account is needed.');
     return;
   }
-  if (!['create', 'inspect', 'prepare', 'start'].includes(command)) throw new Error(`Unknown command: ${command}`);
+  if (!['choose', 'create', 'inspect', 'prepare', 'start'].includes(command)) throw new Error(`Unknown command: ${command}`);
   const options = {};
   for (let i = 0; i < args.length; i += 2) {
     const key = args[i];
-    if (!['--destination', '--name', '--port', '--source', '--revision'].includes(key) || !args[i + 1]) throw new Error(`Invalid option: ${key}`);
+    const allowed = command === 'choose' ? ['--parent'] : ['--destination', '--name', '--port', '--source', '--revision'];
+    if (!allowed.includes(key) || !args[i + 1]) throw new Error(`Invalid option: ${key}`);
     if (options[key.slice(2)] !== undefined) throw new Error(`Repeated option: ${key}`);
     options[key.slice(2)] = args[i + 1];
+  }
+  if (command === 'choose') {
+    console.log(JSON.stringify(chooseStudioLocation(options), null, 2));
+    return;
   }
   if (command === 'start') return startStudio(options.destination, options.port);
   const result = command === 'create' ? createStudio(options) : command === 'prepare' ? prepareStudio(options.destination) : inspectStudio(options.destination);

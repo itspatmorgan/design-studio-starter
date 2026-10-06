@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { test } from 'node:test';
-import { createStudio, destinationPath, inspectStudio, checkInitialConfiguration, ensureClaudeEntry, RECEIPT } from './bootstrap.mjs';
+import { createStudio, chooseStudioLocation, destinationPath, inspectStudio, checkInitialConfiguration, ensureClaudeEntry, RECEIPT } from './bootstrap.mjs';
 
 function fixture(t) {
   const temp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'studio-plugin-test-')));
@@ -37,7 +37,41 @@ test('repeat setup preserves source and configuration edits', (t) => {
   fs.writeFileSync(file, 'my configuration');
   assert.equal(createStudio({ ...options, name: 'Replacement' }).existing, true);
   assert.equal(fs.readFileSync(file, 'utf8'), 'my configuration');
-  assert.equal(inspectStudio(options.destination).name, 'My Design Studio');
+  assert.equal(inspectStudio(options.destination).name, 'Design Studio');
+});
+
+test('additional studios are numbered while existing names and edits survive', (t) => {
+  const options = fixture(t);
+  const parent = path.join(options.temp, 'Developer');
+  for (const name of ['Design Studio', 'Design Studio 2', 'Design Studio 3']) {
+    const chosen = chooseStudioLocation({ parent });
+    assert.equal(chosen.name, name);
+    assert.equal(chosen.destination, path.join(parent, name));
+    assert.equal(createStudio({ ...options, ...chosen }).name, name);
+    fs.writeFileSync(path.join(chosen.destination, 'studio.config.ts'), `custom ${name}`);
+  }
+  const first = path.join(parent, 'Design Studio');
+  const receiptPath = path.join(first, RECEIPT);
+  const receipt = JSON.parse(fs.readFileSync(receiptPath, 'utf8'));
+  fs.writeFileSync(receiptPath, JSON.stringify({ ...receipt, name: 'Acme Studio' }));
+  assert.equal(createStudio({ ...options, destination: first }).name, 'Acme Studio');
+  assert.equal(fs.readFileSync(path.join(first, 'studio.config.ts'), 'utf8'), 'custom Design Studio');
+  assert.equal(chooseStudioLocation({ parent }).name, 'Design Studio 4');
+});
+
+test('selection skips unrelated folders and dangling links without writing', (t) => {
+  const options = fixture(t);
+  const parent = path.join(options.temp, 'Developer');
+  assert.equal(chooseStudioLocation({ parent }).name, 'Design Studio');
+  assert.equal(fs.existsSync(parent), false);
+  fs.mkdirSync(path.join(parent, 'Design Studio'), { recursive: true });
+  fs.writeFileSync(path.join(parent, 'Design Studio', 'important.txt'), 'keep');
+  fs.symlinkSync(path.join(options.temp, 'missing'), path.join(parent, 'Design Studio 2'));
+  const output = execFileSync(process.execPath, [path.resolve('plugins/design-studio/scripts/bootstrap.mjs'), 'choose', '--parent', parent], { encoding: 'utf8' });
+  assert.deepEqual(JSON.parse(output), { name: 'Design Studio 3', destination: path.join(parent, 'Design Studio 3') });
+  assert.deepEqual(fs.readdirSync(parent), ['Design Studio', 'Design Studio 2']);
+  assert.equal(fs.readFileSync(path.join(parent, 'Design Studio', 'important.txt'), 'utf8'), 'keep');
+  assert.throws(() => chooseStudioLocation({ parent: 'relative' }), /absolute/);
 });
 
 test('refuses unrelated existing folders and preserves their files', (t) => {
