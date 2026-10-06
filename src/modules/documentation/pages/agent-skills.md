@@ -2,7 +2,7 @@
 title: Skill discovery
 description: How canonical skills become discoverable in coding harnesses.
 section: Agents
-order: 6
+order: 25
 toc: true
 ---
 

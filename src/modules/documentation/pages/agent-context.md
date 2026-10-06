@@ -2,7 +2,7 @@
 title: Agent context
 description: Where instructions live and how people and agents use them.
 section: Agents
-order: 4
+order: 23
 toc: true
 ---
 

@@ -2,7 +2,7 @@
 title: Plugin and workspace
 description: How Create, Open, and Use Studio hand off to repository procedures.
 section: Agents
-order: 5
+order: 24
 toc: true
 ---
 

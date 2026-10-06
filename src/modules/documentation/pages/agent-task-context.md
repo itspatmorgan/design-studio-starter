@@ -2,7 +2,7 @@
 title: Task context
 description: How the agent chooses platform, module, and assigned-system guidance.
 section: Agents
-order: 7
+order: 26
 toc: true
 ---
 

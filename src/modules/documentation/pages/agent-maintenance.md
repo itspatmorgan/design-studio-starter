@@ -2,7 +2,7 @@
 title: Maintaining guidance
 description: How to author, curate, expose, and verify the instruction set.
 section: Agents
-order: 8
+order: 27
 toc: true
 ---
 
