@@ -122,6 +122,6 @@ export function syncSkillAdapters(root, catalog) {
   const receipt = JSON.stringify({ schema: 1, files }, null, 2) + '\n';
   if (!exists(receiptPath) || fs.readFileSync(receiptPath, 'utf8') !== receipt) fs.writeFileSync(receiptPath, receipt);
   const claude = path.join(root, 'CLAUDE.md');
-  if (!exists(claude)) fs.writeFileSync(claude, '# Design Studio\n\nRead and follow [repository instructions](AGENTS.md) before work. Project skills route to their canonical sources.\n');
+  if (!exists(claude)) fs.writeFileSync(claude, '@AGENTS.md\n');
   return { changed: operations.length, warnings };
 }

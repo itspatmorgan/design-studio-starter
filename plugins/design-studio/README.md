@@ -1,78 +1,85 @@
-# Design Studio plugin experiment
+# Design Studio plugin
 
-This private experiment tests setup through a local agent plugin. A designer asks “Create my Design Studio.” The agent downloads and prepares a complete studio in an ordinary folder, then opens its local preview. GitHub is optional.
+This experimental package helps a local coding agent create, open, and use Design Studio. A designer asks “Create my Design Studio.” The agent handles downloading and preparation, opens a preview, and helps them continue in the owned studio folder.
 
-The pilot targets macOS with a supported local code harness. It does not establish public ChatGPT distribution or a complete one-click installation flow.
+Public directory submission has not happened. Native Claude Code and Cursor setup journeys still need testing. The pilot targets macOS; Windows and Linux remain unverified.
 
-## Ownership and setup
+## One setup flow
 
-The default location is `~/Developer/My Design Studio`. The user can choose another visible folder. The plugin cache contains the setup tools; it does not contain the user's studio.
+The default studio folder is `~/Developer/My Design Studio`. The person can choose another visible folder. Complete source stays there, outside plugin caches, and remains usable after plugin removal. Personal use needs no GitHub account. The installer creates a local Git repository without a remote.
 
-[Create studio](skills/create-studio/SKILL.md) owns first-time setup. [Open studio](skills/open-studio/SKILL.md) owns reopening existing work. These procedures delegate contributor registration and product configuration to the downloaded repository's instructions. [Use studio](skills/use-studio/SKILL.md) handles ongoing work in the identified workspace and follows its current context and skills.
+- [Create studio](skills/create-studio/SKILL.md) owns first-time setup.
+- [Open studio](skills/open-studio/SKILL.md) reopens existing work without reinitializing it.
+- [Use studio](skills/use-studio/SKILL.md) delegates ongoing work to that studio's current guidance.
+- [Host handoff](skills/create-studio/references/host-handoff.md) adapts folder opening to the current coding tool.
+- [Direct setup](../../SETUP.md) lets an agent use the same procedure without a plugin installed.
 
-[bootstrap.mjs](scripts/bootstrap.mjs) downloads a pinned public starter revision and creates a local Git repository without a remote. No GitHub account is required. It uses the existing studio configuration command for personal setup. Repeating setup preserves existing files and settings. Uninstalling the plugin leaves the studio intact.
+[bootstrap.mjs](scripts/bootstrap.mjs) implements downloading, inspection, preparation, and launch. Git and Node are prerequisites; preparation also needs mise. The skill tells the agent to handle missing tools through supported mechanisms and official sources. Automatic prerequisite installation has not been proved on a clean computer.
 
-Git, Node, and mise are prerequisites for the helper. The agent procedure handles missing tools through supported host mechanisms. Automatic installation of those prerequisites has not been tested on a clean computer. Preparation trusts the inspected studio's mise configuration, installs its tools and dependencies, and executes the downloaded starter's commands.
+Preparation trusts the inspected studio's mise configuration, installs pinned tools and dependencies, applies first-run personal defaults, and synchronizes project skills. The receipt `design-studio.local.json` records setup state and is excluded locally from Git. Repeating setup preserves existing configuration and work. Unrelated folders, linked metadata, invalid receipts, and modified initial settings are refused rather than overwritten.
 
-The receipt `design-studio.local.json` records setup state and is excluded locally from Git. The helper refuses unrelated folders, linked repository metadata, invalid receipts, and modified initial settings before applying defaults. It is not a general installer for arbitrary repositories.
+Experiment .9 pins the merged foundation at `7c2ddf1c5bf79bb778827a4eaff2498ca96adae3`. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
 
-## Packaging
+## Packaging and ownership
 
-[plugin.json](plugin.json) is the canonical portable manifest. It supplies identity, prompts, light and dark icons, and OpenAI create, open, and use skills. Run `node scripts/sync-manifest.mjs` from this directory after changing it. The generator writes the compatibility manifest in `.codex-plugin/plugin.json`.
+[plugin.json](plugin.json) is the canonical identity and OpenAI interface manifest. [sync-manifest.mjs](scripts/sync-manifest.mjs) generates host packages and marketplace catalogs:
 
-The repository marketplace lives at [marketplace.json](../../.agents/plugins/marketplace.json). Codex CLI 0.137.0 required the compatibility manifest during local installation. A portable root manifest alone failed in this test.
+| Host | Plugin manifest | Repository marketplace |
+| --- | --- | --- |
+| Codex/OpenAI | `.codex-plugin/plugin.json`, plus portable root manifest | `.agents/plugins/marketplace.json` |
+| Claude Code | `.claude-plugin/plugin.json` | `.claude-plugin/marketplace.json` |
+| Cursor | `.cursor-plugin/plugin.json` | `.cursor-plugin/marketplace.json` |
 
-These maintainer commands install the private experiment from this checkout:
+All hosts load the same `skills/` and `scripts/`; no procedural copies are maintained. Regenerate after identity changes with `node plugins/design-studio/scripts/sync-manifest.mjs`. Use `--check` to detect stale generated files without writing. The OpenAI marketplace retains its existing host policy fields.
+
+Plugin entry skills stay outside the Studio instruction browser. The owned repository exposes platform, enabled-module, and assigned-system procedures through project skill adapters. Its `CLAUDE.md` imports `AGENTS.md`, and `.claude/skills` links the same entries used by Codex and Cursor. The helper replaces only the exact older generated Claude entry with the import; custom entries are preserved. See [Agent context routing](../../src/platform/context/agent-context.md).
+
+## Maintainer testing
+
+These are experiment commands, not the designer-facing installation experience:
+
+```sh
+node plugins/design-studio/scripts/sync-manifest.mjs --check
+node --test plugins/design-studio/scripts/*.test.mjs
+pnpm build
+```
+
+Local Codex marketplace:
 
 ```sh
 codex plugin marketplace add /absolute/path/to/this/repository
 codex plugin add design-studio@design-studio-experiment
-codex plugin list
 ```
 
-They are test instructions for maintainers. The intended designer experience uses plugin discovery and the setup prompt.
-
-## Results and release gates
-
-| Area | Result |
-| --- | --- |
-| Private local marketplace | Plugin installed and enabled with Codex CLI 0.137.0 on the first host and 0.151.0 on the second. |
-| Visible owned source | Public pinned source downloaded to `~/Design Studios/Plugin Experiment`; complete files and local Git present, no remote. |
-| Setup | Dependencies installed and personal studio configuration applied. |
-| Preview | Local preview opened at port 5183; home and Feedback Inbox rendered. |
-| Repeat setup | Existing studio name and configuration preserved. |
-| Automated checks | Eight bootstrap tests, sixteen canonical and plugin skill validators, and platform build checks. The restructure passes 197 platform tests and type checks. |
-| Fresh conversation | Second-host fresh chat selected create-studio, created and configured the studio, and opened its preview. The person confirmed setup worked. |
-| Native plugin UI | Person supplied screenshots of both native lists. Separate composer and listing assets are installed; final optical balance still needs visual confirmation. |
-| Local workspace handoff | On October 5, 2026, the person opened the documented folder link. The new chat ran in `~/Developer/My Design Studio` and read local rules, configuration, and Guide content before answering. Persistent sidebar registration remains unverified. |
-| Portable project skills | Canonical platform and enabled-module skills generate `.agents/skills` entries for Codex and Cursor and `.claude/skills` links for Claude Code. Automated tests cover canonical references, idempotence, collisions, preservation, and capability removal. Native Claude Code and Cursor activation remain unverified. |
-| Knowledge browser | Documentation displays original platform and module READMEs, Context, and Skills. Systems displays each system’s Context and Skills beside its toolkit. Platform context is flat, and one file tree shows Platform and all enabled modules. Browser QA checked owner selection, README and technical source editors, legacy Reference source mode and anchors, Systems navigation, and the Guide diagram. |
-| Installer revision | Experiment .8 pins restructure commit `2c0cdd52d5f7b1cd6e984ebf3269365664d8d795`. A fresh local-source checkout regenerated all 13 project skills successfully. The revision must be pushed to the public source remote before a fresh GitHub install can work. Existing studios follow their own current instructions and are not migrated by reopening. |
-| Clean computer | Missing-tool installation, interrupted downloads, and permission prompts still need end-to-end testing. |
-| Public discoverability | Submission, eligibility, review, and listing are separate release work. No public package was submitted. |
-| Team use | GitHub publishing, joining a team, authentication, and concurrent work remain outside this pilot. Existing repository contributor procedures provide the starting point. |
-
-Corepack on this computer initially shadowed mise's selected pnpm version. The launcher now requests `pnpm@12` explicitly through mise. Windows and Linux behavior is unverified.
-
-The second-host studio was moved from `~/Design Studios/My Design Studio` to `~/Developer/My Design Studio`. Its directory identity, Git history, settings, contributor registration, and receipt were preserved; its preview restarted successfully. Create and open skills now use the documented [host handoff](skills/create-studio/references/host-handoff.md). The link was tested independently; the revised setup-to-handoff sequence still needs a fresh-chat test.
-
-Before release, prove the complete designer journey in the actual target ChatGPT host: discover, install, invoke onboarding, obtain a visible folder, attach that folder as the working project, and open the preview. Then test reopening, restart, removal, updates that preserve user edits, failure recovery, and a separate team workflow.
-
-## Maintainer verification
-
-From the repository root:
+Local Claude validation and testing:
 
 ```sh
-node --test plugins/design-studio/scripts/bootstrap.test.mjs
-mise exec pnpm@12 -- pnpm build
+claude plugin validate --strict plugins/design-studio
+claude plugin validate --strict .claude-plugin/marketplace.json
+claude --plugin-dir /absolute/path/to/this/repository/plugins/design-studio
 ```
 
-The bootstrap tests use local Git fixtures and cover ownership, preservation, path validation, failed fetches, receipts, and interrupted setup. The platform build covers existing studio checks. These checks do not prove host UI behavior or public distribution.
+In that Claude session, invoke `/design-studio:create-studio`. This tests the package in place without changing global plugin registrations. For repository distribution after pushing these manifests, add `itspatmorgan/design-studio-starter` as a Claude marketplace and install `design-studio@design-studio-experiment`.
 
-Official reference: [Codex plugins](https://developers.openai.com/codex/plugins/). Use current host documentation when choosing a public distribution route; this local marketplace is not evidence of ChatGPT listing support.
+Cursor supports repository marketplace imports through Customize → From GitHub Repository. That test requires the new `.cursor-plugin/marketplace.json` to be pushed first. Then install Design Studio and ask it to create a studio. A valid manifest alone does not prove import, activation, or handoff.
 
-## Guidance ownership in experiment .8
+Official references: [OpenAI packaging](https://developers.openai.com/plugins/build/plugins), [Claude plugins](https://code.claude.com/docs/en/plugins-reference), [Claude marketplaces](https://code.claude.com/docs/en/plugin-marketplaces), [Cursor plugins](https://cursor.com/docs/reference/plugins), [Cursor skills and imports](https://cursor.com/docs/skills).
 
-The platform and each enabled module own their context and skills beside implementation. Systems own product and design context and specialized skills. Technical module contracts use `README.md`; procedures link to them. See [agent context routing](../../src/platform/context/agent-context.md) for native adapter ownership and compatibility routes.
+## Release readiness
 
-Preparation and development startup synchronize native project skills. Modified or unrelated adapters are preserved with a diagnostic. The plugin contains only host installation, reopening, and workspace-use entry points, so it does not carry a stale copy of every operating procedure.
+| Evidence | Status |
+| --- | --- |
+| Codex private installation and first-run setup | Previously confirmed on two hosts; experiment .9 needs a fresh native test. |
+| Visible source and workspace handoff | Person confirmed the Codex folder link opens a chat in the owned studio. Persistent sidebar registration remains unverified. |
+| Shared package checks | Eleven plugin/bootstrap tests cover pinning, preservation, linked paths, receipts, Claude entries, generated manifests, and marketplace resolution. |
+| Claude package and marketplace schema | Installed Claude Code 2.1.152 validator accepts both. Live setup/activation remains pending. |
+| Cursor package | Follows current official format. Repository import and live activation remain pending. |
+| Starter revision | Public merged revision downloaded and prepared successfully in a disposable QA folder. Its home rendered in the browser; flat context, current instruction reader, project skills, and Claude import were verified. This host already has prerequisite tools. |
+| Direct setup request | Implemented; first-run agent journey remains pending. |
+| Clean computer | Missing tools, permission prompts, and interrupted prerequisite installation remain pending. The current host already has dependencies. |
+| Public distribution | Submission, review, and listing are pending for each host. |
+| Team use | Separate onboarding and sharing tests are pending. |
+
+For each entry path, verify the full journey: discover or obtain instructions, install/invoke, create the owned folder, open its preview, continue in that folder, and create a first prototype using its current context. Then reopen after restart and confirm plugin removal and updates preserve user work. Check failures with missing tools, an occupied preview port, an interrupted setup, an existing unrelated destination, and a custom instruction entry.
+
+Do not mark a host ready from schema checks or an offered folder link. Record actual native outcomes and the user's visual confirmation. Keep public submission separate from engineering readiness.

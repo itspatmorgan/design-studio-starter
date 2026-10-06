@@ -6,6 +6,12 @@ Made for designers and product managers, working individually or with a team. Br
 
 ## Get started
 
+Ask your local coding agent to handle setup. Copy the request in [Set up with your agent](SETUP.md) into ChatGPT/Codex, Claude Code, or Cursor. It gives the agent the instructions to download, prepare, and open a studio in your user Developer folder. Personal use does not require a GitHub account.
+
+Native plugins are in testing; they are not yet available in public directories. See the [plugin experiment](plugins/design-studio/README.md) for current installation and test status.
+
+If you prefer to set it up yourself:
+
 1. Select **Use this template** on GitHub to create your own repository, then clone it locally.
 2. Install [mise](https://mise.jdx.dev/installing-mise.html) if you do not already have it.
 3. From the repository directory, run:
