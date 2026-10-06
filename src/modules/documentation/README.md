@@ -32,7 +32,7 @@ Legacy Reference and Knowledge URLs redirect to the appropriate scope. System gu
 
 Disabling or removing Documentation hides Guide and its module rail entry. The shared Context and Skills browser remains directly accessible. Prototype Documents is independent of both readers.
 
-The command menu lists enabled Guide chapters and a link to Context and Skills. Individual platform and module README, context, and skill files stay in the instruction browser and are excluded from the command menu. The instruction browser’s search matches titles and source paths, not full document text. Disabled or removed module guidance is excluded.
+The command menu groups Places, Systems, Prototypes, and Guide in that order. It lists system entries, prototypes, and enabled Guide chapters without individual system files or a Context and Skills link. Individual platform and module README, context, and skill files stay in the instruction browser and are excluded from the command menu. The instruction browser’s search matches titles and source paths, not full document text. Disabled or removed module guidance is excluded.
 
 ## Source access
 

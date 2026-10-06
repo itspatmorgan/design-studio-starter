@@ -5,7 +5,7 @@ import { getRouteApi, useMatchRoute, useNavigate, useParams, type NavigateOption
 import {
   Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,
 } from '@/systems/studio/components/command';
-import { findArtifact, findPrototype, firstArtifact, artifactFolder, artifactLabel, artifactLink } from '@/platform/app/data/manifest';
+import { findArtifact, findPrototype, firstArtifact } from '@/platform/app/data/manifest';
 import { moduleApps, type PaletteContext } from '@/platform/app/modules';
 import type { Artifact, Prototype } from '@/platform/app/data/types';
 
@@ -51,40 +51,25 @@ export default function CommandPaletteDialog({ open, setOpen, returnFocus }: { o
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
   
-            {current && (
-              <>
-                <CommandGroup heading={`Views · ${current.title}`}>
-                  {current.artifacts.map((item) => (
-                    <CommandItem
-                      key={item.path}
-                      value={`${artifactLabel(item.path, current)} ${item.path}`}
-                      disabled={isOpen(item)}
-                      onSelect={() => go(artifactLink(current, item))}
-                    >
-                      {artifactFolder(item.path) && <span className="shrink-0 text-xs text-muted-foreground">{artifactFolder(item.path)}</span>}
-                      <span className="truncate">{artifactLabel(item.path, current)}</span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-                <CommandSeparator />
-              </>
-            )}
-  
             <CommandGroup heading="Places">
               <CommandItem value="home overview" disabled={onHome} onSelect={() => go({ to: '/' })}>Home</CommandItem>
               {import.meta.env.DEV && <CommandItem value="studio settings configuration modules contributors admins" onSelect={() => go({ to: '/settings' } as never)}>Studio settings</CommandItem>}
               {moduleApps.map(({ spec, app }) => app.places && <app.places key={spec.id} {...context} />)}
             </CommandGroup>
 
-            <CommandSeparator />
-            <CommandGroup heading="Documentation">
-              <CommandItem value="context skills documentation" onSelect={() => go({ to: '/documentation/context/$owner', params: { owner: 'platform.core' } })}>Context and skills</CommandItem>
-              {manifest.guide.map(page => <CommandItem key={'guide:' + page.slug} value={'guide ' + page.title + ' ' + (page.source ?? page.slug)} onSelect={() => go({ to: '/documentation/guide' + (page.slug === 'index' ? '' : '/' + page.slug) } as never)}>
-                <span className="truncate">{page.title}</span><span className="ml-auto text-xs text-muted-foreground">Guide</span>
-              </CommandItem>)}
-            </CommandGroup>
+            {moduleApps.filter(({ spec }) => spec.id === 'systems' || spec.id === 'prototypes')
+              .sort((a, b) => Number(b.spec.id === 'systems') - Number(a.spec.id === 'systems'))
+              .map(({ spec, app }) => app.palette && <Fragment key={spec.id}><app.palette {...context} /></Fragment>)}
 
-            {moduleApps.map(({ spec, app }) => app.palette && <Fragment key={spec.id}><app.palette {...context} /></Fragment>)}
+            {manifest.guide.length > 0 && <>
+              <CommandSeparator />
+              <CommandGroup heading="Guide">
+                {manifest.guide.map(page => <CommandItem key={'guide:' + page.slug} value={'guide ' + page.title + ' ' + (page.source ?? page.slug)} onSelect={() => go({ to: '/documentation/guide' + (page.slug === 'index' ? '' : '/' + page.slug) } as never)}>
+                  <span className="truncate">{page.title}</span>
+                </CommandItem>)}
+              </CommandGroup>
+            </>}
+
 
 
           </CommandList>
