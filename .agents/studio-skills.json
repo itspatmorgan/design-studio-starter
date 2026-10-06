@@ -81,6 +81,14 @@
       "kind": "link",
       "hash": "b1b28829d1aad7732481d9d1ce0824a81714d903a9b178129c8370d21cb7ee83"
     },
+    ".agents/skills/studio-module-onboarding-use-onboarding/SKILL.md": {
+      "kind": "file",
+      "hash": "ac5d5852af56bd1bfb698cc4454359cfbd378cc373938e0a962b07d17929d771"
+    },
+    ".claude/skills/studio-module-onboarding-use-onboarding": {
+      "kind": "link",
+      "hash": "2f37b557a3f3a4e483e12efc56ce4c2ecbf30584e3bb6525b3df34bae78c9d50"
+    },
     ".agents/skills/studio-module-prototypes-build-prototype/SKILL.md": {
       "kind": "file",
       "hash": "3cff5f959b9357bfc23f251594854f7b3109384d7c570b06a05345f82774ead2"

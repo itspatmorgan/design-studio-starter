@@ -3,12 +3,12 @@ import { lazy, Suspense } from 'react';
 // and prototype systems in the ⌘K palette. The pages are in src/modules/systems/pages/.
 import { createRoute, redirect, useRouterState } from '@tanstack/react-router';
 import { Shapes01Icon } from '@hugeicons/core-free-icons';
-import { CommandGroup, CommandItem } from '@/systems/studio/components/command';
+import { CommandGroup, CommandItem, CommandSeparator } from '@/systems/studio/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
 import { ItemRow } from '@/platform/app/items/ItemRow';
 import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
 import { APP_NAME } from '@/platform/app/data/config';
-import { artifactLabel, artifactLink } from '@/platform/app/data/manifest';
+import { artifactLabel } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 
 // Loaded on first visit, so it isn't in the main bundle:
@@ -31,12 +31,9 @@ function SystemsPlaces({ go }: PaletteContext) {
   );
 }
 
-function SystemFiles({ manifest, go }: PaletteContext) {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  return <>{manifest.systemContent.filter((section) => section.artifacts.length).map((section) =>
-    <CommandGroup key={section.id} heading={section.owner?.label + ' · ' + section.title}>
-      {section.artifacts.map((item) => { const link = artifactLink(section, item); return <CommandItem key={item.path} value={section.system + ' ' + section.title + ' ' + item.path} disabled={pathname === link.to} onSelect={() => go(link)}>{artifactLabel(item.path)}</CommandItem>; })}
-    </CommandGroup>)}</>;
+function SystemsPalette(context: PaletteContext) {
+  if (!Object.keys(PROTOTYPE_SYSTEMS).length) return null;
+  return <><CommandSeparator /><CommandGroup heading="Systems"><SystemsPlaces {...context} /></CommandGroup></>;
 }
 
 // On the front page: a link to the team's design systems, three at most. The platform's own is how the app itself is
@@ -84,6 +81,5 @@ export default {
     ])];
   },
   overview: Overview,
-  places: SystemsPlaces,
-  palette: SystemFiles,
+  palette: SystemsPalette,
 } satisfies ModuleApp;

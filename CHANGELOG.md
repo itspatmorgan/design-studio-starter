@@ -7,6 +7,13 @@
 - Claude's entry point imports the shared repository instructions. Existing personal guidance is preserved.
 - Experiment .9 installs the merged Context and Skills foundation. Native host journeys and public distribution remain release gates.
 
+## Welcome onboarding
+
+- A default-enabled, optional Onboarding module welcomes people on their first local home-page visit, with a short interactive dialog introducing systems and prototype artifacts, sample prototypes, and guidance for making a prototype or setting up a system with their agent.
+- People can step through the introduction or skip it. Dismissal is remembered in the browser; onboarding has no navigation destination.
+- Welcome is independent of installation and is omitted from published viewing sites.
+- The command menu groups Places, Systems, Prototypes, and Guide in that order, without individual platform instruction files or system-content files.
+
 ## Context and Skills foundation
 
 - Platform, modules, and systems own their README, context, and task skills beside their implementation. Standing requirements are context; separate Rules folders have been removed.
