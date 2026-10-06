@@ -79,7 +79,9 @@ const documentationRoute = createRoute({ getParentRoute: () => rootRoute, path: 
 // Owner guidance and local file actions remain available without the optional Guide.
 const DocumentationEditor = import.meta.env.DEV ? lazy(() => import('@/platform/app/docs/DocumentationEditor')) : null;
 const KnowledgePage = lazy(() => import('@/platform/app/docs/KnowledgePage'));
-const contextRoute = createRoute({ getParentRoute: () => rootRoute, path: 'documentation/context', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }) });
+const KnowledgeDocument = lazy(() => import('@/platform/app/docs/KnowledgePage').then(mod => ({ default: mod.KnowledgeDocument })));
+// Keep the reading navigation mounted while child routes replace the open document.
+const contextRoute = createRoute({ getParentRoute: () => rootRoute, path: 'documentation/context', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }), component: () => <Suspense fallback={null}><KnowledgePage /></Suspense> });
 const contextIndexRoute = createRoute({ getParentRoute: () => contextRoute, path: '/', beforeLoad: () => { throw redirect({ to: '/documentation/context/platform.core' as never, replace: true }); } });
 async function ownerDocument(ownerId: string, file: string, mode?: 'source') {
   const manifest = await loadManifest();
@@ -100,10 +102,10 @@ function OwnerDocument({ data }: { data: Awaited<ReturnType<typeof ownerDocument
   if (data.editing) return DocumentationEditor && <Suspense fallback={null}><DocumentationEditor path={'src' + data.path} /></Suspense>;
   return <div ref={rendered} tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none"><MarkdownPage Component={data.Component} frontmatter={data.frontmatter} docKey={data.path} base={data.path.slice(0, data.path.lastIndexOf('/'))} footer={<AboutReference source={data.path} group={data.group} />} /></div>;
 }
-const ownerRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner', loaderDeps: ({ search }) => ({ mode: search.mode }), loader: ({ params, deps }) => ownerDocument(params.owner, 'README.md', deps.mode), component: () => { const data = ownerRoute.useLoaderData(); return <Suspense fallback={null}><KnowledgePage overview={data && <OwnerDocument data={data} />} /></Suspense>; } });
-const ownerReferenceRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/reference/$', loaderDeps: ({ search }) => ({ mode: search.mode }), loader: ({ params, deps }) => ownerDocument(params.owner, params._splat ?? '', deps.mode), component: () => <Suspense fallback={null}><KnowledgePage overview={<OwnerDocument data={ownerReferenceRoute.useLoaderData()} />} /></Suspense> });
-const contextPageRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/$page', component: () => <Suspense fallback={null}><KnowledgePage /></Suspense> });
-const contextItemRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/$page/$', component: () => <Suspense fallback={null}><KnowledgePage /></Suspense> });
+const ownerRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner', loaderDeps: ({ search }) => ({ mode: search.mode }), loader: ({ params, deps }) => ownerDocument(params.owner, 'README.md', deps.mode), component: () => { const data = ownerRoute.useLoaderData(); return <Suspense fallback={null}>{data ? <OwnerDocument data={data} /> : <KnowledgeDocument />}</Suspense>; } });
+const ownerReferenceRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/reference/$', loaderDeps: ({ search }) => ({ mode: search.mode }), loader: ({ params, deps }) => ownerDocument(params.owner, params._splat ?? '', deps.mode), component: () => <OwnerDocument data={ownerReferenceRoute.useLoaderData()} /> });
+const contextPageRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/$page', component: () => <Suspense fallback={null}><KnowledgeDocument /></Suspense> });
+const contextItemRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/$page/$', component: () => <Suspense fallback={null}><KnowledgeDocument /></Suspense> });
 
 // ?mode=source shows an item's text instead of the item (dev only): "Edit source" in its file menu.
 type ItemSearch = { mode?: 'source' };

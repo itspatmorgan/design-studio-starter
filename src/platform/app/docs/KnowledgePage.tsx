@@ -3,7 +3,7 @@ import { ChevronDown, Search, X, FileText, NotebookText, WandSparkles } from 'lu
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/systems/studio/components/collapsible';
 import { Input } from '@/systems/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
-import { Link, useParams } from '@tanstack/react-router';
+import { Link, Outlet, useParams, useRouterState } from '@tanstack/react-router';
 import { useManifest } from '@/platform/app/data/useManifest';
 import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
 import { artifactLabel, artifactLink } from '@/platform/app/data/manifest';
@@ -35,8 +35,8 @@ function GuidanceBranch({ label, path, active = false, defaultExpanded = false, 
   </Collapsible>;
 }
 
-export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
-  const { owner: id, page, _splat: slug } = useParams({ strict: false }) as { owner?: string; page?: string; _splat?: string };
+export default function KnowledgePage() {
+  const id = useRouterState({ select: state => (state.matches.at(-1)?.params as { owner?: string } | undefined)?.owner });
   const manifest = useManifest();
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -45,10 +45,6 @@ export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
   const q = query.trim().toLowerCase();
   const matches = (label: string) => !q || label.toLowerCase().includes(q);
   const owners = [...new Map(manifest.systemContent.filter(p => p.owner && p.owner.kind !== 'system').map(p => [p.owner!.id, p.owner!])).values()];
-  const owner = owners.find(o => o.id === id);
-  const sections = manifest.systemContent.filter(p => p.owner?.id === id);
-  const selected = sections.find(p => p.id === contentId(id ?? '', page ?? ''));
-  if (!owner || (page && page !== 'reference' && !selected)) return <NotFound />;
   const references = (root: string) => manifest.platformReferences.flatMap(g => g.references).filter(r => r.source.startsWith('/' + root.slice(4) + '/'));
   const ownerTree = (navOwner: typeof owners[number]) => {
     const ownerMatch = matches(navOwner.label) || matches(navOwner.root) || (navOwner.kind === 'module' && matches('Modules'));
@@ -94,7 +90,19 @@ export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
       </NavList>
     </SectionNav>
     <main className="flex min-h-0 min-w-0 flex-1 flex-col">
-      {overview ?? (selected ? <SystemContentPage key={selected.id + '/' + (slug ?? '')} proto={selected} slug={slug} /> : <div className="overflow-y-auto px-8 py-10">
+      <Outlet />
+    </main>
+  </div>;
+}
+
+export function KnowledgeDocument() {
+  const { owner: id, page, _splat: slug } = useParams({ strict: false }) as { owner?: string; page?: string; _splat?: string };
+  const manifest = useManifest();
+  const owner = manifest.systemContent.find(p => p.owner?.id === id)?.owner;
+  const sections = manifest.systemContent.filter(p => p.owner?.id === id);
+  const selected = sections.find(p => p.id === contentId(id ?? '', page ?? ''));
+  if (!owner || (page && page !== 'reference' && !selected)) return <NotFound />;
+  return selected ? <SystemContentPage key={selected.id + '/' + (slug ?? '')} proto={selected} slug={slug} /> : <div className="overflow-y-auto px-8 py-10">
         <div className="mx-auto max-w-3xl">
           <h1 className="text-3xl font-semibold">{owner.label}</h1>
           <p className="mt-3 text-muted-foreground">{owner.kind === 'platform' ? 'Shared knowledge and workflows for operating Design Studio.' : `Knowledge and workflows supplied by this ${owner.kind}.`}</p>
@@ -104,7 +112,5 @@ export default function KnowledgePage({ overview }: { overview?: ReactNode }) {
             return <section key={section} className="mt-8"><h2 className="text-lg font-semibold">{spec.title}</h2><p className="mt-2 text-sm text-muted-foreground">{spec.description}</p><ul className="mt-3 space-y-2">{entries.map(a => <li key={a.path}><Link to={`/documentation/context/${id}/${section}/${a.path.replace(/\.md$/, '')}` as never} className="text-sm hover:underline">{section === 'skills' ? artifactLabel(a.path.split('/')[0]) : artifactLabel(a.path)}</Link></li>)}</ul>{!entries.length && <p className="mt-3 text-sm text-muted-foreground">No {spec.title.toLowerCase()} added.</p>}</section>;
           })}
         </div>
-      </div>)}
-    </main>
-  </div>;
+      </div>;
 }
