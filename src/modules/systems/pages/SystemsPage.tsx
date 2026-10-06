@@ -25,6 +25,7 @@ import FileNavItem from '@/platform/app/shell/FileNavItem';
 import { sourceOf } from '../sources';
 import { PLATFORM_ID, PLATFORM_SOURCE } from '../data/systems';
 import { systemSourceRequest } from './systemSource';
+import SystemMenu from './SystemMenu';
 import type { ComponentPageData } from '../data/loadDocs';
 import SystemOverview from './SystemOverview';
 import SystemAssets from './SystemAssets';
@@ -148,7 +149,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   return (
     <SectionNav label="Systems">
       <NavHeader>
-        <NavTitle>{SYSTEMS[system].label}</NavTitle>
+        <NavTitle actions={<SystemMenu key={system} system={system} />}>{SYSTEMS[system].label}</NavTitle>
       </NavHeader>
       <div className="shrink-0 px-3 pt-3">
         <div className="flex h-7 items-center justify-between pl-2">

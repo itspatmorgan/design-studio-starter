@@ -12,6 +12,7 @@ import { Badge } from '@/systems/studio/components/badge';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/systems/studio/components/empty';
 import { DEFAULT_SYSTEM, SYSTEM_SPECS } from '../data/systems';
 import NewSystemButton from './NewSystemDialog';
+import RemovedSystems from './RemovedSystems';
 
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
 export default function SystemsIndex() {
@@ -44,5 +45,6 @@ export default function SystemsIndex() {
       </div>
     </header>
     {filtered.length ? <Collection items={filtered} keyOf={item => item.id} card={item => <CollectionCard link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} title={<span className="flex min-h-5 items-center gap-2"><span>{item.spec.label}</span>{defaultBadge(item)}</span>} description={item.description} meta={usage(item)} />} row={item => <ItemRow link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} title={item.spec.label} meta={<span className="flex items-center gap-2">{defaultBadge(item)}{usage(item)}</span>} />} /> : <Empty className="border border-dashed py-16"><EmptyHeader><EmptyMedia variant="icon"><HugeiconsIcon icon={Shapes01Icon} /></EmptyMedia><EmptyTitle>No matching systems</EmptyTitle><EmptyDescription>Try a different search.</EmptyDescription></EmptyHeader><Link to={'/systems' as never} search={{} as never} className="text-sm hover:underline">View all systems</Link></Empty>}
+    <RemovedSystems />
   </main>;
 }

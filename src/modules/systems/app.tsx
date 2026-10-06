@@ -6,7 +6,7 @@ import { Shapes01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/systems/studio/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
 import { ItemRow } from '@/platform/app/items/ItemRow';
-import { PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
+import { PROTOTYPE_SYSTEMS, SYSTEM_SPECS } from '@/modules/systems/data/systems';
 import { APP_NAME } from '@/platform/app/data/config';
 import { artifactLabel, loadManifest } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
@@ -20,7 +20,7 @@ function SystemsLayout() {
   return <Suspense fallback={null}>{system ? <SystemsPage /> : <Outlet />}</Suspense>;
 }
 const systemsTitle = (...parts: (string | undefined)[]) =>
-  [...parts.filter(Boolean).map((p) => artifactLabel(p!)), 'Systems', APP_NAME].join(' — ');
+  [...parts.filter(Boolean).map((p, index, names) => index === names.length - 1 && SYSTEM_SPECS[p!] ? SYSTEM_SPECS[p!].label : artifactLabel(p!)), 'Systems', APP_NAME].join(' — ');
 
 async function loadSystemPage(params: { system: string; page?: string; _splat?: string }, mode?: 'source') {
   // Preload the layout too, so its initial Suspense boundary does not flash blank.

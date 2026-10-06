@@ -13,6 +13,8 @@ The Resources toolbar searches across the tree and expands or collapses all fold
 
 Overview summarizes the selected system’s instructions, components, theme, and local assets. Counts show what is included; navigation provides the full inventory. The usage section shows active prototypes, previews up to three recent examples, and links to the complete filtered collection. Studio explains its application role instead. Product and Marketing are starter kits to replace with your team’s systems.
 
+The menu beside the system name lets you copy its overview link or, locally, open its folder in your editor or Finder. Admins can rename prototype systems without changing their links, or choose **Set as default** for future prototypes. Existing prototypes keep their current systems. **Remove system** checks dependencies before allowing removal: choose another default and resolve any prototype assignments or other references first. Removed systems are saved in Studio trash; use **Removed systems** on the Systems index to restore one. Studio’s identity and availability are maintained by the platform.
+
 ## Prototype systems and Studio
 
 **Product** is the starter toolkit for prototype views. Replace or adapt it to match your product. You can add more systems when different work needs a different toolkit.

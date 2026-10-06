@@ -136,6 +136,8 @@ Locally, registered Admins can use **New system** to name and create a scaffold.
 
 `meta.json.system` selects a prototype's system; explicit `null` selects no system. Only omission uses the studio default. The [prototype contract](../prototypes/README.md#metadata) owns the metadata definition.
 
+The system name is shared by the index, navigation header, and Overview heading. The header menu offers Copy link and, for registered local contributors, Open in editor and Reveal in Finder. Admins can rename prototype systems, set a default, and remove systems. Rename changes only `system.ts.label`, preserving the system ID, URLs, and assignments. The local `action` route rechecks current registration and Admin roles. Default changes use the CLI’s configuration plan to pin existing implicit assignments. Removal previews CLI dependency checks, blocks the default, Studio, referenced systems, and systems used by prototypes (including archived prototypes and pending rebuild targets), and retains a source copy in `.trash/systems/<key>/` before CLI removal. **Removed systems** on the index restores that copy through CLI installation; ID collisions block restoration. Recovery does not change the default or migrate prototypes. Removed files remain on disk until explicitly cleaned up. Published sites offer only Copy link.
+
 The configuration command preserves existing prototypes' system choices before changing the default. Migration must update imports and metadata together.
 
 See `scripts/lib/studio-setup.js` for preservation and the setup-design-system skill for migration and placeholder cleanup.

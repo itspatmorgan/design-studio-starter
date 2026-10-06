@@ -32,7 +32,7 @@ export default function SystemOverview({ system, sys, components, tokens }: {
   const guidanceCount = guidance.reduce((count, section) => count + section.artifacts.length, 0);
 
   return <>
-    <PageHeader title={`${sys.label} system`} description={sys.summary ?? `The guidance and code included in ${sys.label}.`} />
+    <PageHeader title={sys.label} description={sys.summary ?? `The guidance and code included in ${sys.label}.`} />
     {!platform && !components.length && import.meta.env.DEV && <SystemSetup system={system} />}
     {platform && <p className="mb-6 text-[13px] text-muted-foreground">Required application system</p>}
     {sys.overview?.starter && <aside className="mb-8 rounded-lg border border-border bg-background p-4" aria-label="Starter design system">
