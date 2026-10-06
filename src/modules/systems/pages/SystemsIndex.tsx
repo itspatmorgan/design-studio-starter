@@ -12,6 +12,7 @@ import { Badge } from '@/systems/studio/components/badge';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/systems/studio/components/empty';
 import { DEFAULT_SYSTEM, SYSTEM_SPECS } from '../data/systems';
 import SystemActionToast from './SystemActionToast';
+import SystemMenu from './SystemMenu';
 import NewSystemButton from './NewSystemDialog';
 
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
@@ -36,8 +37,8 @@ export default function SystemsIndex() {
   const collection = (entries: typeof items) => <Collection
     items={entries}
     keyOf={item => item.id}
-    card={item => <CollectionCard link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} archived={item.spec.status === 'archived'} title={<span className="flex min-h-5 items-center gap-2"><span>{item.spec.label}</span>{defaultBadge(item)}</span>} description={item.description} meta={usage(item)} />}
-    row={item => <ItemRow link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} archived={item.spec.status === 'archived'} title={item.spec.label} meta={<span className="flex items-center gap-2">{defaultBadge(item)}{usage(item)}</span>} />}
+    card={item => <CollectionCard link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} archived={item.spec.status === 'archived'} title={<span className="flex min-h-5 items-center gap-2"><span>{item.spec.label}</span>{defaultBadge(item)}</span>} description={item.description} meta={usage(item)} menu={<SystemMenu system={item.id} variant="card" />} />}
+    row={item => <ItemRow link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} archived={item.spec.status === 'archived'} title={item.spec.label} meta={<span className="flex items-center gap-2">{defaultBadge(item)}{usage(item)}</span>} menu={<SystemMenu system={item.id} variant="row" />} />}
   />;
   return <main className="mx-auto w-full max-w-5xl px-6 pt-12 pb-8">
     <SystemActionToast /><header className="mb-6">

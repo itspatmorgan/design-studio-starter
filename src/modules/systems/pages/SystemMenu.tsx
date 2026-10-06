@@ -15,7 +15,7 @@ import { DEFAULT_SYSTEM, SYSTEM_SPECS } from '../data/systems';
 
 export const systemRequest = <T,>(action: string, system?: string, extra: object = {}) => callModule<T>('systems', 'action', { action, system, ...extra });
 
-export default function SystemMenu({ system }: { system: string }) {
+export default function SystemMenu({ system, variant = 'header' }: { system: string; variant?: 'header' | 'card' | 'row' }) {
   const navigate = useNavigate();
   const manifest = useManifest();
   const me = useMe();
@@ -65,9 +65,9 @@ export default function SystemMenu({ system }: { system: string }) {
     try { await navigator.clipboard.writeText(new URL(`/systems/${system}`, location.origin).href); toast.add({ title: 'Link copied' }); }
     catch { toast.add({ type: 'error', title: 'Could not copy the link.' }); }
   }
-  return <>
+  return <div className={variant === 'card' ? 'absolute top-2 right-2' : undefined}>
     <DropdownMenu>
-      <DropdownMenuTrigger aria-label={`Actions for ${spec.label}`} className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
+      <DropdownMenuTrigger aria-label={`Actions for ${spec.label}`} className={`inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring ${variant !== 'header' ? 'opacity-0 transition-opacity focus-visible:opacity-100 group-hover/card-wrap:opacity-100 group-focus-within/card-wrap:opacity-100 data-[popup-open]:opacity-100 [@media(hover:none)]:opacity-100' : ''}`}>
         <HugeiconsIcon icon={MoreHorizontalIcon} size={16} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-44">
@@ -109,5 +109,5 @@ export default function SystemMenu({ system }: { system: string }) {
         </>}
       </DialogContent>
     </Dialog>
-  </>;
+  </div>;
 }
