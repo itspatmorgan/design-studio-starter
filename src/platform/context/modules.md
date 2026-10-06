@@ -33,6 +33,8 @@ Use literal import paths in browser module code and public libraries so checks c
 Node discovery tooling may load declared files by their discovered paths.
 Public module libraries remain subject to the stricter prototype runtime boundary.
 
+`ModuleApp.rail: 'none'` lets a module contribute to Home without adding a navigation destination. It can omit routes and a section when it owns no browsable content.
+
 `ModuleApp.localOnly: true` restricts a module’s app contributions (rail, routes, home, and search) to local development. Published viewing sites omit them; the module’s source and configuration remain available.
 
 These source contracts are 0.x. Review release guidance when updating them.

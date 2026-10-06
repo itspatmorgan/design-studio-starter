@@ -2,8 +2,8 @@
 
 ## Welcome onboarding
 
-- A default-enabled, optional Onboarding module welcomes people on their first local home-page visit, with sample prototypes, systems, and a request to copy into their coding agent.
-- People can go straight to their studio and reopen Welcome from the sidebar or search. Completion is remembered in the browser.
+- A default-enabled, optional Onboarding module welcomes people on their first local home-page visit, with a short interactive dialog introducing systems and prototype artifacts, sample prototypes, and a request to copy into their coding agent.
+- People can step through the introduction or skip it. Dismissal is remembered in the browser; onboarding has no navigation destination.
 - Welcome is independent of installation and is omitted from published viewing sites.
 
 ## Context and Skills foundation

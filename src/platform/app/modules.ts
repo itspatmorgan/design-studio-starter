@@ -26,8 +26,8 @@ export type ModuleApp = {
   // Local creation workflows do not appear on published viewing sites.
   localOnly?: boolean;
   icon: IconSvgElement;
-  // Where its rail button sits, and its place among the others: low first, in the rail, the palette and the routes.
-  rail: 'top' | 'bottom';
+  // Use none for contributions without a navigation destination. Otherwise, where its rail button sits, and its place among the others: low first, in the rail, the palette and the routes.
+  rail: 'top' | 'bottom' | 'none';
   order: number;
   // Routes it adds under the root route. Their addresses start with the module's section key, so
   // /examples opens an optional module. Links to them are written loosely, since the router's types

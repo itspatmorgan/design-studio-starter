@@ -2,7 +2,7 @@
 const completed = new Set<string>();
 type StorageSource = () => Pick<Storage, 'getItem' | 'setItem'>;
 export function progressKey(base: string) {
-  return `design-studio:onboarding:${base}:v1`;
+  return `design-studio:onboarding:${base}:v2`;
 }
 
 export function isComplete(key: string, storage: StorageSource = () => localStorage) {

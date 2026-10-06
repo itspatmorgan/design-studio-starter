@@ -4,20 +4,27 @@ Onboarding welcomes designers and product managers after their studio opens. It 
 
 ## Behavior
 
-The first local home-page visit opens `/onboarding`. The page introduces systems, prototypes, and the enabled artifact types in plain design language. It offers the available example systems and starter prototypes, explains customization, and supplies a request to copy into the coding agent. It links the Guide when enabled. Removed or archived samples are omitted; collection links provide a fallback. It does not create work, install dependencies, register contributors, or change configuration.
+The first local home-page visit opens a four-step dialog over Home: Welcome, Systems, Prototypes, and Make it yours. The system and artifact steps let people select a concept to see a short explanation and example. Only enabled artifact types appear. The final step offers available starter prototypes and a request to copy into the coding agent. Removed or archived samples are omitted.
 
-**Go to my studio** records completion and opens Home. Welcome stays available in the bottom rail and search. Visiting a sample does not mark the welcome complete. People can finish immediately without completing a checklist.
+**Explore my studio**, **Skip introduction**, Escape, backdrop dismissal, and opening a sample all record completion and close the introduction. It has no rail item, search entry, standalone page, or route. Later visits go directly to the studio. The Guide retains the concepts for later reading.
+
+It does not create work, install dependencies, register contributors, or change configuration.
 
 Completion is a local browser preference scoped by origin, base path, and onboarding version. It is not a repository or contributor setting. Changing browsers or clearing browser data shows Welcome again. Different studios served at the same origin and base path share this preference; a future studio identity can refine that scope. If storage is unavailable, the page still works, but completion lasts only until the page is reloaded.
 
-The module uses the application's `localOnly` extension, so published viewing sites have no welcome route, rail entry, or redirect. Disabling or removing the module removes these contributions and retains the browser preference. It has no runtime dependency on optional Documentation; it links the Guide only when present in the manifest.
+The module uses the application's `localOnly` extension, so published viewing sites have no onboarding dialog. Disabling or removing the module removes these contributions and retains the browser preference. It has no runtime dependency on optional Documentation.
 
 ## Ownership
 
-- `module.ts` declares the optional capability and its section.
-- `app.tsx` adds the first-visit home contribution, local route, rail item, and search entry.
-- `Welcome.tsx` owns the experience and copy.
+- `module.ts` declares the optional capability.
+- `app.tsx` adds the local first-visit home contribution without navigation.
+- `Welcome.tsx` owns the dialog, steps, dismissal, and copy.
+- `ConceptPreview.tsx` owns the interactive system and artifact explanations.
 - `progress.ts` handles the browser preference without repository writes.
 - [Use onboarding](skills/use-onboarding/SKILL.md) guides an agent helping a person take their first steps.
 
 Keep installation in the setup entry points and configuration in the platform Configure Studio skill. Onboarding complements both with an introduction after launch. This is a first scaffold to refine through designer feedback, not a complete guided tour or task-completion tracker.
+
+## Design references
+
+[Linear’s introduction](https://linear.app/learn/intro-to-linear) explains core concepts before deeper workflows. [NN/g’s onboarding guidance](https://www.nngroup.com/articles/onboarding-tutorials/) recommends easy dismissal and progressive disclosure, and cautions against lengthy tours that interrupt work. This introduction adapts those principles into a brief, skippable first-use dialog; it does not claim to reproduce Linear’s current UI.

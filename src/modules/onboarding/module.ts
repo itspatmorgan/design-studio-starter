@@ -8,6 +8,5 @@ export default {
   description: 'A first-run welcome that helps people explore their studio and start their first prototype.',
   optional: true,
   lib: false,
-  section: { key: 'onboarding' },
   instructions: [{ path: 'skills/use-onboarding/', when: 'asks for a first tour of the studio or help getting started after installation' }],
 } satisfies ModuleSpec;

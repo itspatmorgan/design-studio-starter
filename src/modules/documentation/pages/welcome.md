@@ -6,7 +6,7 @@ order: 2.5
 module: onboarding
 ---
 
-Welcome introduces the pieces of Design Studio so you can explore with confidence.
+When your studio first opens, a short introduction appears over the home page. Move through it at your own pace, or choose **Skip introduction** to start exploring. It explains the concepts below.
 
 ## Systems are your foundation
 
@@ -35,6 +35,6 @@ Open an example prototype. Try its screens, then use its navigation to explore t
 
 Your studio is fully customizable. After exploring the examples, work with your agent to adapt them to your product. You can keep and customize an example system, or remove it and bring in your own. You can also adapt an example prototype or start fresh.
 
-Copy the request on Welcome into your coding agent’s chat in the studio folder. It will help you decide where to start and handle the technical steps. See [Customize your studio](/documentation/guide/customize) for more ideas.
+Copy the request in the introduction into your coding agent’s chat in the studio folder. It will help you decide where to start and handle the technical steps. See [Customize your studio](/documentation/guide/customize) for more ideas.
 
-Choose **Go to my studio** whenever you are ready. You can return to Welcome from the sidebar or search.
+Choose **Explore my studio** when you are ready, or open an example directly from the last step. The introduction closes, and your next visit opens the studio directly. You can use this Guide whenever you want a reminder of the core concepts.
