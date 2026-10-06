@@ -37,6 +37,11 @@ Open an example system to see these pieces together.
 
 Your studio is fully customizable. After exploring the examples, work with your agent to adapt them to your product. You can keep and customize an example system, or remove it and bring in your own. You can also adapt an example prototype or start fresh.
 
-Copy the request in the introduction into your coding agent’s chat in the studio folder. It will ask about your idea and audience, help you choose a system, and build a first version you can try. See [Customize your studio](/documentation/guide/customize) for more ideas.
+Start by exploring an example. When you’re ready to make something, work with your agent in the studio folder to:
+
+- **Try your own prototype.** Describe an idea and who it’s for. Use an existing system to build a first version you can try and refine.
+- **Set up your own system.** Bring your team’s components and product context. Adapt an example system or replace it with your own.
+
+See [Customize your studio](/documentation/guide/customize) for more ideas.
 
 Choose **Explore my studio** when you are ready, or open an example directly from the last step. The introduction closes, and your next visit opens the studio directly. You can use this Guide whenever you want a reminder of the core concepts.
