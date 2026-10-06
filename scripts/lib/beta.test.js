@@ -304,7 +304,7 @@ test('standalone diagrams are discovered by both extensions and disabling preser
       fs.mkdirSync(folder+'/test-folder');
       fs.writeFileSync(folder+'/test-folder/entry.mermaid','flowchart LR\\n  a --> b');
       const meta=JSON.parse(fs.readFileSync(folder+'/meta.json','utf8'));
-      meta.order=['_helper.mermaid','test-folder','start-here.md'];
+      meta.order=['_helper.mermaid','test-folder','about-this-prototype.md'];
       fs.writeFileSync(folder+'/meta.json',JSON.stringify(meta));
       const { buildManifest } = await import('./scripts/build/build-manifest.js');
       const { manifest, errors } = buildManifest({write:false,quiet:true});
@@ -331,8 +331,8 @@ test('standalone diagrams are discovered by both extensions and disabling preser
       const {manifest,errors}=buildManifest({write:false,quiet:true}); assert.equal(errors,0);
       const prototype=manifest.prototypes.find(p=>p.contributorKey==='patrick'&&p.id==='feedback-inbox');
       assert.equal(prototype.artifacts.some(i=>i.fileType==='diagrams'),false);
-      if (fs.existsSync('src/modules/document/type.ts')) assert.equal(prototype.artifacts[0].path,'start-here.md');
-      assert.ok(fs.existsSync('src/prototypes/patrick/feedback-inbox/start-here.md'));
+      if (fs.existsSync('src/modules/document/type.ts')) assert.equal(prototype.artifacts[0].path,'about-this-prototype.md');
+      assert.ok(fs.existsSync('src/prototypes/patrick/feedback-inbox/about-this-prototype.md'));
       if (fs.existsSync('src/modules/document/type.ts')) assert.ok(prototype.artifacts.some(i=>i.fileType==='document'));
       else assert.equal(prototype.artifacts.some(i=>i.fileType==='document'), false);
       assert.ok(fs.existsSync('src/prototypes/patrick/feedback-inbox/test-flow.mermaid'));

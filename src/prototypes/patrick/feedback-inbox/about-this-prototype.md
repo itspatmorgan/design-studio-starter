@@ -1,5 +1,5 @@
 ---
-title: Start here
+title: About this prototype
 description: Explore how context, diagrams, screens, and canvases work together in a prototype.
 toc: true
 ---
