@@ -1,62 +1,45 @@
 ---
 title: About this prototype
-description: Explore how context, diagrams, screens, and canvases work together in a prototype.
+description: A short tour of the Feedback Inbox, from engineering handoff to early explorations.
 toc: true
 ---
 
-This sample is a small feedback tracker and an introduction to the studio. The views, documents, diagrams, and canvases in the navigation are **artifacts**: pieces of work backed by files that you or your agent can change. The folders tell the story of this example; they don't enforce a workflow.
+Feedback Inbox is an example of how you can bring a product idea to life in Design Studio. It explores a simple way for a team to collect feedback, track open issues, and discuss what to do next.
+
+The working screens sit alongside the thinking behind them. These pieces are called **artifacts**. Together, they help you explore an experience, explain your decisions, and give engineering a clearer picture of what you want to build.
 
 ## Take a short tour
 
-### 1. See the handoff
+### 1. Start with the handoff
 
-Open [Eng handoff](eng-handoff.excalidraw). It arranges live screens and states with notes for engineering. Open an embedded screen using its header; edit the original and its previews follow.
+[Eng handoff](eng-handoff.excalidraw) brings the key screens, states, and engineering notes together on one canvas. It gives you an overview of the proposed experience and the details that need attention during implementation.
 
-Try dragging a view or diagram from the navigation onto a canvas. Documents appear as link cards. A canvas includes files from its own prototype, keeping the example self-contained.
+Open a screen from its preview header to try it yourself. The previews stay connected to the original screens, so changes to a screen also appear on the canvas.
 
-### 2. Try the app
+### 2. Try the experience
 
-Open [Overview](app/overview.tsx), then click **Open issues** to reach the [Feedback inbox](app/feedback-inbox.tsx). Add feedback, open an item in [Feedback detail](app/feedback-detail.tsx), change its status, or add a note.
+Open [Overview](app/overview.tsx), then choose **Open issues** to explore the [Feedback inbox](app/feedback-inbox.tsx). Add feedback, open an item in [Feedback detail](app/feedback-detail.tsx), and try changing its status or adding a note.
 
-The screens share sample data. Reloading resets it, as does **Reset sample data** in the app's navigation. The screens use the Product design system; the studio around them uses its own interface.
+As you explore, think about whether the flow feels clear and what you would change. This is sample data, so you can experiment freely. Reloading the page resets it.
 
-### 3. Inspect specific states
+### 3. Look at the details
 
-The **States** folder groups examples by screen. Open [Inbox / Empty](states/inbox/empty.tsx), [Inbox / Validation error](states/inbox/validation-error.tsx), or [Detail / Delete confirmation](states/detail/delete-confirmation.tsx).
+The **States** folder lets you jump straight to moments that are easy to miss in a walkthrough. Explore an [empty inbox](states/inbox/empty.tsx), a [form with a validation error](states/inbox/validation-error.tsx), or a [delete confirmation](states/detail/delete-confirmation.tsx).
 
-These are small views that reuse the app screens with a chosen starting state. They let you discuss a specific situation without clicking through the app to reproduce it. Try comparing **New feedback** with **Validation error**.
+Having these moments available separately makes it easier to compare options and discuss how the product should respond.
 
-### 4. Explore the discovery references
+### 4. Explore the thinking behind it
 
-Read [Project context](discovery/project-context.md): the problem, the people it serves, decisions, and open questions. It embeds the [Feedback flow](discovery/feedback-flow.mermaid), a low-fidelity screen, and the Breadboard canvas from their original files.
+The **Discovery** folder holds the earlier work behind the proposal. [Project context](discovery/project-context.md) explains the problem, the intended audience, and the decisions and questions that shaped this example.
 
-Open [Breadboard](discovery/breadboard.excalidraw) to compare a live diagram with the same flow converted into editable Excalidraw shapes. The live embed follows the Mermaid source; the converted sketch is independent. Try moving a shape or adding a note.
+The [Feedback flow](discovery/feedback-flow.mermaid) maps the experience, while [Breadboard](discovery/breadboard.excalidraw) brings the flow and early sketches together. The [Lofi inbox](discovery/lofi-inbox.tsx) presents the working screen as a wireframe, helping you focus on layout before visual polish.
 
-The [Lofi inbox](discovery/lofi-inbox.tsx) shows the working inbox in grayscale with handwritten type. It demonstrates how you can discuss layout before polish.
+## Make it your own
 
-## How this example works
+This prototype uses the **Product** system for its components and visual style. You can explore its [shared context](/systems/product/context) to see where product knowledge belongs. Project context holds the information specific to this feedback tracker.
 
-| Artifact | What it contributes |
-| --- | --- |
-| Document (`.md`) | Written context, decisions, and references, with file previews alongside the writing. |
-| Diagram (`.mermaid`) | A portable system model that documents and canvases can preview. |
-| View (`.tsx`) | An interactive screen or a specific state of one. |
-| Canvas (`.excalidraw`) | A place to arrange previews, sketches, and notes together. |
+Work with your agent to try a change, such as adding a due date or exploring a different inbox layout. Share what you want to improve and point your agent to Project context so it understands the idea behind the request. You can review the result here and guide the next change.
 
-The Artifacts navigation shows this prototype's work. Folders organize it; **Show all files** also reveals helpers, assets, and metadata.
+You own the files behind every artifact. You can ask your agent to update them or use **Edit source** in an artifact’s menu to inspect and edit them directly.
 
-Previews reference the original artifact files. Their headers open those files for interaction or editing. Documents can preview views, diagrams, and canvases; other documents appear as cards. Canvases preview views and diagrams, with documents and other canvases shown as cards.
-
-Right-click a file and choose **Edit source** to see its text. While running locally, save edits with Command+S on macOS or Ctrl+S elsewhere, then select **Done**. Try changing a heading in the inbox, or a label in the diagram, and check its previews.
-
-The Lofi inbox has `/** @lofi */` at the top of its source. That marker changes its appearance while preserving components and behavior. **Make lofi** and **Make hi-fi** in a view's menu toggle it; the Discovery folder is only an organizing choice.
-
-Shared screen code lives in `app/_components`. Underscore folders contain helpers and stay out of normal navigation. Use **Show all files** in the prototype's **…** menu to inspect them. **Reveal in Finder** shows the same folder on disk.
-
-## Make it yours
-
-Ask your agent to change something concrete: “add a due date to feedback,” “explore a different inbox layout,” or “put the empty state beside the main screen on the handoff canvas.” Point it at Project context so the changes have a reason behind them.
-
-For more detail, open the [Guide](/documentation/guide). The [system context](/systems/product/context) holds the team's shared context; this prototype holds context specific to the feedback tracker.
-
-When you're ready, create your own prototype from the Prototypes page. You can keep this sample as a reference, archive it to leave it out of the deployed site, or delete it from its **…** menu.
+When you’re ready to explore your own idea, create a prototype from the **Prototypes** page. Keep this example as a reference, and visit the [Guide](/documentation/guide) whenever you want to learn more.
