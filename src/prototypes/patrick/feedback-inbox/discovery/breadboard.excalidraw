@@ -100,14 +100,14 @@
       "height": 260,
       "id": "mustzxtkw1phxe",
       "index": "a4",
-      "link": "/prototypes/patrick/feedback-inbox/explore/feedback-flow",
+      "link": "/prototypes/patrick/feedback-inbox/discovery/feedback-flow",
       "seed": 675480691,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 2,
-      "versionNonce": 268151599,
+      "version": 4,
+      "versionNonce": 178224841,
       "width": 1000,
-      "x": 40,
+      "x": 40.25,
       "y": 220
     },
     {

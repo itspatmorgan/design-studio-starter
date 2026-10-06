@@ -8,7 +8,7 @@ export default function FileNavItem({ href, path, label, nested = false, icon, d
   const navigate = useNavigate();
   const local = import.meta.env.DEV;
   const rowClass = detail
-    ? navLinkClass.replace('data-[status=active]:bg-sidebar-foreground/10', '') + ' group/file-nav focus-visible:bg-sidebar-foreground/5'
+    ? navLinkClass + ' group/file-nav focus-visible:bg-sidebar-foreground/5'
     : navLinkClass;
   return <ContextMenu>
     <ContextMenuTrigger><Link title={path} to={href as never} activeOptions={{ exact: true, includeSearch: false }} style={{ ...navLinkStyle, ...(nested ? { paddingLeft: '1.75rem' } : {}) }} className={rowClass + (className ? ' ' + className : '')}>{icon}{detail ? <><span className="min-w-0 flex-1 truncate">{label}</span><span className="shrink-0 text-[10px] text-muted-foreground opacity-0 transition-opacity group-hover/file-nav:opacity-100 group-focus-visible/file-nav:opacity-100">{detail}</span></> : label}</Link></ContextMenuTrigger>

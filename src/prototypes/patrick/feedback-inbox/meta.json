@@ -2,15 +2,11 @@
   "title": "Feedback Inbox",
   "created": "2026-09-30",
   "order": [
-    "start-here.md",
-    "explore",
+    "about-this-prototype.md",
+    "eng-handoff.excalidraw",
     "app",
     "states",
-    "handoff",
-    "explore/project-context.md",
-    "explore/feedback-flow.mermaid",
-    "explore/breadboard.excalidraw",
-    "explore/lofi-inbox.tsx",
+    "discovery",
     "app/overview.tsx",
     "app/feedback-inbox.tsx",
     "app/feedback-detail.tsx",
@@ -24,6 +20,10 @@
     "states/inbox/row-menu.tsx",
     "states/detail/edit.tsx",
     "states/detail/delete-confirmation.tsx",
-    "handoff/eng-handoff.excalidraw"
+    "meta.json",
+    "discovery/lofi-inbox.tsx",
+    "discovery/breadboard.excalidraw",
+    "discovery/feedback-flow.mermaid",
+    "discovery/project-context.md"
   ]
 }
