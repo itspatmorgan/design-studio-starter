@@ -10,6 +10,8 @@ Open **Studio settings** from the gear icon or search while running Studio local
 
 Saving writes repository files, synchronizes module-owned agent instructions, and restarts the development server. Stale configuration or contributor snapshots are rejected. Reload settings before retrying a conflicting save. Settings and its editing API are excluded from the published viewing site.
 
+Welcome records its first display with `welcomeDismissed: true` in this same file. Updating only that flag leaves the current page open; other settings changes still restart Studio. The flag is studio-wide, and committing it shares the dismissed state with other checkouts.
+
 You can also ask your agent to configure the studio. The configuration command previews changes before applying them. The CLI and settings API share validation, source editing, assignment preservation, and module instruction synchronization.
 
 Use `pnpm studio configure --system <id>` to preview a default-system change. Apply with `--yes` after reviewing the preview. For prototypes without an explicit system choice, the command records their current system before changing the default. Existing prototypes retain their systems.
@@ -34,6 +36,7 @@ Keep shared choices in `studio.config.ts`. Contributor profiles live in `contrib
 | --- | --- |
 | `name` | Required studio name, used by the app. |
 | `usage` | Required `personal` or `team`. Guides onboarding, without changing contributor ownership. |
+| `welcomeDismissed` | Required boolean when Onboarding is enabled; the starter explicitly declares `false`. Welcome sets it to `true` on first display so it stays dismissed across browser and server restarts. |
 | `admins` | Unique registered contributor keys. Required and nonempty in team use; personal use derives Admin access from local identity. |
 | `tagline` | Optional line on the published front page, up to 140 characters. |
 | `modules` | Installed module IDs set to `true` or `false`. Every installed module needs an explicit entry; omission is invalid and never enables it. Required modules cannot be disabled. |

@@ -7,6 +7,10 @@ import path from 'node:path';
 import { claimWelcome } from './node/progress.js';
 import server from './server.ts';
 import { claimIntroduction, recordIntroduction } from './progress.ts';
+import { welcomeOnlyChange } from '../../../scripts/build/vite-settings-plugin.js';
+
+const configFile = (root: string) => path.join(root, 'studio.config.ts');
+const freshConfig = (root: string) => fs.writeFileSync(configFile(root), "// Keep this comment\nexport default { name: 'My studio', modules: { onboarding: true }, welcomeDismissed: false };\n");
 
 test('onboarding completion persists and does not cross base paths', () => {
   const data = new Map<string, string>();
@@ -33,11 +37,17 @@ test('blocked storage still allows the person to leave Welcome for this session'
 test('first display persists across restart and origins while studios remain independent', t => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-welcome-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  freshConfig(root);
   assert.equal(claimWelcome(root), true);
-  // A restarted process/browser has no in-memory state; the fixed marker is sufficient.
+  assert.match(fs.readFileSync(configFile(root), 'utf8'), /welcomeDismissed: true/);
+  assert.match(fs.readFileSync(configFile(root), 'utf8'), /Keep this comment/);
+  assert.match(fs.readFileSync(configFile(root), 'utf8'), /name: 'My studio'/);
+  assert.equal(fs.existsSync(path.join(root, '.design-studio-welcome-dismissed')), false);
+  // Restarting or changing browser origin doesn't change the config flag.
   assert.equal(claimWelcome(root), false);
   const other = path.join(root, 'another-studio');
   fs.mkdirSync(other);
+  freshConfig(other);
   assert.equal(claimWelcome(other), true);
   assert.equal(claimWelcome(other), false);
 });
@@ -45,12 +55,49 @@ test('first display persists across restart and origins while studios remain ind
 test('Welcome marker cannot follow a link or overwrite an existing file', t => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-welcome-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  freshConfig(root);
   const target = path.join(root, 'keep.txt');
   fs.writeFileSync(target, 'keep');
   const marker = path.join(root, '.design-studio-welcome-dismissed');
   fs.symlinkSync(target, marker);
-  assert.throws(() => claimWelcome(root), /ordinary local file/);
+  assert.throws(() => claimWelcome(root), /empty ordinary file/);
   assert.equal(fs.readFileSync(target, 'utf8'), 'keep');
+});
+
+test('the old empty marker migrates into config without reopening Welcome', t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-welcome-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  freshConfig(root);
+  const marker = path.join(root, '.design-studio-welcome-dismissed');
+  fs.writeFileSync(marker, '');
+  assert.equal(claimWelcome(root), false);
+  assert.match(fs.readFileSync(configFile(root), 'utf8'), /welcomeDismissed: true/);
+  assert.equal(fs.existsSync(marker), false);
+});
+
+test('Welcome never follows a config symlink or overwrites invalid configuration', t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-welcome-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const target = path.join(root, 'keep.ts');
+  fs.writeFileSync(target, 'export default { welcomeDismissed: false };');
+  fs.symlinkSync(target, configFile(root));
+  assert.throws(() => claimWelcome(root), /ordinary file/);
+  assert.equal(fs.readFileSync(target, 'utf8'), 'export default { welcomeDismissed: false };');
+  fs.unlinkSync(configFile(root));
+  fs.writeFileSync(configFile(root), 'export default { welcomeDismissed: "yes" };');
+  assert.throws(() => claimWelcome(root), /true or false/);
+  assert.equal(fs.readFileSync(configFile(root), 'utf8'), 'export default { welcomeDismissed: "yes" };');
+});
+
+test('only Welcome progress avoids a config restart; other and invalid changes do not', () => {
+  const before = "export default { name: 'Studio', modules: { onboarding: true } };";
+  const dismissed = "export default { name: 'Studio', modules: { onboarding: true }, welcomeDismissed: true };";
+  assert.equal(welcomeOnlyChange(before, dismissed), true);
+  assert.equal(welcomeOnlyChange(dismissed, before), true);
+  assert.equal(welcomeOnlyChange(before, dismissed.replace("'Studio'", "'Renamed'")), false);
+  assert.equal(welcomeOnlyChange(before, dismissed.replace('onboarding: true', 'onboarding: false')), false);
+  assert.equal(welcomeOnlyChange(before, 'export default computed();'), false);
+  assert.equal(welcomeOnlyChange(before, dismissed.replace('welcomeDismissed: true', 'welcomeDismissed: 1')), false);
 });
 
 test('Welcome route rejects arbitrary paths and unsupported actions', async () => {

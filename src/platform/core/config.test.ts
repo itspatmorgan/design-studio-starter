@@ -21,6 +21,17 @@ test('identity and optional tagline are validated', () => {
   assert.match(configProblems(undefined, modules)[0], /must export/);
 });
 
+test('Welcome dismissal is a boolean and required when Onboarding is enabled', () => {
+  const installed = [...modules, { id: 'onboarding', optional: true }];
+  const enabled = { ...config, modules: { ...config.modules, onboarding: true } };
+  assert.match(configProblems(enabled, installed, ['product']).join(' '), /declare welcomeDismissed/);
+  for (const welcomeDismissed of [false, true]) assert.deepEqual(configProblems({ ...enabled, welcomeDismissed }, installed, ['product']), []);
+  assert.deepEqual(configProblems({ ...enabled, modules: { ...enabled.modules, onboarding: false } }, installed, ['product']), []);
+  assert.equal(problems({ welcomeDismissed: true }), '');
+  assert.equal(problems({ welcomeDismissed: false }), '');
+  assert.match(problems({ welcomeDismissed: 'yes' }), /welcomeDismissed should be true or false/);
+});
+
 test('every installed module needs an explicit boolean', () => {
   assert.match(problems({ modules: undefined }), /declare every installed module/);
   assert.match(problems({ modules: { prototypes: true } }), /declare modules.documentation/);
