@@ -38,6 +38,8 @@ Use ASD-STE100-inspired language with flexibility for our [personas](personas.md
 
 Context documents use a frontmatter `title` and start their body without a duplicate H1. Use H2 headings for sections. A skill keeps its required `name` and `description`; its optional opening H1 names the task, such as “Use Canvas.” READMEs may use an opening H1 without frontmatter. The reader suppresses a matching opening H1 when a frontmatter title is present.
 
+Choose a context title that clearly names its subject. Navigation and the document heading use this same declared title. Keep the filename stable when refining a display title.
+
 Agent instructions should be direct and task-specific. Keep skill descriptions precise enough to select the right task. Put substantial conditional details in linked references.
 
 ## Use visual aids deliberately

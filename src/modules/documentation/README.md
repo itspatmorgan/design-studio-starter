@@ -20,6 +20,8 @@ This navigation supports reading and source access. It has no creation, dragging
 
 The navigation stays mounted when opening another instruction document or switching source mode. Its scroll position, search, and expansion choices persist while the document view changes.
 
+Context entries use the document's declared title for both navigation and the page heading. Filenames remain source identifiers rather than separate display names.
+
 Platform knowledge lives in `src/platform/context/`, with knowledge and technical requirements at the same level. Module and system context and skills live under their respective owners. Component API pages remain beside components and are exposed by Systems.
 
 The browser uses the same source inventory and file readers as system content. Skills retain their file picker for supporting references, scripts, and assets. Generated harness adapters are discovery outputs and have no separately authored procedure.

@@ -1,5 +1,5 @@
 ---
-title: "Diagrams and code"
+title: "Diagrams and code formatting"
 ---
 
 Mermaid blocks render automatically in the Guide, system context, reference pages, and prototype Documents. Write standard Mermaid syntax inside a fenced `mermaid` code block. Use the full view's source control to read or copy the diagram text.

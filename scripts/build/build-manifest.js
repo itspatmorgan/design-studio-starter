@@ -293,6 +293,11 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     for (const [section, { title, description }] of Object.entries(SYSTEM_CONTENT_SECTIONS)) {
       const dir = path.join(base, section);
       const artifacts = fs.existsSync(dir) ? artifactsIn(dir, '', inSystemContent) : [];
+      for (const item of artifacts) {
+        if (!item.path.endsWith('.md')) continue;
+        const declared = frontmatter(fs.readFileSync(path.join(dir, item.path), 'utf8'))?.title;
+        if (typeof declared === 'string' && declared.trim()) item.title = declared;
+      }
       if (fs.existsSync(dir)) errors += checkArtifacts(dir, artifacts, out);
       systemContent.push({ id: contentId(system, section), contributorKey: SYSTEM_CONTENT_KEY, title, description, contributor: '', created: null, system, owner, artifacts });
     }

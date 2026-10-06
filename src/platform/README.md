@@ -13,15 +13,15 @@ All platform knowledge and requirements live together in `context/`:
 
 | Subject | Source |
 | --- | --- |
-| Configuration and roles | [Configuration](context/config.md) |
-| Modules and extensions | [Module contract](context/modules.md) |
+| Configuration and roles | [Studio configuration](context/config.md) |
+| Modules and extensions | [Modules and extensions](context/modules.md) |
 | File formats and lifecycle | [File types](context/file-types.md) |
-| Editing and saving | [Source workflow](context/source.md) |
-| Assets and fonts | [Assets](context/assets.md) |
-| Validation and recovery | [Checks](context/checks.md) |
+| Editing and saving | [Editing and saving](context/source.md) |
+| Assets and fonts | [Assets and fonts](context/assets.md) |
+| Validation and recovery | [Checks and fixes](context/checks.md) |
 | Deployment | [Publishing](context/publishing.md) |
-| Shared diagram rendering | [Diagrams](context/diagrams.md) |
-| Implementation dependencies | [Stack](context/stack.md) |
+| Shared diagram rendering | [Diagrams and code formatting](context/diagrams.md) |
+| Implementation dependencies | [Technology stack](context/stack.md) |
 
 ## Skills
 

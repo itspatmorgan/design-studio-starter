@@ -11,6 +11,7 @@ import type { DocsMode } from '@/modules/systems/sources';
 export type Artifact = {
   path: string;   // file path in the prototype, e.g. "prototype.tsx" or "checkout/step-1.tsx"
   fileType: string; // the id of the file type that owns it, from its extension ("view", "document")
+  title?: string;   // declared instruction-document title, shared by navigation and the reader
   lofi?: true;      // set when the file says it's lofi (a view starting with /** @lofi */)
 };
 

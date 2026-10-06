@@ -1,5 +1,5 @@
 ---
-title: "Module contract"
+title: "Modules and extensions"
 ---
 
 A module is a folder in `src/modules/<id>/` with a `module.ts` declaration. The platform discovers declarations without a separate registry.
