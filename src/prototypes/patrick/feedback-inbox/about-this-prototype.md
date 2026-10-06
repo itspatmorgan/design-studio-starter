@@ -6,6 +6,8 @@ toc: true
 
 Feedback Inbox is an example of how you can bring a product idea to life in Design Studio. It explores a simple way for a team to collect feedback, track open issues, and discuss what to do next.
 
+![Eng handoff canvas with screens, states, and engineering notes](eng-handoff.excalidraw)
+
 The working screens sit alongside the thinking behind them. These pieces are called **artifacts**. Together, they help you explore an experience, explain your decisions, and give engineering a clearer picture of what you want to build.
 
 ## Take a short tour
@@ -22,6 +24,8 @@ Open [Overview](app/overview.tsx), then choose **Open issues** to explore the [F
 
 As you explore, think about whether the flow feels clear and what you would change. This is sample data, so you can experiment freely. Reloading the page resets it.
 
+![Feedback inbox screen](app/feedback-inbox.tsx)
+
 ### 3. Look at the details
 
 The **States** folder lets you jump straight to moments that are easy to miss in a walkthrough. Explore an [empty inbox](states/inbox/empty.tsx), a [form with a validation error](states/inbox/validation-error.tsx), or a [delete confirmation](states/detail/delete-confirmation.tsx).
@@ -34,9 +38,11 @@ The **Discovery** folder holds the earlier work behind the proposal. [Project co
 
 The [Feedback flow](discovery/feedback-flow.mermaid) maps the experience, while [Breadboard](discovery/breadboard.excalidraw) brings the flow and early sketches together. The [Lofi inbox](discovery/lofi-inbox.tsx) presents the working screen as a wireframe, helping you focus on layout before visual polish.
 
+![Feedback review flow](discovery/feedback-flow.mermaid)
+
 ## Make it your own
 
-This prototype uses the **Product** system for its components and visual style. You can explore its [shared context](/systems/product/context) to see where product knowledge belongs. Project context holds the information specific to this feedback tracker.
+This prototype uses the **Product** system for its components and visual style.
 
 Work with your agent to try a change, such as adding a due date or exploring a different inbox layout. Share what you want to improve and point your agent to Project context so it understands the idea behind the request. You can review the result here and guide the next change.
 
