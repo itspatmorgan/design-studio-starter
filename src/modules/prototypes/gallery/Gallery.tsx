@@ -7,7 +7,7 @@ import { PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
 import { newestFirst } from '@/platform/app/data/manifest';
 import type { PrototypeInfo } from '@/platform/app/data/types';
 import { cn } from '@/lib/utils';
-import { Collection, ViewToggle } from '@/platform/app/items/Collection';
+import { ArchivedHeading, Collection, ViewToggle } from '@/platform/app/items/Collection';
 import NewPrototypeButton from '@/modules/prototypes/gallery/NewPrototypeDialog';
 import PrototypeCard, { PrototypeRow } from './PrototypeCard';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/systems/studio/components/empty';
@@ -100,8 +100,7 @@ export default function Gallery() {
         {active.length > 0 && list(active)}
         {archived.length > 0 && (
           <section className={active.length ? 'mt-10' : ''}>
-            <h2 className="mb-1 text-sm font-semibold text-foreground">Archived</h2>
-            <p className="mb-3 text-xs text-muted-foreground">Left out of the deployed site.</p>
+            <ArchivedHeading />
             {list(archived)}
           </section>
         )}

@@ -1,10 +1,23 @@
 import { Fragment, useSyncExternalStore, type ReactNode } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { GridViewIcon, LeftToRightListBulletIcon } from '@hugeicons/core-free-icons';
+import { GridViewIcon, InformationCircleIcon, LeftToRightListBulletIcon } from '@hugeicons/core-free-icons';
 import { Card } from '@/systems/studio/components/card';
 import { ToggleGroup, ToggleGroupItem } from '@/systems/studio/components/toggle-group';
 import { ItemGroup } from '@/systems/studio/components/item';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
 import { ItemGrid } from './ItemGrid';
+
+export function ArchivedHeading() {
+  return <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-foreground">
+    Archived
+    <Tooltip>
+      <TooltipTrigger render={<button type="button" aria-label="About archived items" className="inline-flex size-5 items-center justify-center rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring" />}>
+        <HugeiconsIcon icon={InformationCircleIcon} size={14} />
+      </TooltipTrigger>
+      <TooltipContent>Archived items are excluded from the deployed site.</TooltipContent>
+    </Tooltip>
+  </h2>;
+}
 
 // A collection's index (/prototypes, /examples, ...) can be read as cards or as a plain list. Which one is saved in this
 // browser and shared by every index, so you choose once. Cards are the default.

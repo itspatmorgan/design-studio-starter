@@ -74,6 +74,12 @@ test('create and rename preserve addresses, file errors recover, and system remo
   try {
     fs.cpSync(root, dir, { recursive: true, filter: (file) => !['node_modules', 'dist', '.git'].includes(path.basename(file)) });
     fs.symlinkSync(path.join(root, 'node_modules'), path.join(dir, 'node_modules'));
+    // This journey creates prototypes with both starter systems, regardless of the host's QA state.
+    const { editStudioConfig } = await import('./studio-setup.js');
+    for (const id of ['product', 'marketing']) {
+      const declaration = path.join(dir, 'src/systems', id, 'system.ts');
+      fs.writeFileSync(declaration, editStudioConfig(fs.readFileSync(declaration, 'utf8'), { status: 'active' }));
+    }
     // CLI operations need a registered identity independent of the host's Git config.
     fs.rmSync(path.join(dir, 'contributors'), { recursive: true, force: true });
     fs.writeFileSync(path.join(dir, 'contributors.json'), JSON.stringify({

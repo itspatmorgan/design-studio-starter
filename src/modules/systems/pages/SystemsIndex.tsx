@@ -1,7 +1,7 @@
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, Search01Icon, Shapes01Icon } from '@hugeicons/core-free-icons';
-import { Collection, ViewToggle } from '@/platform/app/items/Collection';
+import { ArchivedHeading, Collection, ViewToggle } from '@/platform/app/items/Collection';
 import { CollectionCard } from '@/platform/app/items/CollectionCard';
 import { ItemRow } from '@/platform/app/items/ItemRow';
 import { useManifest } from '@/platform/app/data/useManifest';
@@ -55,8 +55,7 @@ export default function SystemsIndex() {
     {filtered.length ? <>
       {active.length > 0 && collection(active)}
       {archived.length > 0 && <section className={active.length ? 'mt-10' : ''}>
-        <h2 className="mb-1 text-sm font-semibold text-foreground">Archived</h2>
-        <p className="mb-3 text-xs text-muted-foreground">Left out of the deployed site.</p>
+        <ArchivedHeading />
         {collection(archived)}
       </section>}
     </> : <Empty className="border border-dashed py-16"><EmptyHeader><EmptyMedia variant="icon"><HugeiconsIcon icon={Shapes01Icon} /></EmptyMedia><EmptyTitle>No matching systems</EmptyTitle><EmptyDescription>Try a different search.</EmptyDescription></EmptyHeader><Link to={'/systems' as never} search={{} as never} className="text-sm hover:underline">View all systems</Link></Empty>}
