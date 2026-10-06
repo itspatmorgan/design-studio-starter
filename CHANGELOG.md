@@ -1,5 +1,11 @@
 # Changelog
 
+## Welcome onboarding
+
+- A default-enabled, optional Onboarding module welcomes people on their first local home-page visit, with sample prototypes, systems, and a request to copy into their coding agent.
+- People can go straight to their studio and reopen Welcome from the sidebar or search. Completion is remembered in the browser.
+- Welcome is independent of installation and is omitted from published viewing sites.
+
 ## Context and Skills foundation
 
 - Platform, modules, and systems own their README, context, and task skills beside their implementation. Standing requirements are context; separate Rules folders have been removed.
