@@ -1,19 +1,40 @@
 ---
 title: Welcome
-description: Explore your studio and start your first prototype.
+description: Understand the essentials, explore the examples, and make your studio your own.
 section: Begin
 order: 2.5
 module: onboarding
 ---
 
-When your studio opens for the first time, Welcome helps you find a starting point. You can explore an example, look at the systems, or ask your agent to make something with you.
+Welcome introduces the pieces of Design Studio so you can explore with confidence.
 
-## Find your first step
+## Systems are your foundation
 
-- **Try a prototype.** Open an example and click through it to see how a working idea feels.
-- **Explore your systems.** Look at the components, styles, and guidance available for your own prototypes.
-- **Make something with your agent.** Copy the suggested request into your coding agent’s chat in the studio folder. It will help you turn your idea into a prototype.
+A system brings together your design toolkit and what your agent needs to know about your product:
 
-Choose **Go to my studio** whenever you are ready. You can return to Welcome from the sidebar or search. There is no checklist you need to finish before making something.
+- **Theme and components** supply the look and reusable building blocks for your prototypes.
+- **Context** describes your audience, product, and design principles.
+- **Skills** guide your agent through tasks specific to that system.
 
-If the examples have been removed, Welcome points you to the studio’s prototypes and systems instead. You can bring your own design system and product context as you go; see [Customize your studio](/documentation/guide/customize).
+Open the Product or Marketing example system to see these pieces together.
+
+## Prototypes bring your ideas to life
+
+A prototype is a place to explore an idea using a system’s design toolkit and guidance. It keeps your work for that idea together.
+
+The pieces inside it are called **artifacts**. Depending on your studio’s available tools, these include:
+
+- **Views:** interactive screens to click through and try.
+- **Documents:** briefs, notes, and decisions that explain your idea.
+- **Diagrams:** flows and relationships that make an idea easier to follow.
+- **Canvases:** a space to arrange screens, documents, diagrams, and notes together.
+
+Open an example prototype. Try its screens, then use its navigation to explore the supporting artifacts.
+
+## Make the studio your own
+
+Your studio is fully customizable. After exploring the examples, work with your agent to adapt them to your product. You can keep and customize an example system, or remove it and bring in your own. You can also adapt an example prototype or start fresh.
+
+Copy the request on Welcome into your coding agent’s chat in the studio folder. It will help you decide where to start and handle the technical steps. See [Customize your studio](/documentation/guide/customize) for more ideas.
+
+Choose **Go to my studio** whenever you are ready. You can return to Welcome from the sidebar or search.

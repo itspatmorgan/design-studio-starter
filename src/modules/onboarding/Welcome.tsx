@@ -3,12 +3,18 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { ArrowRight, Check, Copy } from 'lucide-react';
 import { Button } from '@/systems/studio/components/button';
 import { Card } from '@/systems/studio/components/card';
-import { APP_NAME } from '@/platform/core/api';
+import { APP_NAME, CONFIG } from '@/platform/core/api';
 import { useManifest } from '@/platform/app/data/useManifest';
 import { prototypeLink } from '@/platform/app/data/manifest';
 import { complete, progressKey } from './progress';
 
-const firstRequest = 'Help me create my first prototype in this studio. Ask me what I want to explore, then help me choose a design system and get started.';
+const firstRequest = 'Help me make this studio my own. Ask me what I want to design, then help me decide whether to customize an example system or bring in my own. Once the system fits, help me start my first prototype.';
+const artifactTypes = [
+  { module: 'view', title: 'Views', description: 'Interactive screens to click through and try.' },
+  { module: 'document', title: 'Documents', description: 'Briefs, notes, and decisions that explain your idea.' },
+  { module: 'diagrams', title: 'Diagrams', description: 'Flows and relationships that make an idea easier to follow.' },
+  { module: 'canvas', title: 'Canvases', description: 'A space to arrange screens, documents, diagrams, and notes together.' },
+].filter(type => CONFIG.modules[type.module] === true);
 
 export default function Welcome() {
   const manifest = useManifest();
@@ -34,24 +40,39 @@ export default function Welcome() {
     </header>
     <div className="space-y-4">
       <Card className="gap-3 p-5">
-        <h2 className="text-lg font-semibold">1. Try a prototype</h2>
-        <p className="text-sm leading-relaxed text-muted-foreground">Open an example and click through it. A prototype lets you explore how an idea looks and works.</p>
-        <div className="flex flex-wrap gap-2">
-          {examples.map(p => <Button key={p.id} variant="outline" render={<Link {...prototypeLink(p)} />}>{p.title}<ArrowRight /></Button>)}
-          {!examples.length && <Button variant="outline" render={<Link to={'/prototypes' as never} />}>Browse prototypes<ArrowRight /></Button>}
-        </div>
-      </Card>
-      <Card className="gap-3 p-5">
-        <h2 className="text-lg font-semibold">2. Explore your systems</h2>
-        <p className="text-sm leading-relaxed text-muted-foreground">Systems give your prototypes their components, styles, and product guidance. You can start with the examples and bring your own later.</p>
+        <h2 className="text-lg font-semibold">1. Systems are your foundation</h2>
+        <p className="text-sm leading-relaxed text-muted-foreground">A system brings together your design toolkit and what your agent needs to know about your product.</p>
+        <ul className="list-disc space-y-1 pl-5 text-sm leading-relaxed text-muted-foreground">
+          <li><strong className="font-medium text-foreground">Theme and components</strong> give your prototypes their look and reusable building blocks.</li>
+          <li><strong className="font-medium text-foreground">Context</strong> describes your audience, product, and design principles.</li>
+          <li><strong className="font-medium text-foreground">Skills</strong> guide your agent through tasks specific to that system.</li>
+        </ul>
+        <p className="text-sm leading-relaxed text-muted-foreground">Explore a system to see how these pieces fit together.</p>
         <div className="flex flex-wrap gap-2">
           {systems.map(id => <Button key={id} variant="outline" render={<Link to={`/systems/${id}` as never} />}>{id === 'product' ? 'Product system' : 'Marketing system'}<ArrowRight /></Button>)}
           {!systems.length && <Button variant="outline" render={<Link to={'/systems' as never} />}>Browse systems<ArrowRight /></Button>}
         </div>
       </Card>
       <Card className="gap-3 p-5">
-        <h2 className="text-lg font-semibold">3. Make something with your agent</h2>
-        <p className="text-sm leading-relaxed text-muted-foreground">Return to your coding agent’s chat in this studio folder. Tell it what you want to explore, or start with this request:</p>
+        <h2 className="text-lg font-semibold">2. Prototypes bring your ideas to life</h2>
+        <p className="text-sm leading-relaxed text-muted-foreground">A prototype is a place to explore an idea. It uses a system’s design toolkit and guidance, and keeps the work for that idea together.</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">The pieces inside a prototype are called artifacts. You can combine them as your idea grows:</p>
+        <dl className="grid gap-3 sm:grid-cols-2">
+          {artifactTypes.map(type => <div key={type.module}>
+            <dt className="text-sm font-medium">{type.title}</dt>
+            <dd className="text-sm leading-relaxed text-muted-foreground">{type.description}</dd>
+          </div>)}
+        </dl>
+        <p className="text-sm leading-relaxed text-muted-foreground">Open an example, click through its screens, and explore the supporting artifacts in its navigation.</p>
+        <div className="flex flex-wrap gap-2">
+          {examples.map(p => <Button key={p.id} variant="outline" render={<Link {...prototypeLink(p)} />}>{p.title}<ArrowRight /></Button>)}
+          {!examples.length && <Button variant="outline" render={<Link to={'/prototypes' as never} />}>Browse prototypes<ArrowRight /></Button>}
+        </div>
+      </Card>
+      <Card className="gap-3 p-5">
+        <h2 className="text-lg font-semibold">3. Make the studio your own</h2>
+        <p className="text-sm leading-relaxed text-muted-foreground">Your studio is fully customizable. After exploring, work with your agent to adapt the example systems to your product, or remove them and bring in your own. You can customize the example prototypes or start fresh, too.</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">Return to your coding agent’s chat in this studio folder and tell it what you want to make. Start with this request:</p>
         <blockquote className="rounded-lg bg-muted/50 p-4 text-sm leading-relaxed select-text">{firstRequest}</blockquote>
         <div className="flex flex-wrap items-center gap-3">
           <Button variant="outline" onClick={() => void copy()}>{copied ? <Check /> : <Copy />}{copied ? 'Copied' : 'Copy request'}</Button>

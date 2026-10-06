@@ -4,7 +4,7 @@ Onboarding welcomes designers and product managers after their studio opens. It 
 
 ## Behavior
 
-The first local home-page visit opens `/onboarding`. The page offers the available starter prototypes, example systems, a request to copy into the coding agent, and the Guide when it is enabled. Removed or archived samples are omitted; collection links provide a fallback. It does not create work, install dependencies, register contributors, or change configuration.
+The first local home-page visit opens `/onboarding`. The page introduces systems, prototypes, and the enabled artifact types in plain design language. It offers the available example systems and starter prototypes, explains customization, and supplies a request to copy into the coding agent. It links the Guide when enabled. Removed or archived samples are omitted; collection links provide a fallback. It does not create work, install dependencies, register contributors, or change configuration.
 
 **Go to my studio** records completion and opens Home. Welcome stays available in the bottom rail and search. Visiting a sample does not mark the welcome complete. People can finish immediately without completing a checklist.
 
