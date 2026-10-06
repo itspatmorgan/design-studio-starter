@@ -15,7 +15,7 @@ const steps = [
   { title: `Welcome to ${APP_NAME}`, description: 'A place to turn product ideas into working prototypes you can explore, discuss, and refine.' },
   { title: 'Keep the whole idea together', description: 'A prototype brings your screens, flows, and ideas together as artifacts. They’re files you own, saved in open formats for use with compatible tools.' },
   { title: 'Give your prototypes a shared foundation', description: 'A system brings your design toolkit and product knowledge together, helping your agent build prototypes that feel like your product.' },
-  { title: 'Start by exploring', description: 'Open an example, try its screens, and look through its artifacts. You’ll see how a prototype and its system work together.' },
+  { title: 'Start by exploring', description: 'Open an example prototype, try its screens, and look through its artifacts. You’ll see how a prototype and its system work together.' },
 ];
 
 export default function Welcome() {
@@ -41,7 +41,7 @@ export default function Welcome() {
         {step === 1 && <ArtifactPreview />}
         {step === 2 && <SystemPreview />}
         {step === 3 && <div className="space-y-4">
-          {!!examples.length && <div className="flex flex-wrap gap-2">{examples.map(p => <Button key={p.id} variant="outline" onClick={() => { finish(); void navigate(prototypeLink(p)); }}>{p.title}<HugeiconsIcon icon={ArrowRight01Icon} /></Button>)}</div>}
+          {!!examples.length && <div className="flex flex-wrap gap-2">{examples.map(p => <Button key={p.id} variant="outline" onClick={() => { finish(); void navigate(prototypeLink(p)); }}>{p.system === 'product' ? 'Product example' : p.system === 'marketing' ? 'Marketing example' : p.title}<HugeiconsIcon icon={ArrowRight01Icon} /></Button>)}</div>}
           <div className="space-y-4 rounded-xl border bg-muted/30 p-5">
             <p className="text-sm font-medium">When you’re ready to make something, work with your agent to:</p>
             <div className="space-y-1">
