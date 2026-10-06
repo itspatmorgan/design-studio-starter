@@ -4,11 +4,9 @@ description: A short tour of the Feedback Inbox, from engineering handoff to ear
 toc: true
 ---
 
-Feedback Inbox is an example of how you can bring a product idea to life in Design Studio. It explores a simple way for a team to collect feedback, track open issues, and discuss what to do next.
+Welcome! This prototype is an example of how you can bring a product idea to life in Design Studio.
 
-![Eng handoff canvas with screens, states, and engineering notes](eng-handoff.excalidraw)
-
-The working screens sit alongside the thinking behind them. These pieces are called **artifacts**. Together, they help you explore an experience, explain your decisions, and give engineering a clearer picture of what you want to build.
+The working screens sit alongside the thinking behind them. These files are called **artifacts**. Together, they help you explore an experience, explain your decisions, and give your team a clearer picture of what you want to build.
 
 ## Take a short tour
 
@@ -18,11 +16,13 @@ The working screens sit alongside the thinking behind them. These pieces are cal
 
 Open a screen from its preview header to try it yourself. The previews stay connected to the original screens, so changes to a screen also appear on the canvas.
 
+![Eng handoff canvas with screens, states, and engineering notes](eng-handoff.excalidraw)
+
 ### 2. Try the experience
 
 Open [Overview](app/overview.tsx), then choose **Open issues** to explore the [Feedback inbox](app/feedback-inbox.tsx). Add feedback, open an item in [Feedback detail](app/feedback-detail.tsx), and try changing its status or adding a note.
 
-As you explore, think about whether the flow feels clear and what you would change. This is sample data, so you can experiment freely. Reloading the page resets it.
+This is sample data, so you can experiment freely. Reloading the page resets it.
 
 ![Feedback inbox screen](app/feedback-inbox.tsx)
 
@@ -31,6 +31,8 @@ As you explore, think about whether the flow feels clear and what you would chan
 The **States** folder lets you jump straight to moments that are easy to miss in a walkthrough. Explore an [empty inbox](states/inbox/empty.tsx), a [form with a validation error](states/inbox/validation-error.tsx), or a [delete confirmation](states/detail/delete-confirmation.tsx).
 
 Having these moments available separately makes it easier to compare options and discuss how the product should respond.
+
+![Validation error](states/inbox/validation-error.tsx)
 
 ### 4. Explore the thinking behind it
 
@@ -48,4 +50,4 @@ Work with your agent to try a change, such as adding a due date or exploring a d
 
 You own the files behind every artifact. You can ask your agent to update them or use **Edit source** in an artifact’s menu to inspect and edit them directly.
 
-When you’re ready to explore your own idea, create a prototype from the **Prototypes** page. Keep this example as a reference, and visit the [Guide](/documentation/guide) whenever you want to learn more.
+When you’re ready to explore your own idea, create a prototype from the **Prototypes** page. Visit the [Guide](/documentation/guide) if you want to learn more.
