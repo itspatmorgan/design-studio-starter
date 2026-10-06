@@ -19,6 +19,7 @@ When the person asks for a canvas (a page of views, documents, and notes arrange
 When the person asks for a standalone diagram inside a prototype, read [src/modules/diagrams/skills/create-diagram/SKILL.md](src/modules/diagrams/skills/create-diagram/SKILL.md).
 When the person asks for a document inside a prototype, read [src/modules/document/skills/write-document/SKILL.md](src/modules/document/skills/write-document/SKILL.md).
 When the person asks to add or change the human Guide, read [src/modules/documentation/skills/write-guide/SKILL.md](src/modules/documentation/skills/write-guide/SKILL.md).
+When the person asks for a first tour of the studio or help getting started after installation, read [src/modules/onboarding/skills/use-onboarding/SKILL.md](src/modules/onboarding/skills/use-onboarding/SKILL.md).
 When the person asks to create or edit interactive prototype views, read [src/modules/prototypes/skills/build-prototype/SKILL.md](src/modules/prototypes/skills/build-prototype/SKILL.md).
 When the person asks to rename, move, duplicate, archive, restore, or remove a prototype, read [src/modules/prototypes/skills/organize-prototype/SKILL.md](src/modules/prototypes/skills/organize-prototype/SKILL.md).
 When the person asks to import, replace, or adapt a design system, read [src/modules/systems/skills/setup-design-system/SKILL.md](src/modules/systems/skills/setup-design-system/SKILL.md).

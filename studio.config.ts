@@ -15,6 +15,7 @@ export default {
     systems: true,
     text: true,
     view: true,
+    onboarding: true,
   },
   systems: ['studio', 'product', 'marketing'],
   defaultSystem: 'product',   // the design system a prototype uses when its meta.json doesn't name one
