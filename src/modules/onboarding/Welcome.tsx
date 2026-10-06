@@ -14,7 +14,7 @@ import { AgentSketch } from './Illustrations';
 const steps = [
   { title: `Welcome to ${APP_NAME}`, description: 'A place to turn product ideas into working prototypes you can explore, discuss, and refine.' },
   { title: 'Keep the whole idea together', description: 'A prototype brings your screens, flows, and ideas together as artifacts. They’re files you own, saved in open formats for use with compatible tools.' },
-  { title: 'Build on a system that fits', description: 'A system gives your prototypes a shared design toolkit and gives your agent guidance about your product. Use it across as many prototypes as you need.' },
+  { title: 'Build on a system that fits', description: 'A system brings your design toolkit and product knowledge together, helping your agent build prototypes that feel like your product.' },
   { title: 'Start by exploring', description: 'Open an example, try its screens, and look through its artifacts. You’ll see how a prototype and its system work together.' },
 ];
 

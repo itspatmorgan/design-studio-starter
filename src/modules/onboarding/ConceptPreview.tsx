@@ -4,9 +4,9 @@ import { CONFIG } from '@/platform/core/api';
 import { ArtifactSketch, SystemSketch } from './Illustrations';
 
 const systemParts = [
-  { title: 'Theme & components', kind: 'toolkit', description: 'The colors, type, and reusable components that make your prototypes look and feel like your product.', example: 'Use your team’s buttons, forms, and other building blocks.' },
-  { title: 'Context', kind: 'context', description: 'What your agent should know about your product, your audience, and your design principles.', example: '“Our users review feedback every morning. Help them find what needs attention.”' },
-  { title: 'Skills', kind: 'skills', description: 'Instructions that help your agent carry out tasks in the way your team wants.', example: 'Write in your brand’s voice, or follow a familiar design pattern.' },
+  { title: 'Theme & components', kind: 'toolkit', description: 'Bring your colors, typography, and reusable components into one toolkit, so every prototype starts with familiar building blocks like your team’s buttons and forms.' },
+  { title: 'Context', kind: 'context', description: 'Share who your product is for, what they need, and the principles behind your decisions. Your agent uses that knowledge to make choices that fit your audience.' },
+  { title: 'Skills', kind: 'skills', description: 'Give your agent reusable instructions for tasks your team does often, from writing in your brand’s voice to following a familiar design pattern.' },
 ];
 const artifacts = [
   { module: 'view', title: 'Views', kind: 'view', description: 'Explore how your idea feels with working screens, from filtering an inbox to opening a message. Views are saved as React code you can reuse in other React projects.' },
@@ -15,7 +15,7 @@ const artifacts = [
   { module: 'canvas', title: 'Canvases', kind: 'canvas', description: 'Use Excalidraw’s drawing tools to sketch ideas, connect them with arrows, and add notes. Arrange your sketches alongside screens and flows to explore the whole idea.' },
 ].filter(type => CONFIG.modules[type.module] === true);
 
-type Choice = { title: string; kind: string; description: string; example?: string };
+type Choice = { title: string; kind: string; description: string };
 function ConceptPreview({ choices, label, id, system = false }: { choices: Choice[]; label: string; id: string; system?: boolean }) {
   const [index, setIndex] = useState(0);
   const choice = choices[index];
@@ -27,7 +27,6 @@ function ConceptPreview({ choices, label, id, system = false }: { choices: Choic
     <div id={id} className="space-y-3 rounded-xl border bg-muted/30 p-4" aria-live="polite" aria-atomic="true">
       {system ? <SystemSketch selected={index} /> : <ArtifactSketch kind={choice.kind} />}
       <p className="text-sm leading-relaxed text-muted-foreground">{choice.description}</p>
-      {choice.example && <p className="text-xs leading-relaxed text-muted-foreground">{choice.example}</p>}
     </div>
   </div>;
 }
