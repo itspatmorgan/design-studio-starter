@@ -77,7 +77,7 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
       </DropdownMenuContent>
     </DropdownMenu>
     <Dialog open={dialog !== null} onOpenChange={value => { if (!value && !busy) setDialog(null); }}>
-      <DialogContent showCloseButton={!busy}>
+      <DialogContent size={dialog === 'restore' ? 'lg' : 'sm'} showCloseButton={!busy}>
         {dialog === 'rename' ? <form className="grid gap-4" onSubmit={event => { event.preventDefault(); void save(String(new FormData(event.currentTarget).get('name') ?? '')); }}>
           <DialogHeader><DialogTitle>Rename system</DialogTitle><DialogDescription>Enter the new name.</DialogDescription></DialogHeader>
           <label className="grid gap-1.5 text-sm font-medium">Name<Input name="name" defaultValue={spec.label} required maxLength={120} autoFocus /></label>
@@ -105,7 +105,15 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
           {checking && <p role="status" className="text-sm text-muted-foreground">Checking system dependencies</p>}
           {error && <p role="alert" className="text-sm text-destructive whitespace-pre-line">{error}</p>}
           {dependents.length > 0 && <div className="grid gap-2 text-sm"><p>These prototypes depend on {spec.label}.</p><ul className="max-h-48 list-disc overflow-auto pl-5">{dependents.map(proto => <li key={`${proto.contributorKey}/${proto.id}`}><Link {...prototypeLink(proto)} className="underline">{proto.title}</Link>{proto.status === 'archived' ? ' (archived)' : ''}{proto.rebuild?.targetSystem === system ? ' (pending rebuild)' : ''}</li>)}</ul></div>}
-          <DialogFooter><Button variant="outline" disabled={busy} onClick={() => setDialog(null)}>Cancel</Button>{dialog === 'restore' && <Button disabled={busy || checking || !allowed} onClick={() => void save(undefined, true)}>Restore system and prototypes</Button>}<Button variant={dialog === 'restore' ? 'outline' : 'destructive'} disabled={busy || checking || !allowed} onClick={() => void save(undefined, false)}>{busy ? 'Working' : dialog === 'restore' ? 'Restore system only' : 'Delete system'}</Button></DialogFooter>
+          <DialogFooter>
+            {dialog === 'restore' ? <>
+              <Button variant="outline" disabled={busy || checking || !allowed} onClick={() => void save(undefined, false)}>Restore system only</Button>
+              <Button disabled={busy || checking || !allowed} onClick={() => void save(undefined, true)}>{busy ? 'Restoring' : 'Restore system and prototypes'}</Button>
+            </> : <>
+              <Button variant="outline" disabled={busy} onClick={() => setDialog(null)}>Cancel</Button>
+              <Button variant="destructive" disabled={busy || checking || !allowed} onClick={() => void save(undefined, false)}>{busy ? 'Working' : 'Delete system'}</Button>
+            </>}
+          </DialogFooter>
         </>}
       </DialogContent>
     </Dialog>
