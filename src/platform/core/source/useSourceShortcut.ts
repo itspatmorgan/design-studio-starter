@@ -8,7 +8,10 @@ export function useSourceShortcut(enabled: boolean, source: boolean, toggle: () 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented || artifactShortcut(event) !== 'source') return;
       const target = event.target instanceof HTMLElement ? event.target : null;
-      if (document.querySelector('[role="dialog"], [role="alertdialog"], [role="menu"]')) return;
+      // Embedded screens can display sample dialogs inside inert, read-only previews.
+      // Only interactive dialogs and menus should block the page's source shortcut.
+      const overlays = document.querySelectorAll('[role="dialog"], [role="alertdialog"], [role="menu"]');
+      if (Array.from(overlays).some(overlay => !overlay.closest('[inert]'))) return;
       const typing = target?.closest('input, textarea, select, [contenteditable="true"]');
       if (typing && !(source && target?.closest('.cm-editor'))) return;
       event.preventDefault();
