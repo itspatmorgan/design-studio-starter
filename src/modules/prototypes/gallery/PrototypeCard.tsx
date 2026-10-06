@@ -1,4 +1,4 @@
-import { Layers01Icon } from '@hugeicons/core-free-icons';
+import { CursorInWindowIcon } from '@hugeicons/core-free-icons';
 import { ContributorAvatar } from '@/platform/app/shell/ContributorAvatar';
 import { CollectionCard } from '@/platform/app/items/CollectionCard';
 import { ItemRow } from '@/platform/app/items/ItemRow';
@@ -13,7 +13,7 @@ export default function PrototypeCard({ prototype: p }: { prototype: PrototypeIn
   return (
     <CollectionCard
       link={prototypeLink(p)}
-      icon={Layers01Icon}
+      icon={CursorInWindowIcon}
       title={p.title}
       archived={p.status === 'archived'}
       meta={<><ContributorAvatar name={nameOf(p)} github={p.contributorGithub} /><span className="truncate">{nameOf(p).split(' ')[0]}</span>{p.created && <span>· {formatDate(p.created)}</span>}</>}
@@ -27,7 +27,7 @@ export function PrototypeRow({ prototype: p, byline = true, showCreated = false 
   return (
     <ItemRow
       link={prototypeLink(p)}
-      icon={Layers01Icon}
+      icon={CursorInWindowIcon}
       title={p.title}
       meta={byline || (showCreated && p.created) ? <>{byline && nameOf(p).split(' ')[0]}{showCreated && p.created && <span>{byline && ' · '}{formatDate(p.created)}</span>}</> : undefined}
       archived={p.status === 'archived'}

@@ -1,6 +1,6 @@
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/systems/studio/components/input-group';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Cancel01Icon, Layers01Icon, Search01Icon } from '@hugeicons/core-free-icons';
+import { Cancel01Icon, CursorInWindowIcon, Search01Icon } from '@hugeicons/core-free-icons';
 import { getRouteApi, Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { matchesSystem } from '@/platform/app/data/manifest';
 import { PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
@@ -70,7 +70,7 @@ export default function Gallery() {
   if (empty) body = local ? (
     <Empty className="border border-dashed py-16">
       <EmptyHeader>
-        <EmptyMedia variant="icon"><HugeiconsIcon icon={Layers01Icon} /></EmptyMedia>
+        <EmptyMedia variant="icon"><HugeiconsIcon icon={CursorInWindowIcon} /></EmptyMedia>
         <EmptyTitle>No prototypes yet</EmptyTitle>
         <EmptyDescription>A working sketch of an idea: real screens you can click through.</EmptyDescription>
       </EmptyHeader>
@@ -78,7 +78,7 @@ export default function Gallery() {
   ) : (
     <Empty className="border border-dashed py-16">
       <EmptyHeader>
-        <EmptyMedia variant="icon"><HugeiconsIcon icon={Layers01Icon} /></EmptyMedia>
+        <EmptyMedia variant="icon"><HugeiconsIcon icon={CursorInWindowIcon} /></EmptyMedia>
         <EmptyTitle>No prototypes yet</EmptyTitle>
         <EmptyDescription>Prototypes your team makes will show up here.</EmptyDescription>
       </EmptyHeader>

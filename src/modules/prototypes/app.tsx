@@ -2,7 +2,7 @@
 // A prototype itself opens in the viewer (viewer/), through the platform's item routes
 // (src/platform/app/router.tsx), at /prototypes/<person>/<id>.
 import { createRoute } from '@tanstack/react-router';
-import { Layers01Icon } from '@hugeicons/core-free-icons';
+import { CursorInWindowIcon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/systems/studio/components/command';
 import { HomeHint, HomeSection } from '@/platform/app/items/HomeSection';
 import { useMe } from '@/platform/app/data/files';
@@ -68,7 +68,7 @@ function Overview({ manifest }: { manifest: Manifest }) {
 }
 
 export default {
-  icon: Layers01Icon,
+  icon: CursorInWindowIcon,
   rail: 'top',
   order: 0,
   // Locally your own prototypes come first. Modules can set their overview order for local and deployed use.
