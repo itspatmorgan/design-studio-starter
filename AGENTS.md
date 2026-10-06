@@ -1,32 +1,30 @@
 # Design Studio Starter
 
-For a new studio or first-time kit configuration, follow [src/systems/studio/skills/initialize-studio/SKILL.md](src/systems/studio/skills/initialize-studio/SKILL.md). For someone joining an existing studio, follow [src/systems/studio/skills/setup-contributor/SKILL.md](src/systems/studio/skills/setup-contributor/SKILL.md). Missing dependencies alone do not mean the studio needs initialization.
-When setting up or replacing the prototype design system, follow [src/systems/studio/skills/setup-design-system/SKILL.md](src/systems/studio/skills/setup-design-system/SKILL.md).
+Read [working context](src/platform/context/working-in-studio.md) at the start of each session. Preserve existing work and respect the person's explicit choices and authorization.
 
-When working on Design Studio itself, read [Studio system instructions](src/systems/studio/AGENTS.md). That entry point requires the platform's Principles and Personas and selects further Studio instructions.
+Before editing prototypes, resolve the contributor with `node scripts/cli/resolve-contributor.js`. Resolve the assigned system from prototype metadata and configuration: explicit `system: null` means no system; only omission uses the default. Read the assigned system's `AGENTS.md` and relevant context. For a pending rebuild, read the target system too and preserve the original.
 
-At the start of every session, read:
-- [src/systems/studio/rules/prototype-workflow.md](src/systems/studio/rules/prototype-workflow.md)
-- [src/systems/studio/rules/contributor-scope.md](src/systems/studio/rules/contributor-scope.md)
+Start with the [platform README](src/platform/README.md) to locate shared context, skills, and implementation. For platform product or architecture decisions, read [Principles](src/platform/context/principles.md) and [Personas](src/platform/context/personas.md). For Studio interface work, read [Studio instructions](src/systems/studio/AGENTS.md).
 
-Within a conversation, reuse instructions already read while their contents remain available and unchanged. Retrieve missing or stale instructions after compaction or file changes, and follow additional routes when the task scope changes. Keep all required reads and re-read source files before editing them.
+Skills are owned by the platform, enabled modules, and registered systems. Inspect their names and descriptions, then read applicable procedures and supporting files. The generated project skill adapters expose the same canonical sources to coding harnesses. A system skill applies only to that system's assigned prototypes or explicit system maintenance.
 
-Use targeted searches and bounded source reads for discovery. Read applicable rules and skill procedures in full; follow their required references. Save verbose check output to a local temporary log. Wait for the command's final exit status, inspect failure diagnostics and warnings, and report a concise result with the relevant details and log path. Run all required checks.
-
-When the person wants to set a prototype or view aside, or keep it out of the deployed site, read [src/systems/studio/rules/archiving.md](src/systems/studio/rules/archiving.md).
-When the person asks to add or change system context, rules, or skills, read [src/systems/studio/rules/system-content.md](src/systems/studio/rules/system-content.md).
-For documentation creation, revision, or audits, follow [src/systems/studio/skills/maintain-documentation/SKILL.md](src/systems/studio/skills/maintain-documentation/SKILL.md). When platform behavior changes, update affected guidance in the same change.
-When the person wants to turn off, add, remove, or build a module or a design system, read [src/systems/studio/rules/modules.md](src/systems/studio/rules/modules.md).
-Before editing a prototype, resolve its assigned system from its metadata and the studio configuration. An explicit `system: null` means custom styling with no assigned system; do not substitute the default. For an assigned system, read its `src/systems/<id>/AGENTS.md` when present, then the relevant context, rules, and skills it references. Inspect skill names and descriptions before reading applicable `SKILL.md` procedures and their supporting files. Read only the applicable system's product instructions. Platform operating rules continue to apply.
+- For configuring a running studio, use [configure-studio](src/platform/skills/configure-studio/SKILL.md). Missing dependencies alone do not mean initialization is needed.
+- For contributor registration, use [setup-contributor](src/platform/skills/setup-contributor/SKILL.md).
+- For module or system installation, creation, availability, or removal, use [manage-modules](src/platform/skills/manage-modules/SKILL.md).
+- For shared context or skills, use [maintain-context](src/platform/skills/maintain-context/SKILL.md).
+- For documentation creation, revision, or audits, use [maintain-documentation](src/platform/skills/maintain-documentation/SKILL.md).
 
 <!-- studio:modules -->
-When the person asks for a canvas (a page of views, documents, and notes arranged together), read [src/systems/studio/rules/canvases.md](src/systems/studio/rules/canvases.md).
-When the person asks to add or change a standalone diagram in a prototype, read [src/systems/studio/rules/diagrams.md](src/systems/studio/rules/diagrams.md).
-When the person asks for a document (written context in a prototype), read [src/systems/studio/rules/documents.md](src/systems/studio/rules/documents.md).
-When the person asks to add or change platform documentation, read [src/systems/studio/rules/documentation.md](src/systems/studio/rules/documentation.md).
+When the person asks for a canvas (a page of views, documents, and notes arranged together), read [src/modules/canvas/skills/use-canvas/SKILL.md](src/modules/canvas/skills/use-canvas/SKILL.md).
+When the person asks for a standalone diagram inside a prototype, read [src/modules/diagrams/skills/create-diagram/SKILL.md](src/modules/diagrams/skills/create-diagram/SKILL.md).
+When the person asks for a document inside a prototype, read [src/modules/document/skills/write-document/SKILL.md](src/modules/document/skills/write-document/SKILL.md).
+When the person asks to add or change the human Guide, read [src/modules/documentation/skills/write-guide/SKILL.md](src/modules/documentation/skills/write-guide/SKILL.md).
+When the person asks to create or edit interactive prototype views, read [src/modules/prototypes/skills/build-prototype/SKILL.md](src/modules/prototypes/skills/build-prototype/SKILL.md).
+When the person asks to rename, move, duplicate, archive, restore, or remove a prototype, read [src/modules/prototypes/skills/organize-prototype/SKILL.md](src/modules/prototypes/skills/organize-prototype/SKILL.md).
+When the person asks to import, replace, or adapt a design system, read [src/modules/systems/skills/setup-design-system/SKILL.md](src/modules/systems/skills/setup-design-system/SKILL.md).
+When the person asks to import or document a system component, read [src/modules/systems/skills/document-component/SKILL.md](src/modules/systems/skills/document-component/SKILL.md).
 <!-- /studio:modules -->
 
-Use pnpm for project commands. Resolve the contributor before editing prototypes. Follow the scope and prototype rules above.
-The human documentation is the Guide at `/documentation/guide`. Human chapters live in `src/modules/documentation/pages/`. Module documents own technical contracts.
-For component, theme, or pop-up changes, read [src/systems/studio/rules/systems.md](src/systems/studio/rules/systems.md).
-The app uses TanStack Router. For routing work, use its [official documentation](https://tanstack.com/router/latest/docs/framework/react/overview).
+Use pnpm for project commands. Reuse instructions already read while available and unchanged; retrieve missing or stale instructions after compaction or file changes. Re-read source files before editing them. Use targeted searches and bounded reads; read applicable skill procedures in full. Save verbose check output to a temporary log, inspect final exit status and warnings, and report concise results with its path.
+
+The human Guide lives in `src/modules/documentation/pages/`; technical requirements live in owner READMEs and context documents. Update affected guidance with platform behavior changes. For routing work, consult [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview).

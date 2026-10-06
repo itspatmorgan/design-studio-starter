@@ -1,6 +1,6 @@
 import type { ModuleSpec } from '../../platform/core/api.ts';
 
-// The text file type: the system content's fallback, any other text file opens read-only (src/platform/core/fileTypes.md).
+// The text file type: the system content's fallback, any other text file opens read-only (src/platform/context/file-types.md).
 export default {
   optional: false,
   lib: false,

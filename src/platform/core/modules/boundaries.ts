@@ -48,8 +48,12 @@ export const MODULE_PLATFORM_ENTRIES: readonly string[] = [
   'src/platform/core/source/useSourceView',
 ];
 
-export function modulePlatformProblem(importer: string, target: string): string | null {
+export function modulePlatformProblem(importer: string, target: string, raw = false): string | null {
   if (!/^src\/modules\/[^/]+\//.test(importer) || !target.startsWith('src/platform/')) return null;
+  // The shared knowledge readers may render Markdown or inspect support files as raw text.
+  // This does not permit executing platform skill scripts or importing runtime implementation.
+  const knowledge = /^src\/platform\/(?:context|skills)\//.test(target);
+  if (knowledge && ((importer === 'src/modules/systems/loader.ts' && target.endsWith('.md')) || (importer === 'src/modules/text/loader.ts' && raw))) return null;
   const entry = target.replace(/\.[cm]?[jt]sx?$/, '');
   return MODULE_PLATFORM_ENTRIES.includes(entry) ? null
     : `${importer} imports private platform code (${target}). Use the public module API or a supported framework entrypoint.`;

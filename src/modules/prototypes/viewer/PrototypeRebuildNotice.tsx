@@ -10,7 +10,7 @@ export default function PrototypeRebuildNotice({ proto }: { proto: PrototypeInfo
   async function copy() {
     const target = request!.targetSystem;
     const prompt = `Rebuild the prototype at ${repoPath(proto, '')} using ${systemLabel(target)} (${JSON.stringify(target)}).
-Read the repository AGENTS.md and prototype workflow rules first. This is a separate exploration copied from ${request!.source}; preserve the original and work only in the copy.
+Read the repository AGENTS.md and build-prototype skill first. This is a separate exploration copied from ${request!.source}; preserve the original and work only in the copy.
 The copy is currently assigned to ${systemLabel(proto.system)}. Its requested target is recorded in meta.json as rebuild.targetSystem; this has not converted its code.
 ${target === null ? 'Use local components and CSS, without importing a shared system library or theme.' : `Read src/systems/${target}/AGENTS.md and the relevant system guidance. Reconstruct the copy with its components and styles.`}
 Preserve the intent, content, flows, and behavior where possible. Explain any differences that cannot translate. Migrate the implementation and meta.json system assignment together to ${JSON.stringify(target)}. Verify the build and review the rendered views. Remove the rebuild field only when the migration is complete.`;

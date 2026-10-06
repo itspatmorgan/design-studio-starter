@@ -31,3 +31,10 @@ test('SystemContent Context addresses resolve to the docs folder', () => {
   assert.deepEqual(parseAddress('/systems/product/context/personas'), { contributor: 'system-content', id: 'product:context', rest: ['personas'] });
   assert.equal(rootOf('system-content', 'product:context'), 'systems/product/context');
 });
+
+test('owner browser addresses round-trip while overviews remain outside prototype routing', () => {
+  assert.deepEqual(parseAddress('/documentation/context/platform.core/context/config'), {contributor:'system-content',id:'platform.core:context',rest:['config']});
+  assert.deepEqual(parseAddress('/knowledge/module.prototypes/skills/build-prototype/SKILL'), {contributor:'system-content',id:'module.prototypes:skills',rest:['build-prototype','SKILL']});
+  assert.equal(parseAddress('/documentation/context/platform.core'),null);
+  assert.equal(parseAddress('/knowledge/platform.core'),null);
+});

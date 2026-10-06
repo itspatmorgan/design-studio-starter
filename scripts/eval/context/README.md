@@ -1,5 +1,7 @@
 # Agent context efficiency investigation
 
+Historical evaluation notes from before the Context and Skills architecture. Rule counts and old file layouts below describe that evaluation snapshot; current guidance starts at [Platform](../../../src/platform/README.md).
+
 Investigated on 2026-10-04 against `6d4e5c7`. This is an evaluation plan and offline audit, not a new platform contract or an instruction to load during routine work. A six-run CLI pilot has since completed; see [Pilot results](pilot-results.md). Its browser limitations prevent an end-to-end equivalence claim. The [authorized follow-up](pilot-results.md#authorized-follow-up) records subsequent targeted instruction maintenance; mandatory context and checks remain required.
 
 ## Recommendation
@@ -10,7 +12,7 @@ Start with bounded retrieval under the existing policy. Separately evaluate maki
 
 ## Current implementation
 
-The [agent context contract](../../../src/platform/core/agent-context.md) owns current routing. Studio does not inject a context bundle. The host supplies automatically discovered instructions; the agent reads linked files.
+The [agent context contract](../../../src/platform/context/agent-context.md) owns current routing. Studio does not inject a context bundle. The host supplies automatically discovered instructions; the agent reads linked files.
 
 | Mechanism | Current source | Implication for context |
 | --- | --- | --- |

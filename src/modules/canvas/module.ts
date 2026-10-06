@@ -1,6 +1,6 @@
 import type { ModuleSpec } from '../../platform/core/api.ts';
 
-// The canvas file type: an .excalidraw file is a page to arrange views, documents, and notes on (src/platform/core/fileTypes.md).
+// The canvas file type: an .excalidraw file is a page to arrange views, documents, and notes on (src/platform/context/file-types.md).
 export default {
   lib: false,
   id: 'canvas',
@@ -8,6 +8,6 @@ export default {
   version: '0.1.0',
   description: 'An .excalidraw file opens as a page to arrange views, documents, and notes on.',
   optional: true,
-  instructions: [{ path: 'rules/canvases.md', when: 'asks for a canvas (a page of views, documents, and notes arranged together)' }],
+  instructions: [{ path: 'skills/use-canvas/', when: 'asks for a canvas (a page of views, documents, and notes arranged together)' }],
   dependencies: { '@excalidraw/excalidraw': '0.18.1' },
 } satisfies ModuleSpec;

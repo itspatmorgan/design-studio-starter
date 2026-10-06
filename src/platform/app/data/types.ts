@@ -7,10 +7,11 @@ import type { DocsMode } from '@/modules/systems/sources';
 
 // public/prototypes/manifest.json, written by scripts/build/build-manifest.js, with each prototype's artifacts
 // in public/prototypes/artifacts/<contributor>/<prototype>.json.
-// A navigable artifact backed by a file. Shared readers use the same record shape (see src/platform/core/fileTypes.md).
+// A navigable artifact backed by a file. Shared readers use the same record shape (see src/platform/context/file-types.md).
 export type Artifact = {
   path: string;   // file path in the prototype, e.g. "prototype.tsx" or "checkout/step-1.tsx"
   fileType: string; // the id of the file type that owns it, from its extension ("view", "document")
+  title?: string;   // declared instruction-document title, shared by navigation and the reader
   lofi?: true;      // set when the file says it's lofi (a view starting with /** @lofi */)
 };
 
@@ -23,6 +24,7 @@ export type PrototypeInfo = {
   contributorGithub?: string; // registered GitHub account, for optional profile photos
   created: string | null;
   system: string | null;  // null means custom styling; omission in meta.json resolves to defaultSystem
+  owner?: { id: string; kind: 'platform' | 'module' | 'system'; label: string; root: string };
   rebuild?: { targetSystem: string | null; source: string }; // requested fork migration, before changing the actual assignment
   status?: 'archived';    // meta.json "status", when archived; absent means active
   maintainers?: string[]; // meta.json "maintainers" (contributors.json keys), where a section's policy is maintainers; prototypes don't have them
@@ -59,10 +61,11 @@ export type GuidePage = {
 // `systems` holds each system's components and their docs (systemDocs.ts), the tokens its theme
 // defines (themeTokens.ts), and where its components come from (systemSources.ts). The app's own
 // system is one of them.
-export type PlatformReferenceGroup = { id: string; label: string; enabled: boolean; references: { source: string; title: string; order?: number; section?: 'understand' | 'operate' | 'extend'; related?: { title: string; href: string }[] }[]; related: { title: string; href: string }[] };
+export type PlatformReferenceGroup = { id: string; label: string; enabled: boolean; references: { source: string; title: string; related?: { title: string; href: string }[] }[]; related: { title: string; href: string }[] };
 
 export type Manifest = {
   prototypes: PrototypeRef[]; sections: Record<string, PrototypeRef[]>; guide: GuidePage[]; systemContent: Prototype[]; systemContentMaps: Record<string, SystemContentMap>; platformReferences: PlatformReferenceGroup[];
+  skillCatalog: { owner: NonNullable<PrototypeInfo['owner']>; folder: string; name: string; description: string; source: string }[];
   systems: Record<string, { docs: DocsMode; origin: 'shadcn' | null; components: SystemComponentDoc[]; tokens: ThemeToken[] }>;
 };
 

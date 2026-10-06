@@ -6,12 +6,12 @@ import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
-const baseline = ['AGENTS.md', 'src/systems/studio/rules/prototype-workflow.md', 'src/systems/studio/rules/contributor-scope.md'];
+const baseline = ['AGENTS.md', 'src/modules/prototypes/skills/build-prototype/SKILL.md', 'src/platform/context/contributor-scope.md'];
 const profiles = {
   baseline,
-  studioOrientation: [...baseline, 'src/systems/studio/AGENTS.md', 'src/systems/studio/context/principles.md', 'src/systems/studio/context/personas.md'],
-  prototypeRuntime: [...baseline, 'src/modules/prototypes/reference.md', 'src/systems/studio/rules/systems.md', 'src/modules/systems/reference.md', 'src/systems/product/AGENTS.md'],
-  marketingKnowledge: [...baseline, 'src/systems/marketing/AGENTS.md', 'src/systems/marketing/context/brand.md', 'src/systems/marketing/context/library.md', 'src/systems/marketing/rules/marketing-design.md'],
+  studioOrientation: [...baseline, 'src/systems/studio/AGENTS.md', 'src/platform/context/principles.md', 'src/platform/context/personas.md'],
+  prototypeRuntime: [...baseline, 'src/modules/prototypes/README.md', 'src/modules/systems/context/authoring.md', 'src/modules/systems/README.md', 'src/systems/product/AGENTS.md'],
+  marketingKnowledge: [...baseline, 'src/systems/marketing/AGENTS.md', 'src/systems/marketing/context/brand.md', 'src/systems/marketing/context/library.md', 'src/systems/marketing/context/design.md'],
 };
 const files = [...new Set(Object.values(profiles).flat())].sort().map(file => {
   const content = fs.readFileSync(path.join(root, file), 'utf8');

@@ -58,7 +58,9 @@ export function firstArtifact(p: Prototype): Artifact | undefined {
 export const findArtifact = (p: Prototype, slug: string) => p.artifacts.find((i) => artifactSlug(i.path) === slug);
 
 // "checkout/session-done.tsx" → "Session Done": an artifact's name, without its folder.
-export const artifactLabel = (path: string, proto?: Pick<PrototypeInfo, 'contributorKey' | 'id'>) => {
+export const artifactLabel = (path: string, proto?: Pick<PrototypeInfo, 'contributorKey' | 'id'> & { artifacts?: Artifact[] }) => {
+  const declared = proto?.contributorKey === SYSTEM_CONTENT_KEY && proto.artifacts?.find(item => item.path === path)?.title;
+  if (declared) return declared;
   // The entry file keeps its required name on disk; people see the skill it opens.
   const skill = proto?.contributorKey === SYSTEM_CONTENT_KEY && contentSection(proto.id) === 'skills' && /^([^/]+)\/SKILL\.md$/.exec(path);
   const name = skill ? skill[1] : artifactSlug(path).split('/').pop()!;

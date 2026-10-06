@@ -6,6 +6,8 @@
 // only the routes that use it (see router.tsx), so the open view and scroll position stay.
 // Bursts of changes, like moving a folder, are batched into one update.
 import path from 'node:path';
+import { knowledgeOwners, skillCatalog, syncSkillAdapters } from '../lib/agent-skills.js';
+import { SYSTEM_SPECS } from '../../src/modules/systems/node/systems.js';
 import { fileURLToPath } from 'node:url';
 import { buildManifest } from './build-manifest.js';
 import { FILE_TYPES, fileTypeOf } from '../lib/file-types.js';
@@ -63,6 +65,14 @@ export default function manifestWatch() {
       const flush = () => {
         timer = null;
         const { manifest } = buildManifest({ touched: [...touched] });
+        if ([...touched].some(file => /[\\/]skills(?:[\\/]|$)/.test(file))) {
+          try {
+            const result = syncSkillAdapters(ROOT, skillCatalog(ROOT, knowledgeOwners(ENABLED_MODULES, SYSTEM_SPECS)));
+            for (const warning of result.warnings) server.config.logger.warn(warning);
+          } catch (error) {
+            server.config.logger.error(`Skill exposure was not updated: ${error.message}`);
+          }
+        }
         touched.clear();
         if (JSON.stringify(manifest) !== last) publishManifest(server, manifest);
       };

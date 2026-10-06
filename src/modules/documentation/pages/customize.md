@@ -14,7 +14,7 @@ You own this studio and can change any part of it. Start with your prototypes, s
 | --- | --- | --- |
 | `src/prototypes/<contributor>/` | Your views, documents, diagrams, and canvases. | Maintain your work within the prototype contract. |
 | `studio.config.ts` | Studio identity, enabled modules, registered systems, and the default system. | Use supported choices and review configuration migrations. |
-| `src/systems/<id>/` | Your components, theme, context, rules, and skills. | Maintain your system and its dependencies. |
+| `src/systems/<id>/` | Your components, theme, context and skills. | Maintain your system and its dependencies. |
 | `src/modules/<id>/` | A capability such as a new artifact type or studio section. | Maintain your module against the supported extension contracts. |
 | `src/systems/studio/` | The supplied components and guidance used by Design Studio itself. | Reconcile local changes with Studio releases. |
 | `src/platform/` and `scripts/` | Application infrastructure, extension contracts, build tools, and commands. | Maintain local changes and verify them against upstream updates. |
@@ -41,7 +41,7 @@ Choose **Save changes** at the bottom of the page to apply your edits. Studio sa
 
 A save does not share changes with your team or publish the site. Follow your team's [Git workflow](/documentation/guide/collaborate#share-through-git) to share them.
 
-Ask your agent to register or update contributor profiles, assign team Admins, install or remove modules, or bring in a design system. [Collaboration](/documentation/guide/collaborate#studio-settings-and-roles) explains roles. [Studio configuration](/documentation/reference/platform/core/config.md) supplies the file and command contract.
+Ask your agent to register or update contributor profiles, assign team Admins, install or remove modules, or bring in a design system. [Collaboration](/documentation/guide/collaborate#studio-settings-and-roles) explains roles. [Studio configuration](/documentation/reference/platform/context/config.md) supplies the file and command contract.
 
 ## Add a system
 
@@ -55,7 +55,7 @@ Modules add capabilities to your studio. Use `pnpm studio create-module <id>` to
 
 For example, `pnpm studio create-module research --label "Research"` previews a Research module. Applying it creates `src/modules/research/`, registers it, and installs its declared agent rule. Restart the development server, then edit its `app.tsx` to build the page.
 
-Module declarations and shared services have explicit extension contracts. Checks report imports into private platform implementation. See the [Module contract](/documentation/reference/modules/README.md) for file types, local handlers, libraries, installation, and removal.
+Module declarations and shared services have explicit extension contracts. Checks report imports into private platform implementation. See the [Module contract](/documentation/reference/platform/context/modules.md) for file types, local handlers, libraries, installation, and removal.
 
 Modules run as trusted repository code. Supported boundaries reduce accidental coupling; they do not isolate faulty code or guarantee compatibility with every future release.
 

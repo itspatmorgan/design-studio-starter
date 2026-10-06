@@ -1,7 +1,7 @@
 // Modules: the parts of Design Studio you can add or remove. A module is a folder in
 // src/modules/<id>/ with a module.ts that says what it is and what it adds, so the build,
 // the dev server and the app all read one list instead of each knowing about every module.
-// A file type is a module that has a type.ts and an open.tsx (src/platform/core/fileTypes.md).
+// A file type is a module that has a type.ts and an open.tsx (src/platform/context/file-types.md).
 // This file has no imports, so Node scripts can load it directly.
 
 // The version of the module contract this copy of the platform offers: what a module's module.ts, app.tsx and
@@ -36,9 +36,8 @@ export type ModuleSpec = {
   // Prototypes may import the module's lib/index.ts as `@module/<id>`, the one way a prototype can reach into a
   // module when lib is true (the import guard allows exactly that). Removing an imported module is refused.
   lib: boolean;
-  // system content files the module brings (rules, skills), as paths inside src/systems/studio/ ("rules/examples.md"; a trailing
-  // slash is a whole folder, like a skill's). `when` finishes the sentence "When the person ..." in AGENTS.md,
-  // which routes agents to the rule; pnpm studio sync writes those lines for the modules that are on.
+  // Context and skill paths relative to this module. A trailing slash supplies a whole skill folder.
+  // Optional task conditions generate root AGENTS.md routes for enabled modules.
   instructions?: { path: string; when?: string }[];
   // npm packages the module needs, as name → version ("dialkit": "^1.2.0"). Adding the module shows them and installs
   // them only when you say so.
@@ -62,7 +61,7 @@ export type ModuleCheck = (context: { root: string }) => string[] | Promise<stri
 const ID = /^[a-z][a-z0-9-]*$/;
 const VERSION = /^\d+\.\d+\.\d+$/;
 const KEY = /^[a-z0-9][a-z0-9-]*$/;
-const SYSTEM_CONTENT_PATH = /^(rules|context|skills)\/[A-Za-z0-9][A-Za-z0-9._\/-]*$/;
+const SYSTEM_CONTENT_PATH = /^(context|skills)\/[A-Za-z0-9][A-Za-z0-9._\/-]*$/;
 const NPM_NAME = /^(@[a-z0-9][a-z0-9._-]*\/)?[a-z0-9][a-z0-9._-]*$/;
 const NPM_VERSION = /^[\^~]?\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/;
 
@@ -85,7 +84,7 @@ export function moduleProblems(spec: unknown, folder: string): string[] {
     if (!Array.isArray(m.instructions)) problems.push(`${where}: instructions should be a list of { path, when }.`);
     else for (const h of m.instructions) {
       const path = (h as { path?: unknown })?.path;
-      if (typeof path !== 'string' || !SYSTEM_CONTENT_PATH.test(path) || path.split('/').includes('..')) problems.push(`${where}: instructions path "${String(path)}" should be inside rules/, context/ or skills/, like "rules/${folder}.md".`);
+      if (typeof path !== 'string' || !SYSTEM_CONTENT_PATH.test(path) || path.split('/').includes('..')) problems.push(`${where}: instructions path "${String(path)}" should be inside context/ or skills/, like "skills/use-${folder}/".`);
       else if ((h as { when?: unknown }).when !== undefined && typeof (h as { when?: unknown }).when !== 'string') problems.push(`${where}: instructions "when" for ${path} should be text.`);
     }
   }

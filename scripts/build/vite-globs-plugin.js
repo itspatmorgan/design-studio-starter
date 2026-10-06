@@ -38,7 +38,7 @@ export default function globs() {
     },
     transform(code, id) {
       if (/[\\/]app[\\/]docs[\\/]loadReference\.ts$/.test(id.split('?')[0])) {
-        const references = ['/platform/core/*.md', '/modules/README.md', ...ENABLED_MODULES.map((m) => `/modules/${m.id}/*.md`)];
+        const references = ['/platform/README.md', ...ENABLED_MODULES.map((m) => `/modules/${m.id}/*.md`)];
         return { code: code.replace("['/__studio_references__/*']", JSON.stringify(references)), map: null };
       }
       const match = LOADER.exec(id.split('?')[0]);

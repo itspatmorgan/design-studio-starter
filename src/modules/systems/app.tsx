@@ -6,7 +6,7 @@ import { Shapes01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem } from '@/systems/studio/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
 import { ItemRow } from '@/platform/app/items/ItemRow';
-import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS, SYSTEM_SPECS } from '@/modules/systems/data/systems';
+import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
 import { APP_NAME } from '@/platform/app/data/config';
 import { artifactLabel, artifactLink } from '@/platform/app/data/manifest';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
@@ -33,8 +33,8 @@ function SystemsPlaces({ go }: PaletteContext) {
 
 function SystemFiles({ manifest, go }: PaletteContext) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  return <>{manifest.systemContent.filter((section) => SYSTEM_SPECS[section.system!]?.role !== 'platform' && section.artifacts.length).map((section) =>
-    <CommandGroup key={section.id} heading={PROTOTYPE_SYSTEMS[section.system!]?.label + ' · ' + section.title}>
+  return <>{manifest.systemContent.filter((section) => section.artifacts.length).map((section) =>
+    <CommandGroup key={section.id} heading={section.owner?.label + ' · ' + section.title}>
       {section.artifacts.map((item) => { const link = artifactLink(section, item); return <CommandItem key={item.path} value={section.system + ' ' + section.title + ' ' + item.path} disabled={pathname === link.to} onSelect={() => go(link)}>{artifactLabel(item.path)}</CommandItem>; })}
     </CommandGroup>)}</>;
 }

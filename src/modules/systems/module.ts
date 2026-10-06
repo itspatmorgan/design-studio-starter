@@ -4,9 +4,10 @@ import type { ModuleSpec } from '../../platform/core/api.ts';
 export default {
   optional: false,
   lib: false,
+  instructions: [{ path: 'skills/setup-design-system/', when: 'asks to import, replace, or adapt a design system' }, { path: 'skills/document-component/', when: 'asks to import or document a system component' }],
   id: 'systems',
   label: 'Systems',
   version: '0.1.0',
-  description: 'Theme, components, context, rules, and skills for prototypes.',
+  description: 'Theme, components, context, and skills for prototypes.',
   section: { key: 'systems', folder: 'src/systems', policy: 'open' },
 } satisfies ModuleSpec;

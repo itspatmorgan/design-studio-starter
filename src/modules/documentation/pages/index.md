@@ -18,12 +18,12 @@ Your prototypes are independent working areas. Systems and platform capabilities
 %%{init: {"flowchart": {"nodeSpacing": 20, "rankSpacing": 30, "subGraphTitleMargin": {"top": 10, "bottom": 15}}}}%%
 flowchart TB
   accTitle: Studio ownership and safe working areas
-  accDescr: Platform infrastructure composes modules that provide studio capabilities. Each system owns theme, components, context, rules, and skills. Contributor-owned prototypes use an assigned system and contain artifacts for local experiments.
+  accDescr: Platform infrastructure composes modules that provide studio capabilities. Each system owns theme, components, context and skills. Contributor-owned prototypes use an assigned system and contain artifacts for local experiments.
   platform[Platform infrastructure]
   modules[Modules<br/>Studio capabilities]
   subgraph system[System scope]
     ui[Theme<br/>and components]
-    knowledge[Context, Rules,<br/>and Skills]
+    knowledge[Context and Skills]
   end
   subgraph yours[Prototype scope: your experiments]
     artifacts[Views, documents,<br/>diagrams, and canvases]
@@ -63,7 +63,7 @@ sequenceDiagram
 
 This shows one iteration. Checks can fail, and the agent may need clarification before it builds.
 
-The [Agent context chapter](/documentation/guide/agent-context) diagrams how repository instructions lead to the right system knowledge.
+The [Agents section](/documentation/guide/agent-context) explains how to give your agent useful direction and shared knowledge, then refine both through your work.
 
 Give the agent your goals, constraints, and feedback. You can work visually while it handles code and technical details.
 
@@ -73,8 +73,8 @@ Give the agent your goals, constraints, and feedback. You can work visually whil
 | --- | --- |
 | [Home](/documentation/guide/home) | Find work and search the studio. |
 | [Prototypes](/documentation/guide/prototypes) | Explore ideas using screens, writing, diagrams, and canvases. |
-| [Systems](/documentation/guide/systems) | Browse components, styles, context, rules, and skills for your prototypes. |
-| [Documentation](/documentation/guide/documentation) | Read this Guide or consult detailed platform Reference. |
+| [Systems](/documentation/guide/systems) | Browse components, styles, context and skills for your prototypes. |
+| [Documentation](/documentation/guide/documentation) | Read this Guide or browse Context and Skills. |
 
 Run Studio locally to make changes. You can also publish a viewing site when you want to share your work.
 

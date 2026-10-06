@@ -11,7 +11,7 @@ import { dependencyResolver, importsOf, sourceFiles } from '../lib/imports.js';
 //   - nothing outside an optional module imports its files other than its module.ts, and no module imports an
 //     optional one, so deleting its folder leaves nothing broken (a required module is part of the platform,
 //     so the platform and the other modules may import it)
-//   - a file type (a module with a type.ts, src/platform/core/fileTypes.md) has an open.tsx, its type.ts imports
+//   - a file type (a module with a type.ts, src/platform/context/file-types.md) has an open.tsx, its type.ts imports
 //     only ../../core/fileTypes.ts (the build loads it directly in Node), and its loader.ts lists its files with the
 //     ['/__studio_globs__/*'] placeholder, so a new section and archived files reach it (scripts/build/vite-globs-plugin.js)
 // Usage: node scripts/check/check-modules.js

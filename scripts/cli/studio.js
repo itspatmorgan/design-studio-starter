@@ -18,6 +18,7 @@ import { moduleConsumers } from '../lib/imports.js';
 // Dry runs read declarations as data. --yes trusts the source: its checks run after packages install.
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
+import { knowledgeOwners, skillCatalog, syncSkillAdapters } from '../lib/agent-skills.js';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compatible, listProblems, moduleProblems, PLATFORM_VERSION } from '../../src/platform/core/modules/index.ts';
@@ -57,7 +58,7 @@ const titleOf = (id) => id.split('-').map((w) => w.charAt(0).toUpperCase() + w.s
 const slug = (text) => text.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/^[^a-z]+/, '');
 
 // ---- places that must never be deleted, whatever a pack or a flag says
-const PROTECTED = new Set(['src', 'src/platform', 'src/modules', 'src/prototypes', 'src/lib', `src/systems/${PLATFORM_ID}`, `src/systems/${PLATFORM_ID}/rules`, `src/systems/${PLATFORM_ID}/context`, `src/systems/${PLATFORM_ID}/skills`, 'src/systems', 'src/types']);
+const PROTECTED = new Set(['src', 'src/platform', 'src/modules', 'src/prototypes', 'src/lib', `src/systems/${PLATFORM_ID}`, `src/systems/${PLATFORM_ID}/context`, `src/systems/${PLATFORM_ID}/skills`, 'src/systems', 'src/types']);
 function removable(relative) {
   const clean = path.posix.normalize(relative.replace(/\/$/, ''));
   if (!relative || clean.startsWith('..') || clean.startsWith('/') || !clean.startsWith('src/') || PROTECTED.has(clean)) throw new Error(`Refusing to delete ${relative}.`);
@@ -81,6 +82,11 @@ function syncAgents() {
   fs.writeFileSync(file, next);
   return true;
 }
+const syncSkills = () => {
+  const result = syncSkillAdapters(ROOT, skillCatalog(ROOT, knowledgeOwners(ENABLED_MODULES, SYSTEM_SPECS)));
+  for (const warning of result.warnings) say(warning);
+  say(`Project skills synchronized (Codex, Cursor, Claude Code; ${result.changed} changes).`);
+};
 const syncInFreshProcess = () => run('node', ['scripts/cli/studio.js', 'sync']);
 const checkInFreshProcess = () => { try { run('node', ['scripts/check/check-modules.js']); return null; } catch (e) { return `${e.stderr ?? ''}${e.stdout ?? ''}`.trim(); } };
 
@@ -110,6 +116,7 @@ function setEnabled(id, on) {
   if (on && !compatible(spec)) fail(`The ${id} module needs platform ${spec.requires} or newer, and this is ${PLATFORM_VERSION}.`);
   const plan = planSettings({ root: ROOT, modules: Object.values(MODULES), systems: SYSTEM_IDS, platformId: PLATFORM_ID, contributors: loadContributors(), changes: { modules: { [id]: on } } });
   applySetupChanges(plan.edits);
+  syncInFreshProcess();
   say(`${spec.label} is ${on ? 'on' : 'off'}. ${on ? '' : 'Its files are still there; turn it on again any time. '}Restart the dev server for it to take effect.`);
 }
 
@@ -250,7 +257,7 @@ function remove() {
     const spec = MODULES[id];
     if (!spec.optional) fail(`The ${id} module can't be removed yet; other parts of the app still use it.`);
     paths.push(`src/modules/${id}`);
-    for (const h of spec.instructions ?? []) paths.push(`src/systems/${PLATFORM_ID}/${h.path}`);
+
     if (spec.section?.folder && !spec.section.folder.startsWith(`src/modules/${id}`)) {
       if (flags.content) paths.push(spec.section.folder);
       else if (fs.existsSync(rel(spec.section.folder))) notes.push(`Its content in ${spec.section.folder} stays. Add --content to delete that too.`);
@@ -397,6 +404,7 @@ function configure() {
   for (const pin of plan.pins) say(`Keep ${path.relative(ROOT, pin.file)} on ${DEFAULT_SYSTEM}.`);
   if (!flags.yes) { say('Nothing written. Apply these choices with --yes.'); return; }
   applySetupChanges(plan.edits);
+  syncInFreshProcess();
   say('Updated studio.config.ts. Restart the dev server.');
 }
 
@@ -423,7 +431,7 @@ function status() {
 
 const commands = {
   configure, status,
-  list, check, sync: () => { say(syncAgents() ? 'Updated AGENTS.md.' : 'AGENTS.md is up to date.'); },
+  list, check, sync: () => { say(syncAgents() ? 'Updated AGENTS.md.' : 'AGENTS.md is up to date.'); syncSkills(); },
   enable: () => setEnabled(positional[0], true), disable: () => setEnabled(positional[0], false),
   add, remove, 'create-module': () => create('module'), 'create-system': () => create('system'),
 };

@@ -4,7 +4,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/build/build-manifest.js && vite",
+    "dev": "pnpm studio sync && node scripts/build/build-manifest.js && vite",
     "build": "node scripts/build/build-manifest.js --strict --deploy && node scripts/check/check-modules.js && pnpm test && pnpm typecheck && vite build",
     "typecheck": "tsc -b",
     "preview": "vite preview",

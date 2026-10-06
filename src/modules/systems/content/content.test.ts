@@ -1,4 +1,4 @@
-// The system content's fixed shape: the Agent Skills rules (skills.ts) and the folder check
+// The system content's fixed shape: the Agent Skills context (skills.ts) and the folder check
 // (src/modules/systems/content/node/content-check.js). Run with `pnpm test`.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -72,11 +72,11 @@ function systemContent(files: Record<string, string>) {
 const skill = (name: string) => `---\nname: ${name}\ndescription: Does a thing. Use when asked.\n---\n\nBody\n`;
 
 test('a well-formed SystemContent has no problems', () => {
-  const root = systemContent({ 'context/a.md': '# A', 'context/research/b.md': '# B', 'rules/r.md': '# R', 'skills/review/SKILL.md': skill('review'), 'skills/review/scripts/run.sh': 'echo', 'skills/review/references/x.md': '# X' });
+  const root = systemContent({ 'context/a.md': '# A', 'context/research/b.md': '# B', 'context/r.md': '# R', 'skills/review/SKILL.md': skill('review'), 'skills/review/scripts/run.sh': 'echo', 'skills/review/references/x.md': '# X' });
   assert.deepEqual(systemContentProblems(root), []);
 });
 
-test('the top level is docs, rules, and skills only', () => {
+test('the top level is docs, context, and skills only', () => {
   const root = systemContent({ 'context/a.md': '# A', 'notes/n.md': '# N', 'loose.md': '# L' });
   const problems = systemContentProblems(root);
   assert.equal(problems.length, 2);
@@ -84,11 +84,11 @@ test('the top level is docs, rules, and skills only', () => {
   assert.match(problems.join('\n'), /loose\.md/);
 });
 
-test('docs and rules hold Markdown only, and skills hold skill folders', () => {
-  const root = systemContent({ 'context/a.md': '# A', 'context/pic.png': 'x', 'rules/r.txt': 'x', 'skills/loose.md': '# L', 'skills/empty/notes.md': '# N', 'skills/bad/SKILL.md': skill('other') });
+test('docs and context hold Markdown only, and skills hold skill folders', () => {
+  const root = systemContent({ 'context/a.md': '# A', 'context/pic.png': 'x', 'context/r.txt': 'x', 'skills/loose.md': '# L', 'skills/empty/notes.md': '# N', 'skills/bad/SKILL.md': skill('other') });
   const text = systemContentProblems(root).join('\n');
   assert.match(text, /context\/pic\.png isn't a Markdown file/);
-  assert.match(text, /rules\/r\.txt isn't a Markdown file/);
+  assert.match(text, /context\/r\.txt isn't a Markdown file/);
   assert.match(text, /skills\/loose\.md is loose/);
   assert.match(text, /skills\/empty\/ has no SKILL\.md/);
   assert.match(text, /have to match/);
@@ -97,17 +97,16 @@ test('docs and rules hold Markdown only, and skills hold skill folders', () => {
 test('what can be made where', () => {
   assert.deepEqual(creatableIn('context', ''), ['document', 'folder']);
   assert.deepEqual(creatableIn('context', 'research'), ['document', 'folder']);
-  assert.deepEqual(creatableIn('rules', ''), ['document', 'folder']);
   assert.deepEqual(creatableIn('skills', ''), ['skill']);
   assert.deepEqual(creatableIn('skills', 'review'), ['file', 'folder']);
   assert.deepEqual(creatableIn('skills', 'review/scripts'), ['file', 'folder']);
 });
 
 test('changes stay inside the SystemContent\'s shape', () => {
-  // Docs and rules: Markdown, in folders.
+  // Docs and context: Markdown, in folders.
   assert.equal(opProblem('context', { op: 'create', path: '', name: 'a.md' }, true), null);
   assert.match(opProblem('context', { op: 'create', path: '', name: 'a.png' }, true) ?? '', /Markdown/);
-  assert.equal(opProblem('rules', { op: 'create', path: 'x', name: 'y', dir: true }, true), null);
+  assert.equal(opProblem('context', { op: 'create', path: 'x', name: 'y', dir: true }, true), null);
   assert.match(opProblem('context', { op: 'rename', path: 'a.md', name: 'a.txt' }, false) ?? '', /Markdown/);
   assert.equal(opProblem('context', { op: 'move', path: 'a.md', to: 'research' }, false), null);
   assert.equal(opProblem('context', { op: 'delete', path: 'a.md' }, false), null);
@@ -134,27 +133,27 @@ test('the map inventories declared routes from real files', () => {
     "If `node_modules/` doesn't exist, or the person is new, follow [setup](src/systems/studio/skills/setup/SKILL.md) first.",
     '',
     'At the start of every session, read:',
-    '- [systems](src/systems/studio/rules/systems.md)',
-    '- [workflow](src/systems/studio/rules/workflow.md)',
+    '- [systems](src/systems/studio/context/systems.md)',
+    '- [workflow](src/systems/studio/context/workflow.md)',
     '',
-    'When the person asks for a canvas (a page of views), read [canvases](src/systems/studio/rules/canvases.md).',
-    'Also see [gone](src/systems/studio/rules/gone.md) and [nope](src/systems/studio/skills/nope/SKILL.md).',
+    'When the person asks for a canvas (a page of views), read [canvases](src/systems/studio/context/canvases.md).',
+    'Also see [gone](src/systems/studio/context/gone.md) and [nope](src/systems/studio/skills/nope/SKILL.md).',
   ].join('\n');
   const map = systemContentMap({
     agents,
-    rules: { 'systems.md': '# Systems', 'workflow.md': 'See [the canvas rule](canvases.md) and [scope](sub/scope.md).', 'canvases.md': '# C', 'sub/scope.md': 'Back to [systems](../systems.md).', 'orphan.md': '# Nobody links here' },
+    context: { 'systems.md': '# Systems', 'workflow.md': 'See [the canvas document](canvases.md) and [scope](sub/scope.md).', 'canvases.md': '# C', 'sub/scope.md': 'Back to [systems](../systems.md).', 'orphan.md': '# Nobody links here' },
     skills: [{ folder: 'setup', name: 'setup', description: 'Sets up.' }, { folder: 'review', name: 'review', description: 'Reviews.' }],
   });
   assert.deepEqual(map.always, ['systems.md', 'workflow.md']);
   assert.deepEqual(map.onDemand, [{ path: 'canvases.md', when: 'the person asks for a canvas (a page of views)' }]);
   assert.deepEqual(map.via, [{ path: 'sub/scope.md', from: 'workflow.md' }]);
   assert.deepEqual(map.unrouted, ['orphan.md']);
-  assert.deepEqual(map.missing, ['src/systems/studio/rules/gone.md', 'src/systems/studio/skills/nope/SKILL.md']);
+  assert.deepEqual(map.missing, ['src/systems/studio/context/gone.md', 'src/systems/studio/skills/nope/SKILL.md']);
   assert.equal(map.skills.find((s) => s.folder === 'setup')?.when, "`node_modules/` doesn't exist, or the person is new".replace(/`/g, ''));
   assert.equal(map.skills.find((s) => s.folder === 'review')?.when, undefined);
   assert.equal(map.entry, true);
-  assert.equal(systemContentMap({ agents: null, rules: { 'a.md': '' }, skills: [] }).entry, false);
-  assert.deepEqual(systemContentMap({ agents: null, rules: { 'a.md': '' }, skills: [] }).unrouted, ['a.md']);
+  assert.equal(systemContentMap({ agents: null, context: { 'a.md': '' }, skills: [] }).entry, false);
+  assert.deepEqual(systemContentMap({ agents: null, context: { 'a.md': '' }, skills: [] }).unrouted, ['a.md']);
 });
 
 test('SystemContent creation uses its own Markdown template', () => {
@@ -167,22 +166,22 @@ test('platform reference discovery preserves ownership and excludes unavailable 
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-references-'));
   const write = (file: string, text: string) => { fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true }); fs.writeFileSync(path.join(root, file), text); };
   try {
-    write('src/platform/core/fileTypes.md', '# File-type contract');
-    write('src/modules/README.md', '# Module contract');
+    write('src/platform/context/file-types.md', '# File-type contract');
+    write('src/platform/context/modules.md', '# Module contract');
     write('src/modules/example/README.md', '---\ntitle: "Example capability"\n---\n# Example');
     write('src/modules/example/reference.md', '# Example contract');
     write('src/modules/example/internal/notes.md', '# Internal notes');
     write('src/modules/off/README.md', '# Unavailable capability');
-    write('src/systems/studio/rules/example.md', '# Example rule\nRead [contract](../../../modules/example/reference.md#details).');
+    write('src/systems/studio/context/example.md', '# Example document\nRead [contract](../../../modules/example/reference.md#details).');
     write('src/systems/studio/skills/example/SKILL.md', '---\nname: example\ndescription: Example task\n---\nRead [reference](../../../../modules/example/README.md).');
     const modules = [{id:'example',label:'Example'}, {id:'off',label:'Off'}];
-    const systemContent = [{id:'studio:rules',contributorKey:'system-content',system:'studio',title:'Rules',artifacts:[{path:'example.md'}]}, {id:'studio:skills',contributorKey:'system-content',system:'studio',title:'Skills',artifacts:[{path:'example/SKILL.md'}]}];
+    const systemContent = [{id:'studio:context',contributorKey:'system-content',system:'studio',title:'Context',artifacts:[{path:'example.md'}]}, {id:'studio:skills',contributorKey:'system-content',system:'studio',title:'Skills',artifacts:[{path:'example/SKILL.md'}]}];
     const groups = platformReferences({root,modules,enabled:['example'],systemContent});
     const example = groups.find((g) => g.id === 'example');
     assert.deepEqual(example.references.map((r: { source: string }) => r.source), ['/modules/example/README.md','/modules/example/reference.md']);
     assert.equal(example.references[0].title, 'Example capability');
     assert.equal(example.references[1].title, 'Example contract');
-    assert.deepEqual(example.related.map((r: { href: string }) => r.href), ['/systems/studio/rules/example','/systems/studio/skills/example/SKILL']);
+    assert.deepEqual(example.related.map((r: { href: string }) => r.href), ['/systems/studio/context/example','/systems/studio/skills/example/SKILL']);
     assert.equal(example.related[1].title, 'studio · Skills · Example');
     assert.deepEqual(groups.find((g) => g.id === 'off').references, []);
     assert.equal(groups.find((g) => g.id === 'off').enabled, false);
@@ -190,11 +189,11 @@ test('platform reference discovery preserves ownership and excludes unavailable 
   } finally { fs.rmSync(root, {recursive:true,force:true}); }
 });
 
-test('system instruction maps keep identical rule and skill names in their own scopes', () => {
-  const rules = { 'accessibility.md': 'Keep labels visible.' };
+test('system instruction maps keep identical document and skill names in their own scopes', () => {
+  const context = { 'accessibility.md': 'Keep labels visible.' };
   const skills = [{ folder: 'review', name: 'review', description: 'Review this product.' }];
-  const product = systemContentMap({ root: 'src/systems/product', agents: 'Read [rule](rules/accessibility.md) and [review](skills/review/SKILL.md).', rules, skills });
-  const brand = systemContentMap({ root: 'src/systems/brand', agents: 'Read [other](src/systems/product/rules/accessibility.md).', rules, skills });
+  const product = systemContentMap({ root: 'src/systems/product', agents: 'Read [document](context/accessibility.md) and [review](skills/review/SKILL.md).', context, skills });
+  const brand = systemContentMap({ root: 'src/systems/brand', agents: 'Read [other](src/systems/product/context/accessibility.md).', context, skills });
   assert.deepEqual(product.onDemand.map((r) => r.path), ['accessibility.md']);
   assert.deepEqual(product.missing, []);
   assert.deepEqual(brand.onDemand, []);
@@ -206,15 +205,15 @@ test('Studio instructions combine repository and local routes using the declared
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-instructions-'));
   const write = (file: string, text: string) => { fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true }); fs.writeFileSync(path.join(root, file), text); };
   try {
-    write('AGENTS.md', 'At the start of every session, read:\n- [scope](src/systems/custom-studio/rules/scope.md)\n\nWhen documenting, follow [document](src/systems/custom-studio/skills/document/SKILL.md).');
-    write('src/systems/custom-studio/AGENTS.md', 'Read [copy](rules/copy.md) and [people](context/people.md).');
-    write('src/systems/custom-studio/rules/scope.md', '# Scope');
-    write('src/systems/custom-studio/rules/copy.md', '# Copy');
+    write('AGENTS.md', 'At the start of every session, read:\n- [scope](src/systems/custom-studio/context/scope.md)\n\nWhen documenting, follow [document](src/systems/custom-studio/skills/document/SKILL.md).');
+    write('src/systems/custom-studio/AGENTS.md', 'Read [copy](context/copy.md) and [people](context/people.md).');
+    write('src/systems/custom-studio/context/scope.md', '# Scope');
+    write('src/systems/custom-studio/context/copy.md', '# Copy');
     write('src/systems/custom-studio/context/people.md', '# People\nRead [entry](../AGENTS.md).\nExample: `![screen](missing.tsx)`\n```md\n[example](missing.md)\n```');
     write('src/systems/custom-studio/skills/document/SKILL.md', 'Read [checklist](references/checklist.md).');
     write('src/systems/custom-studio/skills/document/references/checklist.md', '# Checklist');
     const instructions = systemInstructions({root, systemRoot:'src/systems/custom-studio', platform:true});
-    const map = systemContentMap({root:'src/systems/custom-studio', agents:instructions.agents, rules:{'scope.md':'# Scope','copy.md':'# Copy'}, skills:[{folder:'document',name:'document',description:'Document work.'}]});
+    const map = systemContentMap({root:'src/systems/custom-studio', agents:instructions.agents, context:{'scope.md':'# Scope','copy.md':'# Copy'}, skills:[{folder:'document',name:'document',description:'Document work.'}]});
     assert.deepEqual(instructions.missing, []);
     assert.deepEqual(map.always, ['scope.md']);
     assert.deepEqual(map.onDemand.map(r => r.path), ['copy.md']);
@@ -225,8 +224,8 @@ test('Studio instructions combine repository and local routes using the declared
       'src/systems/custom-studio/context/missing.md',
       'src/systems/custom-studio/skills/document/references/checklist.md',
     ]);
-    write('src/systems/product/AGENTS.md', 'Read [product](rules/product.md).');
-    write('src/systems/product/rules/product.md', '# Product');
+    write('src/systems/product/AGENTS.md', 'Read [product](context/product.md).');
+    write('src/systems/product/context/product.md', '# Product');
     const product = systemInstructions({root,systemRoot:'src/systems/product'});
     assert.ok(!product.agents?.includes('custom-studio'));
     assert.deepEqual(product.missing, []);
@@ -234,9 +233,9 @@ test('Studio instructions combine repository and local routes using the declared
   } finally { fs.rmSync(root,{recursive:true,force:true}); }
 });
 
-// Repository-relative links must reach the same rule as a sibling-relative link.
-test('rule routes follow repository-relative links without crossing system scopes', () => {
-  const map = systemContentMap({root:'src/systems/product',agents:'Read [entry](rules/entry.md).',rules:{'entry.md':'Read [detail](src/systems/product/rules/detail.md) and [other](src/systems/marketing/rules/other.md).','detail.md':'# Detail','other.md':'# Product other'},skills:[]});
+// Repository-relative links must reach the same document as a sibling-relative link.
+test('document routes follow repository-relative links without crossing system scopes', () => {
+  const map = systemContentMap({root:'src/systems/product',agents:'Read [entry](context/entry.md).',context:{'entry.md':'Read [detail](src/systems/product/context/detail.md) and [other](src/systems/marketing/context/other.md).','detail.md':'# Detail','other.md':'# Product other'},skills:[]});
   assert.deepEqual(map.via, [{path:'detail.md',from:'entry.md'}]);
   assert.deepEqual(map.unrouted, ['other.md']);
 });

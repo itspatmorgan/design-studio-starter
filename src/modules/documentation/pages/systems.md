@@ -7,9 +7,9 @@ module: systems
 toc: true
 ---
 
-Systems brings together the components, styles, and knowledge used by your prototypes. Use the selector to switch between systems. One navigation tree shows the selected system’s theme, components, context, rules, and skills.
+Systems brings together the components, styles, and knowledge used by your prototypes. Use the selector to switch between systems. Its navigation shows Context, Skills, Theme, and Components for the selected system.
 
-The Resources toolbar searches across the tree and expands or collapses all folders. Search reveals matches without losing your previous expansion choices. Context, Rules, Skills, Theme, and Components start open. Guidance appears above the toolkit, and each guidance group has its own **New** action.
+The Resources toolbar searches across the tree and expands or collapses all folders. Search reveals matches without losing your previous expansion choices. Context, Skills, Theme, and Components start open. Guidance appears above the toolkit, and each guidance group has its own **New** action.
 
 Overview summarizes the selected system’s instructions, components, and theme. Counts show what is included; navigation provides the full inventory. The usage section shows active prototypes, previews up to three recent examples, and links to the complete filtered collection. Studio explains its application role instead. Product and Marketing are starter kits to replace with your team’s systems.
 
@@ -25,7 +25,7 @@ Each prototype uses an assigned system and can also have local components and st
 
 ## How a system supports the work
 
-Context explains the people, domain, and intent. Rules set standing constraints. Skills provide procedures for specific tasks. Together, they guide an agent’s decisions and work. Theme and components provide the interface toolkit used by the code.
+Context explains the people, domain, intent, and standing requirements. Skills provide procedures for specific tasks. Together, they guide an agent’s decisions and work. Theme and components provide the interface toolkit used by the code.
 
 ```mermaid
 ---
@@ -36,9 +36,8 @@ config:
 ---
 flowchart LR
   accTitle: How a system supports the work
-  accDescr: Context, rules, and skills guide an agent. Theme and components provide the interface toolkit. Both contribute to the work.
+  accDescr: Context and skills guide an agent. Theme and components provide the interface toolkit. Both contribute to the work.
   context[Context] --> agent[Agent]
-  rules[Rules] --> agent
   skills[Skills] --> agent
   theme[Theme] --> components[Components]
   agent -->|Decisions and tasks| work[Prototype]
@@ -48,7 +47,7 @@ flowchart LR
 
 A prototype’s assigned system connects it to that toolkit and guidance. Its code imports components and uses the system’s styles. Agents follow the system’s linked instructions; selecting a system does not automatically load every resource into a conversation.
 
-The Studio system follows the same pattern for the application itself: its toolkit supplies Studio’s interface, and its guidance helps agents operate and maintain the platform.
+The Studio system follows the same pattern for the application itself: its toolkit supplies Studio’s interface, and its guidance establishes application design and writing conventions.
 
 ## Explore the toolkit
 
@@ -64,20 +63,19 @@ System files are shared team content. Coordinate changes with your maintainer. A
 
 Theme pages are generated from its theme file; component pages combine documentation, examples, and component source. Source is available through navigation, using the [shared file workflow](/documentation/guide/home#working-with-files). Component pages offer separate source tabs for documentation, examples, and component code.
 
-## Context, rules, and skills
+## Context and skills
 
 Each system can also hold product knowledge, standing constraints, and task procedures. These are ordinary files beside its components and styles.
 
 | Part | What belongs there |
 | --- | --- |
 | Context | Personas, principles, research, and shared knowledge. |
-| Rules | Constraints for work using this system. |
 | Skills | Procedures for specific tasks. |
 
 Expand a folder to read, add, or edit its files. Other folders stay available as you browse. Empty sections are fine; add material when it improves the work. Give your agent supplied context and ask it to connect relevant files to the system's instructions.
 
 Each skill appears once in navigation and opens its instructions. In source mode, use the file picker to browse its `SKILL.md` and supporting files. Rename or delete a skill through its navigation menu to act on the whole skill, including its supporting files.
 
-A prototype uses its assigned system's knowledge along with platform operating rules and its own local intent. Files being visible here does not automatically load them into an agent conversation. The [Agent context chapter](/documentation/guide/agent-context) diagrams how the agent chooses instructions.
+A prototype uses its assigned system's knowledge along with platform working context and its own local intent. Files being visible here does not automatically load them into an agent conversation. The [Task context chapter](/documentation/guide/agent-task-context) diagrams how the agent chooses instructions.
 
-Studio contains Design Studio's own context and instructions. Keep your product context in its product system. System knowledge follows Studio's appearance; UI examples follow the system's supported color modes.
+Use Documentation’s Context & Skills browser for platform and module knowledge. Use the selected system’s Context and Skills for product and design guidance. Keep your product context in its product system. System knowledge follows Studio's appearance; UI examples follow the system's supported color modes.

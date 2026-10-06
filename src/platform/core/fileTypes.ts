@@ -7,7 +7,7 @@
 // Optional types can be removed: delete the folder and its files become plain files. A type has
 //   type.ts     what the build and the app both need to know (this file's FileTypeSpec)
 //   open.tsx    how the app opens it: its icon, how it loads, and its page
-// To add a type, see src/platform/core/fileTypes.md. This file has no imports, so Node scripts can
+// To add a type, see src/platform/context/file-types.md. This file has no imports, so Node scripts can
 // load it directly.
 
 export type FileTypeSpec = {
