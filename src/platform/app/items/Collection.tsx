@@ -8,7 +8,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/compon
 import { ItemGrid } from './ItemGrid';
 
 export function ArchivedHeading() {
-  return <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-foreground">
+  return <h2 className="mb-3 flex items-center gap-0.5 text-sm font-semibold text-foreground">
     Archived
     <Tooltip>
       <TooltipTrigger render={<button type="button" aria-label="About archived items" className="inline-flex size-5 items-center justify-center rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring" />}>
