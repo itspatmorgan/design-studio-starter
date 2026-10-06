@@ -23,7 +23,7 @@ When the person asks to add or change the human Guide, read [src/modules/documen
 When the person asks for a first tour of the studio or help getting started after installation, read [src/modules/onboarding/skills/use-onboarding/SKILL.md](src/modules/onboarding/skills/use-onboarding/SKILL.md).
 When the person asks to create or edit interactive prototype views, read [src/modules/prototypes/skills/build-prototype/SKILL.md](src/modules/prototypes/skills/build-prototype/SKILL.md).
 When the person asks to rename, move, duplicate, archive, restore, or remove a prototype, read [src/modules/prototypes/skills/organize-prototype/SKILL.md](src/modules/prototypes/skills/organize-prototype/SKILL.md).
-When the person asks to import, replace, or adapt a design system, read [src/modules/systems/skills/setup-design-system/SKILL.md](src/modules/systems/skills/setup-design-system/SKILL.md).
+When the person asks to curate, assess, import, replace, or adapt a design system, read [src/modules/systems/skills/setup-design-system/SKILL.md](src/modules/systems/skills/setup-design-system/SKILL.md).
 When the person asks to import or document a system component, read [src/modules/systems/skills/document-component/SKILL.md](src/modules/systems/skills/document-component/SKILL.md).
 <!-- /studio:modules -->
 

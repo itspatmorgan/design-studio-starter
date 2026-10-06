@@ -2,7 +2,7 @@
 title: "Assets and fonts"
 ---
 
-Keep fonts, logos, images, and other static files with the scope that owns them. Asset folders are ordinary directories; they need no registration.
+Keep fonts, icons, logos, images, and other static files with the scope that owns them. Assets are part of a system alongside its theme, components, context, and skills. Asset folders are ordinary directories; they need no registration.
 
 ## Locations
 
@@ -15,6 +15,8 @@ Keep fonts, logos, images, and other static files with the scope that owns them.
 | Files that need a fixed public URL or unchanged filename | `public/` |
 
 Create a directory when it is needed. Module-specific platform assets can live in that module's `assets/` folder, so they leave with the module.
+
+Within a system, use recognizable subfolders such as `fonts/`, `icons/`, and `images/` when useful. Package-provided fonts and icons can remain dependencies rather than copied files. Declare those dependencies in package metadata and describe their source and usage in the system README. Local asset discovery does not activate a theme, font, or icon library; imports and scoped usage remain explicit.
 
 A team logo or font used by its product views usually belongs to the assigned design system. Studio's logo and fonts belong to the platform. Use `src/lib/assets/` only when reuse is independent of a particular system.
 

@@ -1,6 +1,6 @@
 ---
 name: setup-design-system
-description: "Import, replace, or adapt a studio design system and migrate its dependencies. Use document-component for one component."
+description: "Curate a studio design system for a prototype, or assess and import an existing React system with its theme and assets. Use document-component for one component."
 ---
 
 ## Scope and input
@@ -9,13 +9,27 @@ Read the [system authoring context](../../context/authoring.md), [system contrac
 
 Inspect installed systems, configuration, `components.json`, packages, and all content using the current system. Include disabled module content.
 
-Collect missing system ID, component source or package, tokens, and usage guidance. If only design files exist, inspect available material and report gaps.
+Start with what the person wants to prototype and whether they already have product components and a theme. A designer may name components and visual choices. For a product manager, decompose the intended flow into screens, states, and the smallest supporting kit. Ask only for decisions needed for the next step.
+
+Collect missing system ID, component source or package, tokens, assets, and usage guidance. If only design files exist, inspect available material and report gaps.
 
 Use supplied decisions. Do not present the placeholder's styles as the person's product system.
 
+## Choose the path
+
+- Keep the starter while exploring, adapt it, or create a separate system according to the person's choice. Sample removal is a separate decision.
+- For a curated library kit, follow [Curate from libraries](references/curated-libraries.md). Use shadcn as the primary starting point and Untitled UI when it fits the intended work.
+- For existing React code, follow [Assess an existing system](references/existing-react-system.md) before importing. An assessment request alone does not authorize migration.
+
+Describe the proposed components, theme, assets, dependencies, and known gaps in plain language. Apply already-authorized choices. Ask about unresolved scope or fidelity compromises before dependent work.
+
+Context and skills are separate curation decisions. Save supplied product knowledge; do not invent personas or product context to fill folders. Add a skill only for a demonstrated recurring task. Do not install a skills catalog during setup.
+
+For an assessment-only request, finish with the evidence, proposed subset, adaptations, and unresolved questions. Continue into implementation only when authorized. An assessment does not need a new system or prototype to be complete.
+
 ## Establish the kit
 
-1. Adapt Product in place if the person chooses its components. Otherwise, preview `pnpm studio create-system` and apply authorized creation.
+1. Adapt the chosen installed system in place if requested. Otherwise, preview `pnpm studio create-system` and apply authorized creation.
 2. Import components or connect the package. Avoid unnecessary copies of package code.
 3. Adapt aliases, dependencies, themes, and portals to the system contract. Place fonts, logos, and imagery using the [static asset convention](../../../../platform/context/assets.md).
 4. Follow [document-component](../document-component/SKILL.md) for component pages and examples.
@@ -29,7 +43,7 @@ Run `pnpm build` before switching the default. Preview `pnpm studio configure --
 
 The command preserves existing system choices. Migrate retained prototypes by updating imports and metadata together.
 
-If cleanup is authorized, inspect all Product dependencies before retirement. Include sample content and disabled modules.
+If cleanup is authorized, inspect all dependencies of each system being retired, including Product or Marketing. Include sample content and disabled modules.
 
 Preserve recoverable copies when replacing content. Update shadcn destinations before removing Product. Preview removal and resolve dependencies instead of using `--force`.
 
@@ -44,3 +58,5 @@ Declare `['light']` or `['dark']` explicitly for a single-mode system. Scope dar
 Run `pnpm build` after migration. Review representative components, pop-ups, and supported color modes in the local app.
 
 Report source provenance, adaptations, the default system, verified prototype URL, and missing input. Return that prototype to initialization for reuse.
+
+For imported product code, distinguish verified API, theme, and behavior fidelity from unresolved differences. A passing build alone does not establish equivalence with production.

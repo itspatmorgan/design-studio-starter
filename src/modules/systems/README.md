@@ -136,7 +136,7 @@ The [contracts and operating instructions foundation](../../platform/context/con
 
 A system’s guidance applies to its product and design domain. Platform and modules own their operating knowledge and procedures.
 
-A system owns four parts: theme, components, context, and skills. Context and skills live directly in their system folders.
+A system owns five parts: theme, components, assets, context, and skills. Assets include fonts, icons, logos, and shared imagery. They may be local files or explicit package dependencies; their ownership follows the static asset convention. Context and skills live directly in their system folders. The current navigation exposes Context, Skills, Theme, and Components; a dedicated Assets browser is not yet implemented.
 
 Systems exposes these files at `/systems/<id>/context/<file>` and `/systems/<id>/skills/<skill>/SKILL`. Saved links from the combined Documentation browser redirect here. The shared source editor and file operations use explicit system and section identifiers. Content remains platform-styled even for a single-mode product system.
 

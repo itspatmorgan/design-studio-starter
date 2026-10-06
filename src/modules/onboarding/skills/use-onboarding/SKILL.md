@@ -10,4 +10,6 @@ Read the module [README](../../README.md) and the repository instructions. Confi
 3. Ask what they want to explore. Follow the current Build Prototype skill, contributor registration, and assigned system guidance when they want to create work.
 4. Keep instructions in ordinary design language. Let them explore or skip the introduction. Do not install tools, change shared configuration, delete samples, or replace a system merely to complete onboarding.
 
+When the person wants their own toolkit, follow [Setup Design System](../../../systems/skills/setup-design-system/SKILL.md). Start with their intended prototype or assess their existing React components and theme. Systems also own fonts, icons, logos, and shared images. Keep this an available next step rather than a prerequisite for exploring. Do not require product context or a skills collection to finish the welcome flow.
+
 If they need installation, use the setup entry point. If they want to personalize the running studio, use Configure Studio. Opening Welcome is not evidence of completed setup or a first prototype.

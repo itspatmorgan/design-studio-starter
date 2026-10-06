@@ -25,7 +25,7 @@ Each prototype uses an assigned system and can also have local components and st
 
 ## How a system supports the work
 
-Context explains the people, domain, intent, and standing requirements. Skills provide procedures for specific tasks. Together, they guide an agent’s decisions and work. Theme and components provide the interface toolkit used by the code.
+Your system has five parts: Theme, Components, Assets, Context, and Skills. Context explains the people, domain, intent, and standing requirements. Skills provide procedures for specific tasks. Theme, components, and assets provide the interface toolkit.
 
 ```mermaid
 ---
@@ -36,13 +36,14 @@ config:
 ---
 flowchart LR
   accTitle: How a system supports the work
-  accDescr: Context and skills guide an agent. Theme and components provide the interface toolkit. Both contribute to the work.
+  accDescr: Context and skills guide an agent. Theme, components, and assets provide the interface toolkit. All support the prototype.
   context[Context] --> agent[Agent]
   skills[Skills] --> agent
   theme[Theme] --> components[Components]
   agent -->|Decisions and tasks| work[Prototype]
   components -->|Code and styles| work
   theme --> work
+  assets[Assets] --> work
 ```
 
 A prototype’s assigned system connects it to that toolkit and guidance. Its code imports components and uses the system’s styles. Agents follow the system’s linked instructions; selecting a system does not automatically load every resource into a conversation.
@@ -57,7 +58,19 @@ A system declares whether it supports light mode, dark mode, or both. Systems wi
 
 ## Bring your own system
 
-Ask your agent to import your components, tokens, fonts, and supported color modes. You can keep the starter while exploring and replace it later.
+You can keep the starter while exploring, adapt it, or create a separate system. Removing sample systems and prototypes is your choice.
+
+Start with what you want to make. For example: “Help me curate a system for a customer feedback dashboard.” Your agent can identify the small set of components and theme choices needed for that first prototype. You can also name the components and visual choices directly. shadcn is the primary library starting point; Untitled UI is another source when it suits the work.
+
+If you have an existing React product, ask: “Assess how we can bring our components and theme into this studio.” Share accessible source code or a package. Your agent checks component APIs, theme, fonts, assets, and dependencies before proposing an import. Application dependencies may require help from your engineer. Any changes to fidelity should be explicit.
+
+You do not need to write product context or install additional skills before starting. Add your team's knowledge when you have it, and choose skills for specific recurring tasks.
+
+### System assets
+
+Fonts, custom icons, logos, and images shared by your product belong to its system. Your agent can place local files in that system's `assets/` folder or connect an asset package. An image used by only one prototype can stay with that prototype.
+
+The current Systems navigation shows Theme and Components, including the configured icon library. There is no dedicated Assets browser yet. Ask your agent to inspect or add your system's files. Supplying actual fonts and icons helps preserve your product's appearance.
 
 System files are shared team content. Coordinate changes with your maintainer. Admins can choose an installed default system in [Studio settings](/documentation/guide/customize#configure-the-studio). Saving there, or asking your agent to use the studio configuration command, preserves existing prototypes' system choices, including None. Direct configuration edits do not provide that protection.
 

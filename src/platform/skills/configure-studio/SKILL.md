@@ -18,7 +18,7 @@ Collect unresolved studio name, personal or team use, contributor identity, desi
 1. Inspect the contributor, current studio configuration, systems, prototypes, and system context. Resume from actual state rather than restarting completed setup.
 2. Follow [setup-contributor](../setup-contributor/SKILL.md) in **registration-only mode**. Return here after identity and registration verification.
 3. Preview studio choices with `pnpm studio configure`. Team use requires at least one registered Admin key through `--admins key,key`. Assign the first studio owner during new-team setup; preserve existing Admins when resuming. Personal use derives Admin access from local contributor identity. Apply confirmed choices with `--yes` and restart the server when needed. The [configuration contract](../../context/config.md) owns role behavior.
-4. Follow [setup-design-system](../../../modules/systems/skills/setup-design-system/SKILL.md) for the chosen kit. Reuse its representative prototype for final verification.
+4. If the person wants to curate or import a kit now, follow [setup-design-system](../../../modules/systems/skills/setup-design-system/SKILL.md). Reuse its representative prototype for final verification. If they choose to explore with an installed starter, preserve that choice and continue without requiring a replacement system.
 5. Use the [maintain-context skill](../maintain-context/SKILL.md) to curate supplied context in the selected product system. Preserve the platform personas, principles, and skills. Keep unresolved materials explicit.
 
 The setup-design-system skill owns system migration and starter cleanup. Do not perform a second cleanup here.
@@ -37,4 +37,4 @@ Run `pnpm build`. Inspect the local prototype and Systems pages. Check identity,
 
 Use the UI for review when helpful. Save any context collected there in repository files.
 
-Report completed choices, verified local links, and unresolved input. Leave the local app available. Missing required context or system materials mean setup remains incomplete.
+Report completed choices, verified local links, and unresolved input. Leave the local app available. Missing materials block only the import or task that needs them. A usable studio with a chosen starter can complete initial configuration. Product context is curated when supplied; empty context and skills folders do not make setup incomplete.

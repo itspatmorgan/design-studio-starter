@@ -1,6 +1,6 @@
 ---
 name: studio-module-systems-setup-design-system
-description: "Import, replace, or adapt a studio design system and migrate its dependencies. Use document-component for one component."
+description: "Curate a studio design system for a prototype, or assess and import an existing React system with its theme and assets. Use document-component for one component."
 ---
 
 <!-- studio:generated-skill -->
