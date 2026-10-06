@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
+import { Image, Smile, Type } from 'lucide-react';
 import type { DesignSystem } from '@/platform/app/data/types';
 import { NotFound } from '@/platform/app/shell/App';
 import { IconsPage, PageHeader } from './foundations';
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/systems/studio/components/empty';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/systems/studio/components/empty';
 import { ThemeScope } from '../ThemeScope';
 import { assetLink, systemAssets, type SystemAsset } from '../data/assets';
 
@@ -47,6 +48,12 @@ export default function SystemAssets({ system, sys, kind, path }: { system: stri
   const items = assets.filter(asset => asset.kind === kind);
   const empty = !items.length && !(kind === 'Icons' && sys.icons);
   const guidance = `Ask your agent to add your system’s ${kind.toLowerCase()} and connect them to your theme or components. Package assets remain dependencies and are not listed as local files.`;
+  const Icon = { Fonts: Type, Icons: Smile, Images: Image }[kind];
+  const emptyDescription = {
+    Fonts: 'Ask your agent to bring in your product’s font files and connect them to this system’s theme.',
+    Icons: 'Ask your agent to bring in your custom icons for this system’s components.',
+    Images: 'Ask your agent to add logos and shared images for prototypes using this system.',
+  }[kind];
   return <>
     <PageHeader title={kind} description={kind === 'Icons' && sys.icons ? `This system uses ${sys.icons.library}.` : `${kind} owned by ${sys.label}.`} />
     {items.length ? <ul className="space-y-2">{items.map(asset => <li key={asset.path}>
@@ -54,7 +61,14 @@ export default function SystemAssets({ system, sys, kind, path }: { system: stri
         {kind !== 'Fonts' && <img src={asset.url} alt="" loading="lazy" className="size-10 shrink-0 object-contain" />}
         <span className="min-w-0 break-all text-sm">{asset.path}</span>
       </Link>
-    </li>)}</ul> : empty && <Empty><EmptyHeader><EmptyTitle>No local {kind.toLowerCase()} yet</EmptyTitle><EmptyDescription>{guidance}</EmptyDescription></EmptyHeader></Empty>}
+    </li>)}</ul> : empty && <Empty className="min-h-[16rem] bg-muted/40">
+      <EmptyHeader>
+        <EmptyMedia variant="icon" className="bg-background"><Icon aria-hidden="true" /></EmptyMedia>
+        <EmptyTitle>No local {kind.toLowerCase()} yet</EmptyTitle>
+        <EmptyDescription>{emptyDescription}</EmptyDescription>
+      </EmptyHeader>
+    </Empty>}
+    {empty && <p className="mt-4 text-xs text-muted-foreground">Assets provided by packages are not listed as local files.</p>}
     {!empty && <p className="my-6 text-sm leading-6 text-foreground/80">{guidance}</p>}
     {kind === 'Icons' && sys.icons && <ThemeScope themeClass={sys.scopeClass}><IconsPage icons={sys.icons} /></ThemeScope>}
   </>;
