@@ -22,8 +22,9 @@ Read the [plugin README](README.md) for installation commands. The plugin folder
 ## Test each harness
 
 - **Codex:** add this checkout as the local plugin marketplace and install the current Design Studio package. If an older experiment is installed, refresh or replace that installation using the plugin controls. Confirm the installed version is experiment .11, then start a fresh chat.
-- **Claude Code:** run `claude --plugin-dir /absolute/path/to/design-studio-starter/plugins/design-studio`, then invoke `/design-studio:create-studio`. This local test does not change global plugin registrations. Repository marketplace installation can be checked afterward.
-- **Cursor:** use Customize → From GitHub Repository, import `itspatmorgan/design-studio-starter`, and install Design Studio. Confirm the current package loads, then start a fresh agent chat.
+- **Claude Code plugin:** follow the local registration procedure in [SETUP.md](../../SETUP.md#claude-code-local-plugin-instructions), then test in Claude Desktop’s Code view with Local selected. Verify the plugin commands before asking it to create a studio. Keep unrelated work repositories out of this test.
+- **Cursor plugin:** follow [local plugin installation](../../SETUP.md#cursor-local-plugin-instructions), reload the app, and verify its skills in Customize before starting a fresh local Agent chat.
+- **Direct from source:** use [the plugin-free request](../../SETUP.md#4-direct-from-the-source-repository) in a local desktop agent without Design Studio installed.
 
 Ask each agent: “Create my Design Studio in [your chosen new folder]. Handle setup and opening it for me.” The person should not need to clone the studio or run its setup commands themselves.
 
@@ -33,15 +34,16 @@ For each harness, check:
 2. Welcome appears. Explore its concepts, then open the Product example.
 3. Continue with the agent in the owned studio folder. Confirm project skills are available and the contributor is resolved before prototype edits.
 4. Ask for a small prototype using the Product system. Check that it uses that system and opens successfully.
-5. Close and reopen the studio with the plugin. The prototype remains and Welcome does not repeat in the same browser origin.
+5. Close and reopen the studio with the plugin. The prototype remains and Welcome does not repeat after a server restart or a preview-port change.
 
 Record what the agent did, where it needed human help, and any unclear step. For skill discovery, note whether skills appear in the harness’s UI and whether the agent actually uses the appropriate procedure.
 
 | Harness | Package/version | Setup + Welcome | Workspace + skills | First prototype | Reopen | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| Codex | experiment .10 confirmed | Person reported successful setup on 2026-10-06; Welcome details not separately recorded | Pending | Pending | Pending | Codex CLI 0.137.0; checkout 291e657. Feedback: explain local file ownership, the exact destination, and the Developer folder. Shared create-studio wording updated afterward; revised wording needs a fresh native test. |
-| Claude Code | Pending | Pending | Pending | Pending | Pending | |
-| Cursor | Pending | Pending | Pending | Pending | Pending | |
+| Codex | experiment .11 | Person confirmed setup and numbered installs | Person confirmed folder handoff | Passed | Verify against updated starter pin | |
+| Claude Desktop Code | experiment .11, locally registered | Person reports setup working well on 2026-10-06 | Plugin commands verified; folder controls inspected | Pending | Pending | Downloaded older pinned starter. Use a separate test studio and preserve unrelated workspaces. |
+| Cursor | Pending | Pending | Pending | Pending | Pending | Local directory install is the first-release path. |
+| Direct from source | No plugin | Pending | Pending | Pending | Pending | |
 
 ## Follow-up checks
 

@@ -2,7 +2,13 @@
 
 This experimental package helps a local coding agent create, open, and use Design Studio. A designer asks “Create my Design Studio.” The agent handles downloading and preparation, opens a preview, and helps them continue in the owned studio folder.
 
-Public directory submission has not happened. Claude Desktop’s local Code view and Cursor setup journeys still need testing. The primary audience uses desktop apps; CLI commands are maintainer tools or an explicitly chosen alternative. The pilot targets macOS; Windows and Linux remain unverified.
+## Staged release
+
+The primary audience uses Codex desktop, Claude Desktop’s local Code view, and Cursor. The first release will use each tool’s supported local or repository plugin installation. Public-directory submissions and reviews are a later distribution stage, not a prerequisite for the first release.
+
+[Set up Design Studio](../../SETUP.md) owns the four user paths: Codex plugin, Claude Code plugin, Cursor plugin, and direct from the source repository. Repository catalogs are installation metadata; they do not imply a reviewed directory listing. Keep terminal commands in agent or maintainer instructions.
+
+Before the first release, publish a tested starter revision, update the bootstrap pin to it, and complete the remaining Cursor and direct-source tests. The current pin still precedes recent local fixes. Codex setup has passed; the person reports Claude Desktop setup working well. Reopen and work-preservation checks remain separate evidence. The pilot targets macOS; Windows, Linux, and clean-computer prerequisite installation remain unverified.
 
 ## One setup flow
 
@@ -58,7 +64,7 @@ Claude Desktop pilot journey:
 3. Verify the source folder and preview, then follow [Host handoff](skills/create-studio/references/host-handoff.md) to continue in that exact folder.
 4. Create a first prototype, restart, and reopen the same studio. Remove disposable test installs after verification.
 
-The marketplace dialog and folder selector were inspected in the desktop app on October 6, 2026. Plugin installation, skill activation, folder handoff, and setup have not yet passed a live Claude Desktop test. A package validator or CLI session does not prove this journey.
+The marketplace dialog and folder selector were inspected on October 6, 2026. Local CLI registration made all three plugin commands available in Claude Desktop; the person then reported setup working well. This local-install evidence does not prove the repository-import journey or reopen and preservation checks.
 
 Local Claude maintainer validation and optional CLI testing:
 
@@ -70,7 +76,7 @@ claude --plugin-dir /absolute/path/to/this/repository/plugins/design-studio
 
 In that Claude session, invoke `/design-studio:create-studio`. This tests the package in place without changing global plugin registrations. For repository distribution after pushing these manifests, add `itspatmorgan/design-studio-starter` as a Claude marketplace and install `design-studio@design-studio-experiment`.
 
-Cursor supports repository marketplace imports through Customize → From GitHub Repository. That test requires the new `.cursor-plugin/marketplace.json` to be pushed first. Then install Design Studio and ask it to create a studio. A valid manifest alone does not prove import, activation, or handoff.
+For the first release, test Cursor’s local directory installation described in [SETUP.md](../../SETUP.md#cursor-local-plugin-instructions). Current official documentation requires a copy inside `~/.cursor/plugins/local`; links outside that directory are skipped. Repository team catalogs and reviewed public listings are additional distribution paths. A valid manifest alone does not prove activation or handoff.
 
 Official references: [Claude Desktop](https://code.claude.com/docs/en/desktop), [OpenAI packaging](https://developers.openai.com/plugins/build/plugins), [Claude plugins](https://code.claude.com/docs/en/plugins-reference), [Claude marketplaces](https://code.claude.com/docs/en/plugin-marketplaces), [Cursor plugins](https://cursor.com/docs/reference/plugins), [Cursor skills and imports](https://cursor.com/docs/skills).
 
@@ -82,12 +88,13 @@ Official references: [Claude Desktop](https://code.claude.com/docs/en/desktop), 
 | Visible source and workspace handoff | Person confirmed the Codex folder link opens a chat in the owned studio. Persistent sidebar registration remains unverified. |
 | Shared package checks | Thirteen plugin/bootstrap tests cover numbered default installs, pinning, preservation, linked paths, receipts, Claude entries, generated manifests, and marketplace resolution. |
 | Claude package and marketplace schema | Installed Claude Code 2.1.285 validator accepts both. This is schema evidence only. |
-| Claude Desktop local Code journey | Marketplace import and local folder controls inspected on October 6, 2026. Installation, activation, setup, preview, and handoff remain pending. |
+| Claude Desktop local Code journey | Local installation and desktop command discovery verified October 6, 2026. Person reports setup working well. Repository import, reopen, and work-preservation checks remain pending. |
 | Cursor package | Follows current official format. Repository import and live activation remain pending. |
 | Starter revision | Public merged revision downloaded and prepared successfully in a disposable QA folder. Its home rendered in the browser; flat context, current instruction reader, project skills, and Claude import were verified. This host already has prerequisite tools. |
 | Direct setup request | Implemented; first-run agent journey remains pending. |
 | Clean computer | Missing tools, permission prompts, and interrupted prerequisite installation remain pending. The current host already has dependencies. |
-| Public distribution | Submission, review, and listing are pending for each host. |
+| First release distribution | Local/repository installs planned; updated public starter pin and remaining native tests are gates. |
+| Reviewed public directories | Later stage. Submission, review, and listing remain pending. |
 | Team use | Separate onboarding and sharing tests are pending. |
 
 For each entry path, verify the full journey: discover or obtain instructions, install/invoke, create the owned folder, open its preview, continue in that folder, and create a first prototype using its current context. Then reopen after restart and confirm plugin removal and updates preserve user work. Check failures with missing tools, an occupied preview port, an interrupted setup, an existing unrelated destination, and a custom instruction entry.

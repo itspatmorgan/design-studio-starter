@@ -8,15 +8,22 @@ toc: true
 
 Your coding agent can handle downloading and opening Design Studio for you. The bundled systems and prototypes are examples for learning. Explore them first, then customize, replace, or remove them to fit your needs.
 
-## Ask your agent to set it up
+## Choose your setup method
 
-Open a local coding tool such as ChatGPT/Codex, Claude Code, or Cursor. Copy the request from [Set up with your agent](https://github.com/itspatmorgan/design-studio-starter/blob/main/SETUP.md) into its chat.
+Use a desktop coding app with local access. Choose the matching path in the [setup instructions](https://github.com/itspatmorgan/design-studio-starter/blob/main/SETUP.md):
 
-The agent prepares a studio in your user Developer folder and opens a preview. It may ask for permission to create the folder or install a missing tool. When it finishes, continue working in the studio folder it shows you.
+| Method | Where to start |
+| --- | --- |
+| [1. Codex plugin](https://github.com/itspatmorgan/design-studio-starter/blob/main/SETUP.md#1-codex-plugin) | Ask a local Codex desktop chat to install the plugin, then create your studio. |
+| [2. Claude Code plugin](https://github.com/itspatmorgan/design-studio-starter/blob/main/SETUP.md#2-claude-code-plugin) | Install through Claude Desktop’s plugin controls, or let a local agent register it. Continue in Code with Local selected. |
+| [3. Cursor plugin](https://github.com/itspatmorgan/design-studio-starter/blob/main/SETUP.md#3-cursor-plugin) | Let Cursor’s local agent install the plugin, reload, and verify its skills in Customize. |
+| [4. Direct from source](https://github.com/itspatmorgan/design-studio-starter/blob/main/SETUP.md#4-direct-from-the-source-repository) | Give your local agent the setup request. No plugin is needed. |
 
-Native Design Studio plugins are being tested. If you already have the experimental plugin, ask: “Create my Design Studio.” Public directory installation will be available after release.
+The first release is planned around local and repository installs, without waiting for reviewed public-directory listings. Plugins are currently experimental. Cursor and direct-source journeys still need live verification. If your organization restricts plugin installs, use the direct-source path.
 
-If you already have a studio, ask your agent to open it. If you are joining a team, ask it to help you join the team's existing studio.
+Your agent handles downloading, missing dependencies, and opening the preview. It may ask for permission to create files or install tools. All studio files live locally on your computer. The default is `~/Developer/Design Studio`; additional installs add a number. Developer is an ordinary folder in your home folder for keeping your studios together.
+
+After setup, continue in the actual studio folder the agent shows you. A preview alone does not select that folder in your coding app. To return later, open that same folder and ask “Open my Design Studio.” If you are joining a team, ask the agent to help you join its existing studio.
 
 ## Run the starter
 

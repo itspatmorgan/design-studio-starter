@@ -6,9 +6,9 @@ Made for designers and product managers, working individually or with a team. Br
 
 ## Get started
 
-Ask your local coding agent to handle setup. Copy the request in [Set up with your agent](SETUP.md) into ChatGPT/Codex, Claude Code, or Cursor. It gives the agent the instructions to download, prepare, and open a studio in your user Developer folder. Personal use does not require a GitHub account.
+Choose one of four paths in [Set up Design Studio](SETUP.md): **Codex plugin**, **Claude Code plugin**, **Cursor plugin**, or **direct from the source repository**. Use your desktop app and a local session. The agent handles technical setup and opens a studio in a visible folder on your computer. Personal use does not require a GitHub account.
 
-Native plugins are in testing; they are not yet available in public directories. See the [plugin experiment](plugins/design-studio/README.md) for current installation and test status.
+The first plugin release is planned around local and repository installs, without waiting for public-directory review. The package is currently experimental. See the [plugin release plan and test status](plugins/design-studio/README.md) for remaining checks. Public marketplace listings are a later stage.
 
 If you prefer to set it up yourself:
 
