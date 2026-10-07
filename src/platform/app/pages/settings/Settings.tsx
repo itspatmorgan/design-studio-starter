@@ -12,6 +12,15 @@ import { Card, CardHeader, CardContent, CardDescription } from '@/systems/studio
 import { adminProblems, type StudioConfig } from '@/platform/core/config';
 import { useStudioSettings } from '@/platform/app/settings/useStudioSettings';
 
+// Presentation groups do not change ownership or availability. Unlisted extensions remain visible.
+const moduleGroups = [
+  { id: 'prototyping', title: 'Prototypes', modules: ['prototypes', 'view', 'canvas', 'diagrams', 'document'] },
+  { id: 'design-systems', title: 'Systems', modules: ['systems', 'text'] },
+  { id: 'studio-team', title: 'Studio & team', modules: ['onboarding', 'documentation', 'contributors'] },
+  { id: 'extensions', title: 'Other modules', modules: [] },
+];
+const groupedModuleIds = new Set(moduleGroups.flatMap(group => group.modules));
+
 const fields = ['name', 'tagline', 'usage', 'defaultSystem', 'modules', 'admins'] as const;
 function Section({ id, title, description, children }: { id: string; title: string; description: string; children: ReactNode }) {
   return <section id={id} aria-labelledby={`${id}-title`}>
@@ -44,18 +53,19 @@ export default function Settings() {
       <form className="space-y-6" onSubmit={(event) => { event.preventDefault(); void save(); }}>
         {snapshot.config.usage === 'team' && snapshot.config.modules.contributors && <Alert className="p-4"><AlertTitle>Contributors &amp; Permissions</AlertTitle><AlertDescription>Manage your team’s studio and system assignments on the <Link to={'/contributors' as never} className="underline underline-offset-4">Contributors page</Link>.</AlertDescription></Alert>}
         <Section id="general" title="General" description="The shared identity and defaults for your studio.">
-          <fieldset disabled={disabled} className="grid gap-5 sm:grid-cols-2">
+          <fieldset disabled={disabled} className="grid gap-5">
             <div className="space-y-2"><Label htmlFor="studio-name">Studio name</Label><Input id="studio-name" value={draft.name} required onChange={(event) => update({ name: event.target.value })} /></div>
+            <div className="space-y-2"><Label htmlFor="studio-tagline">Tagline</Label><Input id="studio-tagline" aria-describedby="tagline-description" value={draft.tagline ?? ''} maxLength={140} onChange={(event) => update({ tagline: event.target.value })} /><p id="tagline-description" className="text-xs text-muted-foreground">An optional introduction on the published Home. Up to 140 characters.</p></div>
             <div className="space-y-2"><Label htmlFor="studio-use">Studio use</Label>
               <Select items={[{ value: 'personal', label: 'Personal' }, { value: 'team', label: 'Team' }]} value={draft.usage} disabled={disabled} onValueChange={(value) => { if (value) update({ usage: value as StudioConfig['usage'], ...(value === 'team' ? { modules: { ...draft.modules, contributors: true }, admins: draft.admins?.length ? draft.admins : snapshot.actor ? [snapshot.actor] : [] } : {}) }); }}>
-                <SelectTrigger id="studio-use" className="w-full"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="studio-use" aria-describedby="usage-description" className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent><SelectItem value="personal">Personal</SelectItem><SelectItem value="team" disabled={!snapshot.modules.some(module => module.id === 'contributors')}>Team</SelectItem></SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">Personal use gives you full access. Switching to team use enables Contributors &amp; Permissions and keeps existing Admins. If none are assigned, you become the first Admin.</p>
+              <p id="usage-description" className="text-xs text-muted-foreground">Personal gives you full access. Team enables contributor permissions.</p>
+              {draft.usage === 'team' && snapshot.config.usage === 'personal' && <p className="text-xs text-muted-foreground">{snapshot.config.admins?.length ? 'Your existing Admins stay assigned.' : 'You’ll become the first Admin.'}</p>}
               {!snapshot.modules.some(module => module.id === 'contributors') && <p className="text-xs text-muted-foreground">Ask your agent to install Contributors &amp; Permissions before switching to team use.</p>}
             </div>
-            <div className="space-y-2 sm:col-span-2"><Label htmlFor="studio-tagline">Tagline</Label><Input id="studio-tagline" aria-describedby="tagline-description" value={draft.tagline ?? ''} maxLength={140} onChange={(event) => update({ tagline: event.target.value })} /><p id="tagline-description" className="text-xs text-muted-foreground">An optional introduction on the published Home. Up to 140 characters.</p></div>
-            <div className="space-y-2 sm:col-span-2"><Label htmlFor="default-system">Default design system</Label>
+            <div className="space-y-2"><Label htmlFor="default-system">Default design system</Label>
               <Select items={snapshot.systems.filter(system => system.status === 'active').map((system) => ({ value: system.id, label: system.label }))} value={draft.defaultSystem} disabled={disabled} onValueChange={(value) => { if (value) update({ defaultSystem: value }); }}>
                 <SelectTrigger id="default-system" aria-describedby="system-description" className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>{snapshot.systems.filter(system => system.status === 'active').map((system) => <SelectItem key={system.id} value={system.id}>{system.label}</SelectItem>)}</SelectContent>
@@ -65,10 +75,19 @@ export default function Settings() {
           </fieldset>
         </Section>
         <Section id="modules" title="Modules" description="Turn optional capabilities on or off. Disabling a module keeps its files and content.">
-          <div className="divide-y divide-border">{snapshot.modules.map((module) => <div key={module.id} className="flex items-center justify-between gap-5 py-4 first:pt-0 last:pb-0">
+          <div className="space-y-6">{moduleGroups.map((group) => {
+            const modules = group.modules.length
+              ? group.modules.flatMap(id => snapshot.modules.filter(module => module.id === id))
+              : snapshot.modules.filter(module => !groupedModuleIds.has(module.id));
+            if (!modules.length) return null;
+            return <section key={group.id} aria-labelledby={`modules-${group.id}-title`}>
+              <h3 id={`modules-${group.id}-title`} className="mb-3 text-sm font-semibold">{group.title}</h3>
+              <div className="divide-y divide-border">{modules.map((module) => <div key={module.id} className="flex items-center justify-between gap-5 py-4 first:pt-0 last:pb-0">
             <div className="min-w-0"><Label htmlFor={`module-${module.id}`}>{module.label} <span className="font-normal text-muted-foreground">({module.id === 'contributors' && draft.usage === 'team' ? 'Required for teams' : module.optional ? 'Optional' : 'Required'})</span></Label><p id={`module-${module.id}-description`} className="mt-2 text-sm text-muted-foreground">{module.description}</p>{!module.compatible && <p className="mt-1 text-sm text-destructive">Incompatible with this platform</p>}</div>
             <Switch id={`module-${module.id}`} aria-describedby={`module-${module.id}-description`} checked={draft.modules[module.id]} disabled={disabled || !module.optional || (module.id === 'contributors' && draft.usage === 'team') || (!module.compatible && !draft.modules[module.id])} onCheckedChange={(checked) => update({ modules: { ...draft.modules, [module.id]: checked } })} />
           </div>)}</div>
+            </section>;
+          })}</div>
         </Section>
 
         {editable && <div className="space-y-3">

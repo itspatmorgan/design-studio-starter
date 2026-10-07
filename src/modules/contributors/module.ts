@@ -5,7 +5,7 @@ export default {
   label: 'Contributors & Permissions',
   version: '0.1.0',
   requires: '0.1.0',
-  description: 'Manage contributor and system assignments for a team studio.',
+  description: 'Manage team contributors, Admin access, and permissions to maintain systems.',
   optional: true,
   lib: false,
   section: { key: 'contributors' },
