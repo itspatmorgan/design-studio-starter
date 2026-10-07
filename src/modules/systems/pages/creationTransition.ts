@@ -5,7 +5,7 @@ function beginSystemTransition(name: string, operation: 'create' | 'delete', sys
   const style = getComputedStyle(theme);
   sessionStorage.setItem(key, JSON.stringify({ name, operation, system, started: Date.now(), appearance: {
     background: style.getPropertyValue('--background'), foreground: style.getPropertyValue('--foreground'),
-    muted: style.getPropertyValue('--muted-foreground'), border: style.getPropertyValue('--border'), font: style.fontFamily,
+    muted: style.getPropertyValue('--muted-foreground'), border: style.getPropertyValue('--border'),
   } }));
   window.dispatchEvent(new Event('studio:system-creating'));
 }

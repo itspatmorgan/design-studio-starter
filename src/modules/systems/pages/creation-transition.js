@@ -18,21 +18,22 @@
       surface.setAttribute('role', 'status');
       surface.setAttribute('aria-live', 'polite');
       surface.tabIndex = -1;
-      surface.style.cssText = 'position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px;background:var(--creation-background,Canvas);color:var(--creation-foreground,CanvasText);font-family:var(--creation-font,system-ui);transition:opacity 160ms ease';
+      surface.style.cssText = 'position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px;background:var(--creation-background,Canvas);color:var(--creation-foreground,CanvasText);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-style:normal;font-weight:400;letter-spacing:normal;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:opacity 160ms ease';
       const card = document.createElement('div');
       card.style.cssText = 'width:min(100%,420px);text-align:center';
       const icon = document.createElement('div');
       icon.setAttribute('aria-hidden', 'true');
       const animation = document.createElement('style');
-      animation.textContent = '@keyframes studio-system-create-spin{to{transform:rotate(360deg)}} @media(prefers-reduced-motion:reduce){#studio-system-creation [data-creation-spinner]{animation:none!important}}';
+      // Keep geometry and typography independent of the app stylesheet and web-font load.
+      animation.textContent = '#studio-system-creation,#studio-system-creation *{box-sizing:border-box} @keyframes studio-system-create-spin{to{transform:rotate(360deg)}} @media(prefers-reduced-motion:reduce){#studio-system-creation [data-creation-spinner]{animation:none!important}}';
       surface.append(animation);
       icon.dataset.creationSpinner = '';
       icon.style.cssText = 'width:32px;height:32px;margin:0 auto 24px;border:2px solid var(--creation-border,GrayText);border-top-color:var(--creation-foreground,CanvasText);border-radius:50%;animation:studio-system-create-spin 1s linear infinite';
       const title = document.createElement('h1');
-      title.style.cssText = 'font-size:24px;line-height:1.3;font-weight:600;margin:0 0 12px;overflow-wrap:anywhere';
+      title.style.cssText = 'font-family:inherit;font-style:normal;letter-spacing:normal;font-size:24px;line-height:1.3;font-weight:600;margin:0 0 12px;overflow-wrap:anywhere';
       title.dataset.creationTitle = '';
       const description = document.createElement('p');
-      description.style.cssText = 'font-size:14px;line-height:1.6;margin:0;color:var(--creation-muted,GrayText)';
+      description.style.cssText = 'font-family:inherit;font-style:normal;font-weight:400;letter-spacing:normal;font-size:14px;line-height:1.6;margin:0;color:var(--creation-muted,GrayText)';
       description.dataset.creationDescription = '';
       const retry = document.createElement('button');
       retry.type = 'button';
