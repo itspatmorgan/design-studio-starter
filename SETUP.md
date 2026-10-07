@@ -12,6 +12,14 @@ Open a local chat in the Codex desktop app and give it this request:
 
 After installation, restart the app if needed and start a new local chat. Confirm Design Studio is available in the plugin controls, then ask: **“Create my Design Studio.”**
 
+For optional publishing, ask instead: **“Create my Design Studio and publish a public review link with ChatGPT Sites.”** This beta workflow requires Sites to be installed and available in the local chat. Your source files and authoring environment stay on your computer. The published site lets anyone with the link view and interact with your built work. Ask for a private site if that is your preference.
+
+To request installation and publishing together, use:
+
+> Install the Design Studio plugin for Codex from https://github.com/itspatmorgan/design-studio-starter. Read SETUP.md and handle setup for me, preserving my other plugins. Then help me create my Design Studio on this computer and publish a public link I can share with reviewers. Guide me through any restart or new chat needed.
+
+After local changes, ask **“Publish my Studio”** to update the same Site with its existing audience. Local edits do not publish automatically. If publishing is unavailable or fails, you can continue working locally.
+
 ## 2. Claude Code plugin
 
 Use **Code** in the Claude desktop app with **Local** selected. Open **Customize → Plugins → Add plugin → Add marketplace** and add `itspatmorgan/design-studio-starter`. Install Design Studio from that repository's catalog. This is a repository install, not a reviewed public-directory listing.

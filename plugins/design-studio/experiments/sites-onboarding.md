@@ -95,7 +95,7 @@ Experiment .13 adds the public publishing capability and combined onboarding pro
 
 The existing local marketplace was refreshed and `codex plugin add` installed experiment .13. Read-back confirmed it enabled at `/Users/itspatmorgan/.codex/plugins/cache/design-studio-experiment/design-studio/0.1.0-experiment.13`. Its installed publish-studio skill matched the branch copy byte-for-byte. These checks prove installation, not desktop activation or a successful fresh-chat journey. See [the candidate handoff](../HANDOFF.md#test-the-sites-candidate) for the two test prompts and preservation checks.
 
-Publishing stays plugin-owned; no publishing procedure is being moved into the starter. The candidate is not yet merged, pushed, or publicly released.
+Publishing stays plugin-owned; no publishing procedure is being moved into the starter. At the candidate installation step, the changes had not been merged or pushed. Beta merge readiness does not imply the pending fresh-chat and recovery tests have passed.
 
 ## Local evidence logs
 

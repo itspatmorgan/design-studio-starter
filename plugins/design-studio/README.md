@@ -27,7 +27,7 @@ The default name and folder are **Design Studio** and `~/Developer/Design Studio
 
 Preparation trusts the inspected studio's mise configuration, installs pinned tools and dependencies, applies first-run personal defaults, and synchronizes project skills. The receipt `design-studio.local.json` records setup state and is excluded locally from Git. Repeating setup preserves existing configuration and work. Unrelated folders, linked metadata, invalid receipts, and modified initial settings are refused rather than overwritten.
 
-Experiment .13 is the Sites publishing test candidate. It retains the tested, publicly available starter at `b6fc5d9c790671da5a27810a08ff9e05de700474` from experiment .12. That starter includes smoother canvas loading, editor fallbacks, automatic link repair, configuration-backed Welcome dismissal, learning-example guidance, and consolidated harness generation. New installs use the working-studio package. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
+Experiment .13 is the Sites publishing beta package. It retains the tested, publicly available starter at `b6fc5d9c790671da5a27810a08ff9e05de700474` from experiment .12. That starter includes smoother canvas loading, editor fallbacks, automatic link repair, configuration-backed Welcome dismissal, learning-example guidance, and consolidated harness generation. New installs use the working-studio package. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
 
 ## Packaging and ownership
 
@@ -108,7 +108,7 @@ Official references: [Claude Desktop](https://code.claude.com/docs/en/desktop), 
 | Latest setup changes | Local revision `b2f74787db1aec4a4d9576121a90b0b6ba66fb72` packaged and passed its full build on October 6, 2026: 228 included tests, typecheck, and Vite. Browser review verified Welcome and dismissal after reload; fixture checks verified independent contributor progress, missing-declaration rejection, project skills, and repeat-create preservation. This used installed host dependencies and pinned tools, not clean-computer preparation or a native agent journey. The public starter pin still predates these changes. |
 | Direct setup request | Implemented; first-run agent journey remains pending. |
 | Clean computer | Missing tools, permission prompts, and interrupted prerequisite installation remain pending. The current host already has dependencies. |
-| First release distribution | Local/repository installs supported by experiment .12 and its updated public starter pin; remaining native tests are gates. |
+| Beta distribution | Local/repository installs supported by experiment .13 with the tested public starter pin retained. Sites deployment and public viewing are verified; fresh installed-plugin onboarding, later-chat publishing, and recovery remain pending beta checks. |
 | Reviewed public directories | Later stage. Submission, review, and listing remain pending. |
 | Team use | Disposable package checks verified a second contributor's explicit Welcome flag and preserved the first profile and shared configuration. Native join, first prototype, and sharing tests remain pending. |
 

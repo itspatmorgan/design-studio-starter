@@ -1,6 +1,6 @@
 # Test Design Studio on another computer
 
-The branch test candidate is `0.1.0-experiment.13`, adding optional public Sites publishing. Its pinned starter snapshot remains `b6fc5d9c790671da5a27810a08ff9e05de700474`, which includes canvas loading, editor fallback, automatic link repair, and configuration-backed Welcome fixes. New installs use a smaller working-studio package. Numbered default installs and local-file messaging remain. Existing studios are preserved and are not upgraded automatically. This candidate is not yet released on main.
+The beta test package is `0.1.0-experiment.13`, adding optional public Sites publishing. Its pinned starter snapshot remains `b6fc5d9c790671da5a27810a08ff9e05de700474`, which includes canvas loading, editor fallback, automatic link repair, and configuration-backed Welcome fixes. New installs use a smaller working-studio package. Numbered default installs and local-file messaging remain. Existing studios are preserved and are not upgraded automatically.
 
 The current development branch has later contributor-level Welcome, system-curation guidance, and separate asset pages. Those changes are not in the experiment .12 starter pin. Before testing them through the four installation paths, publish a tested starter revision and update the package pin. Record the downloaded revision from `design-studio.local.json`; the plugin version alone does not identify the studio code.
 
@@ -42,7 +42,7 @@ Record what the agent did, where it needed human help, and any unclear step. For
 
 ## Test the Sites candidate
 
-Use the `codex/sites-onboarding-experiment` checkout for experiment .13 rather than the unreleased main package. Install it through the local marketplace, restart the desktop app if needed, and start a fresh local chat with Design Studio and Sites available.
+Use the checkout containing experiment .13. For the customer delivery test, use the public repository after these changes are merged and pushed to main. Begin without Design Studio installed and follow the combined installation-and-publishing prompt in [SETUP.md](../../SETUP.md#1-codex-plugin). Verify the installed version, then follow any restart or new-chat handoff. Sites must be installed and available; plugin tagging is optional.
 
 Ask: “Create a new Design Studio named Design Studio Public Onboarding QA in my Developer folder and publish a public review link with ChatGPT Sites. Handle setup and opening it for me.”
 
@@ -50,7 +50,7 @@ Verify the complete local folder and preview, the saved Site identity, and a pub
 
 In a second fresh chat in that studio folder, ask: “Change my Studio tagline to Local creation. Public review. Same Studio. Then publish my Studio to its existing Site.” Verify the same project and URL, the new tagline, and continued public access. Record both chats' actual outcomes in the [Sites experiment record](experiments/sites-onboarding.md).
 
-Before release, verify explicit private-audience requests remain private and interrupted publishing preserves the local studio and resumes the same Site. Ordinary local edits must not publish automatically. Do not treat package installation as proof that either fresh-chat journey passed.
+Before broader rollout, verify explicit private-audience requests remain private and interrupted publishing preserves the local studio and resumes the same Site. Ordinary local edits must not publish automatically. These remain pending beta checks. Do not treat package installation as proof that either fresh-chat journey passed.
 
 ## Test the path to your own system
 
