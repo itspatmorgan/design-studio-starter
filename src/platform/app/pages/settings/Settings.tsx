@@ -24,7 +24,7 @@ const groupedModuleIds = new Set(moduleGroups.flatMap(group => group.modules));
 const fields = ['name', 'tagline', 'usage', 'defaultSystem', 'modules', 'admins'] as const;
 function Section({ id, title, description, children }: { id: string; title: string; description: string; children: ReactNode }) {
   return <section id={id} aria-labelledby={`${id}-title`}>
-    <Card className="bg-muted/40 ring-0 [--card-spacing:var(--spacing-6)]">
+    <Card className="border border-border/50 bg-muted/40 ring-0 [--card-spacing:var(--spacing-6)]">
       <CardHeader><h2 id={`${id}-title`} className="text-lg font-semibold">{title}</h2><CardDescription>{description}</CardDescription></CardHeader>
       <CardContent>{children}</CardContent>
     </Card>
