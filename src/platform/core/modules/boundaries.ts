@@ -28,6 +28,7 @@ export const MODULE_PLATFORM_ENTRIES: readonly string[] = [
   'src/platform/app/items/HomeSection',
   'src/platform/app/items/ItemRow',
   'src/platform/app/modules',
+  'src/platform/app/settings/useStudioSettings',
   'src/platform/app/shell/App',
   'src/platform/app/shell/ContributorAvatar',
   'src/platform/app/shell/FileActionItems',

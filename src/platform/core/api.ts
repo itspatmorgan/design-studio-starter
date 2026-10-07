@@ -11,3 +11,4 @@ export type { ModuleApp, PaletteContext, PrototypeAction } from '../app/modules.
 
 // Studio identity is available to module routes without importing app internals.
 export { APP_NAME, TAGLINE, CONFIG } from '../app/data/config.ts';
+export { adminProblems } from './config.ts';

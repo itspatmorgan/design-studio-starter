@@ -49,7 +49,7 @@ export default function settings() {
               config, version, actor, role: studioRole(config, actor, Object.keys(contributors)),
               contributors: Object.entries(contributors).map(([key, person]) => ({ key, name: person.name, github: person.github ?? '' })),
               modules: options.modules.map((m) => ({ id: m.id, label: m.label, description: m.description, optional: m.optional, compatible: compatible(m) })),
-              systems: SYSTEM_IDS.map((id) => ({ id, label: SYSTEM_SPECS[id].label })),
+              systems: SYSTEM_IDS.map((id) => ({ id, label: SYSTEM_SPECS[id].label, status: SYSTEM_SPECS[id].status })),
             });
           }
           if (req.method === 'POST') {

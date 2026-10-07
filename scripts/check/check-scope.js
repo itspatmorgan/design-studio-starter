@@ -4,7 +4,7 @@
 //   node scripts/check/check-scope.js --ci <before> <after>   (CI, fails if out of scope)
 import { changedFiles, git } from './changed-files.js';
 import { resolveContributor, keyForGithub } from '../cli/resolve-contributor.js';
-import { studioRole, sameSystemIdentity, parseMaintainers } from '../../src/platform/core/permissions.ts';
+import { studioRole, canPerform, sameSystemIdentity, parseMaintainers } from '../../src/platform/core/permissions.ts';
 import { readDeclaration } from '../../src/platform/core/modules/pack.ts';
 import { MODULES } from '../lib/modules.js';
 
@@ -15,6 +15,12 @@ let changed;
 try { changed = changedFiles(mode, before, after); } catch (e) { console.error(e.message); process.exit(2); }
 if (!changed) { console.error('Usage: check-scope.js --staged | --push | --ci <before> <after>'); process.exit(2); }
 const { files, baseRef } = changed;
+const baseConfig = (() => { try { const result = readDeclaration(git('show', `${baseRef ?? 'HEAD'}:studio.config.ts`)); return 'error' in result ? {} : result.value; } catch { return {}; } })();
+// Use the before-side mode: changing to personal in a proposal cannot bypass team review.
+if (baseConfig.usage === 'personal') {
+  console.log('Personal studio: team ownership checks are skipped. Dependency and asset checks still apply.');
+  process.exit(0);
+}
 const actor = process.env.STUDIO_SCOPE_ACTOR ?? process.env.GITHUB_ACTOR;
 // CI identity comes from the before-side profiles. Proposed profile edits cannot impersonate a privileged contributor.
 const baseProfiles = {};
@@ -55,15 +61,14 @@ function maintainedItem(f) {
   return null;
 }
 
-const baseConfig = (() => { try { const result = readDeclaration(git('show', `${baseRef ?? 'HEAD'}:studio.config.ts`)); return 'error' in result ? {} : result.value; } catch { return {}; } })();
 const studioAdmin = studioRole(baseConfig, key, Object.keys(baseProfiles)) === 'admin';
 const systemScope = f => {
   const match = /^src\/systems\/([^/]+)\//.exec(f);
-  if (!match || !key || !baseConfig.systems?.includes(match[1]) || !baseConfig.systemMaintainers?.[match[1]]?.includes(key)) return false;
+  if (!match) return false;
   try {
     const declarationFile = 'src/systems/' + match[1] + '/system.ts';
     const spec = readDeclaration(git('show', `${baseRef ?? 'HEAD'}:${declarationFile}`));
-    if ('error' in spec || spec.value.role !== 'prototype' || spec.value.status !== 'active') return false;
+    if ('error' in spec || !canPerform(baseConfig, key, Object.keys(baseProfiles), { kind: 'system', id: match[1], role: spec.value.role, status: spec.value.status }, 'edit')) return false;
     if (f === declarationFile) {
       const next = readDeclaration(mode === '--staged' ? git('show', ':' + f) : git('show', `${after ?? 'HEAD'}:${f}`));
       return !('error' in next) && sameSystemIdentity(spec.value, next.value);

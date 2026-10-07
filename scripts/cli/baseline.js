@@ -18,6 +18,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 
 // A module's own files (what removing it deletes) and the words that mean source code is using it.
 const MODULES = {
+  contributors: { paths: ['src/modules/contributors'], pattern: 'modules/contributors' },
   onboarding: { paths: ['src/modules/onboarding'], pattern: "modules/onboarding|'onboarding'" },
   documentation: { paths: ['src/modules/documentation'], pattern: "modules/documentation|'documentation'" },
   systems: { paths: ['src/systems', 'src/modules/systems/pages', 'src/modules/systems/data/loadDocs.ts'], pattern: 'systems' },
@@ -126,6 +127,11 @@ function removal(id) {
   if (!m) { console.error(`Unknown module "${id}". Modules: ${Object.keys(MODULES).join(', ')}.`); process.exit(2); }
   const dir = scratchCopy(`remove-${id}`);
   try {
+    if (id === 'contributors') {
+      const personal = run(dir, 'node', ['scripts/cli/studio.js', 'configure', '--usage', 'personal', '--recovery', '--yes']);
+      if (!personal.ok) { console.log(`${id}: FAILS at personal configuration\n${personal.tail}`); return false; }
+      console.log('Checking Contributors & Permissions availability in personal use. Team use requires it.');
+    }
     if (id !== 'none') {
       const args = process.argv.includes('--off') ? ['disable', id] : ['remove', id, '--yes'];
       const operation = run(dir, 'node', ['scripts/cli/studio.js', ...args]);

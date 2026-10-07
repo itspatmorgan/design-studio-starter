@@ -296,6 +296,7 @@ function remove() {
   const notes = [];
   if (isModule) {
     const spec = MODULES[id];
+    if (id === 'contributors' && CONFIG.usage === 'team') fail('Team use requires Contributors & Permissions. Switch to personal use before removing it.');
     if (!spec.optional) fail(`The ${id} module can't be removed yet; other parts of the app still use it.`);
     paths.push(`src/modules/${id}`);
 

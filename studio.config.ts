@@ -16,6 +16,7 @@ export default {
     text: true,
     view: true,
     onboarding: true,
+    contributors: true,
   },
   systems: ['studio', 'product', 'marketing'],
   systemMaintainers: { product: [], marketing: [] },

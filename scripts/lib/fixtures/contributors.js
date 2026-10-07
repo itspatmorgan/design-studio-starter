@@ -1,9 +1,21 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { editStudioConfig } from '../studio-setup.js';
 
 export function writeProfiles(root, entries) {
   fs.mkdirSync(path.join(root, 'contributors'), { recursive: true });
   for (const [key, entry] of Object.entries(entries)) {
     fs.writeFileSync(path.join(root, 'contributors', `${key}.json`), JSON.stringify({ github: '', email: '', welcomeDismissed: false, ...entry }, null, 2) + '\n');
   }
+}
+
+// Platform integration tests own their team capability fixture, even in removal baselines.
+export function ensureTeamManagement(root) {
+  const file = path.join(root, 'src/modules/contributors/module.ts');
+  if (!fs.existsSync(file)) {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, "export default { id: 'contributors', label: 'Team fixture', version: '0.1.0', optional: true, lib: false, section: { key: 'contributors' } };\n");
+  }
+  const config = path.join(root, 'studio.config.ts');
+  fs.writeFileSync(config, editStudioConfig(fs.readFileSync(config, 'utf8'), { modules: { contributors: true } }));
 }

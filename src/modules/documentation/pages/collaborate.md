@@ -4,6 +4,7 @@ description: "Share work while keeping ownership clear."
 section: "Team"
 order: 30
 toc: true
+module: contributors
 ---
 
 A team shares a repository and systems, including their components and context. Each contributor has their own prototypes. Ask your agent to set up your contributor identity when you join an existing studio.
@@ -14,13 +15,13 @@ Make changes in your own prototypes. You can inspect other contributors' work an
 
 Prototype-local components and styles give you room to experiment without changing the team's shared system.
 
-## Studio settings and roles
+## Contributors and permissions
 
-**Studio settings** shows the studio's configuration, installed modules, and contributors. See [Configure the studio](/documentation/guide/customize#configure-the-studio) for how to open it, save changes, and manage optional capabilities.
+**Contributors** shows your team and their studio and system assignments. **Studio settings** manages the studio’s configuration and installed modules. See [Configure the studio](/documentation/guide/customize#configure-the-studio) for how to open it, save changes, and manage optional capabilities.
 
 Contributors manage their own prototypes. System maintainers also manage the active systems assigned to them. Admins manage the whole studio, including other contributors’ prototypes and system availability. Team studios need at least one Admin and can have several. In personal use, your local contributor is automatically an Admin.
 
-Admins assign permissions in the Contributors section. Ask your agent to register or update profiles. Local permissions do not grant repository access. Settings administration is excluded from the published site. See [Studio configuration](/documentation/reference/platform/context/config.md) for file structure and command details.
+Admins assign permissions on the local **Contributors** page. Team use requires the Contributors & Permissions module. Personal use gives you full access and hides team management. Ask your agent to register or update profiles. Local permissions do not grant repository access. Contributor management is excluded from the published site. See [Studio configuration](/documentation/reference/platform/context/config.md) for file structure and command details.
 
 ## Share through Git
 

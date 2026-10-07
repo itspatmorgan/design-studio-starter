@@ -33,6 +33,9 @@ export function configProblems(config: unknown, modules: readonly { id: string; 
   if (typeof c.name !== 'string' || !c.name.trim()) problems.push(`${where}: add a name, what the app calls itself.`);
   if (!c.usage || !['personal', 'team'].includes(c.usage)) problems.push(`${where}: usage should be personal or team.`);
   problems.push(...adminProblems(c, contributors));
+  if (c.usage === 'team' && (c.modules?.contributors !== true || !modules.some(module => module.id === 'contributors'))) {
+    problems.push(`${where}: team use requires the Contributors & Permissions module installed and enabled. Switch to personal use before disabling or removing it.`);
+  }
   if (c.tagline !== undefined && (typeof c.tagline !== 'string' || c.tagline.length > 140)) problems.push(`${where}: tagline should be one short line of text, under 140 characters.`);
   if (typeof c.defaultSystem !== 'string' || !c.defaultSystem) problems.push(`${where}: declare defaultSystem explicitly.`);
   else if (systems && !systems.includes(c.defaultSystem)) {

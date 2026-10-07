@@ -68,7 +68,7 @@ export default function MainNav({ colorMode, onToggleColorMode, sectionNav }: Ma
   const openPalette = useOpenPalette();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const moduleLinks = (place: 'top' | 'bottom') => moduleApps.filter(({ app }) => app.rail === place).map(({ spec, app }) => (
-    <RailLink key={spec.id} to={sectionPath(spec) as never} label={spec.label} active={inSection(spec, pathname)}>
+    <RailLink key={spec.id} to={sectionPath(spec) as never} label={app.navLabel ?? spec.label} active={inSection(spec, pathname)}>
       <HugeiconsIcon icon={app.icon} size={16} />
     </RailLink>
   ));

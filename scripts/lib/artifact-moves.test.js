@@ -87,7 +87,10 @@ test('watcher repairs external renames and prototype folder renames only in supp
 });
 
 test('app operations repair references before reply and preserve ordering', () => {
-  const root = fs.mkdtempSync(path.join(ROOT, 'node_modules', '.file-move-test-'));
+  // Stay inside the repository and outside folders copied by concurrent integration tests.
+  // node_modules may be linked outside the repository by a removal baseline.
+  fs.mkdirSync(path.join(ROOT, 'dist'), { recursive: true });
+  const root = fs.mkdtempSync(path.join(ROOT, 'dist', '.file-move-test-'));
   try {
     write(root, 'meta.json', '{"title":"Test","order":["flow/main.tsx"]}');
     write(root, 'flow/main.tsx', 'export default 1'); write(root, 'next.tsx', "import Screen from './flow/main'; export default Screen");

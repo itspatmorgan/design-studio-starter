@@ -1,4 +1,4 @@
-import { writeProfiles } from './fixtures/contributors.js';
+import { writeProfiles, ensureTeamManagement } from './fixtures/contributors.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -38,6 +38,7 @@ test('local personal setup resumes, then a second clone joins a team without cha
   const git = (cwd, ...args) => execFileSync('git', args, { cwd, stdio: 'pipe' });
   try {
     copy(root, dir);
+    ensureTeamManagement(dir);
     git(dir, 'init', '-q');
     git(dir, 'config', 'user.name', 'Patrick Morgan'); git(dir, 'config', 'user.email', 'legacy@example.test');
     // Own the fixture data: a team's real contributors, systems and prototypes are arbitrary.
@@ -52,6 +53,14 @@ test('local personal setup resumes, then a second clone joins a team without cha
     run(dir, 'scripts/cli/studio.js', 'create-system', 'product', '--label', 'Product', '--yes');
     const declared = () => readDeclaration(fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8')).value;
     assert.deepEqual(declared().systems, ['studio', 'product']);
+    const teamConfig = fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8');
+    for (const args of [['disable', 'contributors'], ['remove', 'contributors', '--yes']]) {
+      const denied = spawnSync(process.execPath, ['scripts/cli/studio.js', ...args], { cwd: dir, encoding: 'utf8' });
+      assert.equal(denied.status, 1);
+      assert.match(denied.stderr, /[Tt]eam use requires/);
+      assert.equal(fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8'), teamConfig);
+      assert.ok(fs.existsSync(path.join(dir, 'src/modules/contributors/module.ts')));
+    }
     const required = spawnSync(process.execPath, ['scripts/cli/studio.js', 'remove', 'studio', '--yes'], { cwd: dir, encoding: 'utf8' });
     assert.equal(required.status, 1);
     assert.match(required.stderr, /cannot be removed/);

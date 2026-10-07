@@ -1,4 +1,4 @@
-import { writeProfiles } from './fixtures/contributors.js';
+import { writeProfiles, ensureTeamManagement } from './fixtures/contributors.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -74,6 +74,7 @@ test('create and rename preserve addresses, file errors recover, and system remo
   const root = path.resolve('.');
   try {
     fs.cpSync(root, dir, { recursive: true, filter: (file) => !['node_modules', 'dist', '.git'].includes(path.basename(file)) });
+    ensureTeamManagement(dir);
     fs.symlinkSync(path.join(root, 'node_modules'), path.join(dir, 'node_modules'));
     // This journey creates prototypes with both starter systems, regardless of the host's QA state.
     const { editStudioConfig } = await import('./studio-setup.js');
@@ -276,6 +277,16 @@ test('CI accepts reviewed platform proposals and maintainer pushes, rejecting ot
     config.admins.push('sam'); fs.writeFileSync(configFile, 'export default ' + JSON.stringify(config) + ';');
     runGit('add', 'studio.config.ts'); runGit('commit', '-qm', 'Proposed Admin assignment');
     assert.equal(check(beforeElevation).status, 1, 'Proposed grants do not authorize themselves');
+    const beforeMode = runGit('rev-parse', 'HEAD');
+    config.usage = 'personal'; fs.writeFileSync(configFile, 'export default ' + JSON.stringify(config) + ';');
+    runGit('add', 'studio.config.ts'); runGit('commit', '-qm', 'Proposed personal mode');
+    assert.equal(check(beforeMode, 'unregistered-fixture').status, 1, 'Proposed personal mode cannot bypass team scope');
+    const personalBase = runGit('rev-parse', 'HEAD');
+    fs.appendFileSync(path.join(dir, 'README.md'), '\nPersonal work\n');
+    runGit('add', 'README.md'); runGit('commit', '-qm', 'Personal work');
+    const personalResult = check(personalBase, 'unregistered-fixture');
+    assert.equal(personalResult.status, 0, personalResult.stderr + personalResult.stdout);
+    assert.match(personalResult.stdout, /team ownership checks are skipped/);
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
 

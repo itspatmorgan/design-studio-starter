@@ -25,6 +25,8 @@ export type PrototypeAction = { label: string; icon: IconSvgElement; onSelect: (
 export type ModuleApp = {
   // Local creation workflows do not appear on published viewing sites.
   localOnly?: boolean;
+  // A short navigation label when the module's full name describes a broader capability.
+  navLabel?: string;
   icon: IconSvgElement;
   // Use none for contributions without a navigation destination. Otherwise, where its rail button sits, and its place among the others: low first, in the rail, the palette and the routes.
   rail: 'top' | 'bottom' | 'none';

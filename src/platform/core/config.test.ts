@@ -2,8 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { adminProblems, configProblems, isEnabled, studioRole, type StudioConfig } from './config.ts';
 
-const modules = [{ id: 'documentation', optional: true }, { id: 'prototypes', optional: false }];
-const config: StudioConfig = { name: 'Studio', usage: 'team', admins: ['sam'], modules: { documentation: true, prototypes: true }, systems: ['studio', 'product'], systemMaintainers: { product: [] }, defaultSystem: 'product' };
+const modules = [{ id: 'contributors', optional: true }, { id: 'documentation', optional: true }, { id: 'prototypes', optional: false }];
+const config: StudioConfig = { name: 'Studio', usage: 'team', admins: ['sam'], modules: { contributors: true, documentation: true, prototypes: true }, systems: ['studio', 'product'], systemMaintainers: { product: [] }, defaultSystem: 'product' };
 const problems = (changes: Record<string, unknown>) => configProblems({ ...config, ...changes }, modules, ['product']).join('\n');
 
 test('an explicit configuration is complete', () => {
@@ -86,4 +86,12 @@ test('system maintainer grants must be explicit, registered, and separate from S
   assert.match(problems({ systemMaintainers: { studio: [], product: [] } }), /registered prototype system/);
   assert.match(problems({ systemMaintainers: { product: ['sam', 'sam'] } }), /unique/);
   assert.match(configProblems({ ...config, systemMaintainers: { product: ['missing'] } }, modules, ['product'], 'studio', ['sam']).join(' '), /not a registered contributor/);
+});
+
+test('team management is required in team use and removable in personal use', () => {
+  assert.match(problems({ modules: { ...config.modules, contributors: false } }), /team use requires/);
+  const { contributors, ...personalModules } = config.modules;
+  const without = modules.filter(module => module.id !== 'contributors');
+  assert.deepEqual(configProblems({ ...config, usage: 'personal', modules: personalModules }, without, ['product']), []);
+  assert.match(configProblems({ ...config, modules: personalModules }, without, ['product']).join(' '), /team use requires/);
 });

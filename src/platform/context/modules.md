@@ -8,7 +8,7 @@ Modules are copied into the repository. They are not downloaded or loaded as plu
 
 ## Ownership and dependencies
 
-Keep a feature's implementation inside its module. Optional modules must support disabling and removal.
+Keep a feature's implementation inside its module. Optional modules must support disabling and removal in their supported configurations. Contributors & Permissions is optional for personal use and required for team use. Configuration validation rejects team use without it.
 
 Prototypes, Views, Text files, and Systems are required. Platform code and modules may depend on required modules.
 
@@ -34,6 +34,8 @@ Node discovery tooling may load declared files by their discovered paths.
 Public module libraries remain subject to the stricter prototype runtime boundary.
 
 `ModuleApp.rail: 'none'` lets a module contribute to Home without adding a navigation destination. It can omit routes and a section when it owns no browsable content.
+
+`ModuleApp.navLabel` supplies a shorter navigation label while the declaration retains the full capability name.
 
 `ModuleApp.localOnly: true` restricts a module’s app contributions (rail, routes, home, and search) to local development. Published viewing sites omit them; the module’s source and configuration remain available.
 

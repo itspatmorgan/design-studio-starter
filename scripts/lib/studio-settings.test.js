@@ -9,12 +9,12 @@ import { planSettings, readSettings, saveSettings } from './studio-settings.js';
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-settings-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  const config = { name: 'Studio', usage: 'team', admins: ['sam'], modules: { prototypes: true, notes: true }, systems: ['studio', 'product', 'brand'], systemMaintainers: { product: [], brand: [] }, defaultSystem: 'product' };
+  const config = { name: 'Studio', usage: 'team', admins: ['sam'], modules: { contributors: true, prototypes: true, notes: true }, systems: ['studio', 'product', 'brand'], systemMaintainers: { product: [], brand: [] }, defaultSystem: 'product' };
   fs.writeFileSync(path.join(root, 'studio.config.ts'), `// keep this comment\nexport default ${JSON.stringify(config)};\n`);
   fs.writeFileSync(path.join(root, 'AGENTS.md'), 'Shared guidance\n<!-- studio:modules -->\n<!-- /studio:modules -->\n');
   const options = {
     root, contributors: { sam: { name: 'Sam' }, alex: { name: 'Alex' } }, systems: ['product', 'brand'], platformId: 'studio', actor: 'sam',
-    modules: [{ id: 'prototypes', label: 'Prototypes', optional: false }, { id: 'notes', label: 'Notes', optional: true, instructions: [{ path: 'rules/notes.md', when: 'When making notes' }], section: { items: 'prototypes', folder: 'src/notes' } }],
+    modules: [{ id: 'contributors', label: 'Contributors & Permissions', optional: true }, { id: 'prototypes', label: 'Prototypes', optional: false }, { id: 'notes', label: 'Notes', optional: true, instructions: [{ path: 'rules/notes.md', when: 'When making notes' }], section: { items: 'prototypes', folder: 'src/notes' } }],
   };
   options.base = readSettings(root, options.contributors).version;
   return options;
@@ -98,4 +98,15 @@ test('Admin saves assign system maintainers without creating new studio roles', 
   assert.deepEqual(current.config.systemMaintainers, assignments);
   assert.throws(() => saveSettings({ ...options, actor: 'alex', base: current.version, changes: { admins: ['alex'] } }), error => error.status === 403);
   assert.throws(() => saveSettings({ ...options, base: current.version, changes: { systemMaintainers: { product: ['missing'], brand: [] } } }), /not a registered contributor/);
+});
+
+test('team module cannot be disabled, and personal mode does not erase grants', t => {
+  const options = fixture(t);
+  assert.throws(() => saveSettings({ ...options, changes: { modules: { contributors: false } } }), /team use requires/);
+  saveSettings({ ...options, changes: { usage: 'personal', modules: { contributors: false } } });
+  const current = readSettings(options.root, options.contributors);
+  assert.deepEqual(current.config.admins, ['sam']);
+  assert.deepEqual(current.config.systemMaintainers, { product: [], brand: [] });
+  assert.throws(() => saveSettings({ ...options, base: current.version, changes: { usage: 'team' } }), /team use requires/);
+  saveSettings({ ...options, base: current.version, changes: { usage: 'team', modules: { contributors: true } } });
 });

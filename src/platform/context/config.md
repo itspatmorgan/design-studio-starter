@@ -6,7 +6,7 @@ title: "Studio configuration"
 
 ## Change configuration
 
-Open **Studio settings** from the gear icon or search while running Studio locally. Contributors can inspect settings. Admins can edit basic configuration and optional module states. Admins assign team Admins and system maintainers in the Contributors section. Identity and profile preferences remain in repository files.
+Open **Studio settings** from the gear icon or search while running Studio locally. Contributors can inspect settings. Admins can edit basic configuration and optional module states. Team Admins assign studio and system permissions on the local **Contributors** page. Identity and profile preferences remain in repository files.
 
 Saving writes repository files, synchronizes module-owned agent instructions, and restarts the development server. Stale configuration or contributor snapshots are rejected. Reload settings before retrying a conflicting save. Settings and its editing API are excluded from the published viewing site.
 
@@ -22,7 +22,7 @@ For manually edited module configuration, run `pnpm studio sync` to refresh agen
 
 ## Local roles and contributors
 
-Studio has two local roles: Contributor and Admin. Registered people are Contributors by default. In team use, `admins` must contain at least one registered contributor key; several Admins are supported. In personal use, the resolved local contributor is automatically an Admin. Unregistered identities cannot save settings.
+Studio has two local roles: Contributor and Admin. Registered people are Contributors by default. In team use, `admins` must contain at least one registered contributor key; several Admins are supported. In personal use, the resolved local contributor is automatically an Admin. Team use requires the Contributors & Permissions module installed and enabled. Personal use can disable or remove it. Unregistered identities cannot save settings.
 
 The settings server checks the current role before applying each save. Only existing Admins can save shared settings. The API still validates Admin assignments in its configuration payload; saving cannot remove the last team Admin. These roles guide local behavior. Admins can manage all prototypes. Contributors retain direct write access to their own folders. Per-system maintainer grants add active system editing and managed rename. Archive, restore, deletion, creation, and default selection remain Admin actions. These grants do not authenticate people or grant GitHub permissions. Existing section-specific artifact policies remain separate.
 
@@ -35,7 +35,7 @@ Keep shared choices in `studio.config.ts`. Contributor profiles live in `contrib
 | Setting | Declaration |
 | --- | --- |
 | `name` | Required studio name, used by the app. |
-| `usage` | Required `personal` or `team`. Guides onboarding, without changing contributor ownership. |
+| `usage` | Required `personal` or `team`. Personal derives local Admin authority and skips team Git scope checks. Team requires Contributors & Permissions enabled and explicit Admin assignments. |
 | `admins` | Unique registered contributor keys. Required and nonempty in team use; personal use derives Admin access from local identity. |
 | `systemMaintainers` | Required object with every registered prototype-system ID explicitly mapped to unique registered contributor keys. Use `[]` for unassigned systems. Studio cannot have an entry. Rename migrates the entry, deletion removes it, and archiving preserves it for restoration. |
 | `tagline` | Optional line on the published front page, up to 140 characters. |
@@ -48,3 +48,9 @@ Keep shared choices in `studio.config.ts`. Contributor profiles live in `contrib
 The agent can run `pnpm studio status --json` to inspect configuration and setup state. This report does not replace a build and review of a working prototype.
 
 For capabilities and removal behavior, see [Module contract](/documentation/context/platform.core/context/modules).
+
+## Team management ownership
+
+Contributors & Permissions owns the management interface and assignment workflows. When installed, its contract is `src/modules/contributors/README.md`. The platform owns profiles, central grants, settings transactions, and permission decisions. Optional management surfaces cannot disable enforcement. The public `useStudioSettings` client supports field-scoped saves with conflict detection and unsaved-change protection.
+
+In Studio settings, switching to team use enables the installed Contributors & Permissions module. Existing Admin assignments remain. If there are none, the current registered contributor becomes the first Admin. CLI setup declares Admins and module availability explicitly.
