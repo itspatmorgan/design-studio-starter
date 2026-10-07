@@ -14,8 +14,8 @@ import { useStudioSettings } from '@/platform/app/settings/useStudioSettings';
 
 // Presentation groups do not change ownership or availability. Unlisted extensions remain visible.
 const moduleGroups = [
-  { id: 'prototyping', title: 'Prototypes', modules: ['prototypes', 'view', 'canvas', 'diagrams', 'document'] },
-  { id: 'design-systems', title: 'Systems', modules: ['systems', 'text'] },
+  { id: 'prototyping', title: 'Prototype tools', modules: ['prototypes', 'view', 'canvas', 'diagrams', 'document'] },
+  { id: 'design-systems', title: 'System resources', modules: ['systems', 'text'] },
   { id: 'studio-team', title: 'Studio & team', modules: ['onboarding', 'documentation', 'contributors'] },
   { id: 'extensions', title: 'Other modules', modules: [] },
 ];
@@ -25,7 +25,7 @@ const fields = ['name', 'tagline', 'usage', 'defaultSystem', 'modules', 'admins'
 function Section({ id, title, description, children }: { id: string; title: string; description: string; children: ReactNode }) {
   return <section id={id} aria-labelledby={`${id}-title`}>
     <Card className="bg-muted/40 ring-0 [--card-spacing:var(--spacing-6)]">
-      <CardHeader><h2 id={`${id}-title`} className="text-base font-semibold">{title}</h2><CardDescription>{description}</CardDescription></CardHeader>
+      <CardHeader><h2 id={`${id}-title`} className="text-lg font-semibold">{title}</h2><CardDescription>{description}</CardDescription></CardHeader>
       <CardContent>{children}</CardContent>
     </Card>
   </section>;
@@ -81,9 +81,9 @@ export default function Settings() {
               : snapshot.modules.filter(module => !groupedModuleIds.has(module.id));
             if (!modules.length) return null;
             return <section key={group.id} aria-labelledby={`modules-${group.id}-title`}>
-              <h3 id={`modules-${group.id}-title`} className="mb-5 text-sm font-semibold">{group.title}</h3>
+              <h3 id={`modules-${group.id}-title`} className="mb-3 text-xs font-medium text-muted-foreground">{group.title}</h3>
               <div className="divide-y divide-border">{modules.map((module) => <div key={module.id} className="flex items-center justify-between gap-5 py-4 first:pt-0 last:pb-0">
-            <div className="min-w-0"><Label htmlFor={`module-${module.id}`}>{module.label} <span className="font-normal text-muted-foreground">({module.id === 'contributors' && draft.usage === 'team' ? 'Required for teams' : module.optional ? 'Optional' : 'Required'})</span></Label><p id={`module-${module.id}-description`} className="mt-2 text-sm text-muted-foreground">{module.description}</p>{!module.compatible && <p className="mt-1 text-sm text-destructive">Incompatible with this platform</p>}</div>
+            <div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><Label htmlFor={`module-${module.id}`} className="font-medium">{module.label}</Label>{(!module.optional || (module.id === 'contributors' && draft.usage === 'team')) && <Badge variant="secondary" className="text-xs font-normal">{module.id === 'contributors' && draft.usage === 'team' ? 'Required for teams' : 'Required'}</Badge>}</div><p id={`module-${module.id}-description`} className="mt-1 text-xs leading-relaxed text-muted-foreground">{module.description}</p>{!module.compatible && <p className="mt-1 text-sm text-destructive">Incompatible with this platform</p>}</div>
             <Switch id={`module-${module.id}`} aria-describedby={`module-${module.id}-description`} checked={draft.modules[module.id]} disabled={disabled || !module.optional || (module.id === 'contributors' && draft.usage === 'team') || (!module.compatible && !draft.modules[module.id])} onCheckedChange={(checked) => update({ modules: { ...draft.modules, [module.id]: checked } })} />
           </div>)}</div>
             </section>;
