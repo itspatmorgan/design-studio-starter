@@ -1,4 +1,5 @@
 import { planSystemLifecycle, applySystemLifecycle } from '../lib/system-lifecycle.js';
+import { prototypeContext } from '../lib/prototype-context.js';
 import { moduleConsumers } from '../lib/imports.js';
 // pnpm studio <command>: add, remove, turn on or off, and make modules and design systems. For your agent: designers
 // ask in plain words and the agent runs these. Every command that changes files says what it will do first, and
@@ -15,6 +16,7 @@ import { moduleConsumers } from '../lib/imports.js';
 //   create-system <id> [--label <name>] [--out <folder>]
 //                                     start a new one; with --out, as a pack in that folder to publish
 //   sync [--check]                    synchronize routing and project skills; --check never writes
+//   context <prototype-folder> [--json] inspect assignment, rebuild target, scope, and guidance paths; never writes
 //   check                             pnpm check, and what has changed from the original of a module you added
 // Dry runs read declarations as data. --yes trusts the source: its checks run after packages install.
 import { execFileSync } from 'node:child_process';
@@ -476,8 +478,18 @@ function status() {
   }
 }
 
+function context() {
+  if (positional.length !== 1) fail('Usage: pnpm studio context src/prototypes/<contributor>/<prototype> [--json]');
+  try {
+    const problems = configProblems(CONFIG, Object.values(MODULES), SYSTEM_IDS, PLATFORM_ID, Object.keys(loadContributors()));
+    if (problems.length) fail(problems.join('\n'));
+    const report = prototypeContext({ root: ROOT, folder: positional[0], config: CONFIG, systems: SYSTEM_SPECS, modules: ENABLED_MODULES, contributor: resolveContributor(), contributors: Object.keys(loadContributors()) });
+    say(JSON.stringify(report, null, 2));
+  } catch (error) { fail(error.message); }
+}
+
 const commands = {
-  configure, status,
+  configure, status, context,
   list, check, sync: () => { say(syncAgents() ? 'Updated AGENTS.md.' : 'AGENTS.md is up to date.'); syncSkills(); },
   enable: () => setEnabled(positional[0], true), disable: () => setEnabled(positional[0], false),
   'rename-system': () => lifecycle('rename'), 'archive-system': () => lifecycle('archive'), 'restore-system': () => lifecycle('restore'), 'delete-system': () => lifecycle('delete'),

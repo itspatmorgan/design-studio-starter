@@ -27,6 +27,8 @@ Open your system's **Context** and **Skills** to read the current guidance. Ask 
 
 When adding guidance, look for an existing document that covers the subject. Keeping related knowledge together makes it easier to review and update. Give a different subject its own document when that makes it clearer.
 
+Save the choices that make the work fit your team. A skill can explain decisions and review the result while Studio's tools handle repeatable file operations and checks. Ask the agent to reuse those tools and keep each workflow focused on the requested outcome. A settings update should not create sample work just to complete a checklist.
+
 ```mermaid
 flowchart TD
   accTitle: Keep shared guidance useful

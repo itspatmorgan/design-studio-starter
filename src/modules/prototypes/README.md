@@ -19,6 +19,8 @@ Two artifacts cannot share a URL, such as `main.tsx` and `main.md` in one folder
 
 ## Metadata
 
+For agent inspection, run `pnpm studio context src/prototypes/<contributor>/<prototype> --json`. It reports assignment, pending rebuild, contributor scope, enabled modules, and system entry paths without writing files. Assignment validation is shared with the manifest; inspect artifact content and relevant guidance separately.
+
 | Field | Contract |
 | --- | --- |
 | `title` | Required display title. |

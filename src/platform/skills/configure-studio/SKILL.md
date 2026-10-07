@@ -1,25 +1,23 @@
 ---
 name: configure-studio
-description: "Configure studio identity, register its first contributor, and establish design-system and product-system context after the starter is running. For first-run installation, use the Guide; for someone joining an existing studio, use setup-contributor."
+description: "Configure a running studio for the first time or update requested studio settings. Use setup-contributor for someone joining; installation has its own workflow."
 ---
 
 ## Scope and input
 
 Use this skill when someone is ready to configure a running studio. The first-run install and launch steps are in the Guide's [getting started page](../../../modules/documentation/pages/getting-started.md); do not make configuration a prerequisite for launching the starter. Preserve existing work and confirmed choices.
 
-Read the [contributor scope](../../context/contributor-scope.md), [manage-modules skill](../manage-modules/SKILL.md), and current studio configuration.
+Read [contributor scope](../../context/contributor-scope.md), [manage-modules](../manage-modules/SKILL.md), and the relevant [configuration contract](../../context/config.md) sections. Run `pnpm studio status --json` and inspect current configuration.
 
-Inspect contributors, Git identity and remotes, installed systems, and system context. Missing dependencies or a stock name do not establish initialization intent.
-
-Collect unresolved studio name, personal or team use, contributor identity, design-system materials, and product context. Explain missing input without inventing decisions.
+Distinguish initial configuration from a settings update. Missing dependencies or a stock name do not establish initialization intent. Collect only unresolved choices needed for the requested work. Initial configuration can include identity, personal or team use, toolkit materials, and supplied product context.
 
 ## Prepare and configure
 
-1. Inspect the contributor, current studio configuration, systems, prototypes, and system context. Resume from actual state rather than restarting completed setup.
-2. Follow [setup-contributor](../setup-contributor/SKILL.md) in **registration-only mode**. Return here after identity and registration verification.
-3. Preview studio choices with `pnpm studio configure`. Team use requires Contributors & Permissions installed and enabled, and at least one registered Admin key through `--admins key,key`. Enable the installed module while still in personal use before switching to team use. Assign the first studio owner during new-team setup. Preserve existing Admins when resuming. Personal use derives Admin access from local contributor identity and can disable team management. For initial setup without an existing local Admin, use the explicit `--recovery` flag. Use recovery only for authorized setup or permission recovery. Apply confirmed choices with `--yes` and restart the server when needed. The [configuration contract](../../context/config.md) owns role behavior.
+1. Inspect the affected contributors, systems, and prototypes. Resume from actual state rather than restarting completed setup.
+2. If registration is needed, follow [setup-contributor](../setup-contributor/SKILL.md) in **registration-only mode**. Return here after identity verification.
+3. Preview requested choices with `pnpm studio configure`. Enable Contributors & Permissions before switching to team use, and provide registered Admin keys with `--admins key,key`. Preserve existing grants when resuming. Use `--recovery` only for authorized initial setup without an Admin or permission recovery. Apply confirmed choices with `--yes`; the command validates configuration and preserves existing prototype assignments. Restart the server as required.
 4. If the person wants to curate or import a kit now, follow [setup-design-system](../../../modules/systems/skills/setup-design-system/SKILL.md). Reuse its representative prototype for final verification. If they choose to explore with an installed starter, preserve that choice and continue without requiring a replacement system.
-5. Use the [maintain-context skill](../maintain-context/SKILL.md) to curate supplied context in the selected product system. Preserve the platform personas, principles, and skills. Keep unresolved materials explicit.
+5. If supplied product context needs saving, use [maintain-context](../maintain-context/SKILL.md) in the selected product system. Preserve platform personas, principles, and skills. Keep unresolved materials explicit.
 
 The setup-design-system skill owns system migration and starter cleanup. Do not perform a second cleanup here.
 
@@ -27,13 +25,11 @@ Do not create a remote, push, or configure hosting without a request. Personal l
 
 ## Verify completion
 
-Create a first prototype only if one was not already created for setup. Use `pnpm new` in the person's folder.
+For initial configuration, reuse the setup prototype or create one with `pnpm new` and inspect a view with the chosen system. Exercise Documents or Canvases when they are part of the requested setup, using their skills; skip disabled capabilities.
 
-Inspect a view with the chosen system. If Documents is enabled, exercise a document using the [write-document skill](../../../modules/document/skills/write-document/SKILL.md).
+For a settings update, verify the changed settings and affected navigation or system behavior. Do not create artifacts merely to verify a name, tagline, or permission change.
 
-If Canvases is enabled, exercise a canvas using the [use-canvas skill](../../../modules/canvas/skills/use-canvas/SKILL.md). Skip disabled capabilities.
-
-Run `pnpm build`. Inspect the local prototype and Systems pages. Check identity, URLs, and enabled navigation.
+Run `pnpm studio status --json` to confirm configuration and identity. Follow [working context](../../context/working-in-studio.md) for build and save requirements. Inspect the affected local pages.
 
 Use the UI for review when helpful. Save any context collected there in repository files.
 

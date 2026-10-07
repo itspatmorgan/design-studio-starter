@@ -1,15 +1,17 @@
 # Systems
 
-Read the [system contract](../README.md) before adding or changing a system, theme, component, or component page. It owns declarations, runtime boundaries, theme inventories, color modes, and documentation adapters.
+Use the assigned system's tokens, component APIs, and product guidance. Keep pop-ups in its themed container and review supported color modes. Add tokens deliberately when the work needs them; omitted tokens remain unavailable.
 
-- Resolve the prototype's assigned system before changing its implementation. Follow the contract's [runtime boundaries](../README.md#runtime-boundaries).
-- Use **Theme** for the system’s visual styling section and **theme tokens** for its inventory. Match this terminology in UI copy, documentation, and agent instructions.
-- Use the system's declared tokens and component APIs. Add theme tokens intentionally for the work rather than filling the upstream catalog. Follow the [theme contract](../README.md#theme).
-- Review components, pop-ups, and scoped styles in every supported color mode. Keep themed pop-ups inside their container as the contract requires.
-- Place fonts, logos, and imagery according to the [static asset convention](../../../platform/context/assets.md).
-- Use supported studio commands for system registration and configuration. Follow the [modules rule](../../../platform/skills/manage-modules/SKILL.md).
-- Obtain shared-change authorization through the [contributor scope](../../../platform/context/contributor-scope.md).
+Read the complete sections relevant to the change:
 
-For system import or replacement, follow [setup-design-system](../skills/setup-design-system/SKILL.md).
+| Work | Contract |
+| --- | --- |
+| Compose prototype views or pop-ups | [Runtime boundaries](../README.md#runtime-boundaries) and [Theme](../README.md#theme). |
+| Change components or themes | [Structure](../README.md#structure), [Runtime boundaries](../README.md#runtime-boundaries), and [Theme](../README.md#theme). |
+| Document components | [Component pages](../README.md#component-pages) and [document-component](../skills/document-component/SKILL.md). |
+| Import or replace a system | [setup-design-system](../skills/setup-design-system/SKILL.md). |
+| Maintain the Systems application surface | [Systems interface](interface.md). |
 
-For component import and documentation, follow [document-component](../skills/document-component/SKILL.md).
+Expand these reads when a dependency or ambiguity requires it. For `system: null`, follow the [prototype dependency boundaries](../../prototypes/README.md#dependency-boundaries) and local CSS; registered-system conventions do not apply.
+
+Use **Theme** and **theme tokens** in interface copy and guidance. Assets follow the [platform convention](../../../platform/context/assets.md). Shared changes follow [contributor scope](../../../platform/context/contributor-scope.md); registration and lifecycle changes use the [managed CLI](../../../platform/skills/manage-modules/SKILL.md).

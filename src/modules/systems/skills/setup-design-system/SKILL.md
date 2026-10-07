@@ -5,9 +5,9 @@ description: "Curate a studio design system for a prototype, or assess and impor
 
 ## Scope and input
 
-Read the [system authoring context](../../context/authoring.md), [system contract](../../README.md), and [manage-modules skill](../../../../platform/skills/manage-modules/SKILL.md).
+Read the [system authoring context](../../context/authoring.md) and the contract sections it selects. Use [manage-modules](../../../../platform/skills/manage-modules/SKILL.md) when creation, registration, default changes, or retirement are needed.
 
-Inspect installed systems, configuration, `components.json`, packages, and all content using the current system. Include disabled module content.
+Inspect the target system, configuration, component destinations, and packages. For replacement or retirement, inspect all consumers, including disabled module content.
 
 Establish whether the person wants to curate a toolkit or bring an existing React system. For curation, start with what they want to prototype. A designer may name components and visual choices. For a product manager, decompose the intended flow into screens, states, and the smallest supporting kit. For an existing system, start with its source, inventory, and dependencies. Do not require a prototype idea to audit it and propose an import plan. Ask only for decisions needed for the next step.
 
@@ -25,7 +25,7 @@ Describe the proposed components, theme, assets, dependencies, and known gaps in
 
 Context and skills are separate curation decisions. Save supplied product knowledge; do not invent personas or product context to fill folders. Add a skill only for a demonstrated recurring task. Do not install a skills catalog during setup.
 
-For an assessment-only request, finish with the evidence, import plan, adaptations, and unresolved questions. The plan can cover the whole reusable system in stages. Continue into implementation only when authorized. An assessment does not need a new system or prototype to be complete.
+For an assessment-only request, report evidence, an import plan, adaptations, and unresolved questions. Cover the reusable system in stages when useful. No new system or prototype is required.
 
 ## Establish the kit
 
@@ -51,11 +51,9 @@ Do not remove another person's work merely because a contributor joined. Explain
 
 ## Completion
 
-Use the managed CLI to register the system and its explicit empty maintainer assignment in `studio.config.ts`. Explicitly declare its status, role, styling contract, supported `colorModes`, documentation policy, and origin in `system.ts`; omitted choices fail validation. Declare the system's chosen theme token inventory, including choices matching upstream defaults. Omitted tokens and families stay unavailable; do not fill the upstream catalog. Adjust components and examples to the selected inventory, and check their utility use. Custom systems use their own scoped CSS vocabulary. Query names and thresholds must be declared; shared names currently require matching thresholds, while unique names or scoped CSS queries support system-specific thresholds.
+Managed creation and installation register the system and maintainer entry. Set the intended [system declarations](../../README.md#structure) and [theme inventory](../../README.md#theme); validators check their structure. Adjust components and examples to those choices.
 
-Declare `['light']` or `['dark']` explicitly for a single-mode system. Scope dark tokens to `.<theme-class>[data-color-mode="dark"]`, and keep pop-ups within the system boundary. Verify that a single-mode system keeps its mode when Studio toggles.
-
-Run `pnpm build` after migration. Review representative components, pop-ups, and supported color modes in the local app.
+Review representative components and pop-ups in every supported color mode. Verify that a single-mode system keeps its mode when Studio toggles. Follow [working context](../../../../platform/context/working-in-studio.md) for build and save requirements after migration.
 
 Report source provenance, adaptations, the default system, verified prototype URL, and missing input. Return that prototype to initialization for reuse.
 

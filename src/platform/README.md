@@ -40,6 +40,8 @@ Choose the owner, edit its canonical context or skill, and update its README and
 - **Documentation standards** defines writing and metadata.
 - **Agent context routing** defines discovery and synchronization.
 
+Use existing commands for repeatable mechanics and skills for decisions and outcome review. [Documentation standards](context/documentation-standards.md#divide-skills-and-code) defines this boundary; [Agent context routing](context/agent-context.md#resolve-a-prototypes-system) documents read-only prototype inspection.
+
 ## Implementation
 
 `core/` holds shared APIs and runtime boundaries. `app/` holds the application shell and shared readers. Markdown knowledge lives in Context; task procedures live in Skills.

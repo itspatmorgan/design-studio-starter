@@ -1,0 +1,55 @@
+---
+title: Systems interface
+description: Browsing, editing, and lifecycle presentation for the Systems module.
+toc: true
+---
+
+Use this context when maintaining the Systems interface. Component and theme authors use the [system contract](../README.md) and [authoring context](authoring.md).
+
+## Overview
+
+The Overview uses a shared Studio presentation for purpose, authored summaries, live counts, and usage links. The Instructions section groups Context and Skills; Toolkit groups Theme, Components, and local Assets. `intro.tsx` can export a short `summary` describing the system’s purpose and audience; an optional `overview` object supplies system-specific `guidance` and `code` summaries. `overview.starter: true` displays a replacement notice near the top; the bundled Product and Marketing systems opt in, while new system scaffolds do not. Instructions, Toolkit, and usage use separate full-width background modules stacked in that order, without section dividers. Each follows the same reading order: heading, metrics aligned to three columns, then authored description or bounded recent prototype list. Optional `intro` content appears directly below the overview, without a disclosure. Systems without a summary receive a generic description. Each section leads with prominent metrics above its authored description. Counts come from discovered files, with each skill counted once through its required `SKILL.md`. Theme counts unique token names. The overview does not repeat the navigation’s file lists. Usage counts all active prototypes assigned to that system, previews at most three newest prototypes, and links to `/prototypes?system=<id>` for the complete collection. Archived prototypes are excluded from the count and preview; Studio instead explains its application role. General explanations and the system relationship diagram live in the Systems Guide rather than each overview.
+
+## Page loading
+
+The Systems layout remains mounted across its child routes. Component route loaders resolve documentation, examples, example source, and props together before displaying the next page. Intent preloading starts this work when navigating links. Successful sections remain available when another file fails; the page reports failures and offers retry. Source mode skips component loading so broken files remain repairable. Live documentation changes invalidate route data. Scroll resets before paint when changing pages.
+
+## Assets browser
+
+Assets lists local files in `assets/` for the selected registered system. Its navigation contains Fonts, Icons, and Images pages, even when empty. Icons combines local icons with the declared library’s existing examples. There is no combined Assets page. Pages with no local files and no configured icon library use Studio’s Empty component with guidance for adding material. Files under `icons/` appear as Icons; other image files appear as Images. Supported extensions are SVG, PNG, JPG, JPEG, WebP, AVIF, GIF, ICO, WOFF, WOFF2, TTF, and OTF. The browser and Overview's local-asset count use the same inventory. Package files are not counted as local assets.
+
+Type pages use `/systems/<id>/fonts`, `/systems/<id>/icons`, and `/systems/<id>/images`. Individual previews append the asset’s relative path to its type page. Previous asset preview links remain readable; the previous Assets index redirects to Fonts. Images render through image elements rather than inline SVG execution. Font previews load only the selected font under a unique temporary family and remove it on navigation. Previews use Studio's appearance and do not activate assets in a system theme. Unknown files show Not Found. Assets have no text-source editor or structural file actions; use the agent or repository editor to add and maintain them.
+
+## Source editing
+
+Systems uses the [shared platform source workflow](../../../platform/context/source.md). Right-click a navigation item for file actions, or use **⌘' / Ctrl+'** to toggle source. **⌘S / Ctrl+S** saves; the toggle or **Done** returns to rendering with unsaved-change protection. Source editors remain in Studio's color mode.
+
+Component pages open their Page, Examples, and Component file tabs. Overview and Icons open the system's overview source (`intro.tsx`). A missing overview source opens `system.ts`. Generated theme pages open the system's theme CSS. There is no separate editable file for each token-family page.
+
+Only these system source files and discovered component files are accessible through the local Systems source endpoint. Menus provide edit, external editor, reveal, and copying actions without rename or delete.
+
+## Navigation and organization
+
+The selected system has one navigation tree, ordered Overview, Context, Skills, Theme, Assets, and Components. Overview opens the system’s overview source. Context, Skills, Theme, Assets, and Components start expanded. Context and Skills read this system’s original guidance files. Branches use disclosure chevrons; individual pages use icons to distinguish their type.
+
+The Resources toolbar searches all system navigation and provides an expand-all or collapse-all action. Search matches navigation names and file paths, temporarily revealing matching branches. Clearing search restores their previous expansion state. Context and Skills provide creation actions in their own branches.
+
+Theme contains token pages generated from the system’s theme file. Its navigation actions expose that source. Component items group their documentation, examples, and runtime source without presenting category metadata as filesystem folders.
+
+In Systems, Context shows original file and folder trees. Skills shows one entry per skill, opening its required `<name>/SKILL.md`; it does not repeat the skill as a folder and a document. Its source editor provides a file picker for the entry file and supporting references, scripts, assets, or other files inside the skill folder. Text files use the shared editor; other assets can be opened externally. Switching files protects unsaved edits. Direct links to supporting documents remain available.
+
+Local menus support creation, source editing, rename, move, and recoverable deletion within each section’s rules. Assigned maintainers and Admins can edit active prototype systems. Only Admins can edit Studio, platform, or module guidance. Archived systems are read-only until restored. A skill entry’s Rename and Delete actions operate on its whole folder, preserving the required entry-file name and the skill’s supporting files. Its New actions create supporting files or folders. Drag operations are scoped to their owning tree: they cannot move a file into another system or another content section. Component and theme menus retain source inspection actions; structural changes to their code require updating imports and related documentation through the agent or editor.
+
+## System collection and creation
+
+Entering `/systems` opens a collection with search and the shared cards/list preference. Cards show names and purpose descriptions, with a Default badge beside the configured default prototype system’s name. Studio has a Platform badge in cards and list rows, with a tooltip explaining its required role and exclusion from prototype choices. Prototype systems show active prototype usage to indicate dependency; Studio has no prototype usage count. Component and asset inventories belong to each system’s Overview. The default prototype system appears first; Studio appears last, with its platform ownership explained in its description. Opening a system shows its named resource navigation, with no system selector or back link. The main Systems navigation returns to the collection. Explicit system URLs still open their selected system.
+
+Locally, registered Admins can use **New system** to name and create a scaffold. The module’s `create` server route resolves the current actor and configuration, enforces Admin access, and delegates registration and validation to `studio create-system`. Creation preserves the default and existing content. CLI preview and application run asynchronously inside the system-operation marker, so manifest and HMR updates cannot expose a partial scaffold. The configuration watcher batches the completed changes into a server restart. A dev-only creation status surface is injected before the React entrypoint and persists in the initiating tab across that restart. Its typography uses a stable system font and explicit text styles, smoothing, and box sizing so loading application CSS and web fonts cannot change its appearance. The response changes the destination with history replacement instead of starting a competing document load; the new Overview releases the status surface only after its manifest entry is ready. Failure returns to the name dialog, and a delayed opening offers a reload without resubmitting creation. New system scaffolds declare an empty theme scope with no tokens, components, assets, context, or skills. A completely blank active prototype system shows two setup paths on its local Overview: targeted curation from open libraries or assessment of an existing React system. The introduction explains collaboration with the agent and review in Studio. Each prompt is visible and copyable, identifying the system by its display name and explicit ID. The blank Overview omits inventory and usage modules. Once content is added, it shows the normal Overview. Empty Theme navigation declares “No tokens yet” and does not invent a Typography page. Existing populated systems retain their chosen inventories. Published sites have no creation action or setup panel.
+
+## Lifecycle presentation
+
+The system name is shared by the index, navigation header, and Overview heading. Index cards and list rows share the header's actions menu, including for archived systems. Card and row triggers appear on hover or keyboard focus and remain visible on touch devices. Active systems offer Copy link and, for registered local contributors, Open in editor, Reveal in Finder, and Copy path. Actions follow the prototype menu grouping: access, changes, then Delete alone. The local `action` route rechecks registration and resource grants. Assigned maintainers and Admins can rename active prototype systems. Creation, archive, restore, deletion, and default selection require an Admin. Archived systems offer only Restore and Delete to Admins; other contributors see no actions menu. Restore before renaming or choosing a default. Studio remains protected. Published sites offer only Copy link for active systems.
+
+Both indexes show archived items in a separate **Archived** section below active items, using the same search, cards/list preference, and muted appearance. The section is absent when there are no matching archived items.
+
+Local deletion keeps a persistent status surface across the configuration restart. It routes to the Systems index and fades out only when the deleted registration is absent from the refreshed collection and manifest. A failed request releases the transition and reports the error without resubmitting.

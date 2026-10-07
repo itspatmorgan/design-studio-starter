@@ -1,6 +1,6 @@
 ---
 name: studio-platform-configure-studio
-description: "Configure studio identity, register its first contributor, and establish design-system and product-system context after the starter is running. For first-run installation, use the Guide; for someone joining an existing studio, use setup-contributor."
+description: "Configure a running studio for the first time or update requested studio settings. Use setup-contributor for someone joining; installation has its own workflow."
 ---
 
 <!-- studio:generated-skill -->

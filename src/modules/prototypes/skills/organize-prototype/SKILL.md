@@ -5,7 +5,7 @@ description: "Rename, move, duplicate, archive, restore, or remove a Design Stud
 
 # Organize a prototype
 
-Resolve the contributor, current assignment, metadata, and incoming links before structural changes. Read the [prototype contract](../../README.md) for rename, move, duplication, rebuild, order, and link behavior.
+Use `pnpm studio context src/prototypes/<key>/<id> --json` to inspect assignment, rebuild, and contributor scope. Inspect metadata and incoming links before structural changes. Read the relevant [prototype contract](../../README.md) sections for the requested operation.
 
 For rename or move, update folder paths, metadata ordering, and internal links together. Report external incoming links for their owners to update. For duplication, preserve the source and operate in the new exploration; a requested system rebuild follows [build-prototype](../build-prototype/SKILL.md).
 

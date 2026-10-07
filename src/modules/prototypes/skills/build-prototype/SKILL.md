@@ -5,7 +5,7 @@ description: "Create or edit a Design Studio prototype view using its assigned s
 
 # Build Prototype
 
-Read the [prototype contract](../../README.md) when creating or reorganizing prototype files, metadata, or links, and before changing runtime dependencies or styles. It owns these technical requirements.
+Inspect an existing prototype with `pnpm studio context src/prototypes/<key>/<id> --json`. Read its reported system entry and relevant guidance; the command resolves facts, not task relevance. Read the [prototype contract](../../README.md) sections needed for metadata, links, dependencies, or styles.
 
 ## Create and edit
 
@@ -16,8 +16,7 @@ Read the [prototype contract](../../README.md) when creating or reorganizing pro
 - Use the assigned design system as a toolkit. Build local components when the experiment needs them.
 - For `system: null`, use local components and CSS Modules; no existing system is assigned. Do not replace this explicit choice with the studio default.
 - Follow that system's component APIs, token conventions, and icon library. For starter components, use Base UI's `render` prop instead of `asChild`.
-- Read the [system authoring context](../../../systems/context/authoring.md) when working with components, themes, or pop-ups.
-- Re-read files before changing them. The person can edit and reorganize content in the running app.
+- For an assigned system, use the [authoring context](../../../systems/context/authoring.md) to select contract sections for components, themes, or pop-ups.
 - When changing files directly, update metadata and internal links using the prototype contract. Report incoming links for other owners to update.
 
 ## Dependencies and styles
@@ -30,9 +29,4 @@ Keep experiments local until an authorized shared change moves them into the sys
 
 ## Verify and save
 
-- Read rendering errors before changing code. Fix type and boundary errors rather than suppressing them.
-- Run `pnpm build` before committing completed work. Inspect the rendered result when changing views.
-- Follow the [Asset Guard](../../../../platform/context/assets.md#asset-guard). Compress oversized assets instead of bypassing the check.
-- Commit finished work with a concise message. Push only when the person asks to share.
-
-A push runs repository checks. Publishing depends on the repository's deployment workflow; see [Publishing](../../../../platform/context/publishing.md).
+Inspect changed views, relevant interactions, and pop-ups in supported color modes. Repair rendering errors. Follow [working context](../../../../platform/context/working-in-studio.md) for build, asset, commit, and sharing requirements.

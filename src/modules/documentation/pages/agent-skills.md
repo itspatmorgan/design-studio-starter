@@ -35,6 +35,8 @@ If you want to understand a result, ask:
 
 This can help you decide whether to refine your request, update shared context, or ask for a different approach.
 
+Studio can report a prototype's assigned system and available capabilities from its files. The agent then selects the guidance needed for your request. Skills use Studio's commands for repeatable mechanics and still review the resulting design and behavior.
+
 You can read Studio's skills in **Documentation → Context & Skills**. Skills specific to your product or brand are in **Systems**. See [Agent context](/documentation/guide/agent-context) for how skills and context work together.
 
 ## After adding a skill

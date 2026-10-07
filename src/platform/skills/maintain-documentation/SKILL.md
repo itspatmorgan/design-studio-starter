@@ -25,7 +25,7 @@ For an audit, report actionable findings with file locations and recommended cor
 
 Check whether task descriptions and `AGENTS.md` routing lead to the needed context without loading unrelated material.
 
-Walk through realistic requests, including similar requests that should not activate a skill. Check overlapping skills, existing authorization, disabled capabilities, and missing input where relevant.
+Walk through realistic requests and similar requests that should not activate a skill. Check nested reads and completion steps, overlapping skills, existing authorization, disabled capabilities, and missing input. Identify deterministic instructions already owned by code or suitable for a shared command; keep judgment and outcome review in the skill.
 
 When live agent testing is warranted, use an isolated workspace and authorized execution. Inspect decisions and resulting artifacts rather than testing exact wording.
 

@@ -42,6 +42,14 @@ Choose a context title that clearly names its subject. Navigation and the docume
 
 Agent instructions should be direct and task-specific. Keep skill descriptions precise enough to select the right task. Put substantial conditional details in linked references.
 
+## Divide skills and code
+
+Keep decisions, meaningful task order, and outcome review in skills. Put repeatable mechanics with known inputs and outputs in commands, scaffolds, or validators. Reuse existing tools before adding another implementation. A skill should invoke them and handle decisions or reported failures, rather than recreate their logic.
+
+Give each instruction a task and a decision it changes. Keep the common path visible; link optional branches and complete relevant contract sections. Exact schemas belong in their contract or types. Keep brief reminders where a wrong choice risks existing work, but link shared operating policy instead of repeating completion checklists.
+
+Do not use a word limit as a quality gate. Review the material and actions a task activates, including nested skills. Match completion criteria to the requested outcome. Code can validate structure and resolve facts; the agent still judges relevance, fidelity, and the rendered experience.
+
 ## Use visual aids deliberately
 
 Use a table for comparisons or mappings. Use a diagram when relationships or sequence are difficult to explain in text.
