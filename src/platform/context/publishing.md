@@ -8,7 +8,7 @@ Publish when people need a shared viewing URL. The studio maintainer chooses the
 
 ## What the build provides
 
-`pnpm build` checks the repository and writes a static site to `dist/`. The site includes active prototypes, design-system pages, the system context, and the Guide when enabled.
+`pnpm build` checks the repository and writes a static site to `dist/`. The site includes active prototypes, design-system pages, the system context, and the Manual when enabled.
 
 Archived prototypes are excluded from the production build. Individual items cannot be archived. Archive content you want to keep locally without including it in the site.
 

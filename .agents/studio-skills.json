@@ -19,7 +19,7 @@
     },
     ".agents/skills/studio-platform-maintain-context/SKILL.md": {
       "kind": "file",
-      "hash": "1cbfba719dbe91597b52f7a516e48699120c809192e54807432fb81bf1e7fa1e"
+      "hash": "456fc17f55d8ae1c6184515e2e520b8a1c91d9651aa67fd08243ec99a58537c3"
     },
     ".claude/skills/studio-platform-maintain-context": {
       "kind": "link",
@@ -27,7 +27,7 @@
     },
     ".agents/skills/studio-platform-maintain-documentation/SKILL.md": {
       "kind": "file",
-      "hash": "c1df4fd4a3c5d20214ac9b1decc0fc1309da5c8a4339129d1e297f313e8cb4ee"
+      "hash": "f8ea834c003a233794aaabac2deded72418f0e2fb93abf9282920ed59886236c"
     },
     ".claude/skills/studio-platform-maintain-documentation": {
       "kind": "link",
@@ -75,7 +75,7 @@
     },
     ".agents/skills/studio-module-document-write-document/SKILL.md": {
       "kind": "file",
-      "hash": "65a6d5b8361faab304d43b4fc574dfe00078792f9d62beb8c26954003e8a36c6"
+      "hash": "656cea21f1753979e613d1b10bb084077b12d96372b7cee557f379960cd0d6db"
     },
     ".claude/skills/studio-module-document-write-document": {
       "kind": "link",
@@ -83,7 +83,7 @@
     },
     ".agents/skills/studio-module-documentation-write-guide/SKILL.md": {
       "kind": "file",
-      "hash": "91d34cbfc25b2fee5c0b5f02a7253e2f71a9f4c3762eb872d36b0cac9315e37e"
+      "hash": "d22e3764952c7ce1db777aae5f1665d2d75a09cd2d19a870daba093fb5d7c11b"
     },
     ".claude/skills/studio-module-documentation-write-guide": {
       "kind": "link",

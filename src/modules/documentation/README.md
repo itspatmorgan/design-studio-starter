@@ -1,14 +1,14 @@
 # Documentation contract
 
-The Documentation module owns the human Guide at `/documentation/guide`. The shared platform owns the platform and module Context and Skills browser at `/documentation/context/<owner>`. Guide chapters explain using Studio; the browser displays original README, context, and skill files.
+The Documentation module owns the human Manual at `/documentation/guide`. The URL and internal `guide` identifiers remain stable for compatibility. The shared platform owns the platform and module Context and Skills browser at `/documentation/context/<owner>`. Manual chapters explain using Studio; the browser displays original README, context, and skill files.
 
-## Guide chapters
+## Manual pages
 
-Human chapters live in `src/modules/documentation/pages/*.md`. Each requires `title` and numeric `order` frontmatter. Optional `description` supplies a summary; `section` groups navigation. The filename supplies its slug; `index.md` opens at the Guide root.
+Human chapters live in `src/modules/documentation/pages/*.md`. Each requires `title` and numeric `order` frontmatter. Optional `description` supplies a summary; `section` groups navigation. The filename supplies its slug; `index.md` opens at the Manual root.
 
-A capability chapter declares `module: <id>`. Discovery includes it only when the module is installed and enabled. Disabling or removing the capability preserves the chapter but hides its reading route, navigation, and search target. Unassociated chapters remain available while Guide is enabled.
+A capability chapter declares `module: <id>`. Discovery includes it only when the module is installed and enabled. Disabling or removing the capability preserves the chapter but hides its reading route, navigation, and search target. Unassociated chapters remain available while Manual is enabled.
 
-Invalid metadata produces a local warning and fails strict builds. Source mode keeps malformed chapters repairable. Previous/next navigation follows discovered order.
+Invalid metadata produces a local warning and fails strict builds. Source mode keeps malformed chapters repairable. The sidebar lists reference pages. There is no previous/next reading sequence. Consolidated chapter URLs redirect to relevant pages and sections through `manualLinks.ts`.
 
 ## Context and Skills sources
 
@@ -30,24 +30,24 @@ Legacy Reference and Knowledge URLs redirect to the appropriate scope. System gu
 
 ## Availability and search
 
-Disabling or removing Documentation hides Guide and its module rail entry. The shared Context and Skills browser remains directly accessible. Prototype Documents is independent of both readers.
+Disabling or removing Documentation hides Manual and its module rail entry. The shared Context and Skills browser remains directly accessible. Prototype Documents is independent of both readers.
 
-The command menu groups Places, Systems, Prototypes, and Guide in that order. It lists system entries, prototypes, and enabled Guide chapters without individual system files or a Context and Skills link. Individual platform and module README, context, and skill files stay in the instruction browser and are excluded from the command menu. The instruction browser’s search matches titles and source paths, not full document text. Disabled or removed module guidance is excluded.
+The command menu groups Places, Systems, Prototypes, and Manual in that order. It lists system entries, prototypes, and enabled Manual chapters without individual system files or a Context and Skills link. Individual platform and module README, context, and skill files stay in the instruction browser and are excluded from the command menu. The instruction browser’s search matches titles and source paths, not full document text. Disabled or removed module guidance is excluded.
 
 ## Source access
 
-Guide chapters and owner READMEs edit their own complete documents through the shared documentation editor. Context and skill files use their existing file access policies. Navigation exposes Edit source, Open in editor, Reveal in Finder, Copy link, and Copy path where local permissions allow them. Instruction document menus have no rename or delete actions.
+Manual chapters and owner READMEs edit their own complete documents through the shared documentation editor. Context and skill files use their existing file access policies. Navigation exposes Edit source, Open in editor, Reveal in Finder, Copy link, and Copy path where local permissions allow them. Instruction document menus have no rename or delete actions.
 
 The [shared editor](../../platform/context/source.md) supplies keyboard controls, version checks, and unsaved-change handling. Published pages retain reading and copying without repository editing or operating-system actions.
 
-Source access is limited to indexed owner documents and locally repairable Guide files. Removing a capability removes its documents from the allowlist; retained chapters remain repairable when Documentation is enabled.
+Source access is limited to indexed owner documents and locally repairable Manual files. Removing a capability removes its documents from the allowlist; retained chapters remain repairable when Documentation is enabled.
 
 ## Implementation
 
-- `module.ts`, `app.tsx`, `GuideLayout.tsx`, `GuidePage.tsx`, `loadGuide.ts`: Guide availability, navigation, and reading.
+- `module.ts`, `app.tsx`, `ManualLayout.tsx`, `ManualPage.tsx`, `loadManual.ts`: Manual availability, navigation, and reading.
 - `pages/*.md`: authored human chapters.
 - `src/platform/app/docs/KnowledgePage.tsx` and `src/platform/app/router.tsx`: the shared owner browser and overview routes.
-- `scripts/build/build-manifest.js`: owner and Guide discovery.
+- `scripts/build/build-manifest.js`: owner and Manual discovery.
 - `scripts/lib/platform-references.js`: canonical owner document catalog.
 - `scripts/build/remark-title-from-heading.js`: opening titles without hiding document sections.
 - `src/platform/app/docs/DocumentationEditor.tsx`, `documentationSource.ts`, `scripts/build/files/source.js`: allowlisted document source editing.

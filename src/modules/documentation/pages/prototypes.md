@@ -1,61 +1,68 @@
 ---
-title: "Prototypes"
-description: "Explore ideas with artifacts that work together."
-section: "Prototypes and artifacts"
-order: 10
+title: Prototypes
+description: Create, organize, and change an exploration.
+order: 2
 module: prototypes
 toc: true
 ---
 
-A prototype is a workspace for an idea. It brings interactive screens and supporting context together, without affecting other prototypes.
+## What belongs in a prototype?
 
-Ask your agent to create one, or select **New prototype** to create its starting files. The dialog does not start an agent or build your intended experience. Continue in your coding app to direct the work. [Your first prototype](/documentation/guide/first-prototype) walks through a small flow and its revisions.
+A prototype holds one exploration. Its pieces are called **artifacts**. Use the ones that help explain your idea.
 
-The creation dialog asks for a title and system. Choose an installed system for its components, styles, and guidance. Choose **No system — custom styling** to build with your own components and CSS instead.
+| Artifact | Purpose | How it connects |
+| --- | --- | --- |
+| View | A working screen or state. | Open it to try the interaction. |
+| Document | A brief, notes, decisions, or handoff. | Can link to artifacts and show their previews. |
+| Diagram | A flow or relationship. | Can also appear in a document or canvas. |
+| Canvas | Sketches, annotations, and comparisons. | Shows screen and diagram previews, with cards for documents. |
 
-The sidebar shows the prototype's assigned system beneath its title. Select the system name to browse its components and guidance. A prototype without an assigned system shows **None**.
+Views are always available. Documents, Diagrams, and Canvases are optional capabilities. Disabling one preserves its files but hides it from normal navigation.
 
-The Prototypes page supports links filtered to a system. A visible system filter identifies the collection; search works within it. Select **Clear system filter** to return to all systems.
+## How do I create one?
 
-## Artifacts work together
+Ask your agent to create a prototype, describing its goal and system. Or select **New prototype**, enter a title, and choose a system. This creates starting files; it does not start an agent or build your intended experience.
 
-A prototype's pieces of work are **artifacts**. Each artifact is backed by a file.
+The assigned system appears beneath the prototype title. Browsing another system does not change the assignment. **No system — custom styling** uses local components and styles instead.
 
-| Artifact | Use it for |
-| --- | --- |
-| View | An interactive screen or state. |
-| Document | Goals, decisions, research, or a handoff. |
-| Diagram | A portable, text-based model of a flow or system. |
-| Canvas | Views, diagrams, and notes arranged together. |
+## How do I organize artifacts?
 
-Documents can embed views, diagrams, and canvas previews. Canvases can embed views and diagrams, and link to documents. Use these together to explain both an idea and how it works.
+Use **+** in navigation to add artifacts or folders. Drag items to move or reorder them. The first artifact is where the prototype opens on the next visit.
 
-Views are always available. Documents, diagrams, and canvases are optional capabilities included in the starter.
+Right-click an item for file actions. Studio repairs known links and embeds when files move within a prototype. Keep Studio running during moves in your editor or Finder. Moves while Studio is closed, deleted targets, and dynamically built links may need your agent to repair them.
 
-## Organize the exploration
+Use the prototype's **…** menu to rename, duplicate, or archive it. Archiving keeps it locally and excludes it from publication. For source editing, see [Help](/documentation/guide/questions#how-do-i-edit-source).
 
-Add artifacts with **+** in navigation. Enter a name. Studio supplies the file extension. Use folders to group work, and drag items to move or reorder them. The first artifact in navigation is where the prototype opens. Reordering keeps your current artifact open. A brief message confirms when a move updates references.
+## How do documents and diagrams work?
 
-Your prototype can use whatever organization suits the work. Ask the agent to make its starting point and important states easy to find.
+Ask your agent to write or revise them, or edit their source. Documents use Markdown; diagrams use Mermaid, a text format for flows and relationships. You can direct both in plain language.
 
-Right-click a view and choose **Make lofi** to explore in grayscale with handwritten type. **Make hi-fi** restores its normal appearance.
+Documents can show previews of artifacts from the same prototype. Open the original to interact or edit. Mermaid diagrams can also live directly inside a document without the standalone Diagrams capability.
 
-## Make changes safely
+If a diagram displays a syntax error, give the message to your agent. Documents and diagrams use Studio's reading style rather than the prototype's system theme.
 
-When you rename or move files inside a prototype, Studio repairs known links, embeds, and local code imports automatically. Keep Studio running when moving files in Finder or your editor so it can follow the move. Other prototypes remain unchanged. If a target was deleted, a move happened while Studio was closed, or a link was built dynamically in code, ask your agent to repair it.
+## How do canvases work?
 
-Your assigned design system supplies components and styles. You can also explore local alternatives inside the prototype. Those experiments stay separate from the shared system.
+Use the Excalidraw toolbar for shapes, text, and arrows. Press **N** for a sticky note. Drag an artifact from navigation onto the canvas, or copy its link and paste over the canvas.
 
-A prototype with no assigned system uses local components and styles. Moving a local component into a shared system is a coordinated change because other prototypes may use it.
+View and diagram previews update with their source. Open the original to interact. Documents and other canvases appear as link cards. Annotations do not automatically change the screens.
 
-Edit your own artifacts with your agent or the [shared source workflow](/documentation/guide/home#working-with-files). Other contributors' source opens read-only.
+Canvases embed only artifacts from their own prototype and cannot store images. Changes save automatically locally. Other contributors' and published canvases are read-only. Agent file edits may not become separate undo steps.
 
-Use the prototype's **…** menu to **Rename**, **Duplicate**, or archive it. Archiving keeps it locally and excludes it from the published site. Put project context in a document artifact.
+Importing Mermaid through **More tools → Mermaid to Excalidraw** creates independent editable shapes; they do not stay synchronized with the diagram.
 
-## Explore another system
+## Can I try another appearance or system?
 
-The assigned system stays with the prototype in the app. To try another system, choose **Duplicate** from your own prototype's menu. Give the copy a title and choose a system, including **No system — custom styling**.
+Right-click a view and choose **Make lofi** for grayscale and handwritten type. **Make hi-fi** restores its normal appearance.
 
-Keeping the same system creates an ordinary copy. Choosing another system asks you to confirm a rebuild copy. Systems rarely translate directly; components, styles, and some behavior may need to be reconstructed. The original stays unchanged so you can compare the result.
+To try another system, choose **Duplicate** and select the target system. A different system creates a rebuild copy, preserving the original. The copy keeps its current system until your agent migrates it.
 
-A rebuild copy keeps its current system until your agent migrates it. Its sidebar shows **Rebuild needed** and the target. Select **Copy rebuild instructions** and paste them into your coding agent. Creating the copy does not start an agent or convert its code automatically. The agent updates the assignment and clears the notice after verifying the rebuild.
+```mermaid
+flowchart TB
+  accTitle: Changing systems preserves the original prototype
+  accDescr: Duplicating with another system creates a copy awaiting an agent rebuild. The original remains available for comparison.
+  original[Original prototype] -->|Duplicate with another system| copy[Copy awaiting rebuild]
+  copy -->|Agent migrates and verifies| rebuilt[Rebuilt prototype]
+```
+
+Use **Copy rebuild instructions** in the copy's sidebar and paste them into your agent. Creating the copy does not convert its code automatically.

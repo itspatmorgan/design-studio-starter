@@ -1,6 +1,6 @@
 ---
 name: write-document
-description: "Create or edit Markdown documents inside a Design Studio prototype. Use only when Documents is enabled; shared system context and Guide chapters have separate owners."
+description: "Create or edit Markdown documents inside a Design Studio prototype. Use only when Documents is enabled; shared system context and Manual chapters have separate owners."
 ---
 
 # Write Document

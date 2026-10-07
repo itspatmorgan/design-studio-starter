@@ -2,7 +2,7 @@
 
 Prototype documents are `.md` files rendered as plain Markdown, with optional frontmatter for title, description, and contents navigation. They do not execute JSX; raw HTML is displayed as text. The shared reader supplies GitHub-style Markdown, code highlighting, Mermaid fences, and same-prototype artifact embeds.
 
-This module owns prototype Markdown. System knowledge and the Guide retain independent Markdown support when it is disabled or removed. Source access follows prototype ownership and the [shared editor contract](../../platform/context/source.md).
+This module owns prototype Markdown. System knowledge and the Manual retain independent Markdown support when it is disabled or removed. Source access follows prototype ownership and the [shared editor contract](../../platform/context/source.md).
 
 ## Implementation
 

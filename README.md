@@ -24,14 +24,14 @@ If you prefer to set it up yourself:
    mise exec -- pnpm dev
    ```
 
-Open the local URL printed by Vite. You can explore the starter before configuring anything or opening it in a coding agent. See the [setup guide](src/modules/documentation/pages/getting-started.md) for what to do next.
+Open the local URL printed by Vite. You can explore the starter before configuring anything or opening it in a coding agent. See the [Manual](src/modules/documentation/pages/index.md) for what to do next.
 
 ## Learn more
 
-The Guide at `/documentation/guide` introduces setup, the app surfaces, and collaboration. Original platform and module instructions appear in Context & Skills at `/documentation/context/platform.core`. System guidance stays in Systems.
+The Manual at `/documentation/guide` is a concise reference for using, customizing, and troubleshooting Design Studio. Original platform and module instructions appear in Context & Skills at `/documentation/context/platform.core`. System guidance stays in Systems.
 
-- [Introduction](src/modules/documentation/pages/index.md) — how the studio works.
-- [Collaborate](src/modules/documentation/pages/collaborate.md) — ownership and sharing work.
+- [Overview](src/modules/documentation/pages/index.md) — how the studio works.
+- [Share](src/modules/documentation/pages/share.md) — viewing links, working files, and handoff.
 - [Modules](src/platform/context/modules.md) — customize and extend your studio.
 - [Tech stack](src/platform/context/stack.md) — what's under the hood.
 

@@ -20,7 +20,7 @@ Read the prototype contract's [archiving and deployment definition](../../README
 - Check active links before archiving and resolve warnings about excluded targets.
 - Apply the [contributor scope](../../../../platform/context/contributor-scope.md).
 
-The [Prototypes chapter](../../../documentation/pages/prototypes.md#make-changes-safely) explains the local controls when the Guide is enabled.
+The [Prototypes chapter](../../../documentation/pages/prototypes.md#how-do-i-organize-artifacts) explains the local controls when the Manual is enabled.
 
 ## Verify
 

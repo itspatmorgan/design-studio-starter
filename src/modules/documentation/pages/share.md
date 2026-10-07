@@ -1,55 +1,41 @@
 ---
-title: Share and hand off
-description: Gather feedback and make your design intent clear to the next person.
-section: Share your work
-order: 30
+title: Share
+description: Share a viewing link, working files, or an engineering handoff.
+order: 5
 toc: true
 ---
 
-Share a prototype when someone needs to try the experience or understand a decision. You can share a viewing site, share the working files, or prepare an engineering handoff.
+## Does saving share my work?
 
-## Prepare for review
+No. Saving updates local files. A commit records a version locally. Pushing sends committed versions to a shared repository. Publishing creates or updates a viewing site.
 
-Give reviewers a clear place to start and a question to consider. For Checkout exploration, that might be: “Can you understand the total cost before payment?”
+```mermaid
+flowchart TB
+  files[Your local files] -->|Commit| history[Local version history]
+  history -->|Push| repository[Shared repository<br/>Working files for teammates]
+  files -->|Build and publish| site[Viewing site<br/>Interactive review for others]
+  accTitle: Two ways to share local work
+  accDescr: Local files can be committed and pushed to share working files, or built and published to share a viewing site. Saving alone does neither.
+```
 
-Ask your agent:
+Your agent can handle these steps. Tell it when you want to share and follow your team's review process. Neither path creates live co-editing.
 
-> Prepare Checkout exploration for review. Make the main flow and error states easy to find. Summarize what I want feedback on, which behavior is simulated, and the open questions.
+## How do I share a viewing link?
 
-If Documents is enabled, save that explanation with the prototype. If Canvases is enabled, use a review canvas to connect screens and annotations. Choose the format that helps your reviewers.
+Ask your agent to help publish, specifying the destination and audience. Published screens remain interactive; source and canvas editing stay local. Updates appear after another publication.
 
-A polished screen does not establish that every behavior works. Check the relevant paths and states before sharing, and label sample data and simulated actions.
+The build can include active prototypes, system pages, product context, and the Manual. Review what is included. Studio has no built-in sign-in; restricted access depends on the host. Archived prototypes remain local and are excluded from publication.
 
-## Publish for review
+Copy links from the published site for remote reviewers. A localhost link points to a server on the viewer's own computer. Your agent can consult [Publishing](/documentation/context/platform.core/context/publishing).
 
-A published site lets people try your prototypes without running Studio. It is a viewing experience: interactive screens still work, but source editing and canvas editing stay local. It does not provide live co-editing or an agent service.
+## How do teammates get my working files?
 
-Ask your agent to help publish, specifying the audience and destination:
+Ask your agent to review and commit changes, then share through your team's Git workflow. Teammates pull those changes into their copies. Repository access and conflict resolution are separate from Studio's contributor assignments.
 
-> Help me publish a viewing site for these reviewers. Check what the build includes and explain how access will work before publishing.
+## What should reviewers or engineers receive?
 
-The build can include active prototypes, system pages, product context, and the Guide. Review the included content before sharing it. Studio does not provide built-in sign-in; restricted access depends on the hosting service. Archiving a prototype keeps it locally and excludes it from the published build.
+Provide a starting point, the question you want feedback on, and an explanation of the intended behavior. Identify sample data, simulated actions, and unresolved decisions.
 
-Local edits appear on the viewing site only after another publication. Copy a link from the published site when sending it to remote reviewers; a localhost link works only on your computer.
+For engineering handoff, also include relevant states, design intent, constraints, and the system components used. Give access to working files when the recipient needs to inspect code. Documents and canvases can hold explanations when those capabilities are enabled.
 
-Your agent can consult [Publishing](/documentation/context/platform.core/context/publishing) for the technical steps. Available publishing integrations depend on your coding environment.
-
-## Share the working files
-
-Saving updates your local files. A **commit** records a version in local Git history. **Push** sends those versions to a shared repository; **pull** receives other people's changes. Your agent can handle these steps.
-
-Tell it when you want to share, and follow your team's review process:
-
-> Review and save this work as a commit, then prepare it for our team's usual code review. Explain any unresolved issues before sharing it.
-
-Sharing repository files and publishing a viewing site are separate actions. Neither creates a live shared editing session.
-
-## Prepare an engineering handoff
-
-Help the engineer and their agent understand the intended experience without reconstructing your conversation. Ask:
-
-> Prepare Checkout exploration for engineering review. Summarize the intended flow and states, the system components it uses, what is simulated, and the decisions still open. Link to the relevant artifacts and explain how to try them.
-
-Include why the design takes this approach, any constraints from research, and the behavior still needing a production decision. Provide access to the working files when the engineer needs to inspect the code; a viewing link supports experience review.
-
-The prototype informs implementation. Production data, services, reliability, and other application requirements still need engineering assessment. Agree with the recipient on what they need rather than treating a particular document format as mandatory.
+A prototype informs production implementation. Ask the engineer what else they need to assess application services and production requirements.

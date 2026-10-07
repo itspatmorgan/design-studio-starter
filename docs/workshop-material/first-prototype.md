@@ -45,7 +45,7 @@ Try the revised flow again. If you want to compare directions, ask the agent to 
 
 ## Build the thinking around the screens
 
-Your prototype can hold more than views. If the corresponding tools are enabled, continue with the artifact chapters: **Diagrams** maps the checkout flow, **Documents** records audience notes and decisions, and **Canvases** arranges the work for annotation.
+Your prototype can hold more than views. If the corresponding tools are enabled, continue with the artifact chapters: **Diagrams** map the checkout flow, **Documents** record notes and decisions, and **Canvases** arrange the work for comparison and annotation.
 
 These are useful ways to explain an idea, not required steps for every prototype. Each artifact stays with the same exploration. If a tool is missing, ask your agent which capabilities are available.
 

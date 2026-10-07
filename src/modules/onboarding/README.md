@@ -6,7 +6,7 @@ Onboarding welcomes designers and product managers after their studio opens. It 
 
 Each contributor’s first local home-page visit opens a four-step dialog over Home: Welcome, Prototypes, Systems, and Start by exploring. The system and artifact steps let people select a concept to see a short explanation and example. Only enabled artifact types appear. The introduction labels Product and Marketing as example systems and Feedback Inbox and Design Studio Marketing as example prototypes for learning. It invites people to customize, replace, or remove these examples for their own needs. The final step focuses on exploring available starter prototypes, then explains two paths with the agent: make a prototype with an existing system, or set up a system of your own. Removed or archived samples are omitted.
 
-**Explore my studio**, **Skip introduction**, Escape, backdrop dismissal, and opening a sample all record completion and close the introduction. It has no rail item, search entry, standalone page, or route. Later visits go directly to the studio. The Guide retains the concepts for later reading.
+**Explore my studio**, **Skip introduction**, Escape, backdrop dismissal, and opening a sample all record completion and close the introduction. It has no rail item, search entry, standalone page, or route. Later visits go directly to the studio. The Manual retains the concepts for later reading.
 
 It does not create work, install dependencies, or register contributors. Its only profile change records whether that contributor has already seen the introduction.
 

@@ -63,8 +63,8 @@ export default function CommandPaletteDialog({ open, setOpen, returnFocus }: { o
 
             {manifest.guide.length > 0 && <>
               <CommandSeparator />
-              <CommandGroup heading="Guide">
-                {manifest.guide.map(page => <CommandItem key={'guide:' + page.slug} value={'guide ' + page.title + ' ' + (page.source ?? page.slug)} onSelect={() => go({ to: '/documentation/guide' + (page.slug === 'index' ? '' : '/' + page.slug) } as never)}>
+              <CommandGroup heading="Manual">
+                {manifest.guide.map(page => <CommandItem key={'guide:' + page.slug} value={'manual guide ' + page.title + ' ' + (page.source ?? page.slug)} onSelect={() => go({ to: '/documentation/guide' + (page.slug === 'index' ? '' : '/' + page.slug) } as never)}>
                   <span className="truncate">{page.title}</span>
                 </CommandItem>)}
               </CommandGroup>

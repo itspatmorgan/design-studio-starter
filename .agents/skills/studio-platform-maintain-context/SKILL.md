@@ -1,6 +1,6 @@
 ---
 name: studio-platform-maintain-context
-description: "Create or revise canonical context documents and task skills for the platform, a module, or an assigned system. Use maintain-documentation for READMEs, Guide coordination, or a guidance audit."
+description: "Create or revise canonical context documents and task skills for the platform, a module, or an assigned system. Use maintain-documentation for READMEs, Manual coordination, or a guidance audit."
 ---
 
 <!-- studio:generated-skill -->

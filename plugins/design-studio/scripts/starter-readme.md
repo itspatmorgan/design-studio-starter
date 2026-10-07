@@ -16,7 +16,7 @@ mise exec -- pnpm install
 mise exec -- pnpm dev
 ```
 
-Open the local URL printed by Vite. See the [getting started guide](src/modules/documentation/pages/getting-started.md) and [platform instructions](src/platform/README.md).
+Open the local URL printed by Vite. See the [Manual](src/modules/documentation/pages/index.md) and [platform instructions](src/platform/README.md).
 
 ## Make it yours
 

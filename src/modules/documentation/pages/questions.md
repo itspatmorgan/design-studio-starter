@@ -1,43 +1,48 @@
 ---
-title: Common questions
-description: Practical answers as you explore and make Studio your own.
-section: Reference
-order: 45
+title: Help
+description: Find, edit, reopen, and troubleshoot your studio.
+order: 6
 toc: true
 ---
 
-## Do I need to write code?
+## Where is my work?
 
-You can direct your coding agent in plain language and review its work in Studio. You can also organize artifacts, annotate canvases when enabled, and edit source directly when that is useful.
+Your studio is a folder on your computer. Prototypes, systems, and guidance are saved there. Work with your coding agent in that folder. A preview URL does not select the folder in your coding app.
 
-## Does Studio run an agent for me?
+Use **⌘K / Ctrl+K** to search the studio. **⌘; / Ctrl+;** shows or hides navigation. Right-click a file-backed item to copy its link or path, reveal it in Finder, or open it in an editor where available.
 
-Work with the agent in your coding app, using the studio folder. Studio displays and organizes the result. Creating an item in Studio does not automatically start an agent task.
+## How do I reopen or install Studio?
 
-## Do I need my own system before starting?
+Open the same folder in your coding app and ask “Open my Design Studio.” For a new installation, another studio, or a teammate's setup, use the [public setup instructions](https://github.com/itspatmorgan/design-studio-starter/blob/main/SETUP.md).
 
-No. Use an available system while exploring. When fidelity to your product matters, ask the agent to set up your components, styles, and product knowledge. See [Systems](/documentation/guide/systems).
+The plugin helps create and open studios; updating it does not automatically update your existing studio's code.
 
-## Are prototypes production applications?
+## Does Studio run an agent?
 
-A prototype demonstrates an experience. Ask the agent to explain what works, what is simulated, and what still needs a production decision. [Share and hand off](/documentation/guide/share#prepare-an-engineering-handoff) helps make those distinctions clear.
+No. Use your coding app's agent to change the studio's files, then review them in Studio. Creating an item through the interface does not start an agent task. You can direct the work in plain language without writing code.
 
-## Where do fonts, logos, and images go?
+## How do I edit source?
 
-Give your agent the assets and explain their purpose. Material used by one exploration belongs with its prototype; reusable product assets belong with the system. The agent can follow [Assets and fonts](/documentation/context/platform.core/context/assets).
+Locally, right-click a document or artifact and choose **Edit source**. **⌘' / Ctrl+'** toggles between source and rendering where supported. **⌘S / Ctrl+S** saves; **Done** returns to the result. Unsaved edits require confirmation before leaving. Canvases save automatically.
 
-## Why is a tool missing?
+**Open in editor** uses an installed code editor; otherwise Studio offers Finder as a fallback. You can edit supported source inside Studio without another editor.
 
-Your studio may have an optional module disabled or uninstalled. Ask the agent to check what is available. Admins can enable installed optional modules in [Studio settings](/documentation/guide/customize#configure-the-studio). Disabled tools keep their saved content.
+## Why can't I edit something?
 
-## Can we change Studio itself?
+Published sites are for viewing. Locally, contributor scope and archive status determine editing access. Ask your agent to check your identity and permissions. See [team access](/documentation/guide/customize#how-does-team-access-work).
 
-Yes. You own its code. Your agent can adapt it or build a module for a new capability. [Customize your studio](/documentation/guide/customize) explains the choices and maintenance responsibilities.
+## Why is a tool or artifact missing?
 
-## What if something breaks?
+An optional module may be disabled or uninstalled. Check Studio settings or ask your agent. Disabling a module preserves saved content. Archiving a prototype keeps it locally but excludes it from publication.
 
-Give the agent the error message, the affected prototype or artifact, and what you were trying to do. Ask it to preserve your work while investigating. It can consult [Checks and fixes](/documentation/context/platform.core/context/checks).
+## Why aren't my changes appearing?
 
-## What is it built with?
+Confirm your agent is editing the folder for this running studio. Check that you saved the file and opened the intended artifact. A published site needs another publication before local changes appear online.
 
-For implementation details, ask your agent to explain the relevant parts of the [Technology stack](/documentation/context/platform.core/context/stack). You do not need to learn the stack to direct a prototype.
+A different default system does not rebuild existing prototypes. A copy marked **Rebuild needed** still needs your agent to migrate it.
+
+## What if something breaks or a link fails?
+
+Give the agent the error message, affected artifact, and what you were doing. Ask it to preserve work while investigating. Links can need repair after deletion or moves while Studio was closed. A localhost link requires a running local studio; use a published link for remote review.
+
+The agent can consult [Checks and fixes](/documentation/context/platform.core/context/checks). If you need an earlier version, ask it to inspect available Git history. A local save is not itself a recovery snapshot.

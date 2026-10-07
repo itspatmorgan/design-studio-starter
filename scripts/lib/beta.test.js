@@ -358,6 +358,9 @@ test('standalone diagrams are discovered by both extensions and disabling preser
   try {
     fs.cpSync(root, dir, { recursive: true, filter: file => !['.git', 'node_modules', 'dist'].includes(path.basename(file)) });
     fs.symlinkSync(path.join(root, 'node_modules'), path.join(dir, 'node_modules'));
+    // Availability is a metadata contract, independent of the Manual's editorial structure.
+    const pages = path.join(dir, 'src/modules/documentation/pages');
+    if (fs.existsSync(pages)) fs.writeFileSync(path.join(pages, 'diagrams.md'), '---\ntitle: Diagrams fixture\norder: 99\nmodule: diagrams\n---\nFixture chapter.\n');
     execFileSync(process.execPath, ['--input-type=module', '--eval', `
       import fs from 'node:fs'; import assert from 'node:assert/strict';
       import { editModulesFlag } from './src/platform/core/modules/pack.ts';

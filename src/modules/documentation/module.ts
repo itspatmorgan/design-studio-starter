@@ -6,8 +6,8 @@ export default {
   id: 'documentation',
   label: 'Documentation',
   version: '0.1.0',
-  description: 'Documentation: an authored Guide alongside the shared Context and Skills browser.',
+  description: 'Documentation: a human Manual alongside the shared Context and Skills browser.',
   optional: true,
-  instructions: [{ path: 'skills/write-guide/', when: 'asks to add or change the human Guide' }],
+  instructions: [{ path: 'skills/write-guide/', when: 'asks to add or change the human Manual' }],
   section: { key: 'documentation', folder: 'src/modules/documentation/pages' },
 } satisfies ModuleSpec;

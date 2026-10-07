@@ -4,21 +4,21 @@ description: Where platform context belongs, how to write it, and when to verify
 toc: true
 ---
 
-Documentation is part of the platform. Keep it accurate as behavior changes. This standard applies to the Guide, module documentation, system content, and agent instructions.
+Documentation is part of the platform. Keep it accurate as behavior changes. This standard applies to the Manual, module documentation, system content, and agent instructions.
 
 ## Author for the right reader
 
 Choose the authoritative location using [Responsibilities](contracts-and-instructions.md). Use [Agent context routing](agent-context.md) for discovery and generated harness entries.
 
-Documentation has two reading choices: Guide provides a curated introduction, and Context and Skills displays original platform and module files. Systems exposes system context and skills alongside its toolkit. Human chapters live only in `src/modules/documentation/pages/`. Platform, module, and system context preserve knowledge under their respective owners. Context and Skills access remains available when the optional Documentation module is disabled.
+Documentation has two reading choices: Manual provides a compact product reference, and Context and Skills displays original platform and module files. Systems exposes system context and skills alongside its toolkit. Human chapters live only in `src/modules/documentation/pages/`. Platform, module, and system context preserve knowledge under their respective owners. Context and Skills access remains available when the optional Documentation module is disabled.
 
 Give each contract one authoritative location. Other documents can summarize its purpose, then link to it. Do not copy requirements, schemas, or procedures into multiple locations.
 
-Organize the Guide around the main app surfaces. Introduce essential concepts and everyday capabilities for people working with agents. Keep detailed commands, file contracts, and troubleshooting in technical context. A supporting module does not need a separate Guide chapter.
+Write the Manual as a compact product reference, not a course. Organize around questions about capabilities, controls, consequences, and recovery. Use diagrams when they explain relationships faster than prose. Keep guided projects and exercises outside the Manual. Keep detailed commands, file contracts, and technical troubleshooting in owner context. A supporting module does not need a separate Manual chapter.
 
 Code defines implemented behavior. Documentation explains that behavior and the intended constraints. If they disagree, identify whether the implementation or the documentation needs correction.
 
-Associate a capability’s Guide chapter through `module: <id>` so disabling or removal hides the human chapter without relocating its source. Keep shared standards in platform context.
+Associate a capability’s Manual chapter through `module: <id>` so disabling or removal hides the human chapter without relocating its source. Keep shared standards in platform context.
 
 File-backed navigation follows the [shared source workflow](source.md). Expose source editing through navigation and the common keyboard toggle. Keep source-file mappings explicit for generated pages or pages backed by several files.
 
@@ -54,7 +54,7 @@ Do not use a word limit as a quality gate. Review the material and actions a tas
 
 Use a table for comparisons or mappings. Use a diagram when relationships or sequence are difficult to explain in text.
 
-Use fenced `mermaid` blocks for diagrams in platform Markdown. The shared reader renders them in the Guide, system context, owner overviews, and prototype Documents. Include `accTitle` and `accDescr` for accessible descriptions. Keep the text in the document so people and agents can review and revise it.
+Use fenced `mermaid` blocks for diagrams in platform Markdown. The shared reader renders them in the Manual, system context, owner overviews, and prototype Documents. Include `accTitle` and `accDescr` for accessible descriptions. Keep the text in the document so people and agents can review and revise it.
 
 Use screenshots only when the interface itself matters and the document location supports them. Include useful text descriptions and keep visuals current.
 

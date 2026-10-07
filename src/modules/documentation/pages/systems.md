@@ -1,80 +1,63 @@
 ---
-title: "Systems"
-description: "Give your prototypes your product's components, styles, and knowledge."
-section: "Your studio"
-order: 20
+title: Systems
+description: Your reusable design toolkit and product knowledge.
+order: 3
 module: systems
 toc: true
 ---
 
-A system is the reusable foundation for your prototypes. It brings your design toolkit and product knowledge together so your agent can build work that fits your product.
+## What is a system?
 
-You can use the same system across many prototypes. Establishing your own system is usually the most valuable way to customize Studio.
+A system brings together the shared foundation your agent uses across prototypes.
 
-## Choose a system
-
-Open **Systems** to explore the available toolkits. **Product** and **Marketing** are examples you can use, adapt, or replace. **Studio**, marked **Platform**, powers Design Studio itself and is required; it is unavailable for prototypes.
-
-The **Default** badge marks the starting choice for new prototypes. Each prototype uses one system, or **None**, and can have its own local components and styles. Its sidebar shows the assignment. Browsing another system does not change it.
-
-## Bring your own system
-
-Ask your agent to create or adapt a system. It handles the setup; you review the components and representative screens.
-
-Choose a starting point based on what you have:
-
-| What you have | What to give your agent |
+| Part | Contains |
 | --- | --- |
-| An existing React design system | Its source or package, usage examples, theme, assets, and known dependencies. |
-| Brand guidance or visual references | Fonts, colors, logos, screenshots, and an explanation of what should carry through. |
-| An idea without an established toolkit | The experience, audience, and visual direction you want to explore. |
+| Theme | Colors, typography, spacing, and other visual choices. |
+| Components | Reusable interface pieces with live examples. |
+| Assets | Fonts, icons, logos, and images. |
+| Context | Audience, goals, research, principles, and standards. |
+| Skills | Instructions for recurring agent tasks. |
 
-Visual references can guide a new toolkit; they do not supply your team's actual component implementation. If you want production components, ask an engineering partner for their source or package. Components coupled to application services may need adaptation.
+Open **Systems** to browse these resources. Product and Marketing are starter examples you can adapt or replace. **Studio**, marked **Platform**, powers Design Studio itself and is unavailable for prototypes.
 
-For example:
+## How do I bring in my own system?
 
-> Help me set up a system for our product using these components and brand materials. Assess what can be reused, explain gaps or adaptations, and propose a small starting toolkit. Then build a representative screen for me to review.
+Ask your agent to create or adapt one. Supply what you have:
 
-If you prefer to start from Studio's controls:
-
-1. Click **New system** and name it. This creates a blank system with no components, theme tokens, or assets. Existing systems and prototypes stay unchanged.
-2. On its overview, choose **Curate a toolkit from open libraries** or **Bring your own system**.
-3. Copy the displayed prompt into your coding agent’s chat to begin.
-
-Your agent can curate a toolkit from shadcn/ui or Untitled UI, or assess your own React system. Review the proposed scope, visual choices, and any dependencies together.
-
-Create systems locally as an Admin. In personal use, your registered contributor is the Admin. You can keep exploring with the examples while preparing your own system.
-
-## What belongs in a system?
-
-| Part | Use it for |
+| Starting point | Useful material |
 | --- | --- |
-| Theme | Shared colors, typography, spacing, and other visual choices. |
-| Components | Reusable interface pieces, with live examples and properties. |
-| Assets | Shared fonts, icons, logos, and images. Package assets may not appear as local files. |
-| Context | Your product’s users, goals, research, and requirements. |
-| Skills | Instructions for specific recurring agent tasks. |
+| Existing React components | Source or package, usage examples, theme, assets, and dependencies. |
+| Brand or visual direction | Fonts, colors, logos, screenshots, and what the references should influence. |
+| No established toolkit | The experience, audience, and visual direction you want. |
 
-Add context and skills when they help; you can start without them. [Product knowledge](/documentation/guide/agent-context) explains what to supply and where to keep it. Assets or overrides used by only one prototype can stay with that exploration.
+The agent can assess your React system or curate a toolkit from shadcn/ui or Untitled UI. Review adaptations and gaps, then try representative screens. Visual references guide appearance; they do not supply your actual production components. Application dependencies may need engineering help.
 
-## Review your system in use
+To start through the interface, select **New system**. It creates a blank system. Choose **Curate a toolkit from open libraries** or **Bring your own system** on its overview, then copy the prompt to your agent. System creation requires local Admin access.
 
-Try a representative screen with the new system. Check typography, spacing, colors, important component states, and the supported light or dark appearances. Tell the agent where the result differs from your product.
+## Where do product knowledge and decisions go?
 
-System changes are shared across the prototypes using it, so review affected work when changing reusable components or styles. In a team, coordinate those changes with the system's maintainers.
+Keep knowledge that should guide many prototypes in the system's **Context**. Keep an exploration's brief, decisions, and open questions with its prototype.
 
-Setting a new default does not rebuild existing prototypes. To compare an existing exploration with another system, use a [rebuild copy](/documentation/guide/prototypes#explore-another-system).
+Ask your agent to update existing guidance rather than create duplicate documents. Preserve sources and distinguish evidence from assumptions. Use **Skills** for recurring workflows; you do not need a new skill for each request.
 
-## Manage a system
+You can review guidance in Systems and ask the agent to revise it. In a team, agree on shared changes together.
 
-Use the **…** menu on a system’s card or beside its name. Admins can change prototype systems.
+## What happens when I change a system?
 
-| Action | What happens |
+Changes to shared components and styles can affect prototypes using that system. Review affected screens. Local experiments can stay inside a prototype until you want to share them.
+
+The **Default** badge marks the starting choice for new prototypes. Changing the default preserves existing assignments. To rebuild existing work with another system, use a [rebuild copy](/documentation/guide/prototypes#can-i-try-another-appearance-or-system).
+
+## How do I manage a system?
+
+Use its **…** menu. Admins manage availability; assigned maintainers can edit their active systems and rename them.
+
+| Action | Result |
 | --- | --- |
-| Rename | Updates the name, folder, and references. A brief toast confirms the update; remaining references needing review are flagged. |
-| Set as default | Changes the starting choice for future prototypes. Existing assignments stay the same. |
-| Archive | Keeps files in the repository, archives associated active prototypes, and excludes them from deployment. The system becomes unavailable for new prototypes. |
-| Restore | Makes the system available again. Choose whether to also restore prototypes archived with it. |
-| Delete | Permanently deletes system files. Associated prototypes keep their files but need another system and a rebuild before they work. There is no Studio recovery copy. |
+| Rename | Updates the name, folder, and known references; remaining references are flagged. |
+| Set as default | Changes the starting choice for future prototypes. |
+| Archive | Keeps files, archives associated active prototypes, and excludes them from publication. |
+| Restore | Makes the system available; optionally restores prototypes archived with it. |
+| Delete | Permanently removes system files. Associated prototypes keep their source but require another system and a rebuild. Studio keeps no recovery copy. |
 
-Choose another default before archiving or deleting the current one. Archived systems offer only **Restore** and **Delete**.
+Choose another default before archiving or deleting the current one. Archived systems offer Restore and Delete.

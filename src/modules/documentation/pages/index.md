@@ -1,37 +1,42 @@
 ---
-title: Introduction
-description: Turn ideas into something you can try, discuss, and refine with your agent.
-section: Begin
+title: Overview
+description: What Design Studio is and where to find what you need.
 order: 1
-toc: true
 ---
 
-Design Studio is a workspace for designing with your coding agent. Describe what you want to explore, let the agent build it, and use Studio to try the result and guide the next change. You own the files and can work alone or with a team.
+Design Studio is a workspace for designing with your coding agent. Describe what you want to explore, let the agent build it, and use Design Studio to try the result and guide the next change. You own the files and can work alone or with a team.
 
-## Two collections: prototypes and systems
+## Two big ideas: prototypes and systems
 
-**Prototypes** hold your explorations. A prototype brings working screens together with the notes, diagrams, and canvases that explain an idea.
+**Prototypes** hold your explorations: working screens and the notes, diagrams, and canvases that explain an idea. **Systems** hold your shared foundation: reusable components, visual styles, assets, and product knowledge.
 
-**Systems** hold your shared foundation. A system combines reusable components, visual styles, assets, and product knowledge. Your agent uses it to make prototypes that fit your product.
+```mermaid
+flowchart TB
+  accTitle: One system supports several independent prototypes
+  accDescr: A shared system supplies components, styles, and product knowledge to multiple prototypes. Each prototype holds its own screens and supporting artifacts.
+  system[System<br/>Design toolkit and product knowledge]
+  system --> a[Prototype A<br/>Screens and supporting artifacts]
+  system --> b[Prototype B<br/>Screens and supporting artifacts]
+```
 
-One system can support many prototypes. You can experiment inside a prototype without changing that shared foundation.
+You can experiment inside a prototype without changing the shared system. Changes to a system can affect all prototypes using it.
 
 ## Working with your agent
 
-Work with your agent in the same studio folder that is running locally. Give it your goals, references, constraints, and feedback. The agent handles implementation and checks; you direct the work and judge the result.
+Work with your agent directly in Design Studio's folder on your machine. Give it your goals, references, constraints, and feedback. The agent handles implementation and checks; you direct the work and judge the result.
 
-Studio does not start an agent when you create or edit something. Continue the conversation in your coding app. You can also organize artifacts, annotate a canvas, or edit text directly in Studio when that is easier.
+Design Studio does not provide its own agent. It provides a workspace for the agents you already use. It also provides manual controls for human users to take action directly when it makes sense.
 
-If you are viewing a published studio, you can explore its work. Creating and editing happen in the local studio.
+If you are viewing a studio online, you can only explore its work. Creating and editing happen locally on your computer.
 
-## Where to begin
+## What do you need to know?
 
-| What you want to do | Start here |
+| Subject | Look here |
 | --- | --- |
-| Get oriented in a running studio | [Start here](/documentation/guide/getting-started) |
-| Turn an idea into a small working flow | [Your first prototype](/documentation/guide/first-prototype) |
-| Give useful direction and feedback | [Work with your agent](/documentation/guide/agent-task-context) |
-| Make prototypes feel like your product | [Systems](/documentation/guide/systems) |
-| Gather feedback or prepare an engineering handoff | [Share and hand off](/documentation/guide/share) |
+| Screens, documents, diagrams, and canvases | [Prototypes](/documentation/guide/prototypes) |
+| Your design toolkit and product knowledge | [Systems](/documentation/guide/systems) |
+| Settings, team access, and new capabilities | [Customize](/documentation/guide/customize) |
+| Viewing links, shared files, and engineering handoff | [Share](/documentation/guide/share) |
+| Missing tools, editing, reopening, and problems | [Help](/documentation/guide/questions) |
 
-The walkthrough uses a checkout exploration to connect screens, a flow diagram, audience notes, and a review canvas. Use your own idea instead, and choose only the artifacts that help explain it.
+Use this Manual as a reference when a question comes up. **Documentation → Context & Skills** contains the detailed instructions your agent uses. Product-specific guidance lives in **Systems**.

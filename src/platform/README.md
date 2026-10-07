@@ -29,7 +29,7 @@ All platform knowledge and requirements live together in `context/`:
 - [Setup contributor](skills/setup-contributor/SKILL.md): join an existing studio.
 - [Manage modules](skills/manage-modules/SKILL.md): install or change capability availability.
 - [Maintain context](skills/maintain-context/SKILL.md): author shared knowledge and procedures.
-- [Maintain documentation](skills/maintain-documentation/SKILL.md): revise READMEs, coordinate Guide updates, and audit consistency.
+- [Maintain documentation](skills/maintain-documentation/SKILL.md): revise READMEs, coordinate Manual updates, and audit consistency.
 - [Check design system](skills/check-design-system/SKILL.md): review a surface against its applicable design system using source checks and rendered evidence.
 
 ## Maintain the instruction set
@@ -48,4 +48,4 @@ Use existing commands for repeatable mechanics and skills for decisions and outc
 
 Each module and system has its own README entry point, context, and relevant skills. A README is technical context at the owner's front door. Skills consult authoritative context rather than copying contracts.
 
-The Documentation surface offers a curated Guide and a platform and module Context and Skills browser. The browser displays these original files. System context and skills appear within each system’s UI alongside its components and theme. Generated harness entries route agents back to the canonical skills.
+The Documentation surface offers a curated Manual and a platform and module Context and Skills browser. The browser displays these original files. System context and skills appear within each system’s UI alongside its components and theme. Generated harness entries route agents back to the canonical skills.

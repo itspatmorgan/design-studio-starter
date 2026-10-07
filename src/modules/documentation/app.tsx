@@ -1,12 +1,13 @@
 import { Suspense } from 'react';
 // The Guide in the app: its rail button and its routes (/documentation/guide and /documentation/guide/<page>). The pages are in
 // src/modules/documentation/pages/ with availability and order recorded in the manifest.
-import { createRoute, notFound, lazyRouteComponent } from '@tanstack/react-router';
+import { createRoute, notFound, redirect, lazyRouteComponent } from '@tanstack/react-router';
 import { BookOpen01Icon } from '@hugeicons/core-free-icons';
 import { APP_NAME } from '@/platform/app/data/config';
 import type { ModuleApp } from '@/platform/core/api';
 import { loadManifest } from '@/platform/app/data/manifest';
 import { loadGuidePage } from './loadGuide';
+import { manualLinkTarget } from './manualLinks';
 
 // Guide pages render in DocLayout, loaded with the first Guide page.
 const GuidePage = lazyRouteComponent(() => import('./GuidePage'));
@@ -24,7 +25,7 @@ async function guideLoader(slug: string, mode?: 'source') {
   const mod = await loadGuidePage(slug, page?.source);
   if (!mod) throw notFound();
   const { title, description, toc } = mod.frontmatter ?? {};
-  return { slug, filePath: page.source ?? `/modules/documentation/pages/${slug}.md`, Component: mod.default, title, description, toc, pageTitle: [title, 'Guide', APP_NAME].filter(Boolean).join(' — ') };
+  return { slug, filePath: page.source ?? `/modules/documentation/pages/${slug}.md`, Component: mod.default, title, description, toc, pageTitle: [title, 'Manual', APP_NAME].filter(Boolean).join(' — ') };
 }
 
 export default {
@@ -50,6 +51,12 @@ export default {
     const pageRoute = createRoute({
       getParentRoute: () => guideRoute,
       path: '$page',
+      beforeLoad: async ({ params, location, search }) => {
+        const target = manualLinkTarget(params.page, location.hash);
+        if (!target) return;
+        if (!(await loadManifest()).guide.some(page => page.slug === target.page)) throw notFound();
+        throw redirect({ to: target.page === 'index' ? '/documentation/guide' : '/documentation/guide/$page', params: { page: target.page }, hash: target.hash, search, replace: true } as never);
+      },
       loaderDeps: ({ search }) => ({ mode: search.mode }),
       loader: ({ params, deps }) => guideLoader(params.page, deps.mode),
       head: ({ loaderData }) => ({ meta: [{ title: loaderData?.pageTitle ?? APP_NAME }] }),

@@ -1,6 +1,6 @@
 ---
 name: studio-module-documentation-write-guide
-description: "Create or revise human Guide chapters for Design Studio. Use only when Documentation is enabled; technical contracts stay with their owners."
+description: "Create or revise human Manual chapters for Design Studio. Use only when Documentation is enabled; technical contracts stay with their owners."
 ---
 
 <!-- studio:generated-skill -->
