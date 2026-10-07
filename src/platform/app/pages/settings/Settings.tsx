@@ -75,13 +75,13 @@ export default function Settings() {
           </fieldset>
         </Section>
         <Section id="modules" title="Modules" description="Turn optional capabilities on or off. Disabling a module keeps its files and content.">
-          <div className="space-y-6">{moduleGroups.map((group) => {
+          <div className="space-y-10">{moduleGroups.map((group) => {
             const modules = group.modules.length
               ? group.modules.flatMap(id => snapshot.modules.filter(module => module.id === id))
               : snapshot.modules.filter(module => !groupedModuleIds.has(module.id));
             if (!modules.length) return null;
             return <section key={group.id} aria-labelledby={`modules-${group.id}-title`}>
-              <h3 id={`modules-${group.id}-title`} className="mb-3 text-sm font-semibold">{group.title}</h3>
+              <h3 id={`modules-${group.id}-title`} className="mb-5 text-sm font-semibold">{group.title}</h3>
               <div className="divide-y divide-border">{modules.map((module) => <div key={module.id} className="flex items-center justify-between gap-5 py-4 first:pt-0 last:pb-0">
             <div className="min-w-0"><Label htmlFor={`module-${module.id}`}>{module.label} <span className="font-normal text-muted-foreground">({module.id === 'contributors' && draft.usage === 'team' ? 'Required for teams' : module.optional ? 'Optional' : 'Required'})</span></Label><p id={`module-${module.id}-description`} className="mt-2 text-sm text-muted-foreground">{module.description}</p>{!module.compatible && <p className="mt-1 text-sm text-destructive">Incompatible with this platform</p>}</div>
             <Switch id={`module-${module.id}`} aria-describedby={`module-${module.id}-description`} checked={draft.modules[module.id]} disabled={disabled || !module.optional || (module.id === 'contributors' && draft.usage === 'team') || (!module.compatible && !draft.modules[module.id])} onCheckedChange={(checked) => update({ modules: { ...draft.modules, [module.id]: checked } })} />
