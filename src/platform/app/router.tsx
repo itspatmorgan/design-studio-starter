@@ -113,23 +113,28 @@ type ItemSearch = { mode?: 'source' };
 // Loads an item before the route renders, so the current one stays on screen until the next
 // one is ready. Its file type (src/modules/<type>/) loads the file. An unknown address, or a type
 // that isn't installed, shows the not-found page.
-async function itemLoader({ contributor, prototype, _splat }: { contributor: string; prototype: string; _splat?: string }, mode?: ItemSearch['mode']): Promise<ItemData> {
+async function itemLoader({ contributor, prototype, _splat }: { contributor: string; prototype: string; _splat?: string }, mode?: ItemSearch['mode'], retainedPath?: string): Promise<ItemData> {
   const proto = await loadPrototype(contributor, prototype);
   // No path in the URL: the prototype's start item, or its first.
-  const item = proto && (_splat ? findArtifact(proto, _splat) : firstArtifact(proto));
+  const item = proto && (_splat ? findArtifact(proto, _splat) : proto.artifacts.find(item => item.path === retainedPath) ?? firstArtifact(proto));
   const type = item && fileTypeModules[item.fileType];
   const title = proto && item && [proto.title, artifactLabel(item.path, proto), APP_NAME].join(' — ');
   // Source view: just the text, so a file that doesn't compile can still be read and fixed.
   if (import.meta.env.DEV && mode === 'source' && proto && item && title && FILE_TYPES[item.fileType]?.language) {
-    return { fileType: item.fileType, props: null, source: { proto, item }, title };
+    return { fileType: item.fileType, props: null, source: { proto, item }, title, artifactPath: item.path };
   }
   const props = proto && item && type ? await type.load({ proto, item }) : undefined;
   if (!proto || !item || !props || !title) throw notFound();
-  return { fileType: item.fileType, props, title };
+  return { fileType: item.fileType, props, title, artifactPath: item.path };
 }
 
 // What an item route loads: the item's page props, or the Source view of it.
-type ItemData = { fileType: string; props: object | null; source?: { proto: Prototype; item: Artifact }; title: string };
+type ItemData = { fileType: string; props: object | null; source?: { proto: Prototype; item: Artifact }; title: string; artifactPath: string };
+
+// Reordering changes the opening artifact for the next visit, not the page being viewed.
+const retainedIndexPath = (routeId: string, cause: string): string | undefined => cause === 'stay'
+  ? (router.state.matches.find(match => match.routeId === routeId)?.loaderData as ItemData | undefined)?.artifactPath
+  : undefined;
 
 // Dev only: import.meta.env.DEV is false in the build, so the editor isn't in the deployed site.
 const ArtifactSource = import.meta.env.DEV ? lazy(() => import('@/platform/app/source/ArtifactSource')) : null;
@@ -171,7 +176,7 @@ const prototypeIndexRoute = createRoute({
   getParentRoute: () => prototypeRoute,
   path: '/',
   loaderDeps: ({ search }) => ({ mode: search.mode }),
-  loader: ({ params, deps }) => itemLoader(params, deps.mode),
+  loader: ({ params, deps, cause }): Promise<ItemData> => itemLoader(params, deps.mode, retainedIndexPath(prototypeIndexRoute.id, cause)),
   head: titleOf,
   component: () => <ItemPage data={prototypeIndexRoute.useLoaderData()} />,
   notFoundComponent: NotFound,
@@ -209,7 +214,7 @@ const sectionItemIndexRoute = createRoute({
   getParentRoute: () => sectionItemRoute,
   path: '/',
   loaderDeps: ({ search }) => ({ mode: search.mode }),
-  loader: ({ params, deps }) => itemLoader(params, deps.mode),
+  loader: ({ params, deps, cause }): Promise<ItemData> => itemLoader(params, deps.mode, retainedIndexPath(sectionItemIndexRoute.id, cause)),
   head: titleOf,
   component: () => <ItemPage data={sectionItemIndexRoute.useLoaderData()} />,
   notFoundComponent: NotFound,
@@ -254,7 +259,8 @@ declare module '@tanstack/react-router' {
 // invalidate() reruns the loaders, so lists and navigation update without a page reload.
 // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#using-routerinvalidate
 if (import.meta.hot) {
-  import.meta.hot.on('studio:moves', (moves: { from: string; to: string }[]) => {
+  import.meta.hot.on('studio:moves', (moves: { from: string; to: string; origin?: string }[]) => {
+    if (moves[0]?.origin === TAB_ID) return; // FileTree follows its completed reply once.
     const current = router.state.location;
     const prefix = import.meta.env.BASE_URL.replace(/\/$/, '');
     const path = current.pathname.slice(prefix.length);

@@ -130,7 +130,7 @@ export type FileOp =
   // A prototype system's components: the examples and page one is missing.
   | { op: 'add-docs'; component: string };
 
-export type FileOpResult = { path?: string; trashedTo?: string; manifest: Manifest };
+export type FileOpResult = { path?: string; trashedTo?: string; relinkedFiles?: string[]; manifest: Manifest };
 
 // A prototype system's components folder, in the shape the file layer takes for a prototype
 // (src/platform/core/roots.ts): what the Source view and the operations above are given.

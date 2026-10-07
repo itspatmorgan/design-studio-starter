@@ -137,10 +137,12 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     if (!from || from === fs.realpathSync(dir) || rel === 'meta.json') throw new Error('That file was moved or deleted.');
     let current = rel;
     let movedPaths = [];
+    let relinkedFiles = [];
     if (typeof to === 'string' && to !== parentOf(rel)) {
       const moved = runOp(dir, { op: 'move', path: rel, to });
       current = moved.path;
       movedPaths = moved.movedPaths ?? [];
+      relinkedFiles = moved.relinkedFiles ?? [];
     }
     const folder = parentOf(current);
     const where = inside(folder);
@@ -152,7 +154,7 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
     meta.order = withFolderOrder(parseOrder(meta.order) ?? [], folder, place(siblings, current, before ?? ''));
     fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
-    return { path: current, movedPaths };
+    return { path: current, movedPaths, relinkedFiles };
   }
   const source = inside(rel);
   if (!source || source === fs.realpathSync(dir)) throw new Error('That file was moved or deleted.');
@@ -174,13 +176,18 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     fs.renameSync(source, target);
     const next = relOf(target);
     let movedPaths = [];
+    let relinkedFiles = [];
     try {
-      if (beforeMove) movedPaths = [...repairReferences(dir, beforeMove, snapshotFiles(dir), prototypeAddress(dir)).moves];
+      if (beforeMove) {
+        const repaired = repairReferences(dir, beforeMove, snapshotFiles(dir), prototypeAddress(dir));
+        movedPaths = [...repaired.moves];
+        relinkedFiles = repaired.changes.map(change => relOf(change.file));
+      }
     } catch (error) { fs.renameSync(target, source); throw error; }
     // A skill's name is its folder's name: keep the two together.
     if (section === 'skills' && op === 'rename' && !rel.includes('/')) renameSkillInFile(path.join(target, SKILL_FILE), path.basename(target));
     fixOrder(dir, rel, op === 'rename' ? next : null);
-    return { path: next, movedPaths };
+    return { path: next, movedPaths, relinkedFiles };
   }
   if (op === 'delete') {
     const where = trash(source);

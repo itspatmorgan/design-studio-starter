@@ -274,6 +274,8 @@ export default function FileTree({ proto, current, embedded = false, rememberExp
       reload();
       if (result.trashedTo) {
         toast.add({ title: `Moved “${deleted}” to ${result.trashedTo === 'the Trash' ? 'the Trash' : `${result.trashedTo} (no Trash on this computer)`}` });
+      } else if (result.relinkedFiles?.length) {
+        toast.add({ title: op.op === 'rename' ? 'Renamed. References updated.' : 'Moved. References updated.' });
       }
       return result;
     } catch (e) {

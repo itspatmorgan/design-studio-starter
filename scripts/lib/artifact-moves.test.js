@@ -8,6 +8,7 @@ import { fileMoves, repairReferences, repairText, snapshotFiles } from './artifa
 import { watchMoves } from '../build/files/watch-moves.js';
 import { runOp } from '../build/files/ops.js';
 import { ROOT } from '../build/files/paths.js';
+import { moveUpdates } from '../build/files/move-updates.js';
 import { moveWithLinks, personAddress } from './prototype-links.js';
 
 const address = '/prototypes/sam/sample';
@@ -92,12 +93,33 @@ test('app operations repair references before reply and preserve ordering', () =
     write(root, 'flow/main.tsx', 'export default 1'); write(root, 'next.tsx', "import Screen from './flow/main'; export default Screen");
     const result = runOp(root, { op: 'rename', path: 'flow/main.tsx', name: 'start.tsx' });
     assert.deepEqual(result.movedPaths, [['flow/main.tsx', 'flow/start.tsx']]);
+    assert.deepEqual(result.relinkedFiles, ['next.tsx']);
     assert.match(fs.readFileSync(path.join(root, 'next.tsx'), 'utf8'), /'.\/flow\/start'/);
     assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, 'meta.json'), 'utf8')).order, ['flow/start.tsx']);
     fs.mkdirSync(path.join(root, 'destination'));
     const reorder = runOp(root, { op: 'reorder', path: 'flow/start.tsx', to: 'destination' });
     assert.deepEqual(reorder.movedPaths, [['flow/start.tsx', 'destination/start.tsx']]);
+    assert.deepEqual(reorder.relinkedFiles, ['next.tsx']);
     assert.match(fs.readFileSync(path.join(root, 'next.tsx'), 'utf8'), /'.\/destination\/start'/);
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});
+
+test('move HMR suppression matches only completed move writes and leaves later edits live', () => {
+  const root = fixture();
+  try {
+    write(root, 'new.tsx', 'export default 1');
+    write(root, 'other.tsx', "import View from './new'; export default View");
+    write(root, 'untouched.tsx', 'export default 2');
+    const updates = moveUpdates();
+    updates.record(root, { movedPaths: [['old.tsx', 'new.tsx']], relinkedFiles: ['other.tsx'] });
+    assert.equal(updates.includes(path.join(root, 'old.tsx')), true);
+    assert.equal(updates.includes(path.join(root, 'new.tsx')), true);
+    assert.equal(updates.includes(path.join(root, 'other.tsx')), true);
+    assert.equal(updates.includes(path.join(root, 'untouched.tsx')), false);
+    write(root, 'other.tsx', "import View from './new'; export const changed = true; export default View");
+    assert.equal(updates.includes(path.join(root, 'other.tsx')), false);
+    write(root, 'old.tsx', 'export default 3');
+    assert.equal(updates.includes(path.join(root, 'old.tsx')), false);
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
 

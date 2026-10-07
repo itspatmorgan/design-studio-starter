@@ -90,7 +90,8 @@ export function createLoader<M>(glob: Glob<M>, hot: ImportMeta['hot']) {
     if (state.glob !== glob) {
       state.glob = glob;
       state.stamp = Date.now();
-      state.loaded.clear();
+      // Keep already-open, unchanged views stable when another file moves.
+      for (const key of state.loaded.keys()) if (!(key in glob)) state.loaded.delete(key);
       state.waiting.splice(0).forEach((resolve) => resolve());
       // A file that was incomplete reaches here once it's fixed: tell the router to load it
       // again (router.tsx).
@@ -102,6 +103,15 @@ export function createLoader<M>(glob: Glob<M>, hot: ImportMeta['hot']) {
     // A file that updates itself (a prototype document, scripts/build/vite-markdown-refresh-plugin.js)
     // hands over its new version: use it, and have the router load the open item again. Added
     // once; it reads the shared state, so it stays current across runs.
+    // Vite replaces custom listeners when this loader hot-updates, so register each run.
+    hot.on('studio:relinked', ({ files }: { files: string[] }) => {
+      // Non-refreshable rewritten modules reload through the route, never the document.
+      const affected = files.filter(file => state.loaded.has(file));
+      if (!affected.length) return;
+      state.stamp = Date.now();
+      affected.forEach(file => state.loaded.delete(file));
+      window.dispatchEvent(new Event('studio:views'));
+    });
     if (!hot.data.listening) {
       hot.data.listening = true;
       window.addEventListener('studio:markdown', ((event: CustomEvent<{ key: string; mod: M }>) => {

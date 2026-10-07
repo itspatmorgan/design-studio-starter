@@ -58,6 +58,8 @@ Renaming changes shared URLs. Relative document links survive a prototype-folder
 
 The app repairs internal references when files or folders are renamed or moved: local literal imports and exports, literal view navigation paths, Markdown link destinations, and canvas element links. Moving a source file also rebases its relative references. Prototype renaming and duplication rewrite self-address links in view code, Markdown, and canvases.
 
+File moves publish the completed inventory and follow the open artifact once. Exact move and relinking writes suppress stale Vite module entries that would reload the document. Retained refresh boundaries update in place. Other rewritten artifacts refresh through their loader, and subsequent code edits retain normal HMR. The loader keeps cached modules for unchanged files when its inventory changes. Reordering keeps the currently displayed index artifact and its navigation selection, while changing the opening artifact for the next visit. A brief toast confirms when references were updated.
+
 While the dev server is running, the same repair follows unambiguous filesystem renames in prototypes owned by the current contributor or maintained section items. It recognizes unique filesystem identities; copies, deleted targets, cross-prototype moves, and ambiguous replacements are not guessed. The currently open artifact follows a detected move. Repairs never change another prototype or an external URL.
 
 Moves made while the server is stopped, dynamically assembled paths, and incoming links from other prototypes still need an agent to update and verify them. Keep the server running while organizing files when automatic repair is wanted.

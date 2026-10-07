@@ -1,6 +1,7 @@
 import { SYSTEM_SOURCES } from '../../src/modules/systems/node/systems.js';
 import { editorFile, openEditor } from './files/editor.js';
 import { watchMoves } from './files/watch-moves.js';
+import { moveUpdates } from './files/move-updates.js';
 import { canonicalDirectory } from '../lib/safe-paths.js';
 import { configurationRestartPending } from './vite-settings-plugin.js';
 import { documentationSources, sourceFile } from './files/source.js';
@@ -64,6 +65,7 @@ import { SYSTEM_CONTENT_NOTE, reveal, runOp, runSystemOp, trash } from './files/
 
 export default function filesPlugin() {
   let moves;
+  const movedUpdates = moveUpdates();
   return {
     name: 'studio-files',
     apply: 'serve',
@@ -72,11 +74,31 @@ export default function filesPlugin() {
     // manifest and the item lists (src/modules/<type>/loader.ts) already handle these, so drop Vite's copy of
     // the file itself and let its importers, like those lists, update as usual. Edits to a
     // file are left to Vite's normal hot reload.
-    hotUpdate: { order: 'post', handler({ type, file, modules, server }) {
+    hotUpdate: { order: 'post', handler({ type, file, modules, server, timestamp }) {
       // A system transaction publishes its complete declarations through one server restart.
       // Never expose its partially written scaffold or regenerated routing through HMR.
       if (configurationRestartPending(server) || fs.existsSync(path.join(ROOT, '.studio-system-operation'))) return [];
       if (type !== 'update') moves?.flush();
+      if (movedUpdates.includes(file)) {
+        // Retained React/Markdown boundaries can refresh their references in place.
+        if (type === 'update' && !movedUpdates.moved(file)) {
+          const accepting = modules.filter(m => m.isSelfAccepting);
+          if (accepting.length) return accepting;
+        }
+        for (const m of modules) if (m.file === file) this.environment.moduleGraph.invalidateModule(m, new Set(), timestamp, true);
+        if (type === 'update' && !movedUpdates.moved(file)) {
+          const affected = new Set([file]), visited = new Set();
+          const visit = module => {
+            if (visited.has(module)) return;
+            visited.add(module);
+            if (module.file) affected.add(module.file);
+            for (const importer of module.importers) visit(importer);
+          };
+          modules.forEach(visit);
+          server.ws.send({ type: 'custom', event: 'studio:relinked', data: { files: [...affected].map(file => '/' + path.relative(path.join(ROOT, 'src'), file).split(path.sep).join('/')) } });
+        }
+        return modules.filter(m => m.file !== file);
+      }
       if (type === 'update' || !(file.startsWith(PROTOS + path.sep) || PROTOTYPE_SECTIONS.some((s) => file.startsWith(s.dir + path.sep)) || file.startsWith(SYSTEM_CONTENT + path.sep) || systemOf(file))) return;
       for (const m of modules) if (m.file === file) this.environment.moduleGraph.invalidateModule(m);
       return modules.filter((m) => m.file !== file);
@@ -100,7 +122,7 @@ export default function filesPlugin() {
       moves = watchMoves(server, () => [
         ...folders(PROTOS).flatMap(person => folders(person).map(dir => ({ dir, contributor: path.basename(person), address: `/prototypes/${path.basename(person)}/${path.basename(dir)}` }))),
         ...PROTOTYPE_SECTIONS.flatMap(section => folders(section.dir).map(dir => ({ dir, contributor: section.key, address: `/${section.key}/${path.basename(dir)}` }))),
-      ].filter(scope => fs.existsSync(path.join(scope.dir, 'meta.json')) && owns(scope.contributor, me(), scope.dir)));
+      ].filter(scope => fs.existsSync(path.join(scope.dir, 'meta.json')) && owns(scope.contributor, me(), scope.dir)), movedUpdates.record);
 
       server.middlewares.use('/__studio', async (req, res, next) => {
         try {
@@ -151,13 +173,14 @@ export default function filesPlugin() {
             try {
               moves.flush();
               const result = body.contributor === SYSTEMS_KEY ? runSystemOp(body.prototype, body) : runOp(dir, body, body.contributor === SYSTEM_CONTENT_KEY ? contentSection(body.prototype) : null);
+              movedUpdates.record(dir, result);
               moves.capture();
               const { manifest } = buildManifest();
               // Other tabs update now; the tab that asked (X-Studio-Tab) handles it from the reply.
               publishManifest(server, manifest, req.headers['x-studio-tab']);
               if (result.movedPaths?.length) {
                 const address = body.contributor === SYSTEM_CONTENT_KEY ? null : PROTOTYPE_SECTIONS.some(section => section.key === body.contributor) ? `/${body.contributor}/${body.prototype}` : `/prototypes/${body.contributor}/${body.prototype}`;
-                if (address) server.ws.send({ type: 'custom', event: 'studio:moves', data: result.movedPaths.map(([from, to]) => ({ from: address + '/' + from.replace(/\.[^./]+$/, '').split('/').map(encodeURIComponent).join('/'), to: address + '/' + to.replace(/\.[^./]+$/, '').split('/').map(encodeURIComponent).join('/') })) });
+                if (address) server.ws.send({ type: 'custom', event: 'studio:moves', data: result.movedPaths.map(([from, to]) => ({ origin: req.headers['x-studio-tab'], from: address + '/' + from.replace(/\.[^./]+$/, '').split('/').map(encodeURIComponent).join('/'), to: address + '/' + to.replace(/\.[^./]+$/, '').split('/').map(encodeURIComponent).join('/') })) });
               }
               return send(res, 200, { ...result, manifest });
             } catch (e) {

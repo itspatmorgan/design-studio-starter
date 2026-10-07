@@ -34,7 +34,7 @@ Views are always available. Documents, diagrams, and canvases are optional capab
 
 ## Organize the exploration
 
-Add artifacts with **+** in navigation. Enter a name; Studio supplies the file extension. Use folders to group work, and drag items to move or reorder them. The first artifact in navigation is where the prototype opens.
+Add artifacts with **+** in navigation. Enter a name. Studio supplies the file extension. Use folders to group work, and drag items to move or reorder them. The first artifact in navigation is where the prototype opens. Reordering keeps your current artifact open. A brief message confirms when a move updates references.
 
 The Feedback Inbox sample demonstrates an introduction, early exploration, app screens, and individual states. Your prototype can use whatever organization suits the work.
 

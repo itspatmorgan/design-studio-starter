@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import { fileMoves, repairReferences, snapshotFiles } from '../../lib/artifact-moves.js';
 
 // The caller supplies only current owned/maintained prototypes. No content is cached or guessed.
-export function watchMoves(server, scopes) {
+export function watchMoves(server, scopes, onMove = () => {}) {
   let previous = new Map(), timer;
   const capture = () => {
     clearTimeout(timer);
@@ -27,6 +27,7 @@ export function watchMoves(server, scopes) {
           const address = old.address === scope.address ? scope.address : [old.address, scope.address];
           if (moves.size || Array.isArray(address)) {
             const result = repairReferences(scope.dir, old.files, files, address, moves);
+            onMove(scope.dir, { movedPaths: [...moves], relinkedFiles: result.changes.map(change => change.file) });
             const routes = [...moves].map(([from, to]) => ({ from: old.address + '/' + from.replace(/\.[^./]+$/, '').split('/').map(encodeURIComponent).join('/'), to: scope.address + '/' + to.replace(/\.[^./]+$/, '').split('/').map(encodeURIComponent).join('/') }));
             if (Array.isArray(address)) routes.push({ from: old.address, to: scope.address });
             server.ws.send({ type: 'custom', event: 'studio:moves', data: routes });
