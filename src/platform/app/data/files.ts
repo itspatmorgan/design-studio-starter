@@ -77,7 +77,7 @@ export async function revealInFinder(p: PrototypeInfo, file: string) {
 // Canvas loads identity before mounting, avoiding a read-only toolbar flash.
 export const preloadIdentity = () => meRequest ??= fetch('/__studio/me').then((r) => { if (!r.ok) throw new Error('Identity unavailable'); return r.json() as Promise<Who>; }).catch(() => ({ key: null, name: null })).then(who => { resolvedWho = who; return who; });
 
-// Who you are, from the dev server: your contributors.json key and name, both null on the deployed site or if
+// Who you are, from the dev server: your contributor key and name, both null on the deployed site or if
 // you're not a contributor. The name is undefined while the dev server hasn't answered yet.
 type Who = { key: string | null; name: string | null | undefined };
 let meRequest: Promise<Who> | undefined;
@@ -104,9 +104,9 @@ function useWho(): Who {
   return who;
 }
 
-// Your contributors.json key. The app lets you change files only in your own prototypes.
+// Your contributor key. The app lets you change files only in your own prototypes.
 export const useMe = () => useWho().key;
-// Your name, as contributors.json has it; undefined until the dev server has answered.
+// Your name, as their profile declares it; undefined until the dev server has answered.
 export const useMyName = () => useWho().name;
 
 // Whether you own a prototype (so you may archive or delete it): your own, or a section item you maintain. The

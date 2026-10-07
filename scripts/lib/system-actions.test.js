@@ -1,3 +1,4 @@
+import { writeProfiles } from './fixtures/contributors.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -10,7 +11,7 @@ function fixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-system-actions-'));
   const config = { usage: 'team', admins: ['admin'], systems: ['studio', 'kit', 'other'], defaultSystem: 'other' };
   fs.writeFileSync(path.join(root, 'studio.config.ts'), `export default ${JSON.stringify(config)};`);
-  fs.writeFileSync(path.join(root, 'contributors.json'), JSON.stringify({ admin: { name: 'Admin' }, member: { name: 'Member' } }));
+  writeProfiles(root, { admin: { name: 'Admin' }, member: { name: 'Member' } });
   for (const id of config.systems) {
     fs.mkdirSync(path.join(root, 'src/systems', id, 'components'), { recursive: true });
     fs.writeFileSync(path.join(root, 'src/systems', id, 'system.ts'), `// preserve comment\nexport default { status: 'active', role: '${id === 'studio' ? 'platform' : 'prototype'}', label: '${id}', themeClass: '${id}-theme' };`);

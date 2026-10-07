@@ -10,7 +10,6 @@ export function claimWelcome(root, contributor) {
   const profiles = path.join(root, 'contributors');
   if (fs.existsSync(profiles) && (!fs.lstatSync(profiles).isDirectory() || fs.lstatSync(profiles).isSymbolicLink())) throw new Error('Contributor profiles must use an ordinary directory.');
   const profile = path.join(profiles, `${contributor}.json`);
-  const registry = path.join(root, 'contributors.json');
   const read = file => {
     const stat = fs.lstatSync(file);
     if (!stat.isFile() || stat.isSymbolicLink()) throw new Error('Contributor profile must be an ordinary file.');
@@ -19,20 +18,14 @@ export function claimWelcome(root, contributor) {
     if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Contributor profile must be an object.');
     return { source, value };
   };
-  const roster = fs.existsSync(registry) ? read(registry) : null;
-  const individual = fs.existsSync(profile) ? read(profile) : null;
-  const inRoster = roster && Object.hasOwn(roster.value, contributor);
-  if (individual && inRoster) throw new Error('Contributor is registered in two files. Keep one.');
-  const entry = individual?.value ?? (inRoster ? roster.value[contributor] : null);
-  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) throw new Error('Contributor is not registered.');
+  if (!fs.existsSync(profile)) throw new Error('Contributor is not registered.');
+  const { source, value: entry } = read(profile);
   if (typeof entry.welcomeDismissed !== 'boolean') {
     throw Object.assign(new Error('Declare contributor welcomeDismissed explicitly as false or true.'), { status: 422 });
   }
   if (entry.welcomeDismissed === true) return false;
-  const file = individual ? profile : registry;
-  const { source, value } = individual ?? roster;
   const next = { ...entry, welcomeDismissed: true };
-  const after = JSON.stringify(individual ? next : { ...value, [contributor]: next }, null, 2) + '\n';
-  applySetupChanges([{ file, before: source, after }]);
+  const after = JSON.stringify(next, null, 2) + '\n';
+  applySetupChanges([{ file: profile, before: source, after }]);
   return true;
 }

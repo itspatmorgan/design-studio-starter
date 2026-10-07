@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { buildManifest } from './build-manifest.js';
 import { FILE_TYPES, fileTypeOf } from '../lib/file-types.js';
 import { ENABLED_MODULES, PROTOTYPE_DIRS } from '../lib/modules.js';
-import { CONTRIBUTORS_DIR, CONTRIBUTORS_FILE } from '../lib/contributors.js';
+import { CONTRIBUTORS_DIR } from '../lib/contributors.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
@@ -40,7 +40,7 @@ const inside = (dir, file) => file === dir || file.startsWith(dir + path.sep);
 // for meta.json, Guide frontmatter, contributor names, and a file that can be lofi (a view says so
 // in its own text). Other edits to a view's code are left to Vite's hot reload.
 function relevant(file, kind) {
-  if (file === CONTRIBUTORS_FILE || inside(CONTRIBUTORS_DIR, file) || file === AGENTS) return true;
+  if (inside(CONTRIBUTORS_DIR, file) || file === AGENTS) return true;
   if (GUIDE && inside(GUIDE, file)) return file.endsWith('.md');
   if (inside(SYSTEM_CONTENT, file)) return kind !== 'change' || file.endsWith('.md');
   if (file.endsWith('.md') && /src[\\/](?:platform[\\/]core|modules)[\\/]/.test(file)) return true;
@@ -59,7 +59,7 @@ export default function manifestWatch() {
     apply: 'serve',
     configureServer(server) {
       if (!fs.existsSync(path.join(ROOT, '.studio-system-operation'))) buildManifest();
-      server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, SYSTEM_CONTENT, ...(GUIDE ? [GUIDE] : []), SYSTEMS, CONTRIBUTORS_FILE, CONTRIBUTORS_DIR, AGENTS]);
+      server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, SYSTEM_CONTENT, ...(GUIDE ? [GUIDE] : []), SYSTEMS, CONTRIBUTORS_DIR, AGENTS]);
       let timer = null;
       // Every file that changed since the last build, even ones that don't ask for a rebuild: the next one tells the
       // build which prototypes to look at again, so an edit that waited for it is never missed.

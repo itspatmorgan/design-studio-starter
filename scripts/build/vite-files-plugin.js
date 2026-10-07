@@ -8,7 +8,7 @@ import { documentationSources, sourceFile } from './files/source.js';
 // The file layer behind the prototype navigation's file tree, during `pnpm dev` only.
 // (The deployed site is static, so this doesn't exist there.)
 //
-//   GET  /__studio/me                                       your contributors.json key and name
+//   GET  /__studio/me                                       your contributor key and name
 //   GET  /__studio/files?contributor=<key>&prototype=<id>   the prototype's files and folders
 //        (reserved contributor "system-content" reads a system-owned Context or Skills section)
 //   GET  /__studio/file?contributor=<key>&prototype=<id>&path=<file>   an item's text and its version
@@ -106,11 +106,11 @@ export default function filesPlugin() {
     async configureServer(server) {
       // The routes the modules add (a server.ts in a module's folder), by module id.
       const moduleServers = Object.fromEntries(await Promise.all(SERVER_FILES.map(async ([id, file]) => [id, (await import(pathToFileURL(file).href)).default])));
-      // Who you are, worked out once (it can call the GitHub CLI), and again if contributors.json changes.
+      // Who you are, worked out once (it can call the GitHub CLI), and again if a contributor profile changes.
       let key;
       const me = () => (key === undefined ? (key = resolveContributor()) : key);
       const identityChanged = (file) => {
-        if (path.basename(file) !== 'contributors.json' && path.dirname(file) !== CONTRIBUTORS_DIR) return;
+        if (path.dirname(file) !== CONTRIBUTORS_DIR) return;
         key = undefined;
         server.ws.send({ type: 'custom', event: 'studio:identity', data: {} });
       };

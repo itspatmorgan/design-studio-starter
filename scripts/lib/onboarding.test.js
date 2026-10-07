@@ -1,3 +1,4 @@
+import { writeProfiles } from './fixtures/contributors.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -39,7 +40,7 @@ test('local personal setup resumes, then a second clone joins a team without cha
     copy(root, dir);
     // Own the fixture data: a team's real contributors, systems and prototypes are arbitrary.
     fs.rmSync(path.join(dir, 'contributors'), { recursive: true, force: true });
-    fs.writeFileSync(path.join(dir, 'contributors.json'), JSON.stringify({ patrick: { name: 'Patrick Morgan', email: '', github: '', welcomeDismissed: false } }));
+    writeProfiles(dir, { patrick: { name: 'Patrick Morgan', email: '', github: '', welcomeDismissed: false } });
     for (const folder of ['src/prototypes', 'src/systems']) {
       fs.rmSync(path.join(dir, folder), { recursive: true, force: true });
       fs.mkdirSync(path.join(dir, folder), { recursive: true });

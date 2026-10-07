@@ -14,33 +14,10 @@ const platformMaintainer = mode === '--ci' && ['admin', 'maintain'].includes(pro
 let changed;
 try { changed = changedFiles(mode, before, after); } catch (e) { console.error(e.message); process.exit(2); }
 if (!changed) { console.error('Usage: check-scope.js --staged | --push | --ci <before> <after>'); process.exit(2); }
-// baseRef is the "before" side of the change, so contributors.json can be compared.
 const { files, baseRef } = changed;
 const actor = process.env.STUDIO_SCOPE_ACTOR ?? process.env.GITHUB_ACTOR;
 const key = mode === '--ci' ? keyForGithub(actor) : resolveContributor();
 const prefix = key ? `src/prototypes/${key}/` : null;
-// The contributors at a ref (null means the working version being checked): contributors.json, and the
-// contributors/<key>.json files, merged the way scripts/lib/contributors.js does.
-function contributorsAt(ref) {
-  const staged = ref === null && mode === '--staged';
-  const treeish = ref === null ? (mode === '--ci' ? after : 'HEAD') : ref;
-  const show = (file) => { try { return JSON.parse(git('show', `${staged ? '' : treeish}:${file}`)); } catch { return null; } };
-  const out = show('contributors.json') ?? {};
-  let files = [];
-  try { files = (staged ? git('ls-files', '--', 'contributors/') : git('ls-tree', '-r', '--name-only', treeish, 'contributors/')).split('\n').filter((f) => /^contributors\/[a-z0-9][a-z0-9-]*\.json$/.test(f)); } catch { /* none */ }
-  for (const file of files) { const entry = show(file); if (entry) out[path.basename(file, '.json')] = entry; }
-  return out;
-}
-
-// Adding or editing only your own entry in contributors.json counts as in scope,
-// so joining (pnpm join) doesn't get flagged as a platform change.
-function onlyOwnEntryChanged() {
-  if (!key || !baseRef) return false;
-  const before = contributorsAt(baseRef);
-  const now = contributorsAt(null);
-  const others = (o) => JSON.stringify(Object.entries(o).filter(([k]) => k !== key).sort());
-  return others(before) === others(now);
-}
 
 // An item in a section whose policy is "maintainers" (a section item, src/examples/<id>/) is changed by the people
 // listed in its meta.json. The list that counts is the one before the change, so a change can't make its
@@ -70,13 +47,13 @@ function maintainedItem(f) {
   return null;
 }
 
-const isInScope = (f) => (prefix && f.startsWith(prefix)) || (key && f === `contributors/${key}.json`) || ((m) => Boolean(m) && maintains(...m))(maintainedItem(f)) || (f === 'contributors.json' && onlyOwnEntryChanged());
+const isInScope = (f) => (prefix && f.startsWith(prefix)) || (key && f === `contributors/${key}.json`) || ((m) => Boolean(m) && maintains(...m))(maintainedItem(f));
 const inScope = files.filter(isInScope);
 const platform = files.filter((f) => !isInScope(f));
 
 const who = key ?? (mode === '--ci' ? `unknown actor "${actor ?? ''}"` : 'unknown contributor');
 console.log(`Scope check (${who}): ${inScope.length} in scope, ${platform.length} platform.`);
-if (!key) console.log('  Not in contributors.json, so every file counts as out of scope.');
+if (!key) console.log('  Not registered in contributors/, so every file counts as out of scope.');
 for (const f of platform) console.log(`  platform: ${f}`);
 
 if (platform.length && review) console.log('  Platform changes require maintainer review before merging. Configure required reviews on main.');

@@ -126,12 +126,12 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
     return skip(`is not valid JSON (${e.message})`);
   }
   if (typeof meta?.title !== 'string' || !meta.title.trim()) return skip('needs a "title"');
-  // "maintainers" (required where the section's policy is maintainers): the contributors.json keys of the people who may change it.
+  // "maintainers" (required where the section's policy is maintainers): the contributor keys of the people who may change it.
   let maintainers;
   if (maintained) {
     maintainers = parseMaintainers(meta.maintainers);
     if (!maintainers) return skip('needs "maintainers": a list with at least one contributor key, like ["patrick"]');
-    for (const key of maintainers) if (!(key in contributors)) out.warn(`[manifest] ${metaFile}: maintainer "${key}" isn't in contributors.json`);
+    for (const key of maintainers) if (!(key in contributors)) out.warn(`[manifest] ${metaFile}: maintainer "${key}" isn't registered in contributors/`);
   }
   // "order" (optional) lists paths to put first, in sequence (src/platform/core/order.ts).
   let order;
@@ -240,7 +240,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   // could look unrelated to a prototype that did change, so then nothing is assumed unchanged.
   const touched = touchedPaths?.every((f) => path.resolve(f).startsWith(ROOT + path.sep)) ? touchedPaths.map((f) => path.resolve(f)) : undefined;
   const out = quiet ? { log() {}, warn() {}, error() {} } : console;
-  // Display names come from the contributors (contributors.json, and contributors/<key>.json), so they live in one place.
+  // Display names come from the contributors/<key>.json profiles, so they live in one place.
   const contributors = loadContributors();
 
   const prototypes = [];

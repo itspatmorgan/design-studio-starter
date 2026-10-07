@@ -28,7 +28,7 @@ The settings server checks the current role before applying each save. Only exis
 
 Use `pnpm studio configure --admins sam,alex --yes` to assign team Admins. This repository command also supports initial setup and recovery when no local Admin can use the UI. CLI commands and direct file edits remain available to people and agents with repository access. GitHub review and CI permission rules remain separate.
 
-Keep shared choices in `studio.config.ts`. Contributor profiles live in `contributors/<key>.json`; `pnpm join` creates these files. Existing `contributors.json` entries are still supported. Both sources form one roster, but a key must appear in only one source. Profiles do not declare Admin authority.
+Keep shared choices in `studio.config.ts`. Contributor profiles live in `contributors/<key>.json`; `pnpm join` creates these files. Each file declares one contributor, with its filename as the stable key. There is no combined roster file. Profiles declare a nonempty `name`, plus `email` and `github` strings. An empty string explicitly means that identity is unavailable. Nonempty emails and GitHub usernames must be unique, ignoring case. When Onboarding is enabled, profiles also declare `welcomeDismissed`. Other preference fields stay with the profile. Profiles do not declare Admin authority.
 
 ## Configuration fields
 

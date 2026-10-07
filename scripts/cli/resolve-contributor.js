@@ -29,7 +29,7 @@ export function resolveContributor() {
   if (byEmail.length > 1) return null;
   const name = run('git', ['config', 'user.name']).toLowerCase();
   const matches = Object.keys(contributors).filter((key) => name && contributors[key].name?.toLowerCase() === name);
-  // Older registries (including the starter author) may not contain an email.
+  // Profiles with an explicitly unavailable email can resolve through an unambiguous Git name.
   if (matches.length === 1 && !contributors[matches[0]].email) return matches[0];
   // A configured, unregistered identity must not inherit a different global GitHub account.
   if (email) return null;

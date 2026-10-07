@@ -65,10 +65,10 @@ for (const m of specs) {
   }
 }
 
-const { contributors: contributorMap, twice, problems: contributorProblems } = readContributors();
+const { contributors: contributorMap, problems: contributorProblems } = readContributors();
 const contributors = Object.keys(contributorMap);
 problems.push(...adminProblems(CONFIG, contributors).filter((problem) => !problems.includes(problem)));
-problems.push(...contributorProblems, ...twice.map((k) => `"${k}" is in contributors.json and also has its own file, contributors/${k}.json. Keep one.`));
+problems.push(...contributorProblems);
 const protoDir = path.join(ROOT, 'src', 'prototypes');
 const folders = fs.existsSync(protoDir) ? fs.readdirSync(protoDir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name) : [];
 for (const key of SECTION_KEYS) {

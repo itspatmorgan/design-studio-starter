@@ -146,9 +146,8 @@ function removal(id) {
 function fixture(count) {
   const dir = scratchCopy(`fixture-${count}`);
   const people = Math.max(1, Math.round(Math.sqrt(count) / 2));
-  const contributors = JSON.parse(fs.readFileSync(path.join(dir, 'contributors.json'), 'utf8'));
-  for (let p = 0; p < people; p++) contributors[`person${p}`] = { name: `Person ${p}`, github: `person${p}`, email: '', welcomeDismissed: false };
-  fs.writeFileSync(path.join(dir, 'contributors.json'), JSON.stringify(contributors, null, 2));
+  fs.mkdirSync(path.join(dir, 'contributors'), { recursive: true });
+  for (let p = 0; p < people; p++) fs.writeFileSync(path.join(dir, 'contributors', `person${p}.json`), JSON.stringify({ name: `Person ${p}`, github: `person${p}`, email: '', welcomeDismissed: false }));
   for (let i = 0; i < count; i++) {
     const who = `person${i % people}`;
     const proto = path.join(dir, 'src', 'prototypes', who, `proto-${i}`);

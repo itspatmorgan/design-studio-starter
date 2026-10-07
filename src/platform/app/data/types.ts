@@ -17,10 +17,10 @@ export type Artifact = {
 
 export type PrototypeInfo = {
   id: string;             // folder name, e.g. "hello-world"
-  contributorKey: string; // contributors.json key, e.g. "patrick"
+  contributorKey: string; // contributor key, e.g. "patrick"
   title: string;
   description?: string;   // shared section descriptions; prototypes use artifacts for context
-  contributor: string;    // display name, from contributors.json
+  contributor: string;    // display name, from contributor profiles
   contributorGithub?: string; // registered GitHub account, for optional profile photos
   created: string | null;
   system: string | null;  // null means custom styling; omission in meta.json resolves to defaultSystem
@@ -28,7 +28,7 @@ export type PrototypeInfo = {
   systemMissing?: { id: string; label: string }; // deleted dependency; source retained for rebuild
   rebuild?: { targetSystem: string | null; source: string }; // requested fork migration, before changing the actual assignment
   status?: 'archived';    // meta.json "status", when archived; absent means active
-  maintainers?: string[]; // meta.json "maintainers" (contributors.json keys), where a section's policy is maintainers; prototypes don't have them
+  maintainers?: string[]; // meta.json "maintainers" (contributor keys), where a section's policy is maintainers; prototypes don't have them
 };
 
 // A prototype with its artifacts loaded, which everything that shows a prototype's files needs.

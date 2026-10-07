@@ -1,3 +1,4 @@
+import { writeProfiles } from './fixtures/contributors.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -82,9 +83,9 @@ test('create and rename preserve addresses, file errors recover, and system remo
     }
     // CLI operations need a registered identity independent of the host's Git config.
     fs.rmSync(path.join(dir, 'contributors'), { recursive: true, force: true });
-    fs.writeFileSync(path.join(dir, 'contributors.json'), JSON.stringify({
+    writeProfiles(dir, {
       patrick: { name: 'Test Maintainer', email: 'maintainer@example.test', github: '', welcomeDismissed: false },
-    }));
+    });
     const script = `
       import fs from 'node:fs';
       import path from 'node:path';
@@ -215,13 +216,13 @@ test('CI accepts reviewed platform proposals and maintainer pushes, rejecting ot
     runGit('config', 'user.name', 'Test Maintainer');
     runGit('config', 'user.email', 'test@example.test');
     runGit('config', 'core.hooksPath', '/dev/null');
-    runGit('add', 'contributors.json', 'README.md');
+    runGit('add', 'contributors/', 'README.md');
     runGit('commit', '-qm', 'Initial fixture');
     const base = runGit('rev-parse', 'HEAD');
     fs.appendFileSync(path.join(dir, 'README.md'), '\nPlatform fixture\n');
     runGit('add', 'README.md'); runGit('commit', '-qm', 'Platform fixture');
     const head = runGit('rev-parse', 'HEAD');
-    const github = JSON.parse(fs.readFileSync(path.join(dir, 'contributors.json'))).patrick.github;
+    const github = JSON.parse(fs.readFileSync(path.join(dir, 'contributors/patrick.json'))).github;
     for (const [role, review, expected] of [['write', false, 1], ['maintain', false, 0], ['admin', false, 0], ['write', true, 0]]) {
       const result = spawnSync(process.execPath, ['scripts/check/check-scope.js', '--ci', base, head, ...(review ? ['--review'] : [])], { cwd: dir, encoding: 'utf8', env: { ...process.env, STUDIO_SCOPE_ACTOR: github, STUDIO_PLATFORM_ROLE: role, MISE_TRUSTED_CONFIG_PATHS: dir } });
       assert.equal(result.status, expected, result.stderr + result.stdout);

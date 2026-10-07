@@ -14,7 +14,7 @@ import type { ModuleSpec } from './modules/index.ts';
 
 export type Policy = 'owner' | 'maintainers' | 'open' | 'none';
 
-// What the policy needs to know: who is asking (their contributors.json key, or null), the key the item
+// What the policy needs to know: who is asking (their contributor key, or null), the key the item
 // is under, and its maintainers if it has any.
 export type Subject = { me: string | null; key: string; maintainers?: readonly string[] };
 
@@ -25,7 +25,7 @@ export const parseMaintainers = (value: unknown): string[] | null => {
   return [...new Set(value as string[])];
 };
 
-// Whether `key` (your contributors.json key, or null) is one of these maintainers.
+// Whether `key` (your contributor key, or null) is one of these maintainers.
 export const canMaintain = (maintainers: readonly string[] | undefined, key: string | null) =>
   Boolean(key && maintainers?.includes(key));
 

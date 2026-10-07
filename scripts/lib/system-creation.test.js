@@ -1,3 +1,4 @@
+import { writeProfiles } from './fixtures/contributors.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -10,7 +11,7 @@ test('system creation requires a current registered Admin and validates input be
   try {
     const config = "export default { usage: 'team', admins: ['admin'] };";
     fs.writeFileSync(path.join(root, 'studio.config.ts'), config);
-    fs.writeFileSync(path.join(root, 'contributors.json'), JSON.stringify({ admin: { name: 'Admin' }, member: { name: 'Member' } }));
+    writeProfiles(root, { admin: { name: 'Admin' }, member: { name: 'Member' } });
     for (const actor of [null, 'missing', 'member']) assert.throws(() => createSystem(root, actor, { name: 'Product' }), /Admin/);
     for (const body of [null, [], { name: '' }, { name: '42' }, { name: 'Kit', source: '/tmp' }, { name: 'a\ncommand' }]) {
       assert.throws(() => createSystem(root, 'admin', body));
@@ -26,7 +27,7 @@ test('creation keeps partial scaffolds private and releases its transaction afte
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-system-create-'));
   try {
     fs.writeFileSync(path.join(root, 'studio.config.ts'), "export default { usage: 'team', admins: ['admin'] };");
-    fs.writeFileSync(path.join(root, 'contributors.json'), JSON.stringify({ admin: { name: 'Admin' } }));
+    writeProfiles(root, { admin: { name: 'Admin' } });
     fs.mkdirSync(path.join(root, 'scripts/cli'), { recursive: true });
     fs.writeFileSync(path.join(root, 'scripts/cli/studio.js'), `
       const fs = require('node:fs');

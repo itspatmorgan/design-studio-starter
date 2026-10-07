@@ -42,7 +42,7 @@ With `system: null`, views start from browser colors and a system font, without 
 
 The first available artifact in navigation order opens by default, including artifacts inside folders. Helpers and disabled file types are excluded. An empty prototype shows an empty state.
 
-Contributor details come from `contributors.json` and `contributors/<key>.json`.
+Contributor details come from `contributors/<key>.json`.
 
 Gallery cards use the contributor's registered `github` username to load a profile photo. Initials appear while it loads, when no GitHub account is registered, or if the image is unavailable. Photo loading is optional and requires no GitHub authentication.
 

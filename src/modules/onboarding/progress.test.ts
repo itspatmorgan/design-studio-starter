@@ -35,7 +35,7 @@ const fixture = (t: { after: (fn: () => void) => void }) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-welcome-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, 'contributors'));
-  fs.writeFileSync(path.join(root, 'contributors.json'), JSON.stringify({ owner: { name: 'Owner', extra: 'keep', welcomeDismissed: false } }));
+  fs.writeFileSync(path.join(root, 'contributors/owner.json'), JSON.stringify({ name: 'Owner', extra: 'keep', welcomeDismissed: false }));
   fs.writeFileSync(path.join(root, 'contributors/newcomer.json'), JSON.stringify({ name: 'Newcomer', email: 'new@example.test', custom: { keep: true }, welcomeDismissed: false }));
   return root;
 };
@@ -47,8 +47,8 @@ test('each contributor gets Welcome once and keeps their own progress across res
   assert.equal(claimWelcome(root, 'newcomer'), true);
   assert.equal(claimWelcome(root, 'newcomer'), false);
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, 'contributors/newcomer.json'), 'utf8')), { name: 'Newcomer', email: 'new@example.test', custom: { keep: true }, welcomeDismissed: true });
-  const roster = JSON.parse(fs.readFileSync(path.join(root, 'contributors.json'), 'utf8'));
-  assert.deepEqual(roster.owner, { name: 'Owner', extra: 'keep', welcomeDismissed: true });
+  const owner = JSON.parse(fs.readFileSync(path.join(root, 'contributors/owner.json'), 'utf8'));
+  assert.deepEqual(owner, { name: 'Owner', extra: 'keep', welcomeDismissed: true });
   const other = fixture(t);
   assert.equal(claimWelcome(other, 'owner'), true);
 });
@@ -66,13 +66,13 @@ test('unregistered exploration and legacy studio state cannot dismiss a new cont
 
 test('progress preserves other roster entries and honors explicit false', t => {
   const root = fixture(t);
-  const file = path.join(root, 'contributors.json');
-  fs.writeFileSync(file, JSON.stringify({ owner: { name: 'Owner', welcomeDismissed: false }, colleague: { name: 'Colleague', welcomeDismissed: true } }));
+  const file = path.join(root, 'contributors/colleague.json');
+  fs.writeFileSync(file, JSON.stringify({ name: 'Colleague', welcomeDismissed: true }));
   assert.equal(claimWelcome(root, 'owner'), true);
-  assert.deepEqual(JSON.parse(fs.readFileSync(file, 'utf8')).colleague, { name: 'Colleague', welcomeDismissed: true });
+  assert.deepEqual(JSON.parse(fs.readFileSync(file, 'utf8')), { name: 'Colleague', welcomeDismissed: true });
 });
 
-test('invalid, duplicate, unknown and linked profiles are preserved', t => {
+test('invalid, unknown and linked profiles are preserved', t => {
   const root = fixture(t);
   const file = path.join(root, 'contributors/newcomer.json');
   fs.writeFileSync(file, '{"name":"Newcomer","welcomeDismissed":"yes"}');
@@ -81,11 +81,11 @@ test('invalid, duplicate, unknown and linked profiles are preserved', t => {
   assert.throws(() => claimWelcome(root, '../elsewhere'), /Invalid contributor/);
   assert.throws(() => claimWelcome(root, 'unknown'), /not registered/);
   fs.unlinkSync(file);
-  fs.symlinkSync(path.join(root, 'contributors.json'), file);
+  fs.symlinkSync(path.join(root, 'contributors/owner.json'), file);
   assert.throws(() => claimWelcome(root, 'newcomer'), /ordinary file/);
   fs.unlinkSync(file);
-  fs.writeFileSync(path.join(root, 'contributors/owner.json'), '{}');
-  assert.throws(() => claimWelcome(root, 'owner'), /two files/);
+  fs.writeFileSync(file, '[]');
+  assert.throws(() => claimWelcome(root, 'newcomer'), /object/);
 });
 
 test('browser fallback progress does not cross contributor identities', () => {

@@ -1,6 +1,6 @@
 // Usage: node scripts/check/check-identity.js   (pre-commit, never blocks)
 //
-// Warns when your Git name or email doesn't match your contributors.json entry, so every
+// Warns when your Git name or email doesn't match your contributor profile, so every
 // commit traces back to the right person. Fix it with:
 //   git config user.name "Your Name"
 //   git config user.email you@yourcompany.com
@@ -15,10 +15,10 @@ if (entry) {
   const name = git('user.name');
   const email = git('user.email');
   const problems = [];
-  if (entry.name && name !== entry.name) problems.push(`user.name is "${name}", but contributors.json says "${entry.name}"`);
-  if (entry.email && email.toLowerCase() !== entry.email.toLowerCase()) problems.push(`user.email is "${email}", but contributors.json says "${entry.email}"`);
+  if (entry.name && name !== entry.name) problems.push(`user.name is "${name}", but your contributor profile says "${entry.name}"`);
+  if (entry.email && email.toLowerCase() !== entry.email.toLowerCase()) problems.push(`user.email is "${email}", but your contributor profile says "${entry.email}"`);
   if (problems.length) {
-    console.log(`Identity check (${key}): your Git identity doesn't match your contributors.json entry.`);
+    console.log(`Identity check (${key}): your Git identity doesn't match your contributor profile.`);
     for (const p of problems) console.log(`  ${p}`);
     console.log('  Set it with git config user.name / user.email, then amend this commit (git commit --amend --reset-author).');
   }

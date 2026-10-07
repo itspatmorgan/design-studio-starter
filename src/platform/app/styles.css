@@ -14,7 +14,6 @@
    by scripts/build/vite-css-plugin.js: a theme for each design system in src/systems/, and a line for each folder of
    prototypes.) */
 /* @studio:data-files */
-@source not "../../../contributors.json";
 @source not "../../../contributors/**";
 
 /* Local light scopes block the global mode; local dark scopes work in light Studio too. */

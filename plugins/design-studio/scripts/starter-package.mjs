@@ -5,11 +5,11 @@ import path from 'node:path';
 const FILES = new Set([
   '.gitignore', '.agents/studio-skills.json', 'AGENTS.md', 'CLAUDE.md', 'README.md',
   'LICENSE', 'CHANGELOG.md', 'CONTRIBUTING.md', 'SECURITY.md', 'components.json',
-  'contributors.json', 'mise.toml', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml',
+  'mise.toml', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml',
   'studio.config.ts', 'studio.lock.json', 'tsconfig.json', 'tsconfig.app.json',
   'tsconfig.node.json', 'vite.config.ts',
 ]);
-const FOLDERS = ['src/', 'public/', 'scripts/', 'patches/', '.agents/skills/', '.claude/skills/', '.husky/'];
+const FOLDERS = ['contributors/', 'src/', 'public/', 'scripts/', 'patches/', '.agents/skills/', '.claude/skills/', '.husky/'];
 
 export function starterIncludes(file) {
   return !file.startsWith('scripts/eval/') && (FILES.has(file) || FOLDERS.some(folder => file.startsWith(folder)));
