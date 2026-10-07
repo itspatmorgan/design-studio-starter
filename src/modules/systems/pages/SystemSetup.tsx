@@ -20,12 +20,12 @@ export default function SystemSetup({ system, label }: { system: string; label: 
       <p>Choose a starting point below. Copy its prompt into your coding agent’s chat to begin.</p>
     </div>
     {paths.map(path => <section key={path.id} aria-labelledby={`setup-${path.id}`} className="rounded-xl border border-border bg-background p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id={`setup-${path.id}`} className="text-base font-semibold">{path.label}</h2>
+      <h2 id={`setup-${path.id}`} className="text-base font-semibold">{path.label}</h2>
+      <p className="mt-1 text-sm leading-6 text-muted-foreground">{path.description}</p>
+      <p className="mt-5 select-text rounded-lg border border-border/50 bg-muted/40 p-4 text-sm leading-6">{path.prompt}</p>
+      <div className="mt-4">
         <Button variant="outline" size="sm" onClick={() => void copy(path.id, path.prompt)} aria-label={`Copy prompt: ${path.label}`}><HugeiconsIcon icon={Copy01Icon} data-icon="inline-start" />{copied === path.id ? 'Copied' : 'Copy prompt'}</Button>
       </div>
-      <p className="mt-1 text-sm leading-6 text-muted-foreground">{path.description}</p>
-      <p className="mt-4 select-text rounded-lg border border-border/50 bg-muted/40 p-4 text-sm leading-6">{path.prompt}</p>
     </section>)}
     <p role="status" className="text-sm text-muted-foreground">{error || (copied ? 'Prompt copied. Paste it into your coding agent’s chat to continue.' : '')}</p>
   </div>;
