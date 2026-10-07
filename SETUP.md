@@ -52,7 +52,7 @@ All four agent-assisted paths create the same working-studio package. Plugin pub
 
 Your agent may need permission to download tools or create the folder. It handles the technical steps and tells you when it needs help.
 
-Your studio and all its source files live locally on your computer. The default folder is `~/Developer/Design Studio`; additional installs use `Design Studio 2`, `Design Studio 3`, and so on. Developer is an ordinary folder in your home folder for organizing these files. Your agent shows the actual absolute path and local preview URL. Continue working in that studio folder, not in the plugin's files. A GitHub account is optional for personal use.
+Your studio and all its source files live locally on your computer. The default folder is `~/Developer/design-studio`; additional installs use `design-studio-2`, `design-studio-3`, and so on. Developer is an ordinary folder in your home folder for organizing these files. Your agent shows the actual absolute path and local preview URL. Continue working in that studio folder, not in the plugin's files. A GitHub account is optional for personal use.
 
 Product and Marketing are example systems. Feedback Inbox and Design Studio Marketing are example prototypes for learning. Explore them, then ask your agent to customize, replace, or remove them for your own needs. Keep Studio, the application's system.
 

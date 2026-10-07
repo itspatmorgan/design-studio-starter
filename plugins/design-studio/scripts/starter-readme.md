@@ -28,4 +28,4 @@ Canonical skills live with their platform, module, or system. The generated `.ag
 
 This folder is an independent local Git repository with no upstream remote. Its setup receipt records the source revision used to create it. Your code and design work belong to you.
 
-Run `pnpm build` to verify changes. See [Contributing](CONTRIBUTING.md), [Security](SECURITY.md), and the [MIT license](LICENSE). The original starter and plugin distribution files are maintained at [design-studio-starter on GitHub](https://github.com/itspatmorgan/design-studio-starter).
+Run `pnpm build` to validate source structure, types, and production output. The working-studio build avoids rerunning the starter’s full regression suite on each publication. Run `pnpm test` for regressions or `pnpm build:release` for the full release checks. See [Contributing](CONTRIBUTING.md), [Security](SECURITY.md), and the [MIT license](LICENSE). The original starter and plugin distribution files are maintained at [design-studio-starter on GitHub](https://github.com/itspatmorgan/design-studio-starter).

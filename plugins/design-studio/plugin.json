@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "design-studio",
-  "version": "0.1.0-experiment.13",
+  "version": "0.1.0-experiment.14",
   "description": "Create and refine prototypes with Design Studio. Setup is handled for you, and all code stays in a visible folder on your computer.",
   "author": {
     "name": "Patrick Morgan",

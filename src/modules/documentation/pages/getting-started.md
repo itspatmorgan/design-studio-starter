@@ -21,7 +21,7 @@ Use a desktop coding app with local access. Choose the matching path in the [set
 
 The first release is planned around local and repository installs, without waiting for reviewed public-directory listings. Plugins are currently experimental. Cursor and direct-source journeys still need live verification. If your organization restricts plugin installs, use the direct-source path.
 
-Your agent handles downloading, missing dependencies, and opening the preview. It may ask for permission to create files or install tools. All studio files live locally on your computer. The default is `~/Developer/Design Studio`; additional installs add a number. Developer is an ordinary folder in your home folder for keeping your studios together.
+Your agent handles downloading, missing dependencies, and opening the preview. It may ask for permission to create files or install tools. All studio files live locally on your computer. The default is `~/Developer/design-studio`; additional installs add a number. Developer is an ordinary folder in your home folder for keeping your studios together.
 
 After setup, continue in the actual studio folder the agent shows you. A preview alone does not select that folder in your coding app. To return later, open that same folder and ask “Open my Design Studio.” If you are joining a team, ask the agent to help you join its existing studio.
 

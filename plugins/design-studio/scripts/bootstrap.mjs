@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { performance } from 'node:perf_hooks';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { packageStarter } from './starter-package.mjs';
@@ -11,11 +12,13 @@ export const RECEIPT = 'design-studio.local.json';
 const REQUIRED = ['AGENTS.md', 'package.json', 'pnpm-lock.yaml', 'mise.toml', 'studio.config.ts', 'src/systems/studio/AGENTS.md'];
 
 function run(command, args, cwd, live = false) {
+  const started = performance.now();
   const result = spawnSync(command, args, {
     cwd, shell: false, encoding: 'utf8',
     stdio: live ? 'inherit' : ['ignore', 'pipe', 'pipe'],
     env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
   });
+  console.error(`[setup] ${command} ${args[0] ?? ''}: ${((performance.now() - started) / 1000).toFixed(2)}s`);
   if (result.error) throw new Error(`Could not run ${command}: ${result.error.message}`);
   if (result.status !== 0) throw new Error(`${command} failed (${result.status ?? result.signal}). ${live ? 'See the setup log.' : (result.stderr || result.stdout || '').trim()}`);
   return result.stdout?.trim();
@@ -52,12 +55,19 @@ export function inspectStudio(value) {
   return { ...receipt, destination, existing: true };
 }
 
+export function studioFolderName(name) {
+  if (typeof name !== 'string' || !name.trim() || name.length > 120) throw new Error('Choose a studio name between 1 and 120 characters.');
+  return name.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'design-studio';
+}
+
 // Selection is read-only; createStudio reserves the chosen folder exclusively.
-export function chooseStudioLocation({ parent = path.join(os.homedir(), 'Developer') } = {}) {
+export function chooseStudioLocation({ parent = path.join(os.homedir(), 'Developer'), name: baseName = 'Design Studio' } = {}) {
   const folder = destinationPath(parent);
+  const baseFolder = studioFolderName(baseName);
   for (let number = 1; ; number += 1) {
-    const name = number === 1 ? 'Design Studio' : `Design Studio ${number}`;
-    const destination = destinationPath(path.join(folder, name));
+    const name = number === 1 ? baseName : `${baseName} ${number}`;
+    const folderName = number === 1 ? baseFolder : `${baseFolder}-${number}`;
+    const destination = destinationPath(path.join(folder, folderName));
     try { fs.lstatSync(destination); }
     catch (error) {
       if (error.code === 'ENOENT') return { name, destination };
@@ -149,14 +159,14 @@ export function startStudio(value, port = '5173') {
 function main() {
   const [command, ...args] = process.argv.slice(2);
   if (!command || command === '--help') {
-    console.log('Usage: node bootstrap.mjs choose [--parent <absolute-folder>]\n       node bootstrap.mjs create|inspect|prepare|start --destination <absolute-folder> [--name <name>] [--port <port>]\nchoose selects Design Studio, Design Studio 2, etc. in ~/Developer without creating files.\nMaintainer fixtures only: create --source <absolute-local-repo> --revision <40-character-commit>.\nGit and Node are prerequisites. prepare/start also require mise. No GitHub account is needed.');
+    console.log('Usage: node bootstrap.mjs choose [--parent <absolute-folder>] [--name <studio-name>]\n       node bootstrap.mjs create|inspect|prepare|start --destination <absolute-folder> [--name <name>] [--port <port>]\nchoose selects design-studio, design-studio-2, etc. in ~/Developer without creating files. Display names retain spaces.\nMaintainer fixtures only: create --source <absolute-local-repo> --revision <40-character-commit>.\nGit and Node are prerequisites. prepare/start also require mise. No GitHub account is needed.');
     return;
   }
   if (!['choose', 'create', 'inspect', 'prepare', 'start'].includes(command)) throw new Error(`Unknown command: ${command}`);
   const options = {};
   for (let i = 0; i < args.length; i += 2) {
     const key = args[i];
-    const allowed = command === 'choose' ? ['--parent'] : ['--destination', '--name', '--port', '--source', '--revision'];
+    const allowed = command === 'choose' ? ['--parent', '--name'] : ['--destination', '--name', '--port', '--source', '--revision'];
     if (!allowed.includes(key) || !args[i + 1]) throw new Error(`Invalid option: ${key}`);
     if (options[key.slice(2)] !== undefined) throw new Error(`Repeated option: ${key}`);
     options[key.slice(2)] = args[i + 1];

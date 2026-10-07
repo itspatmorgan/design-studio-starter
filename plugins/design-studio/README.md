@@ -14,7 +14,7 @@ The current package pins the published starter with the latest local workflow fi
 
 ## One setup flow
 
-The default name and folder are **Design Studio** and `~/Developer/Design Studio`. Additional default installs use the first available **Design Studio 2**, **Design Studio 3**, and so on. The helper's read-only `choose` command selects the name and destination; `create` receives both and reserves the folder exclusively. Explicit names and locations take precedence. Resuming setup or reopening uses the known destination. People can change the studio name later. Complete source stays in the visible local folder, outside plugin caches, and remains usable after plugin removal. Personal use needs no GitHub account. The installer creates a local Git repository without a remote.
+The default name and folder are **Design Studio** and `~/Developer/design-studio`. Additional default folders use the first available `design-studio-2`, `design-studio-3`, and so on; display names retain spaces. Custom names use kebab-case folders unless an exact destination is supplied. The helper's read-only `choose` command selects the name and destination; `create` receives both and reserves the folder exclusively. Explicit names and locations take precedence. Resuming setup or reopening uses the known destination. People can change the studio name later. Complete source stays in the visible local folder, outside plugin caches, and remains usable after plugin removal. Personal use needs no GitHub account. The installer creates a local Git repository without a remote.
 
 - [Create studio](skills/create-studio/SKILL.md) owns first-time setup.
 - [Open studio](skills/open-studio/SKILL.md) reopens existing work without reinitializing it.
@@ -27,7 +27,7 @@ The default name and folder are **Design Studio** and `~/Developer/Design Studio
 
 Preparation trusts the inspected studio's mise configuration, installs pinned tools and dependencies, applies first-run personal defaults, and synchronizes project skills. The receipt `design-studio.local.json` records setup state and is excluded locally from Git. Repeating setup preserves existing configuration and work. Unrelated folders, linked metadata, invalid receipts, and modified initial settings are refused rather than overwritten.
 
-Experiment .13 is the Sites publishing beta package. It retains the tested, publicly available starter at `b6fc5d9c790671da5a27810a08ff9e05de700474` from experiment .12. That starter includes smoother canvas loading, editor fallbacks, automatic link repair, configuration-backed Welcome dismissal, learning-example guidance, and consolidated harness generation. New installs use the working-studio package. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
+Experiment .14 adds kebab-case destination selection, setup stage timings, and faster working-studio builds to the Sites publishing beta package. It retains the tested, publicly available starter at `b6fc5d9c790671da5a27810a08ff9e05de700474` from experiment .12. That starter includes smoother canvas loading, editor fallbacks, automatic link repair, configuration-backed Welcome dismissal, learning-example guidance, and consolidated harness generation. New installs use the working-studio package. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
 
 ## Packaging and ownership
 
@@ -42,6 +42,8 @@ Experiment .13 is the Sites publishing beta package. It retains the tested, publ
 All hosts load the same `skills/` and `scripts/`; no procedural copies are maintained. Run `pnpm harness:sync` after identity or guidance changes. `pnpm harness:check` checks all generated host manifests, catalogs, and project adapters without writing. The OpenAI marketplace retains its existing host policy fields. The portable definition owns shared identity; generated files are not authoring sources.
 
 [starter-package.mjs](scripts/starter-package.mjs) declares the working-studio contents for every agent-assisted setup path. New studios omit this plugin package, distribution catalogs, publishing workflows, and maintainer evaluations. They retain project skills, app code, examples, tool configuration, and local verification commands. Their [README](scripts/starter-readme.md) explains local ownership and customization. Each receives a new local Git baseline; its setup receipt records the pinned source revision. Existing studios are not repackaged. Manual GitHub template copies still contain the full repository.
+
+New working studios retain module, source, type, and production checks in `pnpm build`, with the original full regression build available as `pnpm build:release`. The maintainer repository keeps its full `pnpm build` unchanged. See the [setup speed measurements](experiments/setup-speed.md) for cache assumptions and remaining work.
 
 The package also preserves `contributors.json` when present in an older pinned starter. Omitting that registry breaks its configuration and build checks. The [Sites onboarding experiment](experiments/sites-onboarding.md) found and verified this compatibility fix with a fresh install.
 

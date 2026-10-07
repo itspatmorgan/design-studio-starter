@@ -41,3 +41,16 @@ test('invalid paths and links fail before package contents are removed', t => {
   assert.ok(fs.existsSync(path.join(root, 'plugins/design-studio/plugin.json')));
   assert.equal(fs.readFileSync(path.join(root, 'studio.config.ts'), 'utf8'), 'preserved content');
 });
+
+test('working builds keep source checks and expose full release validation separately', t => {
+  const { root, files } = fixture(t);
+  const build = 'node scripts/build/build-manifest.js --strict --deploy && node scripts/check/check-modules.js && pnpm test && pnpm typecheck && vite build';
+  const pkg = { scripts: { build, test: 'node scripts/check/test.js', dev: 'vite' }, dependencies: { react: '19' } };
+  fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(pkg));
+  packageStarter(root, [...files, 'package.json']);
+  const packed = JSON.parse(fs.readFileSync(path.join(root, 'package.json')));
+  assert.equal(packed.scripts['build:release'], build);
+  assert.equal(packed.scripts.build, 'node scripts/build/build-manifest.js --strict --deploy && node scripts/check/check-modules.js && pnpm typecheck && vite build');
+  assert.equal(packed.scripts.test, pkg.scripts.test);
+  assert.deepEqual(packed.dependencies, pkg.dependencies);
+});
