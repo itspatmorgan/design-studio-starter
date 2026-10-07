@@ -65,7 +65,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
   const [reach, change, remove] = actions.groups;
   const groups = menuGroups<Action>([
     [
-      local && { label: showAll ? 'Hide other files' : 'Show all files', icon: showAll ? ViewOffSlashIcon : ViewIcon, onSelect: toggleShowAll },
+      local && proto.status !== 'archived' && { label: showAll ? 'Hide other files' : 'Show all files', icon: showAll ? ViewOffSlashIcon : ViewIcon, onSelect: toggleShowAll },
     ],
     reach,
     change,
@@ -81,7 +81,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
     ));
 
   // Right-click anywhere on the header opens the same menu, in dev.
-  const withContextMenu = (children: ReactNode) => (!local ? children : (
+  const withContextMenu = (children: ReactNode) => (!local || !groups.length ? children : (
     <ContextMenu>
       <ContextMenuTrigger>{children}</ContextMenuTrigger>
       <ContextMenuContent className="min-w-44">{menuItems(ContextMenuItem, ContextMenuSeparator)}</ContextMenuContent>
@@ -98,13 +98,13 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
             ) : (
               <h2
                 className="min-w-0 flex-1 truncate text-sm font-semibold leading-tight"
-                title={editable ? 'Double-click to rename' : proto.title}
-                onDoubleClick={editable ? () => setRenaming(true) : undefined}
+                title={editable && proto.status !== 'archived' ? 'Double-click to rename' : proto.title}
+                onDoubleClick={editable && proto.status !== 'archived' ? () => setRenaming(true) : undefined}
               >
                 {proto.title}
               </h2>
             )}
-            <DropdownMenu>
+            {groups.length > 0 && <DropdownMenu>
               <Tooltip>
                 <TooltipTrigger
                   render={<DropdownMenuTrigger
@@ -117,7 +117,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
                 <TooltipContent side="bottom">Prototype actions</TooltipContent>
               </Tooltip>
               <DropdownMenuContent align="end" className="min-w-44">{menuItems(DropdownMenuItem, DropdownMenuSeparator)}</DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu>}
           </div>
           <div className="mt-1 mb-2 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
             <span>System ·</span>

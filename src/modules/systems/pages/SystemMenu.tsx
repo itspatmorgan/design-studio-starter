@@ -65,15 +65,19 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
     try { await navigator.clipboard.writeText(new URL(`/systems/${system}`, location.origin).href); toast.add({ title: 'Link copied' }); }
     catch { toast.add({ type: 'error', title: 'Could not copy the link.' }); }
   }
+  if (spec.status === 'archived' && !editable) return null;
   return <div className={variant === 'card' ? 'absolute top-2 right-2' : undefined}>
     <DropdownMenu>
       <DropdownMenuTrigger aria-label={`Actions for ${spec.label}`} className={`inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring ${variant !== 'header' ? 'opacity-0 transition-opacity focus-visible:opacity-100 group-hover/card-wrap:opacity-100 group-focus-within/card-wrap:opacity-100 data-[popup-open]:opacity-100 [@media(hover:none)]:opacity-100' : ''}`}>
         <HugeiconsIcon icon={MoreHorizontalIcon} size={16} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-44">
-        {local && <><DropdownMenuItem onClick={() => void run('open')}><HugeiconsIcon icon={FileEditIcon} />Open in editor</DropdownMenuItem><DropdownMenuItem onClick={() => void run('reveal')}><HugeiconsIcon icon={Folder01Icon} />Reveal in Finder</DropdownMenuItem></>}
-        <DropdownMenuItem onClick={() => void copyLink()}><HugeiconsIcon icon={Link01Icon} />Copy link</DropdownMenuItem>
-        {editable && <><DropdownMenuSeparator /><DropdownMenuItem onClick={() => setTimeout(() => { setError(''); setDialog('rename'); })}><HugeiconsIcon icon={PencilEdit02Icon} />Rename</DropdownMenuItem><DropdownMenuItem disabled={system === DEFAULT_SYSTEM || spec.status === 'archived'} onClick={() => void run('default')}><HugeiconsIcon icon={Tick02Icon} />{system === DEFAULT_SYSTEM ? 'Default system' : 'Set as default'}</DropdownMenuItem><DropdownMenuSeparator /><DropdownMenuItem onClick={() => setTimeout(() => void openAction(spec.status === 'archived' ? 'restore' : 'archive'))}><HugeiconsIcon icon={Archive02Icon} />{spec.status === 'archived' ? 'Restore system' : 'Archive system'}</DropdownMenuItem><DropdownMenuItem variant="destructive" onClick={() => setTimeout(() => void openAction('delete'))}><HugeiconsIcon icon={Delete02Icon} />Delete system</DropdownMenuItem></>}
+        {spec.status === 'active' && <>
+          {local && <><DropdownMenuItem onClick={() => void run('open')}><HugeiconsIcon icon={FileEditIcon} />Open in editor</DropdownMenuItem><DropdownMenuItem onClick={() => void run('reveal')}><HugeiconsIcon icon={Folder01Icon} />Reveal in Finder</DropdownMenuItem></>}
+          <DropdownMenuItem onClick={() => void copyLink()}><HugeiconsIcon icon={Link01Icon} />Copy link</DropdownMenuItem>
+          {editable && <><DropdownMenuSeparator /><DropdownMenuItem onClick={() => setTimeout(() => { setError(''); setDialog('rename'); })}><HugeiconsIcon icon={PencilEdit02Icon} />Rename</DropdownMenuItem><DropdownMenuItem disabled={system === DEFAULT_SYSTEM} onClick={() => void run('default')}><HugeiconsIcon icon={Tick02Icon} />{system === DEFAULT_SYSTEM ? 'Default system' : 'Set as default'}</DropdownMenuItem><DropdownMenuSeparator /></>}
+        </>}
+        {editable && <><DropdownMenuItem onClick={() => setTimeout(() => void openAction(spec.status === 'archived' ? 'restore' : 'archive'))}><HugeiconsIcon icon={Archive02Icon} />{spec.status === 'archived' ? 'Restore system' : 'Archive system'}</DropdownMenuItem><DropdownMenuItem variant="destructive" onClick={() => setTimeout(() => void openAction('delete'))}><HugeiconsIcon icon={Delete02Icon} />Delete system</DropdownMenuItem></>}
       </DropdownMenuContent>
     </DropdownMenu>
     <Dialog open={dialog !== null} onOpenChange={value => { if (!value && !busy) setDialog(null); }}>

@@ -92,6 +92,8 @@ Prototype styles use Tailwind classes or CSS Modules with local selectors. Plain
 
 Archiving applies to a whole prototype. `meta.json.status: "archived"` keeps it available locally and excludes it and its files from production discovery and bundling. Omission or `active` restores publication eligibility. Unknown values fail validation.
 
+Archived prototype menus offer only Restore and Delete to their owner or section maintainers. This applies to index cards, list rows, navigation menus, and header context menus. Other contributors see no actions menu. Restore before renaming, duplicating, or using module actions; double-click renaming is unavailable while archived.
+
 Individual artifacts and folders have no separate archival status. Organizing them into a folder does not exclude them from publication. The build warns when active content links to an excluded prototype; a published viewer cannot open that target.
 
 `src/platform/core/archive.ts` defines exclusion, and the manifest and production globs apply it. The [archiving rule](skills/organize-prototype/SKILL.md) owns the agent's choice and verification workflow.

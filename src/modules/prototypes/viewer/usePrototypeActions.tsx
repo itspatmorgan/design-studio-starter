@@ -27,8 +27,9 @@ export function usePrototypeActions(proto: PrototypeInfo) {
   // import.meta.env.DEV is false in the build, so editing isn't in the deployed site.
   const local = import.meta.env.DEV && me !== null;
   const editable = local && ownsPrototype(proto, me);
+  const archived = proto.status === 'archived';
   // What the modules add. Their hooks run in a fixed order, because the modules that are on never change while the app runs.
-  const contributed = moduleApps.flatMap(({ app }) => app.useActions?.(proto, { editable }) ?? []);
+  const contributed = moduleApps.flatMap(({ app }) => app.useActions?.(proto, { editable: editable && !archived }) ?? []);
   const [renaming, setRenaming] = useState(false);
   const [duplicating, setDuplicating] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -39,7 +40,7 @@ export function usePrototypeActions(proto: PrototypeInfo) {
       const result = await fileOp(proto, { op: 'meta', status: archived ? 'archived' : 'active' });
       setManifest(result.manifest);
       await router.invalidate();
-      toast.add({ title: archived ? 'Archived. The deployed site leaves it out.' : 'Unarchived' });
+      toast.add({ title: archived ? 'Archived. The deployed site leaves it out.' : 'Restored' });
     } catch (e) {
       toast.add({ type: 'error', title: (e as Error).message });
     }
@@ -52,7 +53,11 @@ export function usePrototypeActions(proto: PrototypeInfo) {
   };
 
   // The groups of a menu, in the order they appear (see menuGroups.ts): reach it; change it; delete it, last and alone.
-  const groups: (Action | false)[][] = [
+  const groups: (Action | false)[][] = archived ? [
+    [],
+    [editable && { label: 'Restore', icon: ArchiveRestoreIcon, onSelect: () => setArchived(false) }],
+    [editable && { label: 'Delete', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }],
+  ] : [
     [
       local && { label: 'Open in editor', icon: FileEditIcon, onSelect: () => openInEditor(proto, '') },
       local && { label: 'Reveal in Finder', icon: Folder01Icon, onSelect: () => revealInFinder(proto, '') },
@@ -62,9 +67,7 @@ export function usePrototypeActions(proto: PrototypeInfo) {
     [
       editable && { label: 'Rename', icon: PencilEdit02Icon, onSelect: () => setRenaming(true) },
       editable && proto.contributorKey === me && { label: 'Duplicate', icon: Copy01Icon, onSelect: () => setDuplicating(true) },
-      editable && (proto.status === 'archived'
-        ? { label: 'Unarchive', icon: ArchiveRestoreIcon, onSelect: () => setArchived(false) }
-        : { label: 'Archive', icon: Archive02Icon, onSelect: () => setArchived(true) }),
+      editable && { label: 'Archive', icon: Archive02Icon, onSelect: () => setArchived(true) },
       ...contributed,
     ],
     [editable && { label: 'Delete', icon: Delete02Icon, onSelect: () => setDeleting(true), destructive: true }],

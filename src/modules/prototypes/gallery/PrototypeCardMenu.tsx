@@ -15,6 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 // card's top right corner; `inline` leaves it where it is drawn, for a row that places it itself.
 export default function PrototypeCardMenu({ proto, triggerClassName, inline }: { proto: PrototypeInfo; triggerClassName?: string; inline?: boolean }) {
   const { groups, dialogs } = usePrototypeActions(proto);
+  if (!menuGroups(groups).length) return null;
   return (
     <div className={inline ? undefined : 'absolute top-2 right-2'}>
       <DropdownMenu>
