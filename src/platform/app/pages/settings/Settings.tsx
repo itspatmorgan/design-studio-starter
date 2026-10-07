@@ -32,7 +32,7 @@ function Section({ id, title, description, children }: { id: string; title: stri
 }
 
 export default function Settings() {
-  const { snapshot, draft, error, saving, restarting, saved, conflict, dirty, blocker, editable, disabled, update, save, load, discard } = useStudioSettings(fields);
+  const { snapshot, draft, error, saving, restarting, conflict, dirty, blocker, editable, disabled, update, save, load, discard } = useStudioSettings(fields);
   return <main className="mx-auto w-full max-w-3xl shrink-0 space-y-6 px-4 py-8 sm:px-8 sm:py-10">
     <header className="space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-3"><h1 className="text-2xl font-semibold tracking-tight">Studio settings</h1>
@@ -43,7 +43,6 @@ export default function Settings() {
     {error && <Alert variant="destructive" className="space-y-3 p-4">
       <p className="whitespace-pre-line">{error}</p><Button variant="outline" onClick={() => { if (!dirty || window.confirm('Discard unsaved settings and reload?')) void load(); }}>Reload settings</Button>
     </Alert>}
-    {saved && <Alert role="status" className="p-4">{restarting ? 'Settings saved. Restarting the studio to apply your changes.' : 'Settings saved. Your changes are applied.'}</Alert>}
     {!snapshot || !draft ? (!error && <p role="status" className="text-sm text-muted-foreground">Loading settings</p>) : <>
       {!editable && <Alert role="note" className="p-4">{snapshot.role ? 'You can view these settings. An Admin can change them.' : 'Ask your agent to register your contributor identity before editing settings.'}</Alert>}
       <form className="space-y-6" onSubmit={(event) => { event.preventDefault(); void save(); }}>

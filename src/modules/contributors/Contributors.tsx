@@ -9,7 +9,7 @@ import { useStudioSettings } from '@/platform/app/settings/useStudioSettings';
 const fields = ['admins', 'systemMaintainers'] as const;
 
 export default function Contributors() {
-  const { snapshot, draft, error, saving, restarting, saved, conflict, dirty, blocker, editable, disabled, update, save, load, discard } = useStudioSettings(fields);
+  const { snapshot, draft, error, saving, restarting, conflict, dirty, blocker, editable, disabled, update, save, load, discard } = useStudioSettings(fields, 'Permissions saved');
   return <main className="mx-auto w-full max-w-3xl shrink-0 space-y-6 px-4 py-8 sm:px-8 sm:py-10">
     <header className="space-y-2">
       <h1 className="text-2xl font-semibold tracking-tight">Contributors</h1>
@@ -18,7 +18,6 @@ export default function Contributors() {
     {error && <Alert variant="destructive" className="space-y-3 p-4">
       <p className="whitespace-pre-line">{error}</p><Button variant="outline" onClick={() => { if (!dirty || window.confirm('Discard unsaved permissions and reload?')) void load(); }}>Reload permissions</Button>
     </Alert>}
-    {saved && <Alert role="status" className="p-4">Permissions saved. {sessionStorage.getItem('studio:settings-saved') ? 'The studio is restarting to apply your changes.' : 'Your changes are applied locally.'}</Alert>}
     {!snapshot || !draft ? (!error && <p role="status" className="text-sm text-muted-foreground">Loading settings</p>) : <>
       {!editable && <Alert role="note" className="p-4">{snapshot.role ? 'You can view permissions. An Admin can change them.' : 'Ask your agent to register your contributor identity before editing permissions.'}</Alert>}
       <Alert role="note" className="p-4">

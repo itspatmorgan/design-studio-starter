@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useBlocker } from '@tanstack/react-router';
 import type { StudioConfig } from '@/platform/core/config';
 import { waitForRestart } from './waitForRestart';
+import { toast } from '@/systems/studio/components/toast';
 
 type Snapshot = {
   config: StudioConfig; version: string; actor: string | null; role: 'admin' | 'contributor' | null;
@@ -11,14 +12,13 @@ type Snapshot = {
 };
 
 
-export function useStudioSettings(fields: readonly (keyof StudioConfig)[]) {
+export function useStudioSettings(fields: readonly (keyof StudioConfig)[], successTitle = 'Settings saved') {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [draft, setDraft] = useState<StudioConfig | null>(null);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [restartFrom, setRestartFrom] = useState<string | null>(null);
   const restarting = restartFrom !== null;
-  const [saved, setSaved] = useState(false);
   const [conflict, setConflict] = useState(false);
   const dirty = Boolean(draft && snapshot && JSON.stringify(draft) !== JSON.stringify(snapshot.config));
   const blocker = useBlocker({ shouldBlockFn: () => dirty && !saving, enableBeforeUnload: () => dirty && !saving, withResolver: true });
@@ -32,9 +32,8 @@ export function useStudioSettings(fields: readonly (keyof StudioConfig)[]) {
       setSnapshot(body); setDraft(body.config); setConflict(false);
       const pendingRuntime = sessionStorage.getItem('studio:settings-saved');
       if (pendingRuntime) {
-        setSaved(true);
         if (pendingRuntime === body.runtimeId || body.restarting) setRestartFrom(pendingRuntime);
-        else { setRestartFrom(null); sessionStorage.removeItem('studio:settings-saved'); }
+        else { setRestartFrom(null); sessionStorage.removeItem('studio:settings-saved'); toast.add({ title: successTitle }); }
       } else setRestartFrom(null);
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Settings could not load.'); }
   }
@@ -44,18 +43,18 @@ export function useStudioSettings(fields: readonly (keyof StudioConfig)[]) {
     const controller = new AbortController();
     void waitForRestart(restartFrom, { signal: controller.signal }).then(() => window.location.reload()).catch(cause => {
       if (controller.signal.aborted) return;
-      setRestartFrom(null); setSaved(false);
+      setRestartFrom(null);
       setError(cause instanceof Error ? cause.message : 'The studio could not restart. Reload settings to check again.');
     });
     return () => controller.abort();
   }, [restartFrom]);
   const editable = snapshot?.role === 'admin';
   const disabled = !editable || saving || restarting;
-  const update = (changes: Partial<StudioConfig>) => { setDraft((current) => current && { ...current, ...changes }); setSaved(false); };
+  const update = (changes: Partial<StudioConfig>) => { setDraft((current) => current && { ...current, ...changes }); };
 
   async function save() {
     if (!draft || !snapshot) return;
-    setSaving(true); setError(''); setSaved(false);
+    setSaving(true); setError('');
     try {
       const changes = Object.fromEntries(fields.filter(key => JSON.stringify(draft[key]) !== JSON.stringify(snapshot.config[key])).map(key => [key, draft[key]]));
       const response = await fetch('/__studio/settings', {
@@ -64,13 +63,13 @@ export function useStudioSettings(fields: readonly (keyof StudioConfig)[]) {
       });
       const body = await response.json();
       if (!response.ok) { setConflict(response.status === 409); throw new Error(body.error); }
-      setSnapshot({ ...snapshot, config: draft }); setSaved(true);
+      setSnapshot({ ...snapshot, config: draft });
       if (body.restarting) { setRestartFrom(body.runtimeId); sessionStorage.setItem('studio:settings-saved', body.runtimeId); }
-      else await load();
+      else { await load(); toast.add({ title: successTitle }); }
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Settings could not save.'); }
     finally { setSaving(false); }
   }
 
   const discard = () => { if (snapshot) setDraft(snapshot.config); setError(''); setConflict(false); };
-  return { snapshot, draft, error, saving, restarting, saved, conflict, dirty, blocker, editable, disabled, update, save, load, discard };
+  return { snapshot, draft, error, saving, restarting, conflict, dirty, blocker, editable, disabled, update, save, load, discard };
 }

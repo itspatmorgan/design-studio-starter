@@ -18,7 +18,7 @@ Source editing is available during local development. Published pages retain the
 
 ## Settings restart
 
-Saving configuration can restart the development server. The settings API identifies each runtime instance. After restart, the server explicitly requests one page reload so module availability and configuration refresh together. Settings also checks for a new ready instance to recover when the WebSocket reload is missed. A bounded wait reports a recovery error instead of leaving the form disabled indefinitely. The refreshed page confirms that changes are applied.
+Saving configuration can restart the development server. The settings API identifies each runtime instance. After restart, the server explicitly requests one page reload so module availability and configuration refresh together. Settings also checks for a new ready instance to recover when the WebSocket reload is missed. A bounded wait reports a recovery error instead of leaving the form disabled indefinitely. Restart progress stays beside the save action. The refreshed page confirms success once through the standard toast.
 
 ## Navigation handoff
 
