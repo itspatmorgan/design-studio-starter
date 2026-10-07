@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Delete02Icon, FileEditIcon, Folder01Icon, Link01Icon, Archive02Icon, MoreHorizontalIcon, PencilEdit02Icon, Tick02Icon } from '@hugeicons/core-free-icons';
+import { Delete02Icon, FileEditIcon, Folder01Icon, Link01Icon, Archive02Icon, ArchiveRestoreIcon, Copy01Icon, MoreHorizontalIcon, PencilEdit02Icon, Tick02Icon } from '@hugeicons/core-free-icons';
+import { menuGroups } from '@/platform/app/shell/menuGroups';
 import { callModule, useMe } from '@/platform/app/data/files';
 import { CONFIG } from '@/platform/app/data/config';
 import { useManifest } from '@/platform/app/data/useManifest';
@@ -14,6 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { DEFAULT_SYSTEM, SYSTEM_SPECS } from '../data/systems';
 
 export const systemRequest = <T,>(action: string, system?: string, extra: object = {}) => callModule<T>('systems', 'action', { action, system, ...extra });
+type Action = { label: string; icon: typeof Link01Icon; onSelect: () => void; disabled?: boolean; destructive?: boolean };
 
 export default function SystemMenu({ system, variant = 'header' }: { system: string; variant?: 'header' | 'card' | 'row' }) {
   const navigate = useNavigate();
@@ -65,6 +67,28 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
     try { await navigator.clipboard.writeText(new URL(`/systems/${system}`, location.origin).href); toast.add({ title: 'Link copied' }); }
     catch { toast.add({ type: 'error', title: 'Could not copy the link.' }); }
   }
+  async function copyPath() {
+    try { await navigator.clipboard.writeText(`src/systems/${system}/`); toast.add({ title: 'Path copied' }); }
+    catch { toast.add({ type: 'error', title: 'Could not copy the path.' }); }
+  }
+  // Match prototype menus: reach it; change it; delete it, last and alone.
+  const groups = menuGroups<Action>(spec.status === 'archived' ? [
+    [editable && { label: 'Restore', icon: ArchiveRestoreIcon, onSelect: () => void openAction('restore') }],
+    [editable && { label: 'Delete', icon: Delete02Icon, onSelect: () => void openAction('delete'), destructive: true }],
+  ] : [
+    [
+      local && { label: 'Open in editor', icon: FileEditIcon, onSelect: () => void run('open') },
+      local && { label: 'Reveal in Finder', icon: Folder01Icon, onSelect: () => void run('reveal') },
+      { label: 'Copy link', icon: Link01Icon, onSelect: () => void copyLink() },
+      local && { label: 'Copy path', icon: Copy01Icon, onSelect: () => void copyPath() },
+    ],
+    [
+      editable && { label: 'Rename', icon: PencilEdit02Icon, onSelect: () => { setError(''); setDialog('rename'); } },
+      editable && { label: system === DEFAULT_SYSTEM ? 'Default system' : 'Set as default', icon: Tick02Icon, disabled: system === DEFAULT_SYSTEM, onSelect: () => void run('default') },
+      editable && { label: 'Archive', icon: Archive02Icon, onSelect: () => void openAction('archive') },
+    ],
+    [editable && { label: 'Delete', icon: Delete02Icon, onSelect: () => void openAction('delete'), destructive: true }],
+  ]);
   if (spec.status === 'archived' && !editable) return null;
   return <div className={variant === 'card' ? 'absolute top-2 right-2' : undefined}>
     <DropdownMenu>
@@ -72,12 +96,10 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
         <HugeiconsIcon icon={MoreHorizontalIcon} size={16} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-44">
-        {spec.status === 'active' && <>
-          {local && <><DropdownMenuItem onClick={() => void run('open')}><HugeiconsIcon icon={FileEditIcon} />Open in editor</DropdownMenuItem><DropdownMenuItem onClick={() => void run('reveal')}><HugeiconsIcon icon={Folder01Icon} />Reveal in Finder</DropdownMenuItem></>}
-          <DropdownMenuItem onClick={() => void copyLink()}><HugeiconsIcon icon={Link01Icon} />Copy link</DropdownMenuItem>
-          {editable && <><DropdownMenuSeparator /><DropdownMenuItem onClick={() => setTimeout(() => { setError(''); setDialog('rename'); })}><HugeiconsIcon icon={PencilEdit02Icon} />Rename</DropdownMenuItem><DropdownMenuItem disabled={system === DEFAULT_SYSTEM} onClick={() => void run('default')}><HugeiconsIcon icon={Tick02Icon} />{system === DEFAULT_SYSTEM ? 'Default system' : 'Set as default'}</DropdownMenuItem><DropdownMenuSeparator /></>}
-        </>}
-        {editable && <><DropdownMenuItem onClick={() => setTimeout(() => void openAction(spec.status === 'archived' ? 'restore' : 'archive'))}><HugeiconsIcon icon={Archive02Icon} />{spec.status === 'archived' ? 'Restore system' : 'Archive system'}</DropdownMenuItem><DropdownMenuItem variant="destructive" onClick={() => setTimeout(() => void openAction('delete'))}><HugeiconsIcon icon={Delete02Icon} />Delete system</DropdownMenuItem></>}
+        {groups.map((group, index) => <Fragment key={index}>
+          {index > 0 && <DropdownMenuSeparator />}
+          {group.map(action => <DropdownMenuItem key={action.label} disabled={action.disabled} variant={action.destructive ? 'destructive' : undefined} onClick={() => setTimeout(action.onSelect)}><HugeiconsIcon icon={action.icon} />{action.label}</DropdownMenuItem>)}
+        </Fragment>)}
       </DropdownMenuContent>
     </DropdownMenu>
     <Dialog open={dialog !== null} onOpenChange={value => { if (!value && !busy) setDialog(null); }}>

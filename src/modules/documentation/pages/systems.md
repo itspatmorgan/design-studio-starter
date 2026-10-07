@@ -15,9 +15,9 @@ Overview summarizes the selected system’s instructions, components, theme, and
 
 The menu beside the system name lets you copy its link or open its folder locally. Admins can **Rename** a system; Studio updates its folder, assignments, and references automatically and confirms with a brief toast. **Set as default** changes the choice for future prototypes while preserving existing assignments.
 
-**Archive system** preserves its files and archives the associated active prototypes. The system becomes unavailable for new prototypes, and all archived work leaves the deployment build. Archived items appear below active items on both indexes. Open an archived system and choose **Restore system** from its menu. You can also restore the prototypes archived alongside it. Prototypes already archived remain archived.
+**Archive** preserves its files and archives the associated active prototypes. The system becomes unavailable for new prototypes, and all archived work leaves the deployment build. Archived items appear below active items on both indexes. Open an archived system and choose **Restore** from its menu. You can also restore the prototypes archived alongside it. Prototypes already archived remain archived.
 
-**Delete system** permanently removes its files. The confirmation lists affected prototypes: their source stays, but they need another system and a rebuild before rendering or publishing. Copy rebuild instructions from their sidebar. There is no Studio recovery copy; Git can recover only previously committed files. Choose another default before archiving or deleting the current default. Studio’s identity and availability remain protected.
+**Delete** permanently removes its files. The confirmation lists affected prototypes: their source stays, but they need another system and a rebuild before rendering or publishing. Copy rebuild instructions from their sidebar. There is no Studio recovery copy; Git can recover only previously committed files. Choose another default before archiving or deleting the current default. Studio’s identity and availability remain protected.
 
 ## Prototype systems and Studio
 

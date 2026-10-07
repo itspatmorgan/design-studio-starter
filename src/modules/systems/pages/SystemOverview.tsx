@@ -41,7 +41,7 @@ export default function SystemOverview({ system, sys, components, tokens }: {
     {spec.status === 'archived' && <Alert variant="info" role="note" className="mb-6 p-4">
       <HugeiconsIcon icon={Archive02Icon} />
       <AlertTitle>This system is archived</AlertTitle>
-      <AlertDescription>Files are kept locally and excluded from deployment. Choose Restore system from the system menu to use it again.</AlertDescription>
+      <AlertDescription>Files are kept locally and excluded from deployment. Choose Restore from the system menu to use it again.</AlertDescription>
     </Alert>}
     {!platform && spec.status === 'active' && !components.length && import.meta.env.DEV && <SystemSetup system={system} />}
     {platform && <p className="mb-6 text-[13px] text-muted-foreground">Required application system</p>}
