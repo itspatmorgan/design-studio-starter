@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Delete02Icon, FileEditIcon, Folder01Icon, Link01Icon, Archive02Icon, ArchiveRestoreIcon, Copy01Icon, MoreHorizontalIcon, PencilEdit02Icon, Tick02Icon } from '@hugeicons/core-free-icons';
+import { Delete02Icon, FileEditIcon, Folder01Icon, Link01Icon, Archive02Icon, ArchiveRestoreIcon, Copy01Icon, MoreHorizontalIcon, PencilEdit02Icon, StarIcon } from '@hugeicons/core-free-icons';
 import { menuGroups } from '@/platform/app/shell/menuGroups';
 import { callModule, useMe } from '@/platform/app/data/files';
 import { CONFIG } from '@/platform/app/data/config';
@@ -84,7 +84,7 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
     ],
     [
       editable && { label: 'Rename', icon: PencilEdit02Icon, onSelect: () => { setError(''); setDialog('rename'); } },
-      editable && { label: system === DEFAULT_SYSTEM ? 'Default system' : 'Set as default', icon: Tick02Icon, disabled: system === DEFAULT_SYSTEM, onSelect: () => void run('default') },
+      editable && { label: system === DEFAULT_SYSTEM ? 'Default system' : 'Set as default', icon: StarIcon, disabled: system === DEFAULT_SYSTEM, onSelect: () => void run('default') },
       editable && { label: 'Archive', icon: Archive02Icon, onSelect: () => void openAction('archive') },
     ],
     [editable && { label: 'Delete', icon: Delete02Icon, onSelect: () => void openAction('delete'), destructive: true }],
