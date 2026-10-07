@@ -12,6 +12,7 @@ import { Input } from '@/systems/studio/components/input';
 import { toast } from '@/systems/studio/components/toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/systems/studio/components/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/systems/studio/components/dropdown-menu';
+import { beginSystemDeletion, finishSystemCreation } from './creationTransition';
 import { DEFAULT_SYSTEM, SYSTEM_SPECS } from '../data/systems';
 
 export const systemRequest = <T,>(action: string, system?: string, extra: object = {}) => callModule<T>('systems', 'action', { action, system, ...extra });
@@ -49,15 +50,25 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
     finally { setChecking(false); }
   }
   async function save(name?: string, restorePrototypes = false) {
+    if (busy) return;
+    const action = dialog!;
+    const previousUrl = location.href;
     setBusy(true); setError('');
+    if (action === 'delete') { setDialog(null); beginSystemDeletion(spec.label, system); }
     try {
-      const action = dialog!;
       // Keep reloads during a folder move or deletion on a stable route.
-      await navigate({ to: '/systems' as never });
+      if (action !== 'delete') await navigate({ to: '/systems' as never });
       const result = await systemRequest<{ id: string; references: number }>(action, system, { name, restorePrototypes });
       sessionStorage.setItem('studio:system-action', JSON.stringify({ title: action === 'rename' ? 'System renamed. References updated.' : action === 'archive' ? 'System and associated prototypes archived.' : action === 'restore' ? 'System restored.' : 'System deleted. Associated prototypes need a rebuild.' }));
-      window.location.assign(action === 'delete' || action === 'archive' ? '/systems' : `/systems/${result.id}`);
+      // Deletion's configuration restart opens the updated index behind the transition.
+      if (action === 'delete') return;
+      window.location.assign(action === 'archive' ? '/systems' : `/systems/${result.id}`);
     } catch (e) {
+      if (action === 'delete') {
+        window.history.replaceState(null, '', previousUrl);
+        finishSystemCreation();
+        setDialog('delete');
+      }
       toast.add({ type: 'error', title: (e as Error).message });
       setError((e as Error).message);
       setBusy(false);

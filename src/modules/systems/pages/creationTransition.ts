@@ -1,9 +1,9 @@
 // Only the initiating tab carries a creation handoff across the dev server restart.
 const key = 'studio:creating-system';
-export function beginSystemCreation(name: string) {
+function beginSystemTransition(name: string, operation: 'create' | 'delete', system?: string) {
   const theme = document.querySelector('.studio-theme') ?? document.documentElement;
   const style = getComputedStyle(theme);
-  sessionStorage.setItem(key, JSON.stringify({ name, started: Date.now(), appearance: {
+  sessionStorage.setItem(key, JSON.stringify({ name, operation, system, started: Date.now(), appearance: {
     background: style.getPropertyValue('--background'), foreground: style.getPropertyValue('--foreground'),
     muted: style.getPropertyValue('--muted-foreground'), border: style.getPropertyValue('--border'), font: style.fontFamily,
   } }));
@@ -19,4 +19,15 @@ export function openCreatedSystem(id: string) {
 }
 export function finishSystemCreation(id?: string) {
   window.dispatchEvent(new CustomEvent('studio:system-created', { detail: { id } }));
+}
+
+export function beginSystemCreation(name: string) { beginSystemTransition(name, 'create'); }
+export function beginSystemDeletion(name: string, system: string) {
+  beginSystemTransition(name, 'delete', system);
+  // A restart must land on the collection, never on the disappearing system.
+  window.history.replaceState(null, '', '/systems');
+}
+export function finishSystemDeletion(systems: Record<string, unknown>, manifestSystems: Record<string, unknown>) {
+  const pending = JSON.parse(sessionStorage.getItem(key) || 'null');
+  if (pending?.operation === 'delete' && !Object.hasOwn(systems, pending.system) && !Object.hasOwn(manifestSystems, pending.system)) finishSystemCreation();
 }

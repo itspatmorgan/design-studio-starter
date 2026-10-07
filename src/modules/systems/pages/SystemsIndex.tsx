@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Cancel01Icon, Search01Icon, Shapes01Icon } from '@hugeicons/core-free-icons';
@@ -12,6 +13,7 @@ import { Badge } from '@/systems/studio/components/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/systems/studio/components/empty';
 import { DEFAULT_SYSTEM, SYSTEM_SPECS } from '../data/systems';
+import { finishSystemDeletion } from './creationTransition';
 import SystemActionToast from './SystemActionToast';
 import SystemMenu from './SystemMenu';
 import NewSystemButton from './NewSystemDialog';
@@ -19,6 +21,9 @@ import NewSystemButton from './NewSystemDialog';
 const intros = import.meta.glob<{ default: SystemIntro }>('/systems/*/intro.tsx', { eager: true });
 export default function SystemsIndex() {
   const manifest = useManifest();
+  useEffect(() => {
+    if (import.meta.env.DEV) finishSystemDeletion(SYSTEM_SPECS, manifest.systems);
+  }, [manifest]);
   const navigate = useNavigate();
   const { q = '' } = useSearch({ strict: false }) as { q?: string };
   const setSearch = (value: string) => void navigate({ to: '/systems' as never, search: { q: value || undefined } as never, replace: true });
