@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, type ReactNode } from 'react';
 import type { MDXContent } from 'mdx/types';
 import { DocToc } from '@/platform/app/docs/DocToc';
 import { Prose } from '@/platform/app/docs/Prose';
@@ -13,7 +13,7 @@ export function DocLayout({ Component, title, description, toc, scrollKey, foote
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Open at the heading in the URL (/documentation/guide/prototypes#groups), or at the top.
-  useEffect(() => {
+  useLayoutEffect(() => {
     const id = decodeURIComponent(location.hash.slice(1));
     const target = id && document.getElementById(id);
     if (target) target.scrollIntoView({ block: 'start' });

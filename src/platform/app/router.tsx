@@ -12,24 +12,28 @@
 //
 // The modules add their own: /prototypes (the gallery), /examples, /systems/$system, /documentation/guide/$page
 // (src/modules/<id>/app.tsx). Everything that opens in the viewer does so through the routes above.
-import { lazy, Suspense } from 'react';
-import { createRootRoute, createRoute, createRouter, notFound, redirect, useRouter } from '@tanstack/react-router';
+import { Suspense } from 'react';
+import { createRootRoute, createRoute, createRouter, notFound, redirect, useRouter, lazyRouteComponent } from '@tanstack/react-router';
 import { useSourceView } from '@/platform/core/source/useSourceView';
 import { shortcutLabel } from '@/platform/app/shell/artifactShortcuts';
 import { Button } from '@/systems/studio/components/button';
 import App, { NotFound } from '@/platform/app/shell/App';
 import Home from '@/platform/app/pages/home/Home';
 import PrototypeLayout from '@/modules/prototypes/viewer/PrototypeLayout';
-import { isSectionKey } from '@/platform/core/roots';
+import { isSectionKey, rootOf } from '@/platform/core/roots';
 import { findArtifact, firstArtifact, artifactLabel, loadManifest, loadPrototype, setManifest } from '@/platform/app/data/manifest';
+import { prepareFile } from '@/platform/app/data/fileTypeModule';
 import { FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
 import type { Artifact, Manifest, Prototype } from '@/platform/app/data/types';
+import { createRefreshQueue } from '@/platform/app/data/refreshQueue';
 import { TAB_ID } from '@/platform/app/data/files';
 import { moduleApps } from '@/platform/app/modules';
 import { APP_NAME } from '@/platform/app/data/config';
 import { migratedGuidancePath, markdownPath } from '@/platform/app/docs/referenceLinks';
 import { loadReference } from '@/platform/app/docs/loadReference';
 import MarkdownPage from '@/platform/app/docs/MarkdownPage';
+import { contentId } from '@/platform/core/roots';
+import { prepareContent } from '@/modules/systems/content/SystemContentPage';
 import { AboutReference } from '@/platform/app/docs/References';
 
 
@@ -62,11 +66,12 @@ const homeRoute = createRoute({
   component: Home,
 });
 
-const Settings = import.meta.env.DEV ? lazy(() => import('@/platform/app/pages/settings/Settings')) : null;
+const Settings = import.meta.env.DEV ? lazyRouteComponent(() => import('@/platform/app/pages/settings/Settings')) : null;
 const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: 'settings',
   beforeLoad: () => { if (!import.meta.env.DEV) throw notFound(); },
+  loader: () => Settings?.preload?.(),
   head: () => ({ meta: [{ title: 'Studio settings — ' + APP_NAME }] }),
   component: () => Settings && <Suspense fallback={null}><Settings /></Suspense>,
 });
@@ -77,11 +82,11 @@ const documentationRoute = createRoute({ getParentRoute: () => rootRoute, path: 
 } });
 
 // Owner guidance and local file actions remain available without the optional Guide.
-const DocumentationEditor = import.meta.env.DEV ? lazy(() => import('@/platform/app/docs/DocumentationEditor')) : null;
-const KnowledgePage = lazy(() => import('@/platform/app/docs/KnowledgePage'));
-const KnowledgeDocument = lazy(() => import('@/platform/app/docs/KnowledgePage').then(mod => ({ default: mod.KnowledgeDocument })));
+const DocumentationEditor = import.meta.env.DEV ? lazyRouteComponent(() => import('@/platform/app/docs/DocumentationEditor')) : null;
+const KnowledgePage = lazyRouteComponent(() => import('@/platform/app/docs/KnowledgePage'));
+const KnowledgeDocument = lazyRouteComponent(() => import('@/platform/app/docs/KnowledgePage').then(mod => ({ default: mod.KnowledgeDocument })));
 // Keep the reading navigation mounted while child routes replace the open document.
-const contextRoute = createRoute({ getParentRoute: () => rootRoute, path: 'documentation/context', validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }), component: () => <Suspense fallback={null}><KnowledgePage /></Suspense> });
+const contextRoute = createRoute({ getParentRoute: () => rootRoute, path: 'documentation/context', loader: () => Promise.all([KnowledgePage.preload?.(), KnowledgeDocument.preload?.()]), validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }), component: () => <Suspense fallback={null}><KnowledgePage /></Suspense> });
 const contextIndexRoute = createRoute({ getParentRoute: () => contextRoute, path: '/', beforeLoad: () => { throw redirect({ to: '/documentation/context/platform.core' as never, replace: true }); } });
 async function ownerDocument(ownerId: string, file: string, mode?: 'source') {
   const manifest = await loadManifest();
@@ -90,11 +95,11 @@ async function ownerDocument(ownerId: string, file: string, mode?: 'source') {
   const source = '/' + owner.root.slice(4) + '/' + file;
   const group = manifest.platformReferences.find(g => g.references.some(r => r.source === source));
   if (!group) { if (file === 'README.md') return null; throw notFound(); }
-  if (import.meta.env.DEV && mode === 'source') return { editing: true as const, path: source, title: 'Source' };
+  if (import.meta.env.DEV && mode === 'source') { await DocumentationEditor?.preload?.(); return { editing: true as const, path: source, filePath: source, title: 'Source' }; }
   const mod = await loadReference(source);
   if (!mod) throw notFound();
   const title = group.references.find(r => r.source === source)?.title ?? mod.frontmatter?.title;
-  return { editing: false as const, Component: mod.default, frontmatter: { ...mod.frontmatter, title }, path: source, group, title };
+  return { editing: false as const, Component: mod.default, frontmatter: { ...mod.frontmatter, title }, path: source, filePath: source, group, title };
 }
 function OwnerDocument({ data }: { data: Awaited<ReturnType<typeof ownerDocument>> }) {
   const { rendered } = useSourceView(import.meta.env.DEV && Boolean(data), Boolean(data?.editing));
@@ -104,8 +109,15 @@ function OwnerDocument({ data }: { data: Awaited<ReturnType<typeof ownerDocument
 }
 const ownerRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner', loaderDeps: ({ search }) => ({ mode: search.mode }), loader: ({ params, deps }) => ownerDocument(params.owner, 'README.md', deps.mode), component: () => { const data = ownerRoute.useLoaderData(); return <Suspense fallback={null}>{data ? <OwnerDocument data={data} /> : <KnowledgeDocument />}</Suspense>; } });
 const ownerReferenceRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/reference/$', loaderDeps: ({ search }) => ({ mode: search.mode }), loader: ({ params, deps }) => ownerDocument(params.owner, params._splat ?? '', deps.mode), component: () => <OwnerDocument data={ownerReferenceRoute.useLoaderData()} /> });
-const contextPageRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/$page', component: () => <Suspense fallback={null}><KnowledgeDocument /></Suspense> });
-const contextItemRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/$page/$', component: () => <Suspense fallback={null}><KnowledgeDocument /></Suspense> });
+async function knowledgeLoader(params: { owner: string; page: string; _splat?: string }, mode?: 'source') {
+  const manifest = await loadManifest();
+  const proto = manifest.systemContent.find(p => p.id === contentId(params.owner, params.page));
+  if (!proto) throw notFound();
+  const contentData = await prepareContent(proto, params._splat, mode);
+  return { contentData, filePath: contentData.filePath };
+}
+const contextPageRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/$page', loaderDeps: ({ search }) => ({ mode: search.mode }), loader: ({ params, deps }) => knowledgeLoader(params, deps.mode), component: () => <Suspense fallback={null}><KnowledgeDocument /></Suspense> });
+const contextItemRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/$page/$', loaderDeps: ({ search }) => ({ mode: search.mode }), loader: ({ params, deps }) => knowledgeLoader(params, deps.mode), component: () => <Suspense fallback={null}><KnowledgeDocument /></Suspense> });
 
 // ?mode=source shows an item's text instead of the item (dev only): "Edit source" in its file menu.
 type ItemSearch = { mode?: 'source' };
@@ -121,15 +133,16 @@ async function itemLoader({ contributor, prototype, _splat }: { contributor: str
   const title = proto && item && [proto.title, artifactLabel(item.path, proto), APP_NAME].join(' — ');
   // Source view: just the text, so a file that doesn't compile can still be read and fixed.
   if (import.meta.env.DEV && mode === 'source' && proto && item && title && FILE_TYPES[item.fileType]?.language) {
-    return { fileType: item.fileType, props: null, source: { proto, item }, title, artifactPath: item.path };
+    await ArtifactSource?.preload?.();
+    return { fileType: item.fileType, props: null, source: { proto, item }, title, artifactPath: item.path, filePath: '/' + rootOf(proto.contributorKey, proto.id) + '/' + item.path };
   }
-  const props = proto && item && type ? await type.load({ proto, item }) : undefined;
+  const props = proto && item && type ? await prepareFile(type, { proto, item }) : undefined;
   if (!proto || !item || !props || !title) throw notFound();
-  return { fileType: item.fileType, props, title, artifactPath: item.path };
+  return { fileType: item.fileType, props, title, artifactPath: item.path, filePath: '/' + rootOf(proto.contributorKey, proto.id) + '/' + item.path };
 }
 
 // What an item route loads: the item's page props, or the Source view of it.
-type ItemData = { fileType: string; props: object | null; source?: { proto: Prototype; item: Artifact }; title: string; artifactPath: string };
+type ItemData = { fileType: string; props: object | null; source?: { proto: Prototype; item: Artifact }; title: string; artifactPath: string; filePath: string };
 
 // Reordering changes the opening artifact for the next visit, not the page being viewed.
 const retainedIndexPath = (routeId: string, cause: string): string | undefined => cause === 'stay'
@@ -137,7 +150,7 @@ const retainedIndexPath = (routeId: string, cause: string): string | undefined =
   : undefined;
 
 // Dev only: import.meta.env.DEV is false in the build, so the editor isn't in the deployed site.
-const ArtifactSource = import.meta.env.DEV ? lazy(() => import('@/platform/app/source/ArtifactSource')) : null;
+const ArtifactSource = import.meta.env.DEV ? lazyRouteComponent(() => import('@/platform/app/source/ArtifactSource')) : null;
 
 // The open item, in its file type's page. It shows its own not-found page, inside the
 // prototype's navigation, and never renders without its loader's data.
@@ -245,6 +258,11 @@ export const router = createRouter({
   basepath: import.meta.env.BASE_URL,
   defaultErrorComponent: LoadError,
   defaultPreload: 'intent',
+  // Keep the committed page mounted until all destination loaders and renderers resolve.
+  // The persistent shell supplies delayed progress instead of replacing it with a pending page.
+  defaultPendingMs: Infinity,
+  // Repository notifications explicitly invalidate prepared pages, including cached visits.
+  defaultStaleTime: Infinity,
 });
 
 // Type-safe Link, useNavigate, useParams, and useSearch everywhere.
@@ -259,6 +277,24 @@ declare module '@tanstack/react-router' {
 // invalidate() reruns the loaders, so lists and navigation update without a page reload.
 // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#using-routerinvalidate
 if (import.meta.hot) {
+  let refreshAll = false;
+  const files = new Set<string>();
+  const refresh = createRefreshQueue(() => {
+    const all = refreshAll;
+    const changed = new Set(files);
+    refreshAll = false;
+    files.clear();
+    return router.invalidate({ filter: match => {
+      const data = match.loaderData as { filePath?: string } | undefined;
+      return all || Boolean(data?.filePath && changed.has(data.filePath));
+    } });
+  }, callback => { setTimeout(callback, 50); });
+  const contentChanged = (event: Event) => {
+    const changed = (event as CustomEvent<{ files?: string[] }>).detail?.files;
+    if (changed) changed.forEach(file => files.add(file));
+    else refreshAll = true;
+    refresh();
+  };
   import.meta.hot.on('studio:moves', (moves: { from: string; to: string; origin?: string }[]) => {
     if (moves[0]?.origin === TAB_ID) return; // FileTree follows its completed reply once.
     const current = router.state.location;
@@ -267,10 +303,24 @@ if (import.meta.hot) {
     const move = moves.find(move => path === move.from) ?? moves.find(move => path.startsWith(move.from + '/'));
     if (move) void router.navigate({ to: (move.to + path.slice(move.from.length)) as never, search: current.search as never, hash: current.hash, replace: true });
   });
-  window.addEventListener('studio:views', () => router.invalidate());
+  const markdownChanged = (event: Event) => {
+    files.add((event as CustomEvent<{ key: string }>).detail.key);
+    refresh();
+  };
+  window.addEventListener('studio:markdown', markdownChanged);
+  window.addEventListener('studio:views', contentChanged);
+  import.meta.hot.on('studio:file', (file: { contributor: string; prototype: string; path: string }) => {
+    files.add('/' + rootOf(file.contributor, file.prototype) + '/' + file.path);
+    refresh();
+  });
+  import.meta.hot.dispose(() => {
+    window.removeEventListener('studio:views', contentChanged);
+    window.removeEventListener('studio:markdown', markdownChanged);
+  });
   import.meta.hot.on('studio:manifest', ({ manifest, origin }: { manifest: Manifest; origin?: string }) => {
     if (origin === TAB_ID) return; // this tab made the change and already applied it
     setManifest(manifest);
-    router.invalidate();
+    refreshAll = true;
+    refresh();
   });
 }

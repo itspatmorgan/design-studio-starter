@@ -1,3 +1,4 @@
+import { createMarkdownLoader } from '@/platform/app/docs/createMarkdownLoader';
 import type { MDXContent } from 'mdx/types';
 import type { DocFrontmatter } from '@/platform/app/docs/types';
 
@@ -6,18 +7,10 @@ export type GuideModule = { default: MDXContent; frontmatter?: DocFrontmatter };
 // Human chapters live only in the Guide folder. Vite loads a chapter on demand.
 const glob = import.meta.glob<GuideModule>('/modules/documentation/pages/*.md');
 
-// In dev, adding or removing a page makes Vite run this file again with a new list. The app
-// keeps calling the function from the first run, so the list lives in state Vite keeps
-// across runs (like loadView.ts).
-const state: { pages: typeof glob } = import.meta.hot?.data.state ?? { pages: glob };
+const load = createMarkdownLoader(glob, import.meta.hot);
 
-// A Guide chapter's Markdown module, from its indexed source or filename.
 export function loadGuidePage(slug: string, source?: string) {
-  return state.pages[source ?? `/modules/documentation/pages/${slug}.md`]?.();
+  return load(source ?? `/modules/documentation/pages/${slug}.md`);
 }
 
-if (import.meta.hot) {
-  import.meta.hot.data.state = state;
-  state.pages = glob;
-  import.meta.hot.accept();
-}
+if (import.meta.hot) import.meta.hot.accept();

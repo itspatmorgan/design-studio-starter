@@ -7,6 +7,8 @@ import { CommandPaletteProvider } from '@/platform/app/shell/CommandPalette';
 import { MODULES } from '@/platform/app/data/modules';
 import { SectionNavContext, SectionNavPresenceContext, useColorMode, useSectionNav } from '@/platform/app/shell/appPrefs';
 
+import NavigationProgress from './NavigationProgress';
+
 // The root route's layout: the rail, the current page, and the ⌘K palette.
 export default function App() {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -34,6 +36,7 @@ export default function App() {
           </CommandPaletteProvider>
         </SectionNavPresenceContext.Provider>
       </SectionNavContext.Provider>
+      <NavigationProgress />
       <Toaster />
     </TooltipProvider>
   );

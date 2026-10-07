@@ -110,14 +110,14 @@ export function createLoader<M>(glob: Glob<M>, hot: ImportMeta['hot']) {
       if (!affected.length) return;
       state.stamp = Date.now();
       affected.forEach(file => state.loaded.delete(file));
-      window.dispatchEvent(new Event('studio:views'));
+      window.dispatchEvent(new CustomEvent('studio:views', { detail: { files: affected } }));
     });
     if (!hot.data.listening) {
       hot.data.listening = true;
-      window.addEventListener('studio:markdown', ((event: CustomEvent<{ key: string; mod: M }>) => {
-        if (!(event.detail.key in state.glob)) return;
+      window.addEventListener('studio:markdown', ((event: CustomEvent<{ key: string; mod: M; reference?: boolean }>) => {
+        if (event.detail.reference || !(event.detail.key in state.glob)) return;
         state.loaded.set(event.detail.key, Promise.resolve(event.detail.mod));
-        window.dispatchEvent(new Event('studio:views'));
+        window.dispatchEvent(new CustomEvent('studio:views', { detail: { files: [event.detail.key] } }));
       }) as EventListener);
     }
   }

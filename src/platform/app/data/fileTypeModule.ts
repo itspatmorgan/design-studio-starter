@@ -16,7 +16,7 @@ export type FileTypeModule<Props extends object = any> = { // eslint-disable-lin
   // next is ready. Returns the props for Page, or undefined if the file isn't there (the
   // not-found page).
   load(context: ArtifactContext): Promise<Props | undefined>;
-  Page: ComponentType<Props>;
+  Page: ComponentType<Props> & { preload?: () => Promise<unknown> | undefined };
   Embed?: ComponentType<EmbedProps>;
   embedSurfaces: EmbedSurface[];
 };
@@ -26,4 +26,10 @@ export type EmbedSurface = "document" | "canvas";
 // Only explicitly declared surfaces receive a preview.
 export function embedFor(module: FileTypeModule | undefined, surface: EmbedSurface) {
   return module?.embedSurfaces?.includes(surface) ? module.Embed : undefined;
+}
+
+// Every route reader uses the same handoff: data and renderer must both be prepared.
+export async function prepareFile<Props extends object>(module: FileTypeModule<Props>, context: ArtifactContext): Promise<Props | undefined> {
+  const [props] = await Promise.all([module.load(context), module.Page.preload?.()]);
+  return props;
 }

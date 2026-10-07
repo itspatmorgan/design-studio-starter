@@ -1,5 +1,5 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
-import { Link, useSearch, useRouterState } from '@tanstack/react-router';
+import { Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { Link, useSearch, useRouterState, lazyRouteComponent } from '@tanstack/react-router';
 import { ChevronDown, Compass, Blocks, NotebookText, WandSparkles, SwatchBook, Type, SquareRoundCorner, Layers2, Ruler, MoveRight, Sparkles, Braces, Smile, Image, Search, ChevronsDownUp, ChevronsUpDown, X, type LucideIcon } from 'lucide-react';
 import { Input } from '@/systems/studio/components/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/systems/studio/components/tooltip';
@@ -7,6 +7,7 @@ import { artifactLabel, findArtifact } from '@/platform/app/data/manifest';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/systems/studio/components/collapsible';
 import FileTree from '@/modules/prototypes/viewer/FileTree';
 import { contentId, SYSTEM_CONTENT_SECTIONS } from '@/platform/core/roots';
+import type { ContentData } from '../content/SystemContentPage';
 import SystemContentPage from '../content/SystemContentPage';
 import type { Prototype } from '@/platform/app/data/types';
 import { NavHeader, NavList, NavTitle, SectionNav } from '@/platform/app/shell/nav';
@@ -33,9 +34,11 @@ import SystemAssets from './SystemAssets';
 import { systemAssets } from '../data/assets';
 import { navLinkClass, navLinkStyle } from '@/platform/app/shell/nav';
 
-const ComponentEditor = import.meta.env.DEV ? lazy(() => import('./ComponentEditor').then((module) => ({ default: module.ComponentEditor }))) : null;
+const ComponentEditor = import.meta.env.DEV ? lazyRouteComponent(() => import('./ComponentEditor').then((module) => ({ default: module.ComponentEditor }))) : null;
 
-const SystemSourceEditor = import.meta.env.DEV ? lazy(() => import('./SystemSourceEditor')) : null;
+const SystemSourceEditor = import.meta.env.DEV ? lazyRouteComponent(() => import('./SystemSourceEditor')) : null;
+
+export const prepareSystemSource = () => Promise.all([ComponentEditor?.preload?.(), SystemSourceEditor?.preload?.()]);
 
 // Systems: one page per theme category and component,
 // at /systems/<system>/<page> (the system's introduction at /systems/<system>).
@@ -187,7 +190,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
 
 // One page of a system, or null if the system doesn't have it.
 function SystemPage({ system, sys, components, tokens, origin, page, assetPath, pageData }: {
-  system: SystemId; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[]; origin: 'shadcn' | null; page?: string; assetPath?: string; pageData?: { componentKey: string; componentData: ComponentPageData } | null;
+  system: SystemId; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[]; origin: 'shadcn' | null; page?: string; assetPath?: string; pageData?: { componentKey?: string; componentData?: ComponentPageData; contentData?: ContentData } | null;
 }) {
   const has = (group: TokenGroup) => tokens.some((t) => t.group === group);
   switch (page) {
@@ -219,7 +222,7 @@ function SystemPage({ system, sys, components, tokens, origin, page, assetPath, 
       return <SystemAssets system={system} sys={sys} kind="Icons" path={assetPath} />;
   }
   const found = components.find((c) => c.slug === page);
-  return found && pageData?.componentKey === system + '/' + found.slug ? <ComponentDocPage key={pageData.componentKey} sys={sys} component={found} origin={origin} loaded={pageData.componentData} /> : null;
+  return found && pageData?.componentData && pageData.componentKey === system + '/' + found.slug ? <ComponentDocPage key={pageData.componentKey} sys={sys} component={found} origin={origin} loaded={pageData.componentData} /> : null;
 }
 
 export default function SystemsPage() {
@@ -230,7 +233,7 @@ export default function SystemsPage() {
   const mainRef = useRef<HTMLElement>(null);
   useLayoutEffect(() => { mainRef.current?.scrollTo({ top: 0 }); }, [system, params.page, params._splat]);
 
-  const pageData = useRouterState({ select: state => state.matches.at(-1)?.loaderData }) as { componentKey: string; componentData: ComponentPageData } | null | undefined;
+  const pageData = useRouterState({ select: state => state.matches.at(-1)?.loaderData }) as { componentKey?: string; componentData?: ComponentPageData; contentData?: ContentData } | null | undefined;
   const manifest = useManifest();
   const manifestSystem = manifest.systems[system];
   const selected = manifest.systemContent.find((p) => p.id === contentId(system, params.page ?? '')) as Prototype | undefined;
@@ -241,7 +244,7 @@ export default function SystemsPage() {
   const path = sys && !selected && !params._splat ? sourcePath(system, params.page, components) : null;
   const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(path), editing && !selected);
   const editable = components.find((c) => c.slug === params.page);
-  const content = editing && path ? <></> : selected ? <SystemContentPage key={selected.id + '/' + (params._splat ?? '')} proto={selected} slug={params._splat} /> : sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page, assetPath: params._splat, pageData }) : null;
+  const content = editing && path ? <></> : selected ? <SystemContentPage key={selected.id + '/' + (params._splat ?? '')} proto={selected} slug={params._splat} data={pageData?.contentData} /> : sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page, assetPath: params._splat, pageData }) : null;
   if (!sys || !content) return <NotFound />;
   return (
     <div className="flex min-h-0 flex-1">

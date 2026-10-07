@@ -1,13 +1,13 @@
 // How the app opens a text file: its text, read-only. In dev that's the Source view, with
 // highlighting; the deployed site shows the text plainly.
-import { lazy } from 'react';
+import { lazyRouteComponent } from '@tanstack/react-router';
 import { CodeIcon } from '@hugeicons/core-free-icons';
 import type { FileTypeModule } from '@/platform/app/data/fileTypeModule';
 import type { Artifact, Prototype } from '@/platform/app/data/types';
 import { rootOf } from '@/platform/core/roots';
 import { textFiles } from './loader';
 
-const ArtifactSource = import.meta.env.DEV ? lazy(() => import('@/platform/app/source/ArtifactSource')) : null;
+const ArtifactSource = import.meta.env.DEV ? lazyRouteComponent(() => import('@/platform/app/source/ArtifactSource')) : null;
 
 type Props = { proto: Prototype; item: Artifact; text: string | null };
 
@@ -26,7 +26,10 @@ export default {
   icon: CodeIcon,
 
   async load({ proto, item }) {
-    if (import.meta.env.DEV) return { proto, item, text: null };
+    if (import.meta.env.DEV) {
+      await ArtifactSource?.preload?.();
+      return { proto, item, text: null };
+    }
     const text = await textFiles[`/${rootOf(proto.contributorKey, proto.id)}/${item.path}`]?.();
     return text === undefined ? undefined : { proto, item, text };
   },

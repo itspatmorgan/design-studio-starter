@@ -176,3 +176,5 @@ folders in `src/systems/<id>/`, which are your content.
 - `sources.ts`, `docs.ts`, `scaffold.ts`, `themeTokens.ts`: where a component came from, how its docs and props are read, the starter docs a new component gets, and the theme's tokens.
 - `pages/`, `data/`: the Systems pages and the loaders behind them (browser).
 - `node/`: finding systems, building their docs and props, and `pnpm component-docs` (Node).
+
+Page loading follows the [shared navigation handoff](../../platform/context/source.md#navigation-handoff). Route loaders prepare the reader and content before replacing the current page.

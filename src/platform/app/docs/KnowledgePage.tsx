@@ -100,9 +100,10 @@ export function KnowledgeDocument() {
   const manifest = useManifest();
   const owner = manifest.systemContent.find(p => p.owner?.id === id)?.owner;
   const sections = manifest.systemContent.filter(p => p.owner?.id === id);
+  const data = useRouterState({ select: state => state.matches.at(-1)?.loaderData }) as { contentData?: import('@/modules/systems/content/SystemContentPage').ContentData } | undefined;
   const selected = sections.find(p => p.id === contentId(id ?? '', page ?? ''));
   if (!owner || (page && page !== 'reference' && !selected)) return <NotFound />;
-  return selected ? <SystemContentPage key={selected.id + '/' + (slug ?? '')} proto={selected} slug={slug} /> : <div className="overflow-y-auto px-8 py-10">
+  return selected ? <SystemContentPage key={selected.id + '/' + (slug ?? '')} proto={selected} slug={slug} data={data?.contentData} /> : <div className="overflow-y-auto px-8 py-10">
         <div className="mx-auto max-w-3xl">
           <h1 className="text-3xl font-semibold">{owner.label}</h1>
           <p className="mt-3 text-muted-foreground">{owner.kind === 'platform' ? 'Shared knowledge and workflows for operating Design Studio.' : `Knowledge and workflows supplied by this ${owner.kind}.`}</p>

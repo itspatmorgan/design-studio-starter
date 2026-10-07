@@ -1,6 +1,5 @@
 import moduleEntries from './scripts/build/vite-module-entries-plugin.js';
 import { defineConfig } from 'vite';
-import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import mdx from '@mdx-js/rollup';
@@ -24,12 +23,7 @@ import markdownRefresh from './scripts/build/vite-markdown-refresh-plugin.js';
 import systemProps from './src/modules/systems/node/props-plugin.js';
 import globs from './scripts/build/vite-globs-plugin.js';
 import css, { scopedUtilities } from './scripts/build/vite-css-plugin.js';
-import { ENABLED_MODULES, PROTOTYPE_DIRS } from './scripts/lib/modules.js';
-
-// Prototype documents (src/prototypes/ and the modules' prototype-shaped folders, like src/examples/) refresh in
-// place through scripts/build/vite-markdown-refresh-plugin.js, so React Fast Refresh leaves them alone.
-const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-const prototypeFolders = ['prototypes', ...PROTOTYPE_DIRS.map((dir: string) => path.basename(dir))].map(escapeRegExp).join('|');
+import { ENABLED_MODULES } from './scripts/lib/modules.js';
 
 // References use the same plain-Markdown pipeline, without hiding any document sections.
 function markdown(reference = false) {
@@ -85,8 +79,8 @@ export default defineConfig({
     // Markdown (no JSX or expressions, so any .md file compiles; raw HTML shows as text): frontmatter (a first heading is the title when there's no `title`), GitHub-style Markdown, heading ids, and code highlighting with Shiki in both color modes.
     markdown(),
     markdown(true),
-    // Prototype documents refresh through scripts/build/vite-markdown-refresh-plugin.js instead.
-    react({ include: /\.(md|[jt]sx)$/, exclude: new RegExp(`[\\\\/](${prototypeFolders})[\\\\/].*\\.md$`) }),
+    // Markdown readers refresh through scripts/build/vite-markdown-refresh-plugin.js instead.
+    react({ include: /\.[jt]sx$/ }),
     markdownRefresh(),
     importGuard(),
     css(),

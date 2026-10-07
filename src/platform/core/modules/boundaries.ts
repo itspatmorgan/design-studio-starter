@@ -22,6 +22,7 @@ export const MODULE_PLATFORM_ENTRIES: readonly string[] = [
   'src/platform/app/docs/DocumentationNavItem',
   'src/platform/app/docs/Prose',
   'src/platform/app/docs/markdownFileModule',
+  'src/platform/app/docs/createMarkdownLoader',
   'src/platform/app/docs/types',
   'src/platform/app/items/Collection',
   'src/platform/app/items/CollectionCard',

@@ -41,7 +41,7 @@ export default function CanvasEmbed({ proto, item, width, height }: EmbedProps) 
     void load();
     import.meta.hot?.on('studio:file', changed);
     return () => { active = false; import.meta.hot?.off('studio:file', changed); };
-  }, [proto, item]);
+  }, [proto.contributorKey, proto.id, item.path]);
   const scene = useMemo(() => {
     if (text === undefined) return null;
     try {

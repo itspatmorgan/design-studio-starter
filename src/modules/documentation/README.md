@@ -53,3 +53,5 @@ Source access is limited to indexed owner documents and locally repairable Guide
 - `src/platform/app/docs/DocumentationEditor.tsx`, `documentationSource.ts`, `scripts/build/files/source.js`: allowlisted document source editing.
 
 Follow [Documentation standards](../../platform/context/documentation-standards.md) and [Maintain documentation](../../platform/skills/maintain-documentation/SKILL.md) for authoring and verification.
+
+Page loading follows the [shared navigation handoff](../../platform/context/source.md#navigation-handoff). Route loaders prepare the reader and content before replacing the current page.

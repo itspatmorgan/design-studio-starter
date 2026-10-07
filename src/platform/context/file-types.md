@@ -48,6 +48,10 @@ Preview surfaces use the shared `EmbedFrame`: rounded corners and a full-width g
 
 A loader uses `import.meta.glob(['/__studio_globs__/*'])`. Vite replaces the placeholder with extensions and content roots, excluding archived prototypes in production.
 
+## Page preparation
+
+Route readers call `prepareFile` to prepare content and the registered `Page` together. Deferred page components expose `preload` through TanStack `lazyRouteComponent`. A raw React lazy component does not provide this preparation contract. The module loader returns page props and handles its file access. Rendered canvases and diagrams may then show their own loading status while initializing their scene or SVG. See [Navigation handoff](source.md#navigation-handoff).
+
 ## Lifecycle
 
 Follow the [module contract](modules.md) for installation, disabling, removal, and dependency boundaries.

@@ -1,11 +1,13 @@
-import { lazy, Suspense } from 'react';
-import { Link, getRouteApi } from '@tanstack/react-router';
+import { Suspense } from 'react';
+import { Link, getRouteApi, lazyRouteComponent } from '@tanstack/react-router';
 import { DocLayout } from '@/platform/app/docs/DocLayout';
 import { DocBase } from '@/platform/app/docs/DocBase';
 import type { GuideModule } from './loadGuide';
 import { useSourceView } from '@/platform/core/source/useSourceView';
 
-const DocumentationEditor = import.meta.env.DEV ? lazy(() => import('@/platform/app/docs/DocumentationEditor')) : null;
+const DocumentationEditor = import.meta.env.DEV ? lazyRouteComponent(() => import('@/platform/app/docs/DocumentationEditor')) : null;
+
+export const prepareGuideSource = () => DocumentationEditor?.preload?.();
 
 const rootApi = getRouteApi('__root__');
 

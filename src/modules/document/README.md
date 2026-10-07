@@ -15,3 +15,5 @@ This optional module owns prototype Markdown. Follow the [manage-modules skill](
 - `loader.ts`: the glob of document files for the deployed site.
 
 Agent contract: `src/modules/document/skills/write-document/SKILL.md`.
+
+Page loading follows the [shared navigation handoff](../../platform/context/source.md#navigation-handoff). Route loaders prepare the reader and content before replacing the current page.

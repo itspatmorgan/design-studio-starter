@@ -1,7 +1,7 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 // Systems in the app: its rail button, its routes (/systems, /systems/<system>, /systems/<system>/<page>),
 // and prototype systems in the ⌘K palette. The pages are in src/modules/systems/pages/.
-import { createRoute, Outlet, redirect, useRouterState } from '@tanstack/react-router';
+import { createRoute, Outlet, redirect, useRouterState, lazyRouteComponent } from '@tanstack/react-router';
 import { Shapes01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/systems/studio/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
@@ -9,12 +9,14 @@ import { ItemRow } from '@/platform/app/items/ItemRow';
 import { PROTOTYPE_SYSTEMS, SYSTEM_SPECS } from '@/modules/systems/data/systems';
 import { APP_NAME } from '@/platform/app/data/config';
 import { artifactLabel, loadManifest } from '@/platform/app/data/manifest';
+import { contentId } from '@/platform/core/roots';
+import { prepareContent } from './content/SystemContentPage';
 import type { ModuleApp, PaletteContext } from '@/platform/core/api';
 
 // Loaded on first visit, so it isn't in the main bundle:
 // https://tanstack.com/router/latest/docs/framework/react/guide/code-splitting
-const SystemsPage = lazy(() => import('@/modules/systems/pages/SystemsPage'));
-const SystemsIndex = lazy(() => import('./pages/SystemsIndex'));
+const SystemsPage = lazyRouteComponent(() => import('@/modules/systems/pages/SystemsPage'));
+const SystemsIndex = lazyRouteComponent(() => import('./pages/SystemsIndex'));
 function SystemsLayout() {
   const system = useRouterState({ select: state => (state.matches.at(-1)?.params as { system?: string })?.system });
   return <Suspense fallback={null}>{system ? <SystemsPage /> : <Outlet />}</Suspense>;
@@ -24,9 +26,18 @@ const systemsTitle = (...parts: (string | undefined)[]) =>
 
 async function loadSystemPage(params: { system: string; page?: string; _splat?: string }, mode?: 'source') {
   // Preload the layout too, so its initial Suspense boundary does not flash blank.
-  await import('./pages/SystemsPage');
-  if (mode === 'source' || params._splat) return null;
+  await SystemsPage.preload?.();
   const manifest = await loadManifest();
+  const proto = manifest.systemContent.find(p => p.id === contentId(params.system, params.page ?? ''));
+  if (proto) {
+    const contentData = await prepareContent(proto, params._splat, mode);
+    return { contentData, filePath: contentData.filePath };
+  }
+  if (mode === 'source') {
+    await (await import('./pages/SystemsPage')).prepareSystemSource();
+    return null;
+  }
+  if (params._splat) return null;
   const component = manifest.systems[params.system]?.components.find(item => item.slug === params.page);
   if (!component) return null;
   const { loadComponentPage } = await import('./data/loadDocs');
@@ -75,7 +86,7 @@ export default {
         getParentRoute: () => systemsRoute,
         path: '/',
         head: () => ({ meta: [{ title: `Systems — ${APP_NAME}` }] }),
-        loader: () => import('./pages/SystemsIndex'),
+        loader: () => SystemsIndex.preload?.(),
         component: () => <Suspense fallback={null}><SystemsIndex /></Suspense>,
       }),
       createRoute({
