@@ -68,8 +68,7 @@ html.dark { color-scheme: dark; }
   * {
     @apply border-border outline-ring/50;
     }
-  /* Keep the viewport and fixed app surface opaque during scrolling repaints. */
-  html, body, #root {
+  body {
     @apply bg-background text-foreground;
     }
   html {
