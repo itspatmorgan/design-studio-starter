@@ -9,7 +9,7 @@ Read the [system authoring context](../../context/authoring.md), [system contrac
 
 Inspect installed systems, configuration, `components.json`, packages, and all content using the current system. Include disabled module content.
 
-Start with what the person wants to prototype and whether they already have product components and a theme. A designer may name components and visual choices. For a product manager, decompose the intended flow into screens, states, and the smallest supporting kit. Ask only for decisions needed for the next step.
+Establish whether the person wants to curate a toolkit or bring an existing React system. For curation, start with what they want to prototype. A designer may name components and visual choices. For a product manager, decompose the intended flow into screens, states, and the smallest supporting kit. For an existing system, start with its source, inventory, and dependencies. Do not require a prototype idea to audit it and propose an import plan. Ask only for decisions needed for the next step.
 
 Collect missing system ID, component source or package, tokens, assets, and usage guidance. If only design files exist, inspect available material and report gaps.
 
@@ -25,7 +25,7 @@ Describe the proposed components, theme, assets, dependencies, and known gaps in
 
 Context and skills are separate curation decisions. Save supplied product knowledge; do not invent personas or product context to fill folders. Add a skill only for a demonstrated recurring task. Do not install a skills catalog during setup.
 
-For an assessment-only request, finish with the evidence, proposed subset, adaptations, and unresolved questions. Continue into implementation only when authorized. An assessment does not need a new system or prototype to be complete.
+For an assessment-only request, finish with the evidence, import plan, adaptations, and unresolved questions. The plan can cover the whole reusable system in stages. Continue into implementation only when authorized. An assessment does not need a new system or prototype to be complete.
 
 ## Establish the kit
 

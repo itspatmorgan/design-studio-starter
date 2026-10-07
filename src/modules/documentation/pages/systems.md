@@ -20,12 +20,12 @@ The **Default** badge marks the starting choice for new prototypes. Each prototy
 Build and manage your system with your agent. It handles the setup work. Use Studio to review the results and give feedback.
 
 1. Click **New system** and name it. This creates a blank system with no components, theme tokens, or assets. Existing systems and prototypes stay unchanged.
-2. On its overview, choose **Curate a toolkit from open libraries** or **Bring my own system**.
-3. Copy the displayed prompt into your coding agent’s chat, then tell it what you want to prototype.
+2. On its overview, choose **Curate a toolkit from open libraries** or **Bring your own system**.
+3. Copy the displayed prompt into your coding agent’s chat to begin.
 
 **Starting from an idea?** Describe the experience, such as a customer feedback dashboard. Your agent can select a small toolkit from shadcn or Untitled UI. You can also specify the components and visual choices yourself.
 
-**Have an existing React system?** Share its source or package. Your agent assesses the components, theme, fonts, icons, and dependencies before importing. Review any differences from the original; application dependencies may need your engineer’s help.
+**Have an existing React system?** Share its source or package. Your agent audits the components, theme, assets, and dependencies, then proposes an import plan. Review adaptations and gaps together before importing. Application dependencies may need your engineer’s help.
 
 Create systems locally as an Admin. In personal use, your registered contributor is the Admin. You can keep exploring with the examples while preparing your own system.
 
