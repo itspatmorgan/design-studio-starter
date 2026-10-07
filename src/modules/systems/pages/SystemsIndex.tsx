@@ -53,7 +53,7 @@ export default function SystemsIndex() {
     <SystemActionToast /><header className="mb-6">
       <h1 className="text-2xl font-semibold tracking-tight text-foreground">Systems</h1>
       <div className="mt-0.5 flex flex-wrap items-center justify-between gap-4">
-        <p className="min-w-0 text-sm leading-8 text-muted-foreground">Explore your systems or create one for your prototypes.</p>
+        <p className="min-w-0 text-sm leading-8 text-muted-foreground">Components, styles, assets, and guidance for your prototypes.</p>
         <div className="flex flex-wrap items-center gap-2">
           <form role="search" onSubmit={event => event.preventDefault()} className={q ? 'w-64' : 'w-36 focus-within:w-64 transition-[width] duration-200 motion-reduce:transition-none'}>
             <InputGroup><InputGroupAddon><HugeiconsIcon icon={Search01Icon} /></InputGroupAddon><InputGroupInput aria-label="Search systems" placeholder="Search" value={q} onChange={event => setSearch(event.target.value)} />{q && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-xs" aria-label="Clear search" onClick={() => setSearch('')}><HugeiconsIcon icon={Cancel01Icon} /></InputGroupButton></InputGroupAddon>}</InputGroup>

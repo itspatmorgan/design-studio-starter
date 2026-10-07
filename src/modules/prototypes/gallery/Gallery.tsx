@@ -120,7 +120,7 @@ export default function Gallery() {
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Prototypes</h1>
         {/* The subtitle's line is as tall as the controls (32px), so all of them centre on the same line. */}
         <div className="mt-0.5 flex items-center justify-between gap-4">
-          <p className="min-w-0 truncate text-sm leading-8 text-muted-foreground">All prototypes, newest first.</p>
+          <p className="min-w-0 truncate text-sm leading-8 text-muted-foreground">Explore ideas, test interactions, and share your work.</p>
           <div className="flex shrink-0 items-center gap-2">
             {!empty && <SearchBox value={search} system={system} />}
             {!empty && <ViewToggle />}
