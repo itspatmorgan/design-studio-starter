@@ -16,6 +16,10 @@ Returning or navigating away with unsaved changes requires confirmation. Externa
 
 Source editing is available during local development. Published pages retain their reading experience and copying actions without repository editing.
 
+## Settings restart
+
+Saving configuration can restart the development server. The settings API identifies each runtime instance. After restart, the server explicitly requests one page reload so module availability and configuration refresh together. Settings also checks for a new ready instance to recover when the WebSocket reload is missed. A bounded wait reports a recovery error instead of leaving the form disabled indefinitely. The refreshed page confirms that changes are applied.
+
 ## Navigation handoff
 
 Internal links use TanStack Router. Destination loaders prepare their content, layout, and page renderer before committing navigation. The current page stays visible during preparation. The persistent shell shows **Opening page** after a 200 ms wait. Intent preloading prepares likely destinations without showing progress. Loader failures use the route error surface with retry.

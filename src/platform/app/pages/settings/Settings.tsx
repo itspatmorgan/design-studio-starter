@@ -43,7 +43,7 @@ export default function Settings() {
     {error && <Alert variant="destructive" className="space-y-3 p-4">
       <p className="whitespace-pre-line">{error}</p><Button variant="outline" onClick={() => { if (!dirty || window.confirm('Discard unsaved settings and reload?')) void load(); }}>Reload settings</Button>
     </Alert>}
-    {saved && <Alert role="status" className="p-4">Settings saved. {sessionStorage.getItem('studio:settings-saved') ? 'The studio is restarting to apply your changes.' : 'Your changes are applied locally.'}</Alert>}
+    {saved && <Alert role="status" className="p-4">{restarting ? 'Settings saved. Restarting the studio to apply your changes.' : 'Settings saved. Your changes are applied.'}</Alert>}
     {!snapshot || !draft ? (!error && <p role="status" className="text-sm text-muted-foreground">Loading settings</p>) : <>
       {!editable && <Alert role="note" className="p-4">{snapshot.role ? 'You can view these settings. An Admin can change them.' : 'Ask your agent to register your contributor identity before editing settings.'}</Alert>}
       <form className="space-y-6" onSubmit={(event) => { event.preventDefault(); void save(); }}>

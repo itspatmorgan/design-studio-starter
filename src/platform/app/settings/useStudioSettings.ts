@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useBlocker } from '@tanstack/react-router';
 import type { StudioConfig } from '@/platform/core/config';
+import { waitForRestart } from './waitForRestart';
 
 type Snapshot = {
   config: StudioConfig; version: string; actor: string | null; role: 'admin' | 'contributor' | null;
@@ -15,7 +16,8 @@ export function useStudioSettings(fields: readonly (keyof StudioConfig)[]) {
   const [draft, setDraft] = useState<StudioConfig | null>(null);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
-  const [restarting, setRestarting] = useState(false);
+  const [restartFrom, setRestartFrom] = useState<string | null>(null);
+  const restarting = restartFrom !== null;
   const [saved, setSaved] = useState(false);
   const [conflict, setConflict] = useState(false);
   const dirty = Boolean(draft && snapshot && JSON.stringify(draft) !== JSON.stringify(snapshot.config));
@@ -27,11 +29,26 @@ export function useStudioSettings(fields: readonly (keyof StudioConfig)[]) {
       const response = await fetch('/__studio/settings');
       const body = await response.json();
       if (!response.ok) throw new Error(body.error);
-      setSnapshot(body); setDraft(body.config); setConflict(false); setRestarting(false);
-      if (sessionStorage.getItem('studio:settings-saved')) { setSaved(true); sessionStorage.removeItem('studio:settings-saved'); }
+      setSnapshot(body); setDraft(body.config); setConflict(false);
+      const pendingRuntime = sessionStorage.getItem('studio:settings-saved');
+      if (pendingRuntime) {
+        setSaved(true);
+        if (pendingRuntime === body.runtimeId || body.restarting) setRestartFrom(pendingRuntime);
+        else { setRestartFrom(null); sessionStorage.removeItem('studio:settings-saved'); }
+      } else setRestartFrom(null);
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Settings could not load.'); }
   }
   useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    if (!restartFrom) return;
+    const controller = new AbortController();
+    void waitForRestart(restartFrom, { signal: controller.signal }).then(() => window.location.reload()).catch(cause => {
+      if (controller.signal.aborted) return;
+      setRestartFrom(null); setSaved(false);
+      setError(cause instanceof Error ? cause.message : 'The studio could not restart. Reload settings to check again.');
+    });
+    return () => controller.abort();
+  }, [restartFrom]);
   const editable = snapshot?.role === 'admin';
   const disabled = !editable || saving || restarting;
   const update = (changes: Partial<StudioConfig>) => { setDraft((current) => current && { ...current, ...changes }); setSaved(false); };
@@ -48,7 +65,7 @@ export function useStudioSettings(fields: readonly (keyof StudioConfig)[]) {
       const body = await response.json();
       if (!response.ok) { setConflict(response.status === 409); throw new Error(body.error); }
       setSnapshot({ ...snapshot, config: draft }); setSaved(true);
-      if (body.restarting) { setRestarting(true); sessionStorage.setItem('studio:settings-saved', 'true'); }
+      if (body.restarting) { setRestartFrom(body.runtimeId); sessionStorage.setItem('studio:settings-saved', body.runtimeId); }
       else await load();
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Settings could not save.'); }
     finally { setSaving(false); }
