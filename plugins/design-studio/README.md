@@ -19,7 +19,7 @@ The default name and folder are **Design Studio** and `~/Developer/Design Studio
 - [Create studio](skills/create-studio/SKILL.md) owns first-time setup.
 - [Open studio](skills/open-studio/SKILL.md) reopens existing work without reinitializing it.
 - [Use studio](skills/use-studio/SKILL.md) delegates ongoing work to that studio's current guidance.
-- [Publish studio](skills/publish-studio/SKILL.md) experiments with requested local onboarding through private ChatGPT Sites publication and later updates.
+- [Publish studio](skills/publish-studio/SKILL.md) experiments with requested local onboarding through public ChatGPT Sites publication and later updates.
 - [Host handoff](skills/create-studio/references/host-handoff.md) adapts folder opening to the current coding tool.
 - [Direct setup](../../SETUP.md) lets an agent use the same procedure without a plugin installed.
 
@@ -49,9 +49,9 @@ Plugin entry skills stay outside the Studio instruction browser. The owned repos
 
 ## Experimental Sites publishing
 
-Ask “Create my Design Studio locally and publish a private viewing site with ChatGPT Sites.” Local setup completes first. Native Sites tools then publish the static build and retain the Site identity in the owned folder. Later, ask “Publish my Studio” to update that same Site. Source synchronization also sends the local source to the Sites-managed repository; no GitHub account is required.
+Ask “Create my Design Studio locally and publish a public viewing link with ChatGPT Sites.” Local setup completes first. Native Sites tools then publish the static build and retain the Site identity in the owned folder. New viewing sites default to public, so anyone with the link can review and interact with the built prototypes. An explicit private or restricted audience takes precedence. Later, ask “Publish my Studio” to update that same Site with its existing audience. Source synchronization also sends the local source to the Sites-managed repository; no GitHub account is required.
 
-This path needs a host with both local execution and native Sites capabilities. It does not add a hosted editing backend or change other hosts' local setup. See [publish-studio](skills/publish-studio/SKILL.md) for the procedure and the [experiment record](experiments/sites-onboarding.md) for evidence and viewer sign-in limitations. The package version and public starter pin are unchanged; directory distribution and a fresh installed-plugin onboarding test remain pending.
+This path needs a host with both local execution and native Sites capabilities. It does not add a hosted editing backend or change other hosts' local setup. See [publish-studio](skills/publish-studio/SKILL.md) for the procedure and the [experiment record](experiments/sites-onboarding.md) for evidence and remaining tests. The package version and public starter pin are unchanged; directory distribution and a fresh installed-plugin onboarding test remain pending.
 
 ## Maintainer testing
 

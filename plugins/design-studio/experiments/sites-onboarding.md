@@ -4,7 +4,7 @@ Experiment date: October 6, 2026 (Pacific). Branch: `codex/sites-onboarding-expe
 
 ## Outcome
 
-The local Studio can publish its existing static build through Sites without a hosted editing backend. Two private publications succeeded at the same project and URL. Authenticated HTTP checks confirmed direct routes and the updated production assets. Normal viewer sign-in remains unverified after an in-app browser authentication error.
+The local Studio can publish its existing static build through Sites without a hosted editing backend. Two publications succeeded at the same project and URL. They initially used private access. At the person's request, the existing Site was then made public for sharing with reviewers. Anonymous HTTP checks confirmed direct routes and production assets without authentication. The hosted Feedback Inbox rendered and its New filter worked in the browser.
 
 The person had already verified plugin installation and local setup. This experiment exercised the repository's plugin helper and native Sites tools. It did not install a new plugin version or start an independent agent session from the directory listing.
 
@@ -16,9 +16,9 @@ The person had already verified plugin installation and local setup. This experi
 - Fresh installer verification: `/Users/itspatmorgan/Developer/Design Studio Sites Installer Check`.
 - Site project: `appgprj_6ac5d76da7848191ab5ce8c6e5dc9144`.
 - Viewing URL: https://design-studio-onboarding-experiment.itspatmorgan.chatgpt.site
-- Sites access confirmed owner-private: custom audience, one owner, no additional viewers or editors.
+- Initial access was owner-private. The public follow-up changed only the audience to `public`; native access revision 3 confirmed the change. Site version 2 and its URL were retained.
 
-Both local folders retain their source. The published Site remains private. No database, object storage, Worker, MCP capability, or connector access was added.
+Both local folders retain their source. The published Site is public. No database, object storage, Worker, MCP capability, or connector access was added.
 
 ## Verified sequence
 
@@ -36,8 +36,11 @@ Both local folders retain their source. The published Site remains private. No d
 | Verify deployed update | The entry JavaScript and configuration module matched the second local build byte-for-byte. The configuration module contained the updated tagline. |
 | Verify static interaction | Local production preview rendered the Feedback Inbox direct URL. Selecting New filtered rows; reloading the direct URL rendered successfully. Editing controls were absent from the production navigation. |
 | Normal viewer login | Private Site showed the ChatGPT login gate. Account selection returned `400 Invalid content type: text/html; charset=UTF-8`. Retry reached OpenAI security verification. No challenge was solved and sharing was not weakened. |
+| Public viewing follow-up | The person requested public sharing as the onboarding default. Native access update and read-back confirmed `public`, retaining version 2 and the same URL. |
+| Anonymous access | Requests without cookies or service credentials returned HTTP 200 without redirects for `/`, the Feedback Inbox direct URL, `/systems/product`, and both checked production JavaScript assets. |
+| Hosted interaction | The public Feedback Inbox rendered. Selecting New reduced eight rows to three new items. Reloading its direct URL rendered successfully. |
 
-Service access verifies the deployment and routes. It does not prove a browser visitor can sign in. Local production inspection verifies static rendering and interaction; it is not a rendered hosted-browser result.
+The initial service checks did not prove viewer login. The public follow-up verifies anonymous HTTP access and hosted rendering and interaction. Private viewer sign-in remains unverified; it is no longer required for the intended public review workflow. The version 2 home-page tagline still contains `Private publishing` from the earlier update test; this historical test string does not describe the current audience.
 
 ## Required static configuration
 
@@ -65,9 +68,9 @@ The initial test was recovered by registering the confirmed contributor, then re
 
 The standalone Sites workflow initially selected a system Git executable blocked by an unaccepted Xcode license. Selecting the already installed Homebrew Git resolved that without changing system settings. A later source commit used Node 23 and failed to load TypeScript from a Git hook. Running the entire Sites workflow through `mise exec -- node` resolved the hook error with the pinned runtime. The successful build was reused because its source inputs had not changed.
 
-### Viewer sign-in needs a separate test
+### Private viewer sign-in needs a separate test
 
-The native deployment and authenticated route checks succeeded, but the in-app browser login flow did not. Verify the private URL in the person's normal browser before declaring the viewing experience seamless. Do not use service credentials as browser login or publish publicly to bypass the issue.
+The initial native deployment and authenticated route checks succeeded, but the private in-app browser login flow did not. A future private-audience test should verify normal browser sign-in. The subsequent public change fulfilled the person's explicit review-link requirement; it was not a workaround for this login failure.
 
 ## Integration on this branch
 
@@ -75,13 +78,22 @@ The native deployment and authenticated route checks succeeded, but the in-app b
 - Routed explicitly requested create-and-publish onboarding and later publishing to that procedure.
 - Kept ordinary local creation and editing local.
 - Preserved the current package version and public starter pin.
-- Updated the plugin README and human Guide to distinguish local authoring from private static viewing.
+- Updated the plugin README and human Guide to distinguish local authoring from public static viewing.
+- New requested publication defaults to public; explicit restrictions and existing Site audiences are preserved. Public Sites use the general deployment path rather than private deployment or automatic private publish-on-push.
 
-The next native onboarding test should use the installed branch package, request local creation plus private Sites publishing in one prompt, and complete viewer login in a normal browser. A later chat should publish an authorized local edit to the existing Site. Clean-computer setup, broader sharing, and other hosts' publishing remain separate tests.
+Next steps, in order:
+
+1. Install the updated branch package and start a fresh chat. Request local creation plus public Sites publishing in one prompt. Verify the agent chooses the public audience and general deployment path. This experiment has changed an existing deployment's audience; it has not yet proved a fresh installed-plugin public deployment.
+2. In a later chat, make an authorized local edit and republish to the same Site. Verify the same URL, changed content, and continued anonymous access.
+3. Release the tested plugin changes with a new package version after those checks. Preserve a public, tested starter pin and distinguish repository installation from directory review.
+
+Clean-computer prerequisite setup and publishing from other agent hosts remain separate tests.
 
 ## Local evidence logs
 
 Branch verification passed: `pnpm build` (268 project tests, type checking, and Vite), all 15 plugin tests, `pnpm harness:check`, and `git diff --check`. Skill synchronization made no generated changes. The updated Guide rendered its publishing section in the branch's production preview. Vite reported its existing non-blocking large-chunk warning.
+
+Public-default follow-up verification passed: `pnpm build` (268 project tests, type checking, and Vite), `pnpm harness:check`, and `git diff --check`. Skill synchronization again made no generated changes. The same non-blocking chunk warning remains.
 
 These logs are machine-local, contain no stored publishing credentials, and are not committed:
 
@@ -96,5 +108,8 @@ These logs are machine-local, contain no stored publishing credentials, and are 
 - `/tmp/design-studio-sites-branch-build.log`: complete experiment-branch verification.
 - `/tmp/design-studio-sites-plugin-tests.log`: complete plugin test suite.
 - `/tmp/design-studio-sites-harness-check.log`: generated-entry consistency.
+- `/tmp/design-studio-sites-public-check.log`: anonymous public routes and JavaScript assets.
+- `/tmp/design-studio-sites-public-build.log`: public-default branch build.
+- `/tmp/design-studio-sites-public-harness.log`: public-default harness consistency.
 
 Native Sites responses supplied terminal success, version identity, audience, and URL. Credentials stayed in session memory and hidden stdin. Temporary archives are `/tmp/design-studio-sites-v1.tar.gz` and `/tmp/design-studio-sites-v2.tar.gz`.

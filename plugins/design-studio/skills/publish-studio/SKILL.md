@@ -10,7 +10,7 @@ This is an experimental publishing path. Keep the local repository as the author
 1. Use the person's specified studio or current primary workspace. Read its `AGENTS.md`, working context, and publishing contract. Resolve its contributor before repository changes. Preserve existing work.
 2. Publishing can be part of an explicitly requested create-and-publish onboarding flow. A local creation or edit request alone does not authorize publication. Reuse existing session authorization without asking again.
 3. Discover native Sites capabilities and read the current Sites building and hosting skills. Those skills own source synchronization, credentials, packaging, and deployment. If unavailable, keep local setup working and report the missing publishing capability. Do not require a GitHub account or substitute another host without a request.
-4. Inspect `.openai/hosting.json` before registration. Reuse its exact `project_id` when present. Check the selected Site's ownership and audience. New Sites remain private; sharing is a separate choice.
+4. Inspect `.openai/hosting.json` before registration. Reuse its exact `project_id` when present. Check the selected Site's ownership and audience. For this Design Studio workflow, requested new publication defaults to a public viewing link for reviewers. State that audience in the publishing update. Respect an explicit private or restricted audience. When updating an existing Site, preserve its audience unless the person requests a change.
 
 ## Adapt the static build
 
@@ -32,7 +32,7 @@ Studio does not need a Worker, database, object storage, MCP server, or connecto
 ## Build and publish
 
 1. Complete local setup and inspect the working preview first. Review the active content included by the production build.
-2. Follow native Sites registration for a new project, persisting its exact identity in the local manifest. For later publications, use the existing project and current source-opening procedure.
+2. Follow native Sites registration for a new project, persisting its exact identity in the local manifest. Sites registration starts private; for the requested public viewing link, set its audience to `public` with native access tools before deployment. Use the native save and general deployment path for public Sites, not the owner-private deployment or automatic private publish-on-push path. For later publications, use the existing project and current source-opening procedure, preserving its audience.
 3. Run the Sites source workflow through the studio's pinned environment: `mise exec -- node <installed-sites-plugin>/scripts/site-workflow.mjs --project-id <exact-project-id>`. Include `['mise', 'exec', '--', 'pnpm', 'build']` among its ordered commands when a build is required. The pinned runtime must cover source commits and Git hooks too.
 4. Verify Git works in that environment. Do not accept an Xcode license or disable hooks to recover a PATH or runtime failure. Use an already installed supported Git executable when available.
 5. Keep detailed output in a local log. Follow the Sites skill's credential handling: session memory and hidden stdin, never source files, shell arguments, or user-facing output.
@@ -41,10 +41,10 @@ Studio does not need a Worker, database, object storage, MCP server, or connecto
 
 ## Verify and hand off
 
-Report the local folder, local preview, and published viewing link separately. Label bundled systems and prototypes as learning examples. The published site offers interaction with built prototypes; source, canvas, and configuration editing stay local.
+Report the local folder, local preview, and published viewing link separately, stating its actual audience. A public viewing link lets anyone with the URL review the built content without granting source editing. Label bundled systems and prototypes as learning examples. The published site offers interaction with built prototypes; source, canvas, and configuration editing stay local.
 
-For an onboarding experiment, test a direct prototype link and reload, then make an authorized local change and republish to the same project and URL. Verify the update reached the deployment. Report normal browser sign-in separately from authenticated service checks; service access does not prove viewer login.
+For an onboarding experiment, test public access without cookies or service credentials, a direct prototype link and reload, and hosted interaction. Then make an authorized local change and republish to the same project and URL. Verify the update reached the deployment and the audience stayed public. For a requested private Site, report normal browser sign-in separately from authenticated service checks; service access does not prove viewer login.
 
-If publishing fails, preserve local readiness, the project identity, saved versions, and recoverable source commits. Resume that Site instead of registering another. Keep private access unless the person requests sharing.
+If publishing fails, preserve local readiness, the project identity, saved versions, recoverable source commits, and the requested audience. Resume that Site instead of registering another. Never change access merely to recover a deployment or sign-in failure.
 
 See the maintainer [experiment record](../../experiments/sites-onboarding.md) for verified results and remaining gaps.
