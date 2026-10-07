@@ -4,6 +4,8 @@ title: "Studio configuration"
 
 `studio.config.ts` holds a small set of shared choices. Other customization happens in code, which you also own.
 
+The starter declares personal use. Contributors & Permissions is installed but disabled until you switch to team use. Personal use gives the registered local contributor Admin access and skips team ownership checks. Build, asset, and dependency checks still apply.
+
 ## Change configuration
 
 Open **Studio settings** from the gear icon or search while running Studio locally. Contributors can inspect settings. Admins can edit basic configuration and optional module states. Team Admins assign studio and system permissions on the local **Contributors** page. Identity and profile preferences remain in repository files.

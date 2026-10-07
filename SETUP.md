@@ -48,6 +48,8 @@ Your studio and all its source files live locally on your computer. The default 
 
 Product and Marketing are example systems. Feedback Inbox and Design Studio Marketing are example prototypes for learning. Explore them, then ask your agent to customize, replace, or remove them for your own needs. Keep Studio, the application's system.
 
+New studios start in Personal mode. When you are ready to collaborate, switch to Team in Studio settings. This enables Contributors & Permissions so you can assign Admins and system access.
+
 To return later, open the same studio folder and ask **“Open my Design Studio.”** Plugin updates do not automatically upgrade an existing studio.
 
 ## For the agent installing a plugin
