@@ -3,6 +3,7 @@ import { useBlocker } from '@tanstack/react-router';
 import type { StudioConfig } from '@/platform/core/config';
 import { waitForRestart } from './waitForRestart';
 import { toast } from '@/systems/studio/components/toast';
+import { beginSettingsTransition, finishSettingsTransition } from './restartTransition';
 
 type Snapshot = {
   config: StudioConfig; version: string; actor: string | null; role: 'admin' | 'contributor' | null;
@@ -33,9 +34,9 @@ export function useStudioSettings(fields: readonly (keyof StudioConfig)[], succe
       const pendingRuntime = sessionStorage.getItem('studio:settings-saved');
       if (pendingRuntime) {
         if (pendingRuntime === body.runtimeId || body.restarting) setRestartFrom(pendingRuntime);
-        else { setRestartFrom(null); sessionStorage.removeItem('studio:settings-saved'); toast.add({ title: successTitle }); }
+        else { setRestartFrom(null); sessionStorage.removeItem('studio:settings-saved'); requestAnimationFrame(() => { finishSettingsTransition(); toast.add({ title: successTitle }); }); }
       } else setRestartFrom(null);
-    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Settings could not load.'); }
+    } catch (cause) { finishSettingsTransition(); setError(cause instanceof Error ? cause.message : 'Settings could not load.'); }
   }
   useEffect(() => { void load(); }, []);
   useEffect(() => {
@@ -44,6 +45,7 @@ export function useStudioSettings(fields: readonly (keyof StudioConfig)[], succe
     void waitForRestart(restartFrom, { signal: controller.signal }).then(() => window.location.reload()).catch(cause => {
       if (controller.signal.aborted) return;
       setRestartFrom(null);
+      finishSettingsTransition();
       setError(cause instanceof Error ? cause.message : 'The studio could not restart. Reload settings to check again.');
     });
     return () => controller.abort();
@@ -64,7 +66,7 @@ export function useStudioSettings(fields: readonly (keyof StudioConfig)[], succe
       const body = await response.json();
       if (!response.ok) { setConflict(response.status === 409); throw new Error(body.error); }
       setSnapshot({ ...snapshot, config: draft });
-      if (body.restarting) { setRestartFrom(body.runtimeId); sessionStorage.setItem('studio:settings-saved', body.runtimeId); }
+      if (body.restarting) { setRestartFrom(body.runtimeId); sessionStorage.setItem('studio:settings-saved', body.runtimeId); beginSettingsTransition(); }
       else { await load(); toast.add({ title: successTitle }); }
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Settings could not save.'); }
     finally { setSaving(false); }

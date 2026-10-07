@@ -23,9 +23,10 @@ export default function settings() {
     name: 'studio-settings',
     apply: 'serve',
     transformIndexHtml() {
-      if (!ENABLED_MODULES.some(module => module.id === 'systems')) return;
       // Runs before the module graph loads, so a configuration restart cannot flash a blank page.
-      return [{ tag: 'script', children: fs.readFileSync(path.join(ROOT, 'src/modules/systems/pages/creation-transition.js'), 'utf8'), injectTo: 'body' }];
+      const scripts = ['src/platform/app/settings/restart-transition.js'];
+      if (ENABLED_MODULES.some(module => module.id === 'systems')) scripts.push('src/modules/systems/pages/creation-transition.js');
+      return scripts.map(file => ({ tag: 'script', children: fs.readFileSync(path.join(ROOT, file), 'utf8'), injectTo: 'body' }));
     },
     async hotUpdate({ file, server }) {
       if (file !== configFile && !/src[\\/]systems[\\/][^\\/]+[\\/]system\.ts$/.test(file)) return;
