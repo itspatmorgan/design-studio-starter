@@ -17,7 +17,7 @@ The **Default** badge marks the starting choice for new prototypes. Each prototy
 
 ## Bring your own system
 
-Build and manage your system with your agent. It handles the setup work; use Studio to review the results and give feedback.
+Build and manage your system with your agent. It handles the setup work. Use Studio to review the results and give feedback.
 
 1. Click **New system** and name it. This creates a blank system with no components, theme tokens, or assets. Existing systems and prototypes stay unchanged.
 2. On its overview, choose **Curate a toolkit from open libraries** or **Bring my own system**.

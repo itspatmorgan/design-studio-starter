@@ -16,7 +16,7 @@ export default function SystemSetup({ system, label }: { system: string; label: 
   }
   return <div className="space-y-4">
     <div className="space-y-2 text-sm leading-6 text-muted-foreground">
-      <p>Build and manage your system in collaboration with your agent. Your agent does the setup work; use Design Studio to review the results, give feedback, and guide the next steps.</p>
+      <p>Build and manage your system in collaboration with your agent. Your agent does the setup work. Use Design Studio to review the results, give feedback, and guide the next steps.</p>
       <p>Choose a starting point below. Copy its prompt into your coding agent’s chat to begin.</p>
     </div>
     {paths.map(path => <section key={path.id} aria-labelledby={`setup-${path.id}`} className="rounded-xl border border-border bg-background p-5">
