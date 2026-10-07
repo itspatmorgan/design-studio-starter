@@ -30,8 +30,8 @@ export function planSettings({ root, modules, systems, platformId, contributors,
   }
   if (base !== undefined && base !== current.version) throw new SettingsError('Settings or contributors changed. Reload settings before saving.', 409);
   if (!changes || typeof changes !== 'object' || Array.isArray(changes)) throw new SettingsError('Settings changes must be an object.');
-  const allowed = ['name', 'tagline', 'usage', 'defaultSystem', 'admins', 'modules'];
-  if (Object.keys(changes).some((key) => !allowed.includes(key))) throw new SettingsError('Only basic settings, module states, and Admin assignments can be changed here.');
+  const allowed = ['name', 'tagline', 'usage', 'defaultSystem', 'admins', 'systemMaintainers', 'modules'];
+  if (Object.keys(changes).some((key) => !allowed.includes(key))) throw new SettingsError('Only basic settings, module states, and permission assignments can be changed here.');
   const next = { ...current.config, ...changes };
   if (Object.hasOwn(changes, 'modules')) {
     if (!changes.modules || typeof changes.modules !== 'object' || Array.isArray(changes.modules)) throw new SettingsError('Module states must be an object.');

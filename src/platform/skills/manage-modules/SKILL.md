@@ -19,6 +19,7 @@ Read the [module contract](../../context/modules.md) before creating, installing
 - Restart the dev server after CLI configuration, module installation, or system installation changes. Saving in local Studio settings restarts it automatically. Ordinary component edits update during development.
 - Use the configuration command to change the default system. Preserve existing prototypes until intentional migration.
 - Keep module imports within the public API and explicit framework entrypoints. Do not bypass private-platform checks.
+- Applied shared commands require an Admin. Assigned maintainers may use managed rename for their active systems. Use `configure --maintainers system=key,key --yes` for grants. Reserve `configure --recovery` for explicitly authorized setup or permission recovery.
 - Apply the [contributor scope](../../context/contributor-scope.md) to shared changes.
 
 Use `pnpm studio list` to inspect installed modules and `pnpm check` to validate their contracts.

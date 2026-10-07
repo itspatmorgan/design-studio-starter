@@ -29,6 +29,7 @@ import {
 import { systemProblems } from '../../src/modules/systems/spec.ts';
 import { MODULES, ENABLED_MODULES, CONFIG } from '../lib/modules.js';
 import { PLATFORM_ID, SYSTEM_SPECS, PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_IDS } from '../../src/modules/systems/node/systems.js';
+import { canPerform, studioRole } from '../../src/platform/core/permissions.ts';
 import { configProblems } from '../../src/platform/core/config.ts';
 import { applySetupChanges, editStudioConfig } from '../lib/studio-setup.js';
 import { planSettings } from '../lib/studio-settings.js';
@@ -49,8 +50,8 @@ const flags = {}; const positional = [];
 for (let i = 0; i < rest.length; i++) {
   const a = rest[i];
   if (a === '--') continue;
-  if (['--yes', '--content', '--force', '--allow-license', '--json', '--check', '--restore-prototypes'].includes(a)) flags[a.slice(2)] = true;
-  else if (['--path', '--id', '--label', '--out', '--name', '--tagline', '--usage', '--system', '--admins'].includes(a)) { flags[a.slice(2)] = rest[++i]; if (flags[a.slice(2)] === undefined) fail(`${a} needs a value.`); }
+  if (['--yes', '--content', '--force', '--allow-license', '--json', '--check', '--restore-prototypes', '--recovery'].includes(a)) flags[a.slice(2)] = true;
+  else if (['--path', '--id', '--label', '--out', '--name', '--tagline', '--usage', '--system', '--admins', '--maintainers'].includes(a)) { flags[a.slice(2)] = rest[++i]; if (flags[a.slice(2)] === undefined) fail(`${a} needs a value.`); }
   else if (a.startsWith('--')) fail(`Unknown option ${a}.`);
   else positional.push(a);
 }
@@ -138,7 +139,9 @@ function registerCapability(kind, id, present, remember = () => {}) {
     if ('error' in declaration || !Array.isArray(declaration.value.systems)) throw new Error('Declare systems as an explicit array in studio.config.ts.');
     const systems = declaration.value.systems.filter((value) => value !== id);
     if (present) systems.push(id);
-    next = editStudioConfig(text, { systems });
+    const systemMaintainers = { ...declaration.value.systemMaintainers };
+    if (present) systemMaintainers[id] = []; else delete systemMaintainers[id];
+    next = editStudioConfig(text, { systems, systemMaintainers });
   }
   if (next === null) throw new Error('Declare modules as explicit true/false entries in studio.config.ts.');
   remember(file);
@@ -252,6 +255,7 @@ async function add() {
 
 
 function lifecycle(action) {
+  if (flags.yes && !canPerform(CONFIG, resolveContributor(), Object.keys(loadContributors()), { kind: 'system', id: positional[0], role: SYSTEM_SPECS[positional[0]]?.role, status: SYSTEM_SPECS[positional[0]]?.status }, action === 'rename' ? 'rename' : 'manage')) fail('This system operation requires an Admin or, for rename, an assigned system maintainer.');
   const plan = planSystemLifecycle(ROOT, CONFIG, action, positional[0], { name: flags.label, restorePrototypes: Boolean(flags['restore-prototypes']) });
   say(`${action} system ${positional[0]}${plan.id !== positional[0] ? ` → ${plan.id}` : ''}. ${plan.prototypes} associated prototype(s); ${plan.edits.length} file update(s).`);
   if (action === 'delete') say('Permanently deletes the system source. Associated prototypes retain their code and require a system rebuild before rendering or deployment.');
@@ -434,8 +438,13 @@ function check() {
 function configure() {
   const changes = Object.fromEntries(['name', 'tagline', 'usage'].filter((key) => flags[key] !== undefined).map((key) => [key, flags[key]]));
   if (flags.system !== undefined) changes.defaultSystem = flags.system;
+  if (flags.maintainers !== undefined) {
+    const [id, members] = flags.maintainers.split('=');
+    if (!id || members === undefined) fail('Use --maintainers system=key,key, or system= to clear assignments.');
+    changes.systemMaintainers = { ...CONFIG.systemMaintainers, [id]: members.split(',').map(key => key.trim()).filter(Boolean) };
+  }
   if (flags.admins !== undefined) changes.admins = flags.admins.split(',').map((key) => key.trim()).filter(Boolean);
-  if (!Object.keys(changes).length) fail('Usage: pnpm studio configure --name "My Studio" --usage personal|team --system <id> [--tagline "..."] [--admins key,key] [--yes]');
+  if (!Object.keys(changes).length) fail('Usage: pnpm studio configure --name "My Studio" --usage personal|team --system <id> [--tagline "..."] [--admins key,key] [--maintainers system=key,key] [--recovery] [--yes]');
   const plan = planSettings({ root: ROOT, modules: Object.values(MODULES), systems: SYSTEM_IDS, platformId: PLATFORM_ID, contributors: loadContributors(), changes });
   say(JSON.stringify(changes, null, 2));
   for (const pin of plan.pins) say(`Keep ${path.relative(ROOT, pin.file)} on ${DEFAULT_SYSTEM}.`);
@@ -477,4 +486,10 @@ if (!command || !Object.hasOwn(commands, command)) {
   console.error(`Usage: pnpm studio <command>\n  ${Object.keys(commands).join(', ')}\nSee the top of scripts/cli/studio.js for what each does.`);
   process.exit(command ? 1 : 0);
 }
+if (flags.recovery && command !== 'configure') fail('--recovery is only for explicit configuration setup or recovery.');
+const applies = flags.yes || ['enable', 'disable'].includes(command);
+const externalScaffold = ['create-module', 'create-system'].includes(command) && flags.out;
+const sharedChange = ['configure', 'enable', 'disable', 'add', 'remove', 'create-module', 'create-system'].includes(command) && !externalScaffold;
+if (applies && sharedChange && !(command === 'configure' && flags.recovery) && studioRole(CONFIG, resolveContributor(), Object.keys(loadContributors())) !== 'admin') fail('Only an Admin can apply shared configuration changes. Use a pull request for a proposal. Initial setup or recovery uses configure --recovery.');
+if (applies && flags.recovery) say('Explicit configuration recovery: repository access is being used to restore local permissions.');
 await commands[command]();

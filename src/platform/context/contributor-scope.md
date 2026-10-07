@@ -3,16 +3,20 @@ title: Contributor scope
 description: Contributor ownership, authorization for shared changes, and identity checks.
 ---
 
-Resolve the contributor with `node scripts/cli/resolve-contributor.js` before editing prototype content.
+Resolve the contributor with `node scripts/cli/resolve-contributor.js` before changing repository content. Read their profile and the current grants in `studio.config.ts`.
 
-- Work freely in `src/prototypes/<key>/` for that contributor.
-- For missing registration, follow [setup-contributor](../skills/setup-contributor/SKILL.md).
-- Add or update the person's registration through `pnpm join`. Do not overwrite another contributor's entry.
-- For shared files, obtain maintainer authorization when the request does not already cover the change. Existing authorization covers necessary implementation.
-- Shared files include platform code, design systems, utilities, configuration, scripts, system content, and the Guide.
-- For another owner's prototypes, prepare an isolated branch proposal for that owner to review and merge. Do not change their working branch by default.
-- Do not treat local contributor identity as authentication or repository access control.
+| Authority | Direct work |
+| --- | --- |
+| Contributor | Their own `src/prototypes/<key>/` and profile preferences. |
+| Assigned system maintainer | Contributor scope plus the assigned active system's components, theme, assets, context, and skills. Managed rename is supported. |
+| Admin | All prototypes, active systems, platform, modules, configuration, and permission assignments. System creation, default selection, archive, restore, and deletion. |
 
-Local hooks report scope and identity. Pull requests flag shared changes for review. Main-branch checks require an admin or maintainer for platform changes.
+Personal studios give the resolved registered contributor Admin authority. Team studios declare Admins and per-system maintainer assignments centrally. A maintainer assignment is a grant for one system, not a third studio-wide role. Studio is the required platform system and has no maintainer grants. Restore archived systems before routine editing.
 
-Report scope or identity warnings. Correct identity with the person when needed. Repository protection and required reviews remain the maintainer's responsibility.
+For missing registration, follow [setup-contributor](../skills/setup-contributor/SKILL.md). Use `pnpm join` for registration. Profiles contain identity and preferences, never authority. Do not overwrite another person's profile or change identity to obtain their scope.
+
+Outside the person's direct scope, prepare a pull request proposal for the relevant owner to review. A specific Admin authorization covers necessary shared implementation. Preserve existing user work and do not change another owner's working branch by default. Maintainer system renames may repair configuration and dependent prototypes outside their normal scope. Use the managed rename operation and include those repairs in a reviewed proposal.
+
+Local app and CLI actions recheck grants. Local Git hooks report scope. CI checks identities, assignments, and active system status from the before-side revision so proposed changes cannot grant themselves authority. Reviewed pull requests may propose changes anywhere. Repository protection and required reviews remain the Admin's responsibility.
+
+These rules guide people and agents. They are not filesystem authentication or GitHub permissions. Direct repository edits remain possible. Runtime dependency boundaries still apply to Admins and maintainers.

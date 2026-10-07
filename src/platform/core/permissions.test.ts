@@ -51,8 +51,8 @@ test('a maintained section item is owned by its maintainers, whoever started it'
   assert.equal(canOwn('maintainers', { me: 'patrick', key: 'examples' }), false);
 });
 
-test('open files can be changed by anyone, but nobody owns them', () => {
-  assert.equal(canChange('open', { me: null, key: 'system-content' }), true);
+test('open section files require resource authority and have no artifact owner', () => {
+  assert.equal(canChange('open', { me: null, key: 'system-content' }), false);
   assert.equal(canOwn('open', { me: 'patrick', key: 'system-content' }), false);
 });
 
@@ -60,7 +60,7 @@ test('nobody changes a section with no policy', () => {
   assert.equal(canChange('none', { me: 'patrick', key: 'documentation' }), false);
 });
 
-test('changing needs owning, except where files are open', () => {
+test('section-level changing needs ownership', () => {
   assert.equal(canChange('owner', { me: 'patrick', key: 'patrick' }), true);
   assert.equal(canChange('owner', { me: 'abigail', key: 'patrick' }), false);
   assert.equal(canChange('maintainers', { me: 'sam', key: 'examples', maintainers: ['patrick'] }), false);
@@ -72,4 +72,31 @@ test('the reason says what to do', () => {
   assert.match(whyNot('owner', 'abigail'), /belongs to someone else/);
   assert.match(whyNot('maintainers', 'abigail'), /maintainers/);
   assert.match(whyNot('none', 'abigail'), /can't be changed/);
+});
+
+
+test('resource grants separate prototype ownership, assigned systems, and platform administration', async () => {
+  const { canPerform } = await import('./permissions.ts');
+  const config = { usage: 'team' as const, admins: ['admin'], systems: ['studio', 'product', 'marketing'], systemMaintainers: { product: ['sam'], marketing: [] } };
+  const roster = ['admin', 'sam', 'alex'];
+  const product = { kind: 'system' as const, id: 'product', role: 'prototype' as const, status: 'active' as const };
+  for (const action of ['edit', 'rename'] as const) {
+    assert.equal(canPerform(config, 'sam', roster, product, action), true);
+    assert.equal(canPerform(config, 'alex', roster, product, action), false);
+    assert.equal(canPerform(config, 'sam', roster, { ...product, id: 'marketing' }, action), false);
+    assert.equal(canPerform(config, 'sam', roster, { ...product, status: 'archived' }, action), false);
+    assert.equal(canPerform(config, 'admin', roster, { ...product, status: 'archived' }, action), false);
+  }
+  assert.equal(canPerform(config, 'sam', roster, product, 'manage'), false);
+  assert.equal(canPerform(config, 'admin', roster, product, 'manage'), true);
+  assert.equal(canPerform(config, 'sam', roster, { kind: 'prototype', owner: 'sam' }, 'manage'), true);
+  assert.equal(canPerform(config, 'sam', roster, { kind: 'prototype', owner: 'alex' }, 'edit'), false);
+  assert.equal(canPerform(config, 'admin', roster, { kind: 'prototype', owner: 'alex' }, 'edit'), true);
+  assert.equal(canPerform(config, 'sam', roster, { ...product, id: 'studio', role: 'platform' }, 'edit'), false);
+  assert.equal(canPerform(config, 'admin', roster, { ...product, id: 'studio', role: 'platform' }, 'edit'), true);
+  assert.equal(canPerform(config, 'admin', roster, { ...product, id: 'studio', role: 'platform' }, 'manage'), false);
+  assert.equal(canPerform(config, 'sam', roster, { kind: 'module' }, 'edit'), false);
+  assert.equal(canPerform(config, 'admin', [], product, 'edit'), false);
+  assert.equal(canPerform(config, null, roster, product, 'read'), true);
+  assert.equal(canPerform({ ...config, usage: 'personal' }, 'sam', roster, { kind: 'platform' }, 'edit'), true);
 });

@@ -13,6 +13,7 @@ import { toast } from '@/systems/studio/components/toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/systems/studio/components/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/systems/studio/components/dropdown-menu';
 import { beginSystemDeletion, finishSystemCreation } from './creationTransition';
+import { canPerform } from '@/platform/core/permissions';
 import { DEFAULT_SYSTEM, SYSTEM_SPECS } from '../data/systems';
 
 export const systemRequest = <T,>(action: string, system?: string, extra: object = {}) => callModule<T>('systems', 'action', { action, system, ...extra });
@@ -25,6 +26,7 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
   const spec = SYSTEM_SPECS[system];
   const local = import.meta.env.DEV && !!me;
   const admin = local && (CONFIG.usage === 'personal' || CONFIG.admins?.includes(me!));
+  const maintain = local && canPerform(CONFIG, me, me ? [me] : [], { kind: 'system', id: system, role: spec.role, status: spec.status }, 'rename');
   const editable = admin && spec.role === 'prototype';
   const [dialog, setDialog] = useState<'rename' | 'archive' | 'restore' | 'delete' | null>(null);
   const [busy, setBusy] = useState(false);
@@ -94,7 +96,7 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
       local && { label: 'Copy path', icon: Copy01Icon, onSelect: () => void copyPath() },
     ],
     [
-      editable && { label: 'Rename', icon: PencilEdit02Icon, onSelect: () => { setError(''); setDialog('rename'); } },
+      maintain && { label: 'Rename', icon: PencilEdit02Icon, onSelect: () => { setError(''); setDialog('rename'); } },
       editable && { label: system === DEFAULT_SYSTEM ? 'Default system' : 'Set as default', icon: StarIcon, disabled: system === DEFAULT_SYSTEM, onSelect: () => void run('default') },
       editable && { label: 'Archive', icon: Archive02Icon, onSelect: () => void openAction('archive') },
     ],

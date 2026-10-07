@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { adminProblems, configProblems, isEnabled, studioRole, type StudioConfig } from './config.ts';
 
 const modules = [{ id: 'documentation', optional: true }, { id: 'prototypes', optional: false }];
-const config: StudioConfig = { name: 'Studio', usage: 'team', admins: ['sam'], modules: { documentation: true, prototypes: true }, systems: ['studio', 'product'], defaultSystem: 'product' };
+const config: StudioConfig = { name: 'Studio', usage: 'team', admins: ['sam'], modules: { documentation: true, prototypes: true }, systems: ['studio', 'product'], systemMaintainers: { product: [] }, defaultSystem: 'product' };
 const problems = (changes: Record<string, unknown>) => configProblems({ ...config, ...changes }, modules, ['product']).join('\n');
 
 test('an explicit configuration is complete', () => {
@@ -77,4 +77,13 @@ test('local roles derive personal Admin access and never recognize unregistered 
   assert.equal(studioRole(config, 'sam', []), null);
   assert.equal(studioRole(config, null, ['sam']), null);
   assert.equal(studioRole({ usage: 'personal' }, 'alex', ['alex']), 'admin');
+});
+
+
+test('system maintainer grants must be explicit, registered, and separate from Studio', () => {
+  assert.match(problems({ systemMaintainers: undefined }), /declare systemMaintainers/);
+  assert.match(problems({ systemMaintainers: {} }), /product/);
+  assert.match(problems({ systemMaintainers: { studio: [], product: [] } }), /registered prototype system/);
+  assert.match(problems({ systemMaintainers: { product: ['sam', 'sam'] } }), /unique/);
+  assert.match(configProblems({ ...config, systemMaintainers: { product: ['missing'] } }, modules, ['product'], 'studio', ['sam']).join(' '), /not a registered contributor/);
 });

@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Badge } from '@/systems/studio/components/badge';
 import { Alert, AlertTitle, AlertDescription } from '@/systems/studio/components/alert';
 import { Card, CardHeader, CardContent, CardDescription } from '@/systems/studio/components/card';
+import { Checkbox } from '@/systems/studio/components/checkbox';
 import { adminProblems, type StudioConfig } from '@/platform/core/config';
 
 type Snapshot = {
@@ -57,10 +58,10 @@ export default function Settings() {
     if (!draft || !snapshot) return;
     setSaving(true); setError(''); setSaved(false);
     try {
-      const { name, tagline, usage, defaultSystem, modules, admins } = draft;
+      const { name, tagline, usage, defaultSystem, modules, admins, systemMaintainers } = draft;
       const response = await fetch('/__studio/settings', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ base: snapshot.version, changes: { name, tagline: tagline ?? '', usage, defaultSystem, modules, admins: admins ?? [] } }),
+        body: JSON.stringify({ base: snapshot.version, changes: { name, tagline: tagline ?? '', usage, defaultSystem, modules, systemMaintainers, admins: admins ?? [] } }),
       });
       const body = await response.json();
       if (!response.ok) { setConflict(response.status === 409); throw new Error(body.error); }
@@ -114,15 +115,18 @@ export default function Settings() {
             <Switch id={`module-${module.id}`} aria-describedby={`module-${module.id}-description`} checked={draft.modules[module.id]} disabled={disabled || !module.optional || (!module.compatible && !draft.modules[module.id])} onCheckedChange={(checked) => update({ modules: { ...draft.modules, [module.id]: checked } })} />
           </div>)}</div>
         </Section>
-        <Section id="contributors" title="Contributors" description={draft.usage === 'personal' ? 'Your local contributor is an Admin.' : 'Contributors create prototypes. Admins manage shared settings.'}>
+        <Section id="contributors" title="Contributors" description={draft.usage === 'personal' ? 'Your local contributor is an Admin.' : 'Assign studio administration or access to specific systems.'}>
           <ul className="divide-y divide-border">{snapshot.contributors.map((person) => {
             const admin = draft.usage === 'personal' ? person.key === snapshot.actor : draft.admins?.includes(person.key);
             return <li key={person.key} className="flex flex-wrap items-center justify-between gap-3 py-4 first:pt-0 last:pb-0">
               <div><Link to={'/prototypes' as never} search={{ q: person.key } as never} className="text-sm font-medium hover:underline">{person.name}</Link>{person.key === snapshot.actor && <span className="ml-2 text-xs text-muted-foreground">You</span>}<p className="mt-1 text-xs text-muted-foreground">{person.key}{person.github && ` · @${person.github}`}</p></div>
-              <Badge variant="secondary">{admin ? 'Admin' : 'Contributor'}</Badge>
+              <div className="flex flex-wrap items-center gap-3">
+                {draft.usage === 'team' ? <label className="flex items-center gap-2 text-sm"><Checkbox checked={admin} disabled={disabled} onCheckedChange={checked => update({ admins: checked ? [...(draft.admins ?? []), person.key] : (draft.admins ?? []).filter(key => key !== person.key) })} />Admin</label> : <Badge variant="secondary">{admin ? 'Admin' : 'Contributor'}</Badge>}
+                {snapshot.systems.filter(system => Object.hasOwn(draft.systemMaintainers, system.id)).map(system => <label key={system.id} className="flex items-center gap-2 text-sm"><Checkbox disabled={disabled} checked={draft.systemMaintainers[system.id].includes(person.key)} onCheckedChange={checked => update({ systemMaintainers: { ...draft.systemMaintainers, [system.id]: checked ? [...draft.systemMaintainers[system.id], person.key] : draft.systemMaintainers[system.id].filter(key => key !== person.key) } })} />Maintain {system.label}</label>)}
+              </div>
             </li>;
           })}</ul>
-          <p className="mt-6 text-xs leading-relaxed text-muted-foreground">Ask your agent to update profiles or assigned roles. Roles do not grant repository access or change prototype ownership.</p>
+          <p className="mt-6 text-xs leading-relaxed text-muted-foreground">Contributors manage their own prototypes. Maintainers also edit their assigned active systems. Admins manage the studio and all prototypes. Assignments do not grant repository access.</p>
         </Section>
         {editable && <div className="space-y-3">
           {adminProblems(draft, snapshot.contributors.map((person) => person.key)).length > 0 && <p role="alert" className="text-sm text-destructive">Team use requires at least one registered Admin.</p>}

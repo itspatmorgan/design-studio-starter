@@ -18,7 +18,7 @@ Source editing is available during local development. Published pages retain the
 
 ## Source ownership
 
-Each module maps its navigation items to real files and supplies file access and permissions. Prototype ownership, system context constraints, and platform file allowlists continue to apply. The editor does not grant permission or infer a prototype from a platform document.
+Each module maps its navigation items to real files and supplies file access and permissions. Prototype ownership, system context constraints, and platform file allowlists continue to apply. Contributors edit their own prototypes. Assigned maintainers edit their active systems. Admins edit platform, module, and Studio sources and manage all prototypes. The server rechecks current grants and archive status on each write. System identity and availability fields use managed system actions so references and dependent prototypes stay consistent. The editor does not grant permission or infer a prototype from a platform document.
 
 Guide chapters and owner README documents have separate source files. Each reader edits its own complete Markdown document. Systems components expose Page, Examples, and Component file tabs. Systems overview and icon pages expose their overview source; generated theme pages expose their theme CSS. A system without an overview source exposes its declaration instead. Skills expose a file picker for `SKILL.md` and supporting files, preserving the skill’s directory structure.
 

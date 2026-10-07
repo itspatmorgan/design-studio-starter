@@ -173,11 +173,35 @@ test('create and rename preserve addresses, file errors recover, and system remo
       const systemContentResponse = response();
       await handler({...request, url:'/file?contributor=system-content&prototype=studio%3Acontext&path=beta-context.md'}, systemContentResponse, () => assert.fail('Unexpected fallback'));
       assert.equal(systemContentResponse.statusCode, 200);
+      // Exercise both shared-source handlers with current grants, including revocation.
+      const configBeforePermissions = fs.readFileSync('studio.config.ts', 'utf8');
+      const permissionConfig = (await load('src/platform/core/declarations.ts')).readDeclaration(configBeforePermissions).value;
+      fs.writeFileSync('contributors/permission-admin.json', JSON.stringify({ name: 'Permission Admin', email: '', github: '', welcomeDismissed: false }));
+      permissionConfig.usage = 'team'; permissionConfig.admins = ['permission-admin'];
+      permissionConfig.systemMaintainers.product = ['patrick'];
+      const writePermissionConfig = () => fs.writeFileSync('studio.config.ts', 'export default ' + JSON.stringify(permissionConfig) + ';');
+      const sourceRequest = async (url, body) => {
+        const req = Readable.from([JSON.stringify(body)]); req.method = 'POST'; req.url = url; req.headers = {'sec-fetch-site':'same-origin'};
+        const res = response(); await handler(req, res, () => assert.fail('Unexpected fallback')); return res;
+      };
+      writePermissionConfig();
+      const documentationDenied = await sourceRequest('/documentation', {action:'write', path:'src/platform/README.md', content:'# Unauthorized'});
+      assert.equal(documentationDenied.statusCode, 403);
+      const themePath = 'src/systems/product/styles/theme.css';
+      const themeRead = await sourceRequest('/system-source', {action:'read', path:themePath});
+      assert.equal(themeRead.statusCode, 200);
+      const theme = JSON.parse(themeRead.body);
+      const themeSaved = await sourceRequest('/system-source', {action:'write', path:themePath, base:theme.version, content:theme.content});
+      assert.equal(themeSaved.statusCode, 200, themeSaved.body);
+      permissionConfig.systemMaintainers.product = []; writePermissionConfig();
+      const themeDenied = await sourceRequest('/system-source', {action:'write', path:themePath, base:theme.version, content:theme.content});
+      assert.equal(themeDenied.statusCode, 403);
+      fs.writeFileSync('studio.config.ts', configBeforePermissions); fs.unlinkSync('contributors/permission-admin.json');
 
       fs.mkdirSync('src/systems/z-beta-fixture');
       fs.copyFileSync('src/systems/product/system.ts', 'src/systems/z-beta-fixture/system.ts');
       const { editStudioConfig } = await load('scripts/lib/studio-setup.js');
-      fs.writeFileSync('studio.config.ts', editStudioConfig(fs.readFileSync('studio.config.ts', 'utf8'), { systems: ['studio', 'product', 'z-beta-fixture'] }));
+      fs.writeFileSync('studio.config.ts', editStudioConfig(fs.readFileSync('studio.config.ts', 'utf8'), { systems: ['studio', 'product', 'z-beta-fixture'], systemMaintainers: { product: [], 'z-beta-fixture': [] } }));
       const metaPath = path.join(moved, 'meta.json');
       const meta = JSON.parse(fs.readFileSync(metaPath)); meta.system = 'z-beta-fixture';
       fs.writeFileSync(metaPath, JSON.stringify(meta));
@@ -227,6 +251,31 @@ test('CI accepts reviewed platform proposals and maintainer pushes, rejecting ot
       const result = spawnSync(process.execPath, ['scripts/check/check-scope.js', '--ci', base, head, ...(review ? ['--review'] : [])], { cwd: dir, encoding: 'utf8', env: { ...process.env, STUDIO_SCOPE_ACTOR: github, STUDIO_PLATFORM_ROLE: role, MISE_TRUSTED_CONFIG_PATHS: dir } });
       assert.equal(result.status, expected, result.stderr + result.stdout);
     }
+    const { readDeclaration } = await import('../../src/platform/core/modules/pack.ts');
+    const configFile = path.join(dir, 'studio.config.ts');
+    const config = readDeclaration(fs.readFileSync(configFile, 'utf8')).value;
+    config.usage = 'team'; config.admins = ['patrick']; config.systemMaintainers.product = ['sam'];
+    writeProfiles(dir, { sam: { name: 'Sam', github: 'sam-fixture' } });
+    fs.writeFileSync(configFile, 'export default ' + JSON.stringify(config) + ';');
+    const systemFile = path.join(dir, 'src/systems/product/system.ts');
+    fs.writeFileSync(systemFile, "export default { role: 'prototype', status: 'active' };");
+    runGit('add', 'studio.config.ts', 'contributors/sam.json', 'src/systems/product/system.ts'); runGit('commit', '-qm', 'Trusted grants');
+    const granted = runGit('rev-parse', 'HEAD');
+    fs.writeFileSync(path.join(dir, 'src/systems/product/scope-fixture.md'), '# Assigned system');
+    runGit('add', 'src/systems/product/scope-fixture.md'); runGit('commit', '-qm', 'Assigned system work');
+    const check = (before, actor = 'sam-fixture', review = false) => spawnSync(process.execPath, ['scripts/check/check-scope.js', '--ci', before, runGit('rev-parse', 'HEAD'), ...(review ? ['--review'] : [])], { cwd: dir, encoding: 'utf8', env: { ...process.env, STUDIO_SCOPE_ACTOR: actor, STUDIO_PLATFORM_ROLE: 'write', MISE_TRUSTED_CONFIG_PATHS: dir } });
+    assert.equal(check(granted).status, 0, 'Assigned maintainer can push system work');
+    const beforeImpersonation = runGit('rev-parse', 'HEAD');
+    const profileFile = path.join(dir, 'contributors/patrick.json');
+    const profile = JSON.parse(fs.readFileSync(profileFile));
+    fs.writeFileSync(profileFile, JSON.stringify({ ...profile, github: 'sam-fixture' }));
+    runGit('add', 'contributors/patrick.json'); runGit('commit', '-qm', 'Proposed identity change');
+    assert.equal(check(beforeImpersonation).status, 1, 'Proposed profile cannot impersonate an Admin');
+    assert.equal(check(beforeImpersonation, 'sam-fixture', true).status, 0, 'Out of scope proposals are allowed through review');
+    const beforeElevation = runGit('rev-parse', 'HEAD');
+    config.admins.push('sam'); fs.writeFileSync(configFile, 'export default ' + JSON.stringify(config) + ';');
+    runGit('add', 'studio.config.ts'); runGit('commit', '-qm', 'Proposed Admin assignment');
+    assert.equal(check(beforeElevation).status, 1, 'Proposed grants do not authorize themselves');
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
 

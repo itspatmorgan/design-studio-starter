@@ -6,7 +6,7 @@ import { readSettings } from './studio-settings.js';
 import { editorFile, openEditor } from '../build/files/editor.js';
 import { reveal } from '../build/files/ops.js';
 import { readDeclaration } from '../../src/platform/core/modules/pack.ts';
-import { studioRole } from '../../src/platform/core/permissions.ts';
+import { canPerform, studioRole } from '../../src/platform/core/permissions.ts';
 import { planSystemLifecycle, systemDependents } from './system-lifecycle.js';
 
 /** @returns {never} */
@@ -28,7 +28,7 @@ export async function systemAction(root, actor, body) {
   if (!role) fail('Register a contributor to use local system actions.', 403);
   if (!body || typeof body !== 'object' || Array.isArray(body) || typeof body.action !== 'string') fail('Choose a system action.');
   const { action, system, name, restorePrototypes } = body;
-  if (!['open', 'reveal'].includes(action) && role !== 'admin') fail('Only an Admin can change shared systems.', 403);
+  if (!['open', 'reveal', 'rename'].includes(action) && role !== 'admin') fail('Only an Admin can change shared systems.', 403);
   if (action === 'archived') {
     const items = config.systems.flatMap(id => {
       const declaration = readDeclaration(fs.readFileSync(path.join(root, 'src/systems', id, 'system.ts'), 'utf8'));
@@ -46,6 +46,7 @@ export async function systemAction(root, actor, body) {
   if (action === 'open') return openEditor(dir, { reveal });
   if (action === 'reveal') { await reveal(dir); return {}; }
   if (spec.role !== 'prototype') fail('Studio is maintained by the platform. Its identity and availability are protected.');
+  if (action === 'rename' && !canPerform(config, actor, Object.keys(contributors), { kind: 'system', id: system, role: spec.role, status: spec.status }, 'rename')) fail('Only an Admin or an assigned system maintainer can rename this system.', 403);
   if (action === 'default') {
     if (spec.status !== 'active') fail('Restore this system before making it the default.');
     cli(root, ['configure', '--system', system], true); return { id: system };

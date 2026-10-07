@@ -38,6 +38,8 @@ test('local personal setup resumes, then a second clone joins a team without cha
   const git = (cwd, ...args) => execFileSync('git', args, { cwd, stdio: 'pipe' });
   try {
     copy(root, dir);
+    git(dir, 'init', '-q');
+    git(dir, 'config', 'user.name', 'Patrick Morgan'); git(dir, 'config', 'user.email', 'legacy@example.test');
     // Own the fixture data: a team's real contributors, systems and prototypes are arbitrary.
     fs.rmSync(path.join(dir, 'contributors'), { recursive: true, force: true });
     writeProfiles(dir, { patrick: { name: 'Patrick Morgan', email: '', github: '', welcomeDismissed: false } });
@@ -46,7 +48,7 @@ test('local personal setup resumes, then a second clone joins a team without cha
       fs.mkdirSync(path.join(dir, folder), { recursive: true });
     }
     fs.cpSync(path.join(root, 'src/systems/studio'), path.join(dir, 'src/systems/studio'), { recursive: true });
-    fs.writeFileSync(path.join(dir, 'studio.config.ts'), `import type { StudioConfig } from './src/platform/core/config.ts';\nexport default { name: 'Fixture Studio', usage: 'team', admins: ['patrick'], tagline: 'Fixture', modules: ${JSON.stringify(Object.fromEntries(fs.readdirSync(path.join(dir, 'src/modules')).filter((id) => fs.existsSync(path.join(dir, 'src/modules', id, 'module.ts'))).map((id) => [id, id !== 'documentation'])))}, systems: ['studio'], defaultSystem: 'product' } satisfies StudioConfig;\n`);
+    fs.writeFileSync(path.join(dir, 'studio.config.ts'), `import type { StudioConfig } from './src/platform/core/config.ts';\nexport default { name: 'Fixture Studio', usage: 'team', admins: ['patrick'], tagline: 'Fixture', modules: ${JSON.stringify(Object.fromEntries(fs.readdirSync(path.join(dir, 'src/modules')).filter((id) => fs.existsSync(path.join(dir, 'src/modules', id, 'module.ts'))).map((id) => [id, id !== 'documentation'])))}, systems: ['studio'], systemMaintainers: {}, defaultSystem: 'product' } satisfies StudioConfig;\n`);
     run(dir, 'scripts/cli/studio.js', 'create-system', 'product', '--label', 'Product', '--yes');
     const declared = () => readDeclaration(fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8')).value;
     assert.deepEqual(declared().systems, ['studio', 'product']);
@@ -98,7 +100,7 @@ test('local personal setup resumes, then a second clone joins a team without cha
     assert.equal(fs.readFileSync(config, 'utf8'), before);
     const invalid = spawnSync(process.execPath, ['scripts/cli/studio.js', 'configure', '--usage', 'unknown', '--yes'], { cwd: dir, encoding: 'utf8' });
     assert.equal(invalid.status, 1); assert.equal(fs.readFileSync(config, 'utf8'), before);
-    run(dir, 'scripts/cli/studio.js', 'configure', '--name', 'Personal Studio', '--usage', 'personal', '--yes');
+    run(dir, 'scripts/cli/studio.js', 'configure', '--name', 'Personal Studio', '--usage', 'personal', '--yes', '--recovery');
     const join = ['--key', 'sam', '--name', 'Sam Solo', '--email', 'sam@gmail.com', '--yes'];
     assert.doesNotMatch(run(dir, 'scripts/cli/setup-contributor.js', ...join), /Warning:/);
     const profile = path.join(dir, 'contributors/sam.json');
@@ -113,7 +115,7 @@ test('local personal setup resumes, then a second clone joins a team without cha
     run(dir, 'scripts/cli/studio.js', 'configure', '--system', 'acme', '--yes');
     const components = path.join(dir, 'src/systems/acme/components/button');
     fs.mkdirSync(components, { recursive: true });
-    fs.writeFileSync(path.join(components, 'index.tsx'), 'export function Button(){return <button className="bg-primary text-primary-foreground">Continue</button>}');
+    fs.writeFileSync(path.join(components, 'index.tsx'), 'export function Button(){return <button>Continue</button>}');
     const script = `import {createPrototype} from './src/modules/prototypes/node/create.js'; import fs from 'node:fs'; const {slug}=createPrototype({title:'First Flow',key:'sam'}); const dir='src/prototypes/sam/'+slug; fs.writeFileSync(dir+'/prototype.tsx','import { Button } from \"@/systems/acme/components/button\"; export default function View(){return <Button/>}'); fs.writeFileSync(dir+'/context.md','# First flow\\nA local setup example.'); fs.writeFileSync(dir+'/flow.excalidraw',JSON.stringify({type:'excalidraw',version:2,elements:[],appState:{},files:{}}));`;
     execFileSync(process.execPath, ['--input-type=module', '--eval', script], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
     run(dir, 'scripts/build/build-manifest.js', '--strict');
@@ -134,6 +136,16 @@ test('local personal setup resumes, then a second clone joins a team without cha
     assert.equal(run(clone, 'scripts/cli/resolve-contributor.js').trim(), 'alex');
     assert.equal(fs.readFileSync(path.join(clone, 'studio.config.ts'), 'utf8'), sharedConfig);
     assert.equal(fs.readFileSync(path.join(clone, 'contributors/sam.json'), 'utf8'), contributor);
+    for (const args of [['create-system', 'unauthorized', '--yes'], ['configure', '--admins', 'alex', '--yes'], ['configure', '--admins', 'alex', '--out', 'unused', '--yes']]) {
+      const denied = spawnSync(process.execPath, ['scripts/cli/studio.js', ...args], { cwd: clone, encoding: 'utf8' });
+      assert.equal(denied.status, 1); assert.match(denied.stderr, /Only an Admin/);
+      assert.equal(fs.readFileSync(path.join(clone, 'studio.config.ts'), 'utf8'), sharedConfig);
+    }
+    const assigned = readDeclaration(sharedConfig).value;
+    assigned.systemMaintainers.acme = ['alex'];
+    fs.writeFileSync(path.join(clone, 'studio.config.ts'), 'export default ' + JSON.stringify(assigned) + ';');
+    run(clone, 'scripts/cli/studio.js', 'rename-system', 'acme', '--label', 'Partner System', '--yes');
+    assert.deepEqual(readDeclaration(fs.readFileSync(path.join(clone, 'studio.config.ts'), 'utf8')).value.systemMaintainers['partner-system'], ['alex']);
     const collision = spawnSync(process.execPath, ['scripts/cli/setup-contributor.js', '--key', 'wrong', '--name', 'Wrong', '--email', 'alex@example.test', '--yes'], { cwd: clone, encoding: 'utf8' });
     assert.equal(collision.status, 1); assert.equal(fs.existsSync(path.join(clone, 'contributors/wrong.json')), false);
   } finally { fs.rmSync(dir, { recursive: true, force: true }); fs.rmSync(clone, { recursive: true, force: true }); }

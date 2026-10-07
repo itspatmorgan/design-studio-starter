@@ -68,7 +68,7 @@ Use TanStack Router's `Link` for view navigation. See its [navigation documentat
 
 ## Duplication and system rebuilds
 
-The local **Duplicate** action is available for your own personal prototypes. It copies files into a new folder, resets the creation date, makes an archived source's copy active, and rewrites self-address links in Markdown and canvas files. Relative imports and links stay local to the copy. Symbolic links are rejected; Git metadata, node_modules, and trash folders are excluded.
+The local **Duplicate** action is available for your own personal prototypes and for Admins managing another contributor’s prototypes. The copy stays in the original contributor’s folder. It copies files into a new folder, resets the creation date, makes an archived source's copy active, and rewrites self-address links in Markdown and canvas files. Relative imports and links stay local to the copy. Symbolic links are rejected; Git metadata, node_modules, and trash folders are excluded.
 
 A different selected system records `rebuild.targetSystem` and the original repository path. It retains the source's resolved `system` so its copied implementation can still run. The confirmation explains that reconstruction is required. The sidebar supplies a copyable agent prompt; there is no automatic agent dispatch.
 

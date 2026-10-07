@@ -60,7 +60,7 @@ import { SKILL_FILE, skillProblems } from '../../src/modules/systems/content/ski
 import { frontmatter } from '../lib/frontmatter.js';
 import { BATCH_MS, SYSTEM_CONTENT, MAX_SOURCE_BYTES, PROTOS, itemFile, prototypeDir, readTree, resolveInside, systemOf, versionOf } from './files/paths.js';
 import { readJson, sameOrigin, send } from './files/http.js';
-import { canChange, ownerError, owns } from './files/policy.js';
+import { canChange, canWriteSource, ownerError, owns } from './files/policy.js';
 import { SYSTEM_CONTENT_NOTE, reveal, runOp, runSystemOp, trash } from './files/ops.js';
 
 export default function filesPlugin() {
@@ -229,7 +229,7 @@ export default function filesPlugin() {
             const { contributor, prototype, title, system } = await readJson(req);
             const dir = prototypeDir(contributor, prototype);
             if (!dir) return send(res, 404, { error: 'This prototype no longer exists.' });
-            if (!me() || contributor !== me()) return send(res, 403, { error: 'You can duplicate prototypes in your own workspace.' });
+            if (!owns(contributor, me(), dir)) return send(res, 403, { error: ownerError(contributor, me()) });
             try {
               const { id, manifest } = duplicatePrototype({ key: contributor, id: prototype, title, system });
               publishManifest(server, manifest, req.headers['x-studio-tab']);
@@ -255,14 +255,18 @@ export default function filesPlugin() {
               id === 'platform' ? 'src/systems/studio/intro.tsx' : source.dir + 'intro.tsx',
               ...(manifest.systems[id]?.components ?? []).flatMap((component) => Object.values(component.files).filter(Boolean).map((file) => source.components + '/' + file)),
             ]);
-            const result = sourceFile(ROOT, allowed, await readJson(req));
+            const request = await readJson(req);
+            if (request.action === 'write' && !canWriteSource(me(), request.path, ROOT, request.content)) return send(res, 403, { error: 'Only an Admin or an assigned system maintainer can edit this source. You can propose changes in a pull request.' });
+            const result = sourceFile(ROOT, allowed, request);
             if (result.reveal) await reveal(result.reveal);
             return send(res, result.status ?? 200, result.body);
           }
           if (req.method === 'POST' && url.pathname === '/documentation') {
             const manifest = buildManifest({ write: false, quiet: true }).manifest;
             const allowed = documentationSources(ROOT, manifest);
-            const result = sourceFile(ROOT, allowed, await readJson(req));
+            const request = await readJson(req);
+            if (request.action === 'write' && !canWriteSource(me(), request.path, ROOT, request.content)) return send(res, 403, { error: 'Only an Admin can edit platform and module documentation. You can propose changes in a pull request.' });
+            const result = sourceFile(ROOT, allowed, request);
             if (result.reveal) await reveal(result.reveal);
             return send(res, result.status ?? 200, result.body);
           }

@@ -1,3 +1,5 @@
+import { CONFIG } from './config';
+import { SYSTEM_SPECS } from '@/modules/systems/data/systems';
 import { SourceChanged } from '@/platform/core/source/access';
 // A prototype's files, from the dev server (scripts/build/vite-files-plugin.js). Dev only: on the
 // deployed site these return null, and the prototype navigation lists views from the manifest.
@@ -5,7 +7,7 @@ import { useEffect, useState } from 'react';
 import type { Manifest, Prototype, PrototypeInfo } from '@/platform/app/data/types';
 import { SYSTEMS_KEY, rootOf } from '@/platform/core/roots';
 import { MODULES } from '@/platform/app/data/modules';
-import { canChange, canOwn, policyFor } from '@/platform/core/permissions';
+import { canOwn, policyFor, canPerform, pathResource } from '@/platform/core/permissions';
 import type { Status } from '@/platform/core/archive';
 import { toast } from '@/systems/studio/components/toast';
 
@@ -111,11 +113,12 @@ export const useMyName = () => useWho().name;
 
 // Whether you own a prototype (so you may archive or delete it): your own, or a section item you maintain. The
 // policy of its section decides (src/platform/core/permissions.ts); the dev server checks again on every change.
+export const canEditSource = (path: string, me: string | null) => canPerform(CONFIG, me, me ? [me] : [], pathResource(path, SYSTEM_SPECS), 'edit');
 const subject = (p: PrototypeInfo, me: string | null) => ({ me, key: p.contributorKey, maintainers: p.maintainers });
 const policyOf = (p: PrototypeInfo) => policyFor(p.contributorKey, MODULES);
-export const ownsPrototype = (p: PrototypeInfo, me: string | null) => canOwn(policyOf(p), subject(p, me));
-// Whether you may change its files: that, or files open to everyone (the system content's, the systems').
-export const canChangePrototype = (p: PrototypeInfo, me: string | null) => canChange(policyOf(p), subject(p, me));
+export const ownsPrototype = (p: PrototypeInfo, me: string | null) => policyOf(p) !== 'open' && (canOwn(policyOf(p), subject(p, me)) || canPerform(CONFIG, me, me ? [me] : [], { kind: 'platform' }, 'edit'));
+// Shared source requires resource grants in addition to artifact ownership.
+export const canChangePrototype = (p: PrototypeInfo, me: string | null) => canOwn(policyOf(p), subject(p, me)) || canEditSource('src/' + rootOf(p.contributorKey, p.id), me);
 
 export type FileOp =
   | { op: 'create'; path: string; name: string; dir?: boolean }

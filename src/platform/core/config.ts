@@ -10,6 +10,8 @@ export type StudioConfig = {
   welcomeDismissed?: boolean;
   // Local settings administrators. Team studios require at least one registered key.
   admins?: readonly string[];
+  // Explicit contributor assignments for every prototype system. Studio has no assignment.
+  systemMaintainers: Record<string, readonly string[]>;
   // One line on the front page of the deployed site, under the name, that tells a visitor what this is: "Our team's
   // prototypes and design systems." Left out, there's no line.
   tagline?: string;
@@ -60,6 +62,7 @@ export function configProblems(config: unknown, modules: readonly { id: string; 
     }
     if (c.defaultSystem && !c.systems.includes(c.defaultSystem)) problems.push(`${where}: defaultSystem must be registered in systems.`);
   }
+  problems.push(...systemMaintainerProblems(c, platformId, contributors));
   return problems;
 }
 
@@ -80,4 +83,18 @@ export function adminProblems(config: Partial<StudioConfig>, contributors?: read
 export function studioRole(config: Partial<StudioConfig>, key: string | null, contributors: readonly string[]): 'admin' | 'contributor' | null {
   if (!key || !contributors.includes(key)) return null;
   return config.usage === 'personal' || config.admins?.includes(key) ? 'admin' : 'contributor';
+}
+
+export function systemMaintainerProblems(config: Partial<StudioConfig>, platformId = 'studio', contributors?: readonly string[]): string[] {
+  const grants = config.systemMaintainers;
+  if (!grants || typeof grants !== 'object' || Array.isArray(grants)) return ['studio.config.ts: declare systemMaintainers explicitly for every prototype system.'];
+  const problems: string[] = [];
+  const systems = Array.isArray(config.systems) ? config.systems.filter(id => id !== platformId) : [];
+  for (const id of systems) if (!Object.hasOwn(grants, id)) problems.push(`studio.config.ts: declare systemMaintainers.${id}, using [] when unassigned.`);
+  for (const [id, keys] of Object.entries(grants)) {
+    if (!systems.includes(id)) problems.push(`studio.config.ts: systemMaintainers.${id} must name a registered prototype system.`);
+    if (!Array.isArray(keys) || keys.some(key => typeof key !== 'string' || !/^[a-z0-9][a-z0-9-]*$/.test(key)) || new Set(keys).size !== keys.length) problems.push(`studio.config.ts: systemMaintainers.${id} must list unique contributor keys.`);
+    else if (contributors) for (const key of keys) if (!contributors.includes(key)) problems.push(`studio.config.ts: system maintainer "${key}" is not a registered contributor.`);
+  }
+  return problems;
 }

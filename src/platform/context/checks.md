@@ -39,6 +39,6 @@ Follow the guard’s linked guidance to reduce a flagged asset before committing
 
 This setup is the studio maintainer's responsibility.
 
-Pull requests run checks and flag platform changes for review. On pushes to `main`, platform changes require the pushing account's `admin` or `maintain` role.
+Pull requests run checks and flag changes outside the contributor’s assigned scope for review. Direct pushes accept prototype ownership, assigned active system work, and studio Admin authority from the before-side configuration and profiles. Proposed identity or grant changes cannot authorize themselves. Repository `admin` and `maintain` accounts can also make shared changes.
 
 These checks do not prevent an unauthorized Git push by themselves. Configure GitHub branch protection, required checks, and the team's review process.

@@ -1,13 +1,6 @@
-// Who may change what. Every section of the app has one policy, and the dev server, the scope check on
-// pull requests and the app's own buttons all ask here, so they can't disagree:
-//   owner        the contributor whose folder it is (a prototype, src/prototypes/<key>/<id>)
-//   maintainers  the people listed in the item's meta.json "maintainers" (a shared section item); anyone can use it
-//   open         whoever runs the app, because the files are the platform's and a pull request reviews
-//                the change (the system content, the systems' components)
-//   none         nobody, from the app (the Guide)
-// A module's section declares its policy (src/platform/core/modules/index.ts); a contributor's key matches no
-// module, so it is "owner". The server still checks every request: the app only hides what you can't do.
-// Has only type imports, so Node scripts and the app can both load it.
+// Section policies describe artifact ownership. Shared source writes additionally
+// require resource authority through canPerform. Local identity is workflow policy,
+// not filesystem authentication. Runtime import boundaries are independent.
 export { studioRole } from './config.ts';
 import { SYSTEM_CONTENT_KEY } from './roots.ts';
 import type { ModuleSpec } from './modules/index.ts';
@@ -45,7 +38,7 @@ export function canOwn(policy: Policy, { me, key, maintainers }: Subject): boole
 }
 
 // Whether you may change its files.
-export const canChange = (policy: Policy, subject: Subject) => policy === 'open' || canOwn(policy, subject);
+export const canChange = (policy: Policy, subject: Subject) => canOwn(policy, subject);
 
 // The sentence for why you can't, when you can't.
 export function whyNot(policy: Policy, me: string | null): string {
@@ -54,3 +47,35 @@ export function whyNot(policy: Policy, me: string | null): string {
   if (policy === 'maintainers') return 'Only its maintainers can change it.';
   return 'This prototype belongs to someone else. You can change only your own.';
 }
+
+import { studioRole as roleOf, type StudioConfig } from './config.ts';
+
+export type Resource =
+  | { kind: 'prototype'; owner: string }
+  | { kind: 'system'; id: string; role: 'platform' | 'prototype'; status: 'active' | 'archived' }
+  | { kind: 'platform' | 'module' };
+export type ResourceAction = 'read' | 'edit' | 'rename' | 'manage';
+
+// Runtime import boundaries remain separate from human write authority.
+export function canPerform(config: Partial<StudioConfig>, actor: string | null, contributors: readonly string[], resource: Resource, action: ResourceAction): boolean {
+  if (action === 'read') return true;
+  const role = roleOf(config, actor, contributors);
+  if (!role) return false;
+  if (resource.kind === 'prototype') return role === 'admin' || resource.owner === actor;
+  if (resource.kind !== 'system') return role === 'admin';
+  if (!config.systems?.includes(resource.id)) return false;
+  if (resource.role === 'platform') return role === 'admin' && action === 'edit';
+  if (action === 'manage') return role === 'admin';
+  if (resource.status !== 'active') return false;
+  return role === 'admin' || Boolean(actor && config.systemMaintainers?.[resource.id]?.includes(actor));
+}
+
+export function pathResource(file: string, systems: Record<string, { role: 'platform' | 'prototype'; status: 'active' | 'archived' }>): Resource {
+  const parts = file.replace(/^\/?src\//, '').split('/');
+  if (parts[0] === 'prototypes' && parts[1]) return { kind: 'prototype', owner: parts[1] };
+  if (parts[0] === 'systems' && parts[1] && systems[parts[1]]) return { kind: 'system', id: parts[1], ...systems[parts[1]] };
+  return { kind: parts[0] === 'modules' ? 'module' : 'platform' };
+}
+
+// Availability and identity changes must go through managed lifecycle operations.
+export const sameSystemIdentity = (before: Record<string, unknown>, after: Record<string, unknown>) => ['role', 'status', 'label'].every(key => before[key] === after[key]);

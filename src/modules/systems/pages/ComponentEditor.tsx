@@ -10,7 +10,7 @@ import { PLATFORM_ID, PLATFORM_SOURCE } from '../data/systems';
 import { PROTOTYPE_SYSTEMS } from '../data/systems';
 import { systemSourceRequest } from './systemSource';
 import { shortcutLabel } from '@/platform/app/shell/artifactShortcuts';
-import { fileOp, systemFiles } from '@/platform/app/data/files';
+import { canEditSource, useMe, fileOp, systemFiles } from '@/platform/app/data/files';
 import { setManifest } from '@/platform/app/data/manifest';
 import { Button } from '@/systems/studio/components/button';
 import { toast } from '@/systems/studio/components/toast';
@@ -30,6 +30,7 @@ const TABS: { kind: Kind; label: string; missing: string }[] = [
 const headerClass = 'flex h-[57px] shrink-0 items-center gap-3 border-b border-border px-4 text-[12px]';
 
 export function ComponentEditor({ system, component, onDone }: { system: string; component: SystemComponentDoc; onDone: () => void }) {
+  const me = useMe();
   const router = useRouter();
   const proto = systemFiles(system);
   const tabs = TABS.filter((t) => t.kind !== 'source' || component.files.source);
@@ -44,7 +45,8 @@ export function ComponentEditor({ system, component, onDone }: { system: string;
   const path = component.files[tab.kind];
   const spec = system === PLATFORM_ID ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
   const fullPath = path ? spec.components + '/' + path : null;
-  const access = useMemo<SourceAccess | null>(() => fullPath ? ({ path: fullPath, editable: true, read: () => systemSourceRequest('read', fullPath), write: (content, base) => systemSourceRequest('write', fullPath, { content, base }) }) : null, [fullPath]);
+  const editable = canEditSource(fullPath ?? spec.components, me);
+  const access = useMemo<SourceAccess | null>(() => fullPath ? ({ path: fullPath, editable, read: () => systemSourceRequest('read', fullPath), write: (content, base) => systemSourceRequest('write', fullPath, { content, base }) }) : null, [fullPath, editable]);
 
   const switcher = (
     <Tabs value={tab.kind} onValueChange={(next) => ifSaved(() => setKind(next as Kind))}>
@@ -84,7 +86,7 @@ export function ComponentEditor({ system, component, onDone }: { system: string;
             <div className="max-w-sm text-center">
               <p className="text-sm font-medium text-foreground">{tab.missing}</p>
               <p className="mt-1 mb-4 text-sm text-muted-foreground">Create the files this component is missing, from a template.</p>
-              <Button onClick={addFiles} disabled={adding}>{adding ? 'Creating' : 'Create files'}</Button>
+              <Button onClick={addFiles} disabled={adding || !editable}>{adding ? 'Creating' : 'Create files'}</Button>
             </div>
           </div>
         </>

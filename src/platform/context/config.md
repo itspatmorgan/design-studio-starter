@@ -6,11 +6,11 @@ title: "Studio configuration"
 
 ## Change configuration
 
-Open **Studio settings** from the gear icon or search while running Studio locally. Contributors can inspect settings. Admins can edit basic configuration and optional module states. Contributor profiles and assigned role badges are read-only in this page. Assign team Admins through the configuration command below.
+Open **Studio settings** from the gear icon or search while running Studio locally. Contributors can inspect settings. Admins can edit basic configuration and optional module states. Admins assign team Admins and system maintainers in the Contributors section. Identity and profile preferences remain in repository files.
 
 Saving writes repository files, synchronizes module-owned agent instructions, and restarts the development server. Stale configuration or contributor snapshots are rejected. Reload settings before retrying a conflicting save. Settings and its editing API are excluded from the published viewing site.
 
-Welcome records its first display on the resolved contributor’s profile with `welcomeDismissed: true`. When Onboarding is enabled, every contributor must explicitly declare this boolean. Registration writes `false`; missing declarations are validation errors. Each contributor gets the introduction independently; progress updates do not change studio settings or restart the server. See the [Onboarding contract](../../modules/onboarding/README.md) for fallback and legacy behavior.
+Welcome records its first display on the resolved contributor’s profile with `welcomeDismissed: true`. When Onboarding is enabled, every contributor must explicitly declare this boolean. Registration writes `false`. Missing declarations are validation errors. Each contributor gets the introduction independently; progress updates do not change studio settings or restart the server. See the [Onboarding contract](../../modules/onboarding/README.md) for progress behavior.
 
 You can also ask your agent to configure the studio. The configuration command previews changes before applying them. The CLI and settings API share validation, source editing, assignment preservation, and module instruction synchronization.
 
@@ -24,11 +24,11 @@ For manually edited module configuration, run `pnpm studio sync` to refresh agen
 
 Studio has two local roles: Contributor and Admin. Registered people are Contributors by default. In team use, `admins` must contain at least one registered contributor key; several Admins are supported. In personal use, the resolved local contributor is automatically an Admin. Unregistered identities cannot save settings.
 
-The settings server checks the current role before applying each save. Only existing Admins can save shared settings. The API still validates Admin assignments in its configuration payload; saving cannot remove the last team Admin. These roles guide local behavior. They do not authenticate people, grant GitHub permissions, or override prototype ownership. Existing section-specific artifact policies remain separate.
+The settings server checks the current role before applying each save. Only existing Admins can save shared settings. The API still validates Admin assignments in its configuration payload; saving cannot remove the last team Admin. These roles guide local behavior. Admins can manage all prototypes. Contributors retain direct write access to their own folders. Per-system maintainer grants add active system editing and managed rename. Archive, restore, deletion, creation, and default selection remain Admin actions. These grants do not authenticate people or grant GitHub permissions. Existing section-specific artifact policies remain separate.
 
-Use `pnpm studio configure --admins sam,alex --yes` to assign team Admins. This repository command also supports initial setup and recovery when no local Admin can use the UI. CLI commands and direct file edits remain available to people and agents with repository access. GitHub review and CI permission rules remain separate.
+Use `pnpm studio configure --admins sam,alex --yes` to assign team Admins. Applied shared CLI changes require the current Admin. For explicitly authorized initial setup or recovery, use `configure --recovery --admins sam --yes`. This visible repository-level recovery bypass is limited to configuration and does not bypass Git review. Direct file edits remain possible.
 
-Keep shared choices in `studio.config.ts`. Contributor profiles live in `contributors/<key>.json`; `pnpm join` creates these files. Each file declares one contributor, with its filename as the stable key. There is no combined roster file. Profiles declare a nonempty `name`, plus `email` and `github` strings. An empty string explicitly means that identity is unavailable. Nonempty emails and GitHub usernames must be unique, ignoring case. When Onboarding is enabled, profiles also declare `welcomeDismissed`. Other preference fields stay with the profile. Profiles do not declare Admin authority.
+Keep shared choices in `studio.config.ts`. Contributor profiles live in `contributors/<key>.json`; `pnpm join` creates these files. Each file declares one contributor, with its filename as the stable key. There is no combined roster file. Profiles declare a nonempty `name`, plus `email` and `github` strings. An empty string explicitly means that identity is unavailable. Nonempty emails and GitHub usernames must be unique, ignoring case. When Onboarding is enabled, profiles also declare `welcomeDismissed`. Other preference fields stay with the profile. Profiles do not declare authority. Use `pnpm studio configure --maintainers product=sam,alex --yes` to assign one system. Use `product=` to clear it. The command preserves other system assignments.
 
 ## Configuration fields
 
@@ -37,6 +37,7 @@ Keep shared choices in `studio.config.ts`. Contributor profiles live in `contrib
 | `name` | Required studio name, used by the app. |
 | `usage` | Required `personal` or `team`. Guides onboarding, without changing contributor ownership. |
 | `admins` | Unique registered contributor keys. Required and nonempty in team use; personal use derives Admin access from local identity. |
+| `systemMaintainers` | Required object with every registered prototype-system ID explicitly mapped to unique registered contributor keys. Use `[]` for unassigned systems. Studio cannot have an entry. Rename migrates the entry, deletion removes it, and archiving preserves it for restoration. |
 | `tagline` | Optional line on the published front page, up to 140 characters. |
 | `modules` | Installed module IDs set to `true` or `false`. Every installed module needs an explicit entry; omission is invalid and never enables it. Required modules cannot be disabled. |
 | `systems` | Required list of every installed system ID, including the required Studio system (`studio` in the starter). Discovery does not register a system. |

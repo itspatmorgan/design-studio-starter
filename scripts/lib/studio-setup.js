@@ -34,7 +34,7 @@ export function editStudioConfig(text, changes) {
       if (!remaining.has(key)) continue;
       if (!ts.isPropertyAssignment(property)) throw new Error(`Configure ${key} as a plain property first.`);
       const value = remaining.get(key); remaining.delete(key);
-      if (value && typeof value === 'object' && !Array.isArray(value)) patchObject(property.initializer, value);
+      if (key !== 'systemMaintainers' && value && typeof value === 'object' && !Array.isArray(value)) patchObject(property.initializer, value);
       else edits.push({ start: property.initializer.getStart(source), end: property.initializer.end, text: valueText(value) });
     }
     if (!remaining.size) return;

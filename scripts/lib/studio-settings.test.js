@@ -9,7 +9,7 @@ import { planSettings, readSettings, saveSettings } from './studio-settings.js';
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-settings-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  const config = { name: 'Studio', usage: 'team', admins: ['sam'], modules: { prototypes: true, notes: true }, systems: ['studio', 'product', 'brand'], defaultSystem: 'product' };
+  const config = { name: 'Studio', usage: 'team', admins: ['sam'], modules: { prototypes: true, notes: true }, systems: ['studio', 'product', 'brand'], systemMaintainers: { product: [], brand: [] }, defaultSystem: 'product' };
   fs.writeFileSync(path.join(root, 'studio.config.ts'), `// keep this comment\nexport default ${JSON.stringify(config)};\n`);
   fs.writeFileSync(path.join(root, 'AGENTS.md'), 'Shared guidance\n<!-- studio:modules -->\n<!-- /studio:modules -->\n');
   const options = {
@@ -87,4 +87,15 @@ test('full UI snapshots change only the intended source properties', (t) => {
   const { systems, ...changes } = config;
   saveSettings({ ...options, changes: { ...changes, modules: { ...changes.modules, notes: false } } });
   assert.equal(fs.readFileSync(path.join(options.root, 'studio.config.ts'), 'utf8'), before.replace('"notes":true', '"notes":false'));
+});
+
+
+test('Admin saves assign system maintainers without creating new studio roles', t => {
+  const options = fixture(t);
+  const assignments = { product: ['alex'], brand: [] };
+  saveSettings({ ...options, changes: { systemMaintainers: assignments } });
+  const current = readSettings(options.root, options.contributors);
+  assert.deepEqual(current.config.systemMaintainers, assignments);
+  assert.throws(() => saveSettings({ ...options, actor: 'alex', base: current.version, changes: { admins: ['alex'] } }), error => error.status === 403);
+  assert.throws(() => saveSettings({ ...options, base: current.version, changes: { systemMaintainers: { product: ['missing'], brand: [] } } }), /not a registered contributor/);
 });

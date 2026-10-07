@@ -4,12 +4,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { readDeclaration } from '../../src/platform/core/declarations.ts';
 import { systemAction } from './system-actions.js';
 import { planSystemLifecycle, applySystemLifecycle } from './system-lifecycle.js';
 
 function fixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-system-actions-'));
-  const config = { usage: 'team', admins: ['admin'], systems: ['studio', 'kit', 'other'], defaultSystem: 'other' };
+  const config = { usage: 'team', admins: ['admin'], systems: ['studio', 'kit', 'other'], systemMaintainers: { kit: [], other: [] }, defaultSystem: 'other' };
   fs.writeFileSync(path.join(root, 'studio.config.ts'), `export default ${JSON.stringify(config)};`);
   writeProfiles(root, { admin: { name: 'Admin' }, member: { name: 'Member' } });
   for (const id of config.systems) {
@@ -53,6 +54,7 @@ test('archive and restore track only prototypes archived together; delete preser
     const before = fs.readFileSync(path.join(path.dirname(active), 'view.tsx'), 'utf8');
     applySystemLifecycle(planSystemLifecycle(root, config, 'delete', 'kit'));
     assert.equal(fs.existsSync(path.join(root, 'src/systems/kit')), false);
+    assert.deepEqual(readDeclaration(fs.readFileSync(path.join(root, 'studio.config.ts'), 'utf8')).value.systemMaintainers, { other: [] });
     assert.equal(fs.existsSync(path.join(root, '.trash')), false);
     assert.deepEqual(JSON.parse(fs.readFileSync(active)).systemMissing, { id: 'kit', label: 'kit' });
     assert.equal(fs.readFileSync(path.join(path.dirname(active), 'view.tsx'), 'utf8'), before);
@@ -62,6 +64,8 @@ test('archive and restore track only prototypes archived together; delete preser
 test('true rename repairs assignment, imports, links, registration and rolls back a failed validation', () => {
   const { root, config, proto } = fixture();
   try {
+    config.systemMaintainers.kit = ['member'];
+    fs.writeFileSync(path.join(root, 'studio.config.ts'), 'export default ' + JSON.stringify(config) + ';');
     const meta = proto('example', { rebuild: { targetSystem: 'kit', source: 'src/prototypes/admin/example' } });
     fs.writeFileSync(path.join(root, 'src/systems/kit/components/button.tsx'), 'export const Button = () => null;');
     fs.writeFileSync(path.join(root, 'README.md'), '[Kit](src/systems/kit/system.ts) [Overview](/systems/kit) [External](https://example.com/systems/kit/button)');
@@ -73,6 +77,7 @@ test('true rename repairs assignment, imports, links, registration and rolls bac
     assert.equal(JSON.parse(fs.readFileSync(meta)).system, 'kit');
     applySystemLifecycle(planSystemLifecycle(root, config, 'rename', 'kit', { name: 'Team Kit' }));
     assert.equal(JSON.parse(fs.readFileSync(meta)).system, 'team-kit');
+    assert.deepEqual(readDeclaration(fs.readFileSync(path.join(root, 'studio.config.ts'), 'utf8')).value.systemMaintainers, { 'team-kit': ['member'], other: [] });
     assert.equal(JSON.parse(fs.readFileSync(meta)).rebuild.targetSystem, 'team-kit');
     assert.match(fs.readFileSync(path.join(path.dirname(meta), 'view.tsx'), 'utf8'), /@\/systems\/team-kit\//);
     assert.match(fs.readFileSync(path.join(root, 'README.md'), 'utf8'), /\/systems\/team-kit\)/);

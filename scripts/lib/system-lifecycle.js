@@ -47,7 +47,7 @@ export function planSystemLifecycle(root, config, action, id, { name, restorePro
     if (nextId !== id) {
       move = { from: dir, to: nextDir };
       const configFile = path.join(root, 'studio.config.ts');
-      edits.push(edit(configFile, editStudioConfig(fs.readFileSync(configFile, 'utf8'), { systems: config.systems.map(value => value === id ? nextId : value), defaultSystem: config.defaultSystem === id ? nextId : config.defaultSystem })));
+      edits.push(edit(configFile, editStudioConfig(fs.readFileSync(configFile, 'utf8'), { systemMaintainers: Object.fromEntries(Object.entries(config.systemMaintainers).map(([key, members]) => [key === id ? nextId : key, members])), systems: config.systems.map(value => value === id ? nextId : value), defaultSystem: config.defaultSystem === id ? nextId : config.defaultSystem })));
       for (const { file, meta } of prototypeMetadata(root)) {
         let changed = false;
         if ((meta.system === undefined ? config.defaultSystem : meta.system) === id) { meta.system = nextId; changed = true; }
@@ -98,7 +98,7 @@ export function planSystemLifecycle(root, config, action, id, { name, restorePro
     if (id === config.defaultSystem) throw new Error('Choose another default system before deleting this one.');
     remove = dir;
     const configFile = path.join(root, 'studio.config.ts');
-    edits.push(edit(configFile, editStudioConfig(fs.readFileSync(configFile, 'utf8'), { systems: config.systems.filter(value => value !== id) })));
+    edits.push(edit(configFile, editStudioConfig(fs.readFileSync(configFile, 'utf8'), { systemMaintainers: Object.fromEntries(Object.entries(config.systemMaintainers).filter(([key]) => key !== id)), systems: config.systems.filter(value => value !== id) })));
     for (const { file, meta } of dependents) {
       // Keep the exact old assignment and code. Missing-system prototypes cannot render or deploy until rebuilt.
       if ((meta.system === undefined ? config.defaultSystem : meta.system) === id) {

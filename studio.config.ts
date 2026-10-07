@@ -18,6 +18,7 @@ export default {
     onboarding: true,
   },
   systems: ['studio', 'product', 'marketing'],
+  systemMaintainers: { product: [], marketing: [] },
   defaultSystem: 'product',   // the design system a prototype uses when its meta.json doesn't name one
   admins: ["patrick"],
 } satisfies StudioConfig;

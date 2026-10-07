@@ -10,7 +10,7 @@ A team shares a repository and systems, including their components and context. 
 
 ## Own your experiments
 
-Make changes in your own prototypes. You can inspect other contributors' work and discuss changes with them. Coordinate shared platform or system changes with a studio Admin.
+Make changes in your own prototypes. You can inspect other contributors' work and discuss changes with them. For changes outside your scope, ask your agent to prepare a pull request for review.
 
 Prototype-local components and styles give you room to experiment without changing the team's shared system.
 
@@ -18,9 +18,9 @@ Prototype-local components and styles give you room to experiment without changi
 
 **Studio settings** shows the studio's configuration, installed modules, and contributors. See [Configure the studio](/documentation/guide/customize#configure-the-studio) for how to open it, save changes, and manage optional capabilities.
 
-Contributors own their prototypes. Admins also edit shared settings and switch optional modules on or off. Team studios need at least one Admin and can have several. In personal use, your local contributor is automatically an Admin.
+Contributors manage their own prototypes. System maintainers also manage the active systems assigned to them. Admins manage the whole studio, including other contributors’ prototypes and system availability. Team studios need at least one Admin and can have several. In personal use, your local contributor is automatically an Admin.
 
-Contributor profiles and assigned roles are read-only here. Ask your agent to register or update a profile or assign team Admins. Local roles do not grant repository access or override prototype ownership. Settings administration is excluded from the published site. See [Studio configuration](/documentation/reference/platform/context/config.md) for file structure and command details.
+Admins assign permissions in the Contributors section. Ask your agent to register or update profiles. Local permissions do not grant repository access. Settings administration is excluded from the published site. See [Studio configuration](/documentation/reference/platform/context/config.md) for file structure and command details.
 
 ## Share through Git
 
