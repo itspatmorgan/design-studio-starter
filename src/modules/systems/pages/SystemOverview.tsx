@@ -42,7 +42,7 @@ export default function SystemOverview({ system, sys, components, tokens }: {
   if (blank && spec.status === 'active' && import.meta.env.DEV) return <>
     <PageHeader title={sys.label} description="This system is empty. Choose how you want to build it." />
     <SystemReferenceNotice system={system} />
-    <SystemSetup system={system} />
+    <SystemSetup system={system} label={sys.label} />
   </>;
 
   return <>
