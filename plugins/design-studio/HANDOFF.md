@@ -1,6 +1,6 @@
 # Test Design Studio on another computer
 
-The shared package is `0.1.0-experiment.12`. Its pinned starter snapshot is `b6fc5d9c790671da5a27810a08ff9e05de700474`, which includes the latest canvas loading, editor fallback, automatic link repair, and configuration-backed Welcome fixes. New installs use a smaller working-studio package. Numbered default installs and local-file messaging remain. Existing studios are preserved and are not upgraded automatically.
+The branch test candidate is `0.1.0-experiment.13`, adding optional public Sites publishing. Its pinned starter snapshot remains `b6fc5d9c790671da5a27810a08ff9e05de700474`, which includes canvas loading, editor fallback, automatic link repair, and configuration-backed Welcome fixes. New installs use a smaller working-studio package. Numbered default installs and local-file messaging remain. Existing studios are preserved and are not upgraded automatically. This candidate is not yet released on main.
 
 The current development branch has later contributor-level Welcome, system-curation guidance, and separate asset pages. Those changes are not in the experiment .12 starter pin. Before testing them through the four installation paths, publish a tested starter revision and update the package pin. Record the downloaded revision from `design-studio.local.json`; the plugin version alone does not identify the studio code.
 
@@ -23,7 +23,7 @@ Read the [plugin README](README.md) for installation commands. The plugin folder
 
 ## Test each harness
 
-- **Codex:** add this checkout as the local plugin marketplace and install the current Design Studio package. If an older experiment is installed, refresh or replace that installation using the plugin controls. Confirm the installed version is experiment .12, then start a fresh chat.
+- **Codex:** add this checkout as the local plugin marketplace and install the current Design Studio package. If an older experiment is installed, refresh or replace that installation using the plugin controls. Confirm the installed version is experiment .13, then start a fresh chat.
 - **Claude Code plugin:** follow the local registration procedure in [SETUP.md](../../SETUP.md#claude-code-local-plugin-instructions), then test in Claude Desktop’s Code view with Local selected. Verify the plugin commands before asking it to create a studio. Keep unrelated work repositories out of this test.
 - **Cursor plugin:** follow [local plugin installation](../../SETUP.md#cursor-local-plugin-instructions), reload the app, and verify its skills in Customize before starting a fresh local Agent chat.
 - **Direct from source:** use [the plugin-free request](../../SETUP.md#4-direct-from-the-source-repository) in a local desktop agent without Design Studio installed.
@@ -39,6 +39,18 @@ For each harness, check:
 5. Close and reopen the studio with the plugin. The prototype remains and Welcome does not repeat after a server restart or a preview-port change.
 
 Record what the agent did, where it needed human help, and any unclear step. For skill discovery, note whether skills appear in the harness’s UI and whether the agent actually uses the appropriate procedure.
+
+## Test the Sites candidate
+
+Use the `codex/sites-onboarding-experiment` checkout for experiment .13 rather than the unreleased main package. Install it through the local marketplace, restart the desktop app if needed, and start a fresh local chat with Design Studio and Sites available.
+
+Ask: “Create a new Design Studio named Design Studio Public Onboarding QA in my Developer folder and publish a public review link with ChatGPT Sites. Handle setup and opening it for me.”
+
+Verify the complete local folder and preview, the saved Site identity, and a public viewing link. Check a prototype direct link and interaction without signing in. The agent should report local authoring and public viewing separately.
+
+In a second fresh chat in that studio folder, ask: “Change my Studio tagline to Local creation. Public review. Same Studio. Then publish my Studio to its existing Site.” Verify the same project and URL, the new tagline, and continued public access. Record both chats' actual outcomes in the [Sites experiment record](experiments/sites-onboarding.md).
+
+Before release, verify explicit private-audience requests remain private and interrupted publishing preserves the local studio and resumes the same Site. Ordinary local edits must not publish automatically. Do not treat package installation as proof that either fresh-chat journey passed.
 
 ## Test the path to your own system
 

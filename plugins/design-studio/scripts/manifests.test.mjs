@@ -12,7 +12,7 @@ test('host packages resolve the same skills, helper, and identity', () => {
     assert.equal(manifest.name, portable.name);
     assert.equal(manifest.version, portable.version);
     const skills = new URL(manifest.skills, root);
-    for (const name of ['create-studio', 'open-studio', 'use-studio']) {
+    for (const name of ['create-studio', 'open-studio', 'use-studio', 'publish-studio']) {
       assert.ok(fs.existsSync(new URL(`${name}/SKILL.md`, skills)));
     }
     assert.ok(fs.existsSync(new URL('scripts/bootstrap.mjs', root)));

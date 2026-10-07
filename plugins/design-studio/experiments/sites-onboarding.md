@@ -6,7 +6,7 @@ Experiment date: October 6, 2026 (Pacific). Branch: `codex/sites-onboarding-expe
 
 The local Studio can publish its existing static build through Sites without a hosted editing backend. Two publications succeeded at the same project and URL. They initially used private access. At the person's request, the existing Site was then made public for sharing with reviewers. Anonymous HTTP checks confirmed direct routes and production assets without authentication. The hosted Feedback Inbox rendered and its New filter worked in the browser.
 
-The person had already verified plugin installation and local setup. This experiment exercised the repository's plugin helper and native Sites tools. It did not install a new plugin version or start an independent agent session from the directory listing.
+The person had already verified plugin installation and local setup. The deployment experiment exercised the repository's plugin helper and native Sites tools. A later preparation step installed experiment .13 through the supported local CLI. A fresh desktop chat using that installation remains unverified.
 
 ## Test environment
 
@@ -83,17 +83,27 @@ The initial native deployment and authenticated route checks succeeded, but the 
 
 Next steps, in order:
 
-1. Install the updated branch package and start a fresh chat. Request local creation plus public Sites publishing in one prompt. Verify the agent chooses the public audience and general deployment path. This experiment has changed an existing deployment's audience; it has not yet proved a fresh installed-plugin public deployment.
+1. Start a fresh desktop chat with the installed experiment .13 candidate, restarting the app if needed. Request local creation plus public Sites publishing in one prompt. Verify the agent chooses the public audience and general deployment path. This experiment has changed an existing deployment's audience; it has not yet proved a fresh installed-plugin public deployment.
 2. In a later chat, make an authorized local edit and republish to the same Site. Verify the same URL, changed content, and continued anonymous access.
 3. Release the tested plugin changes with a new package version after those checks. Preserve a public, tested starter pin and distinguish repository installation from directory review.
 
 Clean-computer prerequisite setup and publishing from other agent hosts remain separate tests.
+
+## Installed test candidate
+
+Experiment .13 adds the public publishing capability and combined onboarding prompt to the plugin interface. Generated Codex, Claude, and Cursor manifests share that version. The starter pin remains unchanged. The package check now verifies publish-studio is present in each host's skill directory.
+
+The existing local marketplace was refreshed and `codex plugin add` installed experiment .13. Read-back confirmed it enabled at `/Users/itspatmorgan/.codex/plugins/cache/design-studio-experiment/design-studio/0.1.0-experiment.13`. Its installed publish-studio skill matched the branch copy byte-for-byte. These checks prove installation, not desktop activation or a successful fresh-chat journey. See [the candidate handoff](../HANDOFF.md#test-the-sites-candidate) for the two test prompts and preservation checks.
+
+Publishing stays plugin-owned; no publishing procedure is being moved into the starter. The candidate is not yet merged, pushed, or publicly released.
 
 ## Local evidence logs
 
 Branch verification passed: `pnpm build` (268 project tests, type checking, and Vite), all 15 plugin tests, `pnpm harness:check`, and `git diff --check`. Skill synchronization made no generated changes. The updated Guide rendered its publishing section in the branch's production preview. Vite reported its existing non-blocking large-chunk warning.
 
 Public-default follow-up verification passed: `pnpm build` (268 project tests, type checking, and Vite), `pnpm harness:check`, and `git diff --check`. Skill synchronization again made no generated changes. The same non-blocking chunk warning remains.
+
+Candidate verification passed: all 15 plugin tests, `pnpm build` (268 project tests, type checking, and Vite), `pnpm harness:check`, and `git diff --check`. Generated manifests synchronized successfully. The same non-blocking chunk warning remains.
 
 These logs are machine-local, contain no stored publishing credentials, and are not committed:
 
@@ -111,5 +121,9 @@ These logs are machine-local, contain no stored publishing credentials, and are 
 - `/tmp/design-studio-sites-public-check.log`: anonymous public routes and JavaScript assets.
 - `/tmp/design-studio-sites-public-build.log`: public-default branch build.
 - `/tmp/design-studio-sites-public-harness.log`: public-default harness consistency.
+- `/tmp/design-studio-sites-candidate-tests.log`: candidate plugin tests.
+- `/tmp/design-studio-sites-candidate-build.log`: candidate build.
+- `/tmp/design-studio-sites-candidate-harness.log`: candidate generated consistency.
+- `/tmp/design-studio-sites-candidate-install.log`: supported CLI installation receipt.
 
 Native Sites responses supplied terminal success, version identity, audience, and URL. Credentials stayed in session memory and hidden stdin. Temporary archives are `/tmp/design-studio-sites-v1.tar.gz` and `/tmp/design-studio-sites-v2.tar.gz`.

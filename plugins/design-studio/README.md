@@ -27,7 +27,7 @@ The default name and folder are **Design Studio** and `~/Developer/Design Studio
 
 Preparation trusts the inspected studio's mise configuration, installs pinned tools and dependencies, applies first-run personal defaults, and synchronizes project skills. The receipt `design-studio.local.json` records setup state and is excluded locally from Git. Repeating setup preserves existing configuration and work. Unrelated folders, linked metadata, invalid receipts, and modified initial settings are refused rather than overwritten.
 
-Experiment .12 pins the tested, publicly available starter at `b6fc5d9c790671da5a27810a08ff9e05de700474`. It includes smoother canvas loading, editor fallbacks, automatic link repair, configuration-backed Welcome dismissal, learning-example guidance, and consolidated harness generation. New installs use the working-studio package. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
+Experiment .13 is the Sites publishing test candidate. It retains the tested, publicly available starter at `b6fc5d9c790671da5a27810a08ff9e05de700474` from experiment .12. That starter includes smoother canvas loading, editor fallbacks, automatic link repair, configuration-backed Welcome dismissal, learning-example guidance, and consolidated harness generation. New installs use the working-studio package. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
 
 ## Packaging and ownership
 
@@ -51,7 +51,7 @@ Plugin entry skills stay outside the Studio instruction browser. The owned repos
 
 Ask “Create my Design Studio locally and publish a public viewing link with ChatGPT Sites.” Local setup completes first. Native Sites tools then publish the static build and retain the Site identity in the owned folder. New viewing sites default to public, so anyone with the link can review and interact with the built prototypes. An explicit private or restricted audience takes precedence. Later, ask “Publish my Studio” to update that same Site with its existing audience. Source synchronization also sends the local source to the Sites-managed repository; no GitHub account is required.
 
-This path needs a host with both local execution and native Sites capabilities. It does not add a hosted editing backend or change other hosts' local setup. See [publish-studio](skills/publish-studio/SKILL.md) for the procedure and the [experiment record](experiments/sites-onboarding.md) for evidence and remaining tests. The package version and public starter pin are unchanged; directory distribution and a fresh installed-plugin onboarding test remain pending.
+This path needs a host with both local execution and native Sites capabilities. It does not add a hosted editing backend or change other hosts' local setup. See [publish-studio](skills/publish-studio/SKILL.md) for the procedure and the [experiment record](experiments/sites-onboarding.md) for evidence and remaining tests. Experiment .13 exposes the publishing capability and onboarding prompt in the plugin interface. The public starter pin is unchanged; directory distribution and a fresh installed-plugin onboarding test remain pending.
 
 ## Maintainer testing
 
