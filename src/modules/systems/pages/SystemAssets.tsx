@@ -65,10 +65,7 @@ export default function SystemAssets({ system, sys, kind, path }: { system: stri
   }[kind];
   return <>
     <PageHeader title={kind} description={description} />
-    <div className="mb-6 space-y-2 text-sm leading-6 text-foreground/80">
-      {kind === 'Icons' && sys.icons && <p>This system uses {sys.icons.library}.</p>}
-      <p>{packageNote}</p>
-    </div>
+    {kind === 'Icons' && sys.icons && <p className="mb-6 text-sm leading-6 text-foreground/80">This system uses {sys.icons.library}.</p>}
     {items.length ? <ul className="space-y-2">{items.map(asset => <li key={asset.path}>
       <Link to={assetLink(system, asset) as never} className="flex items-center gap-4 rounded-lg border border-border px-4 py-3 hover:bg-muted">
         {kind !== 'Fonts' && <img src={asset.url} alt="" loading="lazy" className="size-10 shrink-0 object-contain" />}
@@ -81,6 +78,7 @@ export default function SystemAssets({ system, sys, kind, path }: { system: stri
         <EmptyDescription>{emptyDescription}</EmptyDescription>
       </EmptyHeader>
     </Empty>}
+    <p className="mt-4 text-sm leading-6 text-foreground/80">{packageNote}</p>
     {!empty && <p className="my-6 text-sm leading-6 text-foreground/80">{emptyDescription}</p>}
     {kind === 'Icons' && sys.icons && <ThemeScope themeClass={sys.scopeClass}><IconsPage icons={sys.icons} /></ThemeScope>}
   </>;
