@@ -7,7 +7,7 @@ const FILES = new Set([
   'LICENSE', 'CHANGELOG.md', 'CONTRIBUTING.md', 'SECURITY.md', 'components.json',
   'mise.toml', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml',
   'studio.config.ts', 'studio.lock.json', 'tsconfig.json', 'tsconfig.app.json',
-  'tsconfig.node.json', 'vite.config.ts',
+  'tsconfig.node.json', 'vite.config.ts', 'contributors.json',
 ]);
 const FOLDERS = ['contributors/', 'src/', 'public/', 'scripts/', 'patches/', '.agents/skills/', '.claude/skills/', '.husky/'];
 

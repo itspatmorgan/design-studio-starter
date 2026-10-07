@@ -9,7 +9,7 @@ function fixture(t) {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'studio-package-')));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const files = ['src/platform/skills/review/SKILL.md', '.agents/skills/review/SKILL.md',
-    'studio.config.ts', 'scripts/cli/studio.js', '.agents/studio-skills.json', 'patches/fix.patch',
+    'studio.config.ts', 'contributors.json', 'contributors/sam.json', 'scripts/cli/studio.js', '.agents/studio-skills.json', 'patches/fix.patch',
     'plugins/design-studio/plugin.json', '.agents/plugins/marketplace.json', '.claude-plugin/marketplace.json',
     '.cursor-plugin/marketplace.json', 'scripts/eval/results.json', '.github/workflows/check.yml'];
   for (const file of files) {
@@ -25,7 +25,7 @@ function fixture(t) {
 test('starter retains working code and linked skills while omitting distribution and evaluations', t => {
   const { root, files } = fixture(t);
   packageStarter(root, files);
-  for (const file of ['studio.config.ts', 'scripts/cli/studio.js', 'patches/fix.patch', 'src/platform/skills/review/SKILL.md']) {
+  for (const file of ['studio.config.ts', 'contributors.json', 'contributors/sam.json', 'scripts/cli/studio.js', 'patches/fix.patch', 'src/platform/skills/review/SKILL.md']) {
     assert.equal(fs.readFileSync(path.join(root, file), 'utf8'), 'preserved content');
   }
   assert.equal(fs.readFileSync(path.join(root, '.claude/skills/review/SKILL.md'), 'utf8'), 'preserved content');

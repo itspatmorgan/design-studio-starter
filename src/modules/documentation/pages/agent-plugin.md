@@ -30,6 +30,14 @@ flowchart TD
   work --> review[Review in Studio]
 ```
 
+## Publish a viewing site
+
+An experimental ChatGPT Sites workflow can combine local setup with a private viewing link. Ask: “Create my Design Studio locally and publish a private viewing site with ChatGPT Sites.” This requires an agent with local setup and Sites capabilities.
+
+Your code and authoring environment stay in the local folder. Publishing also saves source with Sites. The hosted site lets you view and interact with the built prototypes. Canvas and source editing stay local.
+
+After local changes, ask “Publish my Studio” to update the same site. Publishing and sharing are separate choices. If publishing cannot finish, you can continue working locally.
+
 ## Make it your own
 
 Creating a studio gives you a place to start. Configuring it makes that place fit your team: its name, people, design system, and product knowledge.

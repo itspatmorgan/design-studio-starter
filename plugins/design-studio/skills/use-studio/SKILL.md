@@ -7,6 +7,8 @@ Use the studio identified by the person or the current primary workspace. If the
 
 If the studio needs reopening or workspace handoff, follow [open-studio](../open-studio/SKILL.md). Preserve the repository and use its current procedures rather than importing instructions from another studio or the plugin cache.
 
+For a request to publish through ChatGPT Sites, follow [publish-studio](../publish-studio/SKILL.md). Reuse the studio's Site identity for updates. Editing locally does not publish automatically.
+
 In studios with native project skills, inspect the relevant platform, enabled module, and assigned system skill descriptions. Use the canonical procedure selected for the request. In older studios, follow their repository entry point and linked workflows; do not relocate their files or upgrade them without a request.
 
 For prototype work, resolve contributor identity and metadata assignment. Explicit `system: null` means no system; only an omitted assignment follows the configured default. For a pending rebuild, include the target system's guidance and preserve the original. The browser's selected system does not change assignment.
