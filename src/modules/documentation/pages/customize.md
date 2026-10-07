@@ -1,50 +1,54 @@
 ---
-title: Customize
-description: Change settings, team access, or the capabilities of your studio.
-order: 4
+title: Modules & customization
+description: Adapt your toolkit, settings, and studio capabilities.
+order: 7
 toc: true
 ---
 
-## Where should a change go?
+## Where should I start?
 
-| You want to change… | Use… |
-| --- | --- |
-| One exploration's appearance or behavior | Its prototype. |
-| Reusable components, styles, or product knowledge | A system. |
-| The studio name, defaults, or enabled tools | Studio settings. |
-| A new tool or section | A module where practical. |
-| Studio's core appearance or behavior | Its application code. |
+Your own design system is usually the most useful customization. Bring in your components, theme, assets, and product knowledge so prototypes reflect your team. See [bringing in a system](/documentation/manual/prototypes#how-do-i-bring-in-my-own-system).
 
-Your own [design system](/documentation/manual/systems) is usually the most useful customization. You also own Studio's code; your agent can adapt the environment.
+Choose the scope that matches the change:
 
-## How do I configure the studio?
+| You want to change… | Change… | Affects… |
+| --- | --- | --- |
+| One exploration's appearance or behavior | Its prototype. | That exploration. |
+| Reusable styles, components, or knowledge | A system. | Prototypes using it. |
+| Name, defaults, or enabled capabilities | Studio settings. | The shared environment. |
+| Add a distinct tool or section | A module where practical. | The studio using it. |
+| Core interface or behavior | Platform code. | The shared application. |
 
-Open **Studio settings** from the local gear icon or search, or ask your agent. Registered contributors can view settings; Admins can edit them.
+You own the code. Ask your agent to explain the scope and make the result reviewable before adopting a shared change.
 
-**General** controls the name, tagline, personal or team use, and default system. **Modules** enables or disables installed optional capabilities. Disabling preserves saved content. Changing the default system preserves existing prototype assignments.
+## How do I change settings?
 
-Choose **Save changes** to save locally and restart Studio with the new configuration. **Discard** resets unsaved edits. If your agent changes settings while you are editing, reload before saving. Saving does not share or publish changes.
+Open **Studio settings** from the local gear icon or search. Registered contributors can view settings; Admins can edit them.
 
-## How does team access work?
+**General** controls the name, tagline, personal or team use, and default system. **Modules** controls installed optional capabilities. Changing the default through settings preserves existing prototype assignments.
 
-Personal use gives your local contributor Admin access. Switching to Team enables Contributors & Permissions when installed; ask the agent to install it if missing.
+Choose **Save changes** to save locally and restart Studio with the new configuration. **Discard** resets unsaved edits. If settings changed elsewhere while you were editing, reload before retrying the save.
 
-Ask your agent to register teammates in the existing studio. Use **Contributors** to review profiles and assignments. Admins assign access there.
+Saving settings does not share or publish them. See [Personal & team use](/documentation/manual/team) for permissions and shared changes.
 
-| Responsibility | Can manage |
-| --- | --- |
-| Contributor | Their own prototypes. |
-| System maintainer | Their own prototypes and assigned active systems. |
-| Admin | Shared settings, permissions, systems, and all prototypes. |
+## What are modules?
 
-Team studios need at least one Admin. These assignments organize local work; they do not grant Git repository access or provide sign-in. Coordinate shared changes and follow your team's review process.
+Modules add capabilities such as Documents, Diagrams, and Canvases. Open **Studio settings → Modules** to enable or disable installed optional modules. Required capabilities remain enabled.
+
+Disabling a module keeps its files and content, but hides its normal tools and navigation. Re-enabling makes supported content available again. Team use requires Contributors & Permissions.
+
+Installing or removing a module is a separate agent task. Ask what will happen to its content before removal; removal can delete capability code and, when explicitly requested, associated content.
 
 ## Can my agent add a feature?
 
-Yes. A **module** keeps a capability's code together and integrates through supported platform connections. Ask your agent to assess whether a module fits, explain the scope, and build a reviewable result.
+Yes. Describe what you need and ask the agent to assess whether a module fits. A module groups its code and integrates through supported platform connections, reducing coupling with the core.
 
-Modules reduce accidental coupling with Studio's core. They run as part of the application, so a faulty module can still affect it. Your agent can use the [module contracts](/documentation/context/platform.core/context/modules).
+For example, you might ask for a new review tool or artifact type. Ask for a proposal that explains the inputs, interface, affected parts, and how the result will be checked.
 
-## How do I update a customized studio?
+Modules run inside the application; they are not a protective sandbox. A faulty module can still affect Studio. Your agent can use the [module contracts](/documentation/context/platform.core/context/modules).
 
-Studio does not automatically merge future releases into your folder. Ask your agent to compare an update with your local changes, preserve your work, and verify the application before adopting it. Custom systems and modules also need ongoing maintenance.
+## How do I update my studio?
+
+Studio does not automatically merge new releases into your folder. Updating a setup plugin does not upgrade that folder either.
+
+Ask your agent to compare the update with your local changes, preserve existing work, and verify the application before adopting it. Custom systems, modules, and platform changes need maintenance as dependencies and upstream code evolve.

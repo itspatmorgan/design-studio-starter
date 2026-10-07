@@ -49,4 +49,4 @@ Your prototype can hold more than views. If the corresponding tools are enabled,
 
 These are useful ways to explain an idea, not required steps for every prototype. Each artifact stays with the same exploration. If a tool is missing, ask your agent which capabilities are available.
 
-For everyday controls, see [Prototypes](/documentation/manual/prototypes). For more ways to supply direction, see [Work with your agent](/documentation/manual#working-with-your-agent).
+For everyday controls, see [Prototypes & systems](/documentation/manual/prototypes). For more ways to supply direction, see [Work with your agent](/documentation/manual/agent).

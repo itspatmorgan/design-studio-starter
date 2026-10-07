@@ -1,42 +1,63 @@
 ---
 title: Overview
-description: What Design Studio is and where to find what you need.
+description: Design with intent. Build with an agent.
 order: 1
+toc: true
 ---
 
-Design Studio is a workspace for designing with your coding agent. Describe what you want to explore, let the agent build it, and use Design Studio to try the result and guide the next change. You own the files and can work alone or with a team.
+## What is Design Studio?
 
-## Two big ideas: prototypes and systems
+Design Studio is a prototype sandbox for designers and product managers. Work with your coding agent to turn ideas into interactive experiences, using your components, context, and design principles.
 
-**Prototypes** hold your explorations: working screens and the notes, diagrams, and canvases that explain an idea. **Systems** hold your shared foundation: reusable components, visual styles, assets, and product knowledge.
+Build the interface, map the flow, and capture your thinking in one connected prototype. Use it to explore an idea, discuss behavior, and give your team something tangible to review.
+
+You direct the work. Your agent builds and refines it. Design Studio gives you a place to try the result and participate directly.
+
+## How is the studio organized?
+
+There are two main collections:
+
+- **Systems** hold reusable components, visual styles, assets, and product knowledge.
+- **Prototypes** hold individual explorations: working screens and supporting documents, diagrams, and canvases.
 
 ```mermaid
 flowchart TB
-  accTitle: One system supports several independent prototypes
-  accDescr: A shared system supplies components, styles, and product knowledge to multiple prototypes. Each prototype holds its own screens and supporting artifacts.
-  system[System<br/>Design toolkit and product knowledge]
-  system --> a[Prototype A<br/>Screens and supporting artifacts]
-  system --> b[Prototype B<br/>Screens and supporting artifacts]
+  accTitle: Systems supply a foundation for prototypes
+  accDescr: One shared system supports multiple prototypes. A prototype connects working screens with supporting documents, diagrams, and canvases.
+  system[System<br/>Toolkit and product knowledge]
+  system --> a[Prototype A]
+  system --> b[Prototype B]
+  a --- artifacts[Screens · Documents<br/>Diagrams · Canvases]
 ```
 
-You can experiment inside a prototype without changing the shared system. Changes to a system can affect all prototypes using it.
+Use the included example systems and prototypes to explore. You can adapt or replace them when you are ready. Documents, Diagrams, and Canvases depend on enabled modules.
 
-## Working with your agent
+## What do I own and customize?
 
-Work with your agent directly in Design Studio's folder on your machine. Give it your goals, references, constraints, and feedback. The agent handles implementation and checks; you direct the work and judge the result.
+Design Studio is open source. Your studio and its source files live in a folder you control. Screens use React, documents use Markdown, diagrams use Mermaid, and canvases use Excalidraw.
 
-Design Studio does not provide its own agent. It provides a workspace for the agents you already use. It also provides manual controls for human users to take action directly when it makes sense.
+Useful defaults give you a working starting point. Bring in your own design system and product knowledge to make the work feel like yours. Your agent can also change the platform or add modules for your needs.
 
-If you are viewing a studio online, you can only explore its work. Creating and editing happen locally on your computer.
+Design Studio works with coding agents such as Codex, Claude Code, and Cursor. It does not supply its own agent. Continue in the agent environment you already use.
 
-## What do you need to know?
+## What is it compatible with?
 
-| Subject | Look here |
+The intended starting stack is **React, TypeScript, and Tailwind CSS**. The supported starting libraries, shadcn/ui and Untitled UI, use Tailwind and fit this environment.
+
+Your own React components may fit too, depending on their styling and dependencies. Other frameworks, styling approaches, or components tied to application services can require more adaptation. Ask your agent to assess them before importing a system.
+
+This is a **front-end prototyping environment**. It can simulate data and service behavior; it does not provide a production backend. Open source makes further adaptation possible, but the effort depends on your stack and requirements.
+
+## Where should I look next?
+
+| Your question | Page |
 | --- | --- |
-| Screens, documents, diagrams, and canvases | [Prototypes](/documentation/manual/prototypes) |
-| Your design toolkit and product knowledge | [Systems](/documentation/manual/systems) |
-| Settings, team access, and new capabilities | [Customize](/documentation/manual/customize) |
-| Viewing links, shared files, and engineering handoff | [Share](/documentation/manual/share) |
-| Missing tools, editing, reopening, and problems | [Help](/documentation/manual/questions) |
+| How do I install or reopen my studio? | [Working environment](/documentation/manual/environment) |
+| How do I direct work and give visual feedback? | [Working with your agent](/documentation/manual/agent) |
+| What belongs where, and how do I use my system? | [Prototypes & systems](/documentation/manual/prototypes) |
+| How do teammates join and share work? | [Personal & team use](/documentation/manual/team) |
+| How do I publish, and what appears on Home? | [Publishing & Home](/documentation/manual/share) |
+| How do I change settings or add capabilities? | [Modules & customization](/documentation/manual/customize) |
+| Something is missing or not working. | [Help](/documentation/manual/questions) |
 
-Use this Manual as a reference when a question comes up. **Documentation → Context & Skills** contains the detailed instructions your agent uses. Product-specific guidance lives in **Systems**.
+Use this Manual when a question comes up. **Documentation → Context & Skills** contains detailed platform and module documentation, including the instructions your agent uses. Product-specific guidance lives in **Systems**.

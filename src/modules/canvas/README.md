@@ -3,7 +3,7 @@
 A page to arrange things on: live views and diagrams, and cards for documents from its own prototype, beside sticky
 notes, text, and arrows. It's [Excalidraw](https://github.com/excalidraw/excalidraw) with the app's
 look, and its design comes from Design Studio's canvas. Agent contract: `src/modules/canvas/skills/use-canvas/SKILL.md`.
-Human orientation: [Prototypes](/documentation/manual/prototypes#what-belongs-in-a-prototype).
+Human orientation: [Prototypes & systems](/documentation/manual/prototypes#what-belongs-in-a-prototype).
 
 **This folder is a self-contained file type.** Core never imports it (`scripts/check/check-modules.js`),
 so the app runs with or without it. Canvas doesn't import another file type either: it asks the

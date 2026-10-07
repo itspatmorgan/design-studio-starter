@@ -1,41 +1,68 @@
 ---
-title: Share
-description: Share a viewing link, working files, or an engineering handoff.
-order: 5
+title: Publishing & Home
+description: Share a viewing site and understand its front page.
+order: 6
 toc: true
 ---
 
-## Does saving share my work?
+## What is the difference between building and publishing?
 
-No. Saving updates local files. A commit records a version locally. Pushing sends committed versions to a shared repository. Publishing creates or updates a viewing site.
+Your local studio is the working environment. A published studio is a viewing site made from those files.
 
 ```mermaid
 flowchart TB
-  files[Your local files] -->|Commit| history[Local version history]
-  history -->|Push| repository[Shared repository<br/>Working files for teammates]
-  files -->|Build and publish| site[Viewing site<br/>Interactive review for others]
-  accTitle: Two ways to share local work
-  accDescr: Local files can be committed and pushed to share working files, or built and published to share a viewing site. Saving alone does neither.
+  accTitle: Publishing shares a built version of your studio
+  accDescr: You and your agent create and review work locally. Building and publishing creates a viewing site. Later local changes require another publication to reach viewers.
+  local[Local studio<br/>Create and review] -->|Build and publish| site[Published site<br/>Explore and interact]
+  site --> viewers[Reviewers and teammates]
 ```
 
-Your agent can handle these steps. Tell it when you want to share and follow your team's review process. Neither path creates live co-editing.
+| Local studio | Published site |
+| --- | --- |
+| Create, edit, and organize working files. | Explore the published work and interact with screens. |
+| See saved changes during development. | See updates after another publication. |
+| Work with your coding agent. | No shared editing backend or agent service. |
 
-## How do I share a viewing link?
+Saving does not publish. Sharing working files through Git is a [separate team workflow](/documentation/manual/team#how-do-we-share-changes).
 
-Ask your agent to help publish, specifying the destination and audience. Published screens remain interactive; source and canvas editing stay local. Updates appear after another publication.
+## How do I publish?
 
-The build can include active prototypes, system pages, product context, and the Manual. Review what is included. Studio has no built-in sign-in; restricted access depends on the host. Archived prototypes remain local and are excluded from publication.
+Ask your agent to publish your studio. Specify the audience and destination, or ask it to help choose a host.
 
-Copy links from the published site for remote reviewers. A localhost link points to a server on the viewer's own computer. Your agent can consult [Publishing](/documentation/context/platform.core/context/publishing).
+> Publish my Design Studio for our review group. Help me choose hosting with the access we need, check what will be included, and verify the shared links.
 
-## How do teammates get my working files?
+Design Studio produces a static website. ChatGPT Sites, GitHub Pages, Vercel, Netlify, or another static-site host can provide hosting. Available agent integrations and host access determine the steps. Your agent can consult [Publishing](/documentation/context/platform.core/context/publishing).
 
-Ask your agent to review and commit changes, then share through your team's Git workflow. Teammates pull those changes into their copies. Repository access and conflict resolution are separate from Studio's contributor assignments.
+Review the result, then copy links from the published site. A **localhost** link refers to a server on the viewer's own computer and will not share your local studio with remote reviewers.
+
+To update the site, ask the agent to publish again to the same destination. Local edits do not appear online automatically.
+
+## What becomes visible?
+
+The build can include active prototypes, system pages and context, and the Manual when enabled. Review sample data, documents, and shared guidance before publishing.
+
+Archived prototypes and systems are excluded. Disabling an artifact module hides that capability. Home is a selection of links, not a control over what the build includes.
+
+Studio has no built-in sign-in. Restricted access depends on the hosting service. Contributor permissions do not restrict published viewers.
+
+## What does Home show?
+
+Select the Design Studio logo to return to **Home**. It offers search and links supplied by enabled modules.
+
+Locally, Home greets you and puts your prototypes first, alongside recent team work and systems. On the published site, it shows the studio name, optional tagline, and links to available work without identifying the viewer.
+
+An item missing from Home may still be available in its collection or through search.
+
+## How do I customize Home?
+
+Use **Studio settings → General** to change the studio name and tagline. The tagline appears on published Home after you publish the update.
+
+Home's sections follow enabled modules and available content. There is no separate Home layout editor or featured-item setting. Ask your agent to change the code or add a module if you want a different introduction, arrangement, or selection of work.
 
 ## What should reviewers or engineers receive?
 
-Provide a starting point, the question you want feedback on, and an explanation of the intended behavior. Identify sample data, simulated actions, and unresolved decisions.
+Share a starting link, the question you want feedback on, and the intended behavior. Identify sample data, simulated actions, and unresolved decisions.
 
-For engineering handoff, also include relevant states, design intent, constraints, and the system components used. Give access to working files when the recipient needs to inspect code. Documents and canvases can hold explanations when those capabilities are enabled.
+For engineering handoff, include relevant states, design intent, constraints, and the system components used. Give access to working files when the recipient needs to inspect code. Documents and canvases can hold this context when enabled.
 
-A prototype informs production implementation. Ask the engineer what else they need to assess application services and production requirements.
+A prototype informs production implementation. Agree with the engineer on what needs adapting for application services and production requirements.
