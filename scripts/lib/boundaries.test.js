@@ -9,6 +9,8 @@ import { importsOf, dependencyResolver, moduleConsumers } from './imports.js';
 import { cssProblems } from './css-scope.js';
 import { canonicalDirectory } from './safe-paths.js';
 import { themeClassProblems } from '../../src/modules/systems/spec.ts';
+import { writeProfiles } from './fixtures/contributors.js';
+import { editStudioConfig } from './studio-setup.js';
 
 const temporary = () => fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'studio-boundaries-')));
 const write = (root, file, code) => { const target = path.join(root, file); fs.mkdirSync(path.dirname(target), { recursive: true }); fs.writeFileSync(target, code); return target; };
@@ -101,8 +103,12 @@ test('private module consumers and symlink scopes are rejected; disabled app and
   try {
     fs.cpSync(original, root, { recursive: true, filter: (file) => !['node_modules', 'dist', '.git'].includes(path.basename(file)) });
     fs.symlinkSync(path.join(original, 'node_modules'), path.join(root, 'node_modules'));
-    const run = (file, ...args) => execFileSync(process.execPath, [file, ...args], { cwd: root, encoding: 'utf8', stdio: 'pipe', timeout: 60000, env: { ...process.env, MISE_TRUSTED_CONFIG_PATHS: root } });
-    const attempt = (file, ...args) => spawnSync(process.execPath, [file, ...args], { cwd: root, encoding: 'utf8', env: { ...process.env, MISE_TRUSTED_CONFIG_PATHS: root } });
+    writeProfiles(root, { 'boundary-fixture': { name: 'Boundary Fixture', email: 'boundary@example.test' } });
+    const configFile = path.join(root, 'studio.config.ts');
+    fs.writeFileSync(configFile, editStudioConfig(fs.readFileSync(configFile, 'utf8'), { usage: 'personal', admins: ['boundary-fixture'] }));
+    const env = { ...process.env, MISE_TRUSTED_CONFIG_PATHS: root, GIT_CONFIG_COUNT: '2', GIT_CONFIG_KEY_0: 'user.name', GIT_CONFIG_VALUE_0: 'Boundary Fixture', GIT_CONFIG_KEY_1: 'user.email', GIT_CONFIG_VALUE_1: 'boundary@example.test' };
+    const run = (file, ...args) => execFileSync(process.execPath, [file, ...args], { cwd: root, encoding: 'utf8', stdio: 'pipe', timeout: 60000, env });
+    const attempt = (file, ...args) => spawnSync(process.execPath, [file, ...args], { cwd: root, encoding: 'utf8', env });
     write(root, 'src/modules/extra/module.ts', "export default {id:'extra',label:'Extra',version:'0.1.0',optional:true,lib:true};");
     write(root, 'src/modules/extra/lib/index.ts', 'export const value = 1;');
     write(root, 'src/modules/extra/lib/private.ts', 'export const hidden = 1;');
