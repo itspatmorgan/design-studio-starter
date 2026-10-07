@@ -122,11 +122,19 @@ export default function Settings() {
               <div><Link to={'/prototypes' as never} search={{ q: person.key } as never} className="text-sm font-medium hover:underline">{person.name}</Link>{person.key === snapshot.actor && <span className="ml-2 text-xs text-muted-foreground">You</span>}<p className="mt-1 text-xs text-muted-foreground">{person.key}{person.github && ` · @${person.github}`}</p></div>
               <div className="flex flex-wrap items-center gap-3">
                 {draft.usage === 'team' ? <label className="flex items-center gap-2 text-sm"><Checkbox checked={admin} disabled={disabled} onCheckedChange={checked => update({ admins: checked ? [...(draft.admins ?? []), person.key] : (draft.admins ?? []).filter(key => key !== person.key) })} />Admin</label> : <Badge variant="secondary">{admin ? 'Admin' : 'Contributor'}</Badge>}
-                {admin ? <span className="text-sm text-muted-foreground">Full studio access</span> : snapshot.systems.filter(system => Object.hasOwn(draft.systemMaintainers, system.id)).map(system => <label key={system.id} className="flex items-center gap-2 text-sm"><Checkbox disabled={disabled} checked={draft.systemMaintainers[system.id].includes(person.key)} onCheckedChange={checked => update({ systemMaintainers: { ...draft.systemMaintainers, [system.id]: checked ? [...draft.systemMaintainers[system.id], person.key] : draft.systemMaintainers[system.id].filter(key => key !== person.key) } })} />Maintain {system.label}</label>)}
+                {admin ? <span className="text-sm text-muted-foreground">Full studio access</span> : snapshot.systems.filter(system => Object.hasOwn(draft.systemMaintainers, system.id)).map(system => <label key={system.id} className="flex items-center gap-2 text-sm"><Checkbox disabled={disabled} checked={draft.systemMaintainers[system.id].includes(person.key)} onCheckedChange={checked => update({ systemMaintainers: { ...draft.systemMaintainers, [system.id]: checked ? [...draft.systemMaintainers[system.id], person.key] : draft.systemMaintainers[system.id].filter(key => key !== person.key) } })} />{system.label} system</label>)}
               </div>
             </li>;
           })}</ul>
-          <p className="mt-6 text-xs leading-relaxed text-muted-foreground">Contributors manage their own prototypes. Maintainers also edit their assigned active systems. Admins manage the studio and all prototypes. Assignments do not grant repository access.</p>
+          <div className="mt-6 border-t border-border pt-5">
+            <h3 className="text-sm font-medium">Access levels</h3>
+            <dl className="mt-3 space-y-3 text-sm">
+              <div><dt className="font-medium">Contributor</dt><dd className="mt-1 text-muted-foreground">Manages their own prototypes. Can use any active prototype system.</dd></div>
+              <div><dt className="font-medium">System maintainer</dt><dd className="mt-1 text-muted-foreground">Contributor access, plus editing the components, styles, assets, context, and skills in each assigned active system.</dd></div>
+              <div><dt className="font-medium">Admin</dt><dd className="mt-1 text-muted-foreground">Manages the whole studio, all systems and prototypes, and contributor permissions.</dd></div>
+            </dl>
+            <p className="mt-4 text-sm text-muted-foreground">Repository access is managed separately through your Git provider.</p>
+          </div>
         </Section>
         {editable && <div className="space-y-3">
           {adminProblems(draft, snapshot.contributors.map((person) => person.key)).length > 0 && <p role="alert" className="text-sm text-destructive">Team use requires at least one registered Admin.</p>}
