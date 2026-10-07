@@ -1,74 +1,70 @@
 ---
-title: "Customize your studio"
-description: "Configure Studio settings, then extend the studio through systems and modules."
-section: "Begin"
-order: 3
+title: Customize your studio
+description: Make Studio fit your product, then extend it when you need more.
+section: Your studio
+order: 23
 toc: true
 ---
 
-You own this studio and can change any part of it. Start with your prototypes, systems, and configuration. Add modules when you need a new capability. Changes to supplied code need more care when accepting upstream updates.
+The most useful customization is usually your own design system. Its components, styles, and product knowledge help your agent make work that feels like your product. Start with [Systems](/documentation/guide/systems#bring-your-own-system).
+
+You own Studio's code too. Your agent can change the environment or add capabilities as your needs grow.
 
 ## Choose where to work
 
-| Scope | Purpose | Update responsibility |
-| --- | --- | --- |
-| `src/prototypes/<contributor>/` | Your views, documents, diagrams, and canvases. | Maintain your work within the prototype contract. |
-| `studio.config.ts` | Studio identity, enabled modules, registered systems, and the default system. | Use supported choices and review configuration migrations. |
-| `src/systems/<id>/` | Your components, theme, context and skills. | Maintain your system and its dependencies. |
-| `src/modules/<id>/` | A capability such as a new artifact type or studio section. | Maintain your module against the supported extension contracts. |
-| `src/systems/studio/` | The supplied components and guidance used by Design Studio itself. | Reconcile local changes with Studio releases. |
-| `src/platform/` and `scripts/` | Application infrastructure, extension contracts, build tools, and commands. | Maintain local changes and verify them against upstream updates. |
+| What you want | Where the change belongs |
+| --- | --- |
+| Try a different layout or interaction | In your prototype. |
+| Reuse components, styles, or product guidance | In a system. |
+| Change the studio name, defaults, or available tools | In Studio settings. |
+| Add a new tool or section | In a module where practical. |
+| Change Studio's core experience | In the supplied application code. |
 
-Supplied and custom modules share the same structure. Their location describes their purpose, not who maintains them.
-
-## Start with your work
-
-Create prototypes and use the assigned system's components. Keep experimental helpers in the prototype until you need to share them. The [Prototypes chapter](/documentation/guide/prototypes) explains the workflow.
+Start with the smallest change that serves your goal. An experiment can stay inside a prototype until it needs to become a shared pattern.
 
 ## Configure the studio
 
-Open **Studio settings** from the gear icon in local navigation, or search for it. Registered contributors can view the page; Admins can edit shared settings. Settings are available while running Studio locally.
+Ask your agent to help configure Studio, or open **Studio settings** from the local gear icon or search. Registered contributors can view settings; Admins can edit shared choices. In personal use, your local contributor is automatically an Admin.
 
 | Section | What you can do |
 | --- | --- |
-| General | Change the studio name, personal or team use, optional tagline, and default design system. |
-| Modules | Turn installed optional modules on or off. Required modules stay enabled. |
-| Contributors | View registered profiles and role badges. Select a name to browse that contributor's prototypes. |
+| General | Change the name, tagline, personal or team use, and default design system. |
+| Modules | Turn installed optional capabilities on or off. Required capabilities stay enabled. |
 
-Changing the default system preserves existing prototypes' system choices. Disabling a module keeps its files and content, so you can enable it again later.
+Changing the default system affects the starting choice for new prototypes. Existing prototypes keep their assignments. Disabling a module preserves its files and content so you can enable it later.
 
-Choose **Save changes** at the bottom of the page to apply your edits. Studio saves to your local repository and restarts to apply the configuration. **Discard** resets unsaved edits. If someone or your agent changes the configuration while you are editing, reload settings before trying again.
+Choose **Save changes** to apply edits. Studio saves locally and restarts to apply the configuration. **Discard** resets unsaved edits. If your agent changes settings while you are editing them, reload before saving.
 
-A save does not share changes with your team or publish the site. Follow your team's [Git workflow](/documentation/guide/collaborate#share-through-git) to share them.
+Switching to Team enables Contributors & Permissions when it is installed. If it is missing, ask your agent to install it first. Use the separate **Contributors** page to review profiles and assignments. Ask your agent to help register teammates and establish access. When that module is enabled, the **Collaborate** chapter explains roles and ownership.
 
-Ask your agent to register or update contributor profiles, assign team Admins, install or remove modules, or bring in a design system. [Collaboration](/documentation/guide/collaborate#studio-settings-and-roles) explains roles. [Studio configuration](/documentation/reference/platform/context/config.md) supplies the file and command contract.
+A local save does not share or publish changes. See [Share and hand off](/documentation/guide/share).
 
 ## Add a system
 
-A system supplies components, theme, and guidance for your product. Ask your agent to add or adapt one. You can have several systems and assign a different one to each prototype.
+Ask your agent to create or adapt a system for your product. You can have several systems, such as a product interface and a marketing site, and choose one for each prototype.
 
-Studio is the required system used by the application itself. It is maintained with platform releases and stays separate from prototype systems. See [Systems](/documentation/guide/systems).
+Changes to a shared system can affect the prototypes using it. Review the relevant screens after changing components or styles, and agree on shared changes with your team.
 
 ## Build a module
 
-Modules add capabilities to your studio. Use `pnpm studio create-module <id>` to preview a scaffold, then apply it with `--yes`. The scaffold adds a page and navigation entry without editing the platform shell.
+A **module** adds a capability to Studio, such as an artifact type or a new section. Modules can keep a feature's code together and integrate through supported connections to the platform.
 
-For example, `pnpm studio create-module research --label "Research"` previews a Research module. Applying it creates `src/modules/research/`, registers it, and installs its declared agent rule. Restart the development server, then edit its `app.tsx` to build the page.
+For example:
 
-Module declarations and shared services have explicit extension contracts. Checks report imports into private platform implementation. See the [Module contract](/documentation/reference/platform/context/modules.md) for file types, local handlers, libraries, installation, and removal.
+> We want a Research section for browsing interview summaries. Assess whether this fits as a module. Explain what it would contain, what it needs from Studio, and how we would maintain it before building it.
 
-Modules run as trusted repository code. Supported boundaries reduce accidental coupling; they do not isolate faulty code or guarantee compatibility with every future release.
+Your agent can scaffold the module, build its behavior, and check its integration. You review whether it solves the intended problem. Installed optional modules can be turned on or off in settings.
+
+Module boundaries reduce accidental coupling with the core. Modules still run as part of Studio; a faulty module can affect the application. Ask your agent to use the supported [module contracts](/documentation/context/platform.core/context/modules) and make the result reviewable.
 
 ## Adapt supplied code
 
-You can edit supplied modules, the Studio system, and platform infrastructure. Keep those changes focused and record why you made them. A change to a supported contract also requires checking its consumers.
+Your agent can change Studio's appearance or behavior when settings and modules do not cover the need. Explain the outcome you want and ask it to identify the scope before making a substantial change.
 
-When adopting a release, review upstream changes alongside your local changes. Resolve conflicts and run the checks before accepting the update. Keep platform changes separate from product work where practical so they are easier to review.
+Changes to shared code need coordination in a team. Preserve why a change was made so it is easier to assess future updates.
 
 ## Accept upstream updates
 
-The starter is source code in your repository. It does not automatically merge future platform releases. Use a branch to review and merge changes from the upstream release you choose, then run `pnpm build` and inspect the application.
+Studio does not automatically merge future releases into your folder. Ask your agent to compare an update with your local changes, preserve your work, and verify the application before adopting it.
 
-`studio.lock.json` records sources, versions or revisions, and file hashes for capabilities installed through `pnpm studio add`. Checks report differences from those installed files. The lock does not list supplied starter code or automatically upgrade it. Locally authored capabilities are maintained by your team.
-
-A successful merge does not prove behavioral compatibility. Review the release guidance and verify your systems, modules, and important prototypes.
+Your custom systems and modules need ongoing maintenance too. For deeper setup and update details, your agent can consult [Studio configuration](/documentation/context/platform.core/context/config) and [Modules and extensions](/documentation/context/platform.core/context/modules).

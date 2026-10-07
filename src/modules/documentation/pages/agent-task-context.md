@@ -1,45 +1,49 @@
 ---
-title: Task context
-description: Give your agent clear direction and connect it to the right product guidance.
-section: Agents
-order: 26
+title: Work with your agent
+description: Give useful direction, review the result, and refine your exploration.
+section: Begin
+order: 4
 toc: true
 ---
 
-A useful request describes what you want to explore, who it is for, and what matters most. Your agent can combine that direction with the guidance already saved in your studio.
+You direct the experience; your agent builds and changes it. You can start with an incomplete idea and develop it through conversation.
 
 ## Start with the outcome
 
-For example:
+Explain what you want to explore, who it is for, and what matters most. Point to the prototype you want changed, or ask for a new one.
 
-> Prototype a checkout for first-time customers. Make delivery costs clear before payment. Use our Product system and show both the happy path and a declined-card state.
+> In Checkout exploration, help first-time customers understand the total cost before paying. Use its assigned system. Keep this focused on delivery and payment; account creation is outside this exploration.
 
-This gives the agent an audience, a design priority, a system to use, and the states you want to review. You can also point it to research, a reference, or an existing prototype.
+Tell the agent what is fixed and where it can propose alternatives. If you are unsure about the flow, ask it to suggest a small starting point and explain the choices.
 
-```mermaid
-flowchart TD
-  accTitle: What helps an agent build the right prototype
-  accDescr: Your request describes the goal, audience, and states to explore. The prototype's system provides product knowledge, styles, and components. Studio skills help the agent build a result for your review.
-  request[Your goal, audience, and states] --> work[Agent builds the prototype]
-  system[Product guidance, styles, and components] --> work
-  skill[Studio skills] --> work
-  work --> review[Try the flow and give feedback]
-```
+## Supply useful material
 
-## Use the right system
+Share what you have: customer insights, a brief, screenshots, brand assets, component source, or a reference prototype. Explain what each reference should influence. A visual reference might guide layout without defining your product's behavior.
 
-Each prototype can use a system that brings together its components, styles, and product guidance. A marketing exploration may use your Marketing system, while an in-product flow uses your Product system.
+The agent's ability to access links and files depends on your coding environment. Ask it to confirm what it could read and what is missing.
 
-Tell the agent which system you want when you create the prototype. For existing work, it should follow the prototype's assigned system. If you are unsure, ask:
+> Use these interview notes to understand delivery concerns. Treat them as evidence, and label any additional assumptions. Ask me if an unanswered question would change the flow.
 
-> Which system does this prototype use?
+You do not need to prepare every kind of context before starting. Add material as it becomes relevant.
 
-Browse the system in **Systems** to review its guidance. To change an existing prototype's system, ask the agent to help with that change.
+## Give feedback the agent can act on
 
-## Refine through feedback
+Point to the screen or state, explain the problem, and describe what should remain.
 
-Try the prototype and describe what should improve:
+> On the declined-payment screen, the next action is unclear. Explain that the order has not been placed and make retrying the primary action. Keep the entered delivery details.
 
-> The delivery step feels too busy. Keep the cost visible, but simplify the choices and explain the recommended option.
+You can describe a visual issue in words or provide a screenshot when your agent supports it. Studio's **Copy link** action helps identify an artifact; local links require access to the running studio.
 
-Keep feedback about this exploration in the task. If you discover a principle that should apply across your product, ask the agent to save it as shared context. See [Maintaining guidance](/documentation/guide/agent-maintenance).
+## Review behavior as well as appearance
+
+Try the main path and the states relevant to your question. Check copy, spacing, and visual fidelity, then check navigation, choices, and recovery from errors. Ask what uses sample data or simulated actions.
+
+> Walk me through what this prototype demonstrates, what is simulated, and what still needs a decision.
+
+Agent checks help catch implementation problems. Your review establishes whether the experience answers your design question.
+
+## Keep what you learn
+
+Ask the agent to record decisions that future reviewers need. Keep exploration-specific notes with the prototype. Save principles that should guide other prototypes in the relevant system's context.
+
+[Product knowledge](/documentation/guide/agent-context) explains shared context. [Share and hand off](/documentation/guide/share) helps prepare the work for others.

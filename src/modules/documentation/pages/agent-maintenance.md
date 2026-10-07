@@ -1,48 +1,38 @@
 ---
 title: Maintaining guidance
-description: Keep your team's shared knowledge clear, useful, and current.
-section: Agents
-order: 27
+description: Keep shared knowledge useful as your understanding grows.
+section: Your studio
+order: 22
 toc: true
 ---
 
-Shared guidance helps your agent make consistent decisions across prototypes. Keep it focused on what your team wants the agent to know or do repeatedly.
+Save what should help the next exploration. You do not need to turn every conversation or correction into a new rule.
 
 ## Decide what to save
 
-| What you want to keep | Where it fits |
+| What you learned | Where it fits |
 | --- | --- |
-| Who your customers are and what they need | Audience context in your product's system. |
-| Principles, brand voice, or design standards | Context in the relevant system. |
-| A repeatable task, such as reviewing copy against your standards | A skill in the relevant system. |
-| A decision specific to one exploration | A document or note with that prototype. |
+| Who your customers are and what they need | Audience context in the relevant system. |
+| A principle, brand choice, or design standard | Context in that system. |
+| How to carry out a recurring team task | A skill in that system. |
+| A decision specific to one exploration | Notes with that prototype. |
 
-You can ask your agent to organize the guidance for you:
+Ask your agent to update related guidance rather than create another copy:
 
-> Save these customer insights as context in our Product system. Check the existing audience document first and update it where appropriate.
+> Customers need to see delivery costs before they commit. Review our current guidance and add this principle where it belongs. Keep the checkout-specific decisions with Checkout exploration.
 
 ## Review and refine
 
-Open your system's **Context** and **Skills** to read the current guidance. Ask the agent to revise it, or use **Edit source** to change the document yourself.
+Read the current **Context** and **Skills** in your system. Ask the agent to revise them, or use **Edit source** where you have permission.
 
-When adding guidance, look for an existing document that covers the subject. Keeping related knowledge together makes it easier to review and update. Give a different subject its own document when that makes it clearer.
+Keep the facts and choices that affect the work. Explain when a recommendation applies. Replace outdated guidance and resolve contradictions as your understanding changes.
 
-Save the choices that make the work fit your team. A skill can explain decisions and review the result while Studio's tools handle repeatable file operations and checks. Ask the agent to reuse those tools and keep each workflow focused on the requested outcome. A settings update should not create sample work just to complete a checklist.
+For a team, agree on shared principles and standards together. Label working assumptions so they remain open to review.
 
-```mermaid
-flowchart TD
-  accTitle: Keep shared guidance useful
-  accDescr: Review what the team already knows, update the relevant context or skill, then use it in a prototype and refine it based on the result.
-  review[Review existing guidance] --> update[Update what matters]
-  update --> use[Use it in a prototype]
-  use --> learn[Review the result and refine]
-  learn --> review
-```
+## Learn from the result
 
-## Learn from the work
+If a prototype misses the mark, ask the agent which guidance it used. Decide whether the issue is in the request, the implementation, or the shared knowledge.
 
-If a result misses the mark, explain why and ask the agent to review the guidance it used. A useful correction might be:
+> Our customers know the industry but are new to this product. Check whether the audience guidance makes that clear, then revise the explanations in this flow.
 
-> Our audience knows the industry but is new to this product. Update the onboarding guidance to reflect that, then revise this flow.
-
-For a team, agree on changes to shared principles and standards together. Keep the guidance current as your understanding of customers and your product grows.
+Try the updated guidance in the work. Judge whether it leads to better decisions rather than measuring its usefulness by how much text you have saved.

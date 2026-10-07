@@ -1,33 +1,43 @@
 ---
-title: "Common questions"
-description: "A few practical answers before you go further."
-section: "More"
-order: 40
+title: Common questions
+description: Practical answers as you explore and make Studio your own.
+section: Reference
+order: 45
 toc: true
 ---
 
 ## Do I need to write code?
 
-You can describe changes to your coding agent and review them in Studio. The source is always available when you want to inspect or edit it.
+You can direct your coding agent in plain language and review its work in Studio. You can also organize artifacts, annotate canvases when enabled, and edit source directly when that is useful.
 
-## What is it built with?
+## Does Studio run an agent for me?
 
-The platform uses React, TypeScript, Vite, TanStack Router, and Tailwind CSS. The starter components use shadcn/ui and Base UI. Your product system can use another component library. See [Tech stack](/documentation/reference/platform/context/stack.md).
+Work with the agent in your coding app, using the studio folder. Studio displays and organizes the result. Creating an item in Studio does not automatically start an agent task.
 
-## Can I use our design system?
+## Do I need my own system before starting?
 
-Yes. Ask your agent to bring in your components, tokens, and assets. Systems can support light mode, dark mode, or both. Start with [Systems](/documentation/guide/systems).
+No. Use an available system while exploring. When fidelity to your product matters, ask the agent to set up your components, styles, and product knowledge. See [Systems](/documentation/guide/systems).
+
+## Are prototypes production applications?
+
+A prototype demonstrates an experience. Ask the agent to explain what works, what is simulated, and what still needs a production decision. [Share and hand off](/documentation/guide/share#prepare-an-engineering-handoff) helps make those distinctions clear.
 
 ## Where do fonts, logos, and images go?
 
-Keep prototype-specific assets with that prototype, system assets with their system, and shared studio assets in the shared assets location. Your agent can follow the [Assets and fonts](/documentation/reference/platform/context/assets.md).
+Give your agent the assets and explain their purpose. Material used by one exploration belongs with its prototype; reusable product assets belong with the system. The agent can follow [Assets and fonts](/documentation/context/platform.core/context/assets).
 
-Asset Guard checks asset sizes before commits and in repository checks to catch large files before they slow down the codebase.
+## Why is a tool missing?
 
-## Can we change the starter?
+Your studio may have an optional module disabled or uninstalled. Ask the agent to check what is available. Admins can enable installed optional modules in [Studio settings](/documentation/guide/customize#configure-the-studio). Disabled tools keep their saved content.
 
-Yes. Admins can change the studio name, defaults, and enabled optional modules in [Studio settings](/documentation/guide/customize#configure-the-studio). You own the repository, so you can also ask your agent to adapt systems or add capabilities. Detailed contracts live in [Context and Skills](/documentation/context/platform.core); you do not need to read them to start.
+## Can we change Studio itself?
+
+Yes. You own its code. Your agent can adapt it or build a module for a new capability. [Customize your studio](/documentation/guide/customize) explains the choices and maintenance responsibilities.
 
 ## What if something breaks?
 
-Copy the error message and give it to your agent, along with what you were trying to do. It can inspect the files and run the platform checks. [Checks and fixes](/documentation/reference/platform/context/checks.md) provides the technical details.
+Give the agent the error message, the affected prototype or artifact, and what you were trying to do. Ask it to preserve your work while investigating. It can consult [Checks and fixes](/documentation/context/platform.core/context/checks).
+
+## What is it built with?
+
+For implementation details, ask your agent to explain the relevant parts of the [Technology stack](/documentation/context/platform.core/context/stack). You do not need to learn the stack to direct a prototype.

@@ -1,8 +1,8 @@
 ---
 title: Documentation
 description: Learn how to use Studio and explore the guidance available to your agent.
-section: Studio
-order: 14
+section: Reference
+order: 41
 module: documentation
 toc: true
 ---
@@ -13,7 +13,7 @@ Documentation has two reading choices: **Guide** and **Context & Skills**.
 
 The Guide helps you get started, explore ideas, and work with your agent. Read the chapters that are useful for what you want to do next.
 
-The [Agents section](/documentation/guide/agent-context) explains how shared knowledge and task instructions help your agent make work that fits your product.
+[Product knowledge](/documentation/guide/agent-context) explains how shared context helps your agent make work that fits your product.
 
 ## Context & Skills
 

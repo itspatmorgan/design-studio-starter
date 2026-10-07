@@ -1,8 +1,8 @@
 ---
 title: "Home"
 description: "Find work and understand the local and published studio."
-section: "Studio"
-order: 10
+section: "Reference"
+order: 40
 toc: true
 ---
 

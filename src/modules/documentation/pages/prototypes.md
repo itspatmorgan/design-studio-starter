@@ -1,15 +1,15 @@
 ---
 title: "Prototypes"
 description: "Explore ideas with artifacts that work together."
-section: "Studio"
-order: 11
+section: "Prototypes and artifacts"
+order: 10
 module: prototypes
 toc: true
 ---
 
 A prototype is a workspace for an idea. It brings interactive screens and supporting context together, without affecting other prototypes.
 
-Ask your agent to create one, or select **New prototype**. Give it a goal, then iterate with your agent as you review the result.
+Ask your agent to create one, or select **New prototype** to create its starting files. The dialog does not start an agent or build your intended experience. Continue in your coding app to direct the work. [Your first prototype](/documentation/guide/first-prototype) walks through a small flow and its revisions.
 
 The creation dialog asks for a title and system. Choose an installed system for its components, styles, and guidance. Choose **No system — custom styling** to build with your own components and CSS instead.
 
@@ -36,7 +36,7 @@ Views are always available. Documents, diagrams, and canvases are optional capab
 
 Add artifacts with **+** in navigation. Enter a name. Studio supplies the file extension. Use folders to group work, and drag items to move or reorder them. The first artifact in navigation is where the prototype opens. Reordering keeps your current artifact open. A brief message confirms when a move updates references.
 
-The Feedback Inbox sample demonstrates an introduction, early exploration, app screens, and individual states. Your prototype can use whatever organization suits the work.
+Your prototype can use whatever organization suits the work. Ask the agent to make its starting point and important states easy to find.
 
 Right-click a view and choose **Make lofi** to explore in grayscale with handwritten type. **Make hi-fi** restores its normal appearance.
 
@@ -46,25 +46,7 @@ When you rename or move files inside a prototype, Studio repairs known links, em
 
 Your assigned design system supplies components and styles. You can also explore local alternatives inside the prototype. Those experiments stay separate from the shared system.
 
-```mermaid
-%%{init: {"flowchart": {"nodeSpacing": 20, "rankSpacing": 30, "subGraphTitleMargin": {"top": 10, "bottom": 15}}}}%%
-flowchart TB
-  accTitle: A prototype's local scope and reusable dependencies
-  accDescr: A prototype contains interactive views, local helpers, and optional documents, diagrams, and canvases. Its code can reuse its assigned design system, independent shared utilities, installed packages, and public libraries from enabled modules. Other prototypes, other design systems, and private platform code are outside its dependency boundary.
-  subgraph prototype[One prototype — local experiment]
-    direction TB
-    views[Interactive views]
-    helpers[Local components and helpers]
-    material[Documents, diagrams,<br/>and canvases — optional]
-    views -->|Uses| helpers
-    material -.->|Explains and arranges| views
-  end
-  prototype -->|Code may reuse| system[Assigned<br/>design system]
-  prototype -->|Code may reuse| tools[Shared utilities<br/>and packages]
-  prototype -->|Code may reuse| libraries[Enabled public<br/>module libraries]
-```
-
-Your code can reuse the assigned system, independent shared utilities, installed packages, and public libraries from enabled modules. Other prototypes, other systems, and private platform code stay outside its dependencies. A prototype with no assigned system uses local components and styles. Moving a local component into a shared system is a coordinated change.
+A prototype with no assigned system uses local components and styles. Moving a local component into a shared system is a coordinated change because other prototypes may use it.
 
 Edit your own artifacts with your agent or the [shared source workflow](/documentation/guide/home#working-with-files). Other contributors' source opens read-only.
 

@@ -1,51 +1,55 @@
 ---
-title: "Canvases"
-description: "Arrange artifacts and notes on a canvas."
-section: "Artifacts"
-order: 22
+title: Canvases
+description: Arrange screens, diagrams, and notes for exploration and review.
+section: Prototypes and artifacts
+order: 13
 module: canvas
 toc: true
 ---
 
-Canvases adds an Excalidraw surface inside a prototype. Each canvas is an `.excalidraw` file with shapes, text, notes, arrows, and linked artifacts.
+A canvas is an open space inside a prototype. Sketch an idea, compare screens, or annotate the work with shapes, notes, and arrows. Studio uses Excalidraw for this surface.
 
-The module is optional. Disabling it preserves canvas files and hides them from normal navigation.
+## Bring the exploration together
 
-The canvas grid shortcut is **⌘⇧'** on Mac or **Ctrl+Shift+'** on Windows/Linux. **⌘' / Ctrl+'** is reserved for switching the artifact between rendered view and source locally.
+Continuing Checkout exploration, ask:
 
-## Create and add artifacts
+> Create a review canvas in this prototype. Arrange the checkout screens in order, with the error states beneath the main flow. Leave space beside each screen for annotations. If available, include the flow diagram and a link to the Audience and decisions document.
+
+Open the canvas and add your observations. For example, mark where delivery costs first appear or note a choice that needs discussion.
+
+Tell your agent how to use the annotations:
+
+> Read the notes on the review canvas. Revise the delivery screen to address the cost-visibility concern, and leave the payment behavior unchanged. Tell me which questions remain open.
+
+The agent can edit the saved canvas file. Some coding environments also let it use live canvas tools. Ask it to confirm which access it has.
+
+## Add and open artifacts
 
 Ask your agent to create a canvas, or select **New** (+), then **New canvas**, in the Artifacts row.
 
-Drag an artifact from the prototype's navigation onto the canvas. You can also select **Copy link** in the artifact's menu, place the pointer over the canvas, and paste.
+Drag an artifact from the prototype's navigation onto the canvas. You can also choose **Copy link** in its menu, place the pointer over the canvas, and paste.
 
-| Linked artifact | Display |
+| Artifact | What appears |
 | --- | --- |
-| View | Live-rendered preview. Open the view to interact with it. |
-| Diagram | Live preview of the Mermaid source, with an Open link. Requires the Diagrams module. |
-| Document or canvas | Card with an Open link. |
-| Missing artifact | Placeholder. |
+| View | A preview that updates with the screen. Open the view to interact with it. |
+| Diagram | A preview that updates with the diagram, when Diagrams is enabled. |
+| Document or another canvas | A card with a link to open it. |
+| Missing artifact | A placeholder. |
 
-A canvas embeds only artifacts from its own prototype. An embed from another prototype shows a scope message and fails the build. Copy the artifact into this prototype to reuse it.
+Canvas previews use the original files. Notes and arrows you add are your own annotations; they do not automatically change the screens.
 
-The canvas cannot store images. View and diagram previews provide a connection to their source files.
+A canvas can embed artifacts only from its own prototype. Ask your agent to copy material into the prototype if you need it here. The canvas cannot store images; use shapes, notes, and artifact previews.
 
-To explore a Mermaid flowchart as editable shapes, open **More tools → Mermaid to Excalidraw**, paste its source, and select **Insert**. The converted shapes are an independent sketch; editing them does not update the Mermaid file. The sample prototype's Breadboard canvas demonstrates both approaches.
+## Annotate and save
 
-## Embed a canvas in a document
+Use the toolbar for shapes, text, and arrows. Press **N** for a sticky note. The menu includes undo, redo, grid, snapping, and background color. **⌘. / Ctrl+.** hides or shows controls.
 
-Use `![Exploration](./breadboard.excalidraw)` on its own line in a document from the same prototype. The preview fits the canvas contents and updates when the source changes locally. Open the canvas to edit or explore it. Views and diagrams inside it remain previews; documents and other canvases remain cards.
+Changes save automatically while Studio runs locally. Your agent's file changes also appear in the open canvas. External file edits may not become separate undo steps.
 
-## Local controls and saving
+The grid shortcut is **⌘⇧' / Ctrl+Shift+'**. **⌘' / Ctrl+'** switches between the rendered canvas and its source.
 
-Use the toolbar for shapes, text, and arrows. Press **N** for a sticky note. The canvas menu includes undo, redo, grid, snapping, and background color. Command+. or Ctrl+. hides or shows controls.
+Other contributors' and published canvases are read-only. Disabling Canvases preserves its files and hides them from normal navigation.
 
-Changes save automatically while the studio runs locally. External file changes appear in the open canvas. You can edit only canvases in your own prototypes. Other contributors' and published canvases are read-only.
+## Use the canvas in a document
 
-## Agent access
-
-The agent can edit the saved canvas file. Agents with browser access can also use the live canvas tools, which can report selection and viewport information.
-
-Live tool operations support undo. External file edits are not necessarily separate undo steps. Available live integrations depend on your agent.
-
-The agent tool `artifacts` lists the prototype's available artifacts. To embed one, use `create` with `{ "type": "artifact", "artifact": "explore/feedback-flow" }`. Tool help describes current arguments.
+If Documents is enabled, ask the agent to add a preview of the canvas to your prototype's explanation or handoff. Readers can see the arrangement, then open the canvas to explore it. See [Share and hand off](/documentation/guide/share) for preparing the work for others.

@@ -1,56 +1,44 @@
 ---
-title: "Collaborate"
-description: "Share work while keeping ownership clear."
-section: "Team"
-order: 30
+title: Collaborate
+description: Join a shared studio and keep personal and shared changes clear.
+section: Share your work
+order: 31
 toc: true
 module: contributors
 ---
 
-A team shares a repository and systems, including their components and context. Each contributor has their own prototypes. Ask your agent to set up your contributor identity when you join an existing studio.
+A team shares systems and studio configuration. Each contributor has their own prototypes, giving them a place to explore while reusing the team's foundation.
+
+## Join an existing studio
+
+Ask your agent to help you work in the team's repository and register your contributor identity. It should preserve existing systems, configuration, and other people's work.
+
+Your contributor identity organizes ownership inside Studio. It is not a sign-in account and does not grant access to the team's Git repository.
 
 ## Own your experiments
 
-Make changes in your own prototypes. You can inspect other contributors' work and discuss changes with them. For changes outside your scope, ask your agent to prepare a pull request for review.
+Work in your own prototypes. You can inspect other contributors' work and discuss changes with them. For a change outside your scope, ask the agent to prepare a proposal for review by the relevant owner.
 
-Prototype-local components and styles give you room to experiment without changing the team's shared system.
+Local components and styles let you try alternatives without changing the shared system. Agree with the team before making an experiment reusable across prototypes.
 
 ## Contributors and permissions
 
-**Contributors** shows your team and their studio and system assignments. **Studio settings** manages the studio’s configuration and installed modules. See [Configure the studio](/documentation/guide/customize#configure-the-studio) for how to open it, save changes, and manage optional capabilities.
+Open **Contributors** to see people and assignments. Studio has three kinds of responsibility:
 
-Contributors manage their own prototypes. System maintainers also manage the active systems assigned to them. Admins manage the whole studio, including other contributors’ prototypes and system availability. Team studios need at least one Admin and can have several. In personal use, your local contributor is automatically an Admin.
+| Responsibility | What it covers |
+| --- | --- |
+| Contributor | Their own prototypes. |
+| System maintainer | Their own prototypes and the active systems assigned to them. |
+| Admin | Shared studio settings, systems, permissions, and all prototypes. |
 
-Admins assign permissions on the local **Contributors** page. Team use requires the Contributors & Permissions module. Personal use gives you full access and hides team management. Ask your agent to register or update profiles. Local permissions do not grant repository access. Contributor management is excluded from the published site. See [Studio configuration](/documentation/reference/platform/context/config.md) for file structure and command details.
+Team studios need at least one Admin and can have several. Admins assign access on the local Contributors page. Ask your agent to register or update profiles.
+
+[Studio settings](/documentation/guide/customize#configure-the-studio) controls personal or team use and available modules. Team use requires Contributors & Permissions. Personal use gives your local contributor Admin access and hides team management.
+
+These assignments guide local work. Repository access and review rules are managed separately by your team. Contributor management is excluded from the published site.
 
 ## Share through Git
 
-Saving changes updates your local files. To share them, ask your agent to review and commit the work, then push it through your team's review process. Other contributors pull those changes into their copies.
+Ask your agent to follow the team's branching and review process. When receiving updates, it can help combine changes and resolve conflicts while preserving your work.
 
-```mermaid
-%%{init: {"flowchart": {"nodeSpacing": 20, "rankSpacing": 30, "subGraphTitleMargin": {"top": 10, "bottom": 15}}}}%%
-flowchart TB
-  accTitle: Save and share repository changes
-  accDescr: Saving changes local files. Committing records changes in local Git history. Pushing shares commits with the repository. Another contributor pulls commits into their local history and working files. These actions do not publish a viewing site.
-  subgraph yours[Your local copy]
-    edits[Unsaved edits] -->|Save| files[Working files]
-    files -->|Stage and commit| history[Local Git history]
-  end
-  history -->|Push commits| remote[Shared Git repository]
-  subgraph theirs[Another contributor's local copy]
-    received[Local Git history] -->|Update working files| otherFiles[Working files]
-  end
-  remote -->|Pull and integrate commits| received
-```
-
-A commit records a version in local Git history. Push shares commits; pull receives and integrates them. Conflicts may need resolution. Follow your team's branching and review process.
-
-Tell your agent when to share work. A local save does not publish it or send it to the team.
-
-## Publish for review
-
-Publish a site when people need a viewing link without running Studio. Hosting is optional and separate from sharing code through Git.
-
-Published views remain interactive. The site does not provide live co-editing or an agent service. Archived prototypes stay available locally and are excluded from the published build.
-
-Your maintainer chooses hosting, access, and update timing. Ask your agent to consult [Publishing](/documentation/reference/platform/context/publishing.md) when setting this up.
+[Share and hand off](/documentation/guide/share#share-the-working-files) explains saving, commits, and sharing repository files. That chapter also covers viewing links and engineering handoff, which remain useful when you work alone.

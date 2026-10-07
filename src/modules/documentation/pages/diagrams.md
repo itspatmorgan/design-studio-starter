@@ -1,47 +1,48 @@
 ---
-title: "Diagrams"
-description: "Explain flows and relationships with Mermaid."
-section: "Artifacts"
-order: 21
+title: Diagrams
+description: Map the flow behind your screens and make missing decisions visible.
+section: Prototypes and artifacts
+order: 11
 module: diagrams
 toc: true
 ---
 
-Diagrams adds standalone Mermaid files to prototypes. Use them to explain a flow, responsibility, dependency, or other relationship that helps someone understand the prototype. Each diagram has its own navigation entry and can appear as a live preview on a canvas. Standalone diagrams fill the prototype viewer and scale to fit its available space while preserving their proportions.
+A diagram explains how an experience fits together. Use one to map a customer flow, compare branches, or show responsibilities that are hard to understand from screens alone.
 
-## Create and edit
+## Map your prototype's flow
 
-Ask your agent to create a diagram, or select **New** (+), then **New diagram**, in the prototype’s Artifacts row. New diagrams use `.mermaid`. The module also opens `.mmd` files.
+Continuing Checkout exploration, ask:
 
-A file contains one diagram in plain Mermaid syntax, without Markdown fences:
+> Add a diagram showing the checkout from basket review through delivery and payment. Include the empty-basket and declined-payment branches. Match the behavior currently demonstrated, and identify any missing decisions.
 
-```text
-flowchart LR
-  accTitle: Review feedback
-  accDescr: Feedback is reviewed, then addressed or kept for later.
-  feedback[Feedback] --> review{Review}
-  review -->|Act| task[Create a task]
-  review -->|Later| backlog[Keep for review]
-```
+Open the diagram in the prototype's navigation. Follow each branch and compare it with the screens. Does the diagram explain the same experience? Are there paths that the prototype does not demonstrate yet?
 
-Include an accessible title and description where the selected diagram type supports them. Use the diagram type that communicates the relationship clearly. All diagram types supported by the installed Mermaid renderer are available.
+To revise it, describe the change:
 
-Right-click the file and select **Edit source** to edit it. Save with Command+S on macOS or Ctrl+S elsewhere, then select **Done**. Edits made by your agent or external editor also update the open diagram locally. Invalid syntax displays an error. Use the file menu’s **Edit source** action to inspect and repair it. Standalone diagrams have no separate source toggle.
+> Show how a customer retries payment while keeping their delivery choice. Keep the diagram focused on customer actions.
 
-The source editor highlights `.mermaid` and `.mmd` files with the same Flexoki colors as code. Mermaid fences in Markdown source use this highlighting too. Highlighting covers common diagram types; unsupported syntax remains editable and does not limit rendering.
+Diagrams and screens are separate artifacts. Ask the agent to update both when a flow changes.
 
-Published diagrams and other contributors’ files are read-only. Source access on local files uses the file menu.
+## Choose how to use it
 
-## Share the same visual language
+A standalone diagram has its own navigation entry. When Documents or Canvases is enabled, you can ask the agent to show that same diagram in a document or on a canvas. Local changes to its source update those previews.
 
-Standalone diagrams and Mermaid fences in Markdown share the same renderer, accessibility behavior, and platform theme. They use platform neutrals and Flexoki accents rather than the prototype design-system theme. See [Diagrams and code](/documentation/reference/platform/context/diagrams.md) for examples and customization.
+For a small diagram that belongs only inside an explanation, ask the agent to put it directly in a document instead. That diagram stays part of the document.
 
-Use a document fence when a diagram belongs inside written context. Use a standalone diagram when it should be independently navigable or arranged on a canvas. Link to it from documents with a relative path, such as `[Feedback flow](./feedback-flow.mermaid)`. To render the same source inside a prototype document, place `![Feedback flow](./feedback-flow.mermaid)` on its own line. The embed uses the canvas preview and provides an **Open diagram** link; changes to the source update both presentations. File embeds stay within the current prototype.
+## Create and edit directly
 
-Excalidraw’s Mermaid import can turn copied source into editable canvas shapes. That creates a separate artifact; changes do not synchronize between Mermaid source and the imported shapes.
+Ask your agent to create one, or select **New** (+), then **New diagram**, in the Artifacts row.
+
+Studio uses **Mermaid**, a text format for diagrams. You can direct the agent in plain language without learning its syntax. To inspect or change the text, right-click the diagram and choose **Edit source**. Save with **⌘S / Ctrl+S**, then select **Done**.
+
+If invalid syntax shows an error, copy the message to your agent and explain what the diagram should show. Published diagrams and other contributors' files are read-only.
+
+Diagrams follow Studio's light or dark appearance. For syntax examples and visual customization, ask your agent to consult [Diagrams and code](/documentation/context/platform.core/context/diagrams).
+
+## Sketch an alternative
+
+If Canvases is enabled, Excalidraw's **More tools → Mermaid to Excalidraw** can turn copied Mermaid text into editable shapes. Those shapes become an independent sketch. Editing them does not update the original diagram.
 
 ## Optional capability
 
-Disabling or removing Diagrams preserves prototype source files as plain files and hides them from normal artifact navigation. Canvas links become unavailable until the module is enabled again. The prototype opens on the next available artifact in navigation order.
-
-Mermaid fences in the system context, Documentation, and prototype Documents keep working without Diagrams. Documents and Canvases are separate optional modules.
+Disabling Diagrams preserves its files and hides standalone diagrams from normal navigation. Their previews become unavailable until it is enabled again. Diagrams placed directly inside Markdown documents still work without this module.

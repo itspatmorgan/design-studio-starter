@@ -1,48 +1,37 @@
 ---
-title: Agent context
-description: Give your agent the knowledge it needs to make work that fits your product.
-section: Agents
-order: 23
+title: Product knowledge
+description: Help your agent understand your customers, goals, and standards.
+section: Your studio
+order: 21
 toc: true
 ---
 
-Your agent can build a prototype from a description. To make it feel like your product, it also needs to understand your customers, your goals, and your team's design standards.
+Components and styles help a prototype look like your product. Product knowledge helps the agent make decisions that fit the people using it.
 
-Design Studio keeps that shared knowledge alongside your work. You can review it, refine it, and ask your agent to use it as you explore ideas.
+Your system keeps this shared knowledge alongside its design toolkit. You can start with a few useful facts and refine them as you learn.
 
 ## Context and skills
 
-**Context** explains what matters. It might describe who your product serves, how your brand sounds, or which design principles guide your team.
+**Context** explains what matters: your audience, product goals, research, design principles, or writing standards.
 
-**Skills** explain how to do something in Studio, such as build a prototype or create a diagram. Your agent uses the relevant skill to carry out your request.
+**Skills** describe recurring tasks, such as reviewing interface copy against your standards. Studio already includes skills for its everyday capabilities. You do not need to create one to begin prototyping.
 
-```mermaid
-flowchart TD
-  accTitle: Your direction, context, and skills guide the work
-  accDescr: You describe the result you want. Product context helps the agent make design decisions, and skills help it carry out the task. You review the resulting work.
-  direction[Your direction] --> agent[Agent builds the idea]
-  context[Context: what matters] --> agent
-  skills[Skills: how to do the task] --> agent
-  agent --> review[You review and refine]
-```
+For Checkout exploration, audience context might explain why customers worry about unexpected delivery costs. Writing guidance might favor direct explanations. Your request tells the agent which part of checkout to explore now.
 
-For example, ask for a sign-up flow for your product. Your audience context helps the agent choose what to explain. Your writing guidance shapes the copy. The prototype skill helps it build a flow you can try.
+## Add what you know
 
-## Where to find guidance
+Open **Systems**, choose the relevant system, and browse **Context** and **Skills**. Ask your agent to review what is already there before adding material.
 
-Open **Systems** and choose your product's system to find its **Context** and **Skills**. This is where your team's audience, principles, and design guidance belong. A system brings this knowledge together with the styles and components your prototypes use.
+> Add these customer insights to our system's audience context. Preserve the source and distinguish findings from assumptions. Check the existing guidance for conflicts before updating it.
 
-Open **Documentation → Context & Skills** to explore guidance about Studio and its capabilities. Each **README** introduces that part of Studio. You can browse these documents when you want to understand how something works.
+Useful starting material includes the problem your product solves, who it serves, important constraints, and examples of the experience or voice you want. You can supply documents and notes; the agent can organize them for you.
 
-To update shared guidance, ask your agent. For example:
+Review the saved guidance to confirm it represents your intent. A reference or an agent's suggestion should not silently become a team decision.
 
-> Add this to our product's writing guidance: use short, direct sentences and explain unfamiliar terms.
+## Shared knowledge or prototype notes?
 
-## Explore the Agents section
+Keep knowledge that should guide many prototypes in the system. Keep an exploration's brief, decisions, and open questions with that prototype. If Documents is enabled, a document is a useful home for those notes.
 
-| Chapter | What you can learn |
-| --- | --- |
-| [Plugin and workspace](/documentation/guide/agent-plugin) | Start or reopen a studio with your agent. |
-| [Skill discovery](/documentation/guide/agent-skills) | Understand how your agent finds help for a task. |
-| [Task context](/documentation/guide/agent-task-context) | Give your agent useful direction for a prototype. |
-| [Maintaining guidance](/documentation/guide/agent-maintenance) | Keep shared knowledge useful as your product changes. |
+For example, “explain additional costs before commitment” may become shared guidance. The delivery choices in one checkout experiment belong with that experiment.
+
+[Maintaining guidance](/documentation/guide/agent-maintenance) explains how to revise what you save. For Studio's own instructions, use **Documentation → Context & Skills**; you can ask your agent to explain the relevant parts.

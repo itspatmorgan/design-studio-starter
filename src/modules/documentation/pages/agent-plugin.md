@@ -1,53 +1,31 @@
 ---
 title: Plugin and workspace
-description: Start a studio, return to your work, and make it your own.
-section: Agents
-order: 24
+description: Reopen the right studio and continue in its local folder.
+section: Reference
+order: 42
 toc: true
 ---
 
-The Design Studio plugin helps your agent get your studio running. Your studio is a folder on your computer containing your prototypes, design systems, and shared guidance.
+Your studio is a folder containing your prototypes, systems, and shared guidance. Work in that folder with your coding agent and run Studio alongside it.
 
 ## Start or return to your studio
 
-Ask your agent in plain language:
+The Design Studio plugin helps an agent create or open a studio. Once there, the agent uses the studio's own guidance to work on your ideas.
 
 | What you want | What to ask |
 | --- | --- |
-| Start a new studio | “Create a Design Studio for me.” |
 | Return to existing work | “Open my Design Studio.” |
-| Explore an idea | “Use my studio to prototype a new onboarding flow.” |
+| Create another studio | “Create a new Design Studio for me, preserving my existing studio.” |
+| Continue an exploration | “In this studio, help me refine Checkout exploration.” |
 
-The plugin helps the agent create or open the studio. Once you are working there, the agent uses the studio's own guidance to build and refine your ideas.
+Point to the right folder when you have several studios. The preview URL is where you review work; the folder is where its files live.
 
-```mermaid
-flowchart TD
-  accTitle: From opening Studio to exploring an idea
-  accDescr: You ask the agent to create or open a studio. The plugin helps it get the studio running. The agent then uses the studio's guidance to work on your idea, and you review the result.
-  ask[Ask to create or open Studio] --> plugin[Plugin helps get Studio running]
-  plugin --> work[Agent works on your idea]
-  guidance[Your studio's context and skills] --> work
-  work --> review[Review in Studio]
-```
-
-## Publish a viewing site
-
-An experimental ChatGPT Sites workflow can combine local setup with a public viewing link. Ask: “Create my Design Studio locally and publish a public viewing link with ChatGPT Sites.” This requires an agent with local setup and Sites capabilities. New viewing sites default to public, so anyone with the link can review your work. Ask for a private or restricted site if that is your preference.
-
-Your code and authoring environment stay in the local folder. Publishing also saves source with Sites. The hosted site lets you view and interact with the built prototypes. Canvas and source editing stay local.
-
-After local changes, ask “Publish my Studio” to update the same site with its existing audience. Share the public link with reviewers; it lets them interact with built prototypes without editing your source. If publishing cannot finish, you can continue working locally.
-
-## Make it your own
-
-Creating a studio gives you a place to start. Configuring it makes that place fit your team: its name, people, design system, and product knowledge.
-
-You can begin exploring, then ask your agent to help personalize the studio. For example:
-
-> Help me set this studio up for our team. We want to use our components and add context about our customers.
-
-If you are joining a team's existing studio, ask your agent to help you join it. See [Set up](/documentation/guide/getting-started) for getting started and [Customize your studio](/documentation/guide/customize) for making it your own.
+For installation and supported setup paths, use the [public setup instructions](https://github.com/itspatmorgan/design-studio-starter/blob/main/SETUP.md). A plugin is not required for the direct-source path.
 
 ## Use another coding agent
 
-You can also work with Studio in Claude Code or Cursor. Open your studio's folder in the coding tool you want to use, then ask its agent to help you continue. Your prototypes and shared guidance stay with your studio.
+Open the same studio folder in the coding tool you want to use and ask its agent to continue. Your work and guidance stay with the studio. Available integrations depend on that tool.
+
+Plugin updates do not automatically update an existing studio's code. Ask the agent to assess studio updates separately, preserving your customizations.
+
+For publishing, see [Share and hand off](/documentation/guide/share#publish-for-review).

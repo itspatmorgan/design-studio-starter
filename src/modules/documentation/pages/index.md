@@ -1,83 +1,37 @@
 ---
-title: "Introduction"
-description: "A workspace for designing with your coding agent."
-section: "Begin"
+title: Introduction
+description: Turn ideas into something you can try, discuss, and refine with your agent.
+section: Begin
 order: 1
 toc: true
 ---
 
-Design Studio brings your prototypes, design system, and team context into one workspace. You own its files and the work you create. Use it on your own or with a team.
+Design Studio is a workspace for designing with your coding agent. Describe what you want to explore, let the agent build it, and use Studio to try the result and guide the next change. You own the files and can work alone or with a team.
 
-You do not need to understand the whole platform to begin. Start with the sample prototype, then ask your coding agent to help create your own.
+## Two collections: prototypes and systems
 
-## Your work and shared capabilities
+**Prototypes** hold your explorations. A prototype brings working screens together with the notes, diagrams, and canvases that explain an idea.
 
-Your prototypes are independent working areas. Systems and platform capabilities support the whole studio. Coordinate changes to these shared capabilities with your team.
+**Systems** hold your shared foundation. A system combines reusable components, visual styles, assets, and product knowledge. Your agent uses it to make prototypes that fit your product.
 
-```mermaid
-%%{init: {"flowchart": {"nodeSpacing": 20, "rankSpacing": 30, "subGraphTitleMargin": {"top": 10, "bottom": 15}}}}%%
-flowchart TB
-  accTitle: Studio ownership and safe working areas
-  accDescr: Platform infrastructure composes modules that provide studio capabilities. Each system owns theme, components, context and skills. Contributor-owned prototypes use an assigned system and contain artifacts for local experiments.
-  platform[Platform infrastructure]
-  modules[Modules<br/>Studio capabilities]
-  subgraph system[System scope]
-    ui[Theme<br/>and components]
-    knowledge[Context and Skills]
-  end
-  subgraph yours[Prototype scope: your experiments]
-    artifacts[Views, documents,<br/>diagrams, and canvases]
-  end
-  platform -->|Composes| modules
-  modules -->|Provides capabilities| system
-  modules -->|Provides capabilities| yours
-  ui -->|Components and tokens| artifacts
-  knowledge -.->|Guides people and agents| yours
-```
-
-These boundaries describe collaboration scope. Your contributor area is the default place for independent work. Modules provide capabilities; system knowledge guides people and agents rather than creating a code dependency. Documents, diagrams, and canvases are optional capabilities.
+One system can support many prototypes. You can experiment inside a prototype without changing that shared foundation.
 
 ## Working with your agent
 
-Open the same repository in your coding agent and run Studio alongside it. Describe what you want to explore. The agent changes files; Studio lets you see and interact with the result.
+Work with your agent in the same studio folder that is running locally. Give it your goals, references, constraints, and feedback. The agent handles implementation and checks; you direct the work and judge the result.
 
-```mermaid
-sequenceDiagram
-  accTitle: A person and agent refine a prototype
-  accDescr: A person supplies intent. The agent reads relevant repository context, builds and checks the work, and presents it for review. The person directs revisions or accepts the result.
-  actor Person
-  participant Agent as Coding agent
-  participant Repo as Repository files
-  Person->>Agent: Describe outcome and supply context
-  Agent->>Repo: Read relevant instructions and current files
-  Repo-->>Agent: Guidance and working material
-  Agent->>Repo: Build and check changes
-  Agent-->>Person: Present result and remaining questions
-  opt Further refinement
-    Person->>Agent: Direct the next change
-    Agent->>Repo: Revise and check
-    Agent-->>Person: Present updated result
-  end
-  Note over Person,Agent: The person can also edit the work directly
-```
+Studio does not start an agent when you create or edit something. Continue the conversation in your coding app. You can also organize artifacts, annotate a canvas, or edit text directly in Studio when that is easier.
 
-This shows one iteration. Checks can fail, and the agent may need clarification before it builds.
+If you are viewing a published studio, you can explore its work. Creating and editing happen in the local studio.
 
-The [Agents section](/documentation/guide/agent-context) explains how to give your agent useful direction and shared knowledge, then refine both through your work.
+## Where to begin
 
-Give the agent your goals, constraints, and feedback. You can work visually while it handles code and technical details.
-
-## Find your way around
-
-| Surface | What you do there |
+| What you want to do | Start here |
 | --- | --- |
-| [Home](/documentation/guide/home) | Find work and search the studio. |
-| [Prototypes](/documentation/guide/prototypes) | Explore ideas using screens, writing, diagrams, and canvases. |
-| [Systems](/documentation/guide/systems) | Browse components, styles, context and skills for your prototypes. |
-| [Documentation](/documentation/guide/documentation) | Read this Guide or browse Context and Skills. |
+| Get oriented in a running studio | [Start here](/documentation/guide/getting-started) |
+| Turn an idea into a small working flow | [Your first prototype](/documentation/guide/first-prototype) |
+| Give useful direction and feedback | [Work with your agent](/documentation/guide/agent-task-context) |
+| Make prototypes feel like your product | [Systems](/documentation/guide/systems) |
+| Gather feedback or prepare an engineering handoff | [Share and hand off](/documentation/guide/share) |
 
-Run Studio locally to make changes. You can also publish a viewing site when you want to share your work.
-
-## Make the studio your own
-
-Start with prototypes, then configure the studio, add systems, or build modules. [Customize your studio](/documentation/guide/customize) explains these scopes and the responsibility for future updates.
+The walkthrough uses a checkout exploration to connect screens, a flow diagram, audience notes, and a review canvas. Use your own idea instead, and choose only the artifacts that help explain it.

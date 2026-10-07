@@ -1,95 +1,67 @@
 ---
-title: "Documents"
-description: "Write context and decisions for a prototype."
-section: "Artifacts"
-order: 20
+title: Documents
+description: Keep audience notes, decisions, and explanations beside your screens.
+section: Prototypes and artifacts
+order: 12
 module: document
 toc: true
 ---
 
-Documents adds Markdown pages inside a prototype. It is optional: disabling it hides those pages from normal prototype navigation and preserves their files. The system context and Guide retain their own Markdown support.
+A document holds the thinking behind a prototype: a brief, research notes, decisions, or an engineering handoff. It stays with the screens it explains.
 
-Documents use the platform's page style, rather than the prototype's design-system theme.
+## Record the audience and goal
 
-## Create and edit
+Continuing Checkout exploration, give your agent the notes you have:
 
-Ask your agent to create a document, or select **New** (+), then **New document**, in the Artifacts row.
+> Add an Audience and decisions document to this prototype. Summarize these notes about first-time customers and their concerns about delivery costs. Separate supported insights from assumptions and open questions. Explain how they influenced the checkout.
+
+If you have no research yet, ask for a working audience description labeled as an assumption. The agent should not invent customer evidence.
+
+Review the document. Does it accurately represent what you supplied? Could another person understand the goal without reading your chat?
+
+## Connect the explanation to the work
+
+If the corresponding tools are enabled, ask:
+
+> Link to the checkout's main screens and flow diagram from the document. Add previews where they help explain the decisions.
+
+A document can show previews of views, diagrams, and canvases from the same prototype. Open the original artifact to interact or edit. The preview references the original file, so local changes appear without copying its content. Other documents appear as link cards.
+
+Keep decisions specific to this exploration here. Knowledge that should guide many prototypes belongs in your system's [product context](/documentation/guide/agent-context).
+
+## Create and edit directly
+
+Ask your agent to create or revise a document, or select **New** (+), then **New document**, in the Artifacts row.
+
+Documents use Markdown, plain text with simple formatting marks. To edit locally:
 
 1. Right-click the document and select **Edit source**.
-2. Edit the Markdown text.
-3. Save with Command+S on macOS or Ctrl+S on other systems.
+2. Change the text.
+3. Save with **⌘S / Ctrl+S**.
 4. Select **Done** to return to the page.
 
-Other contributors' documents and published pages are read-only.
+Documents support headings, lists, links, tables, task lists, code blocks, and Mermaid diagrams. They use Studio's reading style. Other contributors' documents and published pages are read-only.
 
-A document and another artifact cannot share a URL, such as `notes.md` and `notes.tsx`.
+## Optional Markdown examples
 
-## Supported content
-
-The reader supports headings, lists, links, tables, task lists, strikethrough, and highlighted code blocks. It does not execute JSX or embedded components. Raw HTML appears as text. HTML comments are hidden.
-
-Frontmatter is an optional settings block at the start of a Markdown file. It controls the heading, description, and contents list:
+To link to a view, use its relative file path:
 
 ```md
----
-title: Notes
-description: Context for this prototype.
-toc: true
----
+Try the [checkout](./checkout.tsx).
 ```
 
-Without a frontmatter title, an opening level-one heading (`# Title`) supplies the title.
-
-### Embed a prototype file
-
-Embed a file from the same prototype using Markdown image syntax on its own line:
+To show a preview, put image syntax on its own line:
 
 ```md
-![Feedback flow](./feedback-flow.mermaid)
+![Checkout](./checkout.tsx)
 
-![Feedback inbox](./app/feedback-inbox.tsx)
+![Checkout flow](./checkout-flow.mermaid)
 
-![Breadboard](./breadboard.excalidraw)
+![Review canvas](./review.excalidraw)
 ```
 
-Each file type supplies its preview, with an **Open** link to the original file. Views show a screen preview; diagrams render their source; canvases show a read-only preview fitted to their contents. Open the original to interact or edit. Documents and types without a preview appear as link cards.
+Replace these example filenames with your prototype's files. File previews stay within the same prototype and require the corresponding capability. Ask the agent to fix a missing or unavailable reference.
 
-The corresponding module must be enabled. Nested documents can use relative paths such as `../feedback-flow.mermaid`; `.mmd` files also work. Missing files and disabled modules show an unavailable message. References outside the current prototype are not embedded. Inline image syntax within a sentence becomes a link.
+Your agent can also add a title, description, or contents list. It can consult [Documents context](/documentation/context/module.document) for file behavior.
 
-Canvas previews retain live views and diagrams, but documents and other canvases inside them stay cards. This keeps nesting bounded.
-
-These references share their original files; no source is copied into the document. Mermaid fences below remain useful for diagrams owned by the document itself.
-
-### Mermaid diagrams
-
-See [Diagrams and code](/documentation/reference/platform/context/diagrams.md) for examples, the shared theme, and customization.
-
-Use a fenced code block with the language `mermaid` to show a diagram:
-
-```mermaid
-flowchart LR
-  accTitle: Feedback review
-  accDescr: Collected feedback goes to review, then becomes a task.
-  A[Collect feedback] --> B[Review] --> C[Create task]
-```
-
-In the Markdown source, put three backticks followed by `mermaid` before the diagram, and three backticks after it.
-
-Diagrams follow the platform's light or dark mode. Use the document's source control to read or copy diagram text. Invalid syntax shows an error; you can correct it in the document source. Add `accTitle` and `accDescr` to describe the diagram for assistive technology.
-
-This shared reader also supports Mermaid in the system context, Guide, and repository reference pages. It loads Mermaid only when a diagram appears. The Markdown text remains the saved source; no image file is required. Diagram scripts and click actions are disabled.
-
-## Links and related context
-
-Link to another artifact with a relative path:
-
-```md
-See the [main view](./prototype.tsx).
-Read the [research](./research/notes.md).
-```
-
-The app accepts paths with or without extensions. External links open in a new tab. Moving linked files can break relative links. Renaming the prototype folder preserves them.
-
-Documents link to views. Canvases can show live view previews alongside document cards.
-
-Keep prototype-specific context here. The [system context](/documentation/guide/systems) holds context shared across the studio.
+Documents is an optional capability. Disabling it preserves the files and hides them from prototype navigation. System context and the Guide remain separate.
