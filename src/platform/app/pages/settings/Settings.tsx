@@ -46,10 +46,6 @@ export default function Settings() {
     {saved && <Alert role="status" className="p-4">Settings saved. {sessionStorage.getItem('studio:settings-saved') ? 'The studio is restarting to apply your changes.' : 'Your changes are applied locally.'}</Alert>}
     {!snapshot || !draft ? (!error && <p role="status" className="text-sm text-muted-foreground">Loading settings</p>) : <>
       {!editable && <Alert role="note" className="p-4">{snapshot.role ? 'You can view these settings. An Admin can change them.' : 'Ask your agent to register your contributor identity before editing settings.'}</Alert>}
-      <Alert role="note" className="p-4">
-        <AlertTitle>Settings are shared through Git</AlertTitle>
-        <AlertDescription>Changes save to your local repository. Share them through your team’s Git workflow.</AlertDescription>
-      </Alert>
       <form className="space-y-6" onSubmit={(event) => { event.preventDefault(); void save(); }}>
         {snapshot.config.usage === 'team' && snapshot.config.modules.contributors && <Alert className="p-4"><AlertTitle>Contributors &amp; Permissions</AlertTitle><AlertDescription>Manage your team’s studio and system assignments on the <Link to={'/contributors' as never} className="underline underline-offset-4">Contributors page</Link>.</AlertDescription></Alert>}
         <Section id="general" title="General" description="The shared identity and defaults for your studio.">
@@ -61,7 +57,7 @@ export default function Settings() {
                 <SelectTrigger id="studio-use" aria-describedby="usage-description" className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent><SelectItem value="personal">Personal</SelectItem><SelectItem value="team" disabled={!snapshot.modules.some(module => module.id === 'contributors')}>Team</SelectItem></SelectContent>
               </Select>
-              <p id="usage-description" className="text-xs text-muted-foreground">Personal gives you full access. Team enables contributor permissions.</p>
+              <p id="usage-description" className="text-xs text-muted-foreground">{draft.usage === 'personal' ? 'You have full access to your studio.' : 'Contributors work within their assigned scopes. Admins manage the studio.'}</p>
               {draft.usage === 'team' && snapshot.config.usage === 'personal' && <p className="text-xs text-muted-foreground">{snapshot.config.admins?.length ? 'Your existing Admins stay assigned.' : 'You’ll become the first Admin.'}</p>}
               {!snapshot.modules.some(module => module.id === 'contributors') && <p className="text-xs text-muted-foreground">Ask your agent to install Contributors &amp; Permissions before switching to team use.</p>}
             </div>
@@ -91,6 +87,7 @@ export default function Settings() {
         </Section>
 
         {editable && <div className="space-y-3">
+          <p className="text-xs text-muted-foreground">Changes save locally.{draft.usage === 'team' && ' Share them with your team through Git.'}</p>
           {adminProblems(draft, snapshot.contributors.map((person) => person.key)).length > 0 && <p role="alert" className="text-sm text-destructive">Team use requires at least one registered Admin.</p>}
           <div className="flex flex-wrap items-center justify-between gap-3"><p role="status" className="text-sm text-muted-foreground">{restarting ? 'Restarting the studio' : dirty ? 'Unsaved changes. Saving restarts the studio.' : 'Your settings are up to date.'}</p><div className="flex gap-2"><Button type="button" variant="outline" disabled={!dirty || disabled} onClick={() => { discard(); }}>Discard</Button><Button type="submit" disabled={!dirty || disabled || conflict || !draft.name.trim() || adminProblems(draft, snapshot.contributors.map((person) => person.key)).length > 0}>{saving ? 'Saving' : 'Save changes'}</Button></div></div>
         </div>}
