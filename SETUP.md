@@ -101,3 +101,7 @@ Use the existing [create-studio skill](plugins/design-studio/skills/create-studi
 Without an installed plugin, download a temporary shallow checkout of this public repository through your supported tools. Record its full commit SHA and read the skill, helper, and references from that same checkout. This is setup tooling, not the person's studio. Inspect `plugins/design-studio/scripts/bootstrap.mjs` before execution; it pins the starter revision independently. Run the helper from that checkout and create the owned studio in the destination specified by the skill. Do not use the temporary checkout as the person's workspace. No repository duplication or remote is needed.
 
 Use the person's requested folder when supplied. Handle missing tools through supported host mechanisms and their official sources. Honor permission prompts; report an unavailable local execution capability. Preserve existing studios and use open-studio for them. Complete the preview and workspace handoff before declaring setup finished.
+
+## Timed setup experiments
+
+For a requested benchmark, capture the request start before obtaining the repository. Follow [benchmark boundaries](plugins/design-studio/experiments/benchmarking.md) after the checkout is available, backfilling only the captured timestamp. Report setup from the uninstalled state, publication from a prepared studio, and the full user wait through final handoff. Command durations are diagnostic details, never a substitute for the end-to-end time. Include restart or new-chat time when required.

@@ -5,18 +5,25 @@ import { performance } from 'node:perf_hooks';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { packageStarter } from './starter-package.mjs';
+import { findWorkingGit, gitEnvironment, verifyPinnedTools, configureLocalGit } from './toolchain.mjs';
 
 export const SOURCE = 'https://github.com/itspatmorgan/design-studio-starter.git';
 export const REVISION = '599da74eee43aba5e1c4a97abad8dc87140f3989';
 export const RECEIPT = 'design-studio.local.json';
 const REQUIRED = ['AGENTS.md', 'package.json', 'pnpm-lock.yaml', 'mise.toml', 'studio.config.ts', 'src/systems/studio/AGENTS.md'];
 
+let selectedGit;
+function toolEnvironment() {
+  selectedGit ??= findWorkingGit();
+  return gitEnvironment(selectedGit);
+}
 function run(command, args, cwd, live = false) {
   const started = performance.now();
-  const result = spawnSync(command, args, {
+  const env = toolEnvironment();
+  const result = spawnSync(command === 'git' ? selectedGit : command, args, {
     cwd, shell: false, encoding: 'utf8',
     stdio: live ? 'inherit' : ['ignore', 'pipe', 'pipe'],
-    env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+    env,
   });
   console.error(`[setup] ${command} ${args[0] ?? ''}: ${((performance.now() - started) / 1000).toFixed(2)}s`);
   if (result.error) throw new Error(`Could not run ${command}: ${result.error.message}`);
@@ -135,9 +142,13 @@ export function prepareStudio(value) {
   const studio = inspectStudio(value);
   checkInitialConfiguration(studio);
   run('mise', ['--version']);
+  if (configureLocalGit(studio.destination, selectedGit)) {
+    run('mise', ['trust', path.join(studio.destination, 'mise.local.toml')], studio.destination, true);
+  } else console.error('[setup] Existing local tool configuration preserved. Use bootstrap exec for follow-up commands.');
   // Trust this inspected studio config, not all ancestor configurations.
   run('mise', ['trust', path.join(studio.destination, 'mise.toml')], studio.destination, true);
   run('mise', ['install'], studio.destination, true);
+  console.error('[setup] tools: ' + JSON.stringify(verifyPinnedTools(studio.destination, toolEnvironment())));
   run('mise', ['exec', 'pnpm@12', '--', 'pnpm', 'install', '--frozen-lockfile'], studio.destination, true);
   if (!studio.prepared) {
     run('mise', ['exec', 'pnpm@12', '--', 'pnpm', 'studio', 'configure', '--name', studio.name, '--usage', 'personal', '--yes'], studio.destination, true);
@@ -150,20 +161,31 @@ export function prepareStudio(value) {
   return inspectStudio(value);
 }
 
+// All follow-up commands (identity, builds, Sites source workflow and hooks)
+// inherit verified Git, then let mise prepend the studio's pinned runtime.
+export function execStudio(value, args) {
+  const studio = inspectStudio(value);
+  if (!args.length) throw new Error('Provide a command after --.');
+  verifyPinnedTools(studio.destination, toolEnvironment());
+  return run('mise', ['exec', '--', ...args], studio.destination, true);
+}
+
 export function startStudio(value, port = '5173') {
   const studio = inspectStudio(value);
   if (!/^[0-9]+$/.test(port) || Number(port) < 1024 || Number(port) > 65535) throw new Error('Choose a local port between 1024 and 65535.');
-  run('mise', ['exec', 'pnpm@12', '--', 'pnpm', 'dev', '--host', '127.0.0.1', '--port', port], studio.destination, true);
+  execStudio(value, ['pnpm', 'dev', '--host', '127.0.0.1', '--port', port]);
 }
 
 function main() {
   const [command, ...args] = process.argv.slice(2);
   if (!command || command === '--help') {
-    console.log('Usage: node bootstrap.mjs choose [--parent <absolute-folder>] [--name <studio-name>]\n       node bootstrap.mjs create|inspect|prepare|start --destination <absolute-folder> [--name <name>] [--port <port>]\nchoose selects design-studio, design-studio-2, etc. in ~/Developer without creating files. Display names retain spaces.\nMaintainer fixtures only: create --source <absolute-local-repo> --revision <40-character-commit>.\nGit and Node are prerequisites. prepare/start also require mise. No GitHub account is needed.');
+    console.log('Usage: node bootstrap.mjs choose [--parent <absolute-folder>] [--name <studio-name>]\n       node bootstrap.mjs create|setup|inspect|prepare|start --destination <absolute-folder> [--name <name>] [--port <port>]\nchoose selects design-studio, design-studio-2, etc. in ~/Developer without creating files. Display names retain spaces.\nMaintainer fixtures only: create --source <absolute-local-repo> --revision <40-character-commit>.\nexec --destination <folder> -- <command> [args...] runs follow-up commands with verified Git and pinned tools.\nsetup combines create and prepare.\nGit and Node are prerequisites. prepare/start also require mise. No GitHub account is needed.');
     return;
   }
-  if (!['choose', 'create', 'inspect', 'prepare', 'start'].includes(command)) throw new Error(`Unknown command: ${command}`);
+  if (!['choose', 'create', 'setup', 'inspect', 'prepare', 'start', 'exec'].includes(command)) throw new Error(`Unknown command: ${command}`);
   const options = {};
+  const separator = command === 'exec' ? args.indexOf('--') : -1;
+  const commandArgs = separator < 0 ? [] : args.splice(separator).slice(1);
   for (let i = 0; i < args.length; i += 2) {
     const key = args[i];
     const allowed = command === 'choose' ? ['--parent', '--name'] : ['--destination', '--name', '--port', '--source', '--revision'];
@@ -173,6 +195,12 @@ function main() {
   }
   if (command === 'choose') {
     console.log(JSON.stringify(chooseStudioLocation(options), null, 2));
+    return;
+  }
+  if (command === 'exec') return execStudio(options.destination, commandArgs);
+  if (command === 'setup') {
+    createStudio(options);
+    console.log(JSON.stringify(prepareStudio(options.destination), null, 2));
     return;
   }
   if (command === 'start') return startStudio(options.destination, options.port);

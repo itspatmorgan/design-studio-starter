@@ -11,6 +11,8 @@ For a request to publish through ChatGPT Sites, follow [publish-studio](../publi
 
 In studios with native project skills, inspect the relevant platform, enabled module, and assigned system skill descriptions. Use the canonical procedure selected for the request. In older studios, follow their repository entry point and linked workflows; do not relocate their files or upgrade them without a request.
 
+Run commands through `node <installed-plugin>/scripts/bootstrap.mjs exec --destination <folder> -- <command> [args...]` for plugin-created studios, especially when the host selects an unusable system Git. This preserves the studio’s pinned Node and working Git; avoid manual PATH replacement.
+
 For prototype work, resolve contributor identity and metadata assignment. Explicit `system: null` means no system; only an omitted assignment follows the configured default. For a pending rebuild, include the target system's guidance and preserve the original. The browser's selected system does not change assignment.
 
 When introducing a fresh starter, clearly identify any remaining Product and Marketing systems and Feedback Inbox and Design Studio Marketing prototypes as learning examples. Explain that the person can customize, replace, or remove them to fit their needs. Do not assume these examples remain unchanged in an existing studio, and do not remove work without a request.

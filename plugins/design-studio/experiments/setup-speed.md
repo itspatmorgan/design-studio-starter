@@ -41,3 +41,26 @@ The four disposable folders Design Studio, Design Studio Public Onboarding QA, D
 ## Tagline follow-up
 
 Experiment .15 removes the installer’s explicit marketing tagline and advances the source pin to the verified public commit 599da74eee43aba5e1c4a97abad8dc87140f3989. A fresh disposable create-and-prepare fixture confirmed the inherited tagline is “A prototype sandbox for you and your team”, with Personal mode and the readable Design Studio name preserved. The full maintainer build passed again. The experiment .14 timing table above remains historical measurement of the earlier pin and should not be presented as a benchmark of experiment .15.
+
+## Experiment .15 native run: October 7
+
+The transcript spans 14:56:47.635Z to 15:04:44.404Z: **476.769 seconds (7m 56.8s)**. This is the measured conversation wait. The final response still asked for activation verification in a fresh chat, so complete activation time remains unknown. The existing marketplace was reused; prerequisite tools and the dependency store were warm. This was not a clean-computer or fully empty-registration test.
+
+| Observation | Time |
+| --- | ---: |
+| Source checkout | 1.175s |
+| Create pinned studio | 1.378s |
+| Prepare | 3.578s |
+| Production build + source workflow | 46.766s |
+| Native save | 5.716s |
+| Native deploy | 18.959s |
+| Request to agent reporting site live | 381.487s (6m 21.5s) |
+| Agent reporting site live to final response | 95.282s |
+
+These are command/tool durations and transcript message boundaries, not independently recorded setup/publishing readiness boundaries. The 39 shell calls have 54.229s of recorded duration and seven MCP calls 45.854s; some calls have zero recorded duration and browser/web activity is not fully accounted for. Do not classify the remaining interval as pure reasoning or promise that removing tool work alone saves it.
+
+The previous run was reported by the person as slightly under six minutes. It had different starter contents and check behavior (225 tests ran during publication); the latest packaged build correctly omitted the repeated regression suite. Without matching phase timestamps for the first run, the additional approximately two minutes cannot be assigned precisely. The latest transcript shows redundant skill reads, command/path recovery, system-Python recovery, and post-publication handoff exploration. Tool repair was performed again after publication to make later chats usable. These are observed optimization opportunities, not a measured causal allocation of every extra second.
+
+Experiment .16 verifies Git execution, retains Node 24 through mise, persists a local Git-only shim before publication, adds setup/exec commands, and supplies [three benchmark boundaries](benchmarking.md). Regression fixtures cover executable-but-broken Git, an incompatible adjacent Node, normal mise commands after handoff, and preservation of custom local configuration. The primary benchmark remains the whole user wait including the final response and required activation. No new native end-to-end speed claim follows from local regression tests.
+
+Experiment .16 validation: a fresh disposable studio downloaded the public pin from GitHub with Apple Git first in inherited PATH. Combined create/preparation passed in 6.738s using installed tools and a warm dependency store. Ordinary mise commands then resolved patrick, Node v24.14.1, and Git 2.54.0 without manual PATH replacement. The working-studio production build passed in 14.977s. The disposable studio was removed. These are command diagnostics, not user-wait setup or deployment benchmarks. The maintainer build passed 275 tests, type checking, and Vite; the existing large-chunk warning remains.
