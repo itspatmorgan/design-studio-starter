@@ -127,7 +127,13 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
             {!defaultArchive && <Button disabled={busy || checking || !allowed} onClick={() => void save()}>{busy ? 'Archiving' : 'Archive system'}</Button>}
           </DialogFooter>
         </> : <>
-          <DialogHeader><DialogTitle>{dialog === 'restore' ? 'Restore' : 'Delete'} {spec.label}?</DialogTitle><DialogDescription>{dialog === 'restore' ? 'Make this system available for new prototypes again. Choose whether to restore the prototypes archived with it.' : 'Permanently delete this system’s source files and registration. Associated prototypes keep their files but cannot render or deploy until rebuilt with another system. There is no Studio recovery copy. Uncommitted system files cannot be recovered through Git.'}</DialogDescription></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>{dialog === 'restore' ? 'Restore' : 'Delete'} {spec.label}?</DialogTitle>
+            {dialog === 'restore' ? <DialogDescription>Make this system available for new prototypes again. Choose whether to restore the prototypes archived with it.</DialogDescription> : <DialogDescription render={<div />} className="space-y-3">
+              <p>This permanently deletes the system’s files. Studio cannot undo this.</p>
+              {dependents.length > 0 && <p>Associated prototypes keep their files, but won’t work or deploy until rebuilt with another system.</p>}
+            </DialogDescription>}
+          </DialogHeader>
           {checking && <p role="status" className="text-sm text-muted-foreground">Checking system dependencies</p>}
           {error && <p role="alert" className="text-sm text-destructive whitespace-pre-line">{error}</p>}
           {dependents.length > 0 && <div className="grid gap-2 text-sm"><p>These prototypes depend on {spec.label}.</p><ul className="max-h-48 list-disc overflow-auto pl-5">{dependents.map(proto => <li key={`${proto.contributorKey}/${proto.id}`}><Link {...prototypeLink(proto)} className="underline">{proto.title}</Link>{proto.status === 'archived' ? ' (archived)' : ''}{proto.rebuild?.targetSystem === system ? ' (pending rebuild)' : ''}</li>)}</ul></div>}
