@@ -6,7 +6,7 @@ import type { ModuleSpec } from './modules/index.ts';
 
 const modules: ModuleSpec[] = [
   { optional: false, lib: false, id: 'examples', label: 'Examples', version: '0.1.0', section: { key: 'examples', folder: 'src/examples', items: 'prototypes', policy: 'maintainers' } },
-  { optional: false, lib: false, id: 'documentation', label: 'Guide', version: '0.1.0', section: { key: 'documentation', folder: 'src/modules/documentation/pages' } },
+  { optional: false, lib: false, id: 'documentation', label: 'Manual', version: '0.1.0', section: { key: 'documentation', folder: 'src/modules/documentation/pages' } },
   { optional: false, lib: false, id: 'extra', label: 'Extra', version: '0.1.0' },
 ];
 

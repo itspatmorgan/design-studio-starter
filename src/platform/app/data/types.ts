@@ -46,12 +46,12 @@ export type PrototypeRef = PrototypeInfo & {
 };
 
 // One human chapter from src/modules/documentation/pages/<slug>.md.
-export type GuidePage = {
-  slug: string;           // its address, /guide/<slug>: the file name without .md, e.g. "getting-started"
+export type ManualPage = {
+  slug: string;           // its address, /documentation/manual/<slug>: the file name without .md, e.g. "prototypes"
   title: string;
   description: string;
   section: string | null; // sidebar heading, e.g. "Core concepts"
-  source?: string;        // the chapter’s source, like "/modules/documentation/pages/canvases.md"
+  source?: string;        // the chapter’s source, like "/modules/documentation/pages/prototypes.md"
 };
 
 // `sections` holds the artifacts of the modules' sections of prototype-shaped folders, by section key: the
@@ -65,7 +65,7 @@ export type GuidePage = {
 export type PlatformReferenceGroup = { id: string; label: string; enabled: boolean; references: { source: string; title: string; related?: { title: string; href: string }[] }[]; related: { title: string; href: string }[] };
 
 export type Manifest = {
-  prototypes: PrototypeRef[]; sections: Record<string, PrototypeRef[]>; guide: GuidePage[]; systemContent: Prototype[]; systemContentMaps: Record<string, SystemContentMap>; platformReferences: PlatformReferenceGroup[];
+  prototypes: PrototypeRef[]; sections: Record<string, PrototypeRef[]>; manual: ManualPage[]; systemContent: Prototype[]; systemContentMaps: Record<string, SystemContentMap>; platformReferences: PlatformReferenceGroup[];
   skillCatalog: { owner: NonNullable<PrototypeInfo['owner']>; folder: string; name: string; description: string; source: string }[];
   systems: Record<string, { docs: DocsMode; origin: 'shadcn' | null; components: SystemComponentDoc[]; tokens: ThemeToken[] }>;
 };

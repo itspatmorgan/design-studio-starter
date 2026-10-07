@@ -78,7 +78,7 @@ The initial native deployment and authenticated route checks succeeded, but the 
 - Routed explicitly requested create-and-publish onboarding and later publishing to that procedure.
 - Kept ordinary local creation and editing local.
 - Preserved the current package version and public starter pin.
-- Updated the plugin README and human Guide to distinguish local authoring from public static viewing.
+- Updated the plugin README and human Manual to distinguish local authoring from public static viewing.
 - New requested publication defaults to public; explicit restrictions and existing Site audiences are preserved. Public Sites use the general deployment path rather than private deployment or automatic private publish-on-push.
 
 Next steps, in order:
@@ -99,7 +99,7 @@ Publishing stays plugin-owned; no publishing procedure is being moved into the s
 
 ## Local evidence logs
 
-Branch verification passed: `pnpm build` (268 project tests, type checking, and Vite), all 15 plugin tests, `pnpm harness:check`, and `git diff --check`. Skill synchronization made no generated changes. The updated Guide rendered its publishing section in the branch's production preview. Vite reported its existing non-blocking large-chunk warning.
+Branch verification passed: `pnpm build` (268 project tests, type checking, and Vite), all 15 plugin tests, `pnpm harness:check`, and `git diff --check`. Skill synchronization made no generated changes. The updated Manual rendered its publishing section in the branch's production preview. Vite reported its existing non-blocking large-chunk warning.
 
 Public-default follow-up verification passed: `pnpm build` (268 project tests, type checking, and Vite), `pnpm harness:check`, and `git diff --check`. Skill synchronization again made no generated changes. The same non-blocking chunk warning remains.
 

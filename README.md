@@ -28,7 +28,7 @@ Open the local URL printed by Vite. You can explore the starter before configuri
 
 ## Learn more
 
-The Manual at `/documentation/guide` is a concise reference for using, customizing, and troubleshooting Design Studio. Original platform and module instructions appear in Context & Skills at `/documentation/context/platform.core`. System guidance stays in Systems.
+The Manual at `/documentation/manual` is a concise reference for using, customizing, and troubleshooting Design Studio. Original platform and module instructions appear in Context & Skills at `/documentation/context/platform.core`. System guidance stays in Systems.
 
 - [Overview](src/modules/documentation/pages/index.md) — how the studio works.
 - [Share](src/modules/documentation/pages/share.md) — viewing links, working files, and handoff.

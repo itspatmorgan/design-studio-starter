@@ -4,7 +4,7 @@ import { canonicalDirectory } from '../../lib/safe-paths.js';
 import { MAX_SOURCE_BYTES, versionOf } from './paths.js';
 
 export function documentationSources(root, manifest) {
-  const allowed = [...manifest.platformReferences.flatMap((group) => group.references.map((ref) => 'src' + ref.source)), ...manifest.guide.map((page) => 'src' + (page.source ?? '/modules/documentation/pages/' + page.slug + '.md'))];
+  const allowed = [...manifest.platformReferences.flatMap((group) => group.references.map((ref) => 'src' + ref.source)), ...manifest.manual.map((page) => 'src' + (page.source ?? '/modules/documentation/pages/' + page.slug + '.md'))];
   // Keep standalone chapters repairable when their metadata is temporarily invalid.
   const folder = 'src/modules/documentation/pages';
   if (manifest.platformReferences.some((group) => group.id === 'documentation' && group.enabled) && fs.existsSync(path.join(root, folder))) {

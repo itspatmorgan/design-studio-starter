@@ -18,7 +18,7 @@ import { parseMaintainers } from '../../src/platform/core/permissions.ts';
 import { FILE_TYPES, fileTypeOf, systemContentTypeOf, isTextFile } from '../lib/file-types.js';
 import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from '../lib/modules.js';
 import { frontmatter } from '../lib/frontmatter.js';
-import { guideChapterEnabled } from '../lib/guide-pages.js';
+import { manualChapterEnabled } from '../lib/manual-pages.js';
 import { contributorsSignature, loadContributors } from '../lib/contributors.js';
 import { systemContentProblems } from '../../src/modules/systems/content/node/content-check.js';
 import { systemDocs } from '../../src/modules/systems/node/docs.js';
@@ -30,9 +30,9 @@ import { systemContentMap } from '../../src/modules/systems/content/map.ts';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 
-// The Guide's pages, or null when its module is off or not installed.
+// The Manual's pages, or null when its module is off or not installed.
 const documentationModule = ENABLED_MODULES.find((m) => m.id === 'documentation');
-const GUIDE = documentationModule?.section?.folder ? path.join(ROOT, documentationModule.section.folder) : null;
+const MANUAL = documentationModule?.section?.folder ? path.join(ROOT, documentationModule.section.folder) : null;
 const OUT_DIR = path.join(ROOT, 'public', 'prototypes');
 const OUT = path.join(OUT_DIR, 'manifest.json');
 // Each prototype's artifacts, one file each: artifacts/<contributor>/<prototype>.json. The app fetches a
@@ -353,24 +353,24 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   }
 
   // Human chapters have one home. Module associations control availability, not source ownership.
-  const guide = [];
-  const guideFiles = GUIDE && fs.existsSync(GUIDE) ? fs.readdirSync(GUIDE).filter(f => f.endsWith('.md')).sort() : [];
-  const pages = guideFiles.map(file => ({ file: path.join(GUIDE, file), where: `src/modules/documentation/pages/${file}`, slug: file.replace(/\.md$/, '') }));
+  const manual = [];
+  const manualFiles = MANUAL && fs.existsSync(MANUAL) ? fs.readdirSync(MANUAL).filter(f => f.endsWith('.md')).sort() : [];
+  const pages = manualFiles.map(file => ({ file: path.join(MANUAL, file), where: `src/modules/documentation/pages/${file}`, slug: file.replace(/\.md$/, '') }));
   const taken = new Map();
   for (const page of pages) {
     const fm = frontmatter(fs.readFileSync(page.file, 'utf8'));
     if (fm?.module !== undefined && (typeof fm.module !== 'string' || !/^[a-z0-9][a-z0-9-]*$/.test(fm.module))) { out.error(`[manifest] Skipped ${page.where}: module must be a capability ID`); errors++; continue; }
-    if (!guideChapterEnabled(fm, ENABLED_MODULES.map(m => m.id))) continue;
+    if (!manualChapterEnabled(fm, ENABLED_MODULES.map(m => m.id))) continue;
     const { where } = page;
     if (!fm || typeof fm.title !== 'string' || !fm.title) { out.error(`[manifest] Skipped ${where}: needs frontmatter with a "title"`); errors++; continue; }
     if (typeof fm.order !== 'number') { out.error(`[manifest] Skipped ${where}: needs a numeric "order" in its frontmatter`); errors++; continue; }
     const slug = page.slug;
     if (!/^[a-z0-9][a-z0-9-]*$/.test(slug)) { out.error(`[manifest] Skipped ${where}: its address "${slug}" must be lowercase letters, numbers, and hyphens`); errors++; continue; }
-    if (taken.has(slug)) { out.error(`[manifest] Skipped ${where}: ${taken.get(slug)} already has the Guide address /documentation/guide/${slug}`); errors++; continue; }
+    if (taken.has(slug)) { out.error(`[manifest] Skipped ${where}: ${taken.get(slug)} already has the Manual address /documentation/manual/${slug}`); errors++; continue; }
     taken.set(slug, where);
-    guide.push({ slug, title: fm.title, description: fm.description ?? '', section: fm.section || null, order: fm.order, source: '/modules/documentation/pages/' + slug + '.md' });
+    manual.push({ slug, title: fm.title, description: fm.description ?? '', section: fm.section || null, order: fm.order, source: '/modules/documentation/pages/' + slug + '.md' });
   }
-  guide.sort((a, b) => a.order - b.order);
+  manual.sort((a, b) => a.order - b.order);
 
   // What the deployed site leaves out (src/platform/core/archive.ts).
   const { kept, archived } = forDeploy([...prototypes, ...Object.values(sections).flat()]);
@@ -385,9 +385,9 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     if (links.length > DOC_WARNINGS) out.warn(`[manifest] and ${links.length - DOC_WARNINGS} more file(s) that link to an archived prototype.`);
   }
 
-  const manifest = { prototypes: deploy ? keptPrototypes : prototypes, sections: deploy ? keptSections : sections, guide: guide.map(({ order, ...page }) => page), systemContent, systemContentMaps: maps, platformReferences: platformReferences({ root: ROOT, modules: Object.values(MODULES).filter(Boolean), enabled: ENABLED_MODULES.map((m) => m.id), systemContent }), systems, skillCatalog: skillCatalog(ROOT, knowledgeOwners(ENABLED_MODULES, SYSTEM_SOURCES)) };
+  const manifest = { prototypes: deploy ? keptPrototypes : prototypes, sections: deploy ? keptSections : sections, manual: manual.map(({ order, ...page }) => page), systemContent, systemContentMaps: maps, platformReferences: platformReferences({ root: ROOT, modules: Object.values(MODULES).filter(Boolean), enabled: ENABLED_MODULES.map((m) => m.id), systemContent }), systems, skillCatalog: skillCatalog(ROOT, knowledgeOwners(ENABLED_MODULES, SYSTEM_SOURCES)) };
   if (write) writeManifest(manifest);
-  out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${Object.entries(manifest.sections).map(([key, artifacts]) => `${artifacts.length} in ${key}`).join(', ') || 'no sections'}, ${guide.length} guide page(s), ${systemContent.length} systemContent section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
+  out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${Object.entries(manifest.sections).map(([key, artifacts]) => `${artifacts.length} in ${key}`).join(', ') || 'no sections'}, ${manual.length} manual page(s), ${systemContent.length} systemContent section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
   if (deploy && archived.length) out.log(`[manifest] Left out of the deployed site: ${archived.length} archived prototype(s)`);
   return { manifest, errors, archived: deploy ? archived : [] };
 }
@@ -395,6 +395,6 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
 // Run as a script: node scripts/build/build-manifest.js [--strict]
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const { errors } = buildManifest({ deploy: process.argv.includes('--deploy') });
-  // pnpm build passes --strict, so a broken meta.json or Guide page fails the build. In dev it's only a warning.
+  // pnpm build passes --strict, so a broken meta.json or Manual page fails the build. In dev it's only a warning.
   if (errors && process.argv.includes('--strict')) process.exit(1);
 }

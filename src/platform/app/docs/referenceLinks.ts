@@ -5,7 +5,7 @@ const movedRules: Record<string, string> = {
   "canvases": "module.canvas/skills/use-canvas/SKILL",
   "documents": "module.document/skills/write-document/SKILL",
   "diagrams": "module.diagrams/skills/create-diagram/SKILL",
-  "documentation": "module.documentation/skills/write-guide/SKILL",
+  "documentation": "module.documentation/skills/write-manual/SKILL",
   "modules": "platform.core/skills/manage-modules/SKILL",
   "system-content": "platform.core/skills/maintain-context/SKILL",
   "systems": "module.systems/context/authoring",
@@ -55,7 +55,7 @@ export function markdownPath(path: string): string {
   const moved = migratedGuidancePath(path);
   if (moved) return moved;
   const chapter = path.match(/^\/modules\/documentation\/pages\/([a-z0-9-]+)\.md$/);
-  if (chapter) return '/documentation/guide' + (chapter[1] === 'index' ? '' : '/' + chapter[1]);
+  if (chapter) return '/documentation/manual' + (chapter[1] === 'index' ? '' : '/' + chapter[1]);
   const oldCore = path.match(/^\/platform\/core\/([^/]+)\.md$/);
   if (oldCore && coreDocuments.has(oldCore[1])) return ownerPath('platform.core') + '/context/' + (oldCore[1] === 'fileTypes' ? 'file-types' : oldCore[1]);
   if (path === '/modules/README.md') return ownerPath('platform.core') + '/context/modules';

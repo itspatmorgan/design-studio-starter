@@ -1,6 +1,6 @@
 # Documentation contract
 
-The Documentation module owns the human Manual at `/documentation/guide`. The URL and internal `guide` identifiers remain stable for compatibility. The shared platform owns the platform and module Context and Skills browser at `/documentation/context/<owner>`. Manual chapters explain using Studio; the browser displays original README, context, and skill files.
+The Documentation module owns the human Manual at `/documentation/manual`. The shared platform owns the platform and module Context and Skills browser at `/documentation/context/<owner>`. Manual chapters explain using Studio; the browser displays original README, context, and skill files.
 
 ## Manual pages
 
@@ -8,7 +8,7 @@ Human chapters live in `src/modules/documentation/pages/*.md`. Each requires `ti
 
 A capability chapter declares `module: <id>`. Discovery includes it only when the module is installed and enabled. Disabling or removing the capability preserves the chapter but hides its reading route, navigation, and search target. Unassociated chapters remain available while Manual is enabled.
 
-Invalid metadata produces a local warning and fails strict builds. Source mode keeps malformed chapters repairable. The sidebar lists reference pages. There is no previous/next reading sequence. Consolidated chapter URLs redirect to relevant pages and sections through `manualLinks.ts`.
+Invalid metadata produces a local warning and fails strict builds. Source mode keeps malformed chapters repairable. The sidebar lists reference pages. There is no previous/next reading sequence.
 
 ## Context and Skills sources
 

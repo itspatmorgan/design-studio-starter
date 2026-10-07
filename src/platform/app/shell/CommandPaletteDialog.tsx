@@ -61,10 +61,10 @@ export default function CommandPaletteDialog({ open, setOpen, returnFocus }: { o
               .sort((a, b) => Number(b.spec.id === 'systems') - Number(a.spec.id === 'systems'))
               .map(({ spec, app }) => app.palette && <Fragment key={spec.id}><app.palette {...context} /></Fragment>)}
 
-            {manifest.guide.length > 0 && <>
+            {manifest.manual.length > 0 && <>
               <CommandSeparator />
               <CommandGroup heading="Manual">
-                {manifest.guide.map(page => <CommandItem key={'guide:' + page.slug} value={'manual guide ' + page.title + ' ' + (page.source ?? page.slug)} onSelect={() => go({ to: '/documentation/guide' + (page.slug === 'index' ? '' : '/' + page.slug) } as never)}>
+                {manifest.manual.map(page => <CommandItem key={'manual:' + page.slug} value={'manual ' + page.title + ' ' + (page.source ?? page.slug)} onSelect={() => go({ to: '/documentation/manual' + (page.slug === 'index' ? '' : '/' + page.slug) } as never)}>
                   <span className="truncate">{page.title}</span>
                 </CommandItem>)}
               </CommandGroup>

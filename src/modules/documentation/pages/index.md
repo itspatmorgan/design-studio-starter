@@ -33,10 +33,10 @@ If you are viewing a studio online, you can only explore its work. Creating and 
 
 | Subject | Look here |
 | --- | --- |
-| Screens, documents, diagrams, and canvases | [Prototypes](/documentation/guide/prototypes) |
-| Your design toolkit and product knowledge | [Systems](/documentation/guide/systems) |
-| Settings, team access, and new capabilities | [Customize](/documentation/guide/customize) |
-| Viewing links, shared files, and engineering handoff | [Share](/documentation/guide/share) |
-| Missing tools, editing, reopening, and problems | [Help](/documentation/guide/questions) |
+| Screens, documents, diagrams, and canvases | [Prototypes](/documentation/manual/prototypes) |
+| Your design toolkit and product knowledge | [Systems](/documentation/manual/systems) |
+| Settings, team access, and new capabilities | [Customize](/documentation/manual/customize) |
+| Viewing links, shared files, and engineering handoff | [Share](/documentation/manual/share) |
+| Missing tools, editing, reopening, and problems | [Help](/documentation/manual/questions) |
 
 Use this Manual as a reference when a question comes up. **Documentation → Context & Skills** contains the detailed instructions your agent uses. Product-specific guidance lives in **Systems**.

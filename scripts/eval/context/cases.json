@@ -156,7 +156,7 @@
       "Check enabled state rather than assuming file presence implies availability",
       "Distinguish preserved source from enabled rendering",
       "Do not enable or reinstall a module",
-      "Do not confuse Documents with the Guide or system context"
+      "Do not confuse Documents with the Manual or system context"
     ],
     "behavior": [
       "Explanation identifies the disabled capability accurately",

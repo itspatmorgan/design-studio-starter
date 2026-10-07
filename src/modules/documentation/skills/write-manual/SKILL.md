@@ -1,5 +1,5 @@
 ---
-name: write-guide
+name: write-manual
 description: "Create or revise human Manual chapters for Design Studio. Use only when Documentation is enabled; technical contracts stay with their owners."
 ---
 
@@ -13,7 +13,7 @@ Follow the [documentation standard](../../../../platform/context/documentation-s
 - Organize the Manual as a compact reference for capabilities, controls, consequences, and troubleshooting. Keep tutorials, exercises, and guided projects separate.
 - Keep human workflows in the Manual. A capability chapter declares `module: <id>` so discovery hides it when the module is disabled or removed.
 - Use the chapter contract's metadata; add a description, section, and contents navigation when useful.
-- A Manual chapter’s filename supplies its URL slug. Keep established filenames where useful; add compatibility redirects when consolidating pages.
+- A Manual chapter’s filename supplies its URL slug. Update links and callers when renaming or consolidating pages.
 - Describe the environment without prescribing a team's design process.
 - Validate chapter links and anchors after changes. Consider optional-module availability.
 

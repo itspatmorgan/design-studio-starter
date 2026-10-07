@@ -14,7 +14,7 @@ Checks help keep the shared studio consistent. Give your agent the warning or er
 | GitHub pull request | Scope review, asset sizes, and full build. Platform proposals are flagged for review. |
 | Push to `main` | Scope authorization, asset sizes, and full build. Platform changes require an admin or maintainer role. |
 
-See [Collaborate](/documentation/guide/collaborate) for how these checks fit the workflow. Configure branch protection and required checks to enforce the team's merge policy.
+See [Share](/documentation/manual/share) for how these checks fit the workflow. Configure branch protection and required checks to enforce the team's merge policy.
 
 ## Respond to a check
 
@@ -27,7 +27,7 @@ See [Collaborate](/documentation/guide/collaborate) for how these checks fit the
 | File exceeds the size limit | Reduce the asset before committing. |
 | Type check fails | Give your agent the error and ask it to correct the code. |
 
-See [Collaborate](/documentation/guide/collaborate) for review paths and [Prototype files and boundaries](/documentation/context/module.prototypes#dependency-boundaries) for permitted dependencies.
+See [Share](/documentation/manual/share) for review paths and [Prototype files and boundaries](/documentation/context/module.prototypes#dependency-boundaries) for permitted dependencies.
 
 ## Keep files small
 

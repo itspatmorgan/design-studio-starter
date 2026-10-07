@@ -1,5 +1,5 @@
 // The ⌘K command palette (Ctrl+K on Windows): jump to places, systems, prototypes,
-// and Guide chapters. Arrow keys move, Enter opens, Esc closes.
+// and Manual chapters. Arrow keys move, Enter opens, Esc closes.
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { PaletteContext } from './paletteContext';
 import { isTyping } from '@/platform/app/shell/appPrefs';

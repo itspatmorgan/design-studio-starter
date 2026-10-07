@@ -18,9 +18,9 @@ import { CONTRIBUTORS_DIR } from '../lib/contributors.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const PROTOS = path.join(ROOT, 'src', 'prototypes');
 const SYSTEM_CONTENT = path.join(ROOT, 'src', 'platform');
-// The Guide's pages, or null when its module is off or not installed.
+// The Manual's pages, or null when its module is off or not installed.
 const documentationModule = ENABLED_MODULES.find((m) => m.id === 'documentation');
-const GUIDE = documentationModule?.section?.folder ? path.join(ROOT, documentationModule.section.folder) : null;
+const MANUAL = documentationModule?.section?.folder ? path.join(ROOT, documentationModule.section.folder) : null;
 const SYSTEMS = path.join(ROOT, 'src', 'systems');
 // The system content's map reads it (src/modules/systems/content/map.ts).
 const AGENTS = path.join(ROOT, 'AGENTS.md');
@@ -37,11 +37,11 @@ export function publishManifest(server, manifest, origin) {
 const inside = (dir, file) => file === dir || file.startsWith(dir + path.sep);
 
 // Adding or removing anything can change the list of views; editing a file only matters
-// for meta.json, Guide frontmatter, contributor names, and a file that can be lofi (a view says so
+// for meta.json, Manual frontmatter, contributor names, and a file that can be lofi (a view says so
 // in its own text). Other edits to a view's code are left to Vite's hot reload.
 function relevant(file, kind) {
   if (inside(CONTRIBUTORS_DIR, file) || file === AGENTS) return true;
-  if (GUIDE && inside(GUIDE, file)) return file.endsWith('.md');
+  if (MANUAL && inside(MANUAL, file)) return file.endsWith('.md');
   if (inside(SYSTEM_CONTENT, file)) return kind !== 'change' || file.endsWith('.md');
   if (file.endsWith('.md') && /src[\\/](?:platform[\\/]core|modules)[\\/]/.test(file)) return true;
   // A system's component docs: files coming and going, and edits to the ones that describe a component
@@ -59,7 +59,7 @@ export default function manifestWatch() {
     apply: 'serve',
     configureServer(server) {
       if (!fs.existsSync(path.join(ROOT, '.studio-system-operation'))) buildManifest();
-      server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, SYSTEM_CONTENT, ...(GUIDE ? [GUIDE] : []), SYSTEMS, CONTRIBUTORS_DIR, AGENTS]);
+      server.watcher.add([PROTOS, ...PROTOTYPE_DIRS, SYSTEM_CONTENT, ...(MANUAL ? [MANUAL] : []), SYSTEMS, CONTRIBUTORS_DIR, AGENTS]);
       let timer = null;
       // Every file that changed since the last build, even ones that don't ask for a rebuild: the next one tells the
       // build which prototypes to look at again, so an edit that waited for it is never missed.

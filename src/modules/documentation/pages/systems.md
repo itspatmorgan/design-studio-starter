@@ -46,7 +46,7 @@ You can review guidance in Systems and ask the agent to revise it. In a team, ag
 
 Changes to shared components and styles can affect prototypes using that system. Review affected screens. Local experiments can stay inside a prototype until you want to share them.
 
-The **Default** badge marks the starting choice for new prototypes. Changing the default preserves existing assignments. To rebuild existing work with another system, use a [rebuild copy](/documentation/guide/prototypes#can-i-try-another-appearance-or-system).
+The **Default** badge marks the starting choice for new prototypes. Changing the default preserves existing assignments. To rebuild existing work with another system, use a [rebuild copy](/documentation/manual/prototypes#can-i-try-another-appearance-or-system).
 
 ## How do I manage a system?
 

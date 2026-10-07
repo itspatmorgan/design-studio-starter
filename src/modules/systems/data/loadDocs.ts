@@ -17,7 +17,7 @@ const globs = {
 
 // In dev, adding or removing a file makes Vite run this file again with new lists. The app keeps
 // calling the functions from the first run, so the lists live in state Vite keeps across runs
-// (like loadGuide.ts).
+// (like loadManual.ts).
 const state: { globs: typeof globs; listeners: Set<() => void> } = import.meta.hot?.data.state ?? { globs, listeners: new Set() };
 
 const at = (system: string, file: string) => `${`/systems/${system}`}/components/${file}`;

@@ -12,13 +12,13 @@
 - A default-enabled, optional Onboarding module welcomes people on their first local home-page visit, with a short interactive dialog introducing systems and prototype artifacts, sample prototypes, and guidance for making a prototype or setting up a system with their agent.
 - People can step through the introduction or skip it. Dismissal is remembered in the browser; onboarding has no navigation destination.
 - Welcome is independent of installation and is omitted from published viewing sites.
-- The command menu groups Places, Systems, Prototypes, and Guide in that order, without individual platform instruction files or system-content files.
+- The command menu groups Places, Systems, Prototypes, and Manual in that order, without individual platform instruction files or system-content files.
 
 ## Context and Skills foundation
 
 - Platform, modules, and systems own their README, context, and task skills beside their implementation. Standing requirements are context; separate Rules folders have been removed.
 - Documentation provides a readable platform and module instruction browser, with consistent document titles and navigation that preserves its scroll position. System guidance stays in Systems.
-- The Guide includes an Agents section written for designers and product managers.
+- The Manual includes an Agents section written for designers and product managers.
 - Project skill entries expose canonical procedures to Codex, Cursor, and Claude Code. Synchronization preserves user-owned changes.
 - An experimental local plugin creates, opens, and uses a studio in a visible user-owned folder. Public plugin submission, clean-computer setup, and native Claude Code and Cursor activation remain follow-up testing.
 - Compatibility redirects retain saved links to relocated guidance.
@@ -35,7 +35,7 @@ The current starter includes:
 - Shared product context and agent guidance, including setup and documentation skills.
 - Modules live alongside systems and platform infrastructure, with scaffolding and installation previews.
 - A required Studio system supplies application components and guidance; prototype systems remain separate.
-- Supported module entrypoints have dependency checks, and the Guide explains customization and upstream updates.
+- Supported module entrypoints have dependency checks, and the Manual explains customization and upstream updates.
 - Contributor scope, import boundaries, scoped-style checks, and file-size checks.
 - The Feedback Inbox sample, with an introduction, exploration artifacts, screens, and states.
 

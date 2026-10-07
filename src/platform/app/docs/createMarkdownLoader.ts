@@ -1,4 +1,4 @@
-// Guide and owner references use the same live Markdown handoff as artifact readers.
+// Manual and owner references use the same live Markdown handoff as artifact readers.
 // Keep original callers current when Vite replaces a glob or a Markdown module.
 export function createMarkdownLoader<M>(glob: Record<string, () => Promise<M>>, hot: ImportMeta['hot'], reference = false) {
   const state: { glob: typeof glob; updated: Map<string, M> } = hot?.data.markdownState ?? { glob, updated: new Map() };

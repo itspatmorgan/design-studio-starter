@@ -29,7 +29,7 @@ Locally, right-click a document or artifact and choose **Edit source**. **⌘' /
 
 ## Why can't I edit something?
 
-Published sites are for viewing. Locally, contributor scope and archive status determine editing access. Ask your agent to check your identity and permissions. See [team access](/documentation/guide/customize#how-does-team-access-work).
+Published sites are for viewing. Locally, contributor scope and archive status determine editing access. Ask your agent to check your identity and permissions. See [team access](/documentation/manual/customize#how-does-team-access-work).
 
 ## Why is a tool or artifact missing?
 

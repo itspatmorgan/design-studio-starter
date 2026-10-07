@@ -57,7 +57,7 @@ export default function SystemOverview({ system, sys, components, tokens }: {
     {sys.overview?.starter && <aside className="mb-8 rounded-lg border border-border bg-background p-4" aria-label="Starter design system">
       <p className="mb-1 text-sm font-semibold">Replace this starter with your team’s design system</p>
       <p className="text-sm leading-6 text-foreground/80">{sys.label} is included to help you explore. Bring in your team’s components, styles, and instructions when you’re ready.</p>
-      <Link to={'/documentation/guide/systems' as never} hash="bring-your-own-system" className="mt-2 inline-flex items-center gap-1 text-sm hover:underline">Set up your system<ArrowUpRight aria-hidden className="size-3.5" /></Link>
+      <Link to={'/documentation/manual/systems' as never} hash="how-do-i-bring-in-my-own-system" className="mt-2 inline-flex items-center gap-1 text-sm hover:underline">Set up your system<ArrowUpRight aria-hidden className="size-3.5" /></Link>
     </aside>}
 
     <div className="mb-4 grid gap-4">

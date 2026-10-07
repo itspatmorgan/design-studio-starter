@@ -15,7 +15,7 @@ toc: true
 | A new tool or section | A module where practical. |
 | Studio's core appearance or behavior | Its application code. |
 
-Your own [design system](/documentation/guide/systems) is usually the most useful customization. You also own Studio's code; your agent can adapt the environment.
+Your own [design system](/documentation/manual/systems) is usually the most useful customization. You also own Studio's code; your agent can adapt the environment.
 
 ## How do I configure the studio?
 

@@ -20,7 +20,7 @@ When the person asks for a canvas (a page of views, documents, and notes arrange
 When the person asks to assign or review team Admins, system maintainers, or contributor permissions, read [src/modules/contributors/skills/use-contributors/SKILL.md](src/modules/contributors/skills/use-contributors/SKILL.md).
 When the person asks for a standalone diagram inside a prototype, read [src/modules/diagrams/skills/create-diagram/SKILL.md](src/modules/diagrams/skills/create-diagram/SKILL.md).
 When the person asks for a document inside a prototype, read [src/modules/document/skills/write-document/SKILL.md](src/modules/document/skills/write-document/SKILL.md).
-When the person asks to add or change the human Manual, read [src/modules/documentation/skills/write-guide/SKILL.md](src/modules/documentation/skills/write-guide/SKILL.md).
+When the person asks to add or change the human Manual, read [src/modules/documentation/skills/write-manual/SKILL.md](src/modules/documentation/skills/write-manual/SKILL.md).
 When the person asks for a first tour of the studio or help getting started after installation, read [src/modules/onboarding/skills/use-onboarding/SKILL.md](src/modules/onboarding/skills/use-onboarding/SKILL.md).
 When the person asks to create or edit interactive prototype views, read [src/modules/prototypes/skills/build-prototype/SKILL.md](src/modules/prototypes/skills/build-prototype/SKILL.md).
 When the person asks to rename, move, duplicate, archive, restore, or remove a prototype, read [src/modules/prototypes/skills/organize-prototype/SKILL.md](src/modules/prototypes/skills/organize-prototype/SKILL.md).
@@ -30,4 +30,4 @@ When the person asks to import or document a system component, read [src/modules
 
 Use pnpm for project commands. Reuse instructions already read while available and unchanged; retrieve missing or stale instructions after compaction or file changes. Re-read source files before editing them. Use targeted searches and bounded reads; read applicable skill procedures in full. Save verbose check output to a temporary log, inspect final exit status and warnings, and report concise results with its path.
 
-The human Guide lives in `src/modules/documentation/pages/`; technical requirements live in owner READMEs and context documents. Update affected guidance with platform behavior changes. For routing work, consult [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview).
+The human Manual lives in `src/modules/documentation/pages/`; technical requirements live in owner READMEs and context documents. Update affected guidance with platform behavior changes. For routing work, consult [TanStack Router](https://tanstack.com/router/latest/docs/framework/react/overview).

@@ -10,7 +10,7 @@
 //                                            An address from before prototypes moved, /patrick/hello-world, is
 //                                            sent on to /prototypes/patrick/hello-world.
 //
-// The modules add their own: /prototypes (the gallery), /examples, /systems/$system, /documentation/guide/$page
+// The modules add their own: /prototypes (the gallery), /examples, /systems/$system, /documentation/manual/$page
 // (src/modules/<id>/app.tsx). Everything that opens in the viewer does so through the routes above.
 import { Suspense } from 'react';
 import { createRootRoute, createRoute, createRouter, notFound, redirect, useRouter, lazyRouteComponent } from '@tanstack/react-router';
@@ -77,11 +77,11 @@ const settingsRoute = createRoute({
 });
 
 const documentationRoute = createRoute({ getParentRoute: () => rootRoute, path: 'documentation', beforeLoad: async () => {
-  const { guide } = await loadManifest();
-  throw redirect({ to: (guide.length ? '/documentation/guide' : '/documentation/context/platform.core') as never, replace: true });
+  const { manual } = await loadManifest();
+  throw redirect({ to: (manual.length ? '/documentation/manual' : '/documentation/context/platform.core') as never, replace: true });
 } });
 
-// Owner guidance and local file actions remain available without the optional Guide.
+// Owner guidance and local file actions remain available without the optional Manual.
 const DocumentationEditor = import.meta.env.DEV ? lazyRouteComponent(() => import('@/platform/app/docs/DocumentationEditor')) : null;
 const KnowledgePage = lazyRouteComponent(() => import('@/platform/app/docs/KnowledgePage'));
 const KnowledgeDocument = lazyRouteComponent(() => import('@/platform/app/docs/KnowledgePage').then(mod => ({ default: mod.KnowledgeDocument })));
@@ -243,7 +243,7 @@ const sectionItemSplatRoute = createRoute({
 });
 
 // The app's own routes are typed, so links to them are checked. The modules' routes (Systems, the
-// system content, the Guide, in src/modules/<id>/app.tsx) are added at run time, and the types leave
+// system content, the Manual, in src/modules/<id>/app.tsx) are added at run time, and the types leave
 // them out: a link to one is written loosely.
 const coreRoutes = [homeRoute, documentationRoute, contextRoute.addChildren([contextIndexRoute, ownerRoute, ownerReferenceRoute, contextPageRoute, contextItemRoute]), prototypeRoute.addChildren([prototypeIndexRoute, itemRoute]), sectionItemRoute.addChildren([sectionItemIndexRoute, sectionItemSplatRoute])] as const;
 const routeTree = rootRoute.addChildren([...coreRoutes, ...(import.meta.env.DEV ? [settingsRoute] : []), ...moduleApps.flatMap(({ app }) => app.routes?.(rootRoute) ?? [])] as unknown as typeof coreRoutes);
@@ -254,7 +254,7 @@ export const router = createRouter({
   // No rewrites on your host? Use hash URLs instead (/#/prototypes/patrick/hello-world):
   //   import { createHashHistory } from '@tanstack/react-router';
   //   history: createHashHistory(),
-  // https://tanstack.com/router/latest/docs/framework/react/guide/history-types
+  // https://tanstack.com/router/latest/docs/framework/react/manual/history-types
   basepath: import.meta.env.BASE_URL,
   defaultErrorComponent: LoadError,
   defaultPreload: 'intent',
@@ -275,7 +275,7 @@ declare module '@tanstack/react-router' {
 
 // In dev, the manifest updates live as files change (scripts/build/vite-manifest-watch-plugin.js).
 // invalidate() reruns the loaders, so lists and navigation update without a page reload.
-// https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#using-routerinvalidate
+// https://tanstack.com/router/latest/docs/framework/react/manual/data-loading#using-routerinvalidate
 if (import.meta.hot) {
   let refreshAll = false;
   const files = new Set<string>();

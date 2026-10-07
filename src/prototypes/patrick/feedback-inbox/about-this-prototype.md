@@ -50,4 +50,4 @@ Work with your agent to try a change, such as adding a due date or exploring a d
 
 You own the files behind every artifact. You can ask your agent to update them or use **Edit source** in an artifact’s menu to inspect and edit them directly.
 
-When you’re ready to explore your own idea, create a prototype from the **Prototypes** page. Visit the [Guide](/documentation/guide) if you want to learn more.
+When you’re ready to explore your own idea, create a prototype from the **Prototypes** page. Visit the [Manual](/documentation/manual) if you want to learn more.

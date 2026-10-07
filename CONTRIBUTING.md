@@ -2,7 +2,7 @@
 
 Design Studio Starter is an early beta. The current priority is a reliable local workflow: studio initialization, contributor onboarding, prototypes and their file types, design systems, and the system content. Hosting is outside the current release focus.
 
-For local setup, follow the [README](README.md) and the Guide in `src/modules/documentation/pages/`. Coding agents should start with [AGENTS.md](AGENTS.md), which points to platform context, principles, personas, and task skills.
+For local setup, follow the [README](README.md) and the Manual in `src/modules/documentation/pages/`. Coding agents should start with [AGENTS.md](AGENTS.md), which points to platform context, principles, personas, and task skills.
 
 ## Proposing a change
 
@@ -19,7 +19,7 @@ pnpm harness:check
 pnpm build
 ```
 
-The build runs tests, type checks, and production validation. Keep committed files below 750 KB. Include useful tests for behavior changes, and update the Guide or agent instructions when a workflow changes.
+The build runs tests, type checks, and production validation. Keep committed files below 750 KB. Include useful tests for behavior changes, and update the Manual or agent instructions when a workflow changes.
 
 Run `pnpm harness:sync` after changing plugin identity or canonical project skills. It generates all three host manifests and catalogs, then synchronizes project routing and skill adapters. Edit canonical sources instead of generated files. See [Agent context routing](src/platform/context/agent-context.md) for ownership and installed-studio packaging.
 

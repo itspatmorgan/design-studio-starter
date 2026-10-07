@@ -1,28 +1,27 @@
 import { Suspense } from 'react';
-// The Guide in the app: its rail button and its routes (/documentation/guide and /documentation/guide/<page>). The pages are in
+// The Manual in the app: its rail button and its routes (/documentation/manual and /documentation/manual/<page>). The pages are in
 // src/modules/documentation/pages/ with availability and order recorded in the manifest.
-import { createRoute, notFound, redirect, lazyRouteComponent } from '@tanstack/react-router';
+import { createRoute, notFound, lazyRouteComponent } from '@tanstack/react-router';
 import { BookOpen01Icon } from '@hugeicons/core-free-icons';
 import { APP_NAME } from '@/platform/app/data/config';
 import type { ModuleApp } from '@/platform/core/api';
 import { loadManifest } from '@/platform/app/data/manifest';
-import { loadGuidePage } from './loadGuide';
-import { manualLinkTarget } from './manualLinks';
+import { loadManualPage } from './loadManual';
 
-// Guide pages render in DocLayout, loaded with the first Guide page.
-const GuidePage = lazyRouteComponent(() => import('./GuidePage'));
-const GuideLayout = lazyRouteComponent(() => import('./GuideLayout'));
+// Manual pages render in DocLayout, loaded with the first Manual page.
+const ManualPage = lazyRouteComponent(() => import('./ManualPage'));
+const ManualLayout = lazyRouteComponent(() => import('./ManualLayout'));
 
-// Loads a Guide page before it renders, like views. /documentation/guide opens index.md. Each chapter has its own Guide source.
-async function guideLoader(slug: string, mode?: 'source') {
-  await Promise.all([GuideLayout.preload?.(), GuidePage.preload?.(), mode === 'source' && import.meta.env.DEV ? import('./GuidePage').then(mod => mod.prepareGuideSource()) : undefined]);
-  const page = (await loadManifest()).guide.find((p) => p.slug === slug);
+// Loads a Manual page before it renders, like views. /documentation/manual opens index.md. Each chapter has its own Manual source.
+async function manualLoader(slug: string, mode?: 'source') {
+  await Promise.all([ManualLayout.preload?.(), ManualPage.preload?.(), mode === 'source' && import.meta.env.DEV ? import('./ManualPage').then(mod => mod.prepareManualSource()) : undefined]);
+  const page = (await loadManifest()).manual.find((p) => p.slug === slug);
   if (import.meta.env.DEV && mode === 'source') {
     const path = 'src' + (page?.source ?? `/modules/documentation/pages/${slug}.md`);
     return { slug, filePath: path.slice(3), source: { path }, title: page?.title ?? slug, pageTitle: [page?.title ?? slug, 'Source', APP_NAME].join(' — ') };
   }
   if (!page) throw notFound();
-  const mod = await loadGuidePage(slug, page?.source);
+  const mod = await loadManualPage(slug, page?.source);
   if (!mod) throw notFound();
   const { title, description, toc } = mod.frontmatter ?? {};
   return { slug, filePath: page.source ?? `/modules/documentation/pages/${slug}.md`, Component: mod.default, title, description, toc, pageTitle: [title, 'Manual', APP_NAME].filter(Boolean).join(' — ') };
@@ -33,35 +32,29 @@ export default {
   rail: 'top',
   order: 30,
   routes: (root) => {
-    // The Guide's sidebar, around whichever page is open.
-    const guideRoute = createRoute({
+    // The Manual's sidebar, around whichever page is open.
+    const manualRoute = createRoute({
       getParentRoute: () => root,
-      path: 'documentation/guide',
+      path: 'documentation/manual',
       validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }),
-      component: () => <Suspense fallback={null}><GuideLayout /></Suspense>,
+      component: () => <Suspense fallback={null}><ManualLayout /></Suspense>,
     });
     const indexRoute = createRoute({
-      getParentRoute: () => guideRoute,
+      getParentRoute: () => manualRoute,
       path: '/',
       loaderDeps: ({ search }) => ({ mode: search.mode }),
-      loader: ({ deps }) => guideLoader('index', deps.mode),
+      loader: ({ deps }) => manualLoader('index', deps.mode),
       head: ({ loaderData }) => ({ meta: [{ title: loaderData?.pageTitle ?? APP_NAME }] }),
-      component: () => <Suspense fallback={null}><GuidePage {...indexRoute.useLoaderData()} /></Suspense>,
+      component: () => <Suspense fallback={null}><ManualPage {...indexRoute.useLoaderData()} /></Suspense>,
     });
     const pageRoute = createRoute({
-      getParentRoute: () => guideRoute,
+      getParentRoute: () => manualRoute,
       path: '$page',
-      beforeLoad: async ({ params, location, search }) => {
-        const target = manualLinkTarget(params.page, location.hash);
-        if (!target) return;
-        if (!(await loadManifest()).guide.some(page => page.slug === target.page)) throw notFound();
-        throw redirect({ to: target.page === 'index' ? '/documentation/guide' : '/documentation/guide/$page', params: { page: target.page }, hash: target.hash, search, replace: true } as never);
-      },
       loaderDeps: ({ search }) => ({ mode: search.mode }),
-      loader: ({ params, deps }) => guideLoader(params.page, deps.mode),
+      loader: ({ params, deps }) => manualLoader(params.page, deps.mode),
       head: ({ loaderData }) => ({ meta: [{ title: loaderData?.pageTitle ?? APP_NAME }] }),
-      component: () => <Suspense fallback={null}><GuidePage {...pageRoute.useLoaderData()} /></Suspense>,
+      component: () => <Suspense fallback={null}><ManualPage {...pageRoute.useLoaderData()} /></Suspense>,
     });
-    return [guideRoute.addChildren([indexRoute, pageRoute])];
+    return [manualRoute.addChildren([indexRoute, pageRoute])];
   },
 } satisfies ModuleApp;

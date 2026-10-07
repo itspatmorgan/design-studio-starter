@@ -31,7 +31,7 @@ Use **+** in navigation to add artifacts or folders. Drag items to move or reord
 
 Right-click an item for file actions. Studio repairs known links and embeds when files move within a prototype. Keep Studio running during moves in your editor or Finder. Moves while Studio is closed, deleted targets, and dynamically built links may need your agent to repair them.
 
-Use the prototype's **…** menu to rename, duplicate, or archive it. Archiving keeps it locally and excludes it from publication. For source editing, see [Help](/documentation/guide/questions#how-do-i-edit-source).
+Use the prototype's **…** menu to rename, duplicate, or archive it. Archiving keeps it locally and excludes it from publication. For source editing, see [Help](/documentation/manual/questions#how-do-i-edit-source).
 
 ## How do documents and diagrams work?
 

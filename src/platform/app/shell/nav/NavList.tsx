@@ -1,5 +1,5 @@
 // A flat list of pages in a section's navigation, in groups under headings: the Systems pages, the
-// Guide's pages. (A list of files and folders is the file tree, FileTree.tsx.) Presentational only:
+// Manual's pages. (A list of files and folders is the file tree, FileTree.tsx.) Presentational only:
 // each row is a router Link that takes navLinkClass, so the row looks like the tree's.
 //   <NavList>
 //     <NavGroup>                          a group with no heading
