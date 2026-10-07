@@ -5,7 +5,7 @@ import type { StudioConfig } from './src/platform/core/config.ts';
 export default {
   name: 'Design Studio',
   usage: 'personal',
-  tagline: 'Your ideas, made tangible.',
+  tagline: "A prototype sandbox for you and your team",
   modules: {
     canvas: true,
     diagrams: true,
@@ -16,9 +16,9 @@ export default {
     text: true,
     view: true,
     onboarding: true,
-    contributors: false,
+    contributors: true,
   },
-  systems: ['studio', 'product', 'marketing'],
+  systems: ["studio", "product", "marketing"],
   systemMaintainers: { product: [], marketing: [] },
   defaultSystem: 'product',   // the design system a prototype uses when its meta.json doesn't name one
   admins: ["patrick"],

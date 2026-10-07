@@ -17,6 +17,7 @@ Skills are owned by the platform, enabled modules, and registered systems. Inspe
 
 <!-- studio:modules -->
 When the person asks for a canvas (a page of views, documents, and notes arranged together), read [src/modules/canvas/skills/use-canvas/SKILL.md](src/modules/canvas/skills/use-canvas/SKILL.md).
+When the person asks to assign or review team Admins, system maintainers, or contributor permissions, read [src/modules/contributors/skills/use-contributors/SKILL.md](src/modules/contributors/skills/use-contributors/SKILL.md).
 When the person asks for a standalone diagram inside a prototype, read [src/modules/diagrams/skills/create-diagram/SKILL.md](src/modules/diagrams/skills/create-diagram/SKILL.md).
 When the person asks for a document inside a prototype, read [src/modules/document/skills/write-document/SKILL.md](src/modules/document/skills/write-document/SKILL.md).
 When the person asks to add or change the human Guide, read [src/modules/documentation/skills/write-guide/SKILL.md](src/modules/documentation/skills/write-guide/SKILL.md).

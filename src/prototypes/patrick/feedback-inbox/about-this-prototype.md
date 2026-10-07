@@ -28,7 +28,7 @@ This is sample data, so you can experiment freely. Reloading the page resets it.
 
 ### 3. Look at the details
 
-The **States** folder lets you jump straight to moments that are easy to miss in a walkthrough. Explore an [empty inbox](states/inbox/empty.tsx), a [form with a validation error](states/inbox/validation-error.tsx), or a [delete confirmation](states/detail/delete-confirmation.tsx).
+The **States** folder lets you jump straight to moments that are easy to miss in a walkthrough. Explore an [empty inbox](states/inbox/empty.tsx), a [form with a validation error](states/inbox/validation-error.tsx), or a [delete confirmation](states/inbox/delete-confirmation.tsx).
 
 Having these moments available separately makes it easier to compare options and discuss how the product should respond.
 

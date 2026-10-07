@@ -928,15 +928,16 @@
       "height": 318,
       "id": "muotyuwchbnhje",
       "index": "ad",
-      "link": "/prototypes/patrick/feedback-inbox/states/detail/delete-confirmation",
+      "link": "/prototypes/patrick/feedback-inbox/states/inbox/delete-confirmation",
       "seed": 1197940310,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 3,
-      "versionNonce": 1466387670,
+      "version": 5,
+      "versionNonce": 1957862284,
       "width": 458,
       "x": 110,
-      "y": 3408
+      "y": 3408,
+      "updated": 1791333832374
     },
     {
       "backgroundColor": "#ffec99",

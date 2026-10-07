@@ -57,6 +57,14 @@
       "kind": "link",
       "hash": "4bc59d6761bfddc596f5f715e31ab43cfefbdce8a4e10e0c52d2c2cd0073f5ab"
     },
+    ".agents/skills/studio-module-contributors-use-contributors/SKILL.md": {
+      "kind": "file",
+      "hash": "9a8fd12adedc80c8c6d7a85170c4688cfdb19ad46d3af32323f747746f87b647"
+    },
+    ".claude/skills/studio-module-contributors-use-contributors": {
+      "kind": "link",
+      "hash": "8289cff96ab30a3c65aa5f683132821648e5f212473d03dc900befde94f4a17c"
+    },
     ".agents/skills/studio-module-diagrams-create-diagram/SKILL.md": {
       "kind": "file",
       "hash": "84c597fab39ca276af2dfa294161f9a9753c8693a19e829d9fcd1692d7972f86"

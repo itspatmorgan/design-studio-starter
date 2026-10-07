@@ -12,18 +12,18 @@
     "app/feedback-detail.tsx",
     "states/inbox",
     "states/detail",
+    "states/detail/edit.tsx",
+    "meta.json",
+    "discovery/lofi-inbox.tsx",
+    "discovery/breadboard.excalidraw",
+    "discovery/feedback-flow.mermaid",
+    "discovery/project-context.md",
     "states/inbox/open-issues.tsx",
     "states/inbox/empty.tsx",
     "states/inbox/no-matches.tsx",
     "states/inbox/new-feedback.tsx",
     "states/inbox/validation-error.tsx",
     "states/inbox/row-menu.tsx",
-    "states/detail/edit.tsx",
-    "states/detail/delete-confirmation.tsx",
-    "meta.json",
-    "discovery/lofi-inbox.tsx",
-    "discovery/breadboard.excalidraw",
-    "discovery/feedback-flow.mermaid",
-    "discovery/project-context.md"
+    "states/inbox/delete-confirmation.tsx"
   ]
 }
