@@ -37,6 +37,13 @@ export default function SystemOverview({ system, sys, components, tokens }: {
   const usage = systemUsage(manifest.prototypes, system);
   const sectionHeading = 'mb-4 text-lg font-semibold tracking-tight';
   const guidanceCount = guidance.reduce((count, section) => count + section.artifacts.length, 0);
+  const blank = !platform && !components.length && !tokens.length && !guidanceCount && !systemAssets(system).length && !sys.icons;
+
+  if (blank && spec.status === 'active' && import.meta.env.DEV) return <>
+    <PageHeader title={sys.label} description="This system is empty. Choose how you want to build it." />
+    <SystemReferenceNotice system={system} />
+    <SystemSetup system={system} />
+  </>;
 
   return <>
     <PageHeader title={sys.label} description={sys.summary ?? `The guidance and code included in ${sys.label}.`} />
@@ -46,7 +53,6 @@ export default function SystemOverview({ system, sys, components, tokens }: {
       <AlertTitle>This system is archived</AlertTitle>
       <AlertDescription>Files are kept locally and excluded from deployment. Choose Restore from the system menu to use it again.</AlertDescription>
     </Alert>}
-    {!platform && spec.status === 'active' && !components.length && import.meta.env.DEV && <SystemSetup system={system} />}
     {platform && <p className="mb-6 text-[13px] text-muted-foreground">Required application system</p>}
     {sys.overview?.starter && <aside className="mb-8 rounded-lg border border-border bg-background p-4" aria-label="Starter design system">
       <p className="mb-1 text-sm font-semibold">Replace this starter with your team’s design system</p>

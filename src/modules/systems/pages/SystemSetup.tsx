@@ -1,24 +1,29 @@
 import { useState } from 'react';
-import { Shapes } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Copy01Icon } from '@hugeicons/core-free-icons';
 import { Button } from '@/systems/studio/components/button';
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/systems/studio/components/empty';
 
 export default function SystemSetup({ system }: { system: string }) {
   const [copied, setCopied] = useState<string | null>(null);
   const [error, setError] = useState('');
-  const prompts = [
-    { id: 'curate', label: 'Curate a toolkit', description: 'Start with what you want to prototype and choose a small set of components, theme choices, and assets.', prompt: `Help me curate the system at src/systems/${system}/ for my first prototype. Ask what I want to make, then propose the smallest useful toolkit, theme, and assets. Preserve existing systems and prototypes. Keep the current default system until I choose to change it.` },
-    { id: 'import', label: 'Bring my product system', description: 'Assess your existing React components, theme, and assets before importing them.', prompt: `Help me assess my existing React components, theme, and assets for the system at src/systems/${system}/. Ask for the source and first intended prototype. Check component APIs, exact theme values, assets, and application dependencies. Propose a maintainable subset and explain fidelity gaps before importing. Preserve existing systems and prototypes.` },
+  const paths = [
+    { id: 'curate', label: 'Curate a toolkit', description: 'Start with an idea. Your agent helps choose the components and visual style you need.', prompt: `Help me curate a toolkit for the system at src/systems/${system}/. Ask what I want to prototype, then propose a small set of components, theme tokens, and assets from shadcn or Untitled UI. Add only what we need. Preserve other systems and prototypes, and keep the current default.` },
+    { id: 'import', label: 'Bring my product system', description: 'Start with your existing React components and theme. Your agent assesses what can be brought in faithfully.', prompt: `Help me bring my product’s React design system into src/systems/${system}/. Ask for the source and first prototype. Assess components, props, theme, fonts, icons, and dependencies. Preserve component APIs and theme fidelity. Explain required adaptations before importing a focused subset. Preserve other systems and prototypes, and keep the current default.` },
   ];
   async function copy(id: string, prompt: string) {
     try { await navigator.clipboard.writeText(prompt); setError(''); setCopied(id); }
-    catch { setError('Could not copy. Select the prompt below and paste it into your agent’s chat.'); }
+    catch { setError('Could not copy. Select the prompt and paste it into your agent’s chat.'); }
   }
-  return <Empty className="mb-8 min-h-[16rem] border border-solid border-border/50 bg-muted/40">
-    <EmptyHeader><EmptyMedia variant="icon"><Shapes /></EmptyMedia><EmptyTitle>Build your system with your agent</EmptyTitle><EmptyDescription>No components have been added yet. Bring in your product’s toolkit or curate one for what you want to prototype. The scaffold includes a starting theme you can replace.</EmptyDescription></EmptyHeader>
-    <EmptyContent className="max-w-none text-left">
-      {prompts.map(item => <div key={item.id} className="w-full rounded-lg border border-border bg-background p-4"><h3 className="text-sm font-semibold">{item.label}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{item.description}</p><details className="mt-2 text-sm"><summary className="cursor-pointer">View prompt</summary><p className="mt-2 select-text leading-6">{item.prompt}</p></details><Button variant="outline" size="sm" className="mt-3" onClick={() => void copy(item.id, item.prompt)} aria-label={`Copy prompt: ${item.label}`}>{copied === item.id ? 'Copied' : 'Copy prompt'}</Button></div>)}
-      <p role="status" className="text-sm text-muted-foreground">{error || (copied ? 'Paste the prompt into your coding agent’s chat to continue.' : 'Copy a prompt and paste it into your coding agent’s chat.')}</p>
-    </EmptyContent>
-  </Empty>;
+  return <div className="space-y-4">
+    <p className="text-sm text-muted-foreground">Copy either prompt and paste it into your coding agent’s chat.</p>
+    {paths.map(path => <section key={path.id} aria-labelledby={`setup-${path.id}`} className="rounded-xl border border-border bg-background p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 id={`setup-${path.id}`} className="text-base font-semibold">{path.label}</h2>
+        <Button variant="outline" size="sm" onClick={() => void copy(path.id, path.prompt)} aria-label={`Copy prompt: ${path.label}`}><HugeiconsIcon icon={Copy01Icon} data-icon="inline-start" />{copied === path.id ? 'Copied' : 'Copy prompt'}</Button>
+      </div>
+      <p className="mt-1 text-sm leading-6 text-muted-foreground">{path.description}</p>
+      <p className="mt-4 select-text rounded-lg border border-border/50 bg-muted/40 p-4 text-sm leading-6">{path.prompt}</p>
+    </section>)}
+    <p role="status" className="text-sm text-muted-foreground">{error || (copied ? 'Prompt copied. Paste it into your coding agent’s chat to continue.' : '')}</p>
+  </div>;
 }

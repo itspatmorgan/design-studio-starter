@@ -17,9 +17,9 @@ The **Default** badge marks the starting choice for new prototypes. Each prototy
 
 ## Bring your own system
 
-1. Click **New system** and name it. This creates a starting theme without changing existing systems or prototypes.
+1. Click **New system** and name it. This creates a blank system with no components, theme tokens, or assets. Existing systems and prototypes stay unchanged.
 2. On its overview, choose **Curate a toolkit** or **Bring my product system**.
-3. Copy the prompt into your coding agent’s chat, then tell it what you want to prototype.
+3. Copy the displayed prompt into your coding agent’s chat, then tell it what you want to prototype.
 
 **Starting from an idea?** Describe the experience, such as a customer feedback dashboard. Your agent can select a small toolkit from shadcn or Untitled UI. You can also specify the components and visual choices yourself.
 

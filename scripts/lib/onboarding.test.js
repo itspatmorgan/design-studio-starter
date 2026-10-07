@@ -74,6 +74,7 @@ test('local personal setup resumes, then a second clone joins a team without cha
     fs.rmSync(localPack, { recursive: true });
     run(dir, 'scripts/cli/studio.js', 'create-system', 'brand', '--yes');
     assert.ok(declared().systems.includes('brand'));
+    assert.equal(/--[a-z][\w-]*\s*:/.test(fs.readFileSync(path.join(dir, 'src/systems/brand/styles/theme.css'), 'utf8')), false, 'A new system must not preselect theme tokens');
     run(dir, 'scripts/cli/studio.js', 'remove', 'brand', '--yes');
     assert.deepEqual(declared().systems, ['studio', 'product']);
     const beforeFailedInstall = fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8');

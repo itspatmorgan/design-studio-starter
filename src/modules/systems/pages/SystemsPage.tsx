@@ -113,7 +113,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   const params = useRouterState({ select: state => state.matches.at(-1)?.params }) as { _splat?: string };
   const manifest = useManifest();
   const source = system === PLATFORM_ID ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
-  const foundations = TOKEN_PAGES.filter((p) => p.id === 'typography' || tokens.some((t) => t.group === p.group));
+  const foundations = TOKEN_PAGES.filter((p) => tokens.some((t) => t.group === p.group));
   const savedTree = systemTreeState.get(system);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => savedTree?.openGroups ?? { context: true, skills: true, theme: true, assets: true, components: true });
   const [folderCommand, setFolderCommand] = useState(() => savedTree?.folderCommand ?? { version: 0, expanded: true });
@@ -170,6 +170,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
         {contentSections.map(({ id, section, proto }) => <FileTree key={proto.id} proto={proto} current={page === id && params._splat ? findArtifact(proto, params._splat) : undefined} embedded contentIcon={navIcon(CONTENT_ICONS[id])} branch={{ label: section.title, path: source.dir + id + '/', active: page === id }} navigation={{ query: matches(section.title) ? '' : q, searching: Boolean(q), expanded: groupOpen(id), onExpandedChange: open => changeGroup(id, open), folderCommand, onFoldersExpanded: open => setFoldersExpanded(prev => prev[id] === open ? prev : { ...prev, [id]: open }) }} />)}
         {(matchingFoundations.length > 0 || matches('Theme')) && <SystemBranch label="Theme" path={source.theme} open={groupOpen('theme')} onOpenChange={open => changeGroup('theme', open)}>
           {matchingFoundations.map(p => file(p.id, p.label))}
+          {!foundations.length && !q && <p className="px-3 py-1 text-[12px] text-muted-foreground">No tokens yet</p>}
         </SystemBranch>}
         {assetPages.length > 0 && <SystemBranch label="Assets" path={source.dir + 'assets/'} open={groupOpen('assets')} onOpenChange={open => changeGroup('assets', open)}>
           {assetPages.map(item => item.id === 'icons' && SYSTEMS[system].icons ? file('icons', 'Icons') : <Link key={item.id} to={`/systems/${system}/${item.id}` as never} activeOptions={{ includeSearch: false }} className={navLinkClass} style={navLinkStyle}>{navIcon(item.icon)}{item.label}</Link>)}
