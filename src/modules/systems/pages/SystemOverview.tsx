@@ -52,12 +52,12 @@ export default function SystemOverview({ system, sys, components, tokens }: {
     </aside>}
 
     <div className="mb-4 grid gap-4">
-      <section className="min-w-0 rounded-xl bg-muted/40 p-6" aria-labelledby="system-guidance">
+      <section className="min-w-0 rounded-xl border border-border/50 bg-muted/40 p-6" aria-labelledby="system-guidance">
         <h2 id="system-guidance" className={sectionHeading}>Instructions</h2>
         <Metrics items={guidance.map(section => ({ label: section.label, count: section.artifacts.length }))} />
         {sys.overview?.guidance ? <p className="text-sm leading-6 text-foreground/80">{sys.overview.guidance}</p> : !guidanceCount && <p className="text-sm leading-6 text-foreground/80">No system instructions have been added yet.</p>}
       </section>
-      <section className="min-w-0 rounded-xl bg-muted/40 p-6" aria-labelledby="system-code">
+      <section className="min-w-0 rounded-xl border border-border/50 bg-muted/40 p-6" aria-labelledby="system-code">
         <h2 id="system-code" className={sectionHeading}>Toolkit</h2>
         <Metrics items={[{ label: 'Components', count: components.length }, { label: 'Theme tokens', count: new Set(tokens.map(token => token.name)).size }, { label: 'Local assets', count: systemAssets(system).length }]} />
         {sys.overview?.code && <p className="text-sm leading-6 text-foreground/80">{sys.overview.code}</p>}
@@ -65,7 +65,7 @@ export default function SystemOverview({ system, sys, components, tokens }: {
       </section>
     </div>
 
-    <section className="rounded-xl bg-muted/40 p-6" aria-labelledby="system-usage">
+    <section className="rounded-xl border border-border/50 bg-muted/40 p-6" aria-labelledby="system-usage">
       <div className="min-w-0">
         <h2 id="system-usage" className={sectionHeading}>Where it’s used</h2>
         {!platform && <Metrics items={[{ label: 'Active prototypes', count: usage.count }]} />}

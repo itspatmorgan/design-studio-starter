@@ -14,7 +14,7 @@ export default function SystemSetup({ system }: { system: string }) {
     try { await navigator.clipboard.writeText(prompt); setError(''); setCopied(id); }
     catch { setError('Could not copy. Select the prompt below and paste it into your agent’s chat.'); }
   }
-  return <Empty className="mb-8 min-h-[16rem] bg-muted/40">
+  return <Empty className="mb-8 min-h-[16rem] border border-solid border-border/50 bg-muted/40">
     <EmptyHeader><EmptyMedia variant="icon"><Shapes /></EmptyMedia><EmptyTitle>Build your system with your agent</EmptyTitle><EmptyDescription>No components have been added yet. Bring in your product’s toolkit or curate one for what you want to prototype. The scaffold includes a starting theme you can replace.</EmptyDescription></EmptyHeader>
     <EmptyContent className="max-w-none text-left">
       {prompts.map(item => <div key={item.id} className="w-full rounded-lg border border-border bg-background p-4"><h3 className="text-sm font-semibold">{item.label}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{item.description}</p><details className="mt-2 text-sm"><summary className="cursor-pointer">View prompt</summary><p className="mt-2 select-text leading-6">{item.prompt}</p></details><Button variant="outline" size="sm" className="mt-3" onClick={() => void copy(item.id, item.prompt)} aria-label={`Copy prompt: ${item.label}`}>{copied === item.id ? 'Copied' : 'Copy prompt'}</Button></div>)}

@@ -74,7 +74,7 @@ export default function SystemAssets({ system, sys, kind, path }: { system: stri
         {kind !== 'Fonts' && <img src={asset.url} alt="" loading="lazy" className="size-10 shrink-0 object-contain" />}
         <span className="min-w-0 break-all text-sm">{asset.path}</span>
       </Link>
-    </li>)}</ul> : empty && <Empty className="min-h-[16rem] bg-muted/40">
+    </li>)}</ul> : empty && <Empty className="min-h-[16rem] border border-solid border-border/50 bg-muted/40">
       <EmptyHeader>
         <EmptyMedia variant="icon" className="bg-background"><Icon aria-hidden="true" /></EmptyMedia>
         <EmptyTitle>No local {kind.toLowerCase()} yet</EmptyTitle>
