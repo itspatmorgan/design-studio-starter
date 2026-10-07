@@ -37,3 +37,7 @@ These measurements exclude network source download, missing-tool installation, a
 All 17 plugin tests passed. The full maintainer build passed all 270 tests, type checking, and Vite. The generated pinned studio's ordinary build passed with the full regression command separately available. The usual Vite large-chunk warning remains. The benchmark studio was removed after measurement.
 
 The four disposable folders Design Studio, Design Studio Public Onboarding QA, Design Studio Sites Experiment, and Design Studio Sites Installer Check were moved to Trash, preserving their contents. The person elected to delete the three hosted test sites themselves; no hosted deletion is claimed. Historical experiment URLs and folder paths are evidence of past runs, not current workspace recommendations.
+
+## Tagline follow-up
+
+Experiment .15 removes the installer’s explicit marketing tagline and advances the source pin to the verified public commit 599da74eee43aba5e1c4a97abad8dc87140f3989. A fresh disposable create-and-prepare fixture confirmed the inherited tagline is “A prototype sandbox for you and your team”, with Personal mode and the readable Design Studio name preserved. The full maintainer build passed again. The experiment .14 timing table above remains historical measurement of the earlier pin and should not be presented as a benchmark of experiment .15.

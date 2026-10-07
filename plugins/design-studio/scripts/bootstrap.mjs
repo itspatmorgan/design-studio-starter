@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url';
 import { packageStarter } from './starter-package.mjs';
 
 export const SOURCE = 'https://github.com/itspatmorgan/design-studio-starter.git';
-export const REVISION = 'b6fc5d9c790671da5a27810a08ff9e05de700474';
+export const REVISION = '599da74eee43aba5e1c4a97abad8dc87140f3989';
 export const RECEIPT = 'design-studio.local.json';
 const REQUIRED = ['AGENTS.md', 'package.json', 'pnpm-lock.yaml', 'mise.toml', 'studio.config.ts', 'src/systems/studio/AGENTS.md'];
 
@@ -140,7 +140,7 @@ export function prepareStudio(value) {
   run('mise', ['install'], studio.destination, true);
   run('mise', ['exec', 'pnpm@12', '--', 'pnpm', 'install', '--frozen-lockfile'], studio.destination, true);
   if (!studio.prepared) {
-    run('mise', ['exec', 'pnpm@12', '--', 'pnpm', 'studio', 'configure', '--name', studio.name, '--usage', 'personal', '--tagline', 'Your ideas, made tangible.', '--yes'], studio.destination, true);
+    run('mise', ['exec', 'pnpm@12', '--', 'pnpm', 'studio', 'configure', '--name', studio.name, '--usage', 'personal', '--yes'], studio.destination, true);
     const { destination, existing, ...receipt } = studio;
     receipt.prepared = true;
     fs.writeFileSync(path.join(destination, RECEIPT), JSON.stringify(receipt, null, 2) + '\n');
