@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MODULES } from '../lib/modules.js';
+import { MODULES, ENABLED_MODULES } from '../lib/modules.js';
 import { PLATFORM_ID, SYSTEM_IDS, SYSTEM_SPECS } from '../../src/modules/systems/node/systems.js';
 import { loadContributors } from '../lib/contributors.js';
 import { resolveContributor } from '../cli/resolve-contributor.js';
@@ -11,6 +11,8 @@ import { readSettings, saveSettings } from '../lib/studio-settings.js';
 import { readJson, sameOrigin, send } from './files/http.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const restarting = new WeakSet();
+export const configurationRestartPending = server => restarting.has(server);
 
 export default function settings() {
   const configFile = path.join(ROOT, 'studio.config.ts');
@@ -18,11 +20,17 @@ export default function settings() {
   return {
     name: 'studio-settings',
     apply: 'serve',
+    transformIndexHtml() {
+      if (!ENABLED_MODULES.some(module => module.id === 'systems')) return;
+      // Runs before the module graph loads, so a configuration restart cannot flash a blank page.
+      return [{ tag: 'script', children: fs.readFileSync(path.join(ROOT, 'src/modules/systems/pages/creation-transition.js'), 'utf8'), injectTo: 'body' }];
+    },
     async hotUpdate({ file, server }) {
       if (file !== configFile && !/src[\\/]systems[\\/][^\\/]+[\\/]system\.ts$/.test(file)) return;
+      restarting.add(server);
       while (fs.existsSync(path.join(ROOT, '.studio-system-operation'))) await new Promise(resolve => setTimeout(resolve, 100));
       clearTimeout(restartTimer);
-      restartTimer = setTimeout(() => void server.restart().catch(error => server.config.logger.error(error.message)), 200);
+      restartTimer = setTimeout(() => void server.restart().catch(error => server.config.logger.error(error.message)).finally(() => restarting.delete(server)), 200);
       return [];
     },
     configureServer(server) {

@@ -21,3 +21,29 @@ test('system creation requires a current registered Admin and validates input be
     assert.throws(() => createSystem(root, 'admin', { name: 'Kit' }), /Admin/);
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
+
+test('creation keeps partial scaffolds private and releases its transaction after success or failure', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-system-create-'));
+  try {
+    fs.writeFileSync(path.join(root, 'studio.config.ts'), "export default { usage: 'team', admins: ['admin'] };");
+    fs.writeFileSync(path.join(root, 'contributors.json'), JSON.stringify({ admin: { name: 'Admin' } }));
+    fs.mkdirSync(path.join(root, 'scripts/cli'), { recursive: true });
+    fs.writeFileSync(path.join(root, 'scripts/cli/studio.js'), `
+      const fs = require('node:fs');
+      if (!fs.existsSync('.studio-system-operation')) process.exit(2);
+      setTimeout(() => {
+        if (process.argv.includes('broken')) { console.error('Scaffold validation failed'); process.exit(1); }
+        fs.appendFileSync('calls', process.argv.includes('--yes') ? 'apply\\n' : 'preview\\n');
+      }, 40);
+    `);
+    const pending = createSystem(root, 'admin', { name: 'Kit' });
+    assert.equal(fs.existsSync(path.join(root, '.studio-system-operation')), true);
+    await assert.rejects(createSystem(root, 'admin', { name: 'Other' }), /in progress/);
+    assert.equal(fs.existsSync(path.join(root, '.studio-system-operation')), true);
+    assert.deepEqual(await pending, { id: 'kit' });
+    assert.equal(fs.readFileSync(path.join(root, 'calls'), 'utf8'), 'preview\napply\n');
+    assert.equal(fs.existsSync(path.join(root, '.studio-system-operation')), false);
+    await assert.rejects(createSystem(root, 'admin', { name: 'Broken' }), /Scaffold validation failed/);
+    assert.equal(fs.existsSync(path.join(root, '.studio-system-operation')), false);
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});

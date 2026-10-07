@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link } from '@tanstack/react-router';
 import { ArrowUpRight } from 'lucide-react';
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -11,6 +12,7 @@ import { SYSTEM_SPECS, PLATFORM_ID } from '../data/systems';
 import { systemAssets } from '../data/assets';
 import SystemReferenceNotice from './SystemReferenceNotice';
 import SystemSetup from './SystemSetup';
+import { finishSystemCreation } from './creationTransition';
 import { isSkillFile } from '../content/rules';
 import type { DesignSystem } from '@/platform/app/data/types';
 import type { SystemComponentDoc } from '../docs';
@@ -21,6 +23,7 @@ export default function SystemOverview({ system, sys, components, tokens }: {
   system: string; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[];
 }) {
   const manifest = useManifest();
+  useEffect(() => { if (import.meta.env.DEV && manifest.systems[system]) finishSystemCreation(system); }, [system, manifest]);
   const platform = system === PLATFORM_ID;
   const spec = SYSTEM_SPECS[system];
   const guidance = [

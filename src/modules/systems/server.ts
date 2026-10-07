@@ -11,8 +11,8 @@ export default {
       return { status, body: { error: error instanceof Error ? error.message : 'Could not update the system.' } };
     }
   },
-  create: ({ me, body }) => {
-    try { return { body: createSystem(root, me, body) }; }
+  create: async ({ me, body }) => {
+    try { return { body: await createSystem(root, me, body) }; }
     catch (error) {
       const status = error instanceof Error && 'status' in error && typeof error.status === 'number' ? error.status : 400;
       return { status, body: { error: error instanceof Error ? error.message : 'Could not create the system.' } };

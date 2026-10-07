@@ -2,6 +2,7 @@ import { SYSTEM_SOURCES } from '../../src/modules/systems/node/systems.js';
 import { editorFile, openEditor } from './files/editor.js';
 import { watchMoves } from './files/watch-moves.js';
 import { canonicalDirectory } from '../lib/safe-paths.js';
+import { configurationRestartPending } from './vite-settings-plugin.js';
 import { documentationSources, sourceFile } from './files/source.js';
 // The file layer behind the prototype navigation's file tree, during `pnpm dev` only.
 // (The deployed site is static, so this doesn't exist there.)
@@ -71,12 +72,15 @@ export default function filesPlugin() {
     // manifest and the item lists (src/modules/<type>/loader.ts) already handle these, so drop Vite's copy of
     // the file itself and let its importers, like those lists, update as usual. Edits to a
     // file are left to Vite's normal hot reload.
-    hotUpdate({ type, file, modules }) {
+    hotUpdate: { order: 'post', handler({ type, file, modules, server }) {
+      // A system transaction publishes its complete declarations through one server restart.
+      // Never expose its partially written scaffold or regenerated routing through HMR.
+      if (configurationRestartPending(server) || fs.existsSync(path.join(ROOT, '.studio-system-operation'))) return [];
       if (type !== 'update') moves?.flush();
       if (type === 'update' || !(file.startsWith(PROTOS + path.sep) || PROTOTYPE_SECTIONS.some((s) => file.startsWith(s.dir + path.sep)) || file.startsWith(SYSTEM_CONTENT + path.sep) || systemOf(file))) return;
       for (const m of modules) if (m.file === file) this.environment.moduleGraph.invalidateModule(m);
       return modules.filter((m) => m.file !== file);
-    },
+    } },
     async configureServer(server) {
       // The routes the modules add (a server.ts in a module's folder), by module id.
       const moduleServers = Object.fromEntries(await Promise.all(SERVER_FILES.map(async ([id, file]) => [id, (await import(pathToFileURL(file).href)).default])));

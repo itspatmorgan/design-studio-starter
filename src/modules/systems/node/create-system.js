@@ -1,8 +1,11 @@
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { readContributors } from '../../../../scripts/lib/contributors.js';
 import { readSettings } from '../../../../scripts/lib/studio-settings.js';
 import { studioRole } from '../../../platform/core/permissions.ts';
+const execute = promisify(execFile);
 
 export function createSystem(root, me, body) {
   const { contributors } = readContributors(root);
@@ -13,11 +16,18 @@ export function createSystem(root, me, body) {
   if (!name || name.length > 120 || /[\n\r<>`$\\]/.test(name)) throw new Error('Use a plain name between 1 and 120 characters.');
   const id = name.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   if (!/^[a-z][a-z0-9-]*$/.test(id)) throw new Error('Start the name with a letter.');
-  try {
-    const args = [path.join(root, 'scripts/cli/studio.js'), 'create-system', id, '--label', name];
-    const options = { cwd: root, encoding: 'utf8', timeout: 30000, stdio: ['ignore', 'pipe', 'pipe'] };
-    execFileSync(process.execPath, args, options);
-    execFileSync(process.execPath, [...args, '--yes'], options);
-  } catch (error) { throw new Error(error.stderr?.trim() || 'Could not create the system. Existing systems were preserved.'); }
-  return { id };
+  return apply();
+  async function apply() {
+    const marker = path.join(root, '.studio-system-operation');
+    let locked = false;
+    try {
+      const fd = fs.openSync(marker, 'wx'); fs.closeSync(fd); locked = true;
+      const args = [path.join(root, 'scripts/cli/studio.js'), 'create-system', id, '--label', name];
+      const options = { cwd: root, encoding: 'utf8', timeout: 30000 };
+      await execute(process.execPath, args, options);
+      await execute(process.execPath, [...args, '--yes'], options);
+      return { id };
+    } catch (error) { throw new Error(error.code === 'EEXIST' ? 'Another system change is in progress. Try again when it finishes.' : error.stderr?.trim() || 'Could not create the system. Existing systems were preserved.'); }
+    finally { if (locked) fs.rmSync(marker, { force: true }); }
+  }
 }
