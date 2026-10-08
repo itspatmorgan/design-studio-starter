@@ -31,13 +31,23 @@ test('local Git survives ordinary mise exec without replacing pinned Node or tra
   // Keep fixture trust and config independent of the CI runner's mise settings.
   const fixtureEnv = { ...process.env, MISE_TRUSTED_CONFIG_PATHS: root,
     MISE_STATE_DIR: path.join(root, 'mise-state'), MISE_CONFIG_DIR: path.join(root, 'mise-config') };
+  for (const key of Object.keys(fixtureEnv)) if (key.startsWith('__MISE_')) delete fixtureEnv[key];
   const env = gitEnvironment(git, fixtureEnv);
   for (const config of ['mise.toml', 'mise.local.toml']) {
     const trust = spawnSync('mise', ['trust', path.join(root, config)], { env, encoding: 'utf8' });
     assert.equal(trust.status, 0, trust.stderr);
   }
-  // Deliberately retain the bad Git first in inherited PATH: local Git must win.
-  const tools = verifyPinnedTools(root, { ...fixtureEnv, PATH: path.join(root, 'bad') + path.delimiter + process.env.PATH });
+  // Model a fresh shell: mise preserves custom PATH entries ahead of an already
+  // active toolchain, so remove inherited tool bins before adding broken Git.
+  const bins = spawnSync('mise', ['bin-paths'], { cwd: root, env: fixtureEnv, encoding: 'utf8' });
+  assert.equal(bins.status, 0, bins.stderr);
+  const canonical = dir => fs.existsSync(dir) ? fs.realpathSync(dir) : dir;
+  const toolBins = new Set(bins.stdout.trim().split('\n').map(canonical));
+  const shimDir = process.env.MISE_SHIMS_DIR ?? path.join(process.env.MISE_DATA_DIR ?? path.join(os.homedir(), '.local/share/mise'), 'shims');
+  toolBins.add(canonical(shimDir));
+  const inheritedPath = process.env.PATH.split(path.delimiter).filter(dir =>
+    !toolBins.has(canonical(dir))).join(path.delimiter);
+  const tools = verifyPinnedTools(root, { ...fixtureEnv, PATH: path.join(root, 'bad') + path.delimiter + inheritedPath });
   assert.match(tools.nodeVersion, /^24\./);
   assert.equal(tools.gitVersion, 'git version 2.54.0');
   assert.equal(fs.readFileSync(path.join(root, 'mise.toml'), 'utf8'), '[tools]\nnode = "24"\npnpm = "12"\n');
