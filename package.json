@@ -21,7 +21,8 @@
     "test": "node scripts/check/test.js",
     "test:release": "node scripts/check/test.js --release",
     "build:release": "pnpm test:release && pnpm build",
-    "build:inspect": "node scripts/check/inspect-build.js"
+    "build:inspect": "node scripts/check/inspect-build.js",
+    "test:changed": "node scripts/check/test.js --changed"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^4.0.0",
