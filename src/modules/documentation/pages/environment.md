@@ -16,9 +16,9 @@ If you are reading this in your local studio, it is already running. For a new i
 | Cursor plugin | A local Agent chat in Cursor. |
 | Direct from source | Your local coding agent, without installing a plugin. |
 
-The setup instructions give you the request to copy. Your agent handles installation and shows you the studio folder and browser address. With the plugin available, ask **“Create my Design Studio.”**
+The setup instructions give you the prompt to copy. Your agent handles installation and shows you the studio folder and browser address. With the plugin available, ask **“Create my Design Studio.”**
 
-All paths provide the same working studio. You need an agent that can work with local files and run the application. Organization policies may affect tool installation; the direct-source path is an alternative to a plugin.
+All paths provide the same working studio. You just need an agent that can work with local files. If you prefer not to use a plugin, the direct-source path is an alternative that provides an identical experience.
 
 ## What needs to be open?
 
@@ -39,7 +39,7 @@ Keep the local server running while using Studio. Closing a browser tab does not
 
 ## How do I return later?
 
-Open the same studio folder in your coding app and ask:
+Open the same studio folder in your agent harness and ask:
 
 > Open my Design Studio and show me the running preview.
 

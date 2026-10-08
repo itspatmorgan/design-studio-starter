@@ -7,9 +7,9 @@ toc: true
 
 ## What does the agent handle?
 
-Work with your agent in the studio folder. It can create screens and supporting artifacts, adapt systems, organize files, investigate problems, and check changes.
+Work with your agent in the studio folder. It can operate the entire application based on your prompts: create screens and supporting artifacts, adapt systems, organize files, investigate problems, check changes, and more.
 
-You supply intent and judge the result. Creating an item in Studio does not start an agent task; ask the agent to build what you want in it.
+You supply intent and judge the result. Manually taking action in Studio does not automatically start an agent task. If you want the agent to take action, ask it.
 
 ## What should I tell it?
 
@@ -23,7 +23,7 @@ Give enough context to make the important choices clear:
 | Behavior | Show empty, loading, and failed-save states. |
 | References and constraints | Follow this screenshot's density; preserve our navigation. |
 
-You do not need a formal brief for every change. Start with what you know and let the agent ask about unresolved decisions. Ask it to identify assumptions and simulated behavior.
+You don't need a formal brief for every change. Start with what you know and let the agent ask about unresolved decisions. Ask it to identify assumptions and simulated behavior.
 
 ## How do I show the agent what I mean?
 

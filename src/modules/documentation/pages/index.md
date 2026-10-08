@@ -42,7 +42,7 @@ Design Studio works with coding agents such as Codex, Claude Code, and Cursor. I
 
 ## What is it compatible with?
 
-The intended starting stack is **React, TypeScript, and Tailwind CSS**. The supported starting libraries, shadcn/ui and Untitled UI, use Tailwind and fit this environment.
+The intended starting stack is **React, TypeScript, and Tailwind CSS**. The supported starting libraries, shadcn/ui and Untitled UI, use this stack and fit this environment.
 
 Your own React components may fit too, depending on their styling and dependencies. Other frameworks, styling approaches, or components tied to application services can require more adaptation. Ask your agent to assess them before importing a system.
 
@@ -60,4 +60,4 @@ This is a **front-end prototyping environment**. It can simulate data and servic
 | How do I change settings or add capabilities? | [Modules & customization](/documentation/manual/customize) |
 | Something is missing or not working. | [Help](/documentation/manual/questions) |
 
-Use this Manual when a question comes up. **Documentation → Context & Skills** contains detailed platform and module documentation, including the instructions your agent uses. Product-specific guidance lives in **Systems**.
+Use this Manual when a question comes up. **Documentation → Context & Skills** contains detailed platform and module documentation, including the instructions your agent uses.
