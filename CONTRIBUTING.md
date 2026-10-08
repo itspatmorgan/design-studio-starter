@@ -30,7 +30,7 @@ Use fictional sample data. Do not commit credentials, local environment files, p
 
 For any host, install with Node 24 and pnpm 12, run `pnpm build`, and publish `dist/`. The build validates source and types. Use `pnpm test` for focused regressions or `pnpm build:release` for full release verification. `pnpm build:inspect` reports startup asset size and requests. Your chosen host owns routing, caching, access, and deployment configuration.
 
-The [Checks workflow](.github/workflows/scope-check.yml) publishes successful pushes to `main` only in `itspatmorgan/design-studio-starter`. The workflow runs scope, regressions, and bundling concurrently, caches dependencies, cancels obsolete validation, and checks commit freshness before deploying. Copies run checks without publishing; configure your own deployment when needed.
+The [Checks and deployment workflow](.github/workflows/checks.yml) publishes successful pushes to `main` only in `itspatmorgan/design-studio-starter`. The workflow runs scope, regressions, and bundling concurrently, caches dependencies, cancels obsolete validation, and checks commit freshness before deploying. Copies run checks without publishing; configure your own deployment when needed.
 
 The starter repository uses GitHub Pages with **GitHub Actions** as its publishing source. Its configured site inherits `itspatmorgan.com` from the account’s user site and publishes at `/design-studio-starter/`; its custom-domain field is empty.
 

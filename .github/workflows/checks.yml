@@ -1,4 +1,4 @@
-name: Checks
+name: Checks and deployment
 on:
   push:
     branches: [main]
@@ -9,6 +9,7 @@ permissions:
   contents: read
 jobs:
   # Keep the tested OS stable when GitHub advances ubuntu-latest.
+  # Preserve the required check name "scope" (ownership, identity, and assets).
   scope:
     runs-on: ubuntu-24.04
     concurrency:
@@ -20,7 +21,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: jdx/mise-action@v5
-      - name: Check scope and asset sizes
+      - name: Check ownership, permanent identities, and asset sizes
         env:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
@@ -40,6 +41,7 @@ jobs:
           fi
           node scripts/check/check-asset-size.js --ci "$BASE_REF" "$HEAD_REF"
   regressions:
+    name: Release tests
     runs-on: ubuntu-24.04
     concurrency:
       group: regressions-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -59,6 +61,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:release
   bundle:
+    name: Production build
     runs-on: ubuntu-24.04
     concurrency:
       group: bundle-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -105,8 +108,10 @@ jobs:
           REGRESSION_RESULT: ${{ needs.regressions.result }}
         run: test "$BUNDLE_RESULT" = success && test "$REGRESSION_RESULT" = success
   deploy:
+    name: Deploy Pages
     if: github.repository == 'itspatmorgan/design-studio-starter' && github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [scope, build]
+    # Wait for the actual checks directly; the required build summary runs alongside deployment.
+    needs: [scope, bundle, regressions]
     runs-on: ubuntu-24.04
     permissions:
       contents: read

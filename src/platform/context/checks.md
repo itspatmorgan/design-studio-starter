@@ -18,7 +18,7 @@ Checks help keep the shared studio consistent. Give your agent the warning or er
 | GitHub pull request | Scope review, asset sizes, full regressions, and production build. Platform proposals are flagged for review. |
 | Push to `main` | Scope authorization, asset sizes, full regressions, and production build. Platform changes require an admin or maintainer role. |
 
-Ordinary builds use the same command in source clones and packaged studios. Publishing does not rerun maintainer regressions. The upstream workflow runs regressions and bundling concurrently; its required `build` check succeeds only when both pass. The `scope` check remains independently required. Copies choose their own CI and publishing policy.
+Ordinary builds use the same command in source clones and packaged studios. Publishing does not rerun maintainer regressions. The upstream **Checks and deployment** workflow (`.github/workflows/checks.yml`) runs **Release tests**, **Production build**, and `scope` concurrently; its required `build` check succeeds only when both pass. The `scope` check remains independently required. Pages deployment on upstream `main` waits directly for scope, tests, and bundling to succeed. The `build` summary runs alongside deployment, avoiding another runner on the deployment dependency chain. The required check names `scope` and `build` remain stable. Copies choose their own CI and publishing policy.
 
 Keep tests for failure-prone behavior and boundaries. Use synthetic fixtures instead of asserting the starter's sample content or visual token choices. Production integration tests end in `.integration.test.js` and run in the release tier. Optional module tests disappear with their module; plugin tests run only when the distribution source is present.
 
