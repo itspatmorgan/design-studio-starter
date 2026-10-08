@@ -39,8 +39,6 @@ Studio does not need a Worker, database, object storage, MCP server, or connecto
 6. Use the workflow's verified source SHA and matching static archive for native save and deployment. Keep existing Git remotes and work intact. Publishing sends source to the Sites-managed repository as well as uploading built assets; it does not require creating a GitHub repository.
 7. Require terminal deployment success and return only its actual URL. An expected URL, saved version, or queued browser opening does not prove publication.
 
-For a requested benchmark, record publishing start, verified readiness, and final handoff using the [benchmark boundaries](../../experiments/benchmarking.md).
-
 ## Verify and hand off
 
 Report the local folder, local preview, and published viewing link separately, stating its actual audience. A public viewing link lets anyone with the URL review the built content without granting source editing. Label bundled systems and prototypes as learning examples. The published site offers interaction with built prototypes; source, canvas, and configuration editing stay local.

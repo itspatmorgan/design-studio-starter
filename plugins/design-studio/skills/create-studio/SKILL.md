@@ -17,8 +17,6 @@ Keep Personal mode, the starter toolkit, and the existing tagline unless customi
 
 In older pinned starters, `pnpm join --help` can perform registration. Inspect the registration CLI source for options instead of invoking that flag.
 
-For a requested timed journey, use [benchmark boundaries](../../experiments/benchmarking.md).
-
 ## Finish
 
 Report the verified source folder, where that filesystem lives, the preview link, and how to continue working there. Describe an offered workspace link as ready to open until opening is verified. Files remain after plugin removal.

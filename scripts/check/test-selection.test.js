@@ -20,6 +20,9 @@ test('shared dependencies and mixed changes include setup and publishing only wh
   assert.deepEqual(select(['src/modules/onboarding/progress.ts']).groups, ['runtime', 'setup']);
   assert.deepEqual(select(['src/platform/core/config.ts']).groups, ['runtime', 'setup', 'publishing']);
   assert.deepEqual(select(['plugins/design-studio/scripts/bootstrap.mjs']).groups, ['distribution']);
+  assert.deepEqual(select(['scripts/plugins/design-studio/check-package.mjs']).groups, ['distribution']);
+  assert.ok(discoverTests().includes('scripts/plugins/design-studio/tests/bootstrap.test.mjs'));
+  assert.ok(!discoverTests().some(file => file.startsWith('plugins/')));
   const result = select(['src/platform/app/shell/MainNav.tsx', 'plugins/design-studio/scripts/bootstrap.mjs']);
   assert.deepEqual(result.groups, ['runtime', 'distribution']);
   assert.equal(new Set(result.tests).size, result.tests.length);

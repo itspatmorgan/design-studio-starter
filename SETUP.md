@@ -137,7 +137,3 @@ Without an installed plugin, download a temporary shallow checkout of this publi
 Follow that procedure through verified preview and workspace handoff. Preserve existing studios and use open-studio for them; a missing receipt does not authorize initialization.
 
 For requested ChatGPT Sites publication, continue with the [publish-studio skill](plugins/design-studio/skills/publish-studio/SKILL.md). It owns capability checks, Site identity, audience, deployment, and verification. If Sites is unavailable, complete local setup and explain the missing capability.
-
-## Setup benchmarks
-
-For a requested benchmark, capture the request start before obtaining the repository. Follow [benchmark boundaries](plugins/design-studio/experiments/benchmarking.md) after the checkout is available, backfilling only the captured timestamp. Report setup from the uninstalled state, publication from a prepared studio, and the full user wait through final handoff. Command durations are diagnostic details, never a substitute for the end-to-end time. Include restart or new-chat time when required.

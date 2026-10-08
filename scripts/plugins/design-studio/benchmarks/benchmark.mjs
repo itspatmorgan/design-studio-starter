@@ -35,6 +35,6 @@ function main() {
   else if (command === 'report' && path.isAbsolute(file ?? '')) console.log(JSON.stringify(reportEvents(readEvents(file)), null, 2));
   else throw new Error('Usage: node benchmark.mjs mark <absolute-jsonl> <event> [ISO-time] | report <absolute-jsonl>');
 }
-if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url) {
+if (process.argv[1] && pathToFileURL(fs.realpathSync(process.argv[1])).href === import.meta.url) {
   try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; }
 }

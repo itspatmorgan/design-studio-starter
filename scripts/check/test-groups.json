@@ -113,11 +113,12 @@
     },
     "distribution": {
       "tests": [
-        "plugins/design-studio/scripts/benchmark.test.mjs",
-        "plugins/design-studio/scripts/bootstrap.test.mjs",
-        "plugins/design-studio/scripts/manifests.test.mjs",
-        "plugins/design-studio/scripts/starter-package.test.mjs",
-        "plugins/design-studio/scripts/toolchain.test.mjs"
+        "scripts/plugins/design-studio/tests/benchmark.test.mjs",
+        "scripts/plugins/design-studio/tests/bootstrap.test.mjs",
+        "scripts/plugins/design-studio/tests/manifests.test.mjs",
+        "scripts/plugins/design-studio/tests/starter-package.test.mjs",
+        "scripts/plugins/design-studio/tests/toolchain.test.mjs",
+        "scripts/plugins/design-studio/tests/check-package.test.mjs"
       ],
       "dependencies": [
         "plugins/**",
@@ -127,7 +128,8 @@
         "scripts/cli/sync-harnesses.js",
         "scripts/lib/agent-skills.js",
         "scripts/lib/harness-*.js",
-        "src/**/skills/**"
+        "src/**/skills/**",
+        "scripts/plugins/**"
       ]
     }
   }

@@ -51,6 +51,6 @@ Use this only when the person explicitly chooses the CLI. Start `claude` in a pe
 
 ## Verify each handoff
 
-A successful launch command proves only that a launch was requested. Verify the folder from the host UI, the new chat's reported working directory, or the person's observation. Claude Code and Cursor handoff journeys still need live testing. Never send them Codex links.
+A successful launch command proves only that a launch was requested. Verify the folder from the host UI, the new chat's reported working directory, or the person's observation. Never send them Codex links.
 
 References: [Claude Desktop](https://code.claude.com/docs/en/desktop), [Claude Code CLI](https://code.claude.com/docs/en/cli-reference), [Claude project instructions](https://code.claude.com/docs/en/memory). Check the installed Cursor CLI's help before using its folder-opening flags.

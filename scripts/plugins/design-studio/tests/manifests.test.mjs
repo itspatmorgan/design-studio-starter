@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { test } from 'node:test';
-import { manifestOutputs, syncManifests } from './sync-manifest.mjs';
+import { manifestOutputs, syncManifests } from '../sync-manifests.mjs';
 
 test('host packages resolve the same skills, helper, and identity', () => {
-  const root = new URL('../', import.meta.url);
+  const root = new URL('../../../../plugins/design-studio/', import.meta.url);
   const portable = JSON.parse(fs.readFileSync(new URL('plugin.json', root), 'utf8'));
   syncManifests(true);
   for (const [relative, manifest] of manifestOutputs(portable)) {
@@ -21,7 +21,7 @@ test('host packages resolve the same skills, helper, and identity', () => {
 });
 
 test('marketplace sources remain inside the repo and point at the shared package', () => {
-  const root = new URL('../', import.meta.url);
+  const root = new URL('../../../../plugins/design-studio/', import.meta.url);
   const portable = JSON.parse(fs.readFileSync(new URL('plugin.json', root), 'utf8'));
   for (const [relative, marketplace] of manifestOutputs(portable)) {
     if (!relative.endsWith('/marketplace.json')) continue;

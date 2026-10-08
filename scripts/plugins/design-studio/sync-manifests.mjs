@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const root = new URL('../', import.meta.url);
+const root = new URL('../../../plugins/design-studio/', import.meta.url);
 export function manifestOutputs(portable) {
   const { $schema, extensions, ...identity } = portable;
   const { interface: ui, ...openai } = extensions['com.openai'];

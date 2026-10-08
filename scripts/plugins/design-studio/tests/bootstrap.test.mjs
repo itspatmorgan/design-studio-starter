@@ -4,8 +4,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { test } from 'node:test';
-import { createStudio, chooseStudioLocation, studioFolderName, destinationPath, inspectStudio, checkInitialConfiguration, ensureClaudeEntry, auditStudio, planStudio, prepareStudio, SOURCE, RECEIPT } from './bootstrap.mjs';
-import { inspectEnvironment, validateSetupPlan } from './setup-environment.mjs';
+import { createStudio, chooseStudioLocation, studioFolderName, destinationPath, inspectStudio, checkInitialConfiguration, ensureClaudeEntry, auditStudio, planStudio, prepareStudio, SOURCE, RECEIPT } from '../../../../plugins/design-studio/scripts/bootstrap.mjs';
+import { inspectEnvironment, validateSetupPlan } from '../../../../plugins/design-studio/scripts/setup-environment.mjs';
 
 function fixture(t) {
   const temp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'studio-plugin-test-')));

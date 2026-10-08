@@ -12,7 +12,7 @@ const FILES = new Set([
 const FOLDERS = ['contributors/', 'src/', 'public/', 'scripts/', 'patches/', '.agents/skills/', '.claude/skills/', '.husky/'];
 
 export function starterIncludes(file) {
-  return !file.startsWith('scripts/eval/') && (FILES.has(file) || FOLDERS.some(folder => file.startsWith(folder)));
+  return !file.startsWith('scripts/eval/') && !file.startsWith('scripts/plugins/') && (FILES.has(file) || FOLDERS.some(folder => file.startsWith(folder)));
 }
 
 export function packageStarter(root, files) {

@@ -323,6 +323,6 @@ Git and Node are prerequisites. prepare/start also require mise. No GitHub accou
   console.log(JSON.stringify(result, null, 2));
 }
 
-if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url) {
+if (process.argv[1] && pathToFileURL(fs.realpathSync(process.argv[1])).href === import.meta.url) {
   try { main(); } catch (error) { console.error(`Could not complete studio setup: ${error.message}`); process.exitCode = 1; }
 }
