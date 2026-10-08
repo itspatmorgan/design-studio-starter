@@ -17,6 +17,7 @@ import tailwindcss from '@tailwindcss/vite';
 import importGuard from './scripts/build/vite-import-guard-plugin.js';
 import manifestWatch from './scripts/build/vite-manifest-watch-plugin.js';
 import spa404 from './scripts/build/vite-spa-404-plugin.js';
+import deploymentRecovery from './scripts/build/vite-deployment-recovery-plugin.js';
 import files from './scripts/build/vite-files-plugin.js';
 import settings from './scripts/build/vite-settings-plugin.js';
 import markdownRefresh from './scripts/build/vite-markdown-refresh-plugin.js';
@@ -56,7 +57,18 @@ export default defineConfig({
   base: `${(process.env.STUDIO_BASE_PATH || '/').replace(/\/+$/, '')}/`,
   publicDir: '../public',
   css: { postcss: { plugins: [scopedUtilities()] } },
-  build: { outDir: '../dist', emptyOutDir: true },
+  build: {
+    outDir: '../dist', emptyOutDir: true, manifest: true,
+    rolldownOptions: {
+      output: {
+        // Keep heavy feature libraries lazy while consolidating shared shell code.
+        codeSplitting: { groups: [{
+          name: 'studio-ui',
+          test: /[\\/]node_modules[\\/](?:@base-ui[\\/]react|@tanstack[\\/](?:react-router|router-core|history)|react(?:-dom)?|use-sync-external-store|scheduler|cmdk)[\\/]/,
+        }] },
+      },
+    },
+  },
   // The Source view's editor (SourcePane.tsx) loads its languages on demand, so Vite would find these packages
   // only when you first open it, re-bundle them, and end up with two copies of @codemirror/state: the editor
   // then fails with "Unrecognized extension value". Listing them bundles them together at start.
@@ -94,5 +106,6 @@ export default defineConfig({
     files(),
     systemProps(),
     spa404(),
+    deploymentRecovery(),
   ],
 });

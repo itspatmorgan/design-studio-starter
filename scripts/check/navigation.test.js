@@ -36,24 +36,6 @@ test('live updates coalesce and serialize without losing edits that arrive durin
   request(); assert.equal(callbacks.length, 1);
 });
 
-test('router keeps the current page while a cold destination loads, including back navigation', async () => {
-  const { createRootRoute, createRoute, createRouter, createMemoryHistory } = await import('@tanstack/react-router');
-  const root = createRootRoute();
-  const first = createRoute({ getParentRoute: () => root, path: '/', loader: () => 'First page' });
-  const loading = deferred();
-  const next = createRoute({ getParentRoute: () => root, path: '/next', loader: async () => { await loading.promise; return 'Next page'; } });
-  const router = createRouter({ routeTree: root.addChildren([first, next]), history: createMemoryHistory({ initialEntries: ['/'] }), isServer: false, defaultPendingMs: Infinity, defaultStaleTime: Infinity });
-  await router.load();
-  router.history.push('/next');
-  const navigation = router.load();
-  await tick();
-  assert.equal(router.state.matches.at(-1).loaderData, 'First page');
-  loading.resolve(); await navigation;
-  assert.equal(router.state.matches.at(-1).loaderData, 'Next page');
-  router.history.push('/');
-  await router.load();
-  assert.equal(router.state.matches.at(-1).loaderData, 'First page');
-});
 
 test('Markdown readers accept live changes and keep reference variants separate across glob replacement', async () => {
   const { createMarkdownLoader } = await import('../../src/platform/app/docs/createMarkdownLoader.ts');

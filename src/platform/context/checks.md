@@ -10,9 +10,17 @@ Checks help keep the shared studio consistent. Give your agent the warning or er
 | --- | --- |
 | Before commit | Staged asset sizes and module checks can block the commit. Scope and Git identity checks report warnings. |
 | Before push | Scope summary. It does not run the full build or block platform changes. |
-| `pnpm build` | Manifest validation, module checks, tests, type checking, and the production bundle. |
-| GitHub pull request | Scope review, asset sizes, and full build. Platform proposals are flagged for review. |
-| Push to `main` | Scope authorization, asset sizes, and full build. Platform changes require an admin or maintainer role. |
+| `pnpm build` | Manifest validation, module checks, type checking, and the production bundle. |
+| `pnpm test` | Focused platform and enabled-module regression tests. |
+| `pnpm test:release` | All regression tests, including disposable setup/production fixtures and plugin distribution tests when present. |
+| `pnpm build:release` | Full regression suite followed by the production build. |
+| `pnpm build:inspect` | Validate emitted asset references and report initial JavaScript/CSS size and request count. |
+| GitHub pull request | Scope review, asset sizes, full regressions, and production build. Platform proposals are flagged for review. |
+| Push to `main` | Scope authorization, asset sizes, full regressions, and production build. Platform changes require an admin or maintainer role. |
+
+Ordinary builds use the same command in source clones and packaged studios. Publishing does not rerun maintainer regressions. The upstream workflow runs regressions and bundling concurrently; its required `build` check succeeds only when both pass. The `scope` check remains independently required. Copies choose their own CI and publishing policy.
+
+Keep tests for failure-prone behavior and boundaries. Use synthetic fixtures instead of asserting the starter's sample content or visual token choices. Production integration tests end in `.integration.test.js` and run in the release tier. Optional module tests disappear with their module; plugin tests run only when the distribution source is present.
 
 See [Personal & team use](/documentation/manual/team) for how these checks fit the workflow. Configure branch protection and required checks to enforce the team's merge policy.
 

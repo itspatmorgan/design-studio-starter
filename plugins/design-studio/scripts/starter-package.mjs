@@ -38,16 +38,5 @@ export function packageStarter(root, files) {
     fs.unlinkSync(absolute);
     for (let dir = path.dirname(absolute); dir !== root && fs.readdirSync(dir).length === 0; dir = path.dirname(dir)) fs.rmdirSync(dir);
   }
-  // End-user publication validates current source; maintainer regression tests remain explicit.
-  const packageFile = path.join(root, 'package.json');
-  if (fs.existsSync(packageFile)) {
-    const pkg = JSON.parse(fs.readFileSync(packageFile, 'utf8'));
-    const build = pkg.scripts?.build;
-    if (typeof build === 'string' && build.split(' && ').includes('pnpm test')) {
-      pkg.scripts['build:release'] = build;
-      pkg.scripts.build = build.split(' && ').filter(step => step !== 'pnpm test').join(' && ');
-      fs.writeFileSync(packageFile, JSON.stringify(pkg, null, 2) + '\n');
-    }
-  }
   fs.writeFileSync(path.join(root, 'README.md'), fs.readFileSync(new URL('starter-readme.md', import.meta.url)));
 }

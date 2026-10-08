@@ -1,6 +1,6 @@
 # Contributing
 
-Design Studio Starter is an early beta. The current priority is a reliable local workflow: studio initialization, contributor onboarding, prototypes and their file types, design systems, and the system content. Hosting is outside the current release focus.
+Design Studio Starter is an early beta. The current priority is a reliable local workflow: studio initialization, contributor onboarding, prototypes and their file types, design systems, and the system content. Portable static publishing is part of the workflow; each studio chooses and configures its own host.
 
 For local setup, follow the [README](README.md) and the Manual in `src/modules/documentation/pages/`. Coding agents should start with [AGENTS.md](AGENTS.md), which points to platform context, principles, personas, and task skills.
 
@@ -16,10 +16,11 @@ Create a branch in your fork and submit a pull request to `main`. Changes to the
 pnpm install --frozen-lockfile
 pnpm check
 pnpm harness:check
-pnpm build
+pnpm build:release
+pnpm build:inspect
 ```
 
-The build runs tests, type checks, and production validation. Keep committed files below 750 KB. Include useful tests for behavior changes, and update the Manual or agent instructions when a workflow changes.
+Use `pnpm test` during development for focused regressions. `pnpm test:release` also exercises disposable setup and production fixtures and plugin distribution tests when present. `pnpm build` validates current source, types, and static output without rerunning tests. `pnpm build:release` performs both release regressions and the build. Keep committed files below 750 KB. Include useful tests for behavior changes, and update the Manual or agent instructions when a workflow changes.
 
 Run `pnpm harness:sync` after changing plugin identity or canonical project skills. It generates all three host manifests and catalogs, then synchronizes project routing and skill adapters. Edit canonical sources instead of generated files. See [Agent context routing](src/platform/context/agent-context.md) for ownership and installed-studio packaging.
 

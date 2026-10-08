@@ -10,6 +10,9 @@ permissions:
 jobs:
   scope:
     runs-on: ubuntu-latest
+    concurrency:
+      group: scope-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,9 +38,30 @@ jobs:
             node scripts/check/check-scope.js --ci "$BASE_REF" "$HEAD_REF"
           fi
           node scripts/check/check-asset-size.js --ci "$BASE_REF" "$HEAD_REF"
-  build:
-    needs: scope
+  regressions:
     runs-on: ubuntu-latest
+    concurrency:
+      group: regressions-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: jdx/mise-action@v2
+      - name: Locate dependency store
+        id: store
+        run: echo "path=$(pnpm store path)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.store.outputs.path }}
+          key: pnpm-12-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml', 'patches/**') }}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:release
+  bundle:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: bundle-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
     permissions:
       contents: read
       pages: read
@@ -46,6 +70,13 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: jdx/mise-action@v2
+      - name: Locate dependency store
+        id: store
+        run: echo "path=$(pnpm store path)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.store.outputs.path }}
+          key: pnpm-12-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml', 'patches/**') }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm harness:check
       - name: Configure Pages
@@ -55,16 +86,29 @@ jobs:
       - run: pnpm build
         env:
           STUDIO_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+      - run: pnpm build:inspect
       - name: Upload Pages site
         if: github.repository == 'itspatmorgan/design-studio-starter' && github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+  # Keep the existing required check name. A successful bundle alone cannot pass it.
+  build:
+    needs: [bundle, regressions]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require bundle and regression success
+        env:
+          BUNDLE_RESULT: ${{ needs.bundle.result }}
+          REGRESSION_RESULT: ${{ needs.regressions.result }}
+        run: test "$BUNDLE_RESULT" = success && test "$REGRESSION_RESULT" = success
   deploy:
     if: github.repository == 'itspatmorgan/design-studio-starter' && github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: build
+    needs: [scope, build]
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pages: write
       id-token: write
     concurrency:
@@ -74,6 +118,20 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Check that this is still the current main commit
+        id: current
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          DEPLOY_SHA: ${{ github.sha }}
+        run: |
+          CURRENT_SHA=$(gh api "repos/$REPOSITORY/git/ref/heads/main" --jq '.object.sha')
+          if [ "$CURRENT_SHA" = "$DEPLOY_SHA" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Skipping superseded deployment $DEPLOY_SHA"
+          fi
       - name: Deploy Pages site
+        if: steps.current.outputs.publish == 'true'
         id: deployment
         uses: actions/deploy-pages@v4

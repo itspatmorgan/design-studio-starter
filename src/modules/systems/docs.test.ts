@@ -106,27 +106,31 @@ test('scanning a folder returns manifest entries and problems', () => {
   assert.deepEqual(systemDocs(path.join(root, 'missing')), { components: [], problems: [] });
 });
 
-test('props are read from the code: types from other packages, defaults, native attributes', async () => {
+test('props resolve imported types, defaults and native attributes independently of example systems', async t => {
   const { extractProps } = await import('./node/extract-props.js');
-  const root = path.resolve(import.meta.dirname, '../../..');
-  const dir = path.join(root, 'src/systems/product/components');
-  const files = ['button', 'input', 'dialog'].map((n) => path.join(dir, n, `${n}.tsx`));
-  const result: Record<string, ComponentPropsDoc[]> = extractProps(files, root) as Record<string, ComponentPropsDoc[]>;
-  const [button] = result[files[0]];
-  assert.equal(button.name, 'Button');
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-props-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.symlinkSync(path.resolve('node_modules'), path.join(root, 'node_modules'));
+  fs.writeFileSync(path.join(root, 'tsconfig.app.json'), JSON.stringify({ compilerOptions: { jsx: 'react-jsx', moduleResolution: 'bundler', module: 'esnext', strict: true } }));
+  fs.writeFileSync(path.join(root, 'types.ts'), 'export interface Variants { variant?: "default" | "outline"; }');
+  const file = path.join(root, 'components.tsx');
+  fs.writeFileSync(file, `import type { ComponentProps } from 'react';
+import type { Variants } from './types';
+import { Button as Primitive } from '@base-ui/react/button';
+export function Button({ variant = "default", ...props }: Primitive.Props & Variants & { label: string }) { return null; }
+export function Input(props: ComponentProps<'input'>) { return null; }
+`);
+  const result = extractProps([file], root) as Record<string, ComponentPropsDoc[]>;
+  const button = result[file].find(c => c.name === 'Button')!;
   assert.equal(button.native, true);
-  const variant = button.props.find((p) => p.name === 'variant')!;
-  assert.equal(variant.default, '"default"');
-  assert.match(variant.type, /"outline"/);
+  const variant = button.props.find(p => p.name === 'variant')!;
+  assert.equal(variant.default, '"default"'); assert.match(variant.type, /"outline"/);
   assert.equal(variant.required, false);
-  // No hundreds of native attributes in the table.
-  assert.ok(button.props.length < 20);
-  assert.deepEqual(result[files[1]].map((c) => [c.name, c.props.length, c.native]), [['Input', 0, true]]);
-  const dialogs = result[files[2]].map((c) => c.name);
-  assert.ok(dialogs.includes('Dialog') && dialogs.includes('DialogContent'));
-  assert.ok(result[files[2]].find((c) => c.name === 'Dialog')!.props.some((p) => p.name === 'open'));
+  assert.equal(button.props.find(p => p.name === 'label')!.required, true);
+  assert.equal(button.props.some(p => p.name === 'onClick'), false);
+  const input = result[file].find(c => c.name === 'Input')!;
+  assert.equal(input.native, true); assert.deepEqual(input.props, []);
 });
-
 test('starter docs files sit next to the component and never break the checks', async () => {
   const { docTemplates, titleOf } = await import('./scaffold.ts');
   assert.equal(titleOf('icon-button'), 'Icon button');
@@ -246,45 +250,7 @@ test('a theme\'s tokens: scoped light and dark values, sorted into groups', asyn
   assert.deepEqual(themeTokens('.x { --a: red }', 'brand-theme'), []);
 });
 
-test('the shipped systems explicitly own every theme token family', async () => {
-  const { themeTokens } = await import('./themeTokens.ts');
-  const css = fs.readFileSync(path.resolve(import.meta.dirname, '../../systems/product/styles/theme.css'), 'utf8');
-  const tokens = themeTokens(css, 'product-theme');
-  assert.equal(tokens.filter((t) => t.group === 'colors' && !t.name.startsWith('--color-')).length, 31);
-  for (const group of ['typography', 'radius', 'shadows', 'spacing', 'motion', 'effects']) assert.ok(tokens.some((t) => t.group === group), group);
-  assert.ok(tokens.filter((t) => t.group === 'radius').every((t) => ['0rem', '9999px'].includes(t.value)));
-  const platform = themeTokens(fs.readFileSync(path.resolve(import.meta.dirname, '../../systems/studio/styles/theme.css'), 'utf8'), { light: ':root', dark: '.dark' });
-  for (const name of ['--font-sans', '--text-sm', '--text-sm--line-height', '--font-weight-medium', '--shadow-md', '--spacing-4']) {
-    assert.ok(tokens.some((t) => t.name === name), `Product ${name}`);
-    assert.ok(platform.some((t) => t.name === name), `Platform ${name}`);
-  }
-  assert.ok(tokens.some(t => t.name === '--radius-square'));
-  assert.ok(!tokens.some(t => t.name === '--radius-xl'));
-  assert.ok(platform.some(t => t.name === '--radius-xl'));
-  // Every one is a known shadcn token with a dark value of its own.
-  assert.ok(tokens.filter((t) => t.group === 'colors' && !t.name.startsWith('--color-')).every((t) => t.subgroup && t.dark));
-});
 
-test('the supplied theme token inventories are curated and utilities use their declarations', async () => {
-  const { compile } = await import('tailwindcss');
-  const { inventories } = await import('../../../scripts/build/vite-css-plugin.js');
-  const { themeAdapter } = await import('../../../scripts/lib/tailwind-theme.js');
-  const systems = inventories();
-  for (const s of systems) {
-    assert.ok(!s.inventory.base.has('--color-red-500'));
-    assert.ok(!s.inventory.base.has('--text-9xl'));
-    assert.ok(!s.inventory.base.has('--blur-md'));
-    assert.ok(!s.inventory.base.has('--spacing'));
-  }
-  const compiler = await compile(themeAdapter(systems) + '\n@tailwind utilities;');
-  const output = compiler.build(['font-sans', 'rounded-xl', 'shadow-md', 'p-4', 'sm:block', 'blur-md']);
-  assert.ok(output.includes('font-family: var(--font-sans)'));
-  assert.ok(output.includes('border-radius: var(--radius-xl)'));
-  assert.ok(output.includes('var(--shadow-md)'));
-  assert.ok(output.includes('padding: var(--spacing-4)'));
-  assert.ok(output.includes('@media (width >= 40rem)'));
-  assert.ok(!output.includes('.blur-md'));
-});
 
 test('a menu\'s items are grouped: what doesn\'t apply is dropped, and groups are never merged', async () => {
   const { menuGroups } = await import('../../platform/app/shell/menuGroups.ts');

@@ -6,9 +6,11 @@ Measured October 7, 2026 on the existing macOS setup. The person reported the in
 
 Experiment .14 preserves the public starter pin b6fc5d9c790671da5a27810a08ff9e05de700474. The helper chooses design-studio, design-studio-2, and subsequent kebab-case folders while keeping readable display names. Custom names use the same conversion; exact supplied destinations and existing folders are preserved. Bootstrap subprocess durations are written to stderr so stdout remains machine-readable JSON.
 
-The working-studio packager removes only the standalone pnpm test step from the ordinary build and preserves the complete original command as build:release. Source/module checks, type checking, Vite compilation, tests, dependencies, lockfile, and Git hooks remain available. The maintainer repository's build is unchanged and still runs the complete release suite. Platform changes should receive regression checks; installing an already-tested starter should not repeat the release suite.
+**Historical experiment behavior (superseded by the shared build contract below):** The working-studio packager removes only the standalone pnpm test step from the ordinary build and preserves the complete original command as build:release. Source/module checks, type checking, Vite compilation, tests, dependencies, lockfile, and Git hooks remain available. The maintainer repository's build is unchanged and still runs the complete release suite. Platform changes should receive regression checks; installing an already-tested starter should not repeat the release suite.
 
 The plugin procedures now direct the agent to reuse a verified setup checkout, batch prerequisite reads, overlap registration with preparation, use the pinned environment and working Git throughout, and avoid repeating builds or publishing a cosmetic test edit during routine onboarding.
+
+The current source and packaged studios now share the same commands: ordinary builds validate source/types/output; `pnpm test:release` supplies full regressions and `pnpm build:release` runs both. Packaging no longer rewrites the build script. The measurements below describe their dated revisions.
 
 ## Measurements
 
