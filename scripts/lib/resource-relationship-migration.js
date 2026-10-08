@@ -7,8 +7,8 @@ import { readResourceDirectory } from './resource-directory.js';
 import { auditResourceIdentities } from './resource-identity-audit.js';
 import { editStudioConfig } from './studio-setup.js';
 
-// Internal review stage only: source IDs must be complete first. This is composed
-// into the full guarded migration before any public apply command is offered.
+// Source IDs must be complete first. This stage is composed into the guarded
+// saved-preview migration; ordinary runtime readers do not accept source keys.
 export function planResourceRelationshipMigration(root, types) {
   const audit = auditResourceIdentities(root, types);
   if (audit.problems.length || audit.missing.length) throw new Error('Complete valid source identities before migrating relationships.');

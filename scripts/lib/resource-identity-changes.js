@@ -1,7 +1,7 @@
 // Identity invariants apply before permission checks, including personal studios.
 // A proposed grant or ownership declaration cannot authorize its own mutation.
 export function resourceIdentityChangeProblems(before, after) {
-  const problems = [...before.problems.map(problem => `Before: ${problem}`), ...after.problems.map(problem => `After: ${problem}`)];
+  const problems = [...after.missing.map(file => `After: ${file}: permanent identity is missing; run an explicit identity assignment or migration.`), ...before.problems.map(problem => `Before: ${problem}`), ...after.problems.map(problem => `After: ${problem}`)];
   const byPath = resources => new Map(resources.map(resource => [resource.path, resource]));
   const byId = resources => new Map(resources.filter(resource => resource.studioId).map(resource => [resource.studioId, resource]));
   const afterPath = byPath(after.resources);

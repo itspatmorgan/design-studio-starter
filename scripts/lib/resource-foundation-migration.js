@@ -105,7 +105,7 @@ export function planResourceFoundationMigration(root, types, { ids = {}, updated
   } finally { fs.rmSync(reviewRoot, { recursive: true, force: true }); }
 }
 
-// Internal until runtime consumers complete their cutover. Treat saved previews
+// The explicit migration CLI uses this guarded transaction. Treat saved previews
 // as data, never as permission to write arbitrary files or trust an after payload.
 export function applyResourceFoundationMigration(root, types, plan) {
   if (plan?.stage !== 'resource-foundation' || plan.version !== 1 || !Array.isArray(plan.resources)) throw new Error('Review a resource foundation migration preview first.');

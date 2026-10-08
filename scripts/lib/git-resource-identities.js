@@ -7,6 +7,7 @@ import { auditResourceIdentities } from './resource-identity-audit.js';
 // Build the same retained identity inventory from Git, never from the checkout.
 // Staged checks inspect index blobs; CI inspects the explicitly requested tree.
 export function gitResourceIdentities(ref, types, { cwd = process.cwd(), staged = false } = {}) {
+  if (ref === 'empty-tree' && !staged) return { resources: [], missing: [], problems: [] };
   const git = args => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 20 * 1024 * 1024 });
   const output = git(staged ? ['ls-files', '--stage', '-z'] : ['ls-tree', '-r', '-z', ref]);
   const entries = output.split('\0').filter(Boolean).map(entry => {

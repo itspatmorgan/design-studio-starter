@@ -137,3 +137,12 @@ test('post-write inventory verification catches concurrent changes beyond files 
   for (const change of plan.changes) assert.equal(fs.readFileSync(path.join(root, change.path), 'utf8'), change.before);
   assert.equal(fs.readFileSync(path.join(root, 'src/prototypes/pat/example/new.txt'), 'utf8'), 'Concurrent source');
 });
+
+test('unresolved stored links and computed legacy routes require reconciliation before migration', t => {
+  const { root, write } = fixture(t);
+  write('src/prototypes/pat/example/notes.md', '[Missing](/prototypes/pat/example/deleted-screen)');
+  assert.throws(() => planResourceFoundationMigration(root, types), /unresolved stored browser reference/);
+  write('src/prototypes/pat/example/notes.md', '# Notes');
+  write('src/prototypes/pat/example/_helpers/other.ts', 'export const href = `/prototypes/${owner}/${folder}/main`;');
+  assert.throws(() => planResourceFoundationMigration(root, types), /computed browser reference needs review/);
+});

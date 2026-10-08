@@ -33,6 +33,10 @@ test('virtual directory refreshes identity mappings, rejects duplicates, and rem
   plugin.configureServer({ watcher, httpServer, ws: { send: message => messages.push(message) }, environments: { client: { moduleGraph: { getModuleById: candidate => candidate === id ? module : null, invalidateModule: value => invalidated.push(value) } } } });
   watcher.emit('change', path.join(root, 'src/prototypes/pat/example/main.tsx'));
   assert.equal(messages.length, 0);
+  fs.writeFileSync(path.join(root, '.studio-system-operation'), '');
+  watcher.emit('change', person);
+  assert.equal(messages.length, 0); assert.equal(invalidated.length, 0);
+  fs.unlinkSync(path.join(root, '.studio-system-operation'));
   fs.writeFileSync(system, "export default { studioId: '23456789abcdefgh' };");
   watcher.emit('change', system);
   assert.deepEqual(invalidated, [module]); assert.deepEqual(messages, []);

@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { writeProfiles } from './fixtures/contributors.js';
+import { readDeclaration } from '../../src/platform/core/declarations.ts';
 import { editStudioConfig } from './studio-setup.js';
 import { inspectBuild } from '../check/inspect-build.js';
 
@@ -19,7 +20,7 @@ test('private module consumers and symlink scopes are rejected; disabled app and
     fs.symlinkSync(path.join(original, 'node_modules'), path.join(root, 'node_modules'));
     writeProfiles(root, { 'boundary-fixture': { name: 'Boundary Fixture', email: 'boundary@example.test' } });
     const configFile = path.join(root, 'studio.config.ts');
-    fs.writeFileSync(configFile, editStudioConfig(fs.readFileSync(configFile, 'utf8'), { usage: 'personal', admins: ['boundary-fixture'] }));
+    fs.writeFileSync(configFile, editStudioConfig(fs.readFileSync(configFile, 'utf8'), { usage: 'personal', admins: [JSON.parse(fs.readFileSync(path.join(root, 'contributors/boundary-fixture.json'))).studioId] }));
     const env = { ...process.env, STUDIO_BASE_PATH: '/release-fixture/', MISE_TRUSTED_CONFIG_PATHS: root, GIT_CONFIG_COUNT: '2', GIT_CONFIG_KEY_0: 'user.name', GIT_CONFIG_VALUE_0: 'Boundary Fixture', GIT_CONFIG_KEY_1: 'user.email', GIT_CONFIG_VALUE_1: 'boundary@example.test' };
     const run = (file, ...args) => execFileSync(process.execPath, [file, ...args], { cwd: root, encoding: 'utf8', stdio: 'pipe', timeout: 60000, env });
     const attempt = (file, ...args) => spawnSync(process.execPath, [file, ...args], { cwd: root, encoding: 'utf8', env });
@@ -50,9 +51,10 @@ test('private module consumers and symlink scopes are rejected; disabled app and
     `);
     run('scripts/cli/studio.js', 'create-system', 'boundary-system', '--yes');
     write(root, 'src/systems/boundary-system/components/proof.tsx', 'export function Proof() { return <button>__CUSTOM_SYSTEM_PROOF__</button>; }');
-    write(root, 'src/prototypes/boundary-fixture/production/meta.json', JSON.stringify({ title: 'Production fixture', system: 'boundary-system' }));
-    write(root, 'src/prototypes/boundary-fixture/production/main.tsx', "import { Proof } from '@/systems/boundary-system/components/proof'; export default function View() { return <Proof />; }");
+    write(root, 'src/prototypes/boundary-fixture/production/meta.json', JSON.stringify({ title: 'Production fixture', system: readDeclaration(fs.readFileSync(path.join(root, 'src/systems/boundary-system/system.ts'), 'utf8')).value.studioId }));
+    write(root, 'src/prototypes/boundary-fixture/production/main.tsx', "import { Proof } from '@/systems/boundary-system/components/proof'; import {usePrototypeArtifactHref} from '@module/prototypes'; export default function View() { const artifactHref=usePrototypeArtifactHref(); const href=artifactHref('main.tsx'); return <a href={href}><Proof /></a>; }");
     write(root, 'src/lib/build-only.test.ts', "export const fixtureClass = 'w-[123456px]';");
+    run('scripts/cli/studio.js', 'identify', 'src/prototypes/boundary-fixture/production', '--yes');
     run('scripts/build/build-manifest.js', '--strict', '--deploy');
     write(root, 'src/systems/boundary-system/styles/imported.css', '.boundary-system-theme .scope-import-proof {color:red}');
     const theme = path.join(root, 'src/systems/boundary-system/styles/theme.css');

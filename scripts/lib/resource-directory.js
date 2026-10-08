@@ -5,6 +5,7 @@ import { canonicalDirectory } from './safe-paths.js';
 import { readDeclaration } from '../../src/platform/core/declarations.ts';
 import { resourceDirectory } from '../../src/platform/core/resourceReferences.ts';
 import { jsonIdentity } from '../../src/platform/core/resourceIdentity.ts';
+import { resourceId } from '../../src/platform/core/resourceIdentity.ts';
 
 // Refresh from ordinary source files rather than cached module imports. CI builds
 // the same directory from its before-side declarations without reading this path.
@@ -30,4 +31,27 @@ export function readResourceDirectory(root) {
     }
   }
   return resourceDirectory(contributors, systems);
+}
+
+export function prototypeSourceForIdentity(root, identity) {
+  const id = resourceId(identity), matches = [];
+  const prototypes = path.join(root, 'src/prototypes');
+  if (!fs.existsSync(prototypes)) throw new Error(`Prototype identity ${id} is unavailable.`);
+  if (!canonicalDirectory(prototypes, root)) throw new Error('Prototype references require ordinary source directories.');
+  for (const owner of fs.readdirSync(prototypes, { withFileTypes: true })) {
+    if (owner.name.startsWith('.')) continue;
+    const ownerDir = path.join(prototypes, owner.name);
+    if (owner.isSymbolicLink()) throw new Error('Prototype identity lookup cannot follow symbolic contributor folders.');
+    if (!owner.isDirectory()) continue;
+    for (const entry of fs.readdirSync(ownerDir, { withFileTypes: true })) {
+      if (entry.name.startsWith('.')) continue;
+      if (entry.isSymbolicLink()) throw new Error('Prototype identity lookup cannot follow symbolic prototype folders.');
+      if (!entry.isDirectory()) continue;
+      const file = path.join(ownerDir, entry.name, 'meta.json');
+      if (!fs.existsSync(file) || fs.lstatSync(file).isSymbolicLink() || !fs.lstatSync(file).isFile()) throw new Error(`${file}: prototype metadata must be an ordinary file.`);
+      if (jsonIdentity(fs.readFileSync(file, 'utf8')) === id) matches.push(`src/prototypes/${owner.name}/${entry.name}`);
+    }
+  }
+  if (matches.length !== 1) throw new Error(`Prototype identity ${id} must resolve to exactly one retained source folder.`);
+  return matches[0];
 }

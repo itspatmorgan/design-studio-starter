@@ -27,9 +27,10 @@ export type PrototypeInfo = {
   contributorGithub?: string; // registered GitHub account, for optional profile photos
   created: string | null;
   system: string | null;  // null means custom styling; omission in meta.json resolves to defaultSystem
+  systemId?: string | null; // permanent assignment identity; system is its resolved source selector
   owner?: { id: string; kind: 'platform' | 'module' | 'system'; label: string; root: string };
   systemMissing?: { id: string; label: string }; // deleted dependency; source retained for rebuild
-  rebuild?: { targetSystem: string | null; source: string }; // requested fork migration, before changing the actual assignment
+  rebuild?: { targetSystem: string | null; targetSystemId: string | null; source: string; sourcePath: string }; // IDs persist; paths/selectors are generated
   status?: 'archived';    // meta.json "status", when archived; absent means active
   maintainers?: string[]; // meta.json "maintainers" (contributor keys), where a section's policy is maintainers; prototypes don't have them
 };

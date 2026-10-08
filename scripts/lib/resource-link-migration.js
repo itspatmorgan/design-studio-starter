@@ -7,6 +7,7 @@ import { prototypeAddress, artifactAddress, resourceId, systemAddress } from '..
 import { artifactSlug } from '../../src/platform/core/fileTypes.ts';
 import { auditResourceIdentities } from './resource-identity-audit.js';
 import { linkedFiles } from './prototype-links.js';
+import { escapeAddress } from './prototype-links.js';
 import { rewriteResourceLinks } from './resource-links.js';
 
 // References inside prototype work are migrated once. No compatibility routes
@@ -15,6 +16,9 @@ export function planResourceLinkMigration(root, types, { updated = Date.now() } 
   if (!Number.isSafeInteger(updated) || updated < 0) throw new Error('Migration timestamp must be a nonnegative safe integer.');
   const audit = auditResourceIdentities(root, types);
   if (audit.problems.length || audit.missing.length) throw new Error('Complete source identity metadata before migrating stored links.');
+  const contributorKeys = audit.resources.filter(resource => resource.kind === 'contributor').map(resource => escapeAddress(resource.key));
+  const shortRoute = contributorKeys.length ? new RegExp(`^/(?:${contributorKeys.join('|')})/[^/]+(?:/|$)`) : null;
+  const legacyRoute = value => (/^\/prototypes\//.test(value) && !/^\/prototypes\/[0-9abcdefghjkmnpqrstvwxyz]{16}(?:\/artifacts\/[0-9abcdefghjkmnpqrstvwxyz]{16})?\/?$/.test(value)) || /^\/systems\/(?![0-9abcdefghjkmnpqrstvwxyz]{16}(?:\/|$))/.test(value) || shortRoute?.test(value);
   const routes = new Map(), prefixes = new Map(), changes = [];
   const prototypes = audit.resources.filter(resource => resource.kind === 'prototype');
   for (const prototype of prototypes) {
@@ -41,6 +45,8 @@ export function planResourceLinkMigration(root, types, { updated = Date.now() } 
     const before = fs.readFileSync(file, 'utf8');
     const after = rewriteResourceLinks(before, file, routes, prefixes, {
       updated,
+      unresolved: route => { if (legacyRoute(route)) throw new Error(`${path.relative(root, file)}: unresolved stored browser reference ${route}. Repair or remove it before the full cutover.`); },
+      computed: value => { if (/\/prototypes\/|\/systems\//.test(value)) throw new Error(`${path.relative(root, file)}: computed browser reference needs review before the full cutover: ${value}`); },
       // Replaying a reviewed preview must reproduce the exact scene content.
       nonce: (element, next) => createHash('sha256').update(JSON.stringify([element, next, updated])).digest().readUInt32BE(0) & 0x7fffffff,
     });

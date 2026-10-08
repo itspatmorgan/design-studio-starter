@@ -5,27 +5,29 @@ import os from 'node:os';
 import path from 'node:path';
 import { writeProfiles } from './fixtures/contributors.js';
 import { canWriteSource, prototypeOwnershipMatches } from '../build/files/policy.js';
+import { writeFixtureConfig } from './fixtures/identities.js';
 
 test('source writes recheck revoked grants and archive status without waiting for a restart', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-source-permissions-'));
-  const config = { usage: 'team', admins: ['admin'], systems: ['studio', 'product'], systemMaintainers: { product: ['sam'] } };
-  const save = () => fs.writeFileSync(path.join(root, 'studio.config.ts'), 'export default ' + JSON.stringify(config) + ';');
+  const config = { usage: 'team', admins: ['admin'], systems: ['studio', 'product'], defaultSystem: 'product', systemMaintainers: { product: ['sam'] } };
+  const save = () => writeFixtureConfig(root, config);
   try {
     writeProfiles(root, { admin: { name: 'Admin' }, sam: { name: 'Sam' } });
     fs.mkdirSync(path.join(root, 'src/systems/product'), { recursive: true });
     const spec = path.join(root, 'src/systems/product/system.ts');
-    fs.writeFileSync(spec, "export default { role: 'prototype', status: 'active' };"); save();
+    fs.writeFileSync(spec, "export default { role: 'prototype', status: 'active' };");
+    const permanentId = save().directory.systemIds.product;
     assert.equal(canWriteSource('sam', 'src/systems/product/components/button.tsx', root), true);
     assert.equal(canWriteSource('sam', 'src/platform/core/config.ts', root), false);
     assert.equal(canWriteSource('admin', 'src/prototypes/sam/example/view.tsx', root), true);
     assert.equal(canWriteSource('sam', 'src/prototypes/admin/example/view.tsx', root), false);
     assert.equal(canWriteSource('sam', '../src/systems/product/system.ts', root), false);
     assert.equal(canWriteSource('sam', 'src/systems/product/system.ts', root, "export default { role: 'prototype', status: 'archived' };"), false);
-    assert.equal(canWriteSource('sam', 'src/systems/product/system.ts', root, "export default { role: 'prototype', status: 'active', description: 'Updated' };"), true);
+    assert.equal(canWriteSource('sam', 'src/systems/product/system.ts', root, `export default { studioId:'${permanentId}', role: 'prototype', status: 'active', description: 'Updated' };`), true);
     config.systemMaintainers.product = []; save();
     assert.equal(canWriteSource('sam', 'src/systems/product/components/button.tsx', root), false);
     config.systemMaintainers.product = ['sam']; save();
-    fs.writeFileSync(spec, "export default { role: 'prototype', status: 'archived' };");
+    fs.writeFileSync(spec, `export default { studioId:'${permanentId}', role: 'prototype', status: 'archived' };`);
     assert.equal(canWriteSource('sam', 'src/systems/product/components/button.tsx', root), false);
     assert.equal(canWriteSource('admin', 'src/systems/product/components/button.tsx', root), false);
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
@@ -35,7 +37,7 @@ test('source editor preserves prototype identity and refuses owner/location mism
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-owner-source-'));
   try {
     writeProfiles(root, { pat: { name: 'Pat', studioId: '0123456789abcdef' } });
-    fs.writeFileSync(path.join(root, 'studio.config.ts'), "export default { usage: 'personal', systems: [] };");
+    writeFixtureConfig(root, { usage:'personal', systems:['studio','product'], defaultSystem:'product', systemMaintainers:{ product:[] } });
     const folder = path.join(root, 'src/prototypes/pat/example'); fs.mkdirSync(folder, { recursive: true });
     const metadata = { title: 'Example', studioId: 'abcdefghjkmnpqrs', ownerId: '0123456789abcdef' };
     fs.writeFileSync(path.join(folder, 'meta.json'), JSON.stringify(metadata));

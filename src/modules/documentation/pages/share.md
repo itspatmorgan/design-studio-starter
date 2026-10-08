@@ -70,7 +70,7 @@ Home's sections follow enabled modules and available content. There is no separa
 
 ## How do I share with reviewers and engineers?
 
-Share a published prototype link when people want to explore the experience and give feedback.
+Share a published prototype link when people want to explore the experience and give feedback. Prototype and artifact links use permanent IDs: renaming a prototype or moving an artifact within it preserves the link after publishing the update. Deletion, archiving, or disabling its capability can make the target unavailable.
 
 Engineers who want to inspect the code can pull your team's Design Studio repository into a local copy, then open the relevant prototype in its contributor folder. They need access to that repository.
 

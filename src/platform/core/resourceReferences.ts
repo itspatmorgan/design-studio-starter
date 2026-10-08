@@ -80,3 +80,10 @@ export function persistStudioReferences(runtime: StudioConfig, directory: Resour
 export const systemKeyForIdentity = (id: unknown, directory: ResourceDirectory) => resolve(id, directory.systemKeys, 'system');
 export const contributorKeyForIdentity = (id: unknown, directory: ResourceDirectory) => resolve(id, directory.contributorKeys, 'contributor');
 export const systemIdentityForKey = (key: string, directory: ResourceDirectory) => identify(key, directory.systemIds, 'system');
+
+export function systemKeyFromDeclarations(reference: unknown, systems: Declarations): string {
+  const id = resourceId(reference);
+  const matches = Object.entries(systems).filter(([, declaration]) => declaration.studioId === id);
+  if (matches.length !== 1) throw new Error(`System identity ${id} must resolve to exactly one installed system.`);
+  return matches[0][0];
+}

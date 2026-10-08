@@ -89,3 +89,25 @@ test('CI resolves persisted grants from the before-side identity directory and p
   assert.match(denied.stdout, /studio.config.ts/);
   assert.match(denied.stdout, /src\/platform\/fixture.md/);
 });
+
+test('missing IDs in proposed retained resources fail even when no previous resource existed', () => {
+  const proposed = { ...report([{ ...item(), studioId: null }]), missing: ['src/prototypes/pat/example/notes.md'] };
+  assert.match(resourceIdentityChangeProblems(report([]), proposed).join('\n'), /permanent identity is missing/);
+});
+
+test('the first repository commit has no before-side grants to authorize itself', t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-first-commit-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const git = args => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
+  git(['init', '-q']); git(['config', 'user.name', 'Fixture']); git(['config', 'user.email', 'fixture@example.test']);
+  fs.mkdirSync(path.join(root, 'contributors'));
+  fs.writeFileSync(path.join(root, 'contributors/pat.json'), JSON.stringify({ studioId: owner, name: 'Pat', github: 'pat-fixture' }));
+  fs.writeFileSync(path.join(root, 'studio.config.ts'), "export default {usage:'personal'};");
+  git(['add', '.']); git(['-c', 'core.hooksPath=/dev/null', 'commit', '-qm', 'Initial']);
+  const head = git(['rev-parse', 'HEAD']);
+  const check = role => spawnSync(process.execPath, [fileURLToPath(new URL('../check/check-scope.js', import.meta.url)), '--ci', '0000000000000000000000000000000000000000', head], { cwd: root, encoding: 'utf8', env: { ...process.env, STUDIO_SCOPE_ACTOR: 'pat-fixture', STUDIO_PLATFORM_ROLE: role } });
+  assert.equal(check('write').status, 1);
+  const accepted = check('maintain');
+  assert.equal(accepted.status, 0, accepted.stderr + accepted.stdout);
+  assert.ok(!accepted.stdout.includes('team ownership checks are skipped'));
+});

@@ -77,7 +77,7 @@ const ctx: Ctx = {
     const artifact = proto && itemsOf(proto).find(i => identityAddress ? i.studioId === identityAddress.artifactId : address && artifactSlug(i.path) === address.rest.join('/'));
     if (!artifact) return null;
     const type = FILE_TYPES[artifact.fileType];
-    return { path: appPath, title: title(artifact.path), type: artifact.fileType, typeLabel: type?.label ?? 'File', preview: Boolean(type?.preview) };
+    return { path: appPath, sourcePath: artifact.path, title: title(artifact.path), type: artifact.fileType, typeLabel: type?.label ?? 'File', preview: Boolean(type?.preview) };
   },
   artifacts: () => everything
     .filter((x) => x.contributorKey === contributor && x.id === prototype)
@@ -89,7 +89,15 @@ const ctx: Ctx = {
 
 try {
   const result = run(scene!.elements!, tool, args, ctx);
-  if (!['describe', 'help'].includes(tool)) {
+  if (!['describe', 'help', 'artifacts'].includes(tool)) {
+    const { resolveContributor } = await import(pathToFileURL(path.join(ROOT, 'scripts/cli/resolve-contributor.js')).href);
+    const { canChange } = await import(pathToFileURL(path.join(ROOT, 'scripts/build/files/policy.js')).href);
+    const prototypeRoot = inSection ? path.join(PROTOTYPE_SECTIONS.find(section => section.key === contributor)!.dir, prototype) : path.join(PROTOS, contributor, prototype);
+    if (!canChange(contributor, resolveContributor(), prototypeRoot)) fail('Only the prototype owner or an Admin can change this canvas.');
+    const metadata = JSON.parse(fs.readFileSync(path.join(prototypeRoot, 'meta.json'), 'utf8'));
+    if (metadata.status !== undefined && metadata.status !== 'active') fail('Restore this prototype before changing its canvas.');
+    resourceId(canvasIdentity.read(text));
+    if (fs.readFileSync(real, 'utf8') !== text) fail('The canvas changed. Read it again before applying this operation.');
     const next = stringifyScene(result.elements, scene!.appState, undefined, canvasIdentity.read(text));
     const tmp = `${real}.${process.pid}.tmp`;
     fs.writeFileSync(tmp, next);

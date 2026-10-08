@@ -19,7 +19,7 @@ export default {
     contributors: true,
   },
   systems: ["studio", "product", "marketing"],
-  systemMaintainers: { product: [], marketing: [] },
-  defaultSystem: 'product',   // the design system a prototype uses when its meta.json doesn't name one
-  admins: ["patrick"],
+  systemMaintainers: { "4f3m7z08hk5a0k53": [], "v4576ka1mbpbqdp1": [] },
+  defaultSystem: "4f3m7z08hk5a0k53",   // the design system a prototype uses when its meta.json doesn't name one
+  admins: ["01ketxwns61brr7r"],
 } satisfies StudioConfig;

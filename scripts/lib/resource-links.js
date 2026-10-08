@@ -8,6 +8,7 @@ export function rewriteResourceLinks(text, file, routes, prefixes = new Map(), s
     const route = suffixAt < 0 ? value : value.slice(0, suffixAt);
     const prefix = [...prefixes.keys()].find(prefix => route === prefix || route.startsWith(prefix + '/'));
     const next = routes.get(route) ?? (prefix ? prefixes.get(prefix) + route.slice(prefix.length) : undefined);
+    if (next === undefined) sceneUpdate.unresolved?.(route);
     return next === undefined ? value : next + (suffixAt < 0 ? '' : value.slice(suffixAt));
   };
   if (/\.[cm]?[jt]sx?$/.test(file)) {
@@ -26,6 +27,7 @@ export function rewriteResourceLinks(text, file, routes, prefixes = new Map(), s
           edits.push({ start: start + 1, end: node.end - 1, value });
         }
       }
+      if (ts.isTemplateExpression(node)) sceneUpdate.computed?.(node.getText(source));
       ts.forEachChild(node, visit);
     };
     visit(source);

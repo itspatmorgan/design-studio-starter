@@ -1,20 +1,18 @@
 ---
 title: Resource identity foundation
-description: Agreed identity model, filesystem parity, dependency preservation, and staged implementation status.
+description: Permanent source identities, filesystem parity, relationship resolution, authority, and migration.
 toc: true
 ---
 
-Design Studio is introducing source identities independent of location, ownership, and naming. This work preserves filesystem-based prototype authoring and system dependency contracts.
+Design Studio uses source identities independent of location, ownership, and naming. This work preserves filesystem-based prototype authoring and system dependency contracts.
 
-## Implementation status
+## Implemented foundation
 
-Source identity metadata and stored prototype browser references have been migrated in this development branch. Prototype and system public routes use IDs. Prototype creation and duplication allocate fresh IDs, copied permanent references are remapped, and source editing preserves identity. System installation and local creation allocate installation IDs. Prototype ownership is declared with `ownerId` and checked against the contributor folder. Normal builds reject malformed or duplicate identities; missing identities remain transitional.
+Prototype and system public routes use permanent IDs. Source metadata, assignments, ownership, default selection, archive/rebuild relationships, and central grants persist IDs. Browser and Node readers resolve them to current source locations without a mutable-name fallback. Reads, builds, and ordinary saves never invent identities.
 
-Git identity checks now compare the before-side tree with proposed committed or staged blobs. They reject identity replacement, resource-kind changes, owner changes, and cross-prototype artifact transfer, including in personal mode and review workflows. Contributor reads reject malformed, duplicated, and ambiguous permanent identities. Explicit first-time metadata migration remains supported.
+Creation and duplication allocate identities explicitly. Copies remap their own permanent references; renames and moves retain identity and preserve supported filesystem dependency repair. Builds reject missing, malformed, and duplicate identities, including archived resources and disabled installed file types. Source writes and Git checks protect retained identities and ownership.
 
-CI can resolve persisted ID grants strictly through the before-side contributor and system directory. Historical Git baselines preceding the cutover retain their original source-key policy; proposed declarations never supply authority. Runtime grant and assignment consumers, full contributor registration integration, and the public migration apply command still require implementation. These are required rollout work, not optional follow-ups. Current local permission evaluation continues using source keys until that phase is complete.
-
-This document records the agreed destination and identifies what remains unimplemented. It does not replace the existing [prototype contract](../../modules/prototypes/README.md), [system contract](../../modules/systems/README.md), or [contributor scope](contributor-scope.md) before their implementations migrate.
+The full migration has a read-only saved preview and a guarded apply command. Directly authored prototype files use a scoped assignment command. Neither mechanism silently repairs malformed metadata or unresolved legacy references.
 
 ## Objective
 
@@ -48,7 +46,7 @@ Prototype navigation faithfully reflects actual files and folders. Labels retain
 
 Permanent browser routes supplement existing reference repair. Relative imports, Markdown links, assets, and other supported file dependencies still resolve through actual locations. Rename and move operations continue repairing them and reporting unresolved references. A successful identity lookup does not demonstrate dependency integrity.
 
-An artifact may move between folders in its prototype without changing its ID or permanent route. A move to a different prototype changes containment and its parent route. Cross-prototype transfer and compatibility policy are deferred.
+An artifact may move between folders in its prototype without changing its ID or permanent route. Moving an identified artifact into another prototype is rejected: it would change containment and its parent route. Cross-prototype transfer policy is deferred.
 
 ## Routes and generated resolution
 
@@ -62,7 +60,7 @@ The agreed prototype routes are:
 
 The prototype address displays its first available artifact without redirecting to a standalone artifact route. Source editing retains `?mode=source`. Names and hierarchy remain visible in navigation, rather than duplicated in the canonical URL.
 
-System routes use `/systems/<system-id>` followed by existing surface names or system-relative resource identifiers, such as `/colors`, `/components/button`, `/context/principles`, and `/skills/build-flow`. Exposed system names and paths remain deliberate dependency contracts. Structural changes identify affected imports, browser links, documentation, and skills; supported repairs and checks remain required.
+System routes use `/systems/<system-id>` followed by existing surface names or system-relative resource identifiers, such as `/colors`, `/components/button`, `/context/principles`, and `/skills/build-flow/SKILL`. Exposed system names and paths remain deliberate dependency contracts. Structural changes identify affected imports, browser links, documentation, and skills; supported repairs and checks remain required.
 
 The generated manifest resolves identities to current locations and relationships. It is a derived inventory, not another authoring location. Browser and Node resolution share types and rules. Published lookup preserves lazy artifact loading and excludes unavailable publication content. Unknown identities must not become filesystem paths or silently resolve to another resource.
 
@@ -88,19 +86,19 @@ This is a full cutover before public release. Existing readable routes do not re
 
 ## Ownership and authority
 
-Prototype metadata will reference its owner's permanent contributor identity. Existing contributor folders remain the supported source organization convention, with validation requiring owner and location to agree. Filesystem movement does not silently grant ownership.
+Prototype metadata references its owner's permanent contributor identity. Existing contributor folders remain the supported source organization convention, with validation requiring owner and location to agree. Filesystem movement does not silently grant ownership.
 
-Admin and system maintainer grants and system assignments will refer to permanent identities; prototype ownership already declares its contributor ID. `resourceReferences.ts` supplies a strict, read-only projection from persisted IDs to current source selectors and the inverse serializer for managed mutations. Unknown, malformed, duplicate, or wrong-kind identities fail resolution. The runtime and CI integration of that projection is still pending. Readable source keys remain distinct from those identities. Local operations, CLI inspection, agent guidance, and CI must interpret authority consistently and evaluate proposed authority changes against existing authority.
+Admin and system maintainer grants, system assignments, archive provenance, and rebuild source/target relationships refer to permanent identities. `resourceReferences.ts` supplies a strict, read-only projection from persisted IDs to current source selectors and the inverse serializer for managed mutations. Unknown, malformed, duplicate, or wrong-kind identities fail resolution. Runtime readers use that projection; CI resolves grants against the before-side Git tree. Readable source keys remain distinct from those identities. Local operations, CLI inspection, agent guidance, and CI must interpret authority consistently and evaluate proposed authority changes against existing authority.
 
 Future prototype-specific collaborator grants can extend this model. Collaborator controls and permissions are not part of the current refactor. Identity is not web authentication or filesystem isolation. Runtime dependency boundaries remain independent of human authority.
 
-`readPersistedStudioConfig` supplies a fresh strict Node reader with separate persisted declarations and resolved source selectors. The Vite resource-directory plugin supplies only contributor and system ID/location mappings, excluding names, emails, and profile preferences. Consumer integration remains pending; the browser plugin's generated directory does not itself evaluate grants.
+`readPersistedStudioConfig` supplies a fresh strict Node reader with separate persisted declarations and resolved source selectors. The Vite resource-directory plugin supplies only contributor and system ID/location mappings, excluding names, emails, and profile preferences. The browser projects persisted configuration through that directory; the generated directory itself does not evaluate grants.
 
-## Read-only inventory audit
+## Explicit identity operations
 
 Run `pnpm studio identity-audit --json` to inspect current identity declarations, missing metadata, and malformed or duplicate identities. The audit includes archived prototypes and file types retained in installed modules even when disabled. It excludes prototype helpers and does not assign identities, generate a manifest, repair references, or change authority.
 
-The initial audit scope is contributor profiles, system declarations, and contributor-owned prototype trees. Module-owned prototype-shaped sections must be reviewed before the migration command is implemented; the audit does not claim that coverage yet.
+The initial audit scope is contributor profiles, system declarations, and contributor-owned prototype trees. Custom module-owned prototype-shaped sections retain their own contracts. Full migration refuses such installations until the section has an explicit identity policy; it does not guess containment or ownership.
 
 Run `pnpm studio identity-plan --out <new-file>` to save a reviewable, composed source preview: metadata, persisted relationships, and stored browser links. It includes exact before/after content, allocated IDs, and a digest inventory of participating source trees and installed module declarations. The output file must not already exist. A new preview allocates new candidate IDs; the saved preview retains its allocation. The command changes no Studio source and refuses installed prototype-shaped module sections until they have an explicit identity policy.
 
@@ -108,19 +106,17 @@ Run `pnpm studio identity-plan --out <new-file>` to save a reviewable, composed 
 
 `scripts/lib/resource-relationship-migration.js` prepares the relationship stage after source IDs are complete: configuration grants and the default, explicit prototype assignments and owners, archive provenance, and rebuild targets and source identities. It preserves explicit `null` and default omission, retains source keys only for registration/location, and refuses unavailable dependencies requiring reconciliation.
 
-`scripts/lib/resource-foundation-migration.js` composes all stages in an isolated temporary review workspace. Its internal apply recomputes the exact reviewed plan, guards the complete participating inventory, applies the combined edits, verifies relationships and links, and rolls back failures while preserving concurrent edits. Canvas timestamps and nonces replay deterministically from the saved preview. Binary assets are copied and hashed as bytes and never rewritten. Public application remains disabled until runtime and authority consumers complete their cutover.
+`scripts/lib/resource-foundation-migration.js` composes all stages in an isolated temporary review workspace. Its internal apply recomputes the exact reviewed plan, guards the complete participating inventory, applies the combined edits, verifies relationships and links, and rolls back failures while preserving concurrent edits. Canvas timestamps and nonces replay deterministically from the saved preview. Binary assets are copied and hashed as bytes and never rewritten. Run `pnpm studio identity-apply <reviewed-preview.json> --yes` after reviewing the saved preview. The command requires existing Admin authority and rejects an edited preview or changed inventory before writing. A shared-operation marker coordinates development-server restarts during the transaction. There are no browser compatibility aliases.
 
-System declarations now accept and validate a declared `studioId`; omission remains transitional. Plain-data declarations reject duplicate properties at every level, including duplicate identity and permission keys.
+Installed systems require a valid `studioId` for runtime resolution. Uninstalled package/scaffold declarations can omit it; installation allocates the instance identity. Plain-data declarations reject duplicate properties at every level, including duplicate identity and permission keys.
 
-## Remaining rollout
+## Direct authoring and verification
 
-1. Complete identity-preserving creation, source-write checks, duplication, and lifecycle operations. Resolve metadata field translation separately from location keys.
-2. Implement a previewable migration with stale-source guards, consistent relationship translation, stored-link migration, and rollback. Resolve each prototype's scope and assigned system before migrating its source.
-3. Introduce identity inventories, permanent routes, navigation helpers, embeds, and canvas relationship validation. Keep filesystem dependency repair intact.
-4. Integrate authority, agent context, CI baseline checks, installed system handling, and contributor registration. Reject self-authorizing changes.
-5. Update owning contracts, skills, and human guidance alongside implemented behavior. Remove transitional ambiguity.
+After creating prototype artifact files directly, run `pnpm studio identify src/prototypes/<contributor>/<prototype> --json` for a preview, then `--yes` to assign missing identities. Existing IDs and declared ownership remain unchanged. The owner or an existing Admin can run it. It assigns the prototype's missing ID/owner when needed and the missing IDs of retained installed file types, including disabled types. It does not assign system children, helpers, or identities outside the chosen prototype.
 
-Verify copied links through renames and moves, stopped-server filesystem moves, filesystem parity, duplicate remapping, system dependency repairs, authority spoofing, canvas saves, archives, disabled modules, malformed metadata, rejection of legacy routes, local editing, and static publication. Build success alone is insufficient.
+An ordinary rename or move needs no new identity assignment. Preserve the leading identity comment, Markdown frontmatter field, or canvas metadata when editing. A copied file with a retained ID fails validation; use managed duplication or explicitly create a new artifact. Arbitrary cross-prototype transfer is rejected until an explicit transfer policy exists.
+
+Verify permanent addresses independently of source dependencies. Regression coverage includes identity adapters, scoped parent lookup, copying/remapping, source moves and repair, system lifecycle, grant revocation and before-side CI authority, missing/malformed/duplicate metadata, preview tampering and stale inventories, rollback failures, lazy publication, disabled capabilities, and deployment under a base path. Review rendered navigation, embeds, source mode, and direct refreshes. A successful build alone does not establish dependency integrity.
 
 Comments, revision history, authentication, a database, collaborator UI, and canvas frame selection are deferred. A future `?frame=<element-id>` selection can extend a canvas's permanent route after Excalidraw frame persistence is verified.
 

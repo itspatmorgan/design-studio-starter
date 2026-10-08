@@ -266,3 +266,19 @@ test('a size that is not sensible is refused', () => {
   assert.throws(() => s.call('create', { elements: [{ type: 'note', text: 'x', width: 5 }] }), /between 20 and 4000/);
   assert.throws(() => s.call('create', { elements: [{ type: 'text', text: 'x', width: 99999 }] }), /between 20 and 4000/);
 });
+
+test('relative canvas authoring paths resolve to permanent links and remain scoped to their prototype', () => {
+  const base = '/prototypes/0123456789abcdef';
+  const view = { path: `${base}/artifacts/abcdefghjkmnpqrs`, sourcePath: 'app/main.tsx', title: 'Main', type: 'view', typeLabel: 'View', preview: true };
+  const notes = { path: `${base}/artifacts/23456789abcdefgh`, sourcePath: 'notes.md', title: 'Notes', type: 'document', typeLabel: 'Document', preview: false };
+  const identified: Ctx = { base, artifacts: () => [view, notes], artifact: path => [view, notes].find(item => item.path === path) ?? null };
+  const created = run([], 'create', { elements: [{ type: 'artifact', artifact: './app/main.tsx' }, { type: 'artifact', artifact: 'notes' }] }, identified);
+  assert.deepEqual(created.elements.filter(element => element.type === 'embeddable').map(element => element.link), [view.path, notes.path]);
+  const list = run([], 'artifacts', {}, identified).result as { artifacts: { artifact: string }[] };
+  assert.deepEqual(list.artifacts.map(item => item.artifact), ['app/main.tsx', 'notes.md']);
+  const embed = created.elements.find(element => element.type === 'embeddable')!;
+  const updated = run(created.elements, 'update', { id: embed.id, artifact: 'notes.md' }, identified);
+  assert.equal(updated.elements.find(element => element.id === embed.id)!.link, notes.path);
+  assert.throws(() => run([], 'create', { type: 'artifact', artifact: '/prototypes/3456789abcdefghj/artifacts/abcdefghjkmnpqrs' }, identified), /another prototype/);
+  assert.throws(() => run([], 'create', { type: 'artifact', artifact: '../other/main.tsx' }, identified), /no artifact at/);
+});

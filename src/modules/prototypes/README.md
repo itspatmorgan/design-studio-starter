@@ -17,6 +17,8 @@ Enabled file types determine other artifacts. Documents and canvases require the
 
 Artifact IDs are unique across retained resources. Source navigation paths must also be unambiguous: `main.tsx` and `main.md` cannot share the same extensionless path in one folder.
 
+Create artifacts through Studio’s file operations or preserve the declared ID while editing an existing file. For directly authored new files, preview `pnpm studio identify <prototype-folder> --json`, then apply with `--yes`. It assigns only missing IDs within that owner’s prototype; it does not replace existing IDs. Builds reject unidentified artifacts, including retained disabled types.
+
 ## Metadata
 
 For agent inspection, run `pnpm studio context src/prototypes/<contributor>/<prototype> --json`. It reports assignment, pending rebuild, contributor scope, enabled modules, and system entry paths without writing files. Assignment validation is shared with the manifest; inspect artifact content and relevant guidance separately.
@@ -28,7 +30,7 @@ For agent inspection, run `pnpm studio context src/prototypes/<contributor>/<pro
 | `title` | Required display title. |
 | `created` | Optional `YYYY-MM-DD` date. Creation fills it in. |
 | `system` | Installed prototype system ID, or `null` for no system (custom styling). Omission uses the explicitly configured `defaultSystem`. Creation saves the chosen value. |
-| `rebuild` | Optional pending migration: `targetSystem` is an installed ID or `null`; `source` is `src/prototypes/<contributor>/<id>`. Current `system` remains the runtime boundary until migration. |
+| `rebuild` | Optional pending migration: `targetSystem` is an installed ID or `null`; `source` is the original prototype’s permanent ID. Current `system` remains the runtime boundary until migration. |
 | `order` | Relative file and folder paths placed first within their folder, in sequence. |
 | `archivedBySystem` | System ID that archived this prototype; used to offer restoration only for work archived together. |
 | `systemMissing` | `{ id, label }` for a deleted assigned system. Preserve source and assignment; rendering and deployment wait for a rebuild. Remove this field after migrating code and assignment together. |
@@ -42,7 +44,7 @@ Invalid metadata skips the prototype with a local warning and fails the producti
 
 With `system: null`, views start from browser colors and a system font, without registered system tokens or components. Use local components, CSS Modules, shared utilities, and installed packages. System imports remain outside this prototype's runtime boundary. Layout utilities without system tokens remain available; style colors, typography, and spacing in local CSS. This is distinct from an invalid system ID, which fails validation.
 
-`pnpm new "Prototype Name"` assigns the studio default. Use `--system <id>` to choose another installed prototype system, or `--no-system` for custom styling.
+`pnpm new "Prototype Name"` assigns the studio default. Use `--system <source-key>` to choose another installed prototype system, or `--no-system` for custom styling.
 
 The first available artifact in navigation order opens by default, including artifacts inside folders. Helpers and disabled file types are excluded. An empty prototype shows an empty state.
 
@@ -60,7 +62,7 @@ Changing the title in the app also renames the prototype folder to its slug. Dir
 
 Renaming preserves permanent shared URLs and all resource IDs. Relative document links survive a prototype-folder rename. File moves still affect source dependencies; permanent routes do not replace reference repair.
 
-The app repairs internal references when files or folders are renamed or moved: local literal imports and exports, literal view navigation paths, Markdown link destinations, and canvas element links. Moving a source file also rebases its relative references. Prototype renaming and duplication rewrite self-address links in view code, Markdown, and canvases.
+The app repairs internal references when files or folders are renamed or moved: local literal imports and exports, literal view navigation paths, Markdown link destinations, and canvas element links. Moving a source file also rebases its relative references. Prototype renaming retains permanent browser links. Duplication remaps copied permanent links to fresh prototype and artifact IDs. Both preserve applicable filesystem reference repair.
 
 File moves publish the completed inventory and follow the open artifact once. Exact move and relinking writes suppress stale Vite module entries that would reload the document. Retained refresh boundaries update in place. Other rewritten artifacts refresh through their loader, and subsequent code edits retain normal HMR. The loader keeps cached modules for unchanged files when its inventory changes. Reordering keeps the currently displayed index artifact and its navigation selection, while changing the opening artifact for the next visit. A brief toast confirms when references were updated.
 
@@ -74,7 +76,7 @@ Use `usePrototypeArtifactHref` from the public `@module/prototypes` library to r
 
 The local **Duplicate** action is available for your own personal prototypes and for Admins managing another contributor’s prototypes. The copy stays in the original contributor’s folder. It gives the prototype and each navigable artifact a fresh ID, remaps copied permanent references inside that copy, copies files into a new folder, resets the creation date, makes an archived source's copy active, and rewrites self-address links in Markdown and canvas files. Relative imports and links stay local to the copy. Symbolic links are rejected; Git metadata, node_modules, and trash folders are excluded.
 
-A different selected system records `rebuild.targetSystem` and the original repository path. It retains the source's resolved `system` so its copied implementation can still run. The confirmation explains that reconstruction is required. The sidebar supplies a copyable agent prompt; there is no automatic agent dispatch.
+A different selected system records the target system ID in `rebuild.targetSystem` and the original prototype ID in `rebuild.source`. Agent inspection resolves the current source path. It retains the source's resolved `system` so its copied implementation can still run. The confirmation explains that reconstruction is required. The sidebar supplies a copyable agent prompt; there is no automatic agent dispatch.
 
 To finish, migrate code and the `system` value together, verify the build and rendered artifacts, then remove `rebuild`. Pending targets prevent removing that system through the studio CLI. Assignment has no in-place switching action in the app; direct code owners can still change metadata while migrating their implementation.
 

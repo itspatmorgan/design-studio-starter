@@ -20,7 +20,7 @@ function withIdentity(resource, source, id, types) {
 
 // ids is an optional path->ID allocation retained from an earlier preview.
 // Existing identities are never reassigned. A collision is retried before any write.
-export function planSourceIdentityMigration(root, types, { ids = {}, generate = createResourceId } = {}) {
+export function planSourceIdentityMigration(root, types, { ids = {}, generate = createResourceId, select = () => true } = {}) {
   const audit = auditResourceIdentities(root, types);
   if (audit.problems.length) throw new Error(audit.problems.join('\n'));
   const used = new Set(audit.resources.flatMap(resource => resource.studioId ? [resource.studioId] : []));
@@ -32,7 +32,7 @@ export function planSourceIdentityMigration(root, types, { ids = {}, generate = 
     snapshot.push({ ...resource, before });
     let id = resource.studioId;
     if (id && ids[resource.path] !== undefined && ids[resource.path] !== id) throw new Error(`${resource.path}: an existing identity cannot be reassigned by migration.`);
-    if (!id) {
+    if (!id && select(resource)) {
       if (ids[resource.path] !== undefined) {
         id = resourceId(ids[resource.path]);
         if (used.has(id)) throw new Error(`${resource.path}: preview allocation conflicts with resource ID ${id}.`);

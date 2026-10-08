@@ -10,7 +10,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { resolveContributor, loadContributors } from './resolve-contributor.js';
 import { SECTION_KEYS } from '../lib/modules.js';
-import CONFIG from '../../studio.config.ts';
+import { CONFIG } from '../lib/modules.js';
 import { contributorFile } from '../lib/contributors.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');

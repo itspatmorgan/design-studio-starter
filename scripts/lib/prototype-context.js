@@ -4,6 +4,8 @@ import { canonicalDirectory } from './safe-paths.js';
 import { prototypeAssignment } from './prototype-assignment.js';
 import { canPerform, studioRole } from '../../src/platform/core/permissions.ts';
 import { parseStatus } from '../../src/platform/core/archive.ts';
+import { jsonIdentity, resourceId } from '../../src/platform/core/resourceIdentity.ts';
+import { prototypeSourceForIdentity } from './resource-directory.js';
 
 // Report facts and entry paths without reading a transitive instruction bundle,
 // writing a manifest, or deciding which task the person wants performed.
@@ -14,7 +16,10 @@ export function prototypeContext({ root, folder, config, systems, modules, contr
   if (!match || !canonicalDirectory(absolute, root)) throw new Error('Provide an existing src/prototypes/<contributor>/<prototype> folder without symbolic links.');
   const metaFile = path.join(absolute, 'meta.json');
   if (fs.lstatSync(metaFile).isSymbolicLink() || !fs.lstatSync(metaFile).isFile()) throw new Error('meta.json must be an ordinary file.');
-  const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
+  const metadataSource = fs.readFileSync(metaFile, 'utf8');
+  const meta = JSON.parse(metadataSource);
+  resourceId(jsonIdentity(metadataSource));
+  resourceId(meta.ownerId);
   if (typeof meta?.title !== 'string' || !meta.title.trim()) throw new Error(`${relative}/meta.json needs a title.`);
   const registered = Object.fromEntries(Object.entries(systems).filter(([id, spec]) => config.systems.includes(id) && spec.role === 'prototype'));
   const assignment = prototypeAssignment(meta, config.defaultSystem, registered);
@@ -32,8 +37,8 @@ export function prototypeContext({ root, folder, config, systems, modules, contr
   return {
     prototype: { path: relative, studioId: meta.studioId, title: meta.title, owner: match[1], ownerId: meta.ownerId, status },
     contributor: { key: contributor, role: studioRole(config, contributor, contributors), canEdit: status === 'active' && canPerform(config, contributor, contributors, { kind: 'prototype', owner: match[1] }, 'edit') },
-    assignment: { source: meta.system === undefined ? 'default' : 'explicit', system: assignment.system, ...entry(assignment.system), ...(meta.systemMissing && { systemMissing: meta.systemMissing }) },
-    rebuild: assignment.rebuild === undefined ? null : { source: assignment.rebuild.source, targetSystem: assignment.rebuild.targetSystem, target: entry(assignment.rebuild.targetSystem) },
+    assignment: { source: meta.system === undefined ? 'default' : 'explicit', system: assignment.system, systemId: assignment.systemId, ...entry(assignment.system), ...(meta.systemMissing && { systemMissing: meta.systemMissing }) },
+    rebuild: assignment.rebuild === undefined ? null : { source: assignment.rebuild.source, sourcePath: prototypeSourceForIdentity(root, assignment.rebuild.source), targetSystem: assignment.rebuild.targetSystem, targetSystemId: assignment.rebuild.targetSystemId, target: entry(assignment.rebuild.targetSystem) },
     modules: { enabled: modules.map(module => module.id) },
     guidance: { working: 'src/platform/context/working-in-studio.md', prototype: 'src/modules/prototypes/README.md' },
   };

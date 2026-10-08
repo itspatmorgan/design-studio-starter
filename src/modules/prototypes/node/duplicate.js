@@ -8,6 +8,9 @@ import { moveWithLinks, personAddress } from '../../../../scripts/lib/prototype-
 import { buildManifest } from '../../../../scripts/build/build-manifest.js';
 import { INSTALLED_FILE_TYPES } from '../../../../scripts/lib/file-types.js';
 import { retainedResourceIds, allocateResourceIdentity, identifyPrototypeArtifacts } from '../../../../scripts/lib/resource-identity-lifecycle.js';
+import { prototypeAssignment } from '../../../../scripts/lib/prototype-assignment.js';
+import { loadContributors } from '../../../../scripts/lib/contributors.js';
+import { resourceId } from '../../../platform/core/fileTypes.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 const validId = value => typeof value === 'string' && /^[a-z0-9][a-z0-9._-]*$/i.test(value);
@@ -37,18 +40,21 @@ export function duplicatePrototype({ key, id, title, system }) {
   checkFiles(from);
   const used = retainedResourceIds(ROOT, INSTALLED_FILE_TYPES);
   const meta = JSON.parse(fs.readFileSync(path.join(from, 'meta.json'), 'utf8'));
-  const previousPrototypeId = meta.studioId;
+  const previousPrototypeId = resourceId(meta.studioId);
+  if (resourceId(meta.ownerId) !== resourceId(loadContributors()[key]?.studioId)) throw new Error('Prototype owner does not match its contributor folder.');
   meta.studioId = allocateResourceIdentity(used);
-  const sourceSystem = meta.system === undefined ? DEFAULT_SYSTEM : meta.system;
+  const assignment = prototypeAssignment(meta, DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS);
+  if (assignment.problems.length) throw new Error(assignment.problems.join('\n'));
+  const sourceSystem = assignment.system;
   const targetSystem = system === undefined ? sourceSystem : system;
   for (const assigned of [sourceSystem, targetSystem]) if (assigned !== null && (!Object.hasOwn(PROTOTYPE_SYSTEMS, assigned) || PROTOTYPE_SYSTEMS[assigned].status !== 'active')) throw new Error('Choose an installed prototype system, or no system.');
   const now = new Date();
   meta.title = title;
   meta.created = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-  meta.system = sourceSystem;
+  meta.system = assignment.systemId;
   delete meta.status;
   delete meta.rebuild;
-  if (targetSystem !== sourceSystem) meta.rebuild = { targetSystem, source: `src/prototypes/${key}/${id}` };
+  if (targetSystem !== sourceSystem) meta.rebuild = { targetSystem: targetSystem === null ? null : resourceId(PROTOTYPE_SYSTEMS[targetSystem].studioId), source: previousPrototypeId };
   fs.mkdirSync(to);
   try {
     fs.cpSync(from, to, { recursive: true, force: false, errorOnExist: true, filter: file => file === from || !excluded.has(path.basename(file)) });

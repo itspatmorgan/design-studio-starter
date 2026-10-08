@@ -1,5 +1,6 @@
 // A browser needs source selectors and permanent IDs, never full contributor
 // profiles. Keep this generated module small and free of personal preferences.
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readResourceDirectory } from '../lib/resource-directory.js';
@@ -31,7 +32,7 @@ export default function resourceDirectoryPlugin(root = ROOT) {
     configureServer(server) {
       server.watcher.add([path.join(root, 'contributors'), path.join(root, 'src/systems')]);
       const refresh = file => {
-        if (!relevant(file)) return;
+        if (!relevant(file) || fs.existsSync(path.join(root, '.studio-system-operation'))) return;
         const graph = server.environments.client.moduleGraph;
         const module = graph.getModuleById(internal);
         if (!module) return;

@@ -1,3 +1,4 @@
+import { writeFixtureConfig } from './fixtures/identities.js';
 import { writeProfiles, ensureTeamManagement } from './fixtures/contributors.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -31,8 +32,15 @@ test('local personal setup resumes, then a second clone joins a team without cha
       fs.mkdirSync(path.join(dir, folder), { recursive: true });
     }
     fs.cpSync(path.join(root, 'src/systems/studio'), path.join(dir, 'src/systems/studio'), { recursive: true });
-    fs.writeFileSync(path.join(dir, 'studio.config.ts'), `import type { StudioConfig } from './src/platform/core/config.ts';\nexport default { name: 'Fixture Studio', usage: 'team', admins: ['patrick'], tagline: 'Fixture', modules: ${JSON.stringify(Object.fromEntries(fs.readdirSync(path.join(dir, 'src/modules')).filter((id) => fs.existsSync(path.join(dir, 'src/modules', id, 'module.ts'))).map((id) => [id, id !== 'documentation'])))}, systems: ['studio'], systemMaintainers: {}, defaultSystem: 'product' } satisfies StudioConfig;\n`);
+    for (const file of fs.globSync('**/*', { cwd: path.join(root, 'scripts/templates/system') }).filter(file => fs.statSync(path.join(root, 'scripts/templates/system', file)).isFile())) {
+      const target = path.join(dir, 'src/systems/bootstrap', file); fs.mkdirSync(path.dirname(target), { recursive: true });
+      fs.writeFileSync(target, fs.readFileSync(path.join(root, 'scripts/templates/system', file), 'utf8').replaceAll('__ID__', 'bootstrap').replaceAll('__LABEL__', 'Bootstrap'));
+    }
+    fs.mkdirSync(path.join(dir, 'src/systems/bootstrap/components'), { recursive: true });
+    writeFixtureConfig(dir, { name: 'Fixture Studio', usage: 'team', admins: ['patrick'], tagline: 'Fixture', modules: Object.fromEntries(fs.readdirSync(path.join(dir, 'src/modules')).filter(id => fs.existsSync(path.join(dir, 'src/modules', id, 'module.ts'))).map(id => [id, id !== 'documentation'])), systems: ['studio', 'bootstrap'], systemMaintainers: { bootstrap: [] }, defaultSystem: 'bootstrap' });
     run(dir, 'scripts/cli/studio.js', 'create-system', 'product', '--label', 'Product', '--yes');
+    run(dir, 'scripts/cli/studio.js', 'configure', '--system', 'product', '--yes');
+    run(dir, 'scripts/cli/studio.js', 'remove', 'bootstrap', '--yes');
     const declared = () => readDeclaration(fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8')).value;
     assert.deepEqual(declared().systems, ['studio', 'product']);
     const teamConfig = fs.readFileSync(path.join(dir, 'studio.config.ts'), 'utf8');
@@ -95,8 +103,9 @@ test('local personal setup resumes, then a second clone joins a team without cha
     const components = path.join(dir, 'src/systems/acme/components/button');
     fs.mkdirSync(components, { recursive: true });
     fs.writeFileSync(path.join(components, 'index.tsx'), 'export function Button(){return <button>Continue</button>}');
-    const script = `import {createPrototype} from './src/modules/prototypes/node/create.js'; import fs from 'node:fs'; const {slug}=createPrototype({title:'First Flow',key:'sam'}); const dir='src/prototypes/sam/'+slug; fs.writeFileSync(dir+'/prototype.tsx','import { Button } from \"@/systems/acme/components/button\"; export default function View(){return <Button/>}'); fs.writeFileSync(dir+'/context.md','# First flow\\nA local setup example.'); fs.writeFileSync(dir+'/flow.excalidraw',JSON.stringify({type:'excalidraw',version:2,elements:[],appState:{},files:{}}));`;
+    const script = `import {createPrototype} from './src/modules/prototypes/node/create.js'; import fs from 'node:fs'; const {slug}=createPrototype({title:'First Flow',key:'sam'}); const dir='src/prototypes/sam/'+slug; const header=fs.readFileSync(dir+'/prototype.tsx','utf8').split('\\n')[0]; fs.writeFileSync(dir+'/prototype.tsx',header+'\\nimport { Button } from \"@/systems/acme/components/button\"; export default function View(){return <Button/>}'); fs.writeFileSync(dir+'/context.md','# First flow\\nA local setup example.'); fs.writeFileSync(dir+'/flow.excalidraw',JSON.stringify({type:'excalidraw',version:2,elements:[],appState:{},files:{}}));`;
     execFileSync(process.execPath, ['--input-type=module', '--eval', script], { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
+    run(dir, 'scripts/cli/studio.js', 'identify', 'src/prototypes/sam/first-flow', '--yes');
     run(dir, 'scripts/build/build-manifest.js', '--strict');
     const status = JSON.parse(run(dir, 'scripts/cli/studio.js', 'status', '--json'));
     assert.equal(status.config.defaultSystem, 'acme'); assert.equal(status.contributor, 'sam');
@@ -119,10 +128,12 @@ test('local personal setup resumes, then a second clone joins a team without cha
       assert.equal(fs.readFileSync(path.join(clone, 'studio.config.ts'), 'utf8'), sharedConfig);
     }
     const assigned = readDeclaration(sharedConfig).value;
-    assigned.systemMaintainers.acme = ['alex'];
+    const acmeId = readDeclaration(fs.readFileSync(path.join(clone, 'src/systems/acme/system.ts'), 'utf8')).value.studioId;
+    const alexId = JSON.parse(fs.readFileSync(path.join(clone, 'contributors/alex.json'))).studioId;
+    assigned.systemMaintainers[acmeId] = [alexId];
     fs.writeFileSync(path.join(clone, 'studio.config.ts'), 'export default ' + JSON.stringify(assigned) + ';');
     run(clone, 'scripts/cli/studio.js', 'rename-system', 'acme', '--label', 'Partner System', '--yes');
-    assert.deepEqual(readDeclaration(fs.readFileSync(path.join(clone, 'studio.config.ts'), 'utf8')).value.systemMaintainers['partner-system'], ['alex']);
+    assert.deepEqual(readDeclaration(fs.readFileSync(path.join(clone, 'studio.config.ts'), 'utf8')).value.systemMaintainers[acmeId], [alexId]);
     const collision = spawnSync(process.execPath, ['scripts/cli/setup-contributor.js', '--key', 'wrong', '--name', 'Wrong', '--email', 'alex@example.test', '--yes'], { cwd: clone, encoding: 'utf8' });
     assert.equal(collision.status, 1); assert.equal(fs.existsSync(path.join(clone, 'contributors/wrong.json')), false);
   } finally { fs.rmSync(dir, { recursive: true, force: true }); fs.rmSync(clone, { recursive: true, force: true }); }

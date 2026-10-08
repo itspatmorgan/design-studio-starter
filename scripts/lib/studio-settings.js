@@ -4,8 +4,10 @@ import { createHash } from 'node:crypto';
 import { readDeclaration as readSystemDeclaration } from '../../src/platform/core/modules/pack.ts';
 import { configProblems, studioRole } from '../../src/platform/core/config.ts';
 import { compatible } from '../../src/platform/core/modules/index.ts';
-import { agentsBlock, applyAgentsBlock, readDeclaration } from '../../src/platform/core/modules/pack.ts';
+import { agentsBlock, applyAgentsBlock } from '../../src/platform/core/modules/pack.ts';
 import { applySetupChanges, editStudioConfig, pinImplicitSystems } from './studio-setup.js';
+import { readPersistedStudioConfig } from './persisted-studio-config.js';
+import { persistStudioReferences } from '../../src/platform/core/resourceReferences.ts';
 
 export class SettingsError extends Error {
   constructor(message, status = 400) { super(message); this.status = status; }
@@ -13,13 +15,11 @@ export class SettingsError extends Error {
 
 // Read current configuration on each request; imported config can be stale until Vite restarts.
 export function readSettings(root, contributors) {
-  const file = path.join(root, 'studio.config.ts');
-  const source = fs.readFileSync(file, 'utf8');
-  const declaration = readDeclaration(source);
-  if ('error' in declaration) throw new SettingsError(`Open studio.config.ts in your editor: ${declaration.error}`);
-  const config = declaration.value;
-  const version = createHash('sha256').update(source).update(JSON.stringify(contributors)).digest('hex');
-  return { config, version, source, file };
+  let current;
+  try { current = readPersistedStudioConfig(root); }
+  catch (error) { throw new SettingsError(`Open the source declarations in your editor: ${error.message}`); }
+  const version = createHash('sha256').update(current.source).update(JSON.stringify(contributors)).update(JSON.stringify(current.directory)).digest('hex');
+  return { ...current, version };
 }
 
 // One plan for the CLI and browser: validate, preserve implicit assignments, and sync agent routes.
@@ -50,9 +50,11 @@ export function planSettings({ root, modules, systems, platformId, contributors,
   const changed = Object.fromEntries(Object.entries(changes).filter(([key]) => key !== 'modules' && JSON.stringify(next[key]) !== JSON.stringify(current.config[key])));
   const moduleChanges = Object.fromEntries(Object.entries(changes.modules ?? {}).filter(([id, on]) => current.config.modules?.[id] !== on));
   if (Object.keys(moduleChanges).length) changed.modules = moduleChanges;
-  const source = Object.keys(changed).length ? editStudioConfig(current.source, changed) : current.source;
+  const persisted = persistStudioReferences(next, current.directory);
+  const serializedChanges = Object.fromEntries(Object.entries(changed).map(([key, value]) => [key, key === 'modules' ? value : persisted[key]]));
+  const source = Object.keys(changed).length ? editStudioConfig(current.source, serializedChanges) : current.source;
   const pins = next.defaultSystem !== current.config.defaultSystem
-    ? pinImplicitSystems(root, current.config.defaultSystem, modules) : [];
+    ? pinImplicitSystems(root, current.persisted.defaultSystem, modules) : [];
   const edits = [...pins, { file: current.file, before: current.source, after: source }];
   const agents = path.join(root, 'AGENTS.md');
   if (fs.existsSync(agents)) {

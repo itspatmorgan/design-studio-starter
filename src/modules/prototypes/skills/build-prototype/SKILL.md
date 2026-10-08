@@ -27,6 +27,8 @@ Follow the prototype contract's [dependency boundaries](../../README.md#dependen
 
 Keep experiments local until an authorized shared change moves them into the system.
 
+After writing new prototype artifact files directly, run `pnpm studio identify src/prototypes/<key>/<prototype> --json` to preview missing identity assignments, then `--yes` to apply. Preserve existing identity metadata when editing. System context and helpers do not need artifact IDs.
+
 ## Verify and save
 
 Inspect changed views, relevant interactions, and pop-ups in supported color modes. Repair rendering errors. Follow [working context](../../../../platform/context/working-in-studio.md) for build, asset, commit, and sharing requirements.

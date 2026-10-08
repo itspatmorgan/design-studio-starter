@@ -1,5 +1,6 @@
 import { cssProblems } from '../lib/css-scope.js';
 import { prototypeAssignment } from '../lib/prototype-assignment.js';
+import { prototypeSourceForIdentity } from '../lib/resource-directory.js';
 // Usage: node scripts/build/build-manifest.js [--strict] [--deploy]
 //   --strict  exits 1 if any meta.json is invalid
 //   --deploy  leaves archived prototypes and views out (src/platform/core/archive.ts), for the deployed site
@@ -157,8 +158,12 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
   // Two artifacts can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
   errors += checkArtifacts(dir, artifacts, out, { contributor: contributorKey, id, ...(studioId && { studioId }) });
   // "system" (optional) is the design system it builds with, one of the folders in src/systems/.
-  const { system, rebuild, problems: assignmentProblems } = prototypeAssignment(meta, DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS);
+  const { system, systemId, rebuild, problems: assignmentProblems } = prototypeAssignment(meta, DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS);
   if (assignmentProblems.length) return skip(assignmentProblems[0]);
+  if (rebuild) {
+    try { rebuild.sourcePath = prototypeSourceForIdentity(ROOT, rebuild.source); }
+    catch (error) { return skip(error.message); }
+  }
   // "status" (optional) is 'active' (the default) or 'archived'.
   let status = null;
   if (meta.status !== undefined) {
@@ -171,7 +176,7 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
       id, contributorKey, ...(studioId && { studioId }), ...(meta.ownerId && { ownerId: meta.ownerId }), title: meta.title, ...(SECTION_KEYS.has(contributorKey) && { description: meta.description ?? '' }),
       contributor: maintained ? maintainers.map((k) => contributors[k]?.name ?? k).join(', ') : contributors[contributorKey]?.name ?? '',
       ...(!maintained && typeof contributors[contributorKey]?.github === 'string' && contributors[contributorKey].github.trim() && { contributorGithub: contributors[contributorKey].github.trim() }),
-      created: meta.created ?? null, system, artifacts,
+      created: meta.created ?? null, system, systemId, artifacts,
       ...(meta.systemMissing && { systemMissing: meta.systemMissing }),
       ...(rebuild !== undefined && { rebuild }),
       ...(maintained && { maintainers }),
@@ -257,7 +262,11 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   const sections = Object.fromEntries(PROTOTYPE_SECTIONS.map((s) => [s.key, []]));
   let errors = 0;
   const identityAudit = auditResourceIdentities(ROOT, INSTALLED_FILE_TYPES);
+  for (const missing of identityAudit.missing) { out.error(`[identity] ${missing}: permanent identity is missing. Run pnpm studio identify <prototype-folder> --yes for newly authored files, or review a full identity migration.`); errors++; }
   for (const problem of identityAudit.problems) { out.error(`[identity] ${problem}`); errors++; }
+  for (const resource of identityAudit.resources.filter(resource => resource.kind === 'prototype' && resource.studioId)) {
+    if (JSON.parse(fs.readFileSync(path.join(ROOT, resource.path), 'utf8')).ownerId === undefined) { out.error(`[identity] ${resource.path}: declare the permanent contributor ownerId. Run pnpm studio identify ${path.posix.dirname(resource.path)} --yes.`); errors++; }
+  }
   const people = contributorsSignature();
   if (people !== cachedFor) { cache.clear(); cachedFor = people; }
   const seen = new Set();

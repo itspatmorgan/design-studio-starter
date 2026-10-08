@@ -2,7 +2,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import CONFIG from '../../../../studio.config.ts';
+import { CONFIG } from '../../../../scripts/lib/modules.js';
+import { readPersistedStudioConfig } from '../../../../scripts/lib/persisted-studio-config.js';
 import { readDeclaration } from '../../../platform/core/declarations.ts';
 import { platformSourceOf, sourceOf } from '../sources.ts';
 import { platformSystemId, systemProblems, themeClassProblems } from '../spec.ts';
@@ -16,9 +17,7 @@ export let DEFAULT_SYSTEM;
 export let SYSTEM_SOURCES = {};
 export let SYSTEM_IDS = [];
 export function refreshSystems() {
-  const config = readDeclaration(fs.readFileSync(path.join(ROOT, 'studio.config.ts'), 'utf8'));
-  if ('error' in config) throw new Error(config.error);
-  Object.assign(CONFIG, config.value);
+  Object.assign(CONFIG, readPersistedStudioConfig(ROOT).config);
   const ids = fs.readdirSync(DIR, { withFileTypes: true }).filter(entry => entry.isDirectory() && fs.existsSync(path.join(DIR, entry.name, 'system.ts'))).map(entry => entry.name).sort();
   SYSTEM_SPECS = Object.fromEntries(ids.map(id => {
     const declaration = readDeclaration(fs.readFileSync(path.join(DIR, id, 'system.ts'), 'utf8'));

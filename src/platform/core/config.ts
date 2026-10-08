@@ -8,18 +8,18 @@ export type StudioConfig = {
   usage: 'personal' | 'team';
   // Deprecated: accepted for older configs, ignored by Welcome. Progress belongs to contributor profiles.
   welcomeDismissed?: boolean;
-  // Local settings administrators. Team studios require at least one registered key.
+  // Persisted Admin contributor IDs. Resolved runtime projections contain source keys.
   admins?: readonly string[];
-  // Explicit contributor assignments for every prototype system. Studio has no assignment.
+  // Persisted system-ID -> contributor-ID grants; runtime projections use source keys.
   systemMaintainers: Record<string, readonly string[]>;
   // One line on the front page of the deployed site, under the name, that tells a visitor what this is: "Our team's
   // prototypes and design systems." Left out, there's no line.
   tagline?: string;
   // Every installed module is declared true or false. Disabling retains its files.
   modules: Record<string, boolean>;
-  // Every installed system, including Studio. A folder alone does not register a system.
+  // Source-folder keys of every installed system, including Studio. Discovery is not registration.
   systems: readonly string[];
-  // Required registered prototype system used when a prototype has no local system choice.
+  // Persisted default system ID; resolved runtime projection contains its source key.
   defaultSystem: string;
 };
 

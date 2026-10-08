@@ -1,6 +1,6 @@
 import type { SystemSpec } from '../../modules/systems/spec.ts';
 
-// __LABEL__: a design system prototypes can build with. A prototype picks it with "system": "__ID__" in its meta.json.
+// __LABEL__: select source key __ID__ in creation controls. Prototype metadata stores this installation’s permanent studioId.
 export default {
   status: 'active',
   role: 'prototype',

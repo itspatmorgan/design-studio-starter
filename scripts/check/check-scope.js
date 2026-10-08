@@ -6,8 +6,7 @@ import { changedFiles, git } from './changed-files.js';
 import { resolveContributor, keyForGithub } from '../cli/resolve-contributor.js';
 import { studioRole, canPerform, sameSystemIdentity, parseMaintainers } from '../../src/platform/core/permissions.ts';
 import { readDeclaration } from '../../src/platform/core/modules/pack.ts';
-import { MODULES } from '../lib/modules.js';
-import { INSTALLED_FILE_TYPES } from '../lib/file-types.js';
+import { INSTALLED_FILE_TYPES } from '../lib/installed-file-types.js';
 import { gitResourceIdentities } from '../lib/git-resource-identities.js';
 import { resourceIdentityChangeProblems } from '../lib/resource-identity-changes.js';
 import { resourceDirectory, resolveStudioReferences } from '../../src/platform/core/resourceReferences.ts';
@@ -67,7 +66,14 @@ const prefix = key ? `src/prototypes/${key}/` : null;
 // listed in its meta.json. The list that counts is the one before the change, so a change can't make its
 // author a maintainer of someone else's. An item that is new in the change (a prototype just published)
 // has no earlier list, so its own is used.
-const MAINTAINED = Object.values(MODULES).filter((m) => m?.section?.policy === 'maintainers' && m.section.items === 'prototypes' && m.section.folder).map((m) => m.section.folder);
+const beforeModules = [];
+try {
+  for (const file of git('ls-tree', '-r', '--name-only', baseRef ?? 'HEAD', '--', 'src/modules').split('\n').filter(file => /^src\/modules\/[^/]+\/module\.ts$/.test(file))) {
+    const declaration = readDeclaration(git('show', `${baseRef ?? 'HEAD'}:${file}`));
+    if (!('error' in declaration)) beforeModules.push(declaration.value);
+  }
+} catch { /* No trusted declarations grant no section authority. */ }
+const MAINTAINED = beforeModules.filter((m) => m?.section?.policy === 'maintainers' && m.section.items === 'prototypes' && m.section.folder).map((m) => m.section.folder);
 function toolMeta(ref, folder, id) {
   const file = `${folder}/${id}/meta.json`;
   try {
