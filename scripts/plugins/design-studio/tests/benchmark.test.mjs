@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
-import { recordEvent, readEvents, reportEvents } from './benchmark.mjs';
+import { recordEvent, readEvents, reportEvents } from '../benchmarks/benchmark.mjs';
 test('reports wall-clock setup, independent deployment, and complete user journey', t => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-benchmark-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));

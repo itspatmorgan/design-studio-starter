@@ -18,7 +18,7 @@ if (args[0] === '--changed') {
   files = plan.tests;
 } else {
   if (args.some(arg => arg !== '--release')) throw new Error('Usage: test.js [--release] | --changed <base> <head> [--plan-only] [--full] [--merge-base]');
-  files = discoverTests().filter(file => args.includes('--release') || (!file.endsWith('.integration.test.js') && !file.startsWith('plugins/')));
+  files = discoverTests().filter(file => args.includes('--release') || (!file.endsWith('.integration.test.js') && !file.startsWith('scripts/plugins/')));
   if (!files.length) throw new Error('No retained regression tests found.');
 }
 if (!files.length) { console.log('No regression groups selected. Production and scope checks remain required.'); process.exit(0); }

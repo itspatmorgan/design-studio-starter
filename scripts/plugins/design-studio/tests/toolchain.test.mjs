@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
-import { findWorkingGit, gitEnvironment, configureLocalGit, verifyPinnedTools } from './toolchain.mjs';
+import { findWorkingGit, gitEnvironment, configureLocalGit, verifyPinnedTools } from '../../../../plugins/design-studio/scripts/toolchain.mjs';
 function fixture(t) {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'studio-tools-')));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));

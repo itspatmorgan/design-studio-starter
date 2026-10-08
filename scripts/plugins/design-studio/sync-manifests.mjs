@@ -2,12 +2,12 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const root = new URL('../', import.meta.url);
+const root = new URL('../../../plugins/design-studio/', import.meta.url);
 export function manifestOutputs(portable) {
   const { $schema, extensions, ...identity } = portable;
   const { interface: ui, ...openai } = extensions['com.openai'];
-  const marketplace = { name: 'design-studio-experiment', owner: identity.author,
-    metadata: { description: 'Experimental Design Studio setup for local coding agents.' },
+  const marketplace = { name: identity.name, owner: identity.author,
+    metadata: { description: 'Design Studio beta setup for local coding agents.' },
     plugins: [{ name: identity.name, source: './plugins/design-studio', description: identity.description }] };
   return new Map([
     ['.codex-plugin/plugin.json', { ...identity, skills: './skills/', interface: ui, extensions: { 'com.openai': openai } }],
@@ -17,7 +17,7 @@ export function manifestOutputs(portable) {
     ['../../.cursor-plugin/marketplace.json', marketplace],
     ['../../.agents/plugins/marketplace.json', {
       name: marketplace.name,
-      interface: { displayName: 'Design Studio Experiment' },
+      interface: { displayName: ui.displayName },
       plugins: [{ name: identity.name, source: { source: 'local', path: marketplace.plugins[0].source },
         policy: { installation: 'AVAILABLE', authentication: 'ON_INSTALL' }, category: ui.category }],
     }],

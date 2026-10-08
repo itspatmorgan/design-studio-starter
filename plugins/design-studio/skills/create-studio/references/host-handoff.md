@@ -1,5 +1,15 @@
 # Host handoff
 
+## Audit execution and preserve the confirmed destination
+
+After plugin activation, audit command execution and filesystem access using [Environment audit and installation location](local-setup.md). An editor running on the person's desktop may still be connected to another executor. Explain the observed environment and ask the user to confirm or modify the Studio location. A launch command, repository connection, or preview does not establish where files live.
+
+- **Codex desktop:** inspect the chat's executor and filesystem context. If the chosen folder requires another local or connected host, help the person select it.
+- **Cursor:** inspect whether the Agent window is local, remote, SSH, or container-backed. Report where its filesystem is located. Help select another window when the confirmed folder is unavailable in the current one.
+- **Claude Desktop:** inspect the **Code** session's environment and selected folder. For the native desktop journey, use **Local**; do not assume all sessions use it.
+
+Keep the audit findings, user-confirmed absolute destination, user response, and setup-plan path in any continuation handoff. After switching sessions, rerun preflight and recheck the plan. If the environment changed, report the new findings and ask the user to confirm or modify the location.
+
 ## Codex desktop
 
 After verifying the studio folder, provide a Markdown link labeled **Continue in your studio**:
@@ -41,6 +51,6 @@ Use this only when the person explicitly chooses the CLI. Start `claude` in a pe
 
 ## Verify each handoff
 
-A successful launch command proves only that a launch was requested. Verify the folder from the host UI, the new chat's reported working directory, or the person's observation. Claude Code and Cursor handoff journeys still need live testing. Never send them Codex links.
+A successful launch command proves only that a launch was requested. Verify the folder from the host UI, the new chat's reported working directory, or the person's observation. Never send them Codex links.
 
 References: [Claude Desktop](https://code.claude.com/docs/en/desktop), [Claude Code CLI](https://code.claude.com/docs/en/cli-reference), [Claude project instructions](https://code.claude.com/docs/en/memory). Check the installed Cursor CLI's help before using its folder-opening flags.

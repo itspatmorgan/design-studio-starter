@@ -9,7 +9,7 @@ Read the [contributor scope](../../context/contributor-scope.md). Inspect config
 
 Preserve shared configuration, systems, samples, and system content. Install missing pinned tools and dependencies as needed.
 
-If configure-studio calls this skill, use **registration-only mode**. Do not configure the studio, create a prototype, or commit partway through initialization.
+When called by configure-studio or an installation workflow, use **registration-only mode**. Perform registration and return to the caller without configuring, creating a prototype, launching the app, or committing partway through setup.
 
 ## Register
 
@@ -25,7 +25,7 @@ The command owns registration files and collision handling. Inspect its help ins
 
 ## Registration-only completion
 
-Return the contributor key and unresolved identity or access issues to configure-studio. The caller owns final build, prototype verification, and commit.
+Return the contributor key and unresolved identity or access issues to the caller. The caller owns launch, final verification, and commit.
 
 ## Standalone completion
 

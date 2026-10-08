@@ -14,7 +14,7 @@ Include instruction discovery, agent work, permission/tool latency, recoveries, 
 
 Capture request-start and setup-start with the host clock before repository retrieval. After the helper is available, record those captured ISO times using:
 
-`node <plugin>/scripts/benchmark.mjs mark <absolute-log.jsonl> request-start <captured-ISO-time>`
+`node <source-checkout>/scripts/plugins/design-studio/benchmarks/benchmark.mjs mark <absolute-log.jsonl> request-start <captured-ISO-time>`
 
 Record setup-start the same way. Use one event log per run, outside the source being published. The helper rejects duplicate events; omitted events remain unknown rather than zero. Invoke the helper with these events at actual boundaries:
 
@@ -25,7 +25,7 @@ Record setup-start the same way. Use one event log per run, outside the source b
 - **publish-end**: publishing completion response delivery, including its verification and handoff. In a combined journey this may be the same final boundary as end.
 - **end**: final response delivery. Record immediately before sending, then correct the reported elapsed time from the host transcript timestamp if available; don't claim that the pre-send mark measures response delivery exactly.
 
-`node <plugin>/scripts/benchmark.mjs report <absolute-log.jsonl>` returns setup, deployment through its completion response, deployment-to-public, end-to-end, request-to-public, and time after public readiness. The same log supports a standalone publishing run: request-start/publish-start, public-ready, publish-end, and end; setup stays unknown. Record publish-end and end only when their required completion conditions are met. An earlier handoff-ready event is valid when workspace handoff precedes publishing.
+`node <source-checkout>/scripts/plugins/design-studio/benchmarks/benchmark.mjs report <absolute-log.jsonl>` returns setup, deployment through its completion response, deployment-to-public, end-to-end, request-to-public, and time after public readiness. The same log supports a standalone publishing run: request-start/publish-start, public-ready, publish-end, and end; setup stays unknown. Record publish-end and end only when their required completion conditions are met. An earlier handoff-ready event is valid when workspace handoff precedes publishing.
 
 During a combined run, register Sites while dependencies prepare when the host permits it. Label setup/publishing phase times as overlapping when work overlaps; don't add them to infer the end-to-end result. A publish phase from a combined run with prior registration is different from a standalone publication request and must be labeled accordingly. Run the prepared-studio publication benchmark separately when comparing that path.
 

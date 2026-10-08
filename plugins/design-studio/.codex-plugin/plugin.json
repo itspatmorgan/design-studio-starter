@@ -1,7 +1,7 @@
 {
   "name": "design-studio",
-  "version": "0.1.0-experiment.16",
-  "description": "Create and refine prototypes with Design Studio. Setup is handled for you, and all code stays in a visible folder on your computer.",
+  "version": "0.2.0-beta.1",
+  "description": "An open-source prototype sandbox for designers and product managers who build. Work with Codex to turn ideas into interactive prototypes using your components, context, and design principles.",
   "author": {
     "name": "Patrick Morgan",
     "url": "https://itspatmorgan.com"
@@ -12,8 +12,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Design Studio",
-    "shortDescription": "Your ideas, made tangible.",
-    "longDescription": "A local design environment for designers and product managers. Create prototypes, sketch on canvases, and keep product context alongside your work. ChatGPT handles setup and technical steps. You own every file. Optionally publish a public review link with ChatGPT Sites when its tools are available. Requires a supported local code harness; GitHub is optional. Experimental package.",
+    "shortDescription": "Design with intent. Build with an agent.",
+    "longDescription": "Design Studio is an open-source prototype sandbox for designers and product managers who build. Codex handles setup and helps you turn ideas into interactive prototypes, connect screens with diagrams and canvases, and capture the thinking behind your work.\n\nStart with included examples, curate a system around your idea, or bring your team’s React components and theme. Give Codex the context, skills, and design principles to build work that feels like yours.\n\nYour code and source files stay in a folder you choose. Customize the studio, share the code with collaborators, and publish interactive prototypes for your team to explore. With ChatGPT Sites available, Codex can publish a viewing link while editing stays local.\n\nCurrently in beta.",
     "developerName": "Patrick Morgan",
     "category": "Developer Tools",
     "capabilities": [

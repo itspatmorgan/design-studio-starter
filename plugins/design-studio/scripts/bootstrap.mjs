@@ -6,6 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { packageStarter } from './starter-package.mjs';
 import { findWorkingGit, gitEnvironment, verifyPinnedTools, configureLocalGit } from './toolchain.mjs';
+import { inspectEnvironment, environmentIdentity, suggestedParent, validateConfirmation, validateSetupPlan, readSetupPlan } from './setup-environment.mjs';
 
 export const SOURCE = 'https://github.com/itspatmorgan/design-studio-starter.git';
 export const REVISION = '599da74eee43aba5e1c4a97abad8dc87140f3989';
@@ -40,6 +41,30 @@ export function destinationPath(value) {
   return destination;
 }
 
+// Validate the nearest existing ancestor before creating even a parent folder.
+export function validateDestination(value) {
+  const destination = destinationPath(value);
+  let ancestor = destination;
+  while (true) {
+    try {
+      const stat = fs.lstatSync(ancestor);
+      if (!stat.isDirectory() || stat.isSymbolicLink() || fs.realpathSync(ancestor) !== ancestor) {
+        throw new Error('Choose a folder whose parents are ordinary directories, not links. Existing files were preserved.');
+      }
+      fs.accessSync(ancestor, fs.constants.W_OK | fs.constants.X_OK);
+      break;
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+      ancestor = path.dirname(ancestor);
+    }
+  }
+  if (fs.existsSync(destination)) {
+    try { inspectStudio(destination); }
+    catch (error) { throw new Error(`The destination is occupied and is not a resumable plugin-created studio. Existing files were preserved. Use open-studio for an existing source checkout. ${error.message}`); }
+  }
+  return destination;
+}
+
 function verifyFiles(destination) {
   if (fs.lstatSync(destination).isSymbolicLink() || !fs.statSync(destination).isDirectory()) throw new Error('The studio folder must be an ordinary directory.');
   for (const relative of REQUIRED) {
@@ -68,8 +93,8 @@ export function studioFolderName(name) {
 }
 
 // Selection is read-only; createStudio reserves the chosen folder exclusively.
-export function chooseStudioLocation({ parent = path.join(os.homedir(), 'Developer'), name: baseName = 'Design Studio' } = {}) {
-  const folder = destinationPath(parent);
+export function chooseStudioLocation({ parent, name: baseName = 'Design Studio' } = {}) {
+  const folder = destinationPath(parent ?? suggestedParent(process.platform, os.homedir()));
   const baseFolder = studioFolderName(baseName);
   for (let number = 1; ; number += 1) {
     const name = number === 1 ? baseName : `${baseName} ${number}`;
@@ -83,8 +108,52 @@ export function chooseStudioLocation({ parent = path.join(os.homedir(), 'Develop
   }
 }
 
-export function createStudio({ destination: value, name = 'Design Studio', source = SOURCE, revision = REVISION }) {
-  const destination = destinationPath(value);
+export function auditStudio(options = {}, environment = inspectEnvironment()) {
+  if (options.destination && options.parent) throw new Error('Choose a destination or a parent folder, not both.');
+  let selected;
+  let destinationCheck;
+  try {
+    selected = options.destination
+      ? { name: options.name ?? 'Design Studio', destination: destinationPath(options.destination) }
+      : chooseStudioLocation({ parent: options.parent ?? environment.suggestedParent, name: options.name });
+    validateDestination(selected.destination);
+    if (fs.existsSync(selected.destination) && options.name === undefined) selected.name = inspectStudio(selected.destination).name;
+    destinationCheck = { available: true };
+  } catch (error) {
+    destinationCheck = { available: false, reason: error.message, code: error.code ?? null };
+  }
+  return { environment, recommendation: selected ?? null, destinationCheck };
+}
+
+function saveSetupPlan(plan, output) {
+  if (output && !path.isAbsolute(output)) throw new Error('Choose an absolute --output path for the setup plan outside the studio.');
+  const file = output ? path.resolve(output) : path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'design-studio-setup-')), 'plan.json');
+  if (file === plan.destination || file.startsWith(plan.destination + path.sep)) throw new Error('Save setup tooling outside the studio destination.');
+  fs.writeFileSync(file, JSON.stringify(plan, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
+  return file;
+}
+
+export function planStudio(options, environment = inspectEnvironment()) {
+  validateConfirmation(options.confirmation);
+  if (!options.destination) throw new Error('Provide the exact user-confirmed destination from the audit and folder recommendation.');
+  const selected = { destination: options.destination, name: options.name ?? 'Design Studio' };
+  selected.name = selected.name.trim();
+  const destination = validateDestination(selected.destination);
+  studioFolderName(selected.name);
+  if (fs.existsSync(destination) && inspectStudio(destination).name !== selected.name) {
+    throw new Error('For interrupted setup, use the existing studio name and destination. Existing settings were preserved.');
+  }
+  return { schema: 1, kind: 'design-studio-setup', ...selected, destination,
+    environment: environmentIdentity(environment), confirmation: options.confirmation.trim() };
+}
+
+export function createStudio({ destination: value, name = 'Design Studio', source = SOURCE, revision = REVISION, plan }) {
+  // Absolute local sources are maintainer fixtures only, never an agent setup fallback.
+  if (source === SOURCE || plan) {
+    validateSetupPlan(plan);
+    if (destinationPath(value) !== plan.destination || name !== plan.name) throw new Error('The destination or name differs from the setup plan. Use the saved plan unchanged.');
+  }
+  const destination = validateDestination(value);
   if (!name.trim() || name.length > 120) throw new Error('Choose a studio name between 1 and 120 characters.');
   if (!/^[0-9a-f]{40}$/.test(revision)) throw new Error('The starter revision must be a complete commit hash.');
   if (source !== SOURCE && !path.isAbsolute(source)) throw new Error('Test sources must be absolute local repository paths.');
@@ -138,8 +207,12 @@ export function ensureClaudeEntry(destination) {
   catch (error) { if (error.code !== 'EEXIST') throw error; }
 }
 
-export function prepareStudio(value) {
-  const studio = inspectStudio(value);
+export function prepareStudio(value, plan) {
+  const studio = inspectStudio(validateDestination(value));
+  if (plan || (!studio.prepared && studio.source === SOURCE)) {
+    validateSetupPlan(plan);
+    if (studio.destination !== plan.destination || studio.name !== plan.name) throw new Error('Preparation must use the planned studio folder and name.');
+  }
   checkInitialConfiguration(studio);
   run('mise', ['--version']);
   if (configureLocalGit(studio.destination, selectedGit)) {
@@ -179,35 +252,77 @@ export function startStudio(value, port = '5173') {
 function main() {
   const [command, ...args] = process.argv.slice(2);
   if (!command || command === '--help') {
-    console.log('Usage: node bootstrap.mjs choose [--parent <absolute-folder>] [--name <studio-name>]\n       node bootstrap.mjs create|setup|inspect|prepare|start --destination <absolute-folder> [--name <name>] [--port <port>]\nchoose selects design-studio, design-studio-2, etc. in ~/Developer without creating files. Display names retain spaces.\nMaintainer fixtures only: create --source <absolute-local-repo> --revision <40-character-commit>.\nexec --destination <folder> -- <command> [args...] runs follow-up commands with verified Git and pinned tools.\nsetup combines create and prepare.\nGit and Node are prerequisites. prepare/start also require mise. No GitHub account is needed.');
+    console.log(`Usage: node bootstrap.mjs audit [--destination <folder> | --parent <folder>] [--name <name>]
+       node bootstrap.mjs preflight
+       node bootstrap.mjs choose [--parent <absolute-folder>] [--name <studio-name>]
+       node bootstrap.mjs plan --destination <confirmed-folder> --confirmation <user-response> [--name <name>] [--output <absolute-json-file>]
+       node bootstrap.mjs create|setup --plan <absolute-json-file>
+       node bootstrap.mjs prepare --destination <folder> [--plan <absolute-json-file>]
+       node bootstrap.mjs inspect|start --destination <folder> [--port <port>]
+       node bootstrap.mjs exec --destination <folder> -- <command> [args...]
+audit combines read-only environment inspection, folder recommendation, and destination validation. Share its findings and exact destination with the user for confirmation or modification.
+Suggested parents are ~/Developer on macOS and ~/Projects on Windows/Linux. They are suggestions, never silent installation defaults.
+plan records the user's response and validates the confirmed destination without creating a studio. It returns an automatically saved planFile; --output overrides that location.
+setup combines creation and preparation from one checked plan. Interrupted first-run prepare requires that plan too.
+Maintainer fixtures only: create --destination <folder> --source <absolute-local-repo> --revision <40-character-commit> [--name <name>].
+Git and Node are prerequisites. prepare/start also require mise. No GitHub account is needed.`);
     return;
   }
-  if (!['choose', 'create', 'setup', 'inspect', 'prepare', 'start', 'exec'].includes(command)) throw new Error(`Unknown command: ${command}`);
+  const allowedOptions = {
+    audit: ['--destination', '--parent', '--name'], preflight: [], choose: ['--parent', '--name'],
+    plan: ['--destination', '--name', '--confirmation', '--output'],
+    create: ['--plan', '--destination', '--name', '--source', '--revision'], setup: ['--plan'],
+    inspect: ['--destination'], prepare: ['--destination', '--plan'], start: ['--destination', '--port'], exec: ['--destination'],
+  };
+  if (!allowedOptions[command]) throw new Error(`Unknown command: ${command}`);
   const options = {};
   const separator = command === 'exec' ? args.indexOf('--') : -1;
   const commandArgs = separator < 0 ? [] : args.splice(separator).slice(1);
   for (let i = 0; i < args.length; i += 2) {
     const key = args[i];
-    const allowed = command === 'choose' ? ['--parent', '--name'] : ['--destination', '--name', '--port', '--source', '--revision'];
+    const allowed = allowedOptions[command];
     if (!allowed.includes(key) || !args[i + 1]) throw new Error(`Invalid option: ${key}`);
     if (options[key.slice(2)] !== undefined) throw new Error(`Repeated option: ${key}`);
     options[key.slice(2)] = args[i + 1];
+  }
+  if (command === 'audit') {
+    console.log(JSON.stringify(auditStudio(options), null, 2));
+    return;
+  }
+  if (command === 'preflight') {
+    console.log(JSON.stringify(inspectEnvironment(), null, 2));
+    return;
+  }
+  if (command === 'plan') {
+    if (!options.destination) throw new Error('Provide the exact user-confirmed --destination from the audit and folder recommendation.');
+    const plan = planStudio(options);
+    console.log(JSON.stringify({ ...plan, planFile: saveSetupPlan(plan, options.output) }, null, 2));
+    return;
   }
   if (command === 'choose') {
     console.log(JSON.stringify(chooseStudioLocation(options), null, 2));
     return;
   }
   if (command === 'exec') return execStudio(options.destination, commandArgs);
+  let plan;
+  if (options.plan) {
+    plan = readSetupPlan(options.plan);
+    if (command === 'create' && Object.keys(options).some(key => key !== 'plan')) throw new Error('Use --plan alone for creation; the plan owns the destination and name.');
+  }
+  if (command === 'create' || command === 'setup') {
+    if (plan) Object.assign(options, { destination: plan.destination, name: plan.name, plan });
+    else if (command === 'setup' || !options.source || options.source === SOURCE) throw new Error('A setup plan is required before creation. Run audit, confirm the folder, then plan.');
+  }
   if (command === 'setup') {
     createStudio(options);
-    console.log(JSON.stringify(prepareStudio(options.destination), null, 2));
+    console.log(JSON.stringify(prepareStudio(options.destination, plan), null, 2));
     return;
   }
   if (command === 'start') return startStudio(options.destination, options.port);
-  const result = command === 'create' ? createStudio(options) : command === 'prepare' ? prepareStudio(options.destination) : inspectStudio(options.destination);
+  const result = command === 'create' ? createStudio(options) : command === 'prepare' ? prepareStudio(options.destination, plan) : inspectStudio(options.destination);
   console.log(JSON.stringify(result, null, 2));
 }
 
-if (process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url) {
+if (process.argv[1] && pathToFileURL(fs.realpathSync(process.argv[1])).href === import.meta.url) {
   try { main(); } catch (error) { console.error(`Could not complete studio setup: ${error.message}`); process.exitCode = 1; }
 }
