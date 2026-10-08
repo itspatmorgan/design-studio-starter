@@ -35,18 +35,33 @@ Each person works in their own local copy. Joining should preserve the team's sy
 
 ## How do we share changes?
 
-Use your team's Git workflow. **Git** records versions and exchanges file changes; your agent can handle its commands.
+For a team using GitHub, we recommend protecting **main**, the shared branch, and requiring pull requests instead of direct pushes. Your repository owner configures this on GitHub, including required checks and reviews. Studio does not turn these settings on automatically.
 
-| Step | Effect |
-| --- | --- |
-| Save | Updates files in your local copy. |
-| Commit | Records a version locally. |
-| Push | Sends committed changes to the shared repository. |
-| Pull | Brings shared changes into your local copy. |
+Your agent can handle the Git work:
 
-Agree on who owns shared system changes and how they are reviewed. Let teammates know before changing foundations their prototypes use. If two people change the same files, the agent may need to reconcile conflicting edits.
+1. **Work on a branch.** A branch keeps your changes separate from main. The agent saves files, commits versions, and pushes the branch to GitHub.
+2. **Open a pull request.** This proposes bringing your branch into main. Ask the agent to summarize the changes and check results when you are ready to share them for review.
+3. **Review at your own pace.** Leave the request open, or mark it as a draft, while discussing the work. Merge it yourself when ready, or enable [GitHub auto-merge](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/automatically-merging-a-pull-request) if your repository supports it. Auto-merge waits for required checks and reviews.
+4. **Merge and update.** Merging brings the work into main. Teammates pull the changes into their local copies. If publishing is configured to run after a merge, the site updates when deployment succeeds. Otherwise, publishing is a separate step.
 
-Contributor assignments and repository access are separate. Ask your Admin or engineering partner to configure the team's review and repository protections.
+```mermaid
+flowchart LR
+  accTitle: Team changes move through a branch and pull request
+  accDescr: Work stays on a branch while a pull request is reviewed and checked. Merging updates main. A configured deployment workflow can then publish the shared site.
+  branch[Your branch] --> pr[Pull request]
+  pr -->|Merge| main[main]
+  main -->|Publish if configured| site[Viewing site]
+```
+
+Saving alone updates your local files. A commit records a local version; pushing shares it through GitHub. Neither necessarily publishes the site.
+
+## How do contributor scopes fit this workflow?
+
+In team mode, Studio associates prototypes with contributor folders and checks changes against ownership, system assignments, and Admin access. The supplied GitHub workflow also checks assets and runs the build.
+
+Pull requests can propose changes outside someone's direct editing scope. Scope checks flag those changes for the appropriate maintainer to review. Passing checks does not replace that review; GitHub's required checks and review rules enforce your team's merge policy.
+
+Let teammates know before changing shared systems their prototypes use. If two branches change the same files, ask the agent to reconcile the conflict before merging. See [Checks and fixes](/documentation/context/platform.core/context/checks) for technical details.
 
 ## How do we include reviewers or engineers?
 

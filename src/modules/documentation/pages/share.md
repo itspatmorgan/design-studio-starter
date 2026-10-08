@@ -42,7 +42,7 @@ For other hosts, ask your agent to assess what is needed with whoever manages ho
 
 After publishing, verify the site and copy links from it. A **localhost** link points to the viewer's own computer and will not share your local studio with remote reviewers.
 
-Local edits do not appear online automatically. Publish another build through your configured hosting workflow to update the site.
+Local edits do not appear online automatically. Publish another build through your configured hosting workflow to update the site. Teams can configure publication after changes merge into main; see the [branch and pull-request workflow](/documentation/manual/team#how-do-we-share-changes).
 
 ## What becomes visible?
 
