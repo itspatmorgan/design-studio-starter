@@ -4,6 +4,8 @@ Choose one of four paths: Codex plugin, Claude Code plugin, Cursor plugin, or di
 
 The first release is planned around local and repository plugin installation. You do not need to wait for a listing in a reviewed public directory. The package is currently experimental; direct-source setup and the newly packaged starter still need native journey verification. Organization policies may limit plugin installation. If your tool cannot load a plugin, use the direct-source path below.
 
+The current pilot targets macOS. Your agent checks where it is running before installation and shows the actual folder where your files will be saved. If you have not chosen a location, it offers a suggestion and lets you choose another. Windows and Linux native setup remain unverified and require an explicit local location. A cloud or remote agent needs a local session to complete this setup.
+
 ## 1. Codex plugin
 
 Open a local chat in the Codex desktop app and give it this request:
@@ -34,7 +36,7 @@ Your agent guides you through any window reload, plugin activation, or new Agent
 
 No plugin is required. In any supported local desktop coding agent, give it this request:
 
-> Help me install Design Studio from https://github.com/itspatmorgan/design-studio-starter. Read its SETUP.md and follow the linked create-studio instructions. Handle downloading, setup, and opening it for me. Save my Design Studio in my user Developer folder. Preserve anything already there. Show me the running Design Studio and help me continue working in its folder.
+> Help me install Design Studio from https://github.com/itspatmorgan/design-studio-starter. Read its SETUP.md and follow the linked create-studio instructions. Handle downloading, setup, and opening it for me. Verify that setup will save files on my computer and help me choose the local folder. Preserve anything already there. Show me the running Design Studio and help me continue working in its folder.
 
 If you prefer to run setup yourself, follow [manual installation](#manual-installation) below.
 
@@ -68,7 +70,7 @@ After local changes, ask **“Publish my Studio”** to update the same Site wit
 
 Your agent may need permission to download tools or create the folder. It handles the technical steps and tells you when it needs help.
 
-Your studio and all its source files live locally on your computer. The default folder is `~/Developer/design-studio`; additional installs use `design-studio-2`, `design-studio-3`, and so on. Developer is an ordinary folder in your home folder for organizing these files. Your agent shows the actual absolute path and local preview URL. Continue working in that studio folder, not in the plugin's files. A GitHub account is optional for personal use.
+Your studio and all its source files live locally on your computer. The suggested macOS folder is `~/Developer/design-studio`; additional installs use `design-studio-2`, `design-studio-3`, and so on. Developer is an ordinary folder in your home folder for organizing these files. Your chosen location takes precedence. Your agent shows the actual absolute path and local preview URL. Continue working in that studio folder, not in the plugin's files. A GitHub account is optional for personal use.
 
 Product and Marketing are example systems. Feedback Inbox and Design Studio Marketing are example prototypes for learning. Explore them, then ask your agent to customize, replace, or remove them for your own needs. Keep Studio, the application's system.
 
@@ -80,7 +82,9 @@ To return later, open the same studio folder and ask **“Open my Design Studio.
 
 Obtain a checkout of the requested source with your supported tools and read its plugin package. Record its commit and package version. Keep setup tooling separate from the person's studio. Preserve occupied folders and existing plugin registrations. Handle missing tools through supported host mechanisms; the person should not need to enter terminal commands.
 
-When the request includes studio creation, continue with [studio setup](#for-the-agent-carrying-out-studio-setup) after installation. Plugin registration alone does not complete that request. If a restart or new chat is required, provide a continuation handoff with the source checkout, installation status, chosen studio folder, and remaining steps. Include any requested Sites publication and audience. Resume the same request and destination after activation.
+Before installing prerequisites or copying/registering any plugin, follow [Local environment and destination](plugins/design-studio/skills/create-studio/references/local-setup.md). Establish native local filesystem access through explicit host evidence or the person's confirmation and compare the observed execution OS with the confirmed computer OS. Use the checkout's read-only `preflight` when Node is available; if it is missing, establish locality before installing it. Never infer locality from the desktop app, a writable home, or absent remote signals. Guide a remote/cloud session into a native local session before installation.
+
+When the request includes studio creation, continue with [studio setup](#for-the-agent-carrying-out-studio-setup) after installation. Plugin registration alone does not complete that request. If a restart or new chat is required, provide a continuation handoff with the source checkout, installation status, confirmed computer OS, local-access evidence, chosen studio folder, saved setup-plan path if available, and remaining steps. Include any requested Sites publication and audience. Recheck execution in the new session and resume the same destination after activation.
 
 ### Codex local plugin instructions
 
@@ -118,7 +122,7 @@ Use the existing [create-studio skill](plugins/design-studio/skills/create-studi
 
 Without an installed plugin, download a temporary shallow checkout of this public repository through your supported tools. Record its full commit SHA and read the skill, helper, and references from that same checkout. This is setup tooling, not the person's studio. Inspect `plugins/design-studio/scripts/bootstrap.mjs` before execution; it pins the starter revision independently. Run the helper from that checkout and create the owned studio in the destination specified by the skill. Do not use the temporary checkout as the person's workspace. No repository duplication or remote is needed.
 
-Use the person's requested folder when supplied. Handle missing tools through supported host mechanisms and their official sources. Honor permission prompts; report an unavailable local execution capability. Preserve existing studios and use open-studio for them. Complete the preview and workspace handoff before declaring setup finished.
+Follow the linked local setup procedure to establish locality, select the folder, and save a checked setup plan. Use `setup --plan <absolute-plan-json>`; creation cannot fall back to an unchecked home directory. Handle missing tools through supported host mechanisms and their official sources. Honor permission prompts; report an unavailable local execution capability. Preserve existing studios and use open-studio for them. Complete the preview and workspace handoff before declaring setup finished.
 
 For requested ChatGPT Sites publication, continue with the [publish-studio skill](plugins/design-studio/skills/publish-studio/SKILL.md). It owns capability checks, Site identity, audience, deployment, and verification. If Sites is unavailable, complete local setup and explain the missing capability.
 

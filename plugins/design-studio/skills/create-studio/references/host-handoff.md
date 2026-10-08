@@ -1,5 +1,15 @@
 # Host handoff
 
+## Establish local execution
+
+Before installation, establish where command execution and file writes occur using [Local environment and destination](local-setup.md). An editor running on the person's desktop may still be connected to a remote executor. The host's explicit execution context or the person's confirmation supplies evidence; a launch command, repository connection, or preview does not.
+
+- **Codex desktop:** use a local chat whose executor accesses the person's native filesystem. A cloud task or a remote host does not establish that access.
+- **Cursor:** use a native local Agent window. If the session is a Cloud Agent or a remote/SSH/container workspace, guide the person to a local window first. Do not copy the plugin into a remote account's `~/.cursor` directory.
+- **Claude Desktop:** use **Code** with **Local** selected and verify the executor reaches the native filesystem. Do not use a remote environment or worktree as the new owned studio.
+
+Keep the verified computer OS, selected absolute destination, and setup-plan path in any continuation handoff. After switching sessions, rerun preflight and recheck the plan; never carry an old environment's home path into a new session as a default.
+
 ## Codex desktop
 
 After verifying the studio folder, provide a Markdown link labeled **Continue in your studio**:
