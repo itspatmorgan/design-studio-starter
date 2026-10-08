@@ -1,3 +1,5 @@
+![Design Studio — Design with intent. Build with an agent. Connected prototype, diagram, document, and canvas cards show you and your coding agent working together.](public/images/design-studio-readme-hero.jpg)
+
 # Design Studio Starter
 
 An open-source starter kit for your own design environment. Work with a coding agent to build interactive prototypes, sketch on canvases, and keep useful context alongside your designs.
