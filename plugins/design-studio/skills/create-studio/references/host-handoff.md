@@ -1,14 +1,14 @@
 # Host handoff
 
-## Establish local execution
+## Audit execution and preserve the confirmed destination
 
-Before installation, establish where command execution and file writes occur using [Local environment and destination](local-setup.md). An editor running on the person's desktop may still be connected to a remote executor. The host's explicit execution context or the person's confirmation supplies evidence; a launch command, repository connection, or preview does not.
+After plugin activation, audit command execution and filesystem access using [Environment audit and installation location](local-setup.md). An editor running on the person's desktop may still be connected to another executor. Explain the observed environment and ask the user to confirm or modify the Studio location. A launch command, repository connection, or preview does not establish where files live.
 
-- **Codex desktop:** use a local chat whose executor accesses the person's native filesystem. A cloud task or a remote host does not establish that access.
-- **Cursor:** use a native local Agent window. If the session is a Cloud Agent or a remote/SSH/container workspace, guide the person to a local window first. Do not copy the plugin into a remote account's `~/.cursor` directory.
-- **Claude Desktop:** use **Code** with **Local** selected and verify the executor reaches the native filesystem. Do not use a remote environment or worktree as the new owned studio.
+- **Codex desktop:** inspect the chat's executor and filesystem context. If the chosen folder requires another local or connected host, help the person select it.
+- **Cursor:** inspect whether the Agent window is local, remote, SSH, or container-backed. Report where its filesystem is located. Help select another window when the confirmed folder is unavailable in the current one.
+- **Claude Desktop:** inspect the **Code** session's environment and selected folder. For the native desktop journey, use **Local**; do not assume all sessions use it.
 
-Keep the verified computer OS, selected absolute destination, and setup-plan path in any continuation handoff. After switching sessions, rerun preflight and recheck the plan; never carry an old environment's home path into a new session as a default.
+Keep the audit findings, user-confirmed absolute destination, user response, and setup-plan path in any continuation handoff. After switching sessions, rerun preflight and recheck the plan. If the environment changed, report the new findings and ask the user to confirm or modify the location.
 
 ## Codex desktop
 

@@ -1,61 +1,50 @@
-# Local environment and destination
+# Environment audit and installation location
 
-Use this procedure before installing prerequisites or copying/registering the plugin, and before creating a studio. It applies to plugin and direct-source setup.
+After plugin activation, run this procedure before installing Studio. Direct-source setup uses the same helper and procedure. Plugin installation and Studio installation are separate stages.
 
-## Establish where files will be saved
+## Audit the current environment
 
-Read the host's execution context. A desktop editor can execute commands in a cloud VM, SSH session, container, or WSL. A preview, writable home directory, username, or OS does not prove that files are on the person's computer. Do not infer locality from missing remote indicators.
-
-Use explicit host evidence that commands and file writes reach the person's native local filesystem. Record the evidence in plain language. The person's OS can come from that same host context or their statement. A GitHub repository connection does not establish local execution.
-
-If the host does not establish this, ask one focused question: “Are you using a Mac, Windows, or Linux computer, and is this agent running locally on it?” Explain that this determines where their studio files will be saved. Do not repeat the question when the session already supplies the answer. Never invent confirmation.
-
-For known remote execution, guide the person into a native local session using [Host handoff](host-handoff.md#establish-local-execution). Do not install the plugin or tools into the remote account as a substitute. This pilot does not create studios in containers, SSH hosts, or WSL; preserve any work already there.
-
-Locate the setup helper in the downloaded tooling or installed plugin. If Node is available, run:
+Read the host's execution context and inspect available Node, Git, and mise. When Node is available, run the read-only audit:
 
 ```sh
 node <setup-tooling>/scripts/bootstrap.mjs preflight
 ```
 
-The command is read-only and requires no Git or mise. It reports execution OS, architecture, account home, hostname, username, remote/container signals, and a suggested macOS parent. It always reports local access as **unverified**: observations do not authenticate the person's computer. It reports signal names, never environment values.
+It reports the execution OS, architecture, account home, hostname, username, home write-access check, and remote/container/WSL signals. It reports signal names rather than environment values. Inspect the result and the host's filesystem context; do not infer the person's computer OS from a desktop app or a GitHub connection.
 
-If Node is missing, first establish local execution through the host or person, then obtain Node through supported host tools and official sources. Run preflight before proceeding. Do not install missing tools in an unverified environment just to run preflight.
+If Node is missing, use the host's supported inspection tools to audit the OS, account home, execution location, and permissions. Install prerequisites through supported tools and official sources in the agreed environment, then run preflight before Studio creation. Do not ask the person to run terminal commands.
 
-Resolve conflicts between the observed OS and the person's computer OS. For example, Linux execution with a person-confirmed Mac requires switching sessions. `/home/ubuntu` is a clue to investigate, not a forbidden username or proof of cloud execution.
+Determine what you can and explain what remains unknown. A writable home does not prove that files are on the person's physical computer. Remote, container, WSL, or Ubuntu indicators are facts to explain, not automatic reasons to reject installation. If the host cannot establish where files live, include that uncertainty in the location question. Ask a focused follow-up only if the response does not establish the intended destination.
 
-## Select and save the plan
+## Recommend a folder and ask the user
 
-Honor an explicit folder. On macOS, suggest `~/Developer/design-studio`; use read-only `choose` to find the next available name and absolute destination. Explain that Developer is an ordinary folder in their home directory. On other OSes, state that the native journey is unverified and ask for an explicit local folder instead of applying a macOS convention.
+Run read-only `choose` for an available name and absolute destination. It suggests a Developer folder under the observed home on macOS, or a Projects folder under the observed home on Windows and Linux. These are Studio's organizational suggestions, not guaranteed existing or system-provided folders. Prefer a person's supplied location or relevant workspace preference over the suggestion. Preserve occupied folders and use the first available numbered name for a new studio.
 
-When no folder was supplied, show the selected absolute destination and ask whether to use it or another folder. Use a supported native folder picker when available. This is a location choice, not a request to repeat authorization for installation. Do not ask again when the person already selected a destination. Wait for their answer before creation.
+Summarize the relevant findings and show the exact absolute destination. For example: “Setup is running on macOS under your account. I suggest saving Design Studio and all its source files in **[actual path]**. Use this folder, or choose another?”
 
-After the location is settled, run:
+If remote execution is observed, say where files would be saved: “Setup is running on a Linux host through SSH. **[actual path]** would save your Studio on that host. Is that where you want it, or should we use another location?” Never describe remote files as saved on the person's laptop. An Ubuntu username alone does not prove remote execution.
 
-```sh
-node <setup-tooling>/scripts/bootstrap.mjs plan --destination <absolute-folder> --name <studio-name> --expected-platform <darwin|linux|win32> --local-access <host|person> --evidence <plain-language-evidence> --output <absolute-plan-json>
-```
+Use a supported folder picker when available. Include any relevant permission limitation found by the audit. Work-managed computers may need an allowed folder or the host's normal permission flow. Do not assume administrative access or escalate permissions simply to retain the recommendation.
 
-Pass the actual confirmed computer OS as `--expected-platform`. Use `host` only for explicit local execution evidence from the host, or `person` for the person's actual confirmation. These fields record the basis for proceeding; they are not automatic proof of local access. Never choose the observed OS merely to satisfy a mismatch check.
+Wait for the person to confirm or modify the location before creating Studio. If the person already specified a destination after seeing this audit, that response supplies confirmation; do not ask again. A folder supplied before the audit should be shown with the findings for confirmation. If the environment cannot access the chosen location, explain that fact and help select the right session or another folder.
 
-Save the plan in the setup tooling's ordinary working folder, outside the studio. The output file is created exclusively; existing plans are not overwritten. It contains machine paths and evidence and should remain local. The command validates access to the nearest existing ancestor and refuses linked parents, plugin caches, internal folders, and unrelated occupied destinations. It does not create the studio or its parents.
-
-The plan binds the display name and destination to the observed OS, architecture, home, hostname, account, and signal names. Creation and first-run preparation recheck these fields. Plans are coordination records, not a security boundary: a person or agent can edit their JSON or execute commands outside the helper.
-
-## Execute and resume
+## Save and execute the confirmed plan
 
 ```sh
+node <setup-tooling>/scripts/bootstrap.mjs plan --destination <confirmed-absolute-folder> --name <studio-name> --confirmation <actual-user-response> --output <absolute-plan-json>
 node <setup-tooling>/scripts/bootstrap.mjs setup --plan <absolute-plan-json>
 ```
 
-Use `--plan` alone. Do not add a different name or destination. The helper verifies the plan before download or directory creation, then prepares that same studio. The normal `create` entry point also requires the plan. Absolute local `--source` paths are reserved for maintainer fixtures, never a fallback for agent setup.
+Record the person's actual response; never fabricate confirmation. The plan command requires the exact confirmed destination, validates its existing ancestor and write access, and preserves unrelated occupied folders. It creates only its JSON record, outside the studio; it does not create Studio or its parent folders. Keep this machine-specific file local and preserve its path in activation or restart handoffs.
 
-If creation finished but preparation was interrupted:
+Setup uses the plan's name and destination unchanged. It rechecks the observed OS, architecture, home, hostname, account, and signal names before download or creation. If they change, audit again and ask the person to confirm or modify the location. The record enforces consistent execution; it cannot authenticate a human response or prove physical filesystem ownership. Absolute local sources without plans are reserved for maintainer fixtures.
+
+If the location is unavailable or permission is denied, preserve work and explain the actual failure. Ask for another folder or use the host's supported permission flow when appropriate. Do not silently switch destinations.
+
+For interrupted first-run preparation, retain the known name and folder:
 
 ```sh
-node <setup-tooling>/scripts/bootstrap.mjs prepare --destination <same-absolute-folder> --plan <absolute-plan-json>
+node <setup-tooling>/scripts/bootstrap.mjs prepare --destination <same-folder> --plan <absolute-plan-json>
 ```
 
-If the environment changed or the plan is unavailable, recheck local access and generate a fresh plan for the known folder and existing display name. Do not select a numbered replacement or copy old machine facts into the new plan. Changed studio settings still require review before first-run defaults are applied.
-
-After readiness, use the verified studio path for preview and workspace handoff. An open browser page cannot establish where the source lives. Existing prepared studios remain usable through open-studio without a new installation plan.
+If the plan is unavailable or the environment changed, audit again and save a new confirmed plan for the intended destination. Do not create a numbered replacement to recover. Existing prepared studios keep their open-studio workflow. Windows and Linux suggestions do not establish that the full native installation journey has been tested.

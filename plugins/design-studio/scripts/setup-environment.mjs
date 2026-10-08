@@ -10,9 +10,23 @@ const SIGNALS = {
   WSL_DISTRO_NAME: 'wsl', WSL_INTEROP: 'wsl',
 };
 
+export function suggestedParent(platform, home) {
+  const paths = platform === 'win32' ? path.win32 : path.posix;
+  return paths.join(home, platform === 'darwin' ? 'Developer' : 'Projects');
+}
+
+function inspectHomeAccess(home, access) {
+  try {
+    access(home, fs.constants.W_OK | fs.constants.X_OK);
+    return { writable: true };
+  } catch (error) {
+    return { writable: false, reason: error.code ?? 'unknown' };
+  }
+}
+
 export function inspectEnvironment({ env = process.env, platform = process.platform,
   architecture = process.arch, home = os.homedir(), hostname = os.hostname(),
-  username = os.userInfo().username, exists = fs.existsSync, read = file => fs.readFileSync(file, 'utf8'),
+  username = os.userInfo().username, exists = fs.existsSync, read = file => fs.readFileSync(file, 'utf8'), access = fs.accessSync,
 } = {}) {
   const signals = Object.entries(SIGNALS).filter(([key]) => env[key]).map(([, value]) => value);
   if (platform === 'linux') {
@@ -24,19 +38,16 @@ export function inspectEnvironment({ env = process.env, platform = process.platf
   }
   const observations = { platform, architecture, home, hostname, username,
     signals: [...new Set(signals)].sort() };
-  return { ...observations, localAccess: 'unverified',
-    pilot: platform === 'darwin' ? 'macOS' : 'unverified platform',
-    suggestedParent: platform === 'darwin' ? path.join(home, 'Developer') : null,
+  return { ...observations, filesystemLocation: 'requires user confirmation',
+    homeAccess: inspectHomeAccess(home, access),
+    suggestedParent: suggestedParent(platform, home),
   };
 }
 
-export function validateLocalAccess(environment, access) {
-  if (!['darwin', 'linux', 'win32'].includes(environment.platform)) throw new Error('Unsupported execution OS. Use a supported local desktop session.');
-  if (environment.signals.length) throw new Error(`Execution signals (${environment.signals.join(', ')}) require a native local session before setup. No studio was created.`);
-  if (!access || !['host', 'person'].includes(access.basis) || typeof access.evidence !== 'string' || !access.evidence.trim()) {
-    throw new Error('Local access is unverified. Record explicit host evidence or the person\'s confirmation before setup.');
+export function validateConfirmation(confirmation) {
+  if (typeof confirmation !== 'string' || !confirmation.trim()) {
+    throw new Error('The user must confirm or modify the installation location after the environment audit. Record their response with --confirmation.');
   }
-  if (access.expectedPlatform !== environment.platform) throw new Error('Execution OS differs from the confirmed computer OS. Switch to the correct local session before setup.');
 }
 
 export function environmentIdentity(environment) {
@@ -45,11 +56,11 @@ export function environmentIdentity(environment) {
 
 export function validateSetupPlan(plan, environment = inspectEnvironment()) {
   if (!plan || plan.schema !== 1 || plan.kind !== 'design-studio-setup' || typeof plan.name !== 'string' || !plan.name.trim() || plan.name.length > 120 || !path.isAbsolute(plan.destination ?? '')) {
-    throw new Error('A valid setup plan is required. Run preflight, resolve local access, then run plan.');
+    throw new Error('A valid setup plan is required. Audit the environment, confirm the location, then run plan.');
   }
-  validateLocalAccess(environment, plan.localAccess);
+  validateConfirmation(plan.confirmation);
   if (JSON.stringify(environmentIdentity(plan.environment ?? {})) !== JSON.stringify(environmentIdentity(environment))) {
-    throw new Error('The setup environment changed. Recheck local access and create a new plan for the same destination.');
+    throw new Error('The setup environment changed. Audit it again and ask the user to confirm or modify the destination before creating a new plan.');
   }
   return plan;
 }

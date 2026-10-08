@@ -36,21 +36,26 @@ test('creates packaged visible source from pinned commit without an upstream rem
 function observedEnvironment(overrides = {}) {
   return inspectEnvironment({ env: {}, platform: 'darwin', architecture: 'arm64',
     home: '/Users/designer', hostname: 'personal-computer', username: 'designer',
-    exists: () => false, read: () => '', ...overrides });
+    exists: () => false, read: () => '', access: () => {}, ...overrides });
 }
 
-function accessOptions(platform = 'darwin') {
-  return { 'local-access': 'person', evidence: 'Person confirmed native local execution and computer OS.', 'expected-platform': platform };
+function accessOptions() {
+  return { confirmation: 'Use the recommended location in the environment you described.' };
 }
 
 test('preflight reports observations without inferring locality or leaking environment values', () => {
   const mac = observedEnvironment();
-  assert.equal(mac.localAccess, 'unverified');
+  assert.equal(mac.filesystemLocation, 'requires user confirmation');
   assert.equal(mac.suggestedParent, '/Users/designer/Developer');
+  assert.deepEqual(mac.homeAccess, { writable: true });
+  const managed = observedEnvironment({ access: () => { throw Object.assign(new Error('Denied'), { code: 'EACCES' }); } });
+  assert.deepEqual(managed.homeAccess, { writable: false, reason: 'EACCES' });
   const remote = observedEnvironment({ platform: 'linux', home: '/home/ubuntu',
     env: { SSH_CONNECTION: 'private connection data', CODESPACES: 'true' } });
   assert.deepEqual(remote.signals, ['codespaces', 'ssh']);
-  assert.equal(remote.suggestedParent, null);
+  assert.equal(remote.suggestedParent, '/home/ubuntu/Projects');
+  const windows = observedEnvironment({ platform: 'win32', home: 'C:\\Users\\designer' });
+  assert.equal(windows.suggestedParent, 'C:\\Users\\designer\\Projects');
   assert.ok(!JSON.stringify(remote).includes('private connection data'));
   const container = observedEnvironment({ platform: 'linux', exists: file => file === '/.dockerenv' });
   assert.deepEqual(container.signals, ['container']);
@@ -58,29 +63,32 @@ test('preflight reports observations without inferring locality or leaking envir
   assert.deepEqual(wsl.signals, ['wsl']);
 });
 
-test('plan refuses unknown locality, mismatched OS, and remote signals before writing', t => {
+test('plan requires user confirmation and allows an audited remote environment when explicitly chosen', t => {
   const { temp } = fixture(t);
   const destination = path.join(temp, 'new-parent', 'studio');
   const options = { ...accessOptions(), destination };
-  assert.throws(() => planStudio({ destination }, observedEnvironment()), /unverified/);
-  assert.throws(() => planStudio({ ...options, evidence: ' ' }, observedEnvironment()), /unverified/);
-  assert.throws(() => planStudio(options, observedEnvironment({ platform: 'linux' })), /differs/);
-  assert.throws(() => planStudio(options, observedEnvironment({ env: { SSH_TTY: 'present' } })), /native local/);
+  assert.throws(() => planStudio({ destination }, observedEnvironment()), /must confirm/);
+  assert.throws(() => planStudio(accessOptions(), observedEnvironment()), /exact user-confirmed destination/);
+  assert.throws(() => planStudio({ ...options, confirmation: ' ' }, observedEnvironment()), /must confirm/);
+  const remote = observedEnvironment({ platform: 'linux', env: { SSH_TTY: 'present' } });
+  const plan = planStudio({ ...options, confirmation: 'Yes, install on the Linux host you described.' }, remote);
+  assert.deepEqual(plan.environment.signals, ['ssh']);
+  assert.equal(validateSetupPlan(plan, remote), plan);
   assert.equal(fs.existsSync(path.dirname(destination)), false);
 });
 
-test('plan chooses numbered macOS defaults and requires explicit destinations on other OSes', t => {
+test('folder suggestions use the audited home on each OS and preserve explicit locations', t => {
   const { temp } = fixture(t);
   const mac = observedEnvironment({ home: temp });
-  const first = planStudio(accessOptions(), mac);
+  const first = chooseStudioLocation({ parent: mac.suggestedParent });
   assert.equal(first.destination, path.join(temp, 'Developer', 'design-studio'));
   assert.equal(fs.existsSync(path.join(temp, 'Developer')), false);
   fs.mkdirSync(first.destination, { recursive: true });
-  const next = planStudio(accessOptions(), mac);
+  const next = chooseStudioLocation({ parent: mac.suggestedParent });
   assert.equal(next.name, 'Design Studio 2');
-  const linux = observedEnvironment({ platform: 'linux' });
-  assert.throws(() => planStudio(accessOptions('linux'), linux), /explicit local destination/);
-  const explicit = planStudio({ ...accessOptions('linux'), name: 'My Studio', destination: path.join(temp, 'chosen') }, linux);
+  const linux = observedEnvironment({ platform: 'linux', home: temp });
+  assert.equal(chooseStudioLocation({ parent: linux.suggestedParent }).destination, path.join(temp, 'Projects', 'design-studio'));
+  const explicit = planStudio({ ...accessOptions(), name: 'My Studio', destination: path.join(temp, 'chosen') }, linux);
   assert.equal(explicit.destination, path.join(temp, 'chosen'));
 });
 
@@ -92,7 +100,7 @@ test('plan rechecks environment identity and newly introduced remote signals', t
   for (const changed of ['home', 'hostname', 'username', 'architecture']) {
     assert.throws(() => validateSetupPlan(plan, { ...environment, [changed]: 'different' }), /environment changed/);
   }
-  assert.throws(() => validateSetupPlan(plan, { ...environment, signals: ['container'] }), /native local/);
+  assert.throws(() => validateSetupPlan(plan, { ...environment, signals: ['container'] }), /environment changed/);
 });
 
 test('destination validation preserves unrelated folders and rejects linked ancestors before mkdir', t => {
@@ -117,13 +125,13 @@ test('CLI requires a plan and rejects old setup flags before any creation', t =>
   assert.equal(fs.existsSync(destination), false);
   const preflight = spawnSync(process.execPath, [helper, 'preflight'], { encoding: 'utf8' });
   assert.equal(preflight.status, 0);
-  assert.equal(JSON.parse(preflight.stdout).localAccess, 'unverified');
+  assert.equal(JSON.parse(preflight.stdout).filesystemLocation, 'requires user confirmation');
 });
 
 test('saved plan creation, reuse, and destination mismatch checks preserve work', t => {
   const options = fixture(t);
   const environment = inspectEnvironment();
-  const plan = planStudio({ ...accessOptions(environment.platform), destination: options.destination, name: ' Design Studio ' }, environment);
+  const plan = planStudio({ ...accessOptions(), destination: options.destination, name: ' Design Studio ' }, environment);
   assert.equal(plan.name, 'Design Studio');
   // A local source fixture exercises the same plan validation without a network download.
   const first = createStudio({ ...options, plan });
@@ -146,8 +154,8 @@ test('CLI plan file is exclusive, bound to the environment, and kept outside the
   const helper = path.resolve('plugins/design-studio/scripts/bootstrap.mjs');
   const destination = path.join(temp, 'studio');
   const output = path.join(temp, 'setup-plan.json');
-  const args = [helper, 'plan', '--local-access', 'host', '--evidence', 'Local desktop executor identified.',
-    '--expected-platform', process.platform, '--destination', destination, '--output', output];
+  const args = [helper, 'plan', '--confirmation', 'Use the folder you recommended after the audit.',
+    '--destination', destination, '--output', output];
   const planned = spawnSync(process.execPath, args, { encoding: 'utf8' });
   assert.equal(planned.status, 0, planned.stderr);
   assert.equal(fs.existsSync(destination), false);
@@ -159,7 +167,7 @@ test('CLI plan file is exclusive, bound to the environment, and kept outside the
   assert.match(invalid.stderr, /--plan alone/);
   const remote = spawnSync(process.execPath, [helper, 'setup', '--plan', output], { encoding: 'utf8', env: { ...process.env, SSH_CONNECTION: 'test' } });
   assert.equal(remote.status, 1);
-  assert.match(remote.stderr, /native local/);
+  assert.match(remote.stderr, /environment changed/);
   assert.equal(fs.existsSync(destination), false);
 });
 

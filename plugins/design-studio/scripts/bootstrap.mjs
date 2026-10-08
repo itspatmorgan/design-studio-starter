@@ -6,7 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { packageStarter } from './starter-package.mjs';
 import { findWorkingGit, gitEnvironment, verifyPinnedTools, configureLocalGit } from './toolchain.mjs';
-import { inspectEnvironment, environmentIdentity, validateLocalAccess, validateSetupPlan, readSetupPlan } from './setup-environment.mjs';
+import { inspectEnvironment, environmentIdentity, suggestedParent, validateConfirmation, validateSetupPlan, readSetupPlan } from './setup-environment.mjs';
 
 export const SOURCE = 'https://github.com/itspatmorgan/design-studio-starter.git';
 export const REVISION = '599da74eee43aba5e1c4a97abad8dc87140f3989';
@@ -94,8 +94,7 @@ export function studioFolderName(name) {
 
 // Selection is read-only; createStudio reserves the chosen folder exclusively.
 export function chooseStudioLocation({ parent, name: baseName = 'Design Studio' } = {}) {
-  if (!parent && process.platform !== 'darwin') throw new Error('Choose an explicit local parent folder on this OS. Only macOS has a verified default location.');
-  const folder = destinationPath(parent ?? path.join(os.homedir(), 'Developer'));
+  const folder = destinationPath(parent ?? suggestedParent(process.platform, os.homedir()));
   const baseFolder = studioFolderName(baseName);
   for (let number = 1; ; number += 1) {
     const name = number === 1 ? baseName : `${baseName} ${number}`;
@@ -110,16 +109,9 @@ export function chooseStudioLocation({ parent, name: baseName = 'Design Studio' 
 }
 
 export function planStudio(options, environment = inspectEnvironment()) {
-  const localAccess = { basis: options['local-access'], evidence: options.evidence,
-    expectedPlatform: options['expected-platform'] };
-  validateLocalAccess(environment, localAccess);
-  if (options.destination && options.parent) throw new Error('Choose a destination or a parent folder, not both.');
-  if (!options.destination && !options.parent && !environment.suggestedParent) {
-    throw new Error('Choose an explicit local destination on this OS. Only macOS has a verified default location.');
-  }
-  const selected = options.destination
-    ? { destination: options.destination, name: options.name ?? 'Design Studio' }
-    : chooseStudioLocation({ parent: options.parent ?? environment.suggestedParent, name: options.name });
+  validateConfirmation(options.confirmation);
+  if (!options.destination) throw new Error('Provide the exact user-confirmed destination from the audit and folder recommendation.');
+  const selected = { destination: options.destination, name: options.name ?? 'Design Studio' };
   selected.name = selected.name.trim();
   const destination = validateDestination(selected.destination);
   studioFolderName(selected.name);
@@ -127,7 +119,7 @@ export function planStudio(options, environment = inspectEnvironment()) {
     throw new Error('For interrupted setup, use the existing studio name and destination. Existing settings were preserved.');
   }
   return { schema: 1, kind: 'design-studio-setup', ...selected, destination,
-    environment: environmentIdentity(environment), localAccess };
+    environment: environmentIdentity(environment), confirmation: options.confirmation.trim() };
 }
 
 export function createStudio({ destination: value, name = 'Design Studio', source = SOURCE, revision = REVISION, plan }) {
@@ -237,13 +229,14 @@ function main() {
   if (!command || command === '--help') {
     console.log(`Usage: node bootstrap.mjs preflight
        node bootstrap.mjs choose [--parent <absolute-folder>] [--name <studio-name>]
-       node bootstrap.mjs plan --local-access host|person --evidence <description> --expected-platform darwin|linux|win32 --output <absolute-json-file> [--destination <folder> | --parent <folder>] [--name <name>]
+       node bootstrap.mjs plan --destination <confirmed-folder> --confirmation <user-response> --output <absolute-json-file> [--name <name>]
        node bootstrap.mjs create|setup --plan <absolute-json-file>
        node bootstrap.mjs prepare --destination <folder> [--plan <absolute-json-file>]
        node bootstrap.mjs inspect|start --destination <folder> [--port <port>]
        node bootstrap.mjs exec --destination <folder> -- <command> [args...]
-preflight and choose are read-only. They do not verify local access. plan records its supplied evidence and validates the destination without creating a studio.
-Only macOS has a suggested default parent: ~/Developer. Other OS journeys require an explicit location and remain unverified.
+preflight and choose are read-only. Share the observed environment and exact destination with the user for confirmation or modification.
+Suggested parents are ~/Developer on macOS and ~/Projects on Windows/Linux. They are suggestions, never silent installation defaults.
+plan records the user's response and validates the confirmed destination without creating a studio.
 setup combines creation and preparation from one checked plan. Interrupted first-run prepare requires that plan too.
 Maintainer fixtures only: create --destination <folder> --source <absolute-local-repo> --revision <40-character-commit> [--name <name>].
 Git and Node are prerequisites. prepare/start also require mise. No GitHub account is needed.`);
@@ -251,7 +244,7 @@ Git and Node are prerequisites. prepare/start also require mise. No GitHub accou
   }
   const allowedOptions = {
     preflight: [], choose: ['--parent', '--name'],
-    plan: ['--parent', '--destination', '--name', '--local-access', '--evidence', '--expected-platform', '--output'],
+    plan: ['--destination', '--name', '--confirmation', '--output'],
     create: ['--plan', '--destination', '--name', '--source', '--revision'], setup: ['--plan'],
     inspect: ['--destination'], prepare: ['--destination', '--plan'], start: ['--destination', '--port'], exec: ['--destination'],
   };
@@ -272,6 +265,7 @@ Git and Node are prerequisites. prepare/start also require mise. No GitHub accou
   }
   if (command === 'plan') {
     if (!options.output || !path.isAbsolute(options.output)) throw new Error('Choose an absolute --output path for the setup plan outside the studio.');
+    if (!options.destination) throw new Error('Provide the exact user-confirmed --destination from the audit and folder recommendation.');
     const plan = planStudio(options);
     const output = path.resolve(options.output);
     if (output === plan.destination || output.startsWith(plan.destination + path.sep)) throw new Error('Save setup tooling outside the studio destination.');
