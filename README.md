@@ -1,4 +1,4 @@
-![Design Studio — Design with intent. Build with an agent. Connected prototype, diagram, document, and canvas cards show you and your coding agent working together.](public/images/design-studio-readme-hero.jpg)
+[![Design Studio — Design with intent. Build with an agent. A prototype sandbox for designers and product managers. Works with ChatGPT Codex, Claude Code, and Cursor.](public/images/design-studio-readme-share.jpg)](https://itspatmorgan.com/design-studio)
 
 # Design Studio Starter
 
