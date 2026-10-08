@@ -20,7 +20,7 @@ import type { DesignSystem, SystemIntro } from '@/platform/app/data/types';
 import type { SystemComponentDoc } from '@/modules/systems/docs';
 import type { ThemeToken, TokenGroup } from '@/modules/systems/themeTokens';
 import { ThemeScope } from '@/modules/systems/ThemeScope';
-import { PROTOTYPE_SYSTEMS, SYSTEM_SPECS, systemKeyFromIdentity, systemPath } from '@/modules/systems/data/systems';
+import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS, SYSTEM_SPECS, systemKeyFromIdentity, systemPath } from '@/modules/systems/data/systems';
 import { useSourceView } from '@/platform/core/source/useSourceView';
 import FileNavItem from '@/platform/app/shell/FileNavItem';
 import { sourceOf } from '../sources';
@@ -154,6 +154,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
     <SectionNav label="Systems">
       <NavHeader>
         <SystemActionToast /><NavTitle actions={<SystemMenu key={system} system={system} />}>{SYSTEMS[system].label}</NavTitle>
+        {system === DEFAULT_SYSTEM && <p className="px-3 pt-0.5 text-xs text-muted-foreground">Default system</p>}
       </NavHeader>
       <div className="shrink-0 px-3 pt-3">
         <div className="flex h-7 items-center justify-between pl-2">

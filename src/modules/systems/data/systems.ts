@@ -17,7 +17,7 @@ export const PLATFORM_SOURCE = platformSourceOf(PLATFORM_ID, SYSTEM_SPECS[PLATFO
 
 export const PROTOTYPE_SYSTEMS = Object.fromEntries(Object.entries(SYSTEM_SPECS).filter(([, spec]) => spec.role === 'prototype'));
 
-// The system a prototype uses when its meta.json doesn't say: the explicitly configured studio.config.ts defaultSystem.
+// Creation selects this configured system and persists its ID in prototype metadata.
 export const DEFAULT_SYSTEM: string = CONFIG.defaultSystem;
 
 export const ACTIVE_PROTOTYPE_SYSTEMS = Object.fromEntries(Object.entries(PROTOTYPE_SYSTEMS).filter(([, spec]) => spec.status === 'active'));

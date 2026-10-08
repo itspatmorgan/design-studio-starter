@@ -40,7 +40,9 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
   async function run(action: string) {
     try {
       const result = await systemRequest<{ message?: string }>(action, system);
-      if (action === 'default') window.location.assign(systemPath(system));
+      // The configuration watcher refreshes this same URL with the new default.
+      // Deliver confirmation after that refresh rather than competing with it.
+      if (action === 'default') sessionStorage.setItem('studio:system-action', JSON.stringify({ title: `${spec.label} is now the default system.` }));
       else if (result.message) toast.add({ title: result.message });
     } catch (e) { toast.add({ type: 'error', title: (e as Error).message }); }
   }
