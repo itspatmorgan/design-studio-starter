@@ -33,6 +33,14 @@ Give them access to the team's repository through your Git host. Ask their agent
 
 Each person works in their own local copy. Joining should preserve the team's systems, configuration, and existing work. See [Working environment](/documentation/manual/environment#how-do-i-join-a-team-studio).
 
+## How do teammates contribute safely?
+
+Each teammate has their own contributor folder for prototypes. Your agent identifies you and keeps prototype work inside that folder. Each prototype is a separate exploration, so changing one does not change another prototype's files.
+
+Studio checks ownership when you edit locally. Build checks prevent prototypes from depending on another prototype's code. The supplied GitHub workflow checks the build and flags changes outside a contributor's assigned scope for review.
+
+These boundaries let teammates keep building and merging their own prototype work independently. Shared systems and platform code need broader review because other people's work depends on them. Your repository owner configures GitHub's required checks and reviews; see [Checks and fixes](/documentation/context/platform.core/context/checks) for details.
+
 ## How do we share changes?
 
 For a team using GitHub, we recommend protecting **main**, the shared branch, and requiring pull requests instead of direct pushes. Your repository owner configures this on GitHub, including required checks and reviews. Studio does not turn these settings on automatically.
@@ -65,14 +73,6 @@ No. Each prototype has its own scope, so you can merge routine changes into main
 | Shared system or platform changes | Seek review from the people responsible for the shared foundation. Check affected prototypes before merging. |
 
 A prototype can keep evolving through many small merges. Longer review is useful when a change affects foundations others depend on.
-
-## How do contributor scopes fit this workflow?
-
-In team mode, Studio associates prototypes with contributor folders and checks changes against ownership, system assignments, and Admin access. The supplied GitHub workflow also checks assets and runs the build.
-
-Pull requests can propose changes outside someone's direct editing scope. Scope checks flag those changes for the appropriate maintainer to review. Passing checks does not replace that review; GitHub's required checks and review rules enforce your team's merge policy.
-
-Let teammates know before changing shared systems their prototypes use. If two branches change the same files, ask the agent to reconcile the conflict before merging. See [Checks and fixes](/documentation/context/platform.core/context/checks) for technical details.
 
 ## How do we include reviewers or engineers?
 
