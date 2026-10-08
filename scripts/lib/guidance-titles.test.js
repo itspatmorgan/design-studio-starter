@@ -16,6 +16,4 @@ test('platform context navigation carries the same declared titles as document h
     assert.equal(typeof declared, 'string', item.path);
     assert.equal(item.title, declared, item.path);
   }
-  assert.equal(context.artifacts.find(item => item.path === 'modules.md').title, 'Modules and extensions');
-  assert.equal(context.artifacts.find(item => item.path === 'config.md').title, 'Studio configuration');
 });

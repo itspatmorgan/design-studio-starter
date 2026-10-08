@@ -8,7 +8,7 @@ Publish when people need a shared viewing URL. The studio maintainer chooses the
 
 ## What the build provides
 
-`pnpm build` checks the repository and writes a static site to `dist/`. The site includes active prototypes, design-system pages, the system context, and the Manual when enabled.
+Use Node 24 and pnpm 12, as declared in `mise.toml` and `package.json`. Run `pnpm install --frozen-lockfile`, then `pnpm build`. This validates the manifest, module boundaries, types, and production compilation and writes a static site to `dist/`. Tests are separate: `pnpm test` is the focused development suite; `pnpm build:release` adds the full maintainer regressions. The site includes active prototypes, design-system pages, the system context, and the Manual when enabled.
 
 Archived prototypes are excluded from the production build. Individual items cannot be archived. Archive content you want to keep locally without including it in the site.
 
@@ -44,6 +44,27 @@ Test a direct prototype URL and reload it. Opening the front page alone does not
 The build also copies `index.html` to `404.html` for hosts such as GitHub Pages. This loads the app for missing paths, but the HTTP response remains a 404. Hosts with rewrite support can return `index.html` with a successful response instead.
 
 The router also contains guidance for hash-based URLs when a host cannot provide these rewrites. This is a code change, not a studio configuration option.
+
+## Serve updates reliably
+
+Configure caching at the chosen host:
+
+| Files | Cache policy |
+| --- | --- |
+| HTML, including the app fallback | Revalidate on use (`Cache-Control: no-cache`). |
+| `prototypes/manifest.json` and `prototypes/artifacts/**` | Revalidate. These filenames are mutable; artifact query hashes do not make their stored files immutable. |
+| Content-hashed files under `assets/` | Long-lived caching (`Cache-Control: public, max-age=31536000, immutable`). |
+| Other public files | Choose a policy for their actual update frequency. |
+
+Publish complete output atomically when supported. Retain previous hashed assets during rollout when the host allows it. Do not return HTML for missing asset URLs; use the app fallback only for application routes.
+
+The production page installs recovery before its entry module loads. A missing entry or lazy chunk can trigger one refresh with a cache-busting query while preserving the route, search, and hash. Retries are bounded for one minute, including when browser storage is unavailable. Offline failures do not trigger automatic refresh. Recovery helps with replaced assets but does not repair a missing upload or incorrect base path. Hosts with a Content Security Policy must allow the generated inline bootstrap, for example through its hash.
+
+## Verify the viewing link
+
+Run `pnpm build:inspect` after building. It verifies all asset references recorded in Vite's manifest and reports the static JavaScript/CSS dependency closure for the entry page. It excludes lazy feature downloads, HTML, data, images and fonts; gzip figures assume compression at the host. It is a build diagnostic, not a network timing measurement or a fixed budget for customized studios.
+
+Preview the output, then verify the actual published URL: open Home, open a prototype directly and reload, open a Manual or system page when available, and open any canvas or diagram you intend to share. Check for missing assets and console errors. Repeat after updating an already-open viewing site. Provider queue, upload, CDN and cache behavior must be measured on that provider.
 
 ## Review the published content
 

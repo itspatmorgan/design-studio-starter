@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm studio sync && node scripts/build/build-manifest.js && vite",
-    "build": "node scripts/build/build-manifest.js --strict --deploy && node scripts/check/check-modules.js && pnpm test && pnpm typecheck && vite build",
+    "build": "node scripts/build/build-manifest.js --strict --deploy && node scripts/check/check-modules.js && pnpm typecheck && vite build",
     "typecheck": "node scripts/check/typecheck.js",
     "preview": "vite preview",
     "new": "node src/modules/prototypes/node/create.js",
@@ -18,7 +18,10 @@
     "harness:sync": "node scripts/cli/sync-harnesses.js",
     "harness:check": "node scripts/cli/sync-harnesses.js --check",
     "canvas": "node src/modules/canvas/cli.ts",
-    "test": "node scripts/check/test.js"
+    "test": "node scripts/check/test.js",
+    "test:release": "node scripts/check/test.js --release",
+    "build:release": "pnpm test:release && pnpm build",
+    "build:inspect": "node scripts/check/inspect-build.js"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^4.0.0",
@@ -81,5 +84,9 @@
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.3",
     "vite": "^8.3.1"
+  },
+  "engines": {
+    "node": ">=24 <25",
+    "pnpm": ">=12 <13"
   }
 }

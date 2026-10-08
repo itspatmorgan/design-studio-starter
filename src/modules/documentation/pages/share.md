@@ -40,7 +40,9 @@ Having a GitHub repository does not automatically publish your studio. Copies of
 
 For other hosts, ask your agent to assess what is needed with whoever manages hosting for your team. The agent can help prepare the build and configuration. What it can complete depends on its tools and your access. See [Publishing](/documentation/context/platform.core/context/publishing) for technical requirements.
 
-After publishing, verify the site and copy links from it. A **localhost** link points to the viewer's own computer and will not share your local studio with remote reviewers.
+Building checks your source and creates the viewing site. Maintainer regression tests run separately, so each publication does not repeat the full test suite. Your hosting service still controls deployment queues and upload time.
+
+After publishing, open the site, follow a direct prototype link, and refresh that page. Try the document, canvas, or diagram you plan to share. Then copy links from the published site. A **localhost** link points to the viewer's own computer and will not share your local studio with remote reviewers.
 
 Local edits do not appear online automatically. Publish another build through your configured hosting workflow to update the site. Teams can configure publication after changes merge into main; see the [branch and pull-request workflow](/documentation/manual/team#how-do-we-share-changes).
 

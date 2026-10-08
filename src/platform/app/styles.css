@@ -1,5 +1,5 @@
 /* Tailwind configuration is explicit; system CSS supplies scoped runtime values. */
-@import "tailwindcss";
+@import "tailwindcss" source("../..");
 @import "../../systems/studio/styles/theme.css";
 /* @studio:system-themes */
 /* Explicit shared component-animation extensions; not system theme defaults. */
@@ -15,6 +15,8 @@
    prototypes.) */
 /* @studio:data-files */
 @source not "../../../contributors/**";
+/* Test fixtures and maintainer scripts do not supply runtime utility classes. */
+@source not "../../**/*.test.*";
 
 /* Local light scopes block the global mode; local dark scopes work in light Studio too. */
 @custom-variant dark (&:where(.dark, .dark *, [data-color-mode="dark"], [data-color-mode="dark"] *):not(:where([data-color-mode="light"], [data-color-mode="light"] *)));
