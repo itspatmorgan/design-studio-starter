@@ -2,7 +2,7 @@
 // Mapping is exact, includes containment, and leaves external origins untouched.
 import ts from 'typescript';
 
-export function rewriteResourceLinks(text, file, routes, prefixes = new Map()) {
+export function rewriteResourceLinks(text, file, routes, prefixes = new Map(), sceneUpdate = {}) {
   const target = value => {
     const suffixAt = value.search(/[?#]/);
     const route = suffixAt < 0 ? value : value.slice(0, suffixAt);
@@ -43,7 +43,11 @@ export function rewriteResourceLinks(text, file, routes, prefixes = new Map()) {
     for (const element of scene.elements ?? []) {
       if (typeof element.link !== 'string') continue;
       const next = target(element.link);
-      if (next !== element.link) { element.link = next; element.version = (element.version ?? 0) + 1; element.versionNonce = Math.floor(Math.random() * 2 ** 31); element.updated = Date.now(); changed = true; }
+      if (next !== element.link) {
+        const nonce = sceneUpdate.nonce?.(element, next) ?? Math.floor(Math.random() * 2 ** 31);
+        element.link = next; element.version = (element.version ?? 0) + 1;
+        element.versionNonce = nonce; element.updated = sceneUpdate.updated ?? Date.now(); changed = true;
+      }
     }
     return changed ? JSON.stringify(scene, null, 2) + '\n' : text;
   }

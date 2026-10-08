@@ -9,7 +9,7 @@ export const addressPattern = (address) => new RegExp(`(?<![A-Za-z0-9:/.])${addr
 // Never follow symlinks or edit another prototype.
 export function linkedFiles(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    if (entry.name.startsWith('.')) return [];
+    if (entry.name.startsWith('.') || entry.name === 'node_modules') return [];
     const file = path.join(dir, entry.name);
     return entry.isDirectory() ? linkedFiles(file) : entry.isFile() && /\.(md|excalidraw|[cm]?[jt]sx?)$/.test(entry.name) ? [file] : [];
   });

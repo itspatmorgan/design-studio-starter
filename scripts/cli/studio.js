@@ -3,7 +3,7 @@ import { INSTALLED_FILE_TYPES } from '../lib/file-types.js';
 import { planSystemLifecycle, applySystemLifecycle } from '../lib/system-lifecycle.js';
 import { prototypeContext } from '../lib/prototype-context.js';
 import { auditResourceIdentities } from '../lib/resource-identity-audit.js';
-import { planSourceIdentityMigration } from '../lib/resource-identity-migration.js';
+import { planResourceFoundationMigration } from '../lib/resource-foundation-migration.js';
 import { moduleConsumers } from '../lib/imports.js';
 // pnpm studio <command>: add, remove, turn on or off, and make modules and design systems. For your agent: designers
 // ask in plain words and the agent runs these. Every command that changes files says what it will do first, and
@@ -22,7 +22,7 @@ import { moduleConsumers } from '../lib/imports.js';
 //   sync [--check]                    synchronize routing and project skills; --check never writes
 //   context <prototype-folder> [--json] inspect assignment, rebuild target, scope, and guidance paths; never writes
 //   identity-audit [--json]             inspect existing/missing IDs, including retained types; never writes
-//   identity-plan [--out <file>] [--json] preview the source-metadata stage; no source is changed
+//   identity-plan [--out <file>] [--json] preview IDs, relationships and stored links; no source is changed
 //   check                             pnpm check, and what has changed from the original of a module you added
 // Dry runs read declarations as data. --yes trusts the source: its checks run after packages install.
 import { execFileSync } from 'node:child_process';
@@ -523,17 +523,17 @@ async function identityAudit() {
 }
 
 async function identityPlan() {
-  if (positional.length || Object.keys(flags).some(key => !['json', 'out'].includes(key))) fail('Usage: pnpm studio identity-plan [--out <file>] [--json]. This previews metadata only; there is no apply command yet.');
+  if (positional.length || Object.keys(flags).some(key => !['json', 'out'].includes(key))) fail('Usage: pnpm studio identity-plan [--out <file>] [--json]. This is a read-only preview; there is no apply command yet.');
   const sections = Object.values(MODULES).filter(module => module?.section?.items === 'prototypes' && !module.section.byPerson);
   if (sections.length) fail('Prototype-shaped module sections need an explicit identity policy before migration can be planned.');
-  const plan = planSourceIdentityMigration(ROOT, await installedIdentityTypes());
+  const plan = planResourceFoundationMigration(ROOT, await installedIdentityTypes());
   if (flags.out) fs.writeFileSync(path.resolve(flags.out), JSON.stringify(plan, null, 2) + '\n', { flag: 'wx' });
   if (flags.json) say(JSON.stringify(plan, null, 2));
   else {
-    say(`${plan.changes.length} files would receive permanent source IDs.`);
+    say(`${plan.changes.length} files would change for permanent IDs, relationships, and stored browser links.`);
     for (const resource of plan.resources) say(`  ${resource.studioId}  ${resource.path}`);
     if (flags.out) say(`Preview saved to ${path.resolve(flags.out)}.`);
-    say('Source metadata only. Relationship, authority, and route migration must be composed before application. No Studio source was changed.');
+    say('Full source preview. Runtime and authority cutover must complete before application is enabled. No Studio source was changed.');
   }
 }
 
