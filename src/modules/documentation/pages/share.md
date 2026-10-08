@@ -66,10 +66,12 @@ Use **Studio settings → General** to change the studio name and tagline. The t
 
 Home's sections follow enabled modules and available content. There is no separate Home layout editor or featured-item setting. Ask your agent to change the code or add a module if you want a different introduction, arrangement, or selection of work.
 
-## What should reviewers or engineers receive?
+## How do I share with reviewers and engineers?
 
-Share a starting link, the question you want feedback on, and the intended behavior. Identify sample data, simulated actions, and unresolved decisions.
+Share a published prototype link when people want to explore the experience and give feedback.
 
-For engineering handoff, include relevant states, design intent, constraints, and the system components used. Give access to working files when the recipient needs to inspect code. Documents and canvases can hold this context when enabled.
+Engineers who want to inspect the code can pull your team's Design Studio repository into a local copy, then open the relevant prototype in its contributor folder. They need access to that repository.
 
-A prototype informs production implementation. Agree with the engineer on what needs adapting for application services and production requirements.
+Prototype source is stored in plain-text files: React code, Markdown documents, Mermaid diagrams, and canvas data. Engineers and their agents can read the work directly, including its supporting context.
+
+Agree with your engineers on any additional materials they need for handoff. Design Studio provides the working files and a viewing experience; your team decides how to use them.

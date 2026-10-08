@@ -76,6 +76,6 @@ A prototype can keep evolving through many small merges. Longer review is useful
 
 ## How do we include reviewers or engineers?
 
-Publish a viewing link for people who only need to explore the work. Give working-file access when someone needs to inspect or develop the code.
+Share a published link for review. Engineers and their agents can pull the studio repository to inspect prototype source locally, with repository access.
 
-Include intended behavior, simulated actions, and unresolved decisions in a handoff. See [Publishing & Home](/documentation/manual/share#what-should-reviewers-or-engineers-receive).
+Agree on handoff needs with your engineers. See [Publishing & Home](/documentation/manual/share#how-do-i-share-with-reviewers-and-engineers).
