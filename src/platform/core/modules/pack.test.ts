@@ -146,3 +146,16 @@ test('a declaration that needs code is refused, never run', () => {
 test('a comment marker inside text is text', () => {
   assert.deepEqual(readDeclaration("export default { label: 'See https://x.y // not a comment', note: \"a /* b */ c\" };"), { value: { label: 'See https://x.y // not a comment', note: 'a /* b */ c' } });
 });
+
+test('duplicate declaration keys cannot hide identity or authority changes', () => {
+  for (const source of [
+    "export default { studioId: '0123456789abcdef', 'studioId': 'abcdefghjkmnpqrs' };",
+    "export default { admins: ['pat'], admins: ['other'] };",
+    "export default { systemMaintainers: { product: ['pat'], 'product': ['other'] } };",
+    "export default { studioId: '0123456789abcdef', '\\u0073tudioId': 'abcdefghjkmnpqrs' };",
+  ]) {
+    const result = readDeclaration(source);
+    assert.ok('error' in result);
+    assert.match(result.error, /declared more than once/);
+  }
+});

@@ -204,6 +204,7 @@ export function readDeclaration(source: string): { value: unknown } | { error: s
         else { const m = /^[A-Za-z_$][\w$-]*/.exec(s.slice(i)); if (!m) return fail('Expected a name.'); key = m[0]; i += key.length; }
         ws(); if (s[i] !== ':') fail(`Expected ":" after ${key}.`); i++;
         if (key === '__proto__' || key === 'constructor' || key === 'prototype') fail(`"${key}" isn't allowed as a name.`);
+        if (Object.hasOwn(out, key)) fail(`"${key}" is declared more than once. Remove duplicate declaration properties.`);
         out[key] = value(); ws();
         if (s[i] === ',') i++; else if (s[i] !== '}') fail('Expected "," or "}".');
       }

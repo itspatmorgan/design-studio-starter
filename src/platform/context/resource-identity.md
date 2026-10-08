@@ -8,7 +8,7 @@ Design Studio is introducing source identities independent of location, ownershi
 
 ## Implementation status
 
-The first stage supplies identity validation, generation, source metadata adapters, and a read-only audit. Canvas saving preserves a declared identity. Current routes, authority, configuration references, and source creation still use their existing contracts. Existing content has not been migrated. Missing identities are reported by the audit, not rejected by normal builds at this stage.
+The first stages supply identity validation, generation, source metadata adapters, a read-only audit, and a previewable source-metadata migration stage. Canvas saving preserves a declared identity. Current routes, authority, configuration references, and source creation still use their existing contracts. Existing content has not been migrated. Missing identities are reported by the audit, not rejected by normal builds at this stage.
 
 This document records the agreed destination and identifies what remains unimplemented. It does not replace the existing [prototype contract](../../modules/prototypes/README.md), [system contract](../../modules/systems/README.md), or [contributor scope](contributor-scope.md) before their implementations migrate.
 
@@ -62,7 +62,25 @@ System routes use `/systems/<system-id>` followed by existing surface names or s
 
 The generated manifest resolves identities to current locations and relationships. It is a derived inventory, not another authoring location. Browser and Node resolution share types and rules. Published lookup preserves lazy artifact loading and excludes unavailable publication content. Unknown identities must not become filesystem paths or silently resolve to another resource.
 
-Existing readable routes require explicit migration aliases. Copied permanent URLs resolve independently of browser history state. Hosting must continue serving the app fallback for direct routes and configured base paths. See [Publishing](publishing.md).
+The target resolution flow keeps the authoring tree visible while public references use identity:
+
+```mermaid
+flowchart LR
+  URL[Permanent prototype and artifact URL] --> Lookup[Generated identity inventory]
+  Lookup --> Prototype[Prototype ID]
+  Prototype --> Artifact[Artifact ID within prototype]
+  Prototype --> Folder[Current contributor and prototype folder]
+  Artifact --> File[Current relative file path]
+  Folder --> Tree[Filesystem navigation and dependency repair]
+  File --> Tree
+  Prototype --> Owner[Owner contributor ID]
+  Owner --> Grants[Explicit authority checks]
+  Prototype --> System[Assigned system ID]
+  System --> SystemFolder[Current system folder]
+  SystemFolder --> Contracts[Named system surfaces and dependency paths]
+```
+
+This is a full cutover before public release. Existing readable routes do not receive compatibility aliases. Stored references must be migrated to permanent URLs. Copied permanent URLs resolve independently of browser history state. Hosting must continue serving the app fallback for direct routes and configured base paths. See [Publishing](publishing.md).
 
 ## Ownership and authority
 
@@ -78,14 +96,26 @@ Run `pnpm studio identity-audit --json` to inspect current identity declarations
 
 The initial audit scope is contributor profiles, system declarations, and contributor-owned prototype trees. Module-owned prototype-shaped sections must be reviewed before the migration command is implemented; the audit does not claim that coverage yet.
 
+Run `pnpm studio identity-plan --out <new-file>` to save a reviewable source-metadata preview, including exact before/after content and allocated IDs. The output file must not already exist. A new preview allocates new candidate IDs; the saved preview retains its allocation. The command changes no Studio source and refuses installed prototype-shaped module sections until they have an explicit identity policy.
+
+`scripts/lib/resource-identity-migration.js` implements the internal metadata stage. It recomputes the preview from the current inventory rather than trusting arbitrary edits in a saved plan, rejects changed sources and inventory additions/removals, retries generated collisions, verifies the result, and rolls back failed writes. Rollback refuses to overwrite concurrent edits and reports when manual recovery is needed. This stage must be composed with relationship and compatibility migration before a public apply command is offered.
+
+System declarations now accept and validate a declared `studioId`; omission remains transitional. Plain-data declarations reject duplicate properties at every level, including duplicate identity and permission keys.
+
 ## Remaining rollout
 
 1. Complete identity-preserving creation, source-write checks, duplication, and lifecycle operations. Resolve metadata field translation separately from location keys.
-2. Implement a previewable migration with stale-source guards, consistent relationship translation, compatibility aliases, and rollback. Resolve each prototype's scope and assigned system before migrating its source.
+2. Implement a previewable migration with stale-source guards, consistent relationship translation, stored-link migration, and rollback. Resolve each prototype's scope and assigned system before migrating its source.
 3. Introduce identity inventories, permanent routes, navigation helpers, embeds, and canvas relationship validation. Keep filesystem dependency repair intact.
 4. Integrate authority, agent context, CI baseline checks, installed system handling, and contributor registration. Reject self-authorizing changes.
 5. Update owning contracts, skills, and human guidance alongside implemented behavior. Remove transitional ambiguity.
 
-Verify copied links through renames and moves, stopped-server filesystem moves, filesystem parity, duplicate remapping, system dependency repairs, authority spoofing, canvas saves, archives, disabled modules, malformed metadata, legacy links, local editing, and static publication. Build success alone is insufficient.
+Verify copied links through renames and moves, stopped-server filesystem moves, filesystem parity, duplicate remapping, system dependency repairs, authority spoofing, canvas saves, archives, disabled modules, malformed metadata, rejection of legacy routes, local editing, and static publication. Build success alone is insufficient.
 
 Comments, revision history, authentication, a database, collaborator UI, and canvas frame selection are deferred. A future `?frame=<element-id>` selection can extend a canvas's permanent route after Excalidraw frame persistence is verified.
+
+## Cutover decisions
+
+The system installation policy is to allocate a new ID for each installed system instance. Package origin and version remain separate provenance; renaming or upgrading that installation preserves its ID. Installing the same package in another studio allocates a different ID. A repository fork retains its source IDs. The person delegated this choice, and this is the selected approach.
+
+The person explicitly chose a full cutover before public release. No legacy browser-route aliases are required. Existing stored links are migrated where supported, and unsupported references must be surfaced for review. New public links use the permanent routes exclusively.

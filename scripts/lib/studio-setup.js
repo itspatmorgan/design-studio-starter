@@ -74,6 +74,9 @@ export function pinImplicitSystems(root, system, modules) {
 
 // Prepare all reads before applying any changes. Same-folder renames prevent truncated files.
 export function applySetupChanges(changes) {
+  const unchanged = (file, content) => {
+    if (!fs.lstatSync(file).isFile() || fs.readFileSync(file, 'utf8') !== content) throw new Error(`${file} changed. Review the setup plan again.`);
+  };
   const atomicWrite = (file, content) => {
     const temporary = `${file}.studio-${randomUUID()}.tmp`;
     try {
@@ -82,15 +85,15 @@ export function applySetupChanges(changes) {
     } finally { fs.rmSync(temporary, { force: true }); }
   };
   for (const change of changes) {
-    if (!fs.lstatSync(change.file).isFile() || fs.readFileSync(change.file, 'utf8') !== change.before) throw new Error(`${change.file} changed. Review the setup plan again.`);
+    unchanged(change.file, change.before);
   }
   const applied = [];
   try {
-    for (const change of changes) { atomicWrite(change.file, change.after); applied.push(change); }
+    for (const change of changes) { unchanged(change.file, change.before); atomicWrite(change.file, change.after); applied.push(change); }
   } catch (error) {
     const failures = [];
     for (const change of applied.reverse()) {
-      try { atomicWrite(change.file, change.before); } catch (rollbackError) { failures.push(rollbackError); }
+      try { unchanged(change.file, change.after); atomicWrite(change.file, change.before); } catch (rollbackError) { failures.push(rollbackError); }
     }
     if (failures.length) throw new AggregateError([error, ...failures], 'Setup failed and some files could not be restored. Inspect the files before retrying.');
     throw error;

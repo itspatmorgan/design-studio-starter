@@ -1,6 +1,7 @@
 import { planSystemLifecycle, applySystemLifecycle } from '../lib/system-lifecycle.js';
 import { prototypeContext } from '../lib/prototype-context.js';
 import { auditResourceIdentities } from '../lib/resource-identity-audit.js';
+import { planSourceIdentityMigration } from '../lib/resource-identity-migration.js';
 import { moduleConsumers } from '../lib/imports.js';
 // pnpm studio <command>: add, remove, turn on or off, and make modules and design systems. For your agent: designers
 // ask in plain words and the agent runs these. Every command that changes files says what it will do first, and
@@ -19,6 +20,7 @@ import { moduleConsumers } from '../lib/imports.js';
 //   sync [--check]                    synchronize routing and project skills; --check never writes
 //   context <prototype-folder> [--json] inspect assignment, rebuild target, scope, and guidance paths; never writes
 //   identity-audit [--json]             inspect existing/missing IDs, including retained types; never writes
+//   identity-plan [--out <file>] [--json] preview the source-metadata stage; no source is changed
 //   check                             pnpm check, and what has changed from the original of a module you added
 // Dry runs read declarations as data. --yes trusts the source: its checks run after packages install.
 import { execFileSync } from 'node:child_process';
@@ -490,8 +492,7 @@ function context() {
   } catch (error) { fail(error.message); }
 }
 
-async function identityAudit() {
-  if (positional.length || Object.keys(flags).some(key => key !== 'json')) fail('Usage: pnpm studio identity-audit [--json]. This command never changes source.');
+async function installedIdentityTypes() {
   const directory = rel('src/modules');
   const types = {};
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
@@ -499,7 +500,12 @@ async function identityAudit() {
     const file = path.join(directory, entry.name, 'type.ts');
     if (fs.existsSync(file)) types[entry.name] = (await import(pathToFileURL(file).href)).default;
   }
-  const report = auditResourceIdentities(ROOT, types);
+  return types;
+}
+
+async function identityAudit() {
+  if (positional.length || Object.keys(flags).some(key => key !== 'json')) fail('Usage: pnpm studio identity-audit [--json]. This command never changes source.');
+  const report = auditResourceIdentities(ROOT, await installedIdentityTypes());
   if (flags.json) say(JSON.stringify(report, null, 2));
   else {
     say(`${report.resources.length} resources; ${report.missing.length} need explicit identity migration.`);
@@ -509,8 +515,24 @@ async function identityAudit() {
   if (report.problems.length) process.exitCode = 1;
 }
 
+async function identityPlan() {
+  if (positional.length || Object.keys(flags).some(key => !['json', 'out'].includes(key))) fail('Usage: pnpm studio identity-plan [--out <file>] [--json]. This previews metadata only; there is no apply command yet.');
+  const sections = Object.values(MODULES).filter(module => module?.section?.items === 'prototypes' && !module.section.byPerson);
+  if (sections.length) fail('Prototype-shaped module sections need an explicit identity policy before migration can be planned.');
+  const plan = planSourceIdentityMigration(ROOT, await installedIdentityTypes());
+  if (flags.out) fs.writeFileSync(path.resolve(flags.out), JSON.stringify(plan, null, 2) + '\n', { flag: 'wx' });
+  if (flags.json) say(JSON.stringify(plan, null, 2));
+  else {
+    say(`${plan.changes.length} files would receive permanent source IDs.`);
+    for (const resource of plan.resources) say(`  ${resource.studioId}  ${resource.path}`);
+    if (flags.out) say(`Preview saved to ${path.resolve(flags.out)}.`);
+    say('Source metadata only. Relationship, authority, and route migration must be composed before application. No Studio source was changed.');
+  }
+}
+
 const commands = {
   'identity-audit': identityAudit,
+  'identity-plan': identityPlan,
   configure, status, context,
   list, check, sync: () => { say(syncAgents() ? 'Updated AGENTS.md.' : 'AGENTS.md is up to date.'); syncSkills(); },
   enable: () => setEnabled(positional[0], true), disable: () => setEnabled(positional[0], false),

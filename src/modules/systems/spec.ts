@@ -2,7 +2,8 @@
 // next to its components/ and styles/theme.css. The build, the dev server and the app all find the systems by
 // their folders; studio.config.ts explicitly registers each installed system.
 // The Studio system lives in src/systems/studio/ and declares role: 'platform'; prototypes
-// never use it (src/modules/systems/sources.ts). This file has no imports, so Node scripts and the app can load it.
+// never use it (src/modules/systems/sources.ts). Node scripts and the app share this contract.
+import { resourceId } from '../../platform/core/fileTypes.ts';
 
 export type ColorMode = 'light' | 'dark';
 
@@ -18,6 +19,7 @@ export function systemColorMode(supported: readonly ColorMode[], global: ColorMo
 export type DocsMode = 'warn' | 'strict' | 'off';
 
 export type SystemSpec = {
+  studioId?: string;           // permanent installed identity; optional until explicit migration
   role: 'platform' | 'prototype';
   status: 'active' | 'archived';
   renameReview?: readonly string[]; // references that require an agent review after renaming
@@ -46,6 +48,9 @@ export function systemProblems(spec: unknown, folder: string): string[] {
   if (!spec || typeof spec !== 'object') return [`${where} must export a system as its default.`];
   const s = spec as Partial<SystemSpec>;
   const problems: string[] = [];
+  if (s.studioId !== undefined) {
+    try { resourceId(s.studioId); } catch (error) { problems.push(`${where}: ${(error as Error).message}`); }
+  }
   if (!['active', 'archived'].includes(s.status ?? '')) problems.push(`${where}: status must explicitly be active or archived.`);
   if (s.role === 'platform' && s.status !== 'active') problems.push(`${where}: the platform system must stay active.`);
   if (!s.role || !['platform', 'prototype'].includes(s.role)) problems.push(where + ": role must be 'platform' or 'prototype'.");
