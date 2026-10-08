@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { test } from 'node:test';
-import { createStudio, chooseStudioLocation, studioFolderName, destinationPath, inspectStudio, checkInitialConfiguration, ensureClaudeEntry, planStudio, prepareStudio, SOURCE, RECEIPT } from './bootstrap.mjs';
+import { createStudio, chooseStudioLocation, studioFolderName, destinationPath, inspectStudio, checkInitialConfiguration, ensureClaudeEntry, auditStudio, planStudio, prepareStudio, SOURCE, RECEIPT } from './bootstrap.mjs';
 import { inspectEnvironment, validateSetupPlan } from './setup-environment.mjs';
 
 function fixture(t) {
@@ -42,6 +42,44 @@ function observedEnvironment(overrides = {}) {
 function accessOptions() {
   return { confirmation: 'Use the recommended location in the environment you described.' };
 }
+
+test('audit combines environment, available recommendation, and destination checks without writes', t => {
+  const { temp, source, destination, revision } = fixture(t);
+  const environment = observedEnvironment({ home: temp });
+  const audit = auditStudio({}, environment);
+  assert.equal(audit.environment, environment);
+  assert.equal(audit.recommendation.destination, path.join(temp, 'Developer', 'design-studio'));
+  assert.equal(audit.destinationCheck.available, true);
+  assert.equal(fs.existsSync(path.join(temp, 'Developer')), false);
+  const occupied = auditStudio({ destination: source }, environment);
+  assert.equal(occupied.destinationCheck.available, false);
+  assert.match(occupied.destinationCheck.reason, /occupied/);
+  assert.equal(fs.existsSync(path.join(source, RECEIPT)), false);
+  const invalid = auditStudio({ destination: 'relative-folder' }, environment);
+  assert.equal(invalid.environment, environment);
+  assert.equal(invalid.recommendation, null);
+  assert.equal(invalid.destinationCheck.available, false);
+  const created = createStudio({ source, destination, revision, name: 'Existing name' });
+  assert.equal(auditStudio({ destination }, environment).recommendation.name, created.name);
+});
+
+test('CLI audit is read-only and plan automatically saves the confirmed destination', t => {
+  const { temp } = fixture(t);
+  const helper = path.resolve('plugins/design-studio/scripts/bootstrap.mjs');
+  const destination = path.join(temp, 'chosen', 'studio');
+  const audit = spawnSync(process.execPath, [helper, 'audit', '--destination', destination], { encoding: 'utf8' });
+  assert.equal(audit.status, 0, audit.stderr);
+  assert.equal(JSON.parse(audit.stdout).recommendation.destination, destination);
+  assert.equal(JSON.parse(audit.stdout).destinationCheck.available, true);
+  assert.equal(fs.existsSync(path.dirname(destination)), false);
+  const result = spawnSync(process.execPath, [helper, 'plan', '--destination', destination, '--confirmation', 'Use the folder you showed.'], { encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr);
+  const saved = JSON.parse(result.stdout);
+  t.after(() => fs.rmSync(path.dirname(saved.planFile), { recursive: true, force: true }));
+  assert.equal(JSON.parse(fs.readFileSync(saved.planFile, 'utf8')).destination, destination);
+  assert.equal(validateSetupPlan(JSON.parse(fs.readFileSync(saved.planFile, 'utf8'))).name, 'Design Studio');
+  assert.equal(fs.existsSync(destination), false);
+});
 
 test('preflight reports observations without inferring locality or leaking environment values', () => {
   const mac = observedEnvironment();

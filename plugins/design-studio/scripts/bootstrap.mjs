@@ -108,6 +108,31 @@ export function chooseStudioLocation({ parent, name: baseName = 'Design Studio' 
   }
 }
 
+export function auditStudio(options = {}, environment = inspectEnvironment()) {
+  if (options.destination && options.parent) throw new Error('Choose a destination or a parent folder, not both.');
+  let selected;
+  let destinationCheck;
+  try {
+    selected = options.destination
+      ? { name: options.name ?? 'Design Studio', destination: destinationPath(options.destination) }
+      : chooseStudioLocation({ parent: options.parent ?? environment.suggestedParent, name: options.name });
+    validateDestination(selected.destination);
+    if (fs.existsSync(selected.destination) && options.name === undefined) selected.name = inspectStudio(selected.destination).name;
+    destinationCheck = { available: true };
+  } catch (error) {
+    destinationCheck = { available: false, reason: error.message, code: error.code ?? null };
+  }
+  return { environment, recommendation: selected ?? null, destinationCheck };
+}
+
+function saveSetupPlan(plan, output) {
+  if (output && !path.isAbsolute(output)) throw new Error('Choose an absolute --output path for the setup plan outside the studio.');
+  const file = output ? path.resolve(output) : path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'design-studio-setup-')), 'plan.json');
+  if (file === plan.destination || file.startsWith(plan.destination + path.sep)) throw new Error('Save setup tooling outside the studio destination.');
+  fs.writeFileSync(file, JSON.stringify(plan, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
+  return file;
+}
+
 export function planStudio(options, environment = inspectEnvironment()) {
   validateConfirmation(options.confirmation);
   if (!options.destination) throw new Error('Provide the exact user-confirmed destination from the audit and folder recommendation.');
@@ -227,23 +252,24 @@ export function startStudio(value, port = '5173') {
 function main() {
   const [command, ...args] = process.argv.slice(2);
   if (!command || command === '--help') {
-    console.log(`Usage: node bootstrap.mjs preflight
+    console.log(`Usage: node bootstrap.mjs audit [--destination <folder> | --parent <folder>] [--name <name>]
+       node bootstrap.mjs preflight
        node bootstrap.mjs choose [--parent <absolute-folder>] [--name <studio-name>]
-       node bootstrap.mjs plan --destination <confirmed-folder> --confirmation <user-response> --output <absolute-json-file> [--name <name>]
+       node bootstrap.mjs plan --destination <confirmed-folder> --confirmation <user-response> [--name <name>] [--output <absolute-json-file>]
        node bootstrap.mjs create|setup --plan <absolute-json-file>
        node bootstrap.mjs prepare --destination <folder> [--plan <absolute-json-file>]
        node bootstrap.mjs inspect|start --destination <folder> [--port <port>]
        node bootstrap.mjs exec --destination <folder> -- <command> [args...]
-preflight and choose are read-only. Share the observed environment and exact destination with the user for confirmation or modification.
+audit combines read-only environment inspection, folder recommendation, and destination validation. Share its findings and exact destination with the user for confirmation or modification.
 Suggested parents are ~/Developer on macOS and ~/Projects on Windows/Linux. They are suggestions, never silent installation defaults.
-plan records the user's response and validates the confirmed destination without creating a studio.
+plan records the user's response and validates the confirmed destination without creating a studio. It returns an automatically saved planFile; --output overrides that location.
 setup combines creation and preparation from one checked plan. Interrupted first-run prepare requires that plan too.
 Maintainer fixtures only: create --destination <folder> --source <absolute-local-repo> --revision <40-character-commit> [--name <name>].
 Git and Node are prerequisites. prepare/start also require mise. No GitHub account is needed.`);
     return;
   }
   const allowedOptions = {
-    preflight: [], choose: ['--parent', '--name'],
+    audit: ['--destination', '--parent', '--name'], preflight: [], choose: ['--parent', '--name'],
     plan: ['--destination', '--name', '--confirmation', '--output'],
     create: ['--plan', '--destination', '--name', '--source', '--revision'], setup: ['--plan'],
     inspect: ['--destination'], prepare: ['--destination', '--plan'], start: ['--destination', '--port'], exec: ['--destination'],
@@ -259,18 +285,18 @@ Git and Node are prerequisites. prepare/start also require mise. No GitHub accou
     if (options[key.slice(2)] !== undefined) throw new Error(`Repeated option: ${key}`);
     options[key.slice(2)] = args[i + 1];
   }
+  if (command === 'audit') {
+    console.log(JSON.stringify(auditStudio(options), null, 2));
+    return;
+  }
   if (command === 'preflight') {
     console.log(JSON.stringify(inspectEnvironment(), null, 2));
     return;
   }
   if (command === 'plan') {
-    if (!options.output || !path.isAbsolute(options.output)) throw new Error('Choose an absolute --output path for the setup plan outside the studio.');
     if (!options.destination) throw new Error('Provide the exact user-confirmed --destination from the audit and folder recommendation.');
     const plan = planStudio(options);
-    const output = path.resolve(options.output);
-    if (output === plan.destination || output.startsWith(plan.destination + path.sep)) throw new Error('Save setup tooling outside the studio destination.');
-    fs.writeFileSync(output, JSON.stringify(plan, null, 2) + '\n', { flag: 'wx', mode: 0o600 });
-    console.log(JSON.stringify({ ...plan, planFile: output }, null, 2));
+    console.log(JSON.stringify({ ...plan, planFile: saveSetupPlan(plan, options.output) }, null, 2));
     return;
   }
   if (command === 'choose') {
@@ -285,7 +311,7 @@ Git and Node are prerequisites. prepare/start also require mise. No GitHub accou
   }
   if (command === 'create' || command === 'setup') {
     if (plan) Object.assign(options, { destination: plan.destination, name: plan.name, plan });
-    else if (command === 'setup' || !options.source || options.source === SOURCE) throw new Error('A setup plan is required before creation. Run preflight, then plan.');
+    else if (command === 'setup' || !options.source || options.source === SOURCE) throw new Error('A setup plan is required before creation. Run audit, confirm the folder, then plan.');
   }
   if (command === 'setup') {
     createStudio(options);
