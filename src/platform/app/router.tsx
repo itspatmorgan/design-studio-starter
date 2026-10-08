@@ -11,6 +11,7 @@ import App, { NotFound } from '@/platform/app/shell/App';
 import Home from '@/platform/app/pages/home/Home';
 import PrototypeLayout from '@/modules/prototypes/viewer/PrototypeLayout';
 import { isSectionKey, rootOf } from '@/platform/core/roots';
+import { resourceId } from '@/platform/core/resourceIdentity';
 import { findArtifact, findArtifactByIdentity, firstArtifact, artifactLabel, loadManifest, loadPrototype, loadPrototypeByIdentity, setManifest } from '@/platform/app/data/manifest';
 import { prepareFile } from '@/platform/app/data/fileTypeModule';
 import { FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
@@ -175,8 +176,21 @@ const prototypeRoute = createRoute({
 const prototypeIndexRoute = createRoute({
   getParentRoute: () => prototypeRoute,
   path: '/',
+  beforeLoad: async ({ params, search, location }) => {
+    const { proto } = await loadProto(params);
+    const item = firstArtifact(proto);
+    // Keep the prototype URL as an entry point; copied browser URLs identify
+    // the actual artifact. Replace the entry so Back does not redirect again.
+    if (item) throw redirect({
+      to: '/prototypes/$prototype/artifacts/$artifact',
+      params: { prototype: params.prototype, artifact: resourceId(item.studioId) },
+      search,
+      hash: location.hash,
+      replace: true,
+    });
+  },
   loaderDeps: ({ search }) => ({ mode: search.mode }),
-  loader: ({ params, deps, cause }): Promise<ItemData> => itemLoader(params, deps.mode, retainedIndexPath(prototypeIndexRoute.id, cause)),
+  loader: ({ params, deps }): Promise<ItemData> => itemLoader(params, deps.mode),
   head: titleOf,
   component: () => <ItemPage data={prototypeIndexRoute.useLoaderData()} />,
   notFoundComponent: NotFound,

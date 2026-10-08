@@ -54,7 +54,7 @@ Gallery cards use the contributor's registered `github` username to load a profi
 
 ## Links and renaming
 
-`/prototypes/<prototype-id>` opens the first available artifact in navigation order without redirecting. `/prototypes/<prototype-id>/artifacts/<artifact-id>` opens a specific artifact within that prototype. Source mode uses `?mode=source`. IDs come from source metadata described in [Resource identity](../../platform/context/resource-identity.md). There are no readable-route compatibility aliases.
+`/prototypes/<prototype-id>` redirects to the first available artifact’s permanent address in navigation order, replacing the entry in browser history. An empty prototype remains at its prototype address. `/prototypes/<prototype-id>/artifacts/<artifact-id>` opens a specific artifact within that prototype. Source mode uses `?mode=source`. IDs come from source metadata described in [Resource identity](../../platform/context/resource-identity.md). There are no readable-route compatibility aliases.
 
 Navigation names and hierarchy remain a reflection of the files and folders. They are independent of the public URL.
 

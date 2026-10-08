@@ -58,7 +58,7 @@ The agreed prototype routes are:
 /prototypes/<prototype-id>/artifacts/<artifact-id>
 ```
 
-The prototype address displays its first available artifact without redirecting to a standalone artifact route. Source editing retains `?mode=source`. Names and hierarchy remain visible in navigation, rather than duplicated in the canonical URL.
+The prototype address redirects to its first available artifact’s nested permanent address, replacing the entry in browser history. The address bar therefore identifies the displayed artifact when copied. An empty prototype stays at its prototype address. Source editing retains `?mode=source`, and the redirect preserves that mode and any fragment. Names and hierarchy remain visible in navigation, rather than duplicated in the canonical URL.
 
 System routes use `/systems/<system-id>` followed by existing surface names or system-relative resource identifiers, such as `/colors`, `/components/button`, `/context/principles`, and `/skills/build-flow/SKILL`. Exposed system names and paths remain deliberate dependency contracts. Structural changes identify affected imports, browser links, documentation, and skills; supported repairs and checks remain required.
 
