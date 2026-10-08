@@ -3,7 +3,7 @@ name: publish-studio
 description: Publish an existing local Design Studio's static viewing site through ChatGPT Sites, including requested first-run publishing and updates to the same Site. Requires native Sites tools; local authoring remains in the owned studio folder.
 ---
 
-This is an experimental publishing path. Keep the local repository as the authoring environment. Publish its production build; never expose the development server.
+This publishing path is part of the beta. Keep the local repository as the authoring environment. Publish its production build; never expose the development server.
 
 ## Resolve the studio and host
 
@@ -45,10 +45,10 @@ Record publishing start and verified public readiness using the [benchmark bound
 
 Report the local folder, local preview, and published viewing link separately, stating its actual audience. A public viewing link lets anyone with the URL review the built content without granting source editing. Label bundled systems and prototypes as learning examples. The published site offers interaction with built prototypes; source, canvas, and configuration editing stay local.
 
-For an onboarding experiment, test public access without cookies or service credentials, a direct prototype link and reload, and hosted interaction. Only when testing update publication is explicitly requested, make an authorized local change and republish to the same project and URL. For that requested update test, verify the change reached the deployment and the audience stayed public. For a requested private Site, report normal browser sign-in separately from authenticated service checks; service access does not prove viewer login.
+When testing onboarding, test public access without cookies or service credentials, a direct prototype link and reload, and hosted interaction. Only when testing update publication is explicitly requested, make an authorized local change and republish to the same project and URL. For that requested update test, verify the change reached the deployment and the audience stayed public. For a requested private Site, report normal browser sign-in separately from authenticated service checks; service access does not prove viewer login.
 
 If publishing fails, preserve local readiness, the project identity, saved versions, recoverable source commits, and the requested audience. Resume that Site instead of registering another. Never change access merely to recover a deployment or sign-in failure.
 
-See the maintainer [experiment record](../../experiments/sites-onboarding.md) for verified results and remaining gaps.
+See the maintainer [historical test record](../../experiments/sites-onboarding.md) for verified results and remaining gaps.
 
 Complete workspace handoff without repeating completed setup or documentation discovery. Return the final response promptly after all required checks; benchmark the wait through that response.

@@ -2,7 +2,7 @@
 
 Choose one of four paths: Codex plugin, Claude Code plugin, Cursor plugin, or direct from the source repository. Use the desktop app and a local session so the agent can create files and run Studio on your computer. Each plugin prompt requests installation and studio creation together. If ChatGPT Sites is available, use the [setup-and-publish prompt](#set-up-and-publish-with-chatgpt-sites) instead.
 
-The first release is planned around local and repository plugin installation. You do not need to wait for a listing in a reviewed public directory. The package is currently experimental; direct-source setup and the newly packaged starter still need native journey verification. Organization policies may limit plugin installation. If your tool cannot load a plugin, use the direct-source path below.
+The beta is distributed through local and repository plugin installation. You do not need to wait for a listing in a reviewed public directory. The package is in beta; direct-source setup and the newly packaged starter still need native journey verification. Organization policies may limit plugin installation. If your tool cannot load a plugin, use the direct-source path below.
 
 After the plugin is ready, your agent audits the environment and recommends a folder for Studio. It explains where files will be saved and asks you to confirm or change the location before creating Studio. Recommendations use the observed OS, home folder, and permissions, including on work-managed computers. Windows and Linux native installation journeys remain unverified; the audit does not assume everyone uses a Mac.
 
@@ -86,24 +86,36 @@ Use the host's supported plugin installation flow and inspect where plugin files
 
 When the request includes studio creation, continue with [studio setup](#for-the-agent-carrying-out-studio-setup) after installation. Plugin registration alone does not complete that request. If a restart or new chat is required, provide a continuation handoff with the source checkout, installation status, audit findings, confirmed folder and user response if available, setup-plan path if available, and remaining steps. Include any requested Sites publication and audience. Audit the new session before continuing; retain the confirmed destination unless the user changes it.
 
+### Move an existing experiment installation to beta
+
+The marketplace is now `design-studio`; earlier packages used `design-studio-experiment`. Treat this as a registration change, not an automatic update. Read the current package version from [plugin.json](plugins/design-studio/plugin.json).
+
+Inspect the host's installed plugins and marketplace registrations first. Using its supported controls or current CLI help, disable or uninstall only the old Design Studio plugin, preserving its persistent data. Register this repository as `design-studio` and install `design-studio@design-studio` using the host instructions below. Remove the old marketplace registration only if it is no longer needed. Keep unrelated plugins and custom files intact; do not manually delete shared caches.
+
+Claude can retain the old marketplace identity when the same checkout path is registered again. Use a separate fresh checkout for the beta catalog and verify that registration reports `design-studio`. Keep the old checkout and registration while other plugins still depend on them. If uninstalling with Claude's CLI, use `--keep-data`.
+
+For Cursor's local directory installation, the plugin name and location stay the same. Inspect the installed version and use the supported replacement procedure, preserving custom files. The changed marketplace name applies to catalog registrations.
+
+Restart or reload as required, then verify one active Design Studio plugin, its current version, and its commands or skills in a fresh session. Open an existing studio with **“Open my Design Studio”** to verify preservation; do not recreate it. Plugin migration does not move or upgrade studio folders. Beta migration still needs native verification in each host.
+
 ### Codex local plugin instructions
 
-Use the installed Codex CLI's current help to verify its plugin commands. The tested registration flow is:
+Use the installed Codex CLI's current help to verify its plugin commands. The registration flow is:
 
 ```sh
 codex plugin marketplace add /absolute/path/to/the/source-checkout
-codex plugin add design-studio@design-studio-experiment
+codex plugin add design-studio@design-studio
 ```
 
 The repository's `.agents/plugins/marketplace.json` is a catalog for this package; it does not require public-directory review. Check the installed version and ask the person to restart the desktop app if required, then verify the plugin in a new local chat. Do not claim an offered instruction or successful CLI install proves desktop activation.
 
 ### Claude Code local plugin instructions
 
-The tested local registration flow is:
+The local registration flow is:
 
 ```sh
 claude plugin marketplace add /absolute/path/to/the/source-checkout
-claude plugin install design-studio@design-studio-experiment --scope user
+claude plugin install design-studio@design-studio --scope user
 ```
 
 Verify current command help before execution. The catalog is `.claude-plugin/marketplace.json`. Keep the local checkout available when the installation reads from it. Verify the three plugin commands in Claude Desktop's local Code view. The CLI is an agent-managed installation tool; continued user work is in the desktop app. Do not substitute a terminal session for a desktop test.
@@ -126,6 +138,6 @@ Follow that procedure through verified preview and workspace handoff. Preserve e
 
 For requested ChatGPT Sites publication, continue with the [publish-studio skill](plugins/design-studio/skills/publish-studio/SKILL.md). It owns capability checks, Site identity, audience, deployment, and verification. If Sites is unavailable, complete local setup and explain the missing capability.
 
-## Timed setup experiments
+## Setup benchmarks
 
 For a requested benchmark, capture the request start before obtaining the repository. Follow [benchmark boundaries](plugins/design-studio/experiments/benchmarking.md) after the checkout is available, backfilling only the captured timestamp. Report setup from the uninstalled state, publication from a prepared studio, and the full user wait through final handoff. Command durations are diagnostic details, never a substitute for the end-to-end time. Include restart or new-chat time when required.

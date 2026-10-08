@@ -1,11 +1,11 @@
 {
-  "name": "design-studio-experiment",
+  "name": "design-studio",
   "owner": {
     "name": "Patrick Morgan",
     "url": "https://itspatmorgan.com"
   },
   "metadata": {
-    "description": "Experimental Design Studio setup for local coding agents."
+    "description": "Design Studio beta setup for local coding agents."
   },
   "plugins": [
     {

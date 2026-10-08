@@ -1,7 +1,7 @@
 {
-  "name": "design-studio-experiment",
+  "name": "design-studio",
   "interface": {
-    "displayName": "Design Studio Experiment"
+    "displayName": "Design Studio"
   },
   "plugins": [
     {

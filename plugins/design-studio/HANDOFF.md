@@ -1,8 +1,10 @@
 # Test Design Studio on another computer
 
-The beta test package is `0.1.0-experiment.13`, adding optional public Sites publishing. Its pinned starter snapshot remains `b6fc5d9c790671da5a27810a08ff9e05de700474`, which includes canvas loading, editor fallback, automatic link repair, and configuration-backed Welcome fixes. New installs use a smaller working-studio package. Numbered default installs and local-file messaging remain. Existing studios are preserved and are not upgraded automatically.
+Read the current beta version from [plugin.json](plugin.json) and the pinned starter revision from [bootstrap.mjs](scripts/bootstrap.mjs). Record both for each test. The setup receipt `design-studio.local.json` identifies the downloaded studio code; the plugin version alone does not.
 
-The current development branch has later contributor-level Welcome, system-curation guidance, and separate asset pages. Those changes are not in the experiment .12 starter pin. Before testing them through the four installation paths, publish a tested starter revision and update the package pin. Record the downloaded revision from `design-studio.local.json`; the plugin version alone does not identify the studio code.
+The plugin uses the stable marketplace name `design-studio`. Earlier installations used `design-studio-experiment`; follow the [beta migration procedure](../../SETUP.md#move-an-existing-experiment-installation-to-beta) before testing an upgrade. Existing studio folders must remain intact.
+
+Test the checkout being reviewed. Before a public delivery test, merge and publish the tested changes and confirm the starter pin includes any studio changes under test. Local plugin changes do not imply that the pinned starter includes later platform changes.
 
 ## Get the current package
 
@@ -23,7 +25,7 @@ Read the [plugin README](README.md) for installation commands. The plugin folder
 
 ## Test each harness
 
-- **Codex:** add this checkout as the local plugin marketplace and install the current Design Studio package. If an older experiment is installed, refresh or replace that installation using the plugin controls. Confirm the installed version is experiment .13, then start a fresh chat.
+- **Codex:** add this checkout as the local plugin marketplace and install the current Design Studio package. For an earlier installation, follow the beta migration procedure. Confirm the installed version matches the current manifest, then start a fresh chat.
 - **Claude Code plugin:** follow the local registration procedure in [SETUP.md](../../SETUP.md#claude-code-local-plugin-instructions), then test in Claude Desktop’s Code view with Local selected. Verify the plugin commands before asking it to create a studio. Keep unrelated work repositories out of this test.
 - **Cursor plugin:** follow [local plugin installation](../../SETUP.md#cursor-local-plugin-instructions), reload the app, and verify its skills in Customize before starting a fresh local Agent chat.
 - **Direct from source:** use [the plugin-free request](../../SETUP.md#4-direct-from-the-source-repository) in a local desktop agent without Design Studio installed.
@@ -42,7 +44,7 @@ Record what the agent did, where it needed human help, and any unclear step. For
 
 ## Test the Sites candidate
 
-Use the checkout containing experiment .13. For the customer delivery test, use the public repository after these changes are merged and pushed to main. Begin without Design Studio installed and follow the combined installation-and-publishing prompt in [SETUP.md](../../SETUP.md#1-codex-plugin). Verify the installed version, then follow any restart or new-chat handoff. Sites must be installed and available; plugin tagging is optional.
+Use the beta checkout being reviewed. For the customer delivery test, use the public repository after these changes are merged and pushed to main. Begin without Design Studio installed and follow the combined installation-and-publishing prompt in [SETUP.md](../../SETUP.md#set-up-and-publish-with-chatgpt-sites). Verify the installed version, then follow any restart or new-chat handoff. Sites must be installed and available; plugin tagging is optional.
 
 Ask: “Create a new Design Studio named Design Studio Public Onboarding QA in my Developer folder and publish a public review link with ChatGPT Sites. Handle setup and opening it for me.”
 
@@ -67,7 +69,7 @@ After the first prototype, use a disposable studio to test these requests with i
 
 Use real supplied product source for the import trial. A synthetic fixture can verify platform mechanics, but cannot prove production fidelity. Empty context and skills folders are valid; the agent should not invent product knowledge or install a skills catalog.
 
-## Recorded native journeys
+## Historical native journeys
 
 | Harness | Package/version | Setup + Welcome | Workspace + skills | First prototype | Reopen | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -77,6 +79,8 @@ Use real supplied product source for the import trial. A synthetic fixture can v
 | Direct from source | No plugin | Pending | Pending | Pending | Pending | |
 
 ## Follow-up checks
+
+For each host, test migration from its previous experiment installation in an isolated profile or disposable environment. Confirm one active beta package and reopen a studio containing prior work. Verify unrelated plugins, custom files, studio paths, and existing work are preserved. Record the old and new versions and marketplace identities. Schema checks do not prove migration.
 
 Create two studios without specifying names or paths. Verify numbered default folders, the local-files explanation, and preservation of the first studio. Reopen by the known folder and resume interrupted setup without allocating another number. Then try [direct setup](../../SETUP.md) without an installed plugin. Check occupied ports, an unrelated existing destination, and preservation after plugin removal or updates. Clean-computer prerequisite installation is still a separate gate if this computer already has the required tools. Windows and Linux remain unverified.
 

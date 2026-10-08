@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "design-studio",
-  "version": "0.1.0-experiment.16",
+  "version": "0.2.0-beta.1",
   "description": "Create and refine prototypes with Design Studio. Setup is handled for you, and all code stays in a visible folder on your computer.",
   "author": {
     "name": "Patrick Morgan",
@@ -15,7 +15,7 @@
       "interface": {
         "displayName": "Design Studio",
         "shortDescription": "Your ideas, made tangible.",
-        "longDescription": "A local design environment for designers and product managers. Create prototypes, sketch on canvases, and keep product context alongside your work. ChatGPT handles setup and technical steps. You own every file. Optionally publish a public review link with ChatGPT Sites when its tools are available. Requires a supported local code harness; GitHub is optional. Experimental package.",
+        "longDescription": "A local design environment for designers and product managers. Create prototypes, sketch on canvases, and keep product context alongside your work. ChatGPT handles setup and technical steps. You own every file. Optionally publish a public review link with ChatGPT Sites when its tools are available. Requires a supported local code harness; GitHub is optional. Beta package.",
         "developerName": "Patrick Morgan",
         "category": "Developer Tools",
         "capabilities": [

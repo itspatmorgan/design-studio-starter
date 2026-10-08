@@ -1,16 +1,16 @@
 # Design Studio plugin
 
-This experimental package helps a local coding agent create, open, and use Design Studio. A designer asks “Create my Design Studio.” The agent handles downloading and preparation, opens a preview, and helps them continue in the owned studio folder.
+This beta package helps a local coding agent create, open, and use Design Studio. A designer asks “Create my Design Studio.” The agent handles downloading and preparation, opens a preview, and helps them continue in the owned studio folder.
 
 Created by [Patrick Morgan](https://itspatmorgan.com). The plugin homepage is the [Design Studio landing page](https://itspatmorgan.com/design-studio); its source is [design-studio-starter on GitHub](https://github.com/itspatmorgan/design-studio-starter). Follow Patrick’s writing at [Unknown Arts](https://www.unknownarts.com/) and find him on [X](https://x.com/itspatmorgan) and [LinkedIn](https://www.linkedin.com/in/itspatmorgan).
 
-## Staged release
+## Beta distribution
 
-The primary audience uses Codex desktop, Claude Desktop’s local Code view, and Cursor. The first release will use each tool’s supported local or repository plugin installation. Public-directory submissions and reviews are a later distribution stage, not a prerequisite for the first release.
+The primary audience uses Codex desktop, Claude Desktop’s local Code view, and Cursor. The beta uses each tool’s supported local or repository plugin installation. Public-directory submissions and reviews are a later distribution stage, not a prerequisite for the beta.
 
 [Set up Design Studio](../../SETUP.md) owns the four user paths: Codex plugin, Claude Code plugin, Cursor plugin, and direct from the source repository. Each plugin path starts with one prompt for installation and studio creation. The optional [ChatGPT Sites prompt](../../SETUP.md#set-up-and-publish-with-chatgpt-sites) includes publication. Repository catalogs are installation metadata; they do not imply a reviewed directory listing. Keep terminal commands in agent or maintainer instructions.
 
-The current package pins the published starter with the latest local workflow fixes. Before the first release, test native setup with the newly packaged starter, including direct-source setup. Codex setup has passed; the person reports Claude Desktop and Cursor setup working well before this packaging refactor. Reopen and work-preservation checks remain separate evidence. The pilot targets macOS; Windows, Linux, and clean-computer prerequisite installation remain unverified.
+The current package pins the published starter with the latest local workflow fixes. Before broader beta rollout, test native setup with the newly packaged starter, including direct-source setup. Codex setup has passed; the person reports Claude Desktop and Cursor setup working well before this packaging refactor. Reopen and work-preservation checks remain separate evidence. The pilot targets macOS; Windows, Linux, and clean-computer prerequisite installation remain unverified.
 
 ## One setup flow
 
@@ -23,7 +23,7 @@ The read-only `audit` command combines environment observations, folder recommen
 - [Create studio](skills/create-studio/SKILL.md) owns first-time setup.
 - [Open studio](skills/open-studio/SKILL.md) reopens existing work without reinitializing it.
 - [Use studio](skills/use-studio/SKILL.md) delegates ongoing work to that studio's current guidance.
-- [Publish studio](skills/publish-studio/SKILL.md) experiments with requested local onboarding through public ChatGPT Sites publication and later updates.
+- [Publish studio](skills/publish-studio/SKILL.md) handles requested local onboarding through public ChatGPT Sites publication and later updates.
 - [Host handoff](skills/create-studio/references/host-handoff.md) adapts folder opening to the current coding tool.
 - [Direct setup](../../SETUP.md) lets an agent use the same procedure without a plugin installed.
 
@@ -31,7 +31,7 @@ The read-only `audit` command combines environment observations, folder recommen
 
 Preparation trusts the inspected studio's mise configuration, installs pinned tools and dependencies, applies first-run personal defaults, and synchronizes project skills. The receipt `design-studio.local.json` records setup state and is excluded locally from Git. Repeating setup preserves existing configuration and work. Unrelated folders, linked metadata, invalid receipts, and modified initial settings are refused rather than overwritten.
 
-Experiment .16 adds deterministic tool selection and explicit [setup, deployment, and end-to-end benchmarks](experiments/benchmarking.md). Experiment .15 preserves the starter’s default tagline instead of replacing it with plugin marketing copy. It pins the publicly available, verified starter at `599da74eee43aba5e1c4a97abad8dc87140f3989`. It includes the experiment .14 kebab-case destination selection, setup stage timings, and faster working-studio builds. That starter includes smoother canvas loading, editor fallbacks, automatic link repair, configuration-backed Welcome dismissal, learning-example guidance, and consolidated harness generation. New installs use the working-studio package. A release pin must identify a public, tested commit. New bootstrap changes do not automatically upgrade existing studios.
+The bootstrap pins a public starter revision in [bootstrap.mjs](scripts/bootstrap.mjs). The setup receipt records the downloaded revision; the plugin version alone does not identify the studio code. A release pin must identify a public, tested commit. Bootstrap changes do not automatically upgrade existing studios. [Setup benchmarks](experiments/benchmarking.md) define the timing boundaries; [historical measurements](experiments/setup-speed.md) record earlier packages.
 
 ## Packaging and ownership
 
@@ -43,7 +43,7 @@ Experiment .16 adds deterministic tool selection and explicit [setup, deployment
 | Claude Code | `.claude-plugin/plugin.json` | `.claude-plugin/marketplace.json` |
 | Cursor | `.cursor-plugin/plugin.json` | `.cursor-plugin/marketplace.json` |
 
-All hosts load the same `skills/` and `scripts/`; no procedural copies are maintained. Run `pnpm harness:sync` after identity or guidance changes. `pnpm harness:check` checks all generated host manifests, catalogs, and project adapters without writing. The OpenAI marketplace retains its existing host policy fields. The portable definition owns shared identity; generated files are not authoring sources.
+All hosts load the same `skills/` and `scripts/`; no procedural copies are maintained. Run `pnpm harness:sync` after identity or guidance changes. `pnpm harness:check` checks all generated host manifests, catalogs, and project adapters without writing. The OpenAI marketplace retains its existing host policy fields. The portable definition owns shared identity; generated files are not authoring sources. The stable plugin and marketplace name is `design-studio`; release stage appears in the version and beta description. For earlier installations, follow [migration to beta](../../SETUP.md#move-an-existing-experiment-installation-to-beta).
 
 [starter-package.mjs](scripts/starter-package.mjs) declares the working-studio contents for every agent-assisted setup path. New studios omit this plugin package, distribution catalogs, publishing workflows, and maintainer evaluations. They retain project skills, app code, examples, tool configuration, and local verification commands. Their [README](scripts/starter-readme.md) explains local ownership and customization. Each receives a new local Git baseline; its setup receipt records the pinned source revision. Existing studios are not repackaged. Manual GitHub template copies still contain the full repository.
 
@@ -53,15 +53,15 @@ The package also preserves `contributors.json` when present in an older pinned s
 
 Plugin entry skills stay outside the Studio instruction browser. The owned repository exposes platform, enabled-module, and assigned-system procedures through project skill adapters. Its `CLAUDE.md` imports `AGENTS.md`, and `.claude/skills` links the same entries used by Codex and Cursor. The helper replaces only the exact older generated Claude entry with the import; custom entries are preserved. See [Agent context routing](../../src/platform/context/agent-context.md).
 
-## Experimental Sites publishing
+## Publishing with ChatGPT Sites
 
 Ask “Create my Design Studio locally and publish a public viewing link with ChatGPT Sites.” Local setup completes first. Native Sites tools then publish the static build and retain the Site identity in the owned folder. New viewing sites default to public, so anyone with the link can review and interact with the built prototypes. An explicit private or restricted audience takes precedence. Later, ask “Publish my Studio” to update that same Site with its existing audience. Source synchronization also sends the local source to the Sites-managed repository; no GitHub account is required.
 
-This path needs a host with both local execution and native Sites capabilities. It does not add a hosted editing backend or change other hosts' local setup. See [publish-studio](skills/publish-studio/SKILL.md) for the procedure and the [experiment record](experiments/sites-onboarding.md) for evidence and remaining tests. Experiment .13 exposes the publishing capability and onboarding prompt in the plugin interface. The public starter pin is unchanged; directory distribution and a fresh installed-plugin onboarding test remain pending.
+This path needs a host with both local execution and native Sites capabilities. It does not add a hosted editing backend or change other hosts' local setup. See [publish-studio](skills/publish-studio/SKILL.md) for the procedure and the [experiment record](experiments/sites-onboarding.md) for evidence and remaining tests. The plugin interface includes the publishing capability and onboarding prompt. Fresh installed-plugin onboarding, later-chat publication, and recovery checks remain pending.
 
 ## Maintainer testing
 
-These are experiment commands, not the designer-facing installation experience:
+These commands verify the package for maintainers:
 
 ```sh
 pnpm harness:check
@@ -73,7 +73,7 @@ Local Codex marketplace:
 
 ```sh
 codex plugin marketplace add /absolute/path/to/this/repository
-codex plugin add design-studio@design-studio-experiment
+codex plugin add design-studio@design-studio
 ```
 
 Claude Desktop pilot journey:
@@ -93,9 +93,9 @@ claude plugin validate --strict .claude-plugin/marketplace.json
 claude --plugin-dir /absolute/path/to/this/repository/plugins/design-studio
 ```
 
-In that Claude session, invoke `/design-studio:create-studio`. This tests the package in place without changing global plugin registrations. For repository distribution after pushing these manifests, add `itspatmorgan/design-studio-starter` as a Claude marketplace and install `design-studio@design-studio-experiment`.
+In that Claude session, invoke `/design-studio:create-studio`. This tests the package in place without changing global plugin registrations. For repository distribution after pushing these manifests, add `itspatmorgan/design-studio-starter` as a Claude marketplace and install `design-studio@design-studio`.
 
-For the first release, test Cursor’s local directory installation described in [SETUP.md](../../SETUP.md#cursor-local-plugin-instructions). Current official documentation requires a copy inside `~/.cursor/plugins/local`; links outside that directory are skipped. Repository team catalogs and reviewed public listings are additional distribution paths. A valid manifest alone does not prove activation or handoff.
+For the beta, test Cursor’s local directory installation described in [SETUP.md](../../SETUP.md#cursor-local-plugin-instructions). Current official documentation requires a copy inside `~/.cursor/plugins/local`; links outside that directory are skipped. Repository team catalogs and reviewed public listings are additional distribution paths. A valid manifest alone does not prove activation or handoff.
 
 Official references: [Claude Desktop](https://code.claude.com/docs/en/desktop), [OpenAI packaging](https://developers.openai.com/plugins/build/plugins), [Claude plugins](https://code.claude.com/docs/en/plugins-reference), [Claude marketplaces](https://code.claude.com/docs/en/plugin-marketplaces), [Cursor plugins](https://cursor.com/docs/reference/plugins), [Cursor skills and imports](https://cursor.com/docs/skills).
 
@@ -114,7 +114,8 @@ Official references: [Claude Desktop](https://code.claude.com/docs/en/desktop), 
 | Latest setup changes | Local revision `b2f74787db1aec4a4d9576121a90b0b6ba66fb72` packaged and passed its full build on October 6, 2026: 228 included tests, typecheck, and Vite. Browser review verified Welcome and dismissal after reload; fixture checks verified independent contributor progress, missing-declaration rejection, project skills, and repeat-create preservation. This used installed host dependencies and pinned tools, not clean-computer preparation or a native agent journey. The public starter pin still predates these changes. |
 | Direct setup request | Implemented; first-run agent journey remains pending. |
 | Clean computer | Missing tools, permission prompts, and interrupted prerequisite installation remain pending. The current host already has dependencies. |
-| Beta distribution | Local/repository installs supported by experiment .13 with the tested public starter pin retained. Sites deployment and public viewing are verified; fresh installed-plugin onboarding, later-chat publishing, and recovery remain pending beta checks. |
+| Claude beta registration migration | Isolated Claude Code CLI profile verified migration from `0.1.0-experiment.16` to `0.2.0-beta.1` on October 8, 2026. Reusing the old catalog path retained its old identity; a separate beta checkout succeeded and preserved an unrelated installed plugin. Desktop activation and existing-studio reopening remain unverified. |
+| Beta distribution | Current package is beta; the tested public starter pin is retained. Earlier packages verified Sites deployment and public viewing. Native beta installation and migration, fresh installed-plugin onboarding, later-chat publishing, and recovery remain pending. |
 | Reviewed public directories | Later stage. Submission, review, and listing remain pending. |
 | Team use | Disposable package checks verified a second contributor's explicit Welcome flag and preserved the first profile and shared configuration. Native join, first prototype, and sharing tests remain pending. |
 
