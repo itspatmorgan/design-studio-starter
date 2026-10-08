@@ -18,6 +18,12 @@ Design Studio takes an omakase approach: choose a coherent set of primitives and
 
 **In practice:** provide a working path through setup and the first prototype. Offer a useful default design system, explain what it is, and support replacing it with the team's own kit. Add options when they serve a concrete need.
 
+## Provide minimum sufficient guidance for a high-quality outcome
+
+Give people and agents the guidance they need to achieve a high-quality outcome. Each instruction should support a meaningful decision or prevent a concrete failure. Keep the common path clear and provide deeper detail when it is needed.
+
+**In practice:** apply this standard to onboarding, documentation, context, and skills. Put repeatable mechanics in code. Use guidance to explain intent, choices, and recovery. Judge sufficiency by the resulting experience and work.
+
 ## Build with parts that compose and grow
 
 Modularity, composability, extensibility, and scalability are product qualities as well as engineering qualities. Teams should be able to add capabilities, replace parts, and grow their studio without having to rebuild the whole environment. Clear boundaries help both people and agents understand what a change affects.
