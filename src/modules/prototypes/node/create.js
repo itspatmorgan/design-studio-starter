@@ -42,7 +42,7 @@ export function createPrototype({ title, key, system = DEFAULT_SYSTEM }) {
     const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
     const d = new Date();
     const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    Object.assign(meta, { studioId, ownerId: resourceId(contributors[key].studioId), title, created: today, system: system === null ? null : resourceId(PROTOTYPE_SYSTEMS[system].studioId) });
+    Object.assign(meta, { studioId, ownerContributorId: resourceId(contributors[key].studioId), title, created: today, systemId: system === null ? null : resourceId(PROTOTYPE_SYSTEMS[system].studioId) });
     identifyPrototypeArtifacts(dest, INSTALLED_FILE_TYPES, used, studioId);
     fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2) + '\n');
     return { slug, manifest: buildManifest().manifest };

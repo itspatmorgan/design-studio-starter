@@ -54,8 +54,8 @@ test('identity audit refuses symbolic source paths rather than inspecting an ext
 test('declared prototype owner must match its current contributor folder', t => {
   const { root, write } = fixture(t);
   write('contributors/pat.json', '{"studioId":"0123456789abcdef"}');
-  write('src/prototypes/pat/example/meta.json', '{"title":"Example","ownerId":"abcdefghjkmnpqrs"}');
-  assert.match(auditResourceIdentities(root, types).problems.join('\n'), /ownerId must match/);
-  write('src/prototypes/pat/example/meta.json', '{"title":"Example","ownerId":"0123456789abcdef"}');
+  write('src/prototypes/pat/example/meta.json', '{"title":"Example","ownerContributorId":"abcdefghjkmnpqrs"}');
+  assert.match(auditResourceIdentities(root, types).problems.join('\n'), /ownerContributorId must match/);
+  write('src/prototypes/pat/example/meta.json', '{"title":"Example","ownerContributorId":"0123456789abcdef"}');
   assert.deepEqual(auditResourceIdentities(root, types).problems, []);
 });

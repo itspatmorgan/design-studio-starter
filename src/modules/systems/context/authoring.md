@@ -12,6 +12,6 @@ Read the complete sections relevant to the change:
 | Import or replace a system | [setup-design-system](../skills/setup-design-system/SKILL.md). |
 | Maintain the Systems application surface | [Systems interface](interface.md). |
 
-Expand these reads when a dependency or ambiguity requires it. For `system: null`, follow the [prototype dependency boundaries](../../prototypes/README.md#dependency-boundaries) and local CSS; registered-system conventions do not apply.
+Expand these reads when a dependency or ambiguity requires it. For `systemId: null`, follow the [prototype dependency boundaries](../../prototypes/README.md#dependency-boundaries) and local CSS; registered-system conventions do not apply.
 
 Use **Theme** and **theme tokens** in interface copy and guidance. Assets follow the [platform convention](../../../platform/context/assets.md). Shared changes follow [contributor scope](../../../platform/context/contributor-scope.md); registration and lifecycle changes use the [managed CLI](../../../platform/skills/manage-modules/SKILL.md).

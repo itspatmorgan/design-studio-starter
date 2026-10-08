@@ -26,14 +26,14 @@ For agent inspection, run `pnpm studio context src/prototypes/<contributor>/<pro
 | Field | Contract |
 | --- | --- |
 | `studioId` | Permanent prototype identity, allocated on creation and retained through rename, move, archive, and restore. |
-| `ownerId` | Permanent contributor identity matching the contributor folder. Moving files cannot silently change ownership. |
+| `ownerContributorId` | Permanent contributor identity matching the contributor folder. Moving files cannot silently change ownership. |
 | `title` | Required display title. |
 | `created` | Optional `YYYY-MM-DD` date. Creation fills it in. |
-| `system` | Installed prototype system ID, or `null` for no system (custom styling). Omission uses the explicitly configured `defaultSystem`. Creation saves the chosen value. |
-| `rebuild` | Optional pending migration: `targetSystem` is an installed ID or `null`; `source` is the original prototype’s permanent ID. Current `system` remains the runtime boundary until migration. |
+| `systemId` | Required installed prototype-system identity, or `null` for no system (custom styling). Creation writes the selected value. Missing assignments fail validation; changing the default affects future prototypes. |
+| `rebuild` | Optional pending migration: `targetSystemId` is an installed ID or `null`; `sourcePrototypeId` is the original prototype’s permanent ID. Current `systemId` remains the runtime boundary until migration. |
 | `order` | Relative file and folder paths placed first within their folder, in sequence. |
-| `archivedBySystem` | System ID that archived this prototype; used to offer restoration only for work archived together. |
-| `systemMissing` | `{ id, label }` for a deleted assigned system. Preserve source and assignment; rendering and deployment wait for a rebuild. Remove this field after migrating code and assignment together. |
+| `archivedBySystemId` | System ID that archived this prototype; used to offer restoration only for work archived together. |
+| `systemMissing` | `{ systemId, label }` for a deleted assigned system. Preserve source and assignment; rendering and deployment wait for a rebuild. Remove this field after migrating code and assignment together. |
 | `status` | `active` or `archived`. Omission means active. |
 
 Remaining artifacts sort alphabetically, files before folders. Use `order` to reorder, rather than renaming files.
@@ -42,7 +42,7 @@ Moving, renaming, or deleting an artifact must update its `order` entries. The a
 
 Invalid metadata skips the prototype with a local warning and fails the production build.
 
-With `system: null`, views start from browser colors and a system font, without registered system tokens or components. Use local components, CSS Modules, shared utilities, and installed packages. System imports remain outside this prototype's runtime boundary. Layout utilities without system tokens remain available; style colors, typography, and spacing in local CSS. This is distinct from an invalid system ID, which fails validation.
+With `systemId: null`, views start from browser colors and a system font, without registered system tokens or components. Use local components, CSS Modules, shared utilities, and installed packages. System imports remain outside this prototype's runtime boundary. Layout utilities without system tokens remain available; style colors, typography, and spacing in local CSS. This is distinct from an invalid system ID, which fails validation.
 
 `pnpm new "Prototype Name"` assigns the studio default. Use `--system <source-key>` to choose another installed prototype system, or `--no-system` for custom styling.
 
@@ -76,9 +76,9 @@ Use `usePrototypeArtifactHref` from the public `@module/prototypes` library to r
 
 The local **Duplicate** action is available for your own personal prototypes and for Admins managing another contributor’s prototypes. The copy stays in the original contributor’s folder. It gives the prototype and each navigable artifact a fresh ID, remaps copied permanent references inside that copy, copies files into a new folder, resets the creation date, makes an archived source's copy active, and rewrites self-address links in Markdown and canvas files. Relative imports and links stay local to the copy. Symbolic links are rejected; Git metadata, node_modules, and trash folders are excluded.
 
-A different selected system records the target system ID in `rebuild.targetSystem` and the original prototype ID in `rebuild.source`. Agent inspection resolves the current source path. It retains the source's resolved `system` so its copied implementation can still run. The confirmation explains that reconstruction is required. The sidebar supplies a copyable agent prompt; there is no automatic agent dispatch.
+A different selected system records the target system ID in `rebuild.targetSystemId` and the original prototype ID in `rebuild.sourcePrototypeId`. Agent inspection resolves the current source path. It retains the source's explicit `systemId` so its copied implementation can still run. The confirmation explains that reconstruction is required. The sidebar supplies a copyable agent prompt; there is no automatic agent dispatch.
 
-To finish, migrate code and the `system` value together, verify the build and rendered artifacts, then remove `rebuild`. Pending targets prevent removing that system through the studio CLI. Assignment has no in-place switching action in the app; direct code owners can still change metadata while migrating their implementation.
+To finish, migrate code and the `systemId` value together, verify the build and rendered artifacts, then remove `rebuild`. Pending targets prevent removing that system through the studio CLI. Assignment has no in-place switching action in the app; direct code owners can still change metadata while migrating their implementation.
 
 ## Lo-fi mode
 

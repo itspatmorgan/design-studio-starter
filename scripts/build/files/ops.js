@@ -14,7 +14,7 @@ import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/module
 import { ROOT, TRASH, readOrder, readTree, resolveInside, validName } from './paths.js';
 import { prototypeAddress, repairReferences, snapshotFiles } from '../../lib/artifact-moves.js';
 import { prototypeAssignment } from '../../lib/prototype-assignment.js';
-import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '../../../src/modules/systems/node/systems.js';
+import { PROTOTYPE_SYSTEMS } from '../../../src/modules/systems/node/systems.js';
 
 // The contents of a new file: its file type's template, by extension (src/modules/<type>/type.ts).
 // Files of no type start empty.
@@ -117,7 +117,7 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     return { path: relOf(target) };
   }
   if (op === 'meta') {
-    // Only the fields given change; others in meta.json (created, system) are kept.
+    // Only the fields given change; others in meta.json (created, systemId) are kept.
     const metaFile = path.join(dir, 'meta.json');
     const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
     if (title !== undefined) {
@@ -129,11 +129,11 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
       const next = parseStatus(status);
       if (!next) throw new Error(`A status is one of: ${STATUSES.join(', ')}.`);
       if (next === 'active') {
-        const assignment = prototypeAssignment(meta, DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS);
+        const assignment = prototypeAssignment(meta, PROTOTYPE_SYSTEMS);
         if (assignment.problems.length || meta.systemMissing) throw new Error('Rebuild this prototype with an available system before restoring it.');
         if (assignment.system !== null && PROTOTYPE_SYSTEMS[assignment.system]?.status === 'archived') throw new Error('Restore this prototype’s system before restoring the prototype.');
       }
-      if (next === 'active') { delete meta.status; delete meta.archivedBySystem; } else meta.status = next;
+      if (next === 'active') { delete meta.status; delete meta.archivedBySystemId; } else meta.status = next;
     }
     fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
     return {};

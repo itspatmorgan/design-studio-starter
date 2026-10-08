@@ -7,6 +7,8 @@ import { readPersistedStudioConfig } from './persisted-studio-config.js';
 import { canonicalDirectory } from './safe-paths.js';
 import { resourceId, jsonIdentity } from '../../src/platform/core/resourceIdentity.ts';
 import { canPerform } from '../../src/platform/core/permissions.ts';
+import { prototypeAssignment } from './prototype-assignment.js';
+import { readDeclaration } from '../../src/platform/core/declarations.ts';
 import { auditResourceIdentities } from './resource-identity-audit.js';
 import { applySetupChanges } from './studio-setup.js';
 
@@ -15,19 +17,26 @@ export function planPrototypeIdentification(root, types, folder, actor, { ids = 
   const match = /^src\/prototypes\/([a-z0-9][a-z0-9-]*)\/([a-z0-9][a-z0-9._-]*)$/i.exec(relative);
   if (!match || !canonicalDirectory(absolute, root)) throw new Error('Identify an existing contributor-owned prototype folder without symbolic links.');
   const current = readPersistedStudioConfig(root);
-  const ownerId = resourceId(current.directory.contributorIds[match[1]]);
+  const ownerContributorId = resourceId(current.directory.contributorIds[match[1]]);
   if (!canPerform(current.config, actor, Object.keys(current.directory.contributorIds), { kind: 'prototype', owner: match[1] }, 'edit')) throw new Error('Only the prototype owner or an Admin can assign its missing identities.');
   const metadataFile = path.join(absolute, 'meta.json');
   const before = fs.readFileSync(metadataFile, 'utf8');
   jsonIdentity(before);
   const metadata = JSON.parse(before);
-  if (metadata.ownerId !== undefined && metadata.ownerId !== ownerId) throw new Error('Prototype owner identity does not match its contributor folder.');
+  if (metadata.ownerContributorId !== undefined && metadata.ownerContributorId !== ownerContributorId) throw new Error('Prototype owner identity does not match its contributor folder.');
+  const systems = Object.fromEntries(current.config.systems.map(key => {
+    const declaration = readDeclaration(fs.readFileSync(path.join(root, 'src/systems', key, 'system.ts'), 'utf8'));
+    if ('error' in declaration) throw new Error(declaration.error);
+    return [key, declaration.value];
+  }).filter(([, spec]) => spec.role === 'prototype'));
+  const assignment = prototypeAssignment(metadata, systems);
+  if (assignment.problems.length) throw new Error(assignment.problems.join('\n'));
   const selected = resource => resource.path === `${relative}/meta.json` || resource.parent === relative;
   const source = planSourceIdentityMigration(root, types, { ids, select: selected });
   const changes = source.changes;
-  if (metadata.ownerId === undefined) {
+  if (metadata.ownerContributorId === undefined) {
     const change = changes.find(change => change.path === `${relative}/meta.json`);
-    const after = JSON.stringify({ ...JSON.parse(change?.after ?? before), ownerId }, null, 2) + '\n';
+    const after = JSON.stringify({ ...JSON.parse(change?.after ?? before), ownerContributorId }, null, 2) + '\n';
     if (change) change.after = after;
     else changes.push({ path: `${relative}/meta.json`, before, after });
   }

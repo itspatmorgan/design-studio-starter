@@ -16,7 +16,7 @@ Read the [system contract](../../../modules/systems/README.md) and [authoring co
 | Surface | Applicable system |
 | --- | --- |
 | Application shell, module interface, navigation, source editors, and shared knowledge readers | The registered system declaring `role: 'platform'`. |
-| Prototype views, including views embedded in documents or canvases | The prototype's resolved assignment. Explicit `system: null` means no system; only omission uses `defaultSystem`. |
+| Prototype views, including views embedded in documents or canvases | The prototype's resolved assignment. Explicit `systemId: null` means no system; missing assignments are invalid. |
 | System runtime components, live examples, and Theme or Component previews | The owning or previewed system. Surrounding application navigation and shared readers retain the platform system. |
 | Documents, diagrams, and canvas controls | Studio's application presentation, as defined by the owning module; embedded views keep their own assignment. |
 

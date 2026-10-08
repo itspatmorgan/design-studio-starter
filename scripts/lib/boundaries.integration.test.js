@@ -51,7 +51,7 @@ test('private module consumers and symlink scopes are rejected; disabled app and
     `);
     run('scripts/cli/studio.js', 'create-system', 'boundary-system', '--yes');
     write(root, 'src/systems/boundary-system/components/proof.tsx', 'export function Proof() { return <button>__CUSTOM_SYSTEM_PROOF__</button>; }');
-    write(root, 'src/prototypes/boundary-fixture/production/meta.json', JSON.stringify({ title: 'Production fixture', system: readDeclaration(fs.readFileSync(path.join(root, 'src/systems/boundary-system/system.ts'), 'utf8')).value.studioId }));
+    write(root, 'src/prototypes/boundary-fixture/production/meta.json', JSON.stringify({ title: 'Production fixture', systemId: readDeclaration(fs.readFileSync(path.join(root, 'src/systems/boundary-system/system.ts'), 'utf8')).value.studioId }));
     write(root, 'src/prototypes/boundary-fixture/production/main.tsx', "import { Proof } from '@/systems/boundary-system/components/proof'; import {usePrototypeArtifactHref} from '@module/prototypes'; export default function View() { const artifactHref=usePrototypeArtifactHref(); const href=artifactHref('main.tsx'); return <a href={href}><Proof /></a>; }");
     write(root, 'src/lib/build-only.test.ts', "export const fixtureClass = 'w-[123456px]';");
     run('scripts/cli/studio.js', 'identify', 'src/prototypes/boundary-fixture/production', '--yes');

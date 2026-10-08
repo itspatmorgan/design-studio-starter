@@ -5,7 +5,7 @@ import { readDeclaration as readSystemDeclaration } from '../../src/platform/cor
 import { configProblems, studioRole } from '../../src/platform/core/config.ts';
 import { compatible } from '../../src/platform/core/modules/index.ts';
 import { agentsBlock, applyAgentsBlock } from '../../src/platform/core/modules/pack.ts';
-import { applySetupChanges, editStudioConfig, pinImplicitSystems } from './studio-setup.js';
+import { applySetupChanges, editStudioConfig } from './studio-setup.js';
 import { readPersistedStudioConfig } from './persisted-studio-config.js';
 import { persistStudioReferences } from '../../src/platform/core/resourceReferences.ts';
 
@@ -53,8 +53,7 @@ export function planSettings({ root, modules, systems, platformId, contributors,
   const persisted = persistStudioReferences(next, current.directory);
   const serializedChanges = Object.fromEntries(Object.entries(changed).map(([key, value]) => [key, key === 'modules' ? value : persisted[key]]));
   const source = Object.keys(changed).length ? editStudioConfig(current.source, serializedChanges) : current.source;
-  const pins = next.defaultSystem !== current.config.defaultSystem
-    ? pinImplicitSystems(root, current.persisted.defaultSystem, modules) : [];
+  const pins = [];
   const edits = [...pins, { file: current.file, before: current.source, after: source }];
   const agents = path.join(root, 'AGENTS.md');
   if (fs.existsSync(agents)) {

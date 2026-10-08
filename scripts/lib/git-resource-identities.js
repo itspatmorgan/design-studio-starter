@@ -6,7 +6,7 @@ import { auditResourceIdentities } from './resource-identity-audit.js';
 
 // Build the same retained identity inventory from Git, never from the checkout.
 // Staged checks inspect index blobs; CI inspects the explicitly requested tree.
-export function gitResourceIdentities(ref, types, { cwd = process.cwd(), staged = false } = {}) {
+export function gitResourceIdentities(ref, types, { cwd = process.cwd(), staged = false, legacyOwnership = false } = {}) {
   if (ref === 'empty-tree' && !staged) return { resources: [], missing: [], problems: [] };
   const git = args => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 20 * 1024 * 1024 });
   const output = git(staged ? ['ls-files', '--stage', '-z'] : ['ls-tree', '-r', '-z', ref]);
@@ -37,8 +37,10 @@ export function gitResourceIdentities(ref, types, { cwd = process.cwd(), staged 
     // Ownership participates in before/after comparison as well as the audit's
     // owner-to-folder validation. Missing owners are checked by the change policy.
     for (const resource of inventory.resources) if (resource.kind === 'prototype') {
-      const ownerId = JSON.parse(fs.readFileSync(path.join(root, resource.path), 'utf8')).ownerId;
-      if (ownerId !== undefined) resource.ownerId = ownerId;
+      const metadata = JSON.parse(fs.readFileSync(path.join(root, resource.path), 'utf8'));
+      const ownerContributorId = metadata.ownerContributorId ?? (legacyOwnership ? metadata.ownerId : undefined);
+      if (legacyOwnership && ownerContributorId !== undefined && !inventory.resources.some(person => person.kind === 'contributor' && person.key === resource.ownerKey && person.studioId === ownerContributorId)) inventory.problems.push(`${resource.path}: historical owner must match its contributor folder.`);
+      if (ownerContributorId !== undefined) resource.ownerContributorId = ownerContributorId;
     }
     return inventory;
   } finally { fs.rmSync(root, { recursive: true, force: true }); }

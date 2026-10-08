@@ -33,7 +33,7 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
   const [error, setError] = useState('');
   const [checking, setChecking] = useState(false);
   const [allowed, setAllowed] = useState(false);
-  const dependents = [...manifest.prototypes, ...Object.values(manifest.sections).flat()].filter(proto => proto.system === system || proto.rebuild?.targetSystem === system);
+  const dependents = [...manifest.prototypes, ...Object.values(manifest.sections).flat()].filter(proto => proto.system === system || proto.rebuild?.targetSystemKey === system);
   const archiveTargets = dependents.filter(proto => proto.status !== 'archived');
   const defaultArchive = dialog === 'archive' && system === DEFAULT_SYSTEM;
 
@@ -149,7 +149,7 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
           </DialogHeader>
           {checking && <p role="status" className="text-sm text-muted-foreground">Checking system dependencies</p>}
           {error && <p role="alert" className="text-sm text-destructive whitespace-pre-line">{error}</p>}
-          {dependents.length > 0 && <div className="grid gap-2 text-sm"><p>These prototypes depend on {spec.label}.</p><ul className="max-h-48 list-disc overflow-auto pl-5">{dependents.map(proto => <li key={`${proto.contributorKey}/${proto.id}`}><Link {...prototypeLink(proto)} className="underline">{proto.title}</Link>{proto.status === 'archived' ? ' (archived)' : ''}{proto.rebuild?.targetSystem === system ? ' (pending rebuild)' : ''}</li>)}</ul></div>}
+          {dependents.length > 0 && <div className="grid gap-2 text-sm"><p>These prototypes depend on {spec.label}.</p><ul className="max-h-48 list-disc overflow-auto pl-5">{dependents.map(proto => <li key={`${proto.contributorKey}/${proto.id}`}><Link {...prototypeLink(proto)} className="underline">{proto.title}</Link>{proto.status === 'archived' ? ' (archived)' : ''}{proto.rebuild?.targetSystemKey === system ? ' (pending rebuild)' : ''}</li>)}</ul></div>}
           <DialogFooter>
             {dialog === 'restore' ? <>
               <Button variant="outline" disabled={busy || checking || !allowed} onClick={() => void save(undefined, false)}>Restore system only</Button>

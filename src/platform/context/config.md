@@ -16,9 +16,9 @@ Welcome records its first display on the resolved contributor’s profile with `
 
 You can also ask your agent to configure the studio. The configuration command previews changes before applying them. The CLI and settings API share validation, source editing, assignment preservation, and module instruction synchronization.
 
-Use `pnpm studio configure --system <id>` to preview a default-system change. Apply with `--yes` after reviewing the preview. For prototypes without an explicit system choice, the command records their current system before changing the default. Existing prototypes retain their systems.
+Use `pnpm studio configure --system <id>` to preview a default-system change. Apply with `--yes` after reviewing the preview. Creation writes the chosen system ID to each prototype. Changing the default affects future prototypes; existing assignments remain unchanged.
 
-Directly editing `defaultSystem` does not perform that preservation step. Prototypes without an explicit choice then follow the new default. Migrating component imports remains a separate task.
+Every prototype must declare `systemId`, including `null` for no system. Missing assignments fail validation. Migrating an existing prototype requires changing its component imports and explicit assignment together.
 
 For manually edited module configuration, run `pnpm studio sync` to refresh agent task routes. Restart the dev server after CLI configuration changes. Coordinate shared configuration changes with your Admin.
 
@@ -45,7 +45,7 @@ CLI and settings controls use current readable source keys for selection. Manage
 | `tagline` | Optional line on the published front page, up to 140 characters. |
 | `modules` | Installed module IDs set to `true` or `false`. Every installed module needs an explicit entry; omission is invalid and never enables it. Required modules cannot be disabled. |
 | `systems` | Required list of every installed system source-folder key, including the required Studio system (`studio` in the starter). Discovery does not register a system. |
-| `defaultSystem` | System for prototypes without an explicit system choice. Required permanent registered prototype-system ID; no alphabetical fallback. |
+| `defaultSystem` | System selected when creating a prototype without a different requested choice. Required permanent registered prototype-system ID; no alphabetical fallback. |
 
 ## Inspect setup
 

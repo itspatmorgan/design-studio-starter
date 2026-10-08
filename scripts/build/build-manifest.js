@@ -9,7 +9,7 @@ import { knowledgeOwners, skillCatalog } from '../lib/agent-skills.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES, SYSTEM_SPECS, refreshSystems } from '../../src/modules/systems/node/systems.js';
+import { PROTOTYPE_SYSTEMS, SYSTEM_SOURCES, SYSTEM_SPECS, refreshSystems } from '../../src/modules/systems/node/systems.js';
 import { PLATFORM_ID } from '../../src/modules/systems/node/systems.js';
 import { isHelper, artifactSlug } from '../../src/platform/core/fileTypes.ts';
 import { jsonIdentity } from '../../src/platform/core/resourceIdentity.ts';
@@ -157,11 +157,11 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
   } catch (error) { return skip(`has invalid resource identity (${error.message})`); }
   // Two artifacts can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
   errors += checkArtifacts(dir, artifacts, out, { contributor: contributorKey, id, ...(studioId && { studioId }) });
-  // "system" (optional) is the design system it builds with, one of the folders in src/systems/.
-  const { system, systemId, rebuild, problems: assignmentProblems } = prototypeAssignment(meta, DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS);
+  // systemId is an explicit permanent assignment; source keys are derived for runtime imports.
+  const { system, systemId, rebuild, problems: assignmentProblems } = prototypeAssignment(meta, PROTOTYPE_SYSTEMS);
   if (assignmentProblems.length) return skip(assignmentProblems[0]);
   if (rebuild) {
-    try { rebuild.sourcePath = prototypeSourceForIdentity(ROOT, rebuild.source); }
+    try { rebuild.sourcePath = prototypeSourceForIdentity(ROOT, rebuild.sourcePrototypeId); }
     catch (error) { return skip(error.message); }
   }
   // "status" (optional) is 'active' (the default) or 'archived'.
@@ -173,7 +173,7 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
   return {
     errors,
     entry: {
-      id, contributorKey, ...(studioId && { studioId }), ...(meta.ownerId && { ownerId: meta.ownerId }), title: meta.title, ...(SECTION_KEYS.has(contributorKey) && { description: meta.description ?? '' }),
+      id, contributorKey, ...(studioId && { studioId }), ...(meta.ownerContributorId && { ownerContributorId: meta.ownerContributorId }), title: meta.title, ...(SECTION_KEYS.has(contributorKey) && { description: meta.description ?? '' }),
       contributor: maintained ? maintainers.map((k) => contributors[k]?.name ?? k).join(', ') : contributors[contributorKey]?.name ?? '',
       ...(!maintained && typeof contributors[contributorKey]?.github === 'string' && contributors[contributorKey].github.trim() && { contributorGithub: contributors[contributorKey].github.trim() }),
       created: meta.created ?? null, system, systemId, artifacts,
@@ -265,7 +265,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   for (const missing of identityAudit.missing) { out.error(`[identity] ${missing}: permanent identity is missing. Run pnpm studio identify <prototype-folder> --yes for newly authored files, or review a full identity migration.`); errors++; }
   for (const problem of identityAudit.problems) { out.error(`[identity] ${problem}`); errors++; }
   for (const resource of identityAudit.resources.filter(resource => resource.kind === 'prototype' && resource.studioId)) {
-    if (JSON.parse(fs.readFileSync(path.join(ROOT, resource.path), 'utf8')).ownerId === undefined) { out.error(`[identity] ${resource.path}: declare the permanent contributor ownerId. Run pnpm studio identify ${path.posix.dirname(resource.path)} --yes.`); errors++; }
+    if (JSON.parse(fs.readFileSync(path.join(ROOT, resource.path), 'utf8')).ownerContributorId === undefined) { out.error(`[identity] ${resource.path}: declare the permanent contributor ownerContributorId. Run pnpm studio identify ${path.posix.dirname(resource.path)} --yes.`); errors++; }
   }
   const people = contributorsSignature();
   if (people !== cachedFor) { cache.clear(); cachedFor = people; }

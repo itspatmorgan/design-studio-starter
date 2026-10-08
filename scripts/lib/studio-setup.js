@@ -54,24 +54,6 @@ export function editStudioConfig(text, changes) {
   return edits.sort((a, b) => b.start - a.start).reduce((result, edit) => result.slice(0, edit.start) + edit.text + result.slice(edit.end), text);
 }
 
-// Preserve existing content's chosen system when the studio's default changes, including disabled modules.
-export function pinImplicitSystems(root, system, modules) {
-  const directories = (folder) => fs.existsSync(folder) ? fs.readdirSync(folder, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => path.join(folder, entry.name)) : [];
-  const personal = directories(path.join(root, 'src/prototypes')).flatMap(directories);
-  const sections = modules.filter((module) => module?.section?.items === 'prototypes' && !module.section.byPerson).flatMap((module) => directories(path.join(root, module.section.folder)));
-  return [...new Set([...personal, ...sections])].flatMap((folder) => {
-    const file = path.join(folder, 'meta.json');
-    if (!fs.existsSync(file)) return [];
-    if (!fs.lstatSync(file).isFile()) throw new Error(`${file}: metadata must be a regular file.`);
-    const before = fs.readFileSync(file, 'utf8');
-    let meta;
-    try { meta = JSON.parse(before); } catch { throw new Error(`${file}: fix invalid JSON before changing the default system.`); }
-    if (!meta || typeof meta !== 'object' || Array.isArray(meta)) throw new Error(`${file}: metadata must be an object.`);
-    if (meta.system !== undefined) return [];
-    return [{ file, before, after: JSON.stringify({ ...meta, system }, null, 2) + '\n' }];
-  });
-}
-
 // Prepare all reads before applying any changes. Same-folder renames prevent truncated files.
 export function applySetupChanges(changes) {
   const unchanged = (file, content) => {

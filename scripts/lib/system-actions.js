@@ -23,7 +23,7 @@ function cli(root, args, apply = false) {
 }
 export async function systemAction(root, actor, body) {
   const { contributors } = readContributors(root);
-  const { config, persisted } = readSettings(root, contributors);
+  const { config } = readSettings(root, contributors);
   const role = studioRole(config, actor, Object.keys(contributors));
   if (!role) fail('Register a contributor to use local system actions.', 403);
   if (!body || typeof body !== 'object' || Array.isArray(body) || typeof body.action !== 'string') fail('Choose a system action.');
@@ -33,7 +33,7 @@ export async function systemAction(root, actor, body) {
     const items = config.systems.flatMap(id => {
       const declaration = readDeclaration(fs.readFileSync(path.join(root, 'src/systems', id, 'system.ts'), 'utf8'));
       if ('error' in declaration || declaration.value.status !== 'archived') return [];
-      return [{ id, label: declaration.value.label, prototypes: systemDependents(root, declaration.value.studioId, persisted.defaultSystem).filter(({ meta }) => meta.archivedBySystem === declaration.value.studioId).length }];
+      return [{ id, label: declaration.value.label, prototypes: systemDependents(root, declaration.value.studioId).filter(({ meta }) => meta.archivedBySystemId === declaration.value.studioId).length }];
     });
     return { items };
   }

@@ -21,11 +21,11 @@ export function resourceIdentityChangeProblems(before, after) {
     const next = afterId.get(previous.studioId);
     if (!next) continue; // Deletion retires the resource rather than reassigning it.
     if (next.kind !== previous.kind) problems.push(`${next.path}: permanent identity cannot change resource kind.`);
-    if (previous.kind === 'prototype' && previous.ownerId !== undefined && next.ownerId !== previous.ownerId) problems.push(`${next.path}: prototype owner identity cannot change through a source edit.`);
+    if (previous.kind === 'prototype' && previous.ownerContributorId !== undefined && next.ownerContributorId !== previous.ownerContributorId) problems.push(`${next.path}: prototype owner identity cannot change through a source edit.`);
     if (previous.kind === 'artifact' && beforeParents.get(previous.parent) !== afterParents.get(next.parent)) problems.push(`${next.path}: transferring an identified artifact between prototypes requires an explicit transfer policy.`);
   }
   for (const resource of after.resources) {
-    if (resource.kind === 'prototype' && resource.studioId && resource.ownerId === undefined) problems.push(`${resource.path}: an identified prototype must declare its contributor ownerId.`);
+    if (resource.kind === 'prototype' && resource.studioId && resource.ownerContributorId === undefined) problems.push(`${resource.path}: an identified prototype must declare its contributor ownerContributorId.`);
   }
   return [...new Set(problems)];
 }

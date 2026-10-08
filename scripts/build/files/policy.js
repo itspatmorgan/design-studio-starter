@@ -30,10 +30,10 @@ export function prototypeOwnershipMatches(contributor, dir, root = ROOT) {
     const file = path.join(dir, 'meta.json');
     if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) return false;
     const text = fs.readFileSync(file, 'utf8'), id = jsonIdentity(text), meta = JSON.parse(text);
-    if (id && meta.ownerId === undefined) return false;
-    if (meta.ownerId === undefined) return true; // Transitional unidentified source.
+    if (id && meta.ownerContributorId === undefined) return false;
+    if (meta.ownerContributorId === undefined) return true; // Transitional unidentified source.
     const { contributors, problems } = readContributors(root);
-    return !problems.length && resourceId(meta.ownerId) === resourceId(contributors[contributor]?.studioId);
+    return !problems.length && resourceId(meta.ownerContributorId) === resourceId(contributors[contributor]?.studioId);
   } catch { return false; }
 }
 export const owns = (contributor, me, dir) => Boolean(safeScope(dir)) && prototypeOwnershipMatches(contributor, dir) && policyOf(contributor) !== 'open' && (canOwn(policyOf(contributor), subjectOf(contributor, me, dir)) || canWriteSource(me, path.relative(ROOT, dir)));
@@ -55,11 +55,11 @@ export function canWriteSource(me, file, root = ROOT, content) {
       const metadataPath = path.join(root, 'src/prototypes', prototype[1], prototype[2], 'meta.json');
       if (fs.existsSync(metadataPath)) {
         const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-        if (metadata.ownerId !== undefined && metadata.ownerId !== contributors[prototype[1]]?.studioId) return false;
+        if (metadata.ownerContributorId !== undefined && metadata.ownerContributorId !== contributors[prototype[1]]?.studioId) return false;
         if (file.endsWith('/meta.json') && typeof content === 'string') {
           jsonIdentity(content);
           const next = JSON.parse(content);
-          if (metadata.studioId !== next.studioId || metadata.ownerId !== next.ownerId) return false;
+          if (metadata.studioId !== next.studioId || metadata.ownerContributorId !== next.ownerContributorId) return false;
         }
       }
     } catch { return false; }

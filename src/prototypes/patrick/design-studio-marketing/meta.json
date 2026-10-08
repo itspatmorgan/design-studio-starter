@@ -1,7 +1,6 @@
 {
   "title": "Design Studio Marketing",
   "created": "2026-10-03",
-  "system": "v4576ka1mbpbqdp1",
   "order": [
     "review-board.excalidraw",
     "project-brief.md",
@@ -12,5 +11,6 @@
     "landing-v3.tsx"
   ],
   "studioId": "2h7mkxzppqfjv1xv",
-  "ownerId": "01ketxwns61brr7r"
+  "ownerContributorId": "01ketxwns61brr7r",
+  "systemId": "v4576ka1mbpbqdp1"
 }

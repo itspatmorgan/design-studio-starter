@@ -18,7 +18,7 @@ export type Artifact = {
 
 export type PrototypeInfo = {
   studioId?: string;       // permanent prototype identity; location remains id/contributorKey
-  ownerId?: string;       // permanent contributor owner, validated against contributorKey
+  ownerContributorId?: string;       // permanent contributor owner, validated against contributorKey
   id: string;             // folder name, e.g. "hello-world"
   contributorKey: string; // contributor key, e.g. "patrick"
   title: string;
@@ -26,11 +26,11 @@ export type PrototypeInfo = {
   contributor: string;    // display name, from contributor profiles
   contributorGithub?: string; // registered GitHub account, for optional profile photos
   created: string | null;
-  system: string | null;  // null means custom styling; omission in meta.json resolves to defaultSystem
+  system: string | null;  // resolved source key; null means custom styling
   systemId?: string | null; // permanent assignment identity; system is its resolved source selector
   owner?: { id: string; kind: 'platform' | 'module' | 'system'; label: string; root: string };
-  systemMissing?: { id: string; label: string }; // deleted dependency; source retained for rebuild
-  rebuild?: { targetSystem: string | null; targetSystemId: string | null; source: string; sourcePath: string }; // IDs persist; paths/selectors are generated
+  systemMissing?: { systemId: string; label: string }; // deleted dependency; source retained for rebuild
+  rebuild?: { targetSystemKey: string | null; targetSystemId: string | null; sourcePrototypeId: string; sourcePath: string }; // IDs persist; paths/selectors are generated
   status?: 'archived';    // meta.json "status", when archived; absent means active
   maintainers?: string[]; // meta.json "maintainers" (contributor keys), where a section's policy is maintainers; prototypes don't have them
 };

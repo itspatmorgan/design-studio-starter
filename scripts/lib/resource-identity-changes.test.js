@@ -11,7 +11,7 @@ import { markdownIdentity } from '../../src/platform/core/resourceIdentity.ts';
 
 const owner = '0123456789abcdef', parent = 'abcdefghjkmnpqrs', artifact = '23456789abcdefgh', secondParent = '3456789abcdefghj', replacement = '456789abcdefghjk';
 const report = resources => ({ resources, problems: [], missing: [] });
-const prototype = (id = parent, folder = 'example', ownerId = owner) => ({ kind: 'prototype', studioId: id, path: `src/prototypes/pat/${folder}/meta.json`, ownerId });
+const prototype = (id = parent, folder = 'example', ownerContributorId = owner) => ({ kind: 'prototype', studioId: id, path: `src/prototypes/pat/${folder}/meta.json`, ownerContributorId });
 const item = (name = 'notes.md', folder = 'example', id = artifact) => ({ kind: 'artifact', studioId: id, path: `src/prototypes/pat/${folder}/${name}`, parent: `src/prototypes/pat/${folder}` });
 
 test('identity change policy preserves moves and copies but rejects replacement, ownership mutation and transfer', () => {
@@ -21,7 +21,7 @@ test('identity change policy preserves moves and copies but rejects replacement,
   assert.match(resourceIdentityChangeProblems(before, report([prototype(), item('notes.md', 'example', replacement)])).join('\n'), /cannot be replaced/);
   assert.match(resourceIdentityChangeProblems(before, report([prototype(parent, 'example', replacement), item()])).join('\n'), /owner identity/);
   assert.match(resourceIdentityChangeProblems(before, report([prototype(), prototype(secondParent, 'copy'), item('notes.md', 'copy')])).join('\n'), /transfer policy/);
-  assert.match(resourceIdentityChangeProblems(before, report([{ ...prototype(), ownerId: undefined }, item()])).join('\n'), /ownerId/);
+  assert.match(resourceIdentityChangeProblems(before, report([{ ...prototype(), ownerContributorId: undefined }, item()])).join('\n'), /ownerContributorId/);
   assert.match(resourceIdentityChangeProblems(before, report([{ ...prototype(), kind: 'system' }, item()])).join('\n'), /resource kind/);
   assert.deepEqual(resourceIdentityChangeProblems(before, report([])), []);
 });
@@ -46,15 +46,17 @@ test('Git inventories inspect their own tree and staged blobs, including retaine
   git(['add', '.']); git(['-c', 'core.hooksPath=/dev/null', 'commit', '-qm', 'Before']);
   const baseline = git(['rev-parse', 'HEAD']);
   const types = { document: { inPrototype: true, extensions: ['.md'], identity: markdownIdentity } };
-  const before = gitResourceIdentities('HEAD', types, { cwd: root });
+  const before = gitResourceIdentities('HEAD', types, { cwd: root, legacyOwnership: true });
   assert.equal(before.resources.length, 3); assert.deepEqual(before.problems, []);
-  assert.equal(before.resources.find(resource => resource.kind === 'prototype').ownerId, owner);
+  assert.equal(before.resources.find(resource => resource.kind === 'prototype').ownerContributorId, owner);
+  write('src/prototypes/pat/example/meta.json', JSON.stringify({ studioId: parent, ownerContributorId: owner, systemId: null, title: 'Example', status: 'archived' }));
+  git(['add', 'src/prototypes/pat/example/meta.json']);
   write('src/prototypes/pat/example/notes.md', `---\nstudioId: ${replacement}\n---\n# Edited\n`);
   git(['add', 'src/prototypes/pat/example/notes.md']);
   write('src/prototypes/pat/example/notes.md', `---\nstudioId: ${artifact}\n---\n# Unstaged\n`);
   const staged = gitResourceIdentities(null, types, { cwd: root, staged: true });
   assert.match(resourceIdentityChangeProblems(before, staged).join('\n'), /cannot be replaced/);
-  assert.deepEqual(gitResourceIdentities('HEAD', types, { cwd: root }), before);
+  assert.deepEqual(gitResourceIdentities('HEAD', types, { cwd: root, legacyOwnership: true }), before);
   git(['-c', 'core.hooksPath=/dev/null', 'commit', '-qm', 'Replace artifact identity']);
   const check = spawnSync(process.execPath, [fileURLToPath(new URL('../check/check-scope.js', import.meta.url)), '--ci', baseline, git(['rev-parse', 'HEAD']), '--review'], { cwd: root, encoding: 'utf8' });
   assert.equal(check.status, 1, check.stderr + check.stdout);

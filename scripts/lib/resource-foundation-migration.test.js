@@ -24,7 +24,7 @@ function fixture(t) {
   write('src/systems/product/system.ts', "// Source contract\nexport default { role: 'prototype', label: 'Product' };");
   write('src/systems/product/components/button.md', '# Button');
   write('studio.config.ts', "// Keep this comment\nexport default { name:'Studio', usage:'team', admins:['pat'], modules:{}, systems:['studio','product'], defaultSystem:'product', systemMaintainers:{ product:['pat'] } };");
-  write('src/prototypes/pat/example/meta.json', JSON.stringify({ title: 'Example', system: 'product', status: 'archived', archivedBySystem: 'product' }));
+  write('src/prototypes/pat/example/meta.json', JSON.stringify({ title: 'Example', system: 'product', status: 'archived', archivedBySystemId: 'product' }));
   write('src/prototypes/pat/example/main.tsx', "import Other from './_helpers/other';\nexport default () => null;\n");
   write('src/prototypes/pat/example/_helpers/other.ts', "export const href = '/prototypes/pat/example/main?mode=source';\n");
   write('src/prototypes/pat/example/notes.md', '# Notes\n\n[Source](./main.tsx) [Share](/pat/example/main) [Button](/systems/product/button)\n');
@@ -45,8 +45,8 @@ test('one read-only preview composes identities, stable relationships and stored
   const system = plan.resources.find(resource => resource.kind === 'system' && resource.key === 'product');
   const person = plan.resources.find(resource => resource.kind === 'contributor');
   const meta = JSON.parse(changes.get(prototype.path).after);
-  assert.equal(meta.studioId, prototype.studioId); assert.equal(meta.ownerId, person.studioId);
-  assert.equal(meta.system, system.studioId); assert.equal(meta.archivedBySystem, system.studioId);
+  assert.equal(meta.studioId, prototype.studioId); assert.equal(meta.ownerContributorId, person.studioId);
+  assert.equal(meta.systemId, system.studioId); assert.equal(meta.archivedBySystemId, system.studioId);
   const config = readDeclaration(changes.get('studio.config.ts').after).value;
   assert.equal(config.defaultSystem, system.studioId);
   assert.deepEqual(config.admins, [person.studioId]);

@@ -27,7 +27,7 @@ test('public CLI migrates an old studio from a saved preview and strict runtime 
     fs.rmSync(path.join(root, 'src/prototypes'), { recursive: true, force: true });
     const folder = 'src/prototypes/patrick/example', dir = path.join(root, folder);
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, 'meta.json'), '{"title":"Example","system":null}');
+    fs.writeFileSync(path.join(dir, 'meta.json'), '{"title":"Example","systemId":null}');
     fs.writeFileSync(path.join(dir, 'main.tsx'), 'export default function View(){ return <div>Example</div> }');
     fs.writeFileSync(path.join(dir, 'notes.md'), '# Notes\n[View](/prototypes/patrick/example/main) [File](./main.tsx)');
     fs.writeFileSync(path.join(dir, 'board.excalidraw'), JSON.stringify({ type: 'excalidraw', version: 2, studioVersion: 1, elements: [], appState: {}, files: {} }));
@@ -44,7 +44,7 @@ test('public CLI migrates an old studio from a saved preview and strict runtime 
     fs.unlinkSync(path.join(dir, 'new.md'));
     run('identity-apply', preview, '--yes');
     const meta = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json')));
-    assert.equal(meta.system, null); assert.equal(meta.ownerId, JSON.parse(fs.readFileSync(personFile)).studioId);
+    assert.equal(meta.systemId, null); assert.equal(meta.ownerContributorId, JSON.parse(fs.readFileSync(personFile)).studioId);
     const notes = fs.readFileSync(path.join(dir, 'notes.md'), 'utf8');
     assert.ok(notes.includes(`/prototypes/${meta.studioId}/artifacts/`)); assert.ok(notes.includes('./main.tsx'));
     assert.equal(JSON.parse(run('identity-audit', '--json')).missing.length, 0);

@@ -44,17 +44,17 @@ test('stale configuration and contributor snapshots cannot overwrite current set
   assert.throws(() => saveSettings({ ...options, changes: { name: 'New' } }), (error) => error.status === 409);
 });
 
-test('default changes preserve implicit systems, explicit None, disabled content, and agent guidance', (t) => {
+test('default changes preserve explicit assignments, None, disabled content, and agent guidance', (t) => {
   const options = fixture(t);
   const add = (folder, meta) => { fs.mkdirSync(path.join(options.root, folder), { recursive: true }); fs.writeFileSync(path.join(options.root, folder, 'meta.json'), JSON.stringify(meta)); };
-  add('src/prototypes/alex/implicit', { title: 'Implicit' });
-  add('src/prototypes/sam/custom', { title: 'Custom', system: null });
-  add('src/notes/old', { title: 'Retained' });
+  add('src/prototypes/alex/implicit', { title: 'Pinned', systemId: options.directory.systemIds.product });
+  add('src/prototypes/sam/custom', { title: 'Custom', systemId: null });
+  add('src/notes/old', { title: 'Retained', systemId: options.directory.systemIds.product });
   const plan = saveSettings({ ...options, changes: { name: 'New Studio', defaultSystem: 'brand', modules: { notes: false } } });
-  assert.equal(plan.pins.length, 2);
-  assert.equal(JSON.parse(fs.readFileSync(path.join(options.root, 'src/prototypes/alex/implicit/meta.json'))).system, options.directory.systemIds.product);
-  assert.equal(JSON.parse(fs.readFileSync(path.join(options.root, 'src/prototypes/sam/custom/meta.json'))).system, null);
-  assert.equal(JSON.parse(fs.readFileSync(path.join(options.root, 'src/notes/old/meta.json'))).system, options.directory.systemIds.product);
+  assert.equal(plan.pins.length, 0);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(options.root, 'src/prototypes/alex/implicit/meta.json'))).systemId, options.directory.systemIds.product);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(options.root, 'src/prototypes/sam/custom/meta.json'))).systemId, null);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(options.root, 'src/notes/old/meta.json'))).systemId, options.directory.systemIds.product);
   const current = readSettings(options.root, options.contributors);
   assert.equal(current.config.modules.notes, false);
   assert.match(current.source, /keep this comment/);

@@ -62,7 +62,7 @@ test('prototype import allowlist includes its system and rejects unrelated local
   try {
     const root = path.join(fixture, 'src/prototypes/patrick/import-fixture');
     fs.mkdirSync(root, { recursive: true });
-    fs.writeFileSync(path.join(root, 'meta.json'), JSON.stringify({ system: '1111111111111111' }));
+    fs.writeFileSync(path.join(root, 'meta.json'), JSON.stringify({ systemId: '1111111111111111' }));
     const guard = importGuard({ root: fixture, systems: { product: { studioId: '1111111111111111', role: 'prototype', dir: path.join(fixture, 'src/systems/product') } }, defaultSystem: 'product', modules: [], prototypeDirs: [] });
     guard.configResolved({ command: 'build' });
     for (const [target, allowed] of [['src/systems/product/components/button/index.ts', true], ['src/lib/store.ts', true], ['src/prototypes/patrick/import-fixture/_components/text.ts', true], ['scripts/lib/random.js', false], ['src/platform/app/router.tsx', false], ['src/prototypes/patrick/feedback-inbox/main.tsx', false]]) {
@@ -88,10 +88,10 @@ test('create and rename preserve addresses, file errors recover, and system remo
       fs.writeFileSync(declaration, editStudioConfig(fs.readFileSync(declaration, 'utf8'), { status: 'active' }));
     }
     // CLI operations need a registered identity independent of the host's Git config.
-    const ownerId = JSON.parse(fs.readFileSync(path.join(dir, 'contributors/patrick.json'), 'utf8')).studioId;
+    const ownerContributorId = JSON.parse(fs.readFileSync(path.join(dir, 'contributors/patrick.json'), 'utf8')).studioId;
     fs.rmSync(path.join(dir, 'contributors'), { recursive: true, force: true });
     writeProfiles(dir, {
-      patrick: { studioId: ownerId, name: 'Test Maintainer', email: 'maintainer@example.test', github: '', welcomeDismissed: false },
+      patrick: { studioId: ownerContributorId, name: 'Test Maintainer', email: 'maintainer@example.test', github: '', welcomeDismissed: false },
     });
     const script = `
       import fs from 'node:fs';
@@ -107,10 +107,10 @@ test('create and rename preserve addresses, file errors recover, and system remo
       const { createResourceId } = await load('src/platform/core/resourceIdentity.ts');
       const { readDeclaration } = await load('src/platform/core/declarations.ts');
       const originalMeta = JSON.parse(fs.readFileSync(path.join(original, 'meta.json')));
-      assert.equal(JSON.parse(fs.readFileSync(path.join(original, 'meta.json'))).system, defaultIdentity);
+      assert.equal(JSON.parse(fs.readFileSync(path.join(original, 'meta.json'))).systemId, defaultIdentity);
       const custom = createPrototype({ title: 'Custom Styling', key: 'patrick', system: null });
       assert.equal(custom.manifest.prototypes.find(p => p.id === custom.slug).system, null);
-      assert.equal(JSON.parse(fs.readFileSync('src/prototypes/patrick/' + custom.slug + '/meta.json')).system, null);
+      assert.equal(JSON.parse(fs.readFileSync('src/prototypes/patrick/' + custom.slug + '/meta.json')).systemId, null);
       assert.throws(() => createPrototype({title:'Invalid System',key:'patrick',system:'missing'}), /installed prototype system/);
       assert.ok(!fs.existsSync('src/prototypes/patrick/invalid-system'));
       const { scopePolicy } = await load('scripts/lib/scope.js');
@@ -124,7 +124,7 @@ test('create and rename preserve addresses, file errors recover, and system remo
       assert.equal(selected.manifest.prototypes.find(p => p.id === selected.slug).system, selectedSystem);
       const cliCreate = (await import('node:child_process')).spawnSync(process.execPath, ['src/modules/prototypes/node/create.js', 'CLI Custom', '--no-system'], {encoding:'utf8'});
       assert.equal(cliCreate.status, 0, cliCreate.stderr);
-      assert.equal(JSON.parse(fs.readFileSync('src/prototypes/patrick/cli-custom/meta.json')).system, null);
+      assert.equal(JSON.parse(fs.readFileSync('src/prototypes/patrick/cli-custom/meta.json')).systemId, null);
       const viewIdentity = fs.readFileSync(path.join(original, 'prototype.tsx'), 'utf8').match(/@studio-id ([0-9a-z]+)/)[1];
       const originalUrl = '/prototypes/' + originalMeta.studioId + '/artifacts/' + viewIdentity;
       fs.writeFileSync(path.join(original, 'notes.md'), '---\\nstudioId: ' + createResourceId() + '\\n---\\n[View](' + originalUrl + ') [Source](./prototype.tsx)');
@@ -133,7 +133,7 @@ test('create and rename preserve addresses, file errors recover, and system remo
       const before = fs.readFileSync(path.join(original, 'meta.json'), 'utf8');
       const copy = duplicatePrototype({key:'patrick',id:slug,title:'Beta Copy',system:DEFAULT_SYSTEM});
       const copiedMeta = JSON.parse(fs.readFileSync('src/prototypes/patrick/' + copy.id + '/meta.json'));
-      assert.equal(copiedMeta.system, defaultIdentity);
+      assert.equal(copiedMeta.systemId, defaultIdentity);
       assert.equal(copiedMeta.rebuild, undefined);
       const copiedViewIdentity = fs.readFileSync('src/prototypes/patrick/' + copy.id + '/prototype.tsx', 'utf8').match(/@studio-id ([0-9a-z]+)/)[1];
       const copiedNotes = fs.readFileSync('src/prototypes/patrick/' + copy.id + '/notes.md', 'utf8');
@@ -143,15 +143,15 @@ test('create and rename preserve addresses, file errors recover, and system remo
       assert.equal(fs.readFileSync(path.join(original, 'meta.json'), 'utf8'), before);
       const rebuild = duplicatePrototype({key:'patrick',id:slug,title:'Beta Rebuild',system:null});
       const rebuildMeta = JSON.parse(fs.readFileSync('src/prototypes/patrick/' + rebuild.id + '/meta.json'));
-      assert.equal(rebuildMeta.system, defaultIdentity);
-      assert.deepEqual(rebuildMeta.rebuild, {targetSystem:null,source:originalMeta.studioId});
+      assert.equal(rebuildMeta.systemId, defaultIdentity);
+      assert.deepEqual(rebuildMeta.rebuild, {targetSystemId:null,sourcePrototypeId:originalMeta.studioId});
       const projectedRebuild = rebuild.manifest.prototypes.find(p => p.id === rebuild.id).rebuild;
-      assert.equal(projectedRebuild.source, originalMeta.studioId);
+      assert.equal(projectedRebuild.sourcePrototypeId, originalMeta.studioId);
       assert.equal(projectedRebuild.sourcePath, 'src/prototypes/patrick/' + slug);
       assert.equal(projectedRebuild.targetSystemId, null);
       const fromCustom = duplicatePrototype({key:'patrick',id:custom.slug,title:'Custom Rebuild',system:DEFAULT_SYSTEM});
       assert.equal(fromCustom.manifest.prototypes.find(p => p.id === fromCustom.id).system, null);
-      assert.equal(fromCustom.manifest.prototypes.find(p => p.id === fromCustom.id).rebuild.targetSystem, DEFAULT_SYSTEM);
+      assert.equal(fromCustom.manifest.prototypes.find(p => p.id === fromCustom.id).rebuild.targetSystemKey, DEFAULT_SYSTEM);
       assert.throws(() => duplicatePrototype({key:'patrick',id:slug,title:'Invalid Copy',system:'missing'}), /installed prototype system/);
       assert.ok(!fs.existsSync('src/prototypes/patrick/invalid-copy'));
       assert.throws(() => duplicatePrototype({key:'patrick',id:slug,title:'Beta Copy'}), /already exists/);
@@ -199,8 +199,8 @@ test('create and rename preserve addresses, file errors recover, and system remo
       const permissionConfig = (await load('src/platform/core/declarations.ts')).readDeclaration(configBeforePermissions).value;
       fs.writeFileSync('contributors/permission-admin.json', JSON.stringify({ studioId: createResourceId(), name: 'Permission Admin', email: '', github: '', welcomeDismissed: false }));
       permissionConfig.usage = 'team'; permissionConfig.admins = [JSON.parse(fs.readFileSync('contributors/permission-admin.json')).studioId];
-      const ownerIdentity = JSON.parse(fs.readFileSync('contributors/patrick.json')).studioId;
-      permissionConfig.systemMaintainers[defaultIdentity] = [ownerIdentity];
+      const ownerContributorIdentity = JSON.parse(fs.readFileSync('contributors/patrick.json')).studioId;
+      permissionConfig.systemMaintainers[defaultIdentity] = [ownerContributorIdentity];
       const writePermissionConfig = () => fs.writeFileSync('studio.config.ts', 'export default ' + JSON.stringify(permissionConfig) + ';');
       const sourceRequest = async (url, body) => {
         const req = Readable.from([JSON.stringify(body)]); req.method = 'POST'; req.url = url; req.headers = {'sec-fetch-site':'same-origin'};
@@ -228,14 +228,14 @@ test('create and rename preserve addresses, file errors recover, and system remo
       const registeredConfig = readDeclaration(fs.readFileSync('studio.config.ts', 'utf8')).value;
       fs.writeFileSync('studio.config.ts', editStudioConfig(fs.readFileSync('studio.config.ts', 'utf8'), { systems: [...registeredConfig.systems, 'z-beta-fixture'], systemMaintainers: { ...registeredConfig.systemMaintainers, [newSystemIdentity]: [] } }));
       const metaPath = path.join(moved, 'meta.json');
-      const meta = JSON.parse(fs.readFileSync(metaPath)); meta.system = newSystemIdentity;
+      const meta = JSON.parse(fs.readFileSync(metaPath)); meta.systemId = newSystemIdentity;
       fs.writeFileSync(metaPath, JSON.stringify(meta));
       const { spawnSync } = await import('node:child_process');
       const removal = spawnSync(process.execPath, ['scripts/cli/studio.js', 'remove', 'z-beta-fixture'], { encoding: 'utf8' });
       assert.equal(removal.status, 1);
       assert.equal((removal.stderr + removal.stdout).includes('patrick/beta-roundtrip'), true, removal.stderr + removal.stdout);
       assert.equal(fs.existsSync('src/systems/z-beta-fixture/system.ts'), true);
-      meta.system = defaultIdentity; meta.rebuild = {targetSystem:newSystemIdentity,source:originalMeta.studioId};
+      meta.systemId = defaultIdentity; meta.rebuild = {targetSystemId:newSystemIdentity,sourcePrototypeId:originalMeta.studioId};
       fs.writeFileSync(metaPath, JSON.stringify(meta));
       const pendingRemoval = spawnSync(process.execPath, ['scripts/cli/studio.js','remove','z-beta-fixture'], {encoding:'utf8'});
       assert.equal(pendingRemoval.status, 1);

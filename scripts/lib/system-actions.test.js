@@ -22,8 +22,8 @@ function fixture() {
   function proto(id, meta) {
     const dir = path.join(root, 'src/prototypes/admin', id);
     fs.mkdirSync(dir, { recursive: true });
-    const stored = { title:id, studioId:createResourceId(), ownerId:directory.contributorIds.admin, system:directory.systemIds.kit, ...meta };
-    if (stored.rebuild) stored.rebuild = { targetSystem:directory.systemIds[stored.rebuild.targetSystem], source:stored.studioId };
+    const stored = { title:id, studioId:createResourceId(), ownerContributorId:directory.contributorIds.admin, systemId:directory.systemIds.kit, ...meta };
+    if (stored.rebuild) stored.rebuild = { targetSystemId:directory.systemIds[stored.rebuild.targetSystemId], sourcePrototypeId:stored.studioId };
     fs.writeFileSync(path.join(dir, 'meta.json'), JSON.stringify(stored));
     fs.writeFileSync(path.join(dir, 'view.tsx'), "import { Button } from '@/systems/kit/components/button'; export default Button;");
     return path.join(dir, 'meta.json');
@@ -50,8 +50,8 @@ test('archive and restore track only prototypes archived together; delete preser
   try {
     const active = proto('active', {}), old = proto('old', { status: 'archived' });
     applySystemLifecycle(planSystemLifecycle(root, config, 'archive', 'kit'));
-    assert.equal(JSON.parse(fs.readFileSync(active)).archivedBySystem, directory.systemIds.kit);
-    assert.equal(JSON.parse(fs.readFileSync(old)).archivedBySystem, undefined);
+    assert.equal(JSON.parse(fs.readFileSync(active)).archivedBySystemId, directory.systemIds.kit);
+    assert.equal(JSON.parse(fs.readFileSync(old)).archivedBySystemId, undefined);
     applySystemLifecycle(planSystemLifecycle(root, config, 'restore', 'kit', { restorePrototypes: true }));
     assert.equal(JSON.parse(fs.readFileSync(active)).status, undefined);
     assert.equal(JSON.parse(fs.readFileSync(old)).status, 'archived');
@@ -60,7 +60,7 @@ test('archive and restore track only prototypes archived together; delete preser
     assert.equal(fs.existsSync(path.join(root, 'src/systems/kit')), false);
     assert.deepEqual(readDeclaration(fs.readFileSync(path.join(root, 'studio.config.ts'), 'utf8')).value.systemMaintainers, { [directory.systemIds.other]: [] });
     assert.equal(fs.existsSync(path.join(root, '.trash')), false);
-    assert.deepEqual(JSON.parse(fs.readFileSync(active)).systemMissing, { id: directory.systemIds.kit, label: 'kit' });
+    assert.deepEqual(JSON.parse(fs.readFileSync(active)).systemMissing, { systemId: directory.systemIds.kit, label: 'kit' });
     assert.equal(fs.readFileSync(path.join(path.dirname(active), 'view.tsx'), 'utf8'), before);
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
@@ -70,7 +70,7 @@ test('true rename preserves identity relationships and share links, repairs sour
   try {
     config.systemMaintainers.kit = ['member'];
     writeFixtureConfig(root, config);
-    const meta = proto('example', { rebuild: { targetSystem: 'kit', source: 'src/prototypes/admin/example' } });
+    const meta = proto('example', { rebuild: { targetSystemId: 'kit', sourcePrototypeId: 'src/prototypes/admin/example' } });
     fs.writeFileSync(path.join(root, 'src/systems/kit/components/button.tsx'), 'export const Button = () => null;');
     fs.writeFileSync(path.join(root, 'README.md'), `[Kit](src/systems/kit/system.ts) [Overview](/systems/${directory.systemIds.kit}) [External](https://example.com/systems/kit/button)`);
     const sourceMeta = fs.readFileSync(meta, 'utf8');
@@ -83,7 +83,7 @@ test('true rename preserves identity relationships and share links, repairs sour
     applySystemLifecycle(planSystemLifecycle(root, config, 'rename', 'kit', { name: 'Team Kit' }));
     assert.equal(fs.readFileSync(meta, 'utf8'), sourceMeta);
     assert.deepEqual(readDeclaration(fs.readFileSync(path.join(root, 'studio.config.ts'), 'utf8')).value.systemMaintainers, { [directory.systemIds.kit]: [directory.contributorIds.member], [directory.systemIds.other]: [] });
-    assert.equal(JSON.parse(fs.readFileSync(meta)).rebuild.targetSystem, directory.systemIds.kit);
+    assert.equal(JSON.parse(fs.readFileSync(meta)).rebuild.targetSystemId, directory.systemIds.kit);
     assert.match(fs.readFileSync(path.join(path.dirname(meta), 'view.tsx'), 'utf8'), /@\/systems\/team-kit\//);
     assert.ok(fs.readFileSync(path.join(root, 'README.md'), 'utf8').includes(`/systems/${directory.systemIds.kit})`));
     assert.ok(fs.readFileSync(path.join(root, 'README.md'), 'utf8').includes('src/systems/team-kit/system.ts'));

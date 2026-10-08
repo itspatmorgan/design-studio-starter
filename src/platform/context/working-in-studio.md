@@ -5,7 +5,7 @@ description: Standing requirements for preserving work, selecting context, and v
 
 Read [Contributor scope](contributor-scope.md) before changing prototype content or shared files. Existing task authorization covers necessary shared changes. Preserve user edits; do not reset, overwrite, or delete work to simplify a task.
 
-Resolve the target prototype's assigned system before edits. Explicit `system: null` is custom styling. Only an omitted assignment follows the configured default. The browser's selected system does not change the assignment. Read only relevant product guidance; platform boundaries remain in force.
+Resolve the target prototype's assigned system before edits. Explicit `systemId: null` is custom styling. A missing assignment is invalid. Creation writes the selected system ID explicitly. The browser's selected system does not change the assignment. Read only relevant product guidance; platform boundaries remain in force.
 
 Honor enabled module declarations. A visible file or skill does not enable an unavailable capability. Use the owning module's technical contract before changing formats, dependencies, or lifecycle behavior. Product guidance cannot relax platform boundaries.
 

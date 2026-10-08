@@ -20,6 +20,6 @@ export default {
   },
   systems: ["studio", "product", "marketing"],
   systemMaintainers: { "4f3m7z08hk5a0k53": [], "v4576ka1mbpbqdp1": [] },
-  defaultSystem: "4f3m7z08hk5a0k53",   // the design system a prototype uses when its meta.json doesn't name one
+  defaultSystem: "4f3m7z08hk5a0k53",   // the system selected at creation; each prototype persists an explicit systemId
   admins: ["01ketxwns61brr7r"],
 } satisfies StudioConfig;

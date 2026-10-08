@@ -330,14 +330,14 @@ function remove() {
     const protoRoot = rel('src', 'prototypes');
     for (const who of fs.existsSync(protoRoot) ? fs.readdirSync(protoRoot, { withFileTypes: true }).filter((entry) => entry.isDirectory()) : []) {
       for (const proto of fs.readdirSync(path.join(protoRoot, who.name), { withFileTypes: true }).filter((entry) => entry.isDirectory())) {
-        try { const meta = JSON.parse(fs.readFileSync(path.join(protoRoot, who.name, proto.name, 'meta.json'), 'utf8')); if (meta.system === SYSTEM_SPECS[id].studioId || meta.rebuild?.targetSystem === SYSTEM_SPECS[id].studioId) users.push(`${who.name}/${proto.name}`); } catch { /* not a prototype */ }
+        try { const meta = JSON.parse(fs.readFileSync(path.join(protoRoot, who.name, proto.name, 'meta.json'), 'utf8')); if (meta.systemId === SYSTEM_SPECS[id].studioId || meta.rebuild?.targetSystemId === SYSTEM_SPECS[id].studioId) users.push(`${who.name}/${proto.name}`); } catch { /* not a prototype */ }
       }
     }
     for (const module of Object.values(MODULES)) {
       if (module?.section?.items !== 'prototypes' || module.section.byPerson || !module.section.folder) continue;
       const folder = rel(module.section.folder);
       for (const item of fs.existsSync(folder) ? fs.readdirSync(folder, { withFileTypes: true }).filter((entry) => entry.isDirectory()) : []) {
-        try { const meta = JSON.parse(fs.readFileSync(path.join(folder, item.name, 'meta.json'), 'utf8')); if (meta.system === SYSTEM_SPECS[id].studioId || meta.rebuild?.targetSystem === SYSTEM_SPECS[id].studioId) users.push(`${module.section.key}/${item.name}`); } catch { /* not an item */ }
+        try { const meta = JSON.parse(fs.readFileSync(path.join(folder, item.name, 'meta.json'), 'utf8')); if (meta.systemId === SYSTEM_SPECS[id].studioId || meta.rebuild?.targetSystemId === SYSTEM_SPECS[id].studioId) users.push(`${module.section.key}/${item.name}`); } catch { /* not an item */ }
       }
     }
     const references = [];

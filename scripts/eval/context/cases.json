@@ -2,12 +2,12 @@
   {
     "id": "none-style",
     "partition": "tuning",
-    "fixture": "Create eval/checkout with explicit system:null and a local empty view. Keep defaultSystem:product and all modules enabled.",
+    "fixture": "Create eval/checkout with explicit systemId:null and a local empty view. Keep defaultSystem:product and all modules enabled.",
     "prompt": "Build a simple checkout form in my checkout prototype with contact details, a shipping option, and a visible order total. Use the prototype's existing system choice. Keep the change local.",
     "critical": [
       "Resolve contributor and explicit None",
       "Use local components and scoped CSS without system imports",
-      "Preserve system:null and unrelated files",
+      "Preserve systemId:null and unrelated files",
       "Run required checks and inspect rendering"
     ],
     "behavior": [
@@ -19,7 +19,7 @@
   {
     "id": "marketing-dialog",
     "partition": "tuning",
-    "fixture": "Create eval/launch with explicit system:marketing and a simple landing page. Set defaultSystem:product.",
+    "fixture": "Create eval/launch with explicit systemId pointing to Marketing’s permanent ID and a simple landing page. Set defaultSystem:product.",
     "prompt": "Add a request-demo dialog to my launch prototype with name and email fields, validation, and a success state. Keep the Marketing look and support both color modes.",
     "critical": [
       "Resolve Marketing rather than default Product",
@@ -53,10 +53,10 @@
   {
     "id": "assigned-default",
     "partition": "tuning",
-    "fixture": "Create eval/inbox with no system key and defaultSystem:product. Ensure the target omits rather than nulls the field.",
+    "fixture": "Create eval/inbox with an explicit systemId pointing to Product’s permanent ID. Keep Product as the configured creation default.",
     "prompt": "Add an empty-state panel with a working Add feedback action to my inbox prototype. Use its assigned system and existing conventions.",
     "critical": [
-      "Resolve omitted assignment through the configured default",
+      "Resolve the explicit Product assignment independently of the creation default",
       "Use Product APIs and declared tokens",
       "No metadata system migration",
       "Keep edits in the owner's prototype"

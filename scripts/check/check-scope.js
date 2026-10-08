@@ -20,7 +20,7 @@ if (!changed) { console.error('Usage: check-scope.js --staged | --push | --ci <b
 const { files, baseRef } = changed;
 let baselineInventory;
 try {
-  const baseline = baselineInventory = gitResourceIdentities(baseRef ?? 'HEAD', INSTALLED_FILE_TYPES);
+  const baseline = baselineInventory = gitResourceIdentities(baseRef ?? 'HEAD', INSTALLED_FILE_TYPES, { legacyOwnership: true });
   const proposed = gitResourceIdentities(after ?? 'HEAD', INSTALLED_FILE_TYPES, { staged: mode === '--staged' });
   const identityProblems = resourceIdentityChangeProblems(baseline, proposed);
   if (identityProblems.length) {

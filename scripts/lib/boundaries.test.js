@@ -15,7 +15,7 @@ const write = (root, file, code) => { const target = path.join(root, file); fs.m
 test('runtime dependency scopes reject indirect, private, documentation and dotted-folder escapes', () => {
   const root = temporary();
   try {
-    write(root, 'src/prototypes/sam/flow.v1/meta.json', JSON.stringify({ title:'Flow', system:'0123456789abcdef' }));
+    write(root, 'src/prototypes/sam/flow.v1/meta.json', JSON.stringify({ title:'Flow', systemId:'0123456789abcdef' }));
     const policy = scopePolicy({ root, systems: { product: { studioId:'0123456789abcdef', role:'prototype', dir: 'src/systems/product' }, brand: { studioId:'abcdefghjkmnpqrs', role:'prototype', dir: 'src/systems/brand' } }, defaultSystem: 'product', modules: [{ id: 'extra', lib: true, optional: true }] });
     const file = (p) => path.join(root, p);
     const cases = [

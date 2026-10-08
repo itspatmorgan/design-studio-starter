@@ -80,10 +80,10 @@ export function auditResourceIdentities(root, types) {
       const metadataFile = path.join(directory, 'meta.json');
       try {
         const metadata = JSON.parse(source(metadataFile));
-        if (metadata.ownerId !== undefined) {
-          resourceId(metadata.ownerId);
+        if (metadata.ownerContributorId !== undefined) {
+          resourceId(metadata.ownerContributorId);
           const contributor = resources.find(resource => resource.kind === 'contributor' && resource.key === owner.name);
-          if (!contributor || contributor.studioId !== metadata.ownerId) problems.push(`${relative(metadataFile)}: ownerId must match the contributor identity declared for its source folder.`);
+          if (!contributor || contributor.studioId !== metadata.ownerContributorId) problems.push(`${relative(metadataFile)}: ownerContributorId must match the contributor identity declared for its source folder.`);
         }
       } catch (error) { problems.push(`${relative(metadataFile)}: ${error.message}`); }
       record('prototype', metadataFile, jsonIdentity, { key: prototype.name, ownerKey: owner.name });

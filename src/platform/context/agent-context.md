@@ -22,13 +22,13 @@ Root `AGENTS.md` routes to [working context](working-in-studio.md). Essential re
 
 | Metadata | Resolved system |
 | --- | --- |
-| `system: "<system-id>"` | The permanent ID of the registered prototype system, resolved to its current source folder. |
-| `system: null` | No system; use local components and styling. |
-| Assignment omitted | The configured default. |
+| `systemId: "<system-id>"` | The permanent ID of the registered prototype system, resolved to its current source folder. |
+| `systemId: null` | No system; use local components and styling. |
+| Assignment omitted | Invalid; declare a system ID or `null`. |
 
 Read the assigned system's entry point and relevant context and skills. A duplicate with pending `rebuild` also needs its target system's guidance. Preserve the original and migrate implementation and assignment together. The current assignment remains the runtime boundary until migration completes.
 
-Use `pnpm studio context src/prototypes/<contributor>/<prototype> --json` for an existing contributor-owned prototype. The read-only report resolves current identity and edit scope, explicit or default assignment, rebuild target, enabled modules, and system entry paths. It shares assignment validation with the manifest and rejects invalid assignments and symbolic-link paths. A deleted system is reported as missing; it is not replaced with the default. This command does not read an instruction bundle, infer task relevance, authorize changes, or verify the artifact. Other module-owned sections use their owning contract.
+Use `pnpm studio context src/prototypes/<contributor>/<prototype> --json` for an existing contributor-owned prototype. The read-only report resolves current identity and edit scope, explicit assignment, rebuild target, enabled modules, and system entry paths. It shares assignment validation with the manifest and rejects invalid assignments and symbolic-link paths. A deleted system is reported as missing; it is not replaced with the default. This command does not read an instruction bundle, infer task relevance, authorize changes, or verify the artifact. Other module-owned sections use their owning contract.
 
 Read complete contract sections needed for the task and expand when dependencies or ambiguity require it. Reuse unchanged guidance while it remains available. The [system authoring context](../../modules/systems/context/authoring.md) selects sections without loading interface-maintenance detail.
 
