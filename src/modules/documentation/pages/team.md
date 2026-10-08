@@ -41,7 +41,7 @@ Your agent can handle the Git work:
 
 1. **Work on a branch.** A branch keeps your changes separate from main. The agent saves files, commits versions, and pushes the branch to GitHub.
 2. **Open a pull request.** This proposes bringing your branch into main. Ask the agent to summarize the changes and check results when you are ready to share them for review.
-3. **Review at your own pace.** Leave the request open, or mark it as a draft, while discussing the work. Merge it yourself when ready, or enable [GitHub auto-merge](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/automatically-merging-a-pull-request) if your repository supports it. Auto-merge waits for required checks and reviews.
+3. **Merge when ready.** Routine prototype changes can move through quickly. Leave the request open, or mark it as a draft, when you want discussion or review. Merge it yourself when ready, or enable [GitHub auto-merge](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/automatically-merging-a-pull-request) if your repository supports it. Auto-merge waits for required checks and reviews.
 4. **Merge and update.** Merging brings the work into main. Teammates pull the changes into their local copies. If publishing is configured to run after a merge, the site updates when deployment succeeds. Otherwise, publishing is a separate step.
 
 ```mermaid
@@ -54,6 +54,17 @@ flowchart LR
 ```
 
 Saving alone updates your local files. A commit records a local version; pushing shares it through GitHub. Neither necessarily publishes the site.
+
+## Do prototypes need long-running branches?
+
+No. Each prototype has its own scope, so you can merge routine changes into main frequently and keep the exploration moving. You do not need to wait until the prototype is finished. Merging records shared progress; it does not declare a design final or ready for production.
+
+| Change | Recommended approach |
+| --- | --- |
+| Work inside your own prototype | Use short-lived branches. Merge and publish progress when you want, once required checks and any repository review requirements are met. |
+| Shared system or platform changes | Seek review from the people responsible for the shared foundation. Check affected prototypes before merging. |
+
+A prototype can keep evolving through many small merges. Longer review is useful when a change affects foundations others depend on.
 
 ## How do contributor scopes fit this workflow?
 
