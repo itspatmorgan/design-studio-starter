@@ -2,7 +2,7 @@
 
 Design Studio Starter is an early beta. The current priority is a reliable local workflow: studio initialization, contributor onboarding, prototypes and their file types, design systems, and the system content. Portable static publishing is part of the workflow; each studio chooses and configures its own host.
 
-For local setup, follow the [README](README.md) and the Manual in `src/modules/documentation/pages/`. Coding agents should start with [AGENTS.md](AGENTS.md), which points to platform context, principles, personas, and task skills.
+For local setup, follow [manual installation](SETUP.md#manual-installation) and the [Manual](src/modules/documentation/pages/index.md). Coding agents should start with [AGENTS.md](AGENTS.md), which points to platform context, principles, personas, and task skills.
 
 ## Proposing a change
 
@@ -25,6 +25,23 @@ Use `pnpm test` during development for focused regressions. `pnpm test:release` 
 Run `pnpm harness:sync` after changing plugin identity or canonical project skills. It generates all three host manifests and catalogs, then synchronizes project routing and skill adapters. Edit canonical sources instead of generated files. See [Agent context routing](src/platform/context/agent-context.md) for ownership and installed-studio packaging.
 
 Use fictional sample data. Do not commit credentials, local environment files, proprietary design-system code, or company information you do not have permission to share. Check both files and commit history before publishing your own studio.
+
+## Starter repository publishing
+
+For any host, install with Node 24 and pnpm 12, run `pnpm build`, and publish `dist/`. The build validates source and types. Use `pnpm test` for focused regressions or `pnpm build:release` for full release verification. `pnpm build:inspect` reports startup asset size and requests. Your chosen host owns routing, caching, access, and deployment configuration.
+
+The [Checks workflow](.github/workflows/scope-check.yml) publishes successful pushes to `main` only in `itspatmorgan/design-studio-starter`. The workflow runs scope, regressions, and bundling concurrently, caches dependencies, cancels obsolete validation, and checks commit freshness before deploying. Copies run checks without publishing; configure your own deployment when needed.
+
+The starter repository uses GitHub Pages with **GitHub Actions** as its publishing source. Its configured site inherits `itspatmorgan.com` from the account’s user site and publishes at `/design-studio-starter/`; its custom-domain field is empty.
+
+The workflow obtains the Pages base path and passes it to the build as `STUDIO_BASE_PATH`. To preview this repository’s subpath locally:
+
+```sh
+STUDIO_BASE_PATH=/design-studio-starter/ pnpm build
+STUDIO_BASE_PATH=/design-studio-starter/ pnpm preview
+```
+
+See [Publishing](src/platform/context/publishing.md) for portable hosting, direct-link routing, and access requirements.
 
 ## License
 
