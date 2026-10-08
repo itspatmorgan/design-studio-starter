@@ -36,9 +36,23 @@ No plugin is required. In any supported local desktop coding agent, give it this
 
 > Help me install Design Studio from https://github.com/itspatmorgan/design-studio-starter. Read its SETUP.md and follow the linked create-studio instructions. Handle downloading, setup, and opening it for me. Save my Design Studio in my user Developer folder. Preserve anything already there. Show me the running Design Studio and help me continue working in its folder.
 
-If you prefer manual setup, create your own repository with **Use this template** on GitHub, or download or clone the source. Open that folder in your coding app and ask the agent to follow the repository's setup instructions there. Manual terminal commands are in the [README](README.md#get-started).
+If you prefer to run setup yourself, follow [manual installation](#manual-installation) below.
 
 All four agent-assisted paths create the same working-studio package. Plugin publishing files remain in the setup tooling. Manual template copies or clones include the complete maintainer repository.
+
+## Manual installation
+
+1. Select **Use this template** on GitHub to create your own repository, then clone it locally. You can also download or clone the source directly.
+2. Install [mise](https://mise.jdx.dev/installing-mise.html) if you do not already have it.
+3. From the repository directory, run:
+
+   ```sh
+   mise install
+   mise exec -- pnpm install
+   mise exec -- pnpm dev
+   ```
+
+Open the local URL printed by Vite. You can explore the starter before configuring anything or opening it in a coding agent. See the [Manual](src/modules/documentation/pages/index.md) for what to do next. To work with your agent, open this folder in your coding app.
 
 ## Set up and publish with ChatGPT Sites
 
