@@ -8,7 +8,9 @@ Created by [Patrick Morgan](https://itspatmorgan.com). Visit the [Design Studio 
 
 ## Get started
 
-Choose one of four paths in [Set up Design Studio](SETUP.md): **Codex plugin**, **Claude Code plugin**, **Cursor plugin**, or **direct from the source repository**. Use your desktop app and a local session. The agent handles technical setup and opens a studio in a visible folder on your computer. Personal use does not require a GitHub account.
+Choose one of four paths in [Set up Design Studio](SETUP.md): **Codex plugin**, **Claude Code plugin**, **Cursor plugin**, or **direct from the source repository**. Use your desktop app and a local session. Copy one prompt to install the plugin and create your studio. The agent handles technical setup and opens a studio in a visible folder on your computer. Personal use does not require a GitHub account.
+
+If ChatGPT Sites is available, use the [setup-and-publish prompt](SETUP.md#set-up-and-publish-with-chatgpt-sites) to include a public review link.
 
 The first plugin release is planned around local and repository installs, without waiting for public-directory review. The package is currently experimental. See the [plugin release plan and test status](plugins/design-studio/README.md) for remaining checks. Public marketplace listings are a later stage.
 

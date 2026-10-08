@@ -8,7 +8,7 @@ Created by [Patrick Morgan](https://itspatmorgan.com). The plugin homepage is th
 
 The primary audience uses Codex desktop, Claude Desktop’s local Code view, and Cursor. The first release will use each tool’s supported local or repository plugin installation. Public-directory submissions and reviews are a later distribution stage, not a prerequisite for the first release.
 
-[Set up Design Studio](../../SETUP.md) owns the four user paths: Codex plugin, Claude Code plugin, Cursor plugin, and direct from the source repository. Repository catalogs are installation metadata; they do not imply a reviewed directory listing. Keep terminal commands in agent or maintainer instructions.
+[Set up Design Studio](../../SETUP.md) owns the four user paths: Codex plugin, Claude Code plugin, Cursor plugin, and direct from the source repository. Each plugin path starts with one prompt for installation and studio creation. The optional [ChatGPT Sites prompt](../../SETUP.md#set-up-and-publish-with-chatgpt-sites) includes publication. Repository catalogs are installation metadata; they do not imply a reviewed directory listing. Keep terminal commands in agent or maintainer instructions.
 
 The current package pins the published starter with the latest local workflow fixes. Before the first release, test native setup with the newly packaged starter, including direct-source setup. Codex setup has passed; the person reports Claude Desktop and Cursor setup working well before this packaging refactor. Reopen and work-preservation checks remain separate evidence. The pilot targets macOS; Windows, Linux, and clean-computer prerequisite installation remain unverified.
 
