@@ -27,15 +27,22 @@ Saving does not publish. Sharing working files through Git is a [separate team w
 
 ## How do I publish?
 
-Ask your agent to publish your studio. Specify the audience and destination, or ask it to help choose a host.
+Design Studio produces a static website that many hosting services can serve. The right choice depends on your company's policies, available accounts, and who needs access. Hosting usually needs configuration outside Studio.
 
-> Publish my Design Studio for our review group. Help me choose hosting with the access we need, check what will be included, and verify the shared links.
+Two paths have specific support:
 
-Design Studio produces a static website. ChatGPT Sites, GitHub Pages, Vercel, Netlify, or another static-site host can provide hosting. Available agent integrations and host access determine the steps. Your agent can consult [Publishing](/documentation/context/platform.core/context/publishing).
+| Path | What you need |
+| --- | --- |
+| ChatGPT Sites through Codex | The Design Studio plugin and an available, connected Sites integration. Ask your agent to publish your studio through Sites. |
+| GitHub Pages | Your studio in a GitHub repository, with access to configure Pages and its deployment workflow. Your agent can help set this up. |
 
-Review the result, then copy links from the published site. A **localhost** link refers to a server on the viewer's own computer and will not share your local studio with remote reviewers.
+Having a GitHub repository does not automatically publish your studio. Copies of the starter need their own deployment configuration.
 
-To update the site, ask the agent to publish again to the same destination. Local edits do not appear online automatically.
+For other hosts, ask your agent to assess what is needed with whoever manages hosting for your team. The agent can help prepare the build and configuration. What it can complete depends on its tools and your access. See [Publishing](/documentation/context/platform.core/context/publishing) for technical requirements.
+
+After publishing, verify the site and copy links from it. A **localhost** link points to the viewer's own computer and will not share your local studio with remote reviewers.
+
+Local edits do not appear online automatically. Publish another build through your configured hosting workflow to update the site.
 
 ## What becomes visible?
 
