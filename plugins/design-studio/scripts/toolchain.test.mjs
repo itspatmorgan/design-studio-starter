@@ -28,13 +28,16 @@ test('local Git survives ordinary mise exec without replacing pinned Node or tra
   assert.equal(configureLocalGit(root, git), true);
   assert.equal(configureLocalGit(root, git), true);
   assert.equal(findWorkingGit({ env: { ...process.env, PATH: path.join(root, '.git/design-studio-tools') }, platform: 'linux' }), git);
-  const env = gitEnvironment(git);
+  // Keep fixture trust and config independent of the CI runner's mise settings.
+  const fixtureEnv = { ...process.env, MISE_TRUSTED_CONFIG_PATHS: root,
+    MISE_STATE_DIR: path.join(root, 'mise-state'), MISE_CONFIG_DIR: path.join(root, 'mise-config') };
+  const env = gitEnvironment(git, fixtureEnv);
   for (const config of ['mise.toml', 'mise.local.toml']) {
     const trust = spawnSync('mise', ['trust', path.join(root, config)], { env, encoding: 'utf8' });
     assert.equal(trust.status, 0, trust.stderr);
   }
   // Deliberately retain the bad Git first in inherited PATH: local Git must win.
-  const tools = verifyPinnedTools(root, { ...process.env, PATH: path.join(root, 'bad') + path.delimiter + process.env.PATH });
+  const tools = verifyPinnedTools(root, { ...fixtureEnv, PATH: path.join(root, 'bad') + path.delimiter + process.env.PATH });
   assert.match(tools.nodeVersion, /^24\./);
   assert.equal(tools.gitVersion, 'git version 2.54.0');
   assert.equal(fs.readFileSync(path.join(root, 'mise.toml'), 'utf8'), '[tools]\nnode = "24"\npnpm = "12"\n');
