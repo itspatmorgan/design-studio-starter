@@ -29,7 +29,7 @@ The current starter includes:
 
 - Personal studio setup and contributor onboarding for shared studios.
 - Prototypes with views, documents, diagrams, and Excalidraw canvases.
-- Local file management, source editing, ordering, and per-view lofi mode.
+- Local file management, source editing, ordering, and per-view lo-fi mode.
 - Prototype archiving that excludes archived work from the published site.
 - Separate platform and prototype design systems, with component examples and token pages.
 - Shared product context and agent guidance, including setup and documentation skills.

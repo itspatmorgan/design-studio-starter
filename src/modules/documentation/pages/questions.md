@@ -31,7 +31,7 @@ A published site needs another publication. Changing the default system does not
 
 ## Why does my prototype look different than expected?
 
-Check its assigned system beneath the title. Browsing another system does not change the assignment. A view in lofi mode uses grayscale and handwritten type.
+Check its assigned system beneath the title. Browsing another system does not change the assignment. A view in lo-fi mode uses grayscale and handwritten type.
 
 Give the agent the affected screen, expected appearance, and any references. Ask it to check system styles and component compatibility. See [Prototypes & systems](/documentation/manual/prototypes).
 

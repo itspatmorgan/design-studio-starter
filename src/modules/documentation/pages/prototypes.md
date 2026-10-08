@@ -76,7 +76,7 @@ Canvases embed artifacts from their own prototype and cannot store images. Chang
 
 ## Can I try a different appearance or system?
 
-Right-click a view and choose **Make lofi** for grayscale and handwritten type. **Make hi-fi** restores normal appearance.
+Right-click a view and choose **Make lo-fi** for grayscale and handwritten type. **Make hi-fi** restores normal appearance.
 
 To try another system, choose **Duplicate** and select the target system. This creates a rebuild copy and preserves the original. Use **Copy rebuild instructions** in the copy's sidebar and give them to your agent. The copy keeps its current system until the agent migrates and verifies it; duplication does not convert code automatically.
 

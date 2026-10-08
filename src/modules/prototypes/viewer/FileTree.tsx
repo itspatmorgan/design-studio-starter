@@ -429,7 +429,7 @@ export default function FileTree({ proto, current, embedded = false, rememberExp
             [
               editable && !isSystemContent && FILE_TYPES[items.get(node.path)?.fileType ?? '']?.fidelity && (
                 <ContextMenuItem key="lofi" onClick={() => setTimeout(() => setLofi(items.get(node.path)!, !items.get(node.path)!.lofi))}>
-                  <HugeiconsIcon icon={PaintBoardIcon} /> {items.get(node.path)?.lofi ? 'Make hi-fi' : 'Make lofi'}
+                  <HugeiconsIcon icon={PaintBoardIcon} /> {items.get(node.path)?.lofi ? 'Make hi-fi' : 'Make lo-fi'}
                 </ContextMenuItem>
               ),
               changeable && <ContextMenuItem key="rename" onClick={() => setTimeout(() => setEditing({ kind: 'rename', path: node.path }))}><HugeiconsIcon icon={PencilEdit02Icon} /> Rename</ContextMenuItem>,

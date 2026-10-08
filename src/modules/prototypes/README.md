@@ -76,7 +76,7 @@ A different selected system records `rebuild.targetSystem` and the original repo
 
 To finish, migrate code and the `system` value together, verify the build and rendered artifacts, then remove `rebuild`. Pending targets prevent removing that system through the studio CLI. Assignment has no in-place switching action in the app; direct code owners can still change metadata while migrating their implementation.
 
-## Lofi mode
+## Lo-fi mode
 
 An opening `/** @lofi */` comment draws that view in grayscale with handwritten type. Its components and behavior remain unchanged.
 

@@ -64,7 +64,8 @@ export const artifactLabel = (path: string, proto?: Pick<PrototypeInfo, 'contrib
   // The entry file keeps its required name on disk; people see the skill it opens.
   const skill = proto?.contributorKey === SYSTEM_CONTENT_KEY && contentSection(proto.id) === 'skills' && /^([^/]+)\/SKILL\.md$/.exec(path);
   const name = skill ? skill[1] : artifactSlug(path).split('/').pop()!;
-  return name.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  return name.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+    .replace(/\bLo ?fi\b/gi, 'Lo-fi').replace(/\bHi ?fi\b/gi, 'Hi-fi');
 };
 
 // "checkout/steps/done.tsx" → "checkout/steps": the folder it's in, or "".

@@ -38,7 +38,7 @@ Having these moments available separately makes it easier to compare options and
 
 The **Discovery** folder holds the earlier work behind the proposal. [Project context](discovery/project-context.md) explains the problem, the intended audience, and the decisions and questions that shaped this example.
 
-The [Feedback flow](discovery/feedback-flow.mermaid) maps the experience, while [Breadboard](discovery/breadboard.excalidraw) brings the flow and early sketches together. The [Lofi inbox](discovery/lofi-inbox.tsx) presents the working screen as a wireframe, helping you focus on layout before visual polish.
+The [Feedback flow](discovery/feedback-flow.mermaid) maps the experience, while [Breadboard](discovery/breadboard.excalidraw) brings the flow and early sketches together. The [Lo-fi inbox](discovery/lofi-inbox.tsx) presents the working screen as a wireframe, helping you focus on layout before visual polish.
 
 ![Feedback review flow](discovery/feedback-flow.mermaid)
 

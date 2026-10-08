@@ -34,7 +34,7 @@ The feedback flow models the review cycle. Its source is shared with the Breadbo
 
 The low-fidelity inbox lets us discuss layout while keeping the screen's behavior.
 
-![Lofi inbox](lofi-inbox.tsx)
+![Lo-fi inbox](lofi-inbox.tsx)
 
 Breadboard compares the live diagram with an independent, editable sketch. Open the canvas to rearrange or annotate it.
 
