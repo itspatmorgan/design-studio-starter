@@ -2,9 +2,9 @@
 
 Choose one of four paths: Codex plugin, Claude Code plugin, Cursor plugin, or direct from the source repository. Use the desktop app and a local session so the agent can create files and run Studio on your computer. Each plugin prompt requests installation and studio creation together. If ChatGPT Sites is available, use the [setup-and-publish prompt](#set-up-and-publish-with-chatgpt-sites) instead.
 
-The beta is distributed through local and repository plugin installation. You do not need to wait for a listing in a reviewed public directory. The package is in beta; direct-source setup and the newly packaged starter still need native journey verification. Organization policies may limit plugin installation. If your tool cannot load a plugin, use the direct-source path below.
+If your account or organization cannot load a plugin, use the direct-source path below.
 
-After the plugin is ready, your agent audits the environment and recommends a folder for Studio. It explains where files will be saved and asks you to confirm or change the location before creating Studio. Recommendations use the observed OS, home folder, and permissions, including on work-managed computers. Windows and Linux native installation journeys remain unverified; the audit does not assume everyone uses a Mac.
+After the plugin is ready, your agent audits the environment and recommends a folder for Studio. It explains where files will be saved and asks you to confirm or change the location before creating Studio. Recommendations use the observed OS, home folder, and permissions, including on work-managed computers.
 
 ## 1. Codex plugin
 
@@ -22,7 +22,7 @@ Open the Claude desktop app, choose **Code**, then select **Local**. Use **No fo
 
 Your agent guides you into your studio folder and through any restart, plugin activation, or new session needed.
 
-You can also install from the repository catalog through **Customize → Plugins → Add plugin → Add marketplace**. Add `itspatmorgan/design-studio-starter`, install Design Studio, then ask **“Create my Design Studio.”** This is a repository install, not a reviewed public-directory listing.
+You can also install from the repository catalog through **Customize → Plugins → Add plugin → Add marketplace**. Add `itspatmorgan/design-studio-starter`, install Design Studio, then ask **“Create my Design Studio.”**
 
 ## 3. Cursor plugin
 
@@ -62,7 +62,7 @@ Use this alternative prompt in a local Codex chat only if ChatGPT Sites is enabl
 
 > Install the Design Studio plugin locally for Codex from https://github.com/itspatmorgan/design-studio-starter. Read SETUP.md and follow its Codex plugin installation, linked create-studio, and ChatGPT Sites publishing instructions. Handle the technical steps and preserve my other plugins and existing files. Create my Design Studio on this computer, verify its local preview, and publish a public review link with ChatGPT Sites. Keep authoring local, show me the published link, and help me continue working in my Design Studio folder. Guide me through any restart, plugin activation, or new chat needed. If ChatGPT Sites is unavailable, complete local setup and tell me what is needed to publish.
 
-This beta workflow publishes a public review link. Anyone with the link can explore your built work; source files and editing stay local. Ask for a private site if you prefer.
+This workflow publishes a public review link. Anyone with the link can explore your built work; source files and editing stay local. Ask for a private site if you prefer.
 
 After local changes, ask **“Publish my Studio”** to update the same Site with its existing audience. Local edits do not publish automatically. If publishing is unavailable or fails, you can continue working locally.
 
@@ -86,17 +86,17 @@ Use the host's supported plugin installation flow and inspect where plugin files
 
 When the request includes studio creation, continue with [studio setup](#for-the-agent-carrying-out-studio-setup) after installation. Plugin registration alone does not complete that request. If a restart or new chat is required, provide a continuation handoff with the source checkout, installation status, audit findings, confirmed folder and user response if available, setup-plan path if available, and remaining steps. Include any requested Sites publication and audience. Audit the new session before continuing; retain the confirmed destination unless the user changes it.
 
-### Move an existing experiment installation to beta
+### Update an existing plugin installation
 
-The marketplace is now `design-studio`; earlier packages used `design-studio-experiment`. Treat this as a registration change, not an automatic update. Read the current package version from [plugin.json](plugins/design-studio/plugin.json).
+Compare the installed plugin and marketplace identity with this checkout. If the installation uses `design-studio-experiment`, moving to `design-studio` requires a registration change. Read the current package version from [plugin.json](plugins/design-studio/plugin.json).
 
-Inspect the host's installed plugins and marketplace registrations first. Using its supported controls or current CLI help, disable or uninstall only the old Design Studio plugin, preserving its persistent data. Register this repository as `design-studio` and install `design-studio@design-studio` using the host instructions below. Remove the old marketplace registration only if it is no longer needed. Keep unrelated plugins and custom files intact; do not manually delete shared caches.
+Use the host's supported update controls when the marketplace identity matches. If it differs, disable or uninstall only the old Design Studio plugin, preserving its persistent data. For that registration change, register this repository as `design-studio` and install `design-studio@design-studio` using the host instructions below. Remove the old marketplace registration only if it is no longer needed. Keep unrelated plugins and custom files intact; do not manually delete shared caches.
 
-Claude can retain the old marketplace identity when the same checkout path is registered again. Use a separate fresh checkout for the beta catalog and verify that registration reports `design-studio`. Keep the old checkout and registration while other plugins still depend on them. If uninstalling with Claude's CLI, use `--keep-data`.
+Claude can retain the old marketplace identity when the same checkout path is registered again. If the marketplace identity differs, use a separate fresh checkout and verify that registration reports `design-studio`. Keep the old checkout and registration while other plugins still depend on them. If uninstalling with Claude's CLI, use `--keep-data`.
 
-For Cursor's local directory installation, the plugin name and location stay the same. Inspect the installed version and use the supported replacement procedure, preserving custom files. The changed marketplace name applies to catalog registrations.
+For Cursor's local directory installation, inspect the installed version and use the supported replacement procedure, preserving custom files. Marketplace identity checks apply to catalog registrations.
 
-Restart or reload as required, then verify one active Design Studio plugin, its current version, and its commands or skills in a fresh session. Open an existing studio with **“Open my Design Studio”** to verify preservation; do not recreate it. Plugin migration does not move or upgrade studio folders. Beta migration still needs native verification in each host.
+Restart or reload as required, then verify one active Design Studio plugin, its current version, and its commands or skills in a fresh session. Open an existing studio with **“Open my Design Studio”** to verify preservation; do not recreate it. Plugin migration does not move or upgrade studio folders.
 
 ### Codex local plugin instructions
 
@@ -107,7 +107,7 @@ codex plugin marketplace add /absolute/path/to/the/source-checkout
 codex plugin add design-studio@design-studio
 ```
 
-The repository's `.agents/plugins/marketplace.json` is a catalog for this package; it does not require public-directory review. Check the installed version and ask the person to restart the desktop app if required, then verify the plugin in a new local chat. Do not claim an offered instruction or successful CLI install proves desktop activation.
+The repository's `.agents/plugins/marketplace.json` is the catalog for this package. Check the installed version and ask the person to restart the desktop app if required, then verify the plugin in a new local chat. Do not claim an offered instruction or successful CLI install proves desktop activation.
 
 ### Claude Code local plugin instructions
 
@@ -118,7 +118,7 @@ claude plugin marketplace add /absolute/path/to/the/source-checkout
 claude plugin install design-studio@design-studio --scope user
 ```
 
-Verify current command help before execution. The catalog is `.claude-plugin/marketplace.json`. Keep the local checkout available when the installation reads from it. Verify the three plugin commands in Claude Desktop's local Code view. The CLI is an agent-managed installation tool; continued user work is in the desktop app. Do not substitute a terminal session for a desktop test.
+Verify current command help before execution. The catalog is `.claude-plugin/marketplace.json`. Keep the local checkout available when the installation reads from it. Verify the plugin commands in Claude Desktop's local Code view. The CLI is an agent-managed installation tool; continued user work is in the desktop app. Do not substitute a terminal session for a desktop test.
 
 ### Cursor local plugin instructions
 

@@ -2,7 +2,7 @@
 
 Read the current beta version from [plugin.json](plugin.json) and the pinned starter revision from [bootstrap.mjs](scripts/bootstrap.mjs). Record both for each test. The setup receipt `design-studio.local.json` identifies the downloaded studio code; the plugin version alone does not.
 
-The plugin uses the stable marketplace name `design-studio`. Earlier installations used `design-studio-experiment`; follow the [beta migration procedure](../../SETUP.md#move-an-existing-experiment-installation-to-beta) before testing an upgrade. Existing studio folders must remain intact.
+The plugin uses the stable marketplace name `design-studio`. Earlier installations used `design-studio-experiment`; follow the [plugin update procedure](../../SETUP.md#update-an-existing-plugin-installation) before testing an upgrade. Existing studio folders must remain intact.
 
 Test the checkout being reviewed. Before a public delivery test, merge and publish the tested changes and confirm the starter pin includes any studio changes under test. Local plugin changes do not imply that the pinned starter includes later platform changes.
 
@@ -25,7 +25,7 @@ Read the [plugin README](README.md) for installation commands. The plugin folder
 
 ## Test each harness
 
-- **Codex:** add this checkout as the local plugin marketplace and install the current Design Studio package. For an earlier installation, follow the beta migration procedure. Confirm the installed version matches the current manifest, then start a fresh chat.
+- **Codex:** add this checkout as the local plugin marketplace and install the current Design Studio package. For an earlier installation, follow the plugin update procedure. Confirm the installed version matches the current manifest, then start a fresh chat.
 - **Claude Code plugin:** follow the local registration procedure in [SETUP.md](../../SETUP.md#claude-code-local-plugin-instructions), then test in Claude Desktop’s Code view with Local selected. Verify the plugin commands before asking it to create a studio. Keep unrelated work repositories out of this test.
 - **Cursor plugin:** follow [local plugin installation](../../SETUP.md#cursor-local-plugin-instructions), reload the app, and verify its skills in Customize before starting a fresh local Agent chat.
 - **Direct from source:** use [the plugin-free request](../../SETUP.md#4-direct-from-the-source-repository) in a local desktop agent without Design Studio installed.

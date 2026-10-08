@@ -35,6 +35,7 @@ Use ASD-STE100-inspired language with flexibility for our [personas](personas.md
 - Define unfamiliar terms on first use. Include technical details only when the audience needs them.
 - Describe what the environment provides. Leave each team free to choose its design process.
 - State assumptions, limitations, and missing input. Do not present planned capabilities as available features.
+- Write guidance for ongoing use. Keep release-stage commentary, dated test results, and rollout plans in maintainer records. Include version-specific details only when they change a required action, such as an installation migration.
 
 Context documents use a frontmatter `title` and start their body without a duplicate H1. Use H2 headings for sections. A skill keeps its required `name` and `description`; its optional opening H1 names the task, such as “Use Canvas.” READMEs may use an opening H1 without frontmatter. The reader suppresses a matching opening H1 when a frontmatter title is present.
 
