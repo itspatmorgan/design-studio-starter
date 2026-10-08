@@ -62,15 +62,16 @@
       "height": 318,
       "id": "muotyuwa1l23m8",
       "index": "a2",
-      "link": "/prototypes/patrick/feedback-inbox/app/overview",
+      "link": "/prototypes/ccncfpcyaa1hvjts/artifacts/0qd3s4spbfcpbb2j",
       "seed": 747537791,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 4,
-      "versionNonce": 1307171658,
+      "version": 5,
+      "versionNonce": 854535900,
       "width": 458,
       "x": 110,
-      "y": 240
+      "y": 240,
+      "updated": 1791474936292
     },
     {
       "boundElements": [
@@ -91,15 +92,16 @@
       "height": 318,
       "id": "muotyuwaniywql",
       "index": "a3",
-      "link": "/prototypes/patrick/feedback-inbox/states/inbox/open-issues",
+      "link": "/prototypes/ccncfpcyaa1hvjts/artifacts/251pw5engqagm142",
       "seed": 719140168,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 5,
-      "versionNonce": 1118557782,
+      "version": 6,
+      "versionNonce": 1653945180,
       "width": 458,
       "x": 808,
-      "y": 240
+      "y": 240,
+      "updated": 1791474936292
     },
     {
       "boundElements": [
@@ -116,15 +118,16 @@
       "height": 318,
       "id": "muotyuwanr91u4",
       "index": "a4",
-      "link": "/prototypes/patrick/feedback-inbox/app/feedback-detail",
+      "link": "/prototypes/ccncfpcyaa1hvjts/artifacts/gjmx07ngsdvvnq3s",
       "seed": 364662265,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 4,
-      "versionNonce": 1868816906,
+      "version": 5,
+      "versionNonce": 1757179249,
       "width": 458,
       "x": 1506,
-      "y": 240
+      "y": 240,
+      "updated": 1791474936292
     },
     {
       "boundElements": [
@@ -421,15 +424,16 @@
       "height": 318,
       "id": "muotyuwbed6mmz",
       "index": "aG",
-      "link": "/prototypes/patrick/feedback-inbox/states/inbox/new-feedback",
+      "link": "/prototypes/ccncfpcyaa1hvjts/artifacts/yddcbrqtg2ap5tsd",
       "seed": 115985680,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 4,
-      "versionNonce": 674845322,
+      "version": 5,
+      "versionNonce": 317185073,
       "width": 458,
       "x": 110,
-      "y": 1032
+      "y": 1032,
+      "updated": 1791474936292
     },
     {
       "boundElements": [
@@ -446,15 +450,16 @@
       "height": 318,
       "id": "muotyuwbqz3ktw",
       "index": "aH",
-      "link": "/prototypes/patrick/feedback-inbox/states/inbox/validation-error",
+      "link": "/prototypes/ccncfpcyaa1hvjts/artifacts/4shat5c7920eczw9",
       "seed": 72576082,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 4,
-      "versionNonce": 279081750,
+      "version": 5,
+      "versionNonce": 1124160114,
       "width": 458,
       "x": 808,
-      "y": 1032
+      "y": 1032,
+      "updated": 1791474936292
     },
     {
       "boundElements": [
@@ -636,15 +641,16 @@
       "height": 318,
       "id": "muotyuwbmfle43",
       "index": "aP",
-      "link": "/prototypes/patrick/feedback-inbox/states/inbox/empty",
+      "link": "/prototypes/ccncfpcyaa1hvjts/artifacts/gcpx47czy7a6rfat",
       "seed": 1484032070,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 3,
-      "versionNonce": 1677539350,
+      "version": 4,
+      "versionNonce": 897252809,
       "width": 458,
       "x": 110,
-      "y": 1824
+      "y": 1824,
+      "updated": 1791474936292
     },
     {
       "boundElements": [],
@@ -656,15 +662,16 @@
       "height": 318,
       "id": "muotyuwbpsedzo",
       "index": "aQ",
-      "link": "/prototypes/patrick/feedback-inbox/states/inbox/no-matches",
+      "link": "/prototypes/ccncfpcyaa1hvjts/artifacts/5cywsdn1tnjqdyhv",
       "seed": 892015785,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 3,
-      "versionNonce": 1336048714,
+      "version": 4,
+      "versionNonce": 896961670,
       "width": 458,
       "x": 808,
-      "y": 1824
+      "y": 1824,
+      "updated": 1791474936292
     },
     {
       "backgroundColor": "#ffec99",
@@ -782,15 +789,16 @@
       "height": 318,
       "id": "muotyuwceutlio",
       "index": "aW",
-      "link": "/prototypes/patrick/feedback-inbox/states/detail/edit",
+      "link": "/prototypes/ccncfpcyaa1hvjts/artifacts/tkekbh8dz8wx2jrg",
       "seed": 772177581,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 3,
-      "versionNonce": 1563863178,
+      "version": 4,
+      "versionNonce": 1358860961,
       "width": 458,
       "x": 110,
-      "y": 2616
+      "y": 2616,
+      "updated": 1791474936292
     },
     {
       "boundElements": [],
@@ -802,15 +810,16 @@
       "height": 318,
       "id": "muotyuwct9oi1h",
       "index": "aX",
-      "link": "/prototypes/patrick/feedback-inbox/states/inbox/row-menu",
+      "link": "/prototypes/ccncfpcyaa1hvjts/artifacts/s19jcb02zbk6b187",
       "seed": 784241333,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 3,
-      "versionNonce": 894270742,
+      "version": 4,
+      "versionNonce": 988330174,
       "width": 458,
       "x": 808,
-      "y": 2616
+      "y": 2616,
+      "updated": 1791474936292
     },
     {
       "backgroundColor": "#ffec99",
@@ -928,16 +937,16 @@
       "height": 318,
       "id": "muotyuwchbnhje",
       "index": "ad",
-      "link": "/prototypes/patrick/feedback-inbox/states/inbox/delete-confirmation",
+      "link": "/prototypes/ccncfpcyaa1hvjts/artifacts/y3jy20pzz4e83as9",
       "seed": 1197940310,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 5,
-      "versionNonce": 1957862284,
+      "version": 6,
+      "versionNonce": 1757518085,
       "width": 458,
       "x": 110,
       "y": 3408,
-      "updated": 1791333832374
+      "updated": 1791474936292
     },
     {
       "backgroundColor": "#ffec99",
@@ -1004,5 +1013,6 @@
     "viewBackgroundColor": "#ffffff",
     "gridSize": 20
   },
-  "files": {}
+  "files": {},
+  "studioId": "ve0mrkhtpskee28e"
 }

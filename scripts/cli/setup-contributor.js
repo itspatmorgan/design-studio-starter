@@ -1,3 +1,5 @@
+import { retainedResourceIds, allocateResourceIdentity } from '../lib/resource-identity-lifecycle.js';
+import { INSTALLED_FILE_TYPES } from '../lib/file-types.js';
 // Usage:
 //   pnpm join                          (dry run: prints the entry it would add)
 //   pnpm join --yes                    (adds it as contributors/<key>.json)
@@ -82,7 +84,7 @@ if (problems.length) {
   process.exit(1);
 }
 
-const entry = { name, github, email, welcomeDismissed: false };
+const entry = { studioId: allocateResourceIdentity(retainedResourceIds(ROOT, INSTALLED_FILE_TYPES)), name, github, email, welcomeDismissed: false };
 console.log(`${yes ? 'Adding' : 'Proposed'} contributors/${key}.json:\n${JSON.stringify(entry, null, 2)}`);
 if (!yes) console.log('Name and email come from your Git config, and the GitHub username from the GitHub CLI, unless passed as flags.');
 console.log(`Your folder will be src/prototypes/${key}/.`);

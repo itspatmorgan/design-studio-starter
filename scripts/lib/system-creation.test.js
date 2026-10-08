@@ -35,13 +35,14 @@ test('creation keeps partial scaffolds private and releases its transaction afte
       setTimeout(() => {
         if (process.argv.includes('broken')) { console.error('Scaffold validation failed'); process.exit(1); }
         fs.appendFileSync('calls', process.argv.includes('--yes') ? 'apply\\n' : 'preview\\n');
+        if (process.argv.includes('--yes')) { fs.mkdirSync('src/systems/kit', { recursive: true }); fs.writeFileSync('src/systems/kit/system.ts', "export default { studioId: '0123456789abcdef' };"); }
       }, 40);
     `);
     const pending = createSystem(root, 'admin', { name: 'Kit' });
     assert.equal(fs.existsSync(path.join(root, '.studio-system-operation')), true);
     await assert.rejects(createSystem(root, 'admin', { name: 'Other' }), /in progress/);
     assert.equal(fs.existsSync(path.join(root, '.studio-system-operation')), true);
-    assert.deepEqual(await pending, { id: 'kit' });
+    assert.deepEqual(await pending, { id: 'kit', studioId: '0123456789abcdef' });
     assert.equal(fs.readFileSync(path.join(root, 'calls'), 'utf8'), 'preview\napply\n');
     assert.equal(fs.existsSync(path.join(root, '.studio-system-operation')), false);
     await assert.rejects(createSystem(root, 'admin', { name: 'Broken' }), /Scaffold validation failed/);

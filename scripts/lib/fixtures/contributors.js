@@ -5,7 +5,9 @@ import { editStudioConfig } from '../studio-setup.js';
 export function writeProfiles(root, entries) {
   fs.mkdirSync(path.join(root, 'contributors'), { recursive: true });
   for (const [key, entry] of Object.entries(entries)) {
-    fs.writeFileSync(path.join(root, 'contributors', `${key}.json`), JSON.stringify({ github: '', email: '', welcomeDismissed: false, ...entry }, null, 2) + '\n');
+    const profileFile = path.join(root, 'contributors', `${key}.json`);
+    const previous = fs.existsSync(profileFile) ? JSON.parse(fs.readFileSync(profileFile, 'utf8')) : {};
+    fs.writeFileSync(profileFile, JSON.stringify({ ...(previous.studioId && { studioId: previous.studioId }), github: '', email: '', welcomeDismissed: false, ...entry }, null, 2) + '\n');
   }
 }
 

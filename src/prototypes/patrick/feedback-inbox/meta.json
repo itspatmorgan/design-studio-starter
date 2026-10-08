@@ -25,5 +25,7 @@
     "states/inbox/validation-error.tsx",
     "states/inbox/row-menu.tsx",
     "states/inbox/delete-confirmation.tsx"
-  ]
+  ],
+  "studioId": "ccncfpcyaa1hvjts",
+  "ownerId": "01ketxwns61brr7r"
 }

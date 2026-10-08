@@ -20,7 +20,7 @@ import type { DesignSystem, SystemIntro } from '@/platform/app/data/types';
 import type { SystemComponentDoc } from '@/modules/systems/docs';
 import type { ThemeToken, TokenGroup } from '@/modules/systems/themeTokens';
 import { ThemeScope } from '@/modules/systems/ThemeScope';
-import { PROTOTYPE_SYSTEMS, SYSTEM_SPECS } from '@/modules/systems/data/systems';
+import { PROTOTYPE_SYSTEMS, SYSTEM_SPECS, systemKeyFromIdentity, systemPath } from '@/modules/systems/data/systems';
 import { useSourceView } from '@/platform/core/source/useSourceView';
 import FileNavItem from '@/platform/app/shell/FileNavItem';
 import { sourceOf } from '../sources';
@@ -57,16 +57,16 @@ type SystemId = string;
 
 
 // Map a rendered Systems page to its actual source files.
-function sourcePath(system: string, page: string | undefined, components: SystemComponentDoc[]) {
+function sourcePath(system: string, page: string | undefined, components: SystemComponentDoc[], componentPage = false) {
   const source = system === PLATFORM_ID ? PLATFORM_SOURCE : sourceOf(system, PROTOTYPE_SYSTEMS[system]);
-  if (page === 'assets' || page === 'fonts' || page === 'images') return null;
-  if (!page || page === 'icons') return intros['/systems/' + system + '/intro.tsx'] ? source.dir + 'intro.tsx' : source.dir + 'system.ts';
-  const component = components.find((c) => c.slug === page);
+  if (!componentPage && (page === 'assets' || page === 'fonts' || page === 'images')) return null;
+  if (!componentPage && (!page || page === 'icons')) return intros['/systems/' + system + '/intro.tsx'] ? source.dir + 'intro.tsx' : source.dir + 'system.ts';
+  const component = componentPage ? components.find((c) => c.slug === page) : undefined;
   if (component) {
     const file = component.files.doc ?? component.files.examples ?? component.files.source;
     return file ? source.components + '/' + file : null;
   }
-  return source.theme;
+  return !componentPage && TOKEN_PAGES.some(item => item.id === page) ? source.theme : null;
 }
 
 // The theme pages: page id and name, for each kind of token a theme can define.
@@ -128,7 +128,7 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   useEffect(() => { if (searchOpen) searchRef.current?.focus(); }, [searchOpen]);
   const q = query.trim().toLowerCase();
   const matches = (label: string) => !q || label.toLowerCase().includes(q);
-  const activeGroup = page && (Object.hasOwn(SYSTEM_CONTENT_SECTIONS, page) ? page : ['assets', 'fonts', 'icons', 'images'].includes(page) ? 'assets' : foundations.some(p => p.id === page) ? 'theme' : components.some(c => c.slug === page) ? 'components' : undefined);
+  const activeGroup = page && (Object.hasOwn(SYSTEM_CONTENT_SECTIONS, page) ? page : ['assets', 'fonts', 'icons', 'images'].includes(page) ? 'assets' : foundations.some(p => p.id === page) ? 'theme' : page.startsWith('components/') ? 'components' : undefined);
   useEffect(() => { if (activeGroup) setOpenGroups(prev => ({ ...prev, [activeGroup]: true })); }, [activeGroup, page, params._splat]);
   const groupOpen = (id: string) => Boolean(q) || openGroups[id];
   const changeGroup = (id: string, open: boolean) => { if (!q) setOpenGroups(prev => ({ ...prev, [id]: open })); };
@@ -146,9 +146,9 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
   const matchingComponents = components.filter(c => matches('Components') || matches(c.title));
   const assetPages = [{ id: 'fonts', label: 'Fonts', icon: Type }, { id: 'icons', label: 'Icons', icon: Smile }, { id: 'images', label: 'Images', icon: Image }].filter(item => matches('Assets') || matches(item.label) || systemAssets(system).some(asset => asset.kind === item.label && matches(asset.path)));
   const anyMatch = matches('Overview') || assetPages.length > 0 || matchingFoundations.length > 0 || matchingComponents.length > 0 || contentSections.some(({ section, proto }) => matches(section.title) || proto.artifacts.some(a => matches(artifactLabel(a.path, proto)) || matches(a.path)));
-  const file = (id: string | undefined, label: string) => {
-    const path = sourcePath(system, id, components);
-    return path && <FileNavItem key={id ?? 'intro'} href={'/systems/' + system + (id ? '/' + id : '')} path={path} label={label} className={id ? undefined : 'h-7'} icon={navIcon(id && components.some((c) => c.slug === id) ? Blocks : PAGE_ICONS[id ?? 'intro'] ?? Blocks)} reveal={() => systemSourceRequest('reveal', path)} />;
+  const file = (id: string | undefined, label: string, component = false) => {
+    const path = sourcePath(system, id, components, component);
+    return path && <FileNavItem key={id ?? 'intro'} href={systemPath(system) + (id ? '/' + (component ? 'components/' : '') + id : '')} path={path} label={label} className={id ? undefined : 'h-7'} icon={navIcon(component ? Blocks : PAGE_ICONS[id ?? 'intro'] ?? Blocks)} reveal={() => systemSourceRequest('reveal', path)} />;
   };
   return (
     <SectionNav label="Systems">
@@ -176,10 +176,10 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
           {!foundations.length && !q && <p className="px-3 py-1 text-[12px] text-muted-foreground">No tokens yet</p>}
         </SystemBranch>}
         {assetPages.length > 0 && <SystemBranch label="Assets" path={source.dir + 'assets/'} open={groupOpen('assets')} onOpenChange={open => changeGroup('assets', open)}>
-          {assetPages.map(item => item.id === 'icons' && SYSTEMS[system].icons ? file('icons', 'Icons') : <Link key={item.id} to={`/systems/${system}/${item.id}` as never} activeOptions={{ includeSearch: false }} className={navLinkClass} style={navLinkStyle}>{navIcon(item.icon)}{item.label}</Link>)}
+          {assetPages.map(item => item.id === 'icons' && SYSTEMS[system].icons ? file('icons', 'Icons') : <Link key={item.id} to={`${systemPath(system)}/${item.id}` as never} activeOptions={{ includeSearch: false }} className={navLinkClass} style={navLinkStyle}>{navIcon(item.icon)}{item.label}</Link>)}
         </SystemBranch>}
         {(matchingComponents.length > 0 || matches('Components')) && <SystemBranch label="Components" path={source.components} open={groupOpen('components')} onOpenChange={open => changeGroup('components', open)}>
-          {matchingComponents.map(c => file(c.slug, c.title))}
+          {matchingComponents.map(c => file(c.slug, c.title, true))}
           {!components.length && <p className="px-3 py-1 text-[12px] text-muted-foreground">Empty folder</p>}
         </SystemBranch>}
         {q && !anyMatch && <p role="status" className="px-3 py-1 text-[12px] text-muted-foreground">No matching items.</p>}
@@ -189,15 +189,13 @@ function SystemNav({ system, components, tokens, page }: { system: SystemId; com
 }
 
 // One page of a system, or null if the system doesn't have it.
-function SystemPage({ system, sys, components, tokens, origin, page, assetPath, pageData }: {
-  system: SystemId; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[]; origin: 'shadcn' | null; page?: string; assetPath?: string; pageData?: { componentKey?: string; componentData?: ComponentPageData; contentData?: ContentData } | null;
+function SystemPage({ system, sys, components, tokens, origin, page, componentSlug, assetPath, pageData }: {
+  system: SystemId; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[]; origin: 'shadcn' | null; page?: string; componentSlug?: string; assetPath?: string; pageData?: { componentKey?: string; componentData?: ComponentPageData; contentData?: ContentData } | null;
 }) {
   const has = (group: TokenGroup) => tokens.some((t) => t.group === group);
   switch (page) {
     case undefined:
       return <SystemOverview system={system} sys={sys} components={components} tokens={tokens} />;
-    case 'assets':
-      return <SystemAssets system={system} sys={sys} path={assetPath} />;
     case 'fonts':
       return <SystemAssets system={system} sys={sys} kind="Fonts" path={assetPath} />;
     case 'images':
@@ -221,14 +219,15 @@ function SystemPage({ system, sys, components, tokens, origin, page, assetPath, 
     case 'icons':
       return <SystemAssets system={system} sys={sys} kind="Icons" path={assetPath} />;
   }
-  const found = components.find((c) => c.slug === page);
+  const found = page === 'components' ? components.find((c) => c.slug === componentSlug) : undefined;
   return found && pageData?.componentData && pageData.componentKey === system + '/' + found.slug ? <ComponentDocPage key={pageData.componentKey} sys={sys} component={found} origin={origin} loaded={pageData.componentData} /> : null;
 }
 
 export default function SystemsPage() {
   // The router's types leave out the modules' routes, so say what this module's routes carry.
   const params = useRouterState({ select: state => state.matches.at(-1)?.params }) as { system?: string; page?: string; _splat?: string };
-  const system = params.system as SystemId;
+  const system = systemKeyFromIdentity(params.system) ?? '';
+  const page = params.page === 'components' ? params._splat : params.page;
   const sys = SYSTEMS[system];
   const mainRef = useRef<HTMLElement>(null);
   useLayoutEffect(() => { mainRef.current?.scrollTo({ top: 0 }); }, [system, params.page, params._splat]);
@@ -241,19 +240,19 @@ export default function SystemsPage() {
   const tokens = manifestSystem?.tokens ?? [];
   const search = useSearch({ strict: false }) as { mode?: 'source' };
   const editing = import.meta.env.DEV && search.mode === 'source';
-  const path = sys && !selected && !params._splat ? sourcePath(system, params.page, components) : null;
+  const path = sys && !selected && (!params._splat || params.page === 'components') ? sourcePath(system, page, components, params.page === 'components') : null;
   const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(path), editing && !selected);
-  const editable = components.find((c) => c.slug === params.page);
-  const content = editing && path ? <></> : selected ? <SystemContentPage key={selected.id + '/' + (params._splat ?? '')} proto={selected} slug={params._splat} data={pageData?.contentData} /> : sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page, assetPath: params._splat, pageData }) : null;
+  const editable = params.page === 'components' ? components.find((c) => c.slug === page) : undefined;
+  const content = editing && path ? <></> : selected ? <SystemContentPage key={selected.id + '/' + (params._splat ?? '')} proto={selected} slug={params._splat} data={pageData?.contentData} /> : sys ? SystemPage({ system, sys, components, tokens, origin: manifestSystem?.origin ?? null, page: params.page, componentSlug: params._splat, assetPath: params._splat, pageData }) : null;
   if (!sys || !content) return <NotFound />;
   return (
     <div className="flex min-h-0 flex-1">
-      <SystemNav system={system} components={components} tokens={tokens} page={params.page} key={system} />
+      <SystemNav system={system} components={components} tokens={tokens} page={params.page === 'components' ? 'components/' + params._splat : params.page} key={system} />
       {selected ? <main className="flex min-h-0 min-w-0 flex-1 flex-col">{content}</main> : editing && path ? (
         <main className="flex min-h-0 min-w-0 flex-1 flex-col"><Suspense fallback={<p className="p-4 text-sm">Loading editor…</p>}>{editable && ComponentEditor ? <ComponentEditor key={system + '/' + editable.slug} system={system} component={editable} onDone={toggle} /> : SystemSourceEditor && <SystemSourceEditor path={path} onDone={toggle} />}</Suspense></main>
       ) : (
         <main ref={mainRef} className="min-w-0 flex-1 overflow-y-auto">
-          <ThemeScope themeClass={params.page && !['assets', 'fonts', 'icons', 'images'].includes(params.page) ? sys.scopeClass : platform.scopeClass} className="min-h-full bg-background text-foreground">
+          <ThemeScope themeClass={page && !['assets', 'fonts', 'icons', 'images'].includes(page) ? sys.scopeClass : platform.scopeClass} className="min-h-full bg-background text-foreground">
             <div ref={rendered} tabIndex={-1} className="mx-auto w-full max-w-3xl px-8 py-10 outline-none" data-testid={`${system}-set`}>{content}</div>
           </ThemeScope>
         </main>

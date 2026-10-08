@@ -62,7 +62,9 @@ To start in the interface, select **New system**. Its blank overview offers **Cu
 
 Use **+** in navigation to add artifacts or folders. Drag to move or reorder them. The first available artifact is where the prototype opens.
 
-Right-click an item for file actions. Studio repairs known links and embeds when files move within a prototype. Moves in your editor or Finder need Studio running for repair. Deleted targets, moves while Studio is closed, and dynamically built links may need the agent's help.
+Right-click an item for file actions. Shared links use permanent prototype and artifact IDs, so renaming or moving a file within its prototype preserves that link. Navigation continues to reflect the actual filenames and folders.
+
+Imports, relative document links, and assets still depend on file locations. Studio repairs known source references and embeds when files move within a prototype. Moves in your editor or Finder need Studio running for repair. Deleted targets, moves while Studio is closed, and dynamically built links may need the agent's help.
 
 ## How do supporting artifacts connect?
 

@@ -1,3 +1,4 @@
+/** @studio-id gs4jd0fvp6qr7kxs */
 /** @lofi */
 // The real feedback inbox, in lo-fi. The marker above is all it takes: the screen keeps its components
 // and its design system, and is drawn in grayscale with handwritten type, for the stage where the

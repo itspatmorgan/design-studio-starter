@@ -1,4 +1,5 @@
 ---
+studioId: kdxn8cva5w5cfxnk
 title: Project brief
 description: Three complete marketing directions using the Marketing system.
 ---
@@ -9,7 +10,7 @@ Introduce Design Studio, demonstrate its artifact surfaces, and help visitors ru
 
 This prototype uses **Marketing**: Geist, warm neutrals, and adapted Untitled UI components. The self-contained demo examples are rendered in code using the same Marketing system. Studio supplies the shared artifact tools.
 
-Follow the [Marketing design rule](/systems/marketing/rules/marketing-design). Examples stay within this project and use HTML, CSS, and SVG instead of screenshot assets. V1 shows local selection and status changes. V2 and V3 adapt the personal website’s current code-based illustrations and feedback-triage demo. No image assets or personal portrait are imported.
+Follow the [Marketing design rule](/systems/v4576ka1mbpbqdp1/context/design). Examples stay within this project and use HTML, CSS, and SVG instead of screenshot assets. V1 shows local selection and status changes. V2 and V3 adapt the personal website’s current code-based illustrations and feedback-triage demo. No image assets or personal portrait are imported.
 
 ## Review directions
 

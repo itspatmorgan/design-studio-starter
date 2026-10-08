@@ -1,3 +1,5 @@
+import { allocateResourceIdentity, retainedResourceIds } from '../lib/resource-identity-lifecycle.js';
+import { INSTALLED_FILE_TYPES } from '../lib/file-types.js';
 import { planSystemLifecycle, applySystemLifecycle } from '../lib/system-lifecycle.js';
 import { prototypeContext } from '../lib/prototype-context.js';
 import { auditResourceIdentities } from '../lib/resource-identity-audit.js';
@@ -223,12 +225,15 @@ async function add() {
     if (problems.length) { say(); for (const p of problems) console.error(`Can't add it: ${p}`); process.exit(1); }
     if (!flags.yes) { say(); say(`Nothing was changed. To add it, run the same command with --yes.`); return; }
 
+    // The package ID describes its source; this ID identifies this installation.
+    const installationId = kind === 'system' ? allocateResourceIdentity(retainedResourceIds(ROOT, INSTALLED_FILE_TYPES)) : undefined;
     // Add it.
     for (const m of plan.moves) {
       const to = rel(m.to);
       if (fs.existsSync(to)) continue; // content that was already there stays
       fs.mkdirSync(path.dirname(to), { recursive: true });
-      fs.copyFileSync(path.join(pack.dir, m.from), to);
+      if (kind === 'system' && m.from === 'system.ts') fs.writeFileSync(to, editStudioConfig(fs.readFileSync(path.join(pack.dir, m.from), 'utf8'), { studioId: installationId }));
+      else fs.copyFileSync(path.join(pack.dir, m.from), to);
       created.push(to);
     }
     const lock = readLock();
@@ -403,6 +408,7 @@ function create(kind) {
   }
   say(`Register ${kind} ${id} in studio.config.ts and synchronize agent routing.`);
   if (!flags.yes) { say('Nothing written. Apply this scaffold with --yes.'); return; }
+  const installationId = kind === 'system' ? allocateResourceIdentity(retainedResourceIds(ROOT, INSTALLED_FILE_TYPES)) : undefined;
   const written = [];
   const backups = new Map();
   try {
@@ -410,7 +416,8 @@ function create(kind) {
       const to = rel(m.to);
       if (fs.existsSync(to)) throw new Error(`${m.to} already exists.`);
       fs.mkdirSync(path.dirname(to), { recursive: true });
-      fs.writeFileSync(to, fill(fs.readFileSync(path.join(template, sourceOf.get(m.from)), 'utf8')));
+      const content = fill(fs.readFileSync(path.join(template, sourceOf.get(m.from)), 'utf8'));
+      fs.writeFileSync(to, kind === 'system' && sourceOf.get(m.from) === 'system.ts' ? editStudioConfig(content, { studioId: installationId }) : content);
       written.push(to);
     }
     registerCapability(kind, id, true, (file) => backups.set(file, fs.readFileSync(file)));

@@ -83,9 +83,10 @@ test('create and rename preserve addresses, file errors recover, and system remo
       fs.writeFileSync(declaration, editStudioConfig(fs.readFileSync(declaration, 'utf8'), { status: 'active' }));
     }
     // CLI operations need a registered identity independent of the host's Git config.
+    const ownerId = JSON.parse(fs.readFileSync(path.join(dir, 'contributors/patrick.json'), 'utf8')).studioId;
     fs.rmSync(path.join(dir, 'contributors'), { recursive: true, force: true });
     writeProfiles(dir, {
-      patrick: { name: 'Test Maintainer', email: 'maintainer@example.test', github: '', welcomeDismissed: false },
+      patrick: { studioId: ownerId, name: 'Test Maintainer', email: 'maintainer@example.test', github: '', welcomeDismissed: false },
     });
     const script = `
       import fs from 'node:fs';

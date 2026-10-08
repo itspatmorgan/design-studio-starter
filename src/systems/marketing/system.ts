@@ -10,4 +10,5 @@ export default {
   colorModes: ['light', 'dark'],
   docs: 'warn',
   origin: null,
+  studioId: "v4576ka1mbpbqdp1",
 } satisfies SystemSpec;

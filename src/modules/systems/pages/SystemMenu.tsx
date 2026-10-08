@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/systems/studio/components/dropdown-menu';
 import { beginSystemDeletion, finishSystemCreation } from './creationTransition';
 import { canPerform } from '@/platform/core/permissions';
-import { DEFAULT_SYSTEM, SYSTEM_SPECS } from '../data/systems';
+import { DEFAULT_SYSTEM, SYSTEM_SPECS, systemPath } from '../data/systems';
 
 export const systemRequest = <T,>(action: string, system?: string, extra: object = {}) => callModule<T>('systems', 'action', { action, system, ...extra });
 type Action = { label: string; icon: typeof Link01Icon; onSelect: () => void; disabled?: boolean; destructive?: boolean };
@@ -40,7 +40,7 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
   async function run(action: string) {
     try {
       const result = await systemRequest<{ message?: string }>(action, system);
-      if (action === 'default') window.location.assign(`/systems/${system}`);
+      if (action === 'default') window.location.assign(systemPath(system));
       else if (result.message) toast.add({ title: result.message });
     } catch (e) { toast.add({ type: 'error', title: (e as Error).message }); }
   }
@@ -60,11 +60,11 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
     try {
       // Keep reloads during a folder move or deletion on a stable route.
       if (action !== 'delete') await navigate({ to: '/systems' as never });
-      const result = await systemRequest<{ id: string; references: number }>(action, system, { name, restorePrototypes });
+      await systemRequest<{ id: string; references: number }>(action, system, { name, restorePrototypes });
       sessionStorage.setItem('studio:system-action', JSON.stringify({ title: action === 'rename' ? 'System renamed. References updated.' : action === 'archive' ? 'System and associated prototypes archived.' : action === 'restore' ? 'System restored.' : 'System deleted. Associated prototypes need a rebuild.' }));
       // Deletion's configuration restart opens the updated index behind the transition.
       if (action === 'delete') return;
-      window.location.assign(action === 'archive' ? '/systems' : `/systems/${result.id}`);
+      window.location.assign(action === 'archive' ? '/systems' : systemPath(system));
     } catch (e) {
       if (action === 'delete') {
         window.history.replaceState(null, '', previousUrl);
@@ -77,7 +77,7 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
     }
   }
   async function copyLink() {
-    try { await navigator.clipboard.writeText(new URL(`/systems/${system}`, location.origin).href); toast.add({ title: 'Link copied' }); }
+    try { await navigator.clipboard.writeText(new URL(import.meta.env.BASE_URL.replace(/\/$/, '') + systemPath(system), location.origin).href); toast.add({ title: 'Link copied' }); }
     catch { toast.add({ type: 'error', title: 'Could not copy the link.' }); }
   }
   async function copyPath() {

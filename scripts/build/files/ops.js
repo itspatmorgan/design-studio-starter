@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
 import { promisify } from 'node:util';
-import { FILE_TYPES, fileTypeOf, systemContentTypeOf } from '../../lib/file-types.js';
+import { FILE_TYPES, INSTALLED_FILE_TYPES, fileTypeOf, systemContentTypeOf } from '../../lib/file-types.js';
+import { retainedResourceIds, allocateResourceIdentity } from '../../lib/resource-identity-lifecycle.js';
 import { STATUSES, parseStatus } from '../../../src/platform/core/archive.ts';
 import { afterChange, parentOf, parseOrder, place, withFolderOrder } from '../../../src/platform/core/order.ts';
 import { scaffold } from '../../../src/modules/systems/node/scaffold-docs.js';
@@ -103,7 +104,15 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     const target = path.join(parent, name);
     if (fs.existsSync(target)) throw new Error(`Something named “${name}” already exists here.`);
     if (isDir) fs.mkdirSync(target);
-    else fs.writeFileSync(target, templateFor(name, Boolean(section)));
+    else {
+      let source = templateFor(name, Boolean(section));
+      const type = FILE_TYPES[fileTypeOf(name)];
+      if (!section && ![...rel.split('/'), name].some(part => part.startsWith('_')) && type?.inPrototype) {
+        if (!type.identity) throw new Error('This artifact file type needs an identity adapter.');
+        source = type.identity.write(source, allocateResourceIdentity(retainedResourceIds(ROOT, INSTALLED_FILE_TYPES)));
+      }
+      fs.writeFileSync(target, source, { flag: 'wx' });
+    }
     return { path: relOf(target) };
   }
   if (op === 'meta') {

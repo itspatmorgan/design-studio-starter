@@ -1,5 +1,8 @@
+import { systemPath } from '@/modules/systems/data/systems';
+import { contentParts } from '@/platform/core/roots';
 import { linkOptions } from '@tanstack/react-router';
 import { artifactSlug } from '@/platform/core/fileTypes';
+import { resourceId } from '@/platform/core/resourceIdentity';
 import { SYSTEM_CONTENT_KEY, isSectionKey, contentSection, addressOf } from '@/platform/core/roots';
 import type { Artifact, Manifest, Prototype, PrototypeInfo, PrototypeRef } from '@/platform/app/data/types';
 
@@ -47,6 +50,19 @@ export async function loadPrototype(contributor: string, prototype: string): Pro
   return ref && withItems(ref);
 }
 
+export async function loadPrototypeByIdentity(id: string): Promise<Prototype | undefined> {
+  const matches = (await loadManifest()).prototypes.filter(proto => proto.studioId === id);
+  if (matches.length > 1) throw new Error(`Prototype identity ${id} is declared more than once. Fix the source metadata.`);
+  const ref = matches[0];
+  return ref && withItems(ref);
+}
+
+export function findArtifactByIdentity(proto: Prototype, id: string): Artifact | undefined {
+  const matches = proto.artifacts.filter(item => item.studioId === id);
+  if (matches.length > 1) throw new Error(`Artifact identity ${id} is declared more than once in ${proto.title}.`);
+  return matches[0];
+}
+
 export { artifactSlug };
 
 // The first available artifact in navigation order opens by default.
@@ -82,13 +98,19 @@ export const newestFirst = (a: PrototypeInfo, b: PrototypeInfo) => (b.created ??
 
 // Where a prototype's links go. The prototype's own URL opens its default view: /prototypes/<person>/<id>, or
 // /examples/<id> for an artifact of a section.
-export const prototypeLink = (p: Pick<PrototypeInfo, 'contributorKey' | 'id'>) => p.contributorKey === SYSTEM_CONTENT_KEY ? { to: addressOf(p.contributorKey, p.id) } as never : isSectionKey(p.contributorKey)
+export const prototypeLink = (p: Pick<PrototypeInfo, 'contributorKey' | 'id' | 'studioId'>) => p.contributorKey === SYSTEM_CONTENT_KEY ? { to: contentAddress(p.contributorKey, p.id) } as never : isSectionKey(p.contributorKey)
   ? linkOptions({ to: '/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.id } })
-  : linkOptions({ to: '/prototypes/$contributor/$prototype', params: { contributor: p.contributorKey, prototype: p.id } });
+  : linkOptions({ to: '/prototypes/$prototype', params: { prototype: resourceId(p.studioId) } });
 
 // An artifact's URL: the prototype's, plus the artifact's path without its extension.
 export const artifactLink = (p: PrototypeInfo, item: Artifact) => p.contributorKey === SYSTEM_CONTENT_KEY ? { to: addressOf(p.contributorKey, p.id) + '/' + artifactSlug(item.path) } as never : isSectionKey(p.contributorKey)
   ? linkOptions({ to: '/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: artifactSlug(item.path) } })
-  : linkOptions({ to: '/prototypes/$contributor/$prototype/$', params: { contributor: p.contributorKey, prototype: p.id, _splat: artifactSlug(item.path) } });
+  : linkOptions({ to: '/prototypes/$prototype/artifacts/$artifact', params: { prototype: resourceId(p.studioId), artifact: resourceId(item.studioId) } });
 
 export { matchesSystem, systemUsage } from './prototypeUsage';
+
+export function contentAddress(contributor: string, id: string): string {
+  const parts = contentParts(id);
+  return contributor === SYSTEM_CONTENT_KEY && !parts.system.startsWith('module.') && parts.system !== 'platform.core'
+    ? systemPath(parts.system) + '/' + parts.section : addressOf(contributor, id);
+}

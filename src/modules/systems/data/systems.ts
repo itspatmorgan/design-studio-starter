@@ -2,6 +2,7 @@
 // any of them removed. (src/modules/systems/node/systems.js finds the same folders for the build.)
 import { platformSystemId, type SystemSpec } from '@/modules/systems/spec';
 import { platformSourceOf } from '../sources';
+import { resourceId, systemAddress } from '@/platform/core/fileTypes';
 import { CONFIG } from '@/platform/app/data/config';
 
 const specs = import.meta.glob<SystemSpec>('/systems/*/system.ts', { eager: true, import: 'default' });
@@ -20,3 +21,12 @@ export const PROTOTYPE_SYSTEMS = Object.fromEntries(Object.entries(SYSTEM_SPECS)
 export const DEFAULT_SYSTEM: string = CONFIG.defaultSystem;
 
 export const ACTIVE_PROTOTYPE_SYSTEMS = Object.fromEntries(Object.entries(PROTOTYPE_SYSTEMS).filter(([, spec]) => spec.status === 'active'));
+
+// Source keys locate installed files; browser addresses carry only permanent IDs.
+export function systemKeyFromIdentity(id: string | undefined): string | undefined {
+  if (!id) return undefined;
+  const matches = Object.entries(SYSTEM_SPECS).filter(([, spec]) => spec.studioId === id);
+  if (matches.length > 1) throw new Error(`System identity ${id} is declared more than once.`);
+  return matches[0]?.[0];
+}
+export const systemPath = (key: string) => systemAddress(resourceId(SYSTEM_SPECS[key]?.studioId));

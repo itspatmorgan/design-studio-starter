@@ -5,7 +5,7 @@ import type { ModuleSpec } from '../../platform/core/api.ts';
 // Required: the viewer here is also how a module item or a system content section opens.
 export default {
   optional: false,
-  lib: false,
+  lib: true,
   instructions: [{ path: 'skills/build-prototype/', when: 'asks to create or edit interactive prototype views' }, { path: 'skills/organize-prototype/', when: 'asks to rename, move, duplicate, archive, restore, or remove a prototype' }],
   id: 'prototypes',
   label: 'Prototypes',

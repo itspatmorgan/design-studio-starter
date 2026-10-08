@@ -8,7 +8,9 @@ Design Studio is introducing source identities independent of location, ownershi
 
 ## Implementation status
 
-The first stages supply identity validation, generation, source metadata adapters, a read-only audit, and a previewable source-metadata migration stage. Canvas saving preserves a declared identity. Current routes, authority, configuration references, and source creation still use their existing contracts. Existing content has not been migrated. Missing identities are reported by the audit, not rejected by normal builds at this stage.
+Source identity metadata and stored prototype browser references have been migrated in this development branch. Prototype and system public routes use IDs. Prototype creation and duplication allocate fresh IDs, copied permanent references are remapped, and source editing preserves identity. System installation and local creation allocate installation IDs. Prototype ownership is declared with `ownerId` and checked against the contributor folder. Normal builds reject malformed or duplicate identities; missing identities remain transitional.
+
+Authority grants, persisted system assignments, contributor registration, CI identity protections, and the complete public migration command still require implementation. These are required rollout work, not optional follow-ups. Existing permission evaluation continues using source keys until that phase is complete.
 
 This document records the agreed destination and identifies what remains unimplemented. It does not replace the existing [prototype contract](../../modules/prototypes/README.md), [system contract](../../modules/systems/README.md), or [contributor scope](contributor-scope.md) before their implementations migrate.
 
@@ -28,9 +30,9 @@ For independent uniform generation, the probability of any collision among n IDs
 
 | Resource | Identity metadata |
 | --- | --- |
-| Contributor | `studioId` in its profile JSON, planned for migration. |
-| Prototype | `studioId` in `meta.json`, planned for migration. |
-| System | `studioId` in `system.ts`, planned for migration. |
+| Contributor | `studioId` in its profile JSON. |
+| Prototype | `studioId` in `meta.json`. |
+| System | `studioId` in `system.ts`. |
 | React artifact | Leading `/** @studio-id <id> */` comment. |
 | Markdown artifact | Top-level `studioId` in frontmatter. |
 | Diagram artifact | Leading `%% @studio-id <id>` comment. |
@@ -98,7 +100,7 @@ The initial audit scope is contributor profiles, system declarations, and contri
 
 Run `pnpm studio identity-plan --out <new-file>` to save a reviewable source-metadata preview, including exact before/after content and allocated IDs. The output file must not already exist. A new preview allocates new candidate IDs; the saved preview retains its allocation. The command changes no Studio source and refuses installed prototype-shaped module sections until they have an explicit identity policy.
 
-`scripts/lib/resource-identity-migration.js` implements the internal metadata stage. It recomputes the preview from the current inventory rather than trusting arbitrary edits in a saved plan, rejects changed sources and inventory additions/removals, retries generated collisions, verifies the result, and rolls back failed writes. Rollback refuses to overwrite concurrent edits and reports when manual recovery is needed. This stage must be composed with relationship and compatibility migration before a public apply command is offered.
+`scripts/lib/resource-identity-migration.js` implements the internal metadata stage. It recomputes the preview from the current inventory rather than trusting arbitrary edits in a saved plan, rejects changed sources and inventory additions/removals, retries generated collisions, verifies the result, and rolls back failed writes. Rollback refuses to overwrite concurrent edits and reports when manual recovery is needed. This stage must be composed with relationship and stored-link migration before a public apply command is offered.
 
 System declarations now accept and validate a declared `studioId`; omission remains transitional. Plain-data declarations reject duplicate properties at every level, including duplicate identity and permission keys.
 

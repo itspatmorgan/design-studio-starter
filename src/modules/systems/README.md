@@ -43,6 +43,10 @@ Theme selectors and imported stylesheets stay under the system's unique theme cl
 
 Pop-ups render within the themed container. Starter Base UI portals pass `usePortalContainer()` as their `container`. This preserves system styling and local color-mode behavior.
 
+## Permanent identity and routes
+
+Each installed system declares `studioId` in `system.ts`. Creation and installation allocate it; rename, ordinary updates, archive, and restore retain it. Package source and version remain separate provenance. The browser opens `/systems/<system-id>` and named surfaces such as `/colors`, `/fonts`, `/components/button`, `/context/design`, and `/skills/build-flow/SKILL`. System children have no generated IDs. Source keys and dependency paths remain meaningful; changing them still requires import and reference repair. See [Resource identity](../../platform/context/resource-identity.md) for the staged relationship migration.
+
 ## Page loading
 
 See [Systems interface](context/interface.md#page-loading) for this surface's behavior.
@@ -144,7 +148,7 @@ A system’s guidance applies to its product and design domain. Platform and mod
 
 A system owns five parts: theme, components, assets, context, and skills. Assets include fonts, icons, logos, and shared imagery. They may be local files or explicit package dependencies; their ownership follows the static asset convention. Context and skills live directly in their system folders. The navigation exposes all five parts, including Assets when no local files exist.
 
-Systems exposes these files at `/systems/<id>/context/<file>` and `/systems/<id>/skills/<skill>/SKILL`. Saved links from the combined Documentation browser redirect here. The shared source editor and file operations use explicit system and section identifiers. Content remains platform-styled even for a single-mode product system.
+Systems exposes these files at `/systems/<id>/context/<file>` and `/systems/<id>/skills/<skill>/SKILL`. Old readable system routes have no compatibility aliases. The shared source editor and file operations use explicit system and section identifiers. Content remains platform-styled even for a single-mode product system.
 
 The repository's `AGENTS.md` supplies platform operating instructions and routes prototype work to its assigned system's `AGENTS.md`. System-local instructions link to relevant context and skills. System knowledge supplements platform constraints; it does not override runtime dependency boundaries. Different systems may use the same skill folder name because their source paths remain distinct. Discovery does not imply a harness automatically loads these files.
 

@@ -1,6 +1,7 @@
 import moduleEntries from './scripts/build/vite-module-entries-plugin.js';
 import { defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
+import { existsSync } from 'node:fs';
 import react from '@vitejs/plugin-react';
 import mdx from '@mdx-js/rollup';
 import remarkFrontmatter from 'remark-frontmatter';
@@ -86,7 +87,7 @@ export default defineConfig({
     ],
   },
   resolve: {
-    alias: [{ find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) }, ...moduleLibs],
+    alias: [{ find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) }],
   },
   plugins: [
     // Markdown pages (Manual pages in src/modules/documentation/pages/, and prototype documents), as plain
@@ -97,6 +98,12 @@ export default defineConfig({
     react({ include: /\.[jt]sx$/ }),
     markdownRefresh(),
     importGuard(),
+    // Resolve public libraries after the guard sees the original @module import.
+    // Vite aliases run earlier and would hide that explicit public entrypoint.
+    { name: 'studio-module-library', resolveId(source) {
+      const library = moduleLibs.find(entry => entry.find === source);
+      return library ? ['.ts', '.tsx', '.js', '.jsx', '.mts', '.cts', '.mjs', '.cjs'].map(extension => library.replacement + extension).find(existsSync) ?? null : null;
+    } },
     css(),
     tailwindcss(),
     globs(),

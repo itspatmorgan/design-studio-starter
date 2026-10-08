@@ -9,7 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { artifactSlug, canvasIdentity } from '../../platform/core/fileTypes.ts';
+import { artifactSlug, canvasIdentity, prototypeAddress, artifactAddress, parsePrototypeAddress, resourceId } from '../../platform/core/fileTypes.ts';
 import { addressOf, canonicalPath, parseAddress } from '../../platform/core/roots.ts';
 import { FORMAT_VERSION, stringifyScene } from './slim.ts';
 import { help, run, ToolError, type Ctx, type El, type ArtifactInfo } from './tools.ts';
@@ -52,35 +52,39 @@ if ((scene!.studioVersion ?? 1) > FORMAT_VERSION) fail(`${first} was written by 
 // What the tools need to know about the app: the artifacts in this canvas's prototype, from the manifest.
 const manifestFile = path.join(ROOT, 'public', 'prototypes', 'manifest.json');
 if (!fs.existsSync(manifestFile)) fail('There is no manifest yet. Run: node scripts/build/build-manifest.js');
-const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8')) as { prototypes: { contributorKey: string; id: string }[]; sections?: Record<string, { contributorKey: string; id: string }[]> };
+type PrototypeRef = { contributorKey: string; id: string; studioId?: string };
+const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8')) as { prototypes: PrototypeRef[]; sections?: Record<string, PrototypeRef[]> };
 const everything = [...manifest.prototypes, ...Object.values(manifest.sections ?? {}).flat()];
 // A prototype's artifacts are in a file of their own (scripts/build/build-manifest.js).
-const itemsOf = (x: { contributorKey: string; id: string }): { path: string; fileType: string }[] => {
+const itemsOf = (x: PrototypeRef): { path: string; fileType: string; studioId?: string }[] => {
   const file = path.join(ROOT, 'public', 'prototypes', 'artifacts', x.contributorKey, `${x.id}.json`);
   return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : [];
 };
 const { FILE_TYPES } = await import(pathToFileURL(path.join(ROOT, 'scripts', 'lib', 'file-types.js')).href) as { FILE_TYPES: Record<string, { label: string; preview?: boolean }> };
 
 const title = (p: string) => artifactSlug(p).split('/').pop()!.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-const base = addressOf(contributor, prototype);
+const current = everything.find(x => x.contributorKey === contributor && x.id === prototype) ?? fail('This canvas prototype is missing from the manifest. Rebuild it first.');
+const base = inSection ? addressOf(contributor, prototype) : prototypeAddress(resourceId(current.studioId));
+const linkOf = (x: PrototypeRef, item: { path: string; studioId?: string }) => inSection ? `${addressOf(x.contributorKey, x.id)}/${artifactSlug(item.path)}` : artifactAddress(resourceId(x.studioId), resourceId(item.studioId));
 const ctx: Ctx = {
   base,
   artifact(appPath) {
     // A canvas shows only its own prototype's artifacts.
     if (!appPath.startsWith(`${base}/`)) return null;
-    const address = parseAddress(appPath.split('/').map(decodeURIComponent).join('/'));
-    const proto = address && everything.find((x) => x.contributorKey === address.contributor && x.id === address.id);
-    const artifact = proto && itemsOf(proto).find((i) => artifactSlug(i.path) === address!.rest.join('/'));
+    const identityAddress = !inSection && parsePrototypeAddress(appPath);
+    const address = inSection && parseAddress(appPath.split('/').map(decodeURIComponent).join('/'));
+    const proto = identityAddress ? everything.find(x => x.studioId === identityAddress.prototypeId) : address ? everything.find(x => x.contributorKey === address.contributor && x.id === address.id) : undefined;
+    const artifact = proto && itemsOf(proto).find(i => identityAddress ? i.studioId === identityAddress.artifactId : address && artifactSlug(i.path) === address.rest.join('/'));
     if (!artifact) return null;
     const type = FILE_TYPES[artifact.fileType];
     return { path: appPath, title: title(artifact.path), type: artifact.fileType, typeLabel: type?.label ?? 'File', preview: Boolean(type?.preview) };
   },
   artifacts: () => everything
     .filter((x) => x.contributorKey === contributor && x.id === prototype)
-    .flatMap((x) => itemsOf(x).map((i) => `${addressOf(x.contributorKey, x.id)}/${artifactSlug(i.path)}`))
+    .flatMap((x) => itemsOf(x).map(i => linkOf(x, i)))
     .map((p) => ctx.artifact(p))
     .filter((i): i is ArtifactInfo => i !== null),
-  linkPath: (link) => (link.startsWith('/') && !link.startsWith('//') ? canonicalPath(link) : null),
+  linkPath: (link) => inSection ? (link.startsWith('/') && !link.startsWith('//') ? canonicalPath(link) : null) : parsePrototypeAddress(link)?.artifactId ? link : null,
 };
 
 try {

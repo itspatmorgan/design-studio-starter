@@ -42,6 +42,12 @@ export function systemAddress(id: ResourceId): string {
   return `/systems/${resourceId(id)}`;
 }
 
+// This pre-release cutover recognizes permanent addresses exclusively.
+export function parsePrototypeAddress(path: string): { prototypeId: ResourceId; artifactId?: ResourceId } | null {
+  const match = /^\/prototypes\/([0-9abcdefghjkmnpqrstvwxyz]{16})(?:\/artifacts\/([0-9abcdefghjkmnpqrstvwxyz]{16}))?\/?$/.exec(path);
+  return match ? { prototypeId: resourceId(match[1]), ...(match[2] && { artifactId: resourceId(match[2]) }) } : null;
+}
+
 export type IdentityMetadata = {
   read(source: string): ResourceId | null;
   write(source: string, id: ResourceId): string;

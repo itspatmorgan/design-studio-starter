@@ -15,7 +15,7 @@ Folders organize files at any depth. A file or folder starting with `_` is a hel
 
 Enabled file types determine other artifacts. Documents and canvases require their respective modules. Assets remain ordinary files. Follow the [static asset convention](../../platform/context/assets.md) for their ownership, locations, and imports.
 
-Two artifacts cannot share a URL, such as `main.tsx` and `main.md` in one folder.
+Artifact IDs are unique across retained resources. Source navigation paths must also be unambiguous: `main.tsx` and `main.md` cannot share the same extensionless path in one folder.
 
 ## Metadata
 
@@ -23,6 +23,8 @@ For agent inspection, run `pnpm studio context src/prototypes/<contributor>/<pro
 
 | Field | Contract |
 | --- | --- |
+| `studioId` | Permanent prototype identity, allocated on creation and retained through rename, move, archive, and restore. |
+| `ownerId` | Permanent contributor identity matching the contributor folder. Moving files cannot silently change ownership. |
 | `title` | Required display title. |
 | `created` | Optional `YYYY-MM-DD` date. Creation fills it in. |
 | `system` | Installed prototype system ID, or `null` for no system (custom styling). Omission uses the explicitly configured `defaultSystem`. Creation saves the chosen value. |
@@ -50,13 +52,13 @@ Gallery cards use the contributor's registered `github` username to load a profi
 
 ## Links and renaming
 
-`/prototypes/<contributor>/<id>` opens the first available artifact in navigation order. Appending an artifact path without extension opens that artifact.
+`/prototypes/<prototype-id>` opens the first available artifact in navigation order without redirecting. `/prototypes/<prototype-id>/artifacts/<artifact-id>` opens a specific artifact within that prototype. Source mode uses `?mode=source`. IDs come from source metadata described in [Resource identity](../../platform/context/resource-identity.md). There are no readable-route compatibility aliases.
 
-Nested folders become URL segments. Legacy addresses without `/prototypes` redirect to the canonical address.
+Navigation names and hierarchy remain a reflection of the files and folders. They are independent of the public URL.
 
 Changing the title in the app also renames the prototype folder to its slug. Direct title changes should do the same unless requested otherwise.
 
-Renaming changes shared URLs. Relative document links survive a prototype-folder rename.
+Renaming preserves permanent shared URLs and all resource IDs. Relative document links survive a prototype-folder rename. File moves still affect source dependencies; permanent routes do not replace reference repair.
 
 The app repairs internal references when files or folders are renamed or moved: local literal imports and exports, literal view navigation paths, Markdown link destinations, and canvas element links. Moving a source file also rebases its relative references. Prototype renaming and duplication rewrite self-address links in view code, Markdown, and canvases.
 
@@ -66,11 +68,11 @@ While the dev server is running, the same repair follows unambiguous filesystem 
 
 Moves made while the server is stopped, dynamically assembled paths, and incoming links from other prototypes still need an agent to update and verify them. Keep the server running while organizing files when automatic repair is wanted.
 
-Use TanStack Router's `Link` for view navigation. See its [navigation documentation](https://tanstack.com/router/latest/docs/framework/react/guide/navigation).
+Use `usePrototypeArtifactHref` from the public `@module/prototypes` library to resolve a prototype-relative path such as `app/main` to its permanent URL. This hook is available in rendered views and their embeds. Pass the result to TanStack Router's `Link`. Source paths remain subject to the existing literal-path repair; do not construct them dynamically if automatic repair is needed. See its [navigation documentation](https://tanstack.com/router/latest/docs/framework/react/guide/navigation).
 
 ## Duplication and system rebuilds
 
-The local **Duplicate** action is available for your own personal prototypes and for Admins managing another contributor’s prototypes. The copy stays in the original contributor’s folder. It copies files into a new folder, resets the creation date, makes an archived source's copy active, and rewrites self-address links in Markdown and canvas files. Relative imports and links stay local to the copy. Symbolic links are rejected; Git metadata, node_modules, and trash folders are excluded.
+The local **Duplicate** action is available for your own personal prototypes and for Admins managing another contributor’s prototypes. The copy stays in the original contributor’s folder. It gives the prototype and each navigable artifact a fresh ID, remaps copied permanent references inside that copy, copies files into a new folder, resets the creation date, makes an archived source's copy active, and rewrites self-address links in Markdown and canvas files. Relative imports and links stay local to the copy. Symbolic links are rejected; Git metadata, node_modules, and trash folders are excluded.
 
 A different selected system records `rebuild.targetSystem` and the original repository path. It retains the source's resolved `system` so its copied implementation can still run. The confirmation explains that reconstruction is required. The sidebar supplies a copyable agent prompt; there is no automatic agent dispatch.
 

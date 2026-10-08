@@ -26,8 +26,11 @@ export function prototypeContext({ root, folder, config, systems, modules, contr
     const file = `src/systems/${id}/AGENTS.md`;
     return { status: registered[id]?.status ?? 'missing', entry: fs.existsSync(path.join(root, file)) ? file : null };
   };
+  const ownerFile = path.join(root, 'contributors', match[1] + '.json');
+  const ownerId = fs.existsSync(ownerFile) ? JSON.parse(fs.readFileSync(ownerFile, 'utf8')).studioId : undefined;
+  if (meta.ownerId !== undefined && meta.ownerId !== ownerId) throw new Error(`${relative}/meta.json ownerId does not match its contributor folder.`);
   return {
-    prototype: { path: relative, title: meta.title, owner: match[1], status },
+    prototype: { path: relative, studioId: meta.studioId, title: meta.title, owner: match[1], ownerId: meta.ownerId, status },
     contributor: { key: contributor, role: studioRole(config, contributor, contributors), canEdit: status === 'active' && canPerform(config, contributor, contributors, { kind: 'prototype', owner: match[1] }, 'edit') },
     assignment: { source: meta.system === undefined ? 'default' : 'explicit', system: assignment.system, ...entry(assignment.system), ...(meta.systemMissing && { systemMissing: meta.systemMissing }) },
     rebuild: assignment.rebuild === undefined ? null : { source: assignment.rebuild.source, targetSystem: assignment.rebuild.targetSystem, target: entry(assignment.rebuild.targetSystem) },

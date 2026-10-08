@@ -17,7 +17,7 @@ import { NavHeader } from '@/platform/app/shell/nav';
 import { menuGroups } from '@/platform/app/shell/menuGroups';
 import { Link } from '@tanstack/react-router';
 import PrototypeRebuildNotice from './PrototypeRebuildNotice';
-import { PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
+import { PROTOTYPE_SYSTEMS, systemPath } from '@/modules/systems/data/systems';
 
 // The title, renamed in place: Enter or leaving the field saves, Escape cancels.
 function TitleInput({ initial, onDone }: { initial: string; onDone: (title: string | null) => void }) {
@@ -121,7 +121,7 @@ export default function PrototypeHeader({ proto }: { proto: Prototype }) {
           </div>
           <div className="mt-1 mb-2 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
             <span>System ·</span>
-            {system ? <Link to={`/systems/${proto.system}` as never} className="min-w-0 truncate rounded-sm hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-ring" aria-label={`Open ${system.label} system`}>{system.label} ↗</Link>
+            {system ? <Link to={systemPath(proto.system!) as never} className="min-w-0 truncate rounded-sm hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-ring" aria-label={`Open ${system.label} system`}>{system.label} ↗</Link>
               : proto.system === null ? <span title="This prototype uses its own components and CSS">None</span> : <span title={`Assigned system: ${proto.system}`}>System unavailable</span>}
           </div>
           <PrototypeRebuildNotice proto={proto} />

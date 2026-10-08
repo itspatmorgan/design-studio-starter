@@ -25,7 +25,7 @@ test('local personal setup resumes, then a second clone joins a team without cha
     git(dir, 'config', 'user.name', 'Patrick Morgan'); git(dir, 'config', 'user.email', 'legacy@example.test');
     // Own the fixture data: a team's real contributors, systems and prototypes are arbitrary.
     fs.rmSync(path.join(dir, 'contributors'), { recursive: true, force: true });
-    writeProfiles(dir, { patrick: { name: 'Patrick Morgan', email: '', github: '', welcomeDismissed: false } });
+    writeProfiles(dir, { patrick: { studioId: '0123456789abcdef', name: 'Patrick Morgan', email: '', github: '', welcomeDismissed: false } });
     for (const folder of ['src/prototypes', 'src/systems']) {
       fs.rmSync(path.join(dir, folder), { recursive: true, force: true });
       fs.mkdirSync(path.join(dir, folder), { recursive: true });

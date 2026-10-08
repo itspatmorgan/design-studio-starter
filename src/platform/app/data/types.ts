@@ -9,6 +9,7 @@ import type { DocsMode } from '@/modules/systems/sources';
 // in public/prototypes/artifacts/<contributor>/<prototype>.json.
 // A navigable artifact backed by a file. Shared readers use the same record shape (see src/platform/context/file-types.md).
 export type Artifact = {
+  studioId?: string; // permanent prototype artifact identity; absent for system content
   path: string;   // file path in the prototype, e.g. "prototype.tsx" or "checkout/step-1.tsx"
   fileType: string; // the id of the file type that owns it, from its extension ("view", "document")
   title?: string;   // declared instruction-document title, shared by navigation and the reader
@@ -16,6 +17,8 @@ export type Artifact = {
 };
 
 export type PrototypeInfo = {
+  studioId?: string;       // permanent prototype identity; location remains id/contributorKey
+  ownerId?: string;       // permanent contributor owner, validated against contributorKey
   id: string;             // folder name, e.g. "hello-world"
   contributorKey: string; // contributor key, e.g. "patrick"
   title: string;

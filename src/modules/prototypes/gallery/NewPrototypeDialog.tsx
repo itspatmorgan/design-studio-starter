@@ -5,7 +5,7 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Add01Icon } from '@hugeicons/core-free-icons';
 import { createPrototype, useMe } from '@/platform/app/data/files';
-import { prototypeLink, setManifest } from '@/platform/app/data/manifest';
+import { findPrototype, prototypeLink, setManifest } from '@/platform/app/data/manifest';
 import { DEFAULT_SYSTEM, ACTIVE_PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
 import { Button } from '@/systems/studio/components/button';
 import { Input } from '@/systems/studio/components/input';
@@ -37,7 +37,9 @@ function NewPrototype() {
       setManifest(result.manifest);
       await router.invalidate();
       setOpen(false);
-      navigate(prototypeLink({ contributorKey: result.contributor, id: result.prototype }));
+      const created = findPrototype(result.manifest, result.contributor, result.prototype);
+      if (!created) throw new Error('The new prototype is missing from the inventory.');
+      navigate(prototypeLink(created));
     } catch (e) {
       setError((e as Error).message);
     } finally {

@@ -77,7 +77,16 @@ export function auditResourceIdentities(root, types) {
       if (!prototype.isDirectory()) continue;
       const directory = path.join(prototypes, owner.name, prototype.name);
       const parent = relative(directory);
-      record('prototype', path.join(directory, 'meta.json'), jsonIdentity, { key: prototype.name, ownerKey: owner.name });
+      const metadataFile = path.join(directory, 'meta.json');
+      try {
+        const metadata = JSON.parse(source(metadataFile));
+        if (metadata.ownerId !== undefined) {
+          resourceId(metadata.ownerId);
+          const contributor = resources.find(resource => resource.kind === 'contributor' && resource.key === owner.name);
+          if (!contributor || contributor.studioId !== metadata.ownerId) problems.push(`${relative(metadataFile)}: ownerId must match the contributor identity declared for its source folder.`);
+        }
+      } catch (error) { problems.push(`${relative(metadataFile)}: ${error.message}`); }
+      record('prototype', metadataFile, jsonIdentity, { key: prototype.name, ownerKey: owner.name });
       walkArtifacts(directory, parent, owner.name);
     }
   }

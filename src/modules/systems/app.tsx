@@ -1,12 +1,12 @@
 import { Suspense } from 'react';
 // Systems in the app: its rail button, its routes (/systems, /systems/<system>, /systems/<system>/<page>),
 // and prototype systems in the ⌘K palette. The pages are in src/modules/systems/pages/.
-import { createRoute, Outlet, redirect, useRouterState, lazyRouteComponent } from '@tanstack/react-router';
+import { createRoute, Outlet, notFound, useRouterState, lazyRouteComponent } from '@tanstack/react-router';
 import { Shapes01Icon } from '@hugeicons/core-free-icons';
 import { CommandGroup, CommandItem, CommandSeparator } from '@/systems/studio/components/command';
 import { HomeSection } from '@/platform/app/items/HomeSection';
 import { ItemRow } from '@/platform/app/items/ItemRow';
-import { PROTOTYPE_SYSTEMS, SYSTEM_SPECS } from '@/modules/systems/data/systems';
+import { PROTOTYPE_SYSTEMS, SYSTEM_SPECS, systemKeyFromIdentity, systemPath } from '@/modules/systems/data/systems';
 import { APP_NAME } from '@/platform/app/data/config';
 import { artifactLabel, loadManifest } from '@/platform/app/data/manifest';
 import { contentId } from '@/platform/core/roots';
@@ -22,13 +22,15 @@ function SystemsLayout() {
   return <Suspense fallback={null}>{system ? <SystemsPage /> : <Outlet />}</Suspense>;
 }
 const systemsTitle = (...parts: (string | undefined)[]) =>
-  [...parts.filter(Boolean).map((p, index, names) => index === names.length - 1 && SYSTEM_SPECS[p!] ? SYSTEM_SPECS[p!].label : artifactLabel(p!)), 'Systems', APP_NAME].join(' — ');
+  [...parts.filter(Boolean).map((p, index, names) => index === names.length - 1 && SYSTEM_SPECS[systemKeyFromIdentity(p) ?? ''] ? SYSTEM_SPECS[systemKeyFromIdentity(p)!].label : artifactLabel(p!)), 'Systems', APP_NAME].join(' — ');
 
 async function loadSystemPage(params: { system: string; page?: string; _splat?: string }, mode?: 'source') {
+  const system = systemKeyFromIdentity(params.system);
+  if (!system) throw notFound();
   // Preload the layout too, so its initial Suspense boundary does not flash blank.
   await SystemsPage.preload?.();
   const manifest = await loadManifest();
-  const proto = manifest.systemContent.find(p => p.id === contentId(params.system, params.page ?? ''));
+  const proto = manifest.systemContent.find(p => p.id === contentId(system, params.page ?? ''));
   if (proto) {
     const contentData = await prepareContent(proto, params._splat, mode);
     return { contentData, filePath: contentData.filePath };
@@ -37,22 +39,22 @@ async function loadSystemPage(params: { system: string; page?: string; _splat?: 
     await (await import('./pages/SystemsPage')).prepareSystemSource();
     return null;
   }
-  if (params._splat) return null;
-  const component = manifest.systems[params.system]?.components.find(item => item.slug === params.page);
+  if (params.page !== 'components' || !params._splat) return null;
+  const component = manifest.systems[system]?.components.find(item => item.slug === params._splat);
   if (!component) return null;
   const { loadComponentPage } = await import('./data/loadDocs');
-  return { componentKey: params.system + '/' + component.slug, componentData: await loadComponentPage(params.system, component) };
+  return { componentKey: system + '/' + component.slug, componentData: await loadComponentPage(system, component) };
 }
 
 function SystemsPlaces({ go }: PaletteContext) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const on = (system: string) => pathname === `/systems/${system}` || pathname.startsWith(`/systems/${system}/`);
+  const on = (system: string) => pathname === systemPath(system) || pathname.startsWith(systemPath(system) + '/');
   // The team's own design systems, one entry each. The platform's own system is how the app itself is built, so the
   // palette, which searches the team's content, leaves it out.
   return (
     <>
       {Object.entries(PROTOTYPE_SYSTEMS).map(([id, system]) => (
-        <CommandItem key={id} value={`${system.label} system components`} disabled={on(id)} onSelect={() => go({ to: `/systems/${id}` } as never)}>{system.label} system</CommandItem>
+        <CommandItem key={id} value={`${system.label} system components`} disabled={on(id)} onSelect={() => go({ to: systemPath(id) } as never)}>{system.label} system</CommandItem>
       ))}
     </>
   );
@@ -70,7 +72,7 @@ function Overview() {
   if (!systems.length) return null;
   return (
     <HomeSection title="Systems" to="/systems">
-      <ul>{systems.map(([id, s]) => <ItemRow key={id} link={{ to: `/systems/${id}` }} icon={Shapes01Icon} title={s.label} />)}</ul>
+      <ul>{systems.map(([id, s]) => <ItemRow key={id} link={{ to: systemPath(id) }} icon={Shapes01Icon} title={s.label} />)}</ul>
     </HomeSection>
   );
 }
@@ -99,7 +101,6 @@ export default {
       createRoute({
         getParentRoute: () => systemsRoute,
         path: '$system/$page',
-        beforeLoad: ({ params }) => { if (params.page === 'assets') throw redirect({ to: '/systems/$system/$page' as never, params: { system: params.system, page: 'fonts' } as never, replace: true }); },
         head: ({ params }) => ({ meta: [{ title: systemsTitle(params.page, params.system) }] }),
         loaderDeps: ({ search }) => ({ mode: search.mode }),
         loader: ({ params, deps }) => loadSystemPage(params, deps.mode),

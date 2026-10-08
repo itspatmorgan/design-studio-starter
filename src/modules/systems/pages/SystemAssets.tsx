@@ -1,3 +1,4 @@
+import { systemPath } from '../data/systems';
 import { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Image, Smile, Type } from 'lucide-react';
@@ -36,7 +37,7 @@ export default function SystemAssets({ system, sys, kind, path }: { system: stri
     const asset = assets.find(item => item.path === path);
     if (!asset || (kind && asset.kind !== kind)) return <NotFound />;
     return <>
-      <Link to={`/systems/${system}/${asset.kind.toLowerCase()}` as never} className="mb-4 inline-block text-sm hover:underline">{asset.kind}</Link>
+      <Link to={`${systemPath(system)}/${asset.kind.toLowerCase()}` as never} className="mb-4 inline-block text-sm hover:underline">{asset.kind}</Link>
       <PageHeader title={asset.path.split('/').pop()!} description={asset.path} />
       <div className="rounded-xl border border-border bg-muted/40 p-6">
         {asset.kind === 'Fonts' ? <FontPreview asset={asset} /> : <img src={asset.url} alt={asset.path} className="mx-auto max-h-[24rem] max-w-full object-contain" />}

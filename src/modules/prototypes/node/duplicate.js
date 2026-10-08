@@ -6,6 +6,8 @@ import { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } from '../../systems/node/systems.js
 import { canonicalDirectory } from '../../../../scripts/lib/safe-paths.js';
 import { moveWithLinks, personAddress } from '../../../../scripts/lib/prototype-links.js';
 import { buildManifest } from '../../../../scripts/build/build-manifest.js';
+import { INSTALLED_FILE_TYPES } from '../../../../scripts/lib/file-types.js';
+import { retainedResourceIds, allocateResourceIdentity, identifyPrototypeArtifacts } from '../../../../scripts/lib/resource-identity-lifecycle.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
 const validId = value => typeof value === 'string' && /^[a-z0-9][a-z0-9._-]*$/i.test(value);
@@ -33,7 +35,10 @@ export function duplicatePrototype({ key, id, title, system }) {
   if (!canonicalDirectory(from, ROOT) || !canonicalDirectory(parent, ROOT)) throw new Error('This prototype is unavailable.');
   if (fs.existsSync(to)) throw new Error('A prototype with that name already exists. Choose another title.');
   checkFiles(from);
+  const used = retainedResourceIds(ROOT, INSTALLED_FILE_TYPES);
   const meta = JSON.parse(fs.readFileSync(path.join(from, 'meta.json'), 'utf8'));
+  const previousPrototypeId = meta.studioId;
+  meta.studioId = allocateResourceIdentity(used);
   const sourceSystem = meta.system === undefined ? DEFAULT_SYSTEM : meta.system;
   const targetSystem = system === undefined ? sourceSystem : system;
   for (const assigned of [sourceSystem, targetSystem]) if (assigned !== null && (!Object.hasOwn(PROTOTYPE_SYSTEMS, assigned) || PROTOTYPE_SYSTEMS[assigned].status !== 'active')) throw new Error('Choose an installed prototype system, or no system.');
@@ -47,6 +52,7 @@ export function duplicatePrototype({ key, id, title, system }) {
   fs.mkdirSync(to);
   try {
     fs.cpSync(from, to, { recursive: true, force: false, errorOnExist: true, filter: file => file === from || !excluded.has(path.basename(file)) });
+    identifyPrototypeArtifacts(to, INSTALLED_FILE_TYPES, used, meta.studioId, previousPrototypeId);
     moveWithLinks(to, to, meta, personAddress(key, id), `/prototypes/${key}/${slug}`, `/prototypes/${key}/${id}`);
     return { id: slug, manifest: buildManifest().manifest };
   } catch (error) {

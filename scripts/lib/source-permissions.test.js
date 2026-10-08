@@ -30,3 +30,19 @@ test('source writes recheck revoked grants and archive status without waiting fo
     assert.equal(canWriteSource('admin', 'src/systems/product/components/button.tsx', root), false);
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
+
+test('source editor preserves prototype identity and refuses owner/location mismatches', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-owner-source-'));
+  try {
+    writeProfiles(root, { pat: { name: 'Pat', studioId: '0123456789abcdef' } });
+    fs.writeFileSync(path.join(root, 'studio.config.ts'), "export default { usage: 'personal', systems: [] };");
+    const folder = path.join(root, 'src/prototypes/pat/example'); fs.mkdirSync(folder, { recursive: true });
+    const metadata = { title: 'Example', studioId: 'abcdefghjkmnpqrs', ownerId: '0123456789abcdef' };
+    fs.writeFileSync(path.join(folder, 'meta.json'), JSON.stringify(metadata));
+    const file = 'src/prototypes/pat/example/meta.json';
+    assert.equal(canWriteSource('pat', file, root, JSON.stringify({ ...metadata, title: 'Updated' })), true);
+    for (const field of ['studioId', 'ownerId']) assert.equal(canWriteSource('pat', file, root, JSON.stringify({ ...metadata, [field]: '23456789abcdefgh' })), false);
+    fs.writeFileSync(path.join(folder, 'meta.json'), JSON.stringify({ ...metadata, ownerId: '23456789abcdefgh' }));
+    assert.equal(canWriteSource('pat', 'src/prototypes/pat/example/main.tsx', root), false);
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});

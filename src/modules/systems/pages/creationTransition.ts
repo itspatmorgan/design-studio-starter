@@ -14,7 +14,7 @@ export function openCreatedSystem(id: string) {
   if (pending) sessionStorage.setItem(key, JSON.stringify({ ...pending, id }));
   // Vite reloads once the new declarations are ready. Change the destination without
   // navigating into the old module graph or starting a competing document load.
-  window.history.replaceState(null, '', `/systems/${encodeURIComponent(id)}`);
+  window.history.replaceState(null, '', `${import.meta.env.BASE_URL.replace(/\/$/, '')}/systems/${encodeURIComponent(id)}`);
   window.dispatchEvent(new Event('studio:system-creating'));
 }
 export function finishSystemCreation(id?: string) {
@@ -25,7 +25,7 @@ export function beginSystemCreation(name: string) { beginSystemTransition(name, 
 export function beginSystemDeletion(name: string, system: string) {
   beginSystemTransition(name, 'delete', system);
   // A restart must land on the collection, never on the disappearing system.
-  window.history.replaceState(null, '', '/systems');
+  window.history.replaceState(null, '', import.meta.env.BASE_URL.replace(/\/$/, '') + '/systems');
 }
 export function finishSystemDeletion(systems: Record<string, unknown>, manifestSystems: Record<string, unknown>) {
   const pending = JSON.parse(sessionStorage.getItem(key) || 'null');

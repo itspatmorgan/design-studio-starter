@@ -4,7 +4,7 @@ import vm from 'node:vm';
 import { stripTypeScriptTypes } from 'node:module';
 import { test } from 'node:test';
 
-function transition() {
+function transition(baseUrl = '/') {
   const values = new Map(), events = [], urls = [];
   const context = vm.createContext({
     sessionStorage: { getItem: key => values.get(key), setItem: (key, value) => values.set(key, value) },
@@ -14,7 +14,7 @@ function transition() {
     Event: class { constructor(type) { this.type = type; } },
     CustomEvent: class { constructor(type, options) { this.type = type; this.detail = options.detail; } },
   });
-  const source = fs.readFileSync('src/modules/systems/pages/creationTransition.ts', 'utf8').replace(/export /g, '');
+  const source = fs.readFileSync('src/modules/systems/pages/creationTransition.ts', 'utf8').replace(/export /g, '').replaceAll('import.meta.env.BASE_URL', JSON.stringify(baseUrl));
   vm.runInContext(stripTypeScriptTypes(source), context);
   return { context, events, urls, values };
 }
@@ -38,4 +38,10 @@ test('index completion does not dismiss an in-progress creation', () => {
   assert.deepEqual(urls, ['/systems/example']);
   vm.runInContext("finishSystemCreation()", context);
   assert.equal(events.at(-1).type, 'studio:system-created');
+});
+
+test('creation and deletion keep the deployment base path in their permanent destination', () => {
+  const { context, urls } = transition('/studio/');
+  vm.runInContext("beginSystemCreation('Example'); openCreatedSystem('0123456789abcdef'); beginSystemDeletion('Example', 'example')", context);
+  assert.deepEqual(urls, ['/studio/systems/0123456789abcdef', '/studio/systems']);
 });

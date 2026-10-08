@@ -1,11 +1,10 @@
-// Moving between this prototype's screens. A prototype's address changes if it is renamed or moved to
-// another contributor, so the links are built from the address you're on instead of being written out.
+// Source paths resolve to permanent links through this view's prototype inventory.
 import type { ReactNode } from 'react';
-import { Link, useLocation, useParams } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
+import { usePrototypeArtifactHref, useIsPrototypeArtifact } from '@module/prototypes';
 
 export function useScreenPath() {
-  const { contributor, prototype } = useParams({ strict: false }) as { contributor?: string; prototype?: string };
-  return (screen: string) => `/prototypes/${contributor}/${prototype}/${screen}`;
+  return usePrototypeArtifactHref();
 }
 
 export function ScreenLink({ to, className, onClick, children }: { to: string; className?: string; onClick?: () => void; children: ReactNode }) {
@@ -14,5 +13,5 @@ export function ScreenLink({ to, className, onClick, children }: { to: string; c
 }
 
 export function useIsOn(screen: string) {
-  return useLocation().pathname.endsWith(`/${screen}`);
+  return useIsPrototypeArtifact(screen);
 }

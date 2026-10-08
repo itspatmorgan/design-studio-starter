@@ -5,6 +5,7 @@ import { ThemeScope } from '@/modules/systems/ThemeScope';
 import { useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { PortalContext } from '@/lib/portal';
+import { PrototypeNavigationProvider } from '../prototypes/lib';
 import type { EmbedProps } from '@/platform/app/data/fileTypeModule';
 import { loadView } from './load';
 import './lofi.css';
@@ -41,7 +42,7 @@ export default function ViewEmbed({ proto, item, width, height }: EmbedProps) {
       >
         <ErrorBoundary resetKeys={[viewKey, Component]} fallbackRender={() => <Unavailable>This view has an error. Open it to see what's wrong.</Unavailable>}>
           <PortalContext.Provider value={portal}>
-            <Component />
+            <PrototypeNavigationProvider value={loaded.prototype}><Component /></PrototypeNavigationProvider>
           </PortalContext.Provider>
         </ErrorBoundary>
         <div ref={setPortal} />

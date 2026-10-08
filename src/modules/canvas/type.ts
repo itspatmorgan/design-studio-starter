@@ -2,7 +2,7 @@
 // beside sticky notes, text, and arrows, drawn with Excalidraw. The file is Excalidraw's own
 // format (an .excalidraw file is JSON), so its name, without the extension, is the canvas's name
 // in the navigation.
-import { defineFileType, canvasIdentity } from '../../platform/core/fileTypes.ts';
+import { defineFileType, canvasIdentity, parsePrototypeAddress } from '../../platform/core/fileTypes.ts';
 
 // Version 1 of the canvas file (see format.ts). A newer one is opened but never saved over.
 const KNOWN_VERSION = 1;
@@ -38,7 +38,13 @@ export default defineFileType({
     // paths ("/prototypes/patrick/hello-world/lofi/main", or the older "/patrick/hello-world/lofi/main").
     if (prototype && Array.isArray(canvas.elements)) {
       // (This file can import only ../index.ts, so the address is checked here in both forms.)
-      const isHere = (link: string) => link.startsWith(`/prototypes/${prototype.contributor}/${prototype.id}/`) || link.startsWith(`/${prototype.contributor}/${prototype.id}/`);
+      const isHere = (link: string) => {
+        if (prototype.studioId) {
+          const address = parsePrototypeAddress(link.split(/[?#]/)[0]);
+          return Boolean(address?.artifactId && address.prototypeId === prototype.studioId);
+        }
+        return link.startsWith(`/prototypes/${prototype.contributor}/${prototype.id}/`) || link.startsWith(`/${prototype.contributor}/${prototype.id}/`);
+      };
       const elsewhere = new Set<string>();
       for (const el of canvas.elements as { link?: unknown }[]) {
         const link = el?.link;

@@ -1,3 +1,4 @@
+import { systemPath } from './systems';
 // Only previewable static files are exposed; source code and HTML are not assets here.
 const urls = import.meta.glob<string>('/systems/*/assets/**/*.{svg,png,jpg,jpeg,webp,avif,gif,ico,woff,woff2,ttf,otf}', { eager: true, query: '?url', import: 'default' });
 
@@ -10,4 +11,4 @@ export function systemAssets(system: string): SystemAsset[] {
     return { path, url, kind } as SystemAsset;
   }).sort((a, b) => a.path.localeCompare(b.path));
 }
-export const assetLink = (system: string, asset: SystemAsset) => `/systems/${system}/${asset.kind.toLowerCase()}/${asset.path.split('/').map(encodeURIComponent).join('/')}`;
+export const assetLink = (system: string, asset: SystemAsset) => `${systemPath(system)}/${asset.kind.toLowerCase()}/${asset.path.split('/').map(encodeURIComponent).join('/')}`;

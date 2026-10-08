@@ -35,16 +35,16 @@
       "height": 1550,
       "id": "mutgn9q6gi2blr",
       "index": "a2",
-      "link": "/prototypes/patrick/design-studio-marketing/landing-v1",
+      "link": "/prototypes/2h7mkxzppqfjv1xv/artifacts/aa1q57swhwgk759f",
       "seed": 1063405180,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 12,
-      "versionNonce": 1837502098,
+      "version": 13,
+      "versionNonce": 1222771490,
       "width": 700,
       "x": 840,
       "y": 60,
-      "updated": 1791335101037
+      "updated": 1791474936278
     },
     {
       "boundElements": [],
@@ -326,16 +326,16 @@
       "height": 1550,
       "id": "muu239okcpjfqd",
       "index": "aG",
-      "link": "/prototypes/patrick/design-studio-marketing/landing-v2",
+      "link": "/prototypes/2h7mkxzppqfjv1xv/artifacts/3g4re0qa91m0q9y4",
       "seed": 1595982155,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 13,
-      "versionNonce": 1585218916,
+      "version": 14,
+      "versionNonce": 431004970,
       "width": 700,
       "x": 1787.66,
       "y": 60,
-      "updated": 1791335102821
+      "updated": 1791474936278
     },
     {
       "boundElements": [],
@@ -383,16 +383,16 @@
       "height": 1550,
       "id": "muu239olf4kemm",
       "index": "aJ",
-      "link": "/prototypes/patrick/design-studio-marketing/landing-v3",
+      "link": "/prototypes/2h7mkxzppqfjv1xv/artifacts/d1y03hesw480egfc",
       "seed": 597680452,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 21,
-      "versionNonce": 702725172,
+      "version": 22,
+      "versionNonce": 1780638070,
       "width": 700,
       "x": 2735.38,
       "y": 60,
-      "updated": 1791335104120
+      "updated": 1791474936278
     },
     {
       "boundElements": [],
@@ -439,15 +439,16 @@
       "height": 88,
       "id": "muu2c6eydhj8ps",
       "index": "aM",
-      "link": "/prototypes/patrick/design-studio-marketing/project-brief",
+      "link": "/prototypes/2h7mkxzppqfjv1xv/artifacts/kdxn8cva5w5cfxnk",
       "seed": 1531694813,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 7,
-      "versionNonce": 1053904001,
+      "version": 8,
+      "versionNonce": 583462050,
       "width": 480,
       "x": -680,
-      "y": 0
+      "y": 0,
+      "updated": 1791474936278
     },
     {
       "autoResize": true,
@@ -498,5 +499,6 @@
     "viewBackgroundColor": "#ffffff",
     "gridSize": 20
   },
-  "files": {}
+  "files": {},
+  "studioId": "sr7kwryqs2ft7rbt"
 }

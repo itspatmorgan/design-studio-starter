@@ -11,11 +11,13 @@ import { fileURLToPath } from 'node:url';
 import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES, SYSTEM_SPECS, refreshSystems } from '../../src/modules/systems/node/systems.js';
 import { PLATFORM_ID } from '../../src/modules/systems/node/systems.js';
 import { isHelper, artifactSlug } from '../../src/platform/core/fileTypes.ts';
+import { jsonIdentity } from '../../src/platform/core/resourceIdentity.ts';
 import { SYSTEM_CONTENT_KEY, SYSTEM_CONTENT_SECTIONS, rootOf, contentId, systemRoot } from '../../src/platform/core/roots.ts';
 import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../../src/platform/core/archive.ts';
 import { byOrder, parseOrder } from '../../src/platform/core/order.ts';
 import { parseMaintainers } from '../../src/platform/core/permissions.ts';
-import { FILE_TYPES, fileTypeOf, systemContentTypeOf, isTextFile } from '../lib/file-types.js';
+import { FILE_TYPES, INSTALLED_FILE_TYPES, fileTypeOf, systemContentTypeOf, isTextFile } from '../lib/file-types.js';
+import { auditResourceIdentities } from '../lib/resource-identity-audit.js';
 import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from '../lib/modules.js';
 import { frontmatter } from '../lib/frontmatter.js';
 import { manualChapterEnabled } from '../lib/manual-pages.js';
@@ -141,8 +143,19 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
     if (!order) return skip('has an "order" that isn\'t a list of paths');
   }
   const artifacts = artifactsIn(dir, '', { ...inPrototype, order });
+  let studioId;
+  try {
+    studioId = jsonIdentity(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8'));
+    for (const item of artifacts) {
+      const identity = FILE_TYPES[item.fileType].identity;
+      if (identity) {
+        const id = identity.read(fs.readFileSync(path.join(dir, item.path), 'utf8'));
+        if (id) item.studioId = id;
+      }
+    }
+  } catch (error) { return skip(`has invalid resource identity (${error.message})`); }
   // Two artifacts can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
-  errors += checkArtifacts(dir, artifacts, out, { contributor: contributorKey, id });
+  errors += checkArtifacts(dir, artifacts, out, { contributor: contributorKey, id, ...(studioId && { studioId }) });
   // "system" (optional) is the design system it builds with, one of the folders in src/systems/.
   const { system, rebuild, problems: assignmentProblems } = prototypeAssignment(meta, DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS);
   if (assignmentProblems.length) return skip(assignmentProblems[0]);
@@ -155,7 +168,7 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
   return {
     errors,
     entry: {
-      id, contributorKey, title: meta.title, ...(SECTION_KEYS.has(contributorKey) && { description: meta.description ?? '' }),
+      id, contributorKey, ...(studioId && { studioId }), ...(meta.ownerId && { ownerId: meta.ownerId }), title: meta.title, ...(SECTION_KEYS.has(contributorKey) && { description: meta.description ?? '' }),
       contributor: maintained ? maintainers.map((k) => contributors[k]?.name ?? k).join(', ') : contributors[contributorKey]?.name ?? '',
       ...(!maintained && typeof contributors[contributorKey]?.github === 'string' && contributors[contributorKey].github.trim() && { contributorGithub: contributors[contributorKey].github.trim() }),
       created: meta.created ?? null, system, artifacts,
@@ -243,6 +256,8 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   // Items of the modules' sections of prototype-shaped folders, by section key.
   const sections = Object.fromEntries(PROTOTYPE_SECTIONS.map((s) => [s.key, []]));
   let errors = 0;
+  const identityAudit = auditResourceIdentities(ROOT, INSTALLED_FILE_TYPES);
+  for (const problem of identityAudit.problems) { out.error(`[identity] ${problem}`); errors++; }
   const people = contributorsSignature();
   if (people !== cachedFor) { cache.clear(); cachedFor = people; }
   const seen = new Set();
@@ -385,7 +400,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     if (links.length > DOC_WARNINGS) out.warn(`[manifest] and ${links.length - DOC_WARNINGS} more file(s) that link to an archived prototype.`);
   }
 
-  const manifest = { prototypes: deploy ? keptPrototypes : prototypes, sections: deploy ? keptSections : sections, manual: manual.map(({ order, ...page }) => page), systemContent, systemContentMaps: maps, platformReferences: platformReferences({ root: ROOT, modules: Object.values(MODULES).filter(Boolean), enabled: ENABLED_MODULES.map((m) => m.id), systemContent }), systems, skillCatalog: skillCatalog(ROOT, knowledgeOwners(ENABLED_MODULES, SYSTEM_SOURCES)) };
+  const manifest = { prototypes: deploy ? keptPrototypes : prototypes, sections: deploy ? keptSections : sections, manual: manual.map(({ order, ...page }) => page), systemContent, systemContentMaps: maps, platformReferences: platformReferences({ root: ROOT, modules: Object.values(MODULES).filter(Boolean), enabled: ENABLED_MODULES.map((m) => m.id), systemContent, systemIdentities: Object.fromEntries(Object.entries(SYSTEM_SPECS).map(([key, spec]) => [key, spec.studioId])) }), systems, skillCatalog: skillCatalog(ROOT, knowledgeOwners(ENABLED_MODULES, SYSTEM_SOURCES)) };
   if (write) writeManifest(manifest);
   out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${Object.entries(manifest.sections).map(([key, artifacts]) => `${artifacts.length} in ${key}`).join(', ') || 'no sections'}, ${manual.length} manual page(s), ${systemContent.length} systemContent section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
   if (deploy && archived.length) out.log(`[manifest] Left out of the deployed site: ${archived.length} archived prototype(s)`);

@@ -29,6 +29,20 @@ export function canWriteSource(me, file, root = ROOT, content) {
   const { contributors, problems } = readContributors(root);
   if (problems.length) return false;
   const { config } = readSettings(root, contributors);
+  const prototype = /^src\/prototypes\/([^/]+)\/([^/]+)(?:\/|$)/.exec(file);
+  if (prototype) {
+    try {
+      const metadataPath = path.join(root, 'src/prototypes', prototype[1], prototype[2], 'meta.json');
+      if (fs.existsSync(metadataPath)) {
+        const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+        if (metadata.ownerId !== undefined && metadata.ownerId !== contributors[prototype[1]]?.studioId) return false;
+        if (file.endsWith('/meta.json') && typeof content === 'string') {
+          const next = JSON.parse(content);
+          if (metadata.studioId !== next.studioId || metadata.ownerId !== next.ownerId) return false;
+        }
+      }
+    } catch { return false; }
+  }
   const systems = {};
   const id = /^src\/systems\/([^/]+)(?:\/|$)/.exec(file)?.[1];
   if (id) {

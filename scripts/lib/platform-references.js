@@ -1,11 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { frontmatter } from './frontmatter.js';
-import { rootOf, addressOf } from '../../src/platform/core/roots.ts';
+import { rootOf, addressOf, contentParts } from '../../src/platform/core/roots.ts';
 import { skillTitle } from '../../src/modules/systems/content/skills.ts';
 
 // Match the shared reader's deliberately limited top-level Markdown set.
-export function platformReferences({ root, modules, enabled, systemContent }) {
+export function platformReferences({ root, modules, enabled, systemContent, systemIdentities = {} }) {
   const related = systemContent.flatMap((section) => section.artifacts.filter((item) => item.path.endsWith('.md')).map((item) => {
     const source = '/' + rootOf(section.contributorKey, section.id) + '/' + item.path;
     const text = fs.readFileSync(path.join(root, 'src', source), 'utf8');
@@ -19,7 +19,9 @@ export function platformReferences({ root, modules, enabled, systemContent }) {
     });
     const fm = frontmatter(text);
     const title = fm?.title ?? (fm?.name ? skillTitle(fm.name) : text.match(/^#\s+(.+)$/m)?.[1] ?? item.path);
-    return { title: `${section.owner?.label ?? section.system} · ${section.title} · ${title}`, href: addressOf(section.contributorKey, section.id) + '/' + item.path.replace(/\.md$/, ''), source, targets };
+    const parts = contentParts(section.id);
+    const address = systemIdentities[parts.system] ? '/systems/' + systemIdentities[parts.system] + '/' + parts.section : addressOf(section.contributorKey, section.id);
+    return { title: `${section.owner?.label ?? section.system} · ${section.title} · ${title}`, href: address + '/' + item.path.replace(/\.md$/, ''), source, targets };
   }));
   const group = (id, label, folder, on, declared = []) => {
     const dir = path.join(root, 'src', folder);
