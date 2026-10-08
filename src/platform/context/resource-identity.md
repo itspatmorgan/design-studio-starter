@@ -10,7 +10,9 @@ Design Studio is introducing source identities independent of location, ownershi
 
 Source identity metadata and stored prototype browser references have been migrated in this development branch. Prototype and system public routes use IDs. Prototype creation and duplication allocate fresh IDs, copied permanent references are remapped, and source editing preserves identity. System installation and local creation allocate installation IDs. Prototype ownership is declared with `ownerId` and checked against the contributor folder. Normal builds reject malformed or duplicate identities; missing identities remain transitional.
 
-Authority grants, persisted system assignments, contributor registration, CI identity protections, and the complete public migration command still require implementation. These are required rollout work, not optional follow-ups. Existing permission evaluation continues using source keys until that phase is complete.
+Git identity checks now compare the before-side tree with proposed committed or staged blobs. They reject identity replacement, resource-kind changes, owner changes, and cross-prototype artifact transfer, including in personal mode and review workflows. Contributor reads reject malformed, duplicated, and ambiguous permanent identities. Explicit first-time metadata migration remains supported.
+
+CI can resolve persisted ID grants strictly through the before-side contributor and system directory. Historical Git baselines preceding the cutover retain their original source-key policy; proposed declarations never supply authority. Runtime grant and assignment consumers, full contributor registration integration, and the public migration apply command still require implementation. These are required rollout work, not optional follow-ups. Current local permission evaluation continues using source keys until that phase is complete.
 
 This document records the agreed destination and identifies what remains unimplemented. It does not replace the existing [prototype contract](../../modules/prototypes/README.md), [system contract](../../modules/systems/README.md), or [contributor scope](contributor-scope.md) before their implementations migrate.
 
@@ -91,6 +93,8 @@ Prototype metadata will reference its owner's permanent contributor identity. Ex
 Admin and system maintainer grants and system assignments will refer to permanent identities; prototype ownership already declares its contributor ID. `resourceReferences.ts` supplies a strict, read-only projection from persisted IDs to current source selectors and the inverse serializer for managed mutations. Unknown, malformed, duplicate, or wrong-kind identities fail resolution. The runtime and CI integration of that projection is still pending. Readable source keys remain distinct from those identities. Local operations, CLI inspection, agent guidance, and CI must interpret authority consistently and evaluate proposed authority changes against existing authority.
 
 Future prototype-specific collaborator grants can extend this model. Collaborator controls and permissions are not part of the current refactor. Identity is not web authentication or filesystem isolation. Runtime dependency boundaries remain independent of human authority.
+
+`readPersistedStudioConfig` supplies a fresh strict Node reader with separate persisted declarations and resolved source selectors. The Vite resource-directory plugin supplies only contributor and system ID/location mappings, excluding names, emails, and profile preferences. Consumer integration remains pending; the browser plugin's generated directory does not itself evaluate grants.
 
 ## Read-only inventory audit
 

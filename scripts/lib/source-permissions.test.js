@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { writeProfiles } from './fixtures/contributors.js';
-import { canWriteSource } from '../build/files/policy.js';
+import { canWriteSource, prototypeOwnershipMatches } from '../build/files/policy.js';
 
 test('source writes recheck revoked grants and archive status without waiting for a restart', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-source-permissions-'));
@@ -39,10 +39,17 @@ test('source editor preserves prototype identity and refuses owner/location mism
     const folder = path.join(root, 'src/prototypes/pat/example'); fs.mkdirSync(folder, { recursive: true });
     const metadata = { title: 'Example', studioId: 'abcdefghjkmnpqrs', ownerId: '0123456789abcdef' };
     fs.writeFileSync(path.join(folder, 'meta.json'), JSON.stringify(metadata));
+    assert.equal(prototypeOwnershipMatches('pat', folder, root), true);
+    assert.equal(prototypeOwnershipMatches('other', folder, root), false);
     const file = 'src/prototypes/pat/example/meta.json';
     assert.equal(canWriteSource('pat', file, root, JSON.stringify({ ...metadata, title: 'Updated' })), true);
     for (const field of ['studioId', 'ownerId']) assert.equal(canWriteSource('pat', file, root, JSON.stringify({ ...metadata, [field]: '23456789abcdefgh' })), false);
     fs.writeFileSync(path.join(folder, 'meta.json'), JSON.stringify({ ...metadata, ownerId: '23456789abcdefgh' }));
+    assert.equal(prototypeOwnershipMatches('pat', folder, root), false);
     assert.equal(canWriteSource('pat', 'src/prototypes/pat/example/main.tsx', root), false);
+    fs.writeFileSync(path.join(folder, 'meta.json'), JSON.stringify({ title: 'Example', studioId: metadata.studioId }));
+    assert.equal(prototypeOwnershipMatches('pat', folder, root), false);
+    fs.writeFileSync(path.join(folder, 'meta.json'), JSON.stringify(metadata).replace('"ownerId":', '"ownerId":"23456789abcdefgh","ownerId":'));
+    assert.equal(prototypeOwnershipMatches('pat', folder, root), false);
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });

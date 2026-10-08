@@ -9,6 +9,8 @@ import { readSettings } from '../../lib/studio-settings.js';
 import { canPerform, pathResource, sameSystemIdentity } from '../../../src/platform/core/permissions.ts';
 import { readDeclaration } from '../../../src/platform/core/declarations.ts';
 import { MODULES } from '../../lib/modules.js';
+import { jsonIdentity, resourceId } from '../../../src/platform/core/resourceIdentity.ts';
+import { canonicalDirectory } from '../../lib/safe-paths.js';
 
 // Artifact ownership composes with current resource grants. Shared system content
 // requires an assigned maintainer; Admin authority also covers other contributors' prototypes.
@@ -17,8 +19,25 @@ export const maintainersOf = (dir) => {
 };
 export const policyOf = (contributor) => policyFor(contributor, Object.values(MODULES));
 export const subjectOf = (contributor, me, dir) => ({ me, key: contributor, maintainers: policyOf(contributor) === 'maintainers' ? maintainersOf(dir) : undefined });
-export const owns = (contributor, me, dir) => Boolean(safeScope(dir)) && policyOf(contributor) !== 'open' && (canOwn(policyOf(contributor), subjectOf(contributor, me, dir)) || canWriteSource(me, path.relative(ROOT, dir)));
-export const canChange = (contributor, me, dir) => Boolean(safeScope(dir)) && (canOwn(policyOf(contributor), subjectOf(contributor, me, dir)) || canWriteSource(me, path.relative(ROOT, dir)));
+export function prototypeOwnershipMatches(contributor, dir, root = ROOT) {
+  const relative = path.relative(root, dir).split(path.sep).join('/');
+  const prototype = /^src\/prototypes\/([^/]+)\/[^/]+$/.exec(relative);
+  if (!prototype) return true; // Shared resources use their independent grant policy.
+  if (prototype[1] !== contributor) return false;
+  if (!fs.existsSync(dir)) return true; // Creation is authorized before the folder exists.
+  if (!canonicalDirectory(dir, root)) return false;
+  try {
+    const file = path.join(dir, 'meta.json');
+    if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) return false;
+    const text = fs.readFileSync(file, 'utf8'), id = jsonIdentity(text), meta = JSON.parse(text);
+    if (id && meta.ownerId === undefined) return false;
+    if (meta.ownerId === undefined) return true; // Transitional unidentified source.
+    const { contributors, problems } = readContributors(root);
+    return !problems.length && resourceId(meta.ownerId) === resourceId(contributors[contributor]?.studioId);
+  } catch { return false; }
+}
+export const owns = (contributor, me, dir) => Boolean(safeScope(dir)) && prototypeOwnershipMatches(contributor, dir) && policyOf(contributor) !== 'open' && (canOwn(policyOf(contributor), subjectOf(contributor, me, dir)) || canWriteSource(me, path.relative(ROOT, dir)));
+export const canChange = (contributor, me, dir) => Boolean(safeScope(dir)) && prototypeOwnershipMatches(contributor, dir) && (canOwn(policyOf(contributor), subjectOf(contributor, me, dir)) || canWriteSource(me, path.relative(ROOT, dir)));
 
 // Why you can't change a prototype: it's someone else's, you aren't a maintainer, or you aren't set up yet.
 export const ownerError = (contributor, me) => policyOf(contributor) === 'open' ? 'Only an Admin or an assigned system maintainer can change this shared resource. You can propose changes in a pull request.' : whyNot(policyOf(contributor), me);
@@ -31,12 +50,14 @@ export function canWriteSource(me, file, root = ROOT, content) {
   const { config } = readSettings(root, contributors);
   const prototype = /^src\/prototypes\/([^/]+)\/([^/]+)(?:\/|$)/.exec(file);
   if (prototype) {
+    if (!prototypeOwnershipMatches(prototype[1], path.join(root, 'src/prototypes', prototype[1], prototype[2]), root)) return false;
     try {
       const metadataPath = path.join(root, 'src/prototypes', prototype[1], prototype[2], 'meta.json');
       if (fs.existsSync(metadataPath)) {
         const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
         if (metadata.ownerId !== undefined && metadata.ownerId !== contributors[prototype[1]]?.studioId) return false;
         if (file.endsWith('/meta.json') && typeof content === 'string') {
+          jsonIdentity(content);
           const next = JSON.parse(content);
           if (metadata.studioId !== next.studioId || metadata.ownerId !== next.ownerId) return false;
         }

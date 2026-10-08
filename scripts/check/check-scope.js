@@ -7,6 +7,10 @@ import { resolveContributor, keyForGithub } from '../cli/resolve-contributor.js'
 import { studioRole, canPerform, sameSystemIdentity, parseMaintainers } from '../../src/platform/core/permissions.ts';
 import { readDeclaration } from '../../src/platform/core/modules/pack.ts';
 import { MODULES } from '../lib/modules.js';
+import { INSTALLED_FILE_TYPES } from '../lib/file-types.js';
+import { gitResourceIdentities } from '../lib/git-resource-identities.js';
+import { resourceIdentityChangeProblems } from '../lib/resource-identity-changes.js';
+import { resourceDirectory, resolveStudioReferences } from '../../src/platform/core/resourceReferences.ts';
 
 const [mode, before, after, policy] = process.argv.slice(2);
 const review = mode === '--ci' && policy === '--review';
@@ -15,7 +19,20 @@ let changed;
 try { changed = changedFiles(mode, before, after); } catch (e) { console.error(e.message); process.exit(2); }
 if (!changed) { console.error('Usage: check-scope.js --staged | --push | --ci <before> <after>'); process.exit(2); }
 const { files, baseRef } = changed;
-const baseConfig = (() => { try { const result = readDeclaration(git('show', `${baseRef ?? 'HEAD'}:studio.config.ts`)); return 'error' in result ? {} : result.value; } catch { return {}; } })();
+let baselineInventory;
+try {
+  const baseline = baselineInventory = gitResourceIdentities(baseRef ?? 'HEAD', INSTALLED_FILE_TYPES);
+  const proposed = gitResourceIdentities(after ?? 'HEAD', INSTALLED_FILE_TYPES, { staged: mode === '--staged' });
+  const identityProblems = resourceIdentityChangeProblems(baseline, proposed);
+  if (identityProblems.length) {
+    console.error('Resource identity checks failed:\n' + identityProblems.map(problem => `  ${problem}`).join('\n'));
+    if (mode === '--ci') process.exit(1);
+  }
+} catch (error) {
+  console.error(`Resource identity inventory could not be verified: ${error.message}`);
+  if (mode === '--ci') process.exit(2);
+}
+let baseConfig = (() => { try { const result = readDeclaration(git('show', `${baseRef ?? 'HEAD'}:studio.config.ts`)); return 'error' in result ? {} : result.value; } catch { return {}; } })();
 // Use the before-side mode: changing to personal in a proposal cannot bypass team review.
 if (baseConfig.usage === 'personal') {
   console.log('Personal studio: team ownership checks are skipped. Dependency and asset checks still apply.');
@@ -30,6 +47,19 @@ try {
     if (match) baseProfiles[match[1]] = JSON.parse(git('show', `${baseRef ?? 'HEAD'}:${file}`));
   }
 } catch { /* Missing base identity is unregistered, never privileged. */ }
+// Historical Git baselines can predate the source cutover. Once their default
+// is a permanent ID, every grant is resolved strictly through that SAME tree.
+// Proposed declarations and the checkout never supply its identity directory.
+if (/^[0-9abcdefghjkmnpqrstvwxyz]{16}$/.test(baseConfig.defaultSystem ?? '')) {
+  try {
+    const systems = Object.fromEntries(baselineInventory.resources.filter(resource => resource.kind === 'system').map(resource => [resource.key, { studioId: resource.studioId }]));
+    baseConfig = resolveStudioReferences(baseConfig, resourceDirectory(baseProfiles, systems));
+  } catch (error) {
+    console.error(`Before-side authority could not be resolved: ${error.message}`);
+    if (mode === '--ci') process.exit(2);
+    baseConfig = {};
+  }
+}
 const key = mode === '--ci' ? keyForGithub(actor, baseProfiles) : resolveContributor();
 const prefix = key ? `src/prototypes/${key}/` : null;
 

@@ -124,18 +124,22 @@ export const markdownIdentity: IdentityMetadata = {
   },
 };
 
-// JSON.parse accepts duplicate object keys. Identity must not use that last-wins
-// behavior, including when a key is escaped or a nested object also has studioId.
+// JSON.parse accepts duplicate object keys. Source metadata must not use that
+// last-wins behavior for identity, ownership, or other top-level declarations.
 export function jsonIdentity(source: string): ResourceId | null {
   const value: unknown = JSON.parse(source);
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Resource metadata must be a JSON object.');
-  let depth = 0, declarations = 0;
+  let depth = 0;
+  const declarations = new Set<string>();
   for (const token of source.matchAll(/"(?:\\[\s\S]|[^"\\])*"|[{}\[\]]/g)) {
     if (token[0] === '{' || token[0] === '[') depth++;
     else if (token[0] === '}' || token[0] === ']') depth--;
-    else if (depth === 1 && JSON.parse(token[0]) === 'studioId' && /^\s*:/.test(source.slice(token.index! + token[0].length))) declarations++;
+    else if (depth === 1 && /^\s*:/.test(source.slice(token.index! + token[0].length))) {
+      const key = JSON.parse(token[0]) as string;
+      if (declarations.has(key)) throw new Error(`Resource metadata must declare ${key} only once.`);
+      declarations.add(key);
+    }
   }
-  if (declarations > 1) throw new Error('Resource metadata must declare studioId only once.');
   const id = (value as Record<string, unknown>).studioId;
   return id === undefined ? null : resourceId(id);
 }

@@ -1,4 +1,5 @@
 import moduleEntries from './scripts/build/vite-module-entries-plugin.js';
+import resourceDirectoryPlugin from './scripts/build/vite-resource-directory-plugin.js';
 import { defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
@@ -108,6 +109,7 @@ export default defineConfig({
     tailwindcss(),
     globs(),
     moduleEntries(),
+    resourceDirectoryPlugin(),
     manifestWatch(),
     settings(),
     files(),

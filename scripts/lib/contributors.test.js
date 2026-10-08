@@ -41,3 +41,15 @@ test('linked profiles, invalid keys, and non-object profiles are rejected', t =>
   assert.deepEqual(Object.keys(contributors), ['sam']);
   assert.equal(problems.length, 3);
 });
+
+test('profile identities reject malformed, duplicated and ambiguously declared permanent IDs', t => {
+  const root = fixture(t);
+  writeProfiles(root, { pat: { name: 'Pat', studioId: '0123456789abcdef' }, alex: { name: 'Alex', studioId: '0123456789abcdef' } });
+  assert.ok(readContributors(root).problems.some(problem => problem.includes('studioId is also registered')));
+  fs.writeFileSync(path.join(root, 'contributors/alex.json'), '{"name":"Alex","email":"","github":"","studioId":"bad"}');
+  assert.ok(readContributors(root).problems.some(problem => problem.includes('exactly 16')));
+  fs.writeFileSync(path.join(root, 'contributors/alex.json'), '{"name":"Alex","email":"","github":"","studioId":"0123456789abcdef","studioId":"abcdefghjkmnpqrs"}');
+  assert.ok(readContributors(root).problems.some(problem => problem.includes('studioId only once')));
+  fs.writeFileSync(path.join(root, 'contributors/alex.json'), '{"name":"Alex","email":"","github":"","github":"pat","studioId":"abcdefghjkmnpqrs"}');
+  assert.ok(readContributors(root).problems.some(problem => problem.includes('github only once')));
+});

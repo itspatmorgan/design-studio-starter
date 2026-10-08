@@ -49,6 +49,8 @@ This setup is the studio maintainer's responsibility.
 
 Personal studios skip team ownership checks, using the before-side configuration. Declaration, dependency, and asset checks still run. A proposed switch from team to personal cannot bypass team review.
 
+Resource identity checks run before that personal-mode exception. They inspect committed trees or staged blobs rather than trusting the working tree. Permanent IDs cannot be replaced or removed in place, retained prototype owners cannot change through a source edit, and an identified artifact cannot transfer between prototypes without an explicit transfer policy. Moves within the same prototype and fresh identities for copies are supported. Identity errors fail CI even when platform review is requested; local hooks report them for correction.
+
 Pull requests in team studios run checks and flag changes outside the contributor’s assigned scope for review. Direct pushes accept prototype ownership, assigned active system work, and studio Admin authority from the before-side configuration and profiles. Proposed identity or grant changes cannot authorize themselves. Repository `admin` and `maintain` accounts can also make shared changes.
 
 These checks do not prevent an unauthorized Git push by themselves. Configure GitHub branch protection, required checks, and the team's review process.
