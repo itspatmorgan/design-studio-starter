@@ -52,6 +52,8 @@ Contributor details come from `contributors/<key>.json`.
 
 Gallery cards use the contributor's registered `github` username to load a profile photo. Initials appear while it loads, when no GitHub account is registered, or if the image is unavailable. Photo loading is optional and requires no GitHub authentication.
 
+Deleting a prototype moves its folder to the Trash and shows a confirmation toast. From the Prototypes index, deletion preserves the current page and filters. From an open prototype, it returns to the Prototypes index.
+
 ## Links and renaming
 
 `/prototypes/<prototype-id>` redirects to the first available artifact’s permanent address in navigation order, replacing the entry in browser history. An empty prototype remains at its prototype address. `/prototypes/<prototype-id>/artifacts/<artifact-id>` opens a specific artifact within that prototype. Source mode uses `?mode=source`. IDs come from source metadata described in [Resource identity](../../platform/context/resource-identity.md). There are no readable-route compatibility aliases.
