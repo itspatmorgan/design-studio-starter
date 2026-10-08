@@ -23,7 +23,7 @@ export default function SystemOverview({ system, sys, components, tokens }: {
   system: string; sys: DesignSystem; components: SystemComponentDoc[]; tokens: ThemeToken[];
 }) {
   const manifest = useManifest();
-  useEffect(() => { if (import.meta.env.DEV && manifest.systems[system]) finishSystemCreation(system); }, [system, manifest]);
+  useEffect(() => { if (import.meta.env.DEV && manifest.systems[system]) finishSystemCreation(SYSTEM_SPECS[system]?.studioId); }, [system, manifest]);
   const platform = system === PLATFORM_ID;
   const spec = SYSTEM_SPECS[system];
   const guidance = [

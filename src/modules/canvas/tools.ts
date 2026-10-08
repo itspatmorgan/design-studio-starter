@@ -17,11 +17,11 @@ import {
 export { ToolError, type El };
 
 // What the tools need to know about the app around the canvas.
-export type ArtifactInfo = { path: string; title: string; type: string; typeLabel: string; preview: boolean };
+export type ArtifactInfo = { path: string; sourcePath?: string; title: string; type: string; typeLabel: string; preview: boolean };
 export type Ctx = {
-  // The canvas's own prototype, as an app path: "/patrick/hello-world".
+  // The canvas’s own permanent prototype address.
   base: string;
-  // The artifact at an app path ("/patrick/hello-world/lofi/main"), or null if there isn't one.
+  // The artifact at its permanent app address, or null.
   artifact(path: string): ArtifactInfo | null;
   // The artifacts in this prototype, for the `artifacts` tool and hints. A canvas shows only its own prototype's artifacts.
   artifacts?(): ArtifactInfo[];
@@ -253,7 +253,10 @@ function finder(scene: () => El[], refs: Record<string, string> = Object.create(
 function artifactPath(value: unknown, ctx: Ctx): string {
   const given = str(value, 'artifact').trim();
   const asPath = ctx.linkPath?.(given) ?? (given.startsWith('/') ? given : null);
-  const path = asPath ?? `${ctx.base}/${given.replace(/^\.?\//, '')}`;
+  const sourcePath = given.replace(/^\.?\//, '');
+  const matches = asPath ? [] : (ctx.artifacts?.() ?? []).filter(item => item.sourcePath === sourcePath || item.sourcePath && artifactSlug(item.sourcePath) === artifactSlug(sourcePath));
+  if (matches.length > 1) throw new ToolError(`ambiguous artifact source path ${given}`);
+  const path = asPath ?? matches[0]?.path ?? `${ctx.base}/${sourcePath}`;
   // A canvas shows only its own prototype's artifacts, so a prototype stays self-contained.
   if (!path.startsWith(`${ctx.base}/`)) throw new ToolError(`${given} is in another prototype. A canvas shows only artifacts from its own (${ctx.base}). Copy the view into this prototype first, then put that copy on the canvas`);
   // Without the extension: "lofi/main.tsx" is "lofi/main".
@@ -302,7 +305,7 @@ function placeArrowLabel(arrow: El, label: El): El {
 const relative = (path: string, ctx: Ctx) => (path.startsWith(`${ctx.base}/`) ? path.slice(ctx.base.length + 1) : path);
 
 function listArtifacts(ctx: Ctx) {
-  const artifacts = (ctx.artifacts?.() ?? []).map((i) => ({ artifact: relative(i.path, ctx), title: i.title, type: i.typeLabel, ...(i.preview ? { shownAs: 'live preview' } : { shownAs: 'card' }) }));
+  const artifacts = (ctx.artifacts?.() ?? []).map((i) => ({ artifact: i.sourcePath ?? relative(i.path, ctx), title: i.title, type: i.typeLabel, ...(i.preview ? { shownAs: 'live preview' } : { shownAs: 'card' }) }));
   return { artifacts };
 }
 
@@ -436,7 +439,7 @@ function create(input: El[], args: any, ctx: Ctx): Run {
           const path = artifactPath(spec.artifact, ctx);
           const info = ctx.artifact(path);
           if (!info) {
-            const here = ctx.artifacts?.().slice(0, 20).map((i) => relative(i.path, ctx));
+            const here = ctx.artifacts?.().slice(0, 20).map((i) => i.sourcePath ?? relative(i.path, ctx));
             throw new ToolError(`no artifact at ${path}${here?.length ? `. In this prototype: ${here.join(', ')} (the \`artifacts\` tool lists them)` : ''}`);
           }
           const w = num(spec.width, 'width') ?? ARTIFACT_WIDTH;

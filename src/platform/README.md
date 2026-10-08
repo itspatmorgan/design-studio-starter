@@ -16,6 +16,7 @@ All platform knowledge and requirements live together in `context/`:
 | Configuration and roles | [Studio configuration](context/config.md) |
 | Modules and extensions | [Modules and extensions](context/modules.md) |
 | File formats and lifecycle | [File types](context/file-types.md) |
+| Permanent resource identity | [Resource identity](context/resource-identity.md) |
 | Editing and saving | [Editing and saving](context/source.md) |
 | Assets and fonts | [Assets and fonts](context/assets.md) |
 | Validation and recovery | [Checks and fixes](context/checks.md) |

@@ -1,17 +1,7 @@
-// Routes and router, in code (TanStack Router's code-based routing):
+// Permanent prototype and artifact addresses use source IDs. System routes are
+// contributed by Systems; their named surfaces remain relative to the system ID.
+// Module-owned sections retain their own declared routing contract.
 // https://tanstack.com/router/latest/docs/framework/react/routing/code-based-routing
-//
-//   /                                        Home: what each module adds to the app's front page
-//   /prototypes/$contributor/$prototype      a prototype, on its start item (or its first)
-//   /prototypes/$contributor/$prototype/$    an item, by its path without the extension, at any depth:
-//                                            /prototypes/patrick/hello-world/lofi/main
-//                                            (?mode=source shows its text, in dev: ArtifactSource)
-//   /$contributor/$prototype[/$]             the same for a section's items: /examples/sample, /systems/studio/context.
-//                                            An address from before prototypes moved, /patrick/hello-world, is
-//                                            sent on to /prototypes/patrick/hello-world.
-//
-// The modules add their own: /prototypes (the gallery), /examples, /systems/$system, /documentation/manual/$page
-// (src/modules/<id>/app.tsx). Everything that opens in the viewer does so through the routes above.
 import { Suspense } from 'react';
 import { createRootRoute, createRoute, createRouter, notFound, redirect, useRouter, lazyRouteComponent } from '@tanstack/react-router';
 import { useSourceView } from '@/platform/core/source/useSourceView';
@@ -21,7 +11,8 @@ import App, { NotFound } from '@/platform/app/shell/App';
 import Home from '@/platform/app/pages/home/Home';
 import PrototypeLayout from '@/modules/prototypes/viewer/PrototypeLayout';
 import { isSectionKey, rootOf } from '@/platform/core/roots';
-import { findArtifact, firstArtifact, artifactLabel, loadManifest, loadPrototype, setManifest } from '@/platform/app/data/manifest';
+import { resourceId } from '@/platform/core/resourceIdentity';
+import { findArtifact, findArtifactByIdentity, firstArtifact, artifactLabel, loadManifest, loadPrototype, loadPrototypeByIdentity, setManifest } from '@/platform/app/data/manifest';
 import { prepareFile } from '@/platform/app/data/fileTypeModule';
 import { FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
 import type { Artifact, Manifest, Prototype } from '@/platform/app/data/types';
@@ -29,7 +20,6 @@ import { createRefreshQueue } from '@/platform/app/data/refreshQueue';
 import { TAB_ID } from '@/platform/app/data/files';
 import { moduleApps } from '@/platform/app/modules';
 import { APP_NAME } from '@/platform/app/data/config';
-import { migratedGuidancePath, markdownPath } from '@/platform/app/docs/referenceLinks';
 import { loadReference } from '@/platform/app/docs/loadReference';
 import MarkdownPage from '@/platform/app/docs/MarkdownPage';
 import { contentId } from '@/platform/core/roots';
@@ -47,10 +37,6 @@ function LoadError({ error, reset }: { error: unknown; reset: () => void }) {
 }
 
 const rootRoute = createRootRoute({
-  beforeLoad: ({ location }) => {
-    const moved = migratedGuidancePath(location.pathname) ?? (markdownPath(location.pathname) !== location.pathname ? markdownPath(location.pathname) : null);
-    if (moved) throw redirect({ to: moved as never, search: location.search as never, hash: location.hash, replace: true });
-  },
   loader: () => loadManifest(),
   staleTime: Infinity,
   head: () => ({ meta: [{ title: APP_NAME }] }),
@@ -89,6 +75,7 @@ const KnowledgeDocument = lazyRouteComponent(() => import('@/platform/app/docs/K
 const contextRoute = createRoute({ getParentRoute: () => rootRoute, path: 'documentation/context', loader: () => Promise.all([KnowledgePage.preload?.(), KnowledgeDocument.preload?.()]), validateSearch: (search: Record<string, unknown>): { mode?: 'source' } => ({ mode: search.mode === 'source' ? 'source' : undefined }), component: () => <Suspense fallback={null}><KnowledgePage /></Suspense> });
 const contextIndexRoute = createRoute({ getParentRoute: () => contextRoute, path: '/', beforeLoad: () => { throw redirect({ to: '/documentation/context/platform.core' as never, replace: true }); } });
 async function ownerDocument(ownerId: string, file: string, mode?: 'source') {
+  if (ownerId !== 'platform.core' && !ownerId.startsWith('module.')) throw notFound();
   const manifest = await loadManifest();
   const owner = manifest.systemContent.find(p => p.owner?.id === ownerId)?.owner;
   if (!owner) throw notFound();
@@ -110,6 +97,7 @@ function OwnerDocument({ data }: { data: Awaited<ReturnType<typeof ownerDocument
 const ownerRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner', loaderDeps: ({ search }) => ({ mode: search.mode }), loader: ({ params, deps }) => ownerDocument(params.owner, 'README.md', deps.mode), component: () => { const data = ownerRoute.useLoaderData(); return <Suspense fallback={null}>{data ? <OwnerDocument data={data} /> : <KnowledgeDocument />}</Suspense>; } });
 const ownerReferenceRoute = createRoute({ getParentRoute: () => contextRoute, path: '$owner/reference/$', loaderDeps: ({ search }) => ({ mode: search.mode }), loader: ({ params, deps }) => ownerDocument(params.owner, params._splat ?? '', deps.mode), component: () => <OwnerDocument data={ownerReferenceRoute.useLoaderData()} /> });
 async function knowledgeLoader(params: { owner: string; page: string; _splat?: string }, mode?: 'source') {
+  if (params.owner !== 'platform.core' && !params.owner.startsWith('module.')) throw notFound();
   const manifest = await loadManifest();
   const proto = manifest.systemContent.find(p => p.id === contentId(params.owner, params.page));
   if (!proto) throw notFound();
@@ -125,28 +113,28 @@ type ItemSearch = { mode?: 'source' };
 // Loads an item before the route renders, so the current one stays on screen until the next
 // one is ready. Its file type (src/modules/<type>/) loads the file. An unknown address, or a type
 // that isn't installed, shows the not-found page.
-async function itemLoader({ contributor, prototype, _splat }: { contributor: string; prototype: string; _splat?: string }, mode?: ItemSearch['mode'], retainedPath?: string): Promise<ItemData> {
-  const proto = await loadPrototype(contributor, prototype);
+async function itemLoader({ contributor, prototype, _splat, artifact }: { contributor?: string; prototype: string; _splat?: string; artifact?: string }, mode?: ItemSearch['mode'], retainedPath?: string): Promise<ItemData> {
+  const proto = await (contributor ? loadPrototype(contributor, prototype) : loadPrototypeByIdentity(prototype));
   // No path in the URL: the prototype's start item, or its first.
-  const item = proto && (_splat ? findArtifact(proto, _splat) : proto.artifacts.find(item => item.path === retainedPath) ?? firstArtifact(proto));
+  const item = proto && (artifact ? findArtifactByIdentity(proto, artifact) : _splat ? findArtifact(proto, _splat) : proto.artifacts.find(item => item.studioId === retainedPath) ?? proto.artifacts.find(item => item.path === retainedPath) ?? firstArtifact(proto));
   const type = item && fileTypeModules[item.fileType];
   const title = proto && item && [proto.title, artifactLabel(item.path, proto), APP_NAME].join(' — ');
   // Source view: just the text, so a file that doesn't compile can still be read and fixed.
   if (import.meta.env.DEV && mode === 'source' && proto && item && title && FILE_TYPES[item.fileType]?.language) {
     await ArtifactSource?.preload?.();
-    return { fileType: item.fileType, props: null, source: { proto, item }, title, artifactPath: item.path, filePath: '/' + rootOf(proto.contributorKey, proto.id) + '/' + item.path };
+    return { fileType: item.fileType, props: null, source: { proto, item }, title, artifactId: item.studioId, artifactPath: item.path, filePath: '/' + rootOf(proto.contributorKey, proto.id) + '/' + item.path };
   }
   const props = proto && item && type ? await prepareFile(type, { proto, item }) : undefined;
   if (!proto || !item || !props || !title) throw notFound();
-  return { fileType: item.fileType, props, title, artifactPath: item.path, filePath: '/' + rootOf(proto.contributorKey, proto.id) + '/' + item.path };
+  return { fileType: item.fileType, props, title, artifactId: item.studioId, artifactPath: item.path, filePath: '/' + rootOf(proto.contributorKey, proto.id) + '/' + item.path };
 }
 
 // What an item route loads: the item's page props, or the Source view of it.
-type ItemData = { fileType: string; props: object | null; source?: { proto: Prototype; item: Artifact }; title: string; artifactPath: string; filePath: string };
+type ItemData = { fileType: string; props: object | null; source?: { proto: Prototype; item: Artifact }; title: string; artifactId?: string; artifactPath: string; filePath: string };
 
 // Reordering changes the opening artifact for the next visit, not the page being viewed.
 const retainedIndexPath = (routeId: string, cause: string): string | undefined => cause === 'stay'
-  ? (router.state.matches.find(match => match.routeId === routeId)?.loaderData as ItemData | undefined)?.artifactPath
+  ? (() => { const data = router.state.matches.find(match => match.routeId === routeId)?.loaderData as ItemData | undefined; return data?.artifactId ?? data?.artifactPath; })()
   : undefined;
 
 // Dev only: import.meta.env.DEV is false in the build, so the editor isn't in the deployed site.
@@ -168,8 +156,8 @@ function ItemPage({ data }: { data: ItemData | undefined }) {
 // The routes that open an item in the viewer: one set for a prototype (/prototypes/<person>/<id>) and one for an item
 // of a section (/examples/<id>, /systems/<system>/<section>). They do the same thing and are written twice, not made by a
 // function, because the router's types need each path written out to check links to it.
-const loadProto = async ({ contributor, prototype }: { contributor: string; prototype: string }) => {
-  const proto = await loadPrototype(contributor, prototype);
+const loadProto = async ({ contributor, prototype }: { contributor?: string; prototype: string }) => {
+  const proto = await (contributor ? loadPrototype(contributor, prototype) : loadPrototypeByIdentity(prototype));
   if (!proto) throw notFound();
   return { proto };
 };
@@ -179,7 +167,7 @@ const titleOf = ({ loaderData }: { loaderData?: ItemData }) => ({ meta: [{ title
 // A prototype's, with its navigation around whichever item is open.
 const prototypeRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: 'prototypes/$contributor/$prototype',
+  path: 'prototypes/$prototype',
   validateSearch: searchOf,
   loader: ({ params }) => loadProto(params),
   component: () => <PrototypeLayout proto={prototypeRoute.useLoaderData().proto} />,
@@ -188,17 +176,29 @@ const prototypeRoute = createRoute({
 const prototypeIndexRoute = createRoute({
   getParentRoute: () => prototypeRoute,
   path: '/',
+  beforeLoad: async ({ params, search, location }) => {
+    const { proto } = await loadProto(params);
+    const item = firstArtifact(proto);
+    // Keep the prototype URL as an entry point; copied browser URLs identify
+    // the actual artifact. Replace the entry so Back does not redirect again.
+    if (item) throw redirect({
+      to: '/prototypes/$prototype/artifacts/$artifact',
+      params: { prototype: params.prototype, artifact: resourceId(item.studioId) },
+      search,
+      hash: location.hash,
+      replace: true,
+    });
+  },
   loaderDeps: ({ search }) => ({ mode: search.mode }),
-  loader: ({ params, deps, cause }): Promise<ItemData> => itemLoader(params, deps.mode, retainedIndexPath(prototypeIndexRoute.id, cause)),
+  loader: ({ params, deps }): Promise<ItemData> => itemLoader(params, deps.mode),
   head: titleOf,
   component: () => <ItemPage data={prototypeIndexRoute.useLoaderData()} />,
   notFoundComponent: NotFound,
 });
-// Splat route: everything after the prototype is the item's path.
-// https://tanstack.com/router/latest/docs/framework/react/routing/routing-concepts#splat--catch-all-routes
+// Resolve an artifact only within its identified parent prototype.
 const itemRoute = createRoute({
   getParentRoute: () => prototypeRoute,
-  path: '$',
+  path: 'artifacts/$artifact',
   loaderDeps: ({ search }) => ({ mode: search.mode }),
   loader: ({ params, deps }) => itemLoader(params, deps.mode),
   head: titleOf,
@@ -206,18 +206,11 @@ const itemRoute = createRoute({
   notFoundComponent: NotFound,
 });
 
-// A section's. A first part that isn't a section is a prototype's address from before prototypes moved under
-// /prototypes (/patrick/hello-world), so it is sent there.
+// Only registered module sections use these routes. Old contributor routes fail.
 const sectionItemRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '$contributor/$prototype',
-  beforeLoad: async ({ params, location }) => {
-    if (!isSectionKey(params.contributor)) {
-      const manifest = await loadManifest();
-      if (!manifest.prototypes.some((proto) => proto.contributorKey === params.contributor)) throw notFound();
-      throw redirect({ to: `/prototypes${location.pathname}` as never, search: location.search as never, replace: true });
-    }
-  },
+  beforeLoad: ({ params }) => { if (!isSectionKey(params.contributor)) throw notFound(); },
   validateSearch: searchOf,
   loader: ({ params }) => loadProto(params),
   component: () => <PrototypeLayout proto={sectionItemRoute.useLoaderData().proto} />,
@@ -251,7 +244,7 @@ const routeTree = rootRoute.addChildren([...coreRoutes, ...(import.meta.env.DEV 
 export const router = createRouter({
   routeTree,
   // Browser history: clean URLs; the host must serve index.html for every path (see README, Hosting).
-  // No rewrites on your host? Use hash URLs instead (/#/prototypes/patrick/hello-world):
+  // No rewrites on your host? Use hash URLs instead (/#/prototypes/<prototype-id>):
   //   import { createHashHistory } from '@tanstack/react-router';
   //   history: createHashHistory(),
   // https://tanstack.com/router/latest/docs/framework/react/manual/history-types

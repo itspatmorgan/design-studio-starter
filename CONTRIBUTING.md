@@ -20,7 +20,7 @@ pnpm build:release
 pnpm build:inspect
 ```
 
-Use `pnpm test` during development for focused regressions. `pnpm test:release` also exercises disposable setup and production fixtures and plugin distribution tests when present. `pnpm build` validates current source, types, and static output without rerunning tests. `pnpm build:release` performs both release regressions and the build. Keep committed files below 750 KB. Include useful tests for behavior changes, and update the Manual or agent instructions when a workflow changes.
+Use `pnpm test:changed <base> <head>` for affected regression groups, or add `--plan-only` to review the decision. [Checks and fixes](src/platform/context/checks.md#minimum-sufficient-verification) owns the dependency map and fallback policy. Use `pnpm test` during development for all focused regressions. `pnpm test:release` also exercises disposable setup and production fixtures and plugin distribution tests when present. `pnpm build` validates current source, types, and static output without rerunning tests. `pnpm build:release` performs both release regressions and the build. Keep committed files below 750 KB. Include useful tests for behavior changes, and update the Manual or agent instructions when a workflow changes.
 
 Run `pnpm harness:sync` after changing plugin identity or canonical project skills. It generates all three host manifests and catalogs, then synchronizes project routing and skill adapters. Edit canonical sources instead of generated files. See [Agent context routing](src/platform/context/agent-context.md) for ownership and installed-studio packaging.
 
@@ -30,7 +30,7 @@ Use fictional sample data. Do not commit credentials, local environment files, p
 
 For any host, install with Node 24 and pnpm 12, run `pnpm build`, and publish `dist/`. The build validates source and types. Use `pnpm test` for focused regressions or `pnpm build:release` for full release verification. `pnpm build:inspect` reports startup asset size and requests. Your chosen host owns routing, caching, access, and deployment configuration.
 
-The [Checks workflow](.github/workflows/scope-check.yml) publishes successful pushes to `main` only in `itspatmorgan/design-studio-starter`. The workflow runs scope, regressions, and bundling concurrently, caches dependencies, cancels obsolete validation, and checks commit freshness before deploying. Copies run checks without publishing; configure your own deployment when needed.
+The [Checks and deployment workflow](.github/workflows/checks.yml) publishes successful pushes to `main` only in `itspatmorgan/design-studio-starter`. The workflow selects affected regression groups and runs them concurrently with scope and bundling, caches dependencies, cancels obsolete validation, and checks commit freshness before deploying. Copies run checks without publishing; configure your own deployment when needed.
 
 The starter repository uses GitHub Pages with **GitHub Actions** as its publishing source. Its configured site inherits `itspatmorgan.com` from the account’s user site and publishes at `/design-studio-starter/`; its custom-domain field is empty.
 

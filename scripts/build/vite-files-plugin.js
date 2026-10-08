@@ -50,7 +50,7 @@ import { createPrototype, renamePrototype } from '../../src/modules/prototypes/n
 import { duplicatePrototype } from '../../src/modules/prototypes/node/duplicate.js';
 import { publishManifest } from './vite-manifest-watch-plugin.js';
 import { resolveContributor } from '../cli/resolve-contributor.js';
-import { fileTypeOf, systemContentTypeOf } from '../lib/file-types.js';
+import { FILE_TYPES, fileTypeOf, systemContentTypeOf } from '../lib/file-types.js';
 import { knowledgeOwners } from '../lib/agent-skills.js';
 import { ENABLED_MODULES } from '../lib/modules.js';
 import { SYSTEM_CONTENT_KEY, SYSTEMS_KEY, contentSection, contentId, SYSTEM_CONTENT_SECTIONS } from '../../src/platform/core/roots.ts';
@@ -157,7 +157,16 @@ export default function filesPlugin() {
             if (!canChange(contributor, me(), dir)) return send(res, 403, { error: ownerError(contributor, me()) });
             if (typeof content !== 'string' || Buffer.byteLength(content) > MAX_SOURCE_BYTES) return send(res, 413, { error: 'This file is too large to save here. Keep files under 750 KB.' });
             // Never overwrite a version you haven't seen: if it changed on disk since you opened it, say so.
-            if (versionOf(fs.readFileSync(file, 'utf8')) !== base) return send(res, 409, { error: 'This file changed on disk since you opened it.', code: 'changed' });
+            const previousSource = fs.readFileSync(file, 'utf8');
+            if (versionOf(previousSource) !== base) return send(res, 409, { error: 'This file changed on disk since you opened it.', code: 'changed' });
+            if (contributor !== SYSTEM_CONTENT_KEY && contributor !== SYSTEMS_KEY) {
+              const identity = FILE_TYPES[fileTypeOf(rel)]?.identity;
+              if (identity) {
+                try {
+                  if (identity.read(previousSource) !== identity.read(content)) return send(res, 409, { error: 'Keep the artifact’s permanent studio ID when editing its source.', code: 'identity' });
+                } catch (error) { return send(res, 400, { error: error.message, code: 'identity' }); }
+              }
+            }
             fs.writeFileSync(file, content);
             // Saving is never blocked, but a skill that's out of the format is said so now, not at the next build.
             const skill = contributor === SYSTEM_CONTENT_KEY && contentSection(prototype) === 'skills' && rel.split('/').length === 2 && rel.endsWith(`/${SKILL_FILE}`);

@@ -78,4 +78,4 @@ export function pathResource(file: string, systems: Record<string, { role: 'plat
 }
 
 // Availability and identity changes must go through managed lifecycle operations.
-export const sameSystemIdentity = (before: Record<string, unknown>, after: Record<string, unknown>) => ['role', 'status', 'label'].every(key => before[key] === after[key]);
+export const sameSystemIdentity = (before: Record<string, unknown>, after: Record<string, unknown>) => ['studioId', 'role', 'status', 'label'].every(key => before[key] === after[key]);

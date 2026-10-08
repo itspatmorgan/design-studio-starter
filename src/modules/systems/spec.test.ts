@@ -10,6 +10,12 @@ test('a well formed system has no problems', () => {
   assert.deepEqual(systemProblems({ ...product, label: 'Brand', themeClass: 'brand-theme', origin: null }, 'brand'), []);
 });
 
+test('declared system identity is strict while legacy systems await explicit migration', () => {
+  assert.deepEqual(systemProblems({ ...product, studioId: '0123456789abcdef' }, 'product'), []);
+  assert.match(systemProblems({ ...product, studioId: 'product' }, 'product').join(' '), /exactly 16/);
+  assert.match(systemProblems({ ...product, studioId: null }, 'product').join(' '), /exactly 16/);
+});
+
 test('a label and a theme class are required', () => {
   assert.match(systemProblems({ ...product, label: ' ' }, 'product')[0], /add a label/);
   assert.match(systemProblems({ ...product, themeClass: 'Product Theme' }, 'product')[0], /themeClass should be a CSS class name like "product-theme"/);

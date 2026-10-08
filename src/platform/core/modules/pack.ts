@@ -104,7 +104,7 @@ export function licenseVerdict(spec: Partial<ModuleSpec>, hasLicenseFile: boolea
 // studio.config.ts with one module turned on or off, or null if its `modules` list isn't in the plain form this writes
 // (edit it by hand then). true enables, false disables, null removes the installed entry.
 export function editModulesFlag(text: string, id: string, on: boolean | null): string | null {
-  const m = /(\bmodules:\s*)\{([^{}]*)\}/.exec(text);
+  const m = /((?:\bmodules|'modules'|"modules")\s*:\s*)\{([^{}]*)\}/.exec(text);
   if (!m) return null;
   const entries = new Map<string, boolean>();
   for (const part of m[2].split(',').map((s) => s.trim()).filter(Boolean)) {
@@ -204,6 +204,7 @@ export function readDeclaration(source: string): { value: unknown } | { error: s
         else { const m = /^[A-Za-z_$][\w$-]*/.exec(s.slice(i)); if (!m) return fail('Expected a name.'); key = m[0]; i += key.length; }
         ws(); if (s[i] !== ':') fail(`Expected ":" after ${key}.`); i++;
         if (key === '__proto__' || key === 'constructor' || key === 'prototype') fail(`"${key}" isn't allowed as a name.`);
+        if (Object.hasOwn(out, key)) fail(`"${key}" is declared more than once. Remove duplicate declaration properties.`);
         out[key] = value(); ws();
         if (s[i] === ',') i++; else if (s[i] !== '}') fail('Expected "," or "}".');
       }

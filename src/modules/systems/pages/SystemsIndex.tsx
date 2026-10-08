@@ -1,3 +1,4 @@
+import { systemPath } from '../data/systems';
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -46,8 +47,8 @@ export default function SystemsIndex() {
   const collection = (entries: typeof items) => <Collection
     items={entries}
     keyOf={item => item.id}
-    card={item => <CollectionCard link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} archived={item.spec.status === 'archived'} title={<span className="flex min-h-5 items-center gap-2"><span>{item.spec.label}</span>{systemBadge(item)}</span>} description={item.description} meta={usage(item)} menu={<SystemMenu system={item.id} variant="card" />} />}
-    row={item => <ItemRow link={{ to: `/systems/${item.id}` }} icon={Shapes01Icon} archived={item.spec.status === 'archived'} title={item.spec.label} meta={<span className="flex items-center gap-2">{systemBadge(item)}{usage(item)}</span>} menu={<SystemMenu system={item.id} variant="row" />} />}
+    card={item => <CollectionCard link={{ to: systemPath(item.id) }} icon={Shapes01Icon} archived={item.spec.status === 'archived'} title={<span className="flex min-h-5 items-center gap-2"><span>{item.spec.label}</span>{systemBadge(item)}</span>} description={item.description} meta={usage(item)} menu={<SystemMenu system={item.id} variant="card" />} />}
+    row={item => <ItemRow link={{ to: systemPath(item.id) }} icon={Shapes01Icon} archived={item.spec.status === 'archived'} title={item.spec.label} meta={<span className="flex items-center gap-2">{systemBadge(item)}{usage(item)}</span>} menu={<SystemMenu system={item.id} variant="row" />} />}
   />;
   return <main className="mx-auto w-full max-w-5xl px-6 pt-12 pb-8">
     <SystemActionToast /><header className="mb-6">

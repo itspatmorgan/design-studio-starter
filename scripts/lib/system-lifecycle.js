@@ -6,6 +6,8 @@ import { readDeclaration } from '../../src/platform/core/modules/pack.ts';
 import { editStudioConfig, applySetupChanges } from './studio-setup.js';
 import { snapshotFiles, repairText } from './artifact-moves.js';
 import { canonicalDirectory } from './safe-paths.js';
+import { resourceId } from '../../src/platform/core/resourceIdentity.ts';
+import { readResourceDirectory } from './resource-directory.js';
 
 export const systemSlug = text => text.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/^[^a-z]+/, '');
 const json = value => JSON.stringify(value, null, 2) + '\n';
@@ -18,11 +20,12 @@ export function prototypeMetadata(root) {
     return { file: absolute, meta: read(absolute) };
   }).filter(({ meta }) => typeof meta.title === 'string');
 }
-export function systemDependents(root, id, defaultSystem) {
-  return prototypeMetadata(root).filter(({ meta }) => (meta.system === undefined ? defaultSystem : meta.system) === id || meta.rebuild?.targetSystem === id);
+export function systemDependents(root, id) {
+  return prototypeMetadata(root).filter(({ meta }) => meta.systemId === id || meta.rebuild?.targetSystemId === id);
 }
 export function unavailablePrototypeRoots(root) {
-  return prototypeMetadata(root).filter(({ meta }) => typeof meta.system === 'string' && meta.systemMissing?.id === meta.system && typeof meta.systemMissing?.label === 'string' && !fs.existsSync(path.join(root, 'src/systems', meta.system, 'system.ts'))).map(({ file }) => path.dirname(file));
+  const directory = readResourceDirectory(root);
+  return prototypeMetadata(root).filter(({ meta }) => typeof meta.systemId === 'string' && meta.systemMissing?.systemId === meta.systemId && typeof meta.systemMissing?.label === 'string' && !Object.hasOwn(directory.systemKeys, meta.systemId)).map(({ file }) => path.dirname(file));
 }
 export function planSystemLifecycle(root, config, action, id, { name, restorePrototypes = false } = {}) {
   if (!/^[a-z][a-z0-9-]*$/.test(id ?? '') || !config.systems.includes(id)) throw new Error('Choose a registered system.');
@@ -31,8 +34,13 @@ export function planSystemLifecycle(root, config, action, id, { name, restorePro
   const declaration = readDeclaration(fs.readFileSync(file, 'utf8'));
   if ('error' in declaration) throw new Error(declaration.error);
   const spec = declaration.value;
+  const systemIdentity = resourceId(spec.studioId);
+  const configFile = path.join(root, 'studio.config.ts');
+  const configSource = fs.readFileSync(configFile, 'utf8'), persistedDeclaration = readDeclaration(configSource);
+  if ('error' in persistedDeclaration) throw new Error(persistedDeclaration.error);
+  const persisted = persistedDeclaration.value;
   if (spec.role !== 'prototype') throw new Error('Studio is maintained by the platform. Its identity and availability are protected.');
-  const dependents = systemDependents(root, id, config.defaultSystem);
+  const dependents = systemDependents(root, systemIdentity);
   const edits = [];
   let nextId = id;
   let move = null, remove = null;
@@ -46,15 +54,7 @@ export function planSystemLifecycle(root, config, action, id, { name, restorePro
     edits.push(edit(file, editStudioConfig(fs.readFileSync(file, 'utf8'), { label: name.trim() })));
     if (nextId !== id) {
       move = { from: dir, to: nextDir };
-      const configFile = path.join(root, 'studio.config.ts');
-      edits.push(edit(configFile, editStudioConfig(fs.readFileSync(configFile, 'utf8'), { systemMaintainers: Object.fromEntries(Object.entries(config.systemMaintainers).map(([key, members]) => [key === id ? nextId : key, members])), systems: config.systems.map(value => value === id ? nextId : value), defaultSystem: config.defaultSystem === id ? nextId : config.defaultSystem })));
-      for (const { file, meta } of prototypeMetadata(root)) {
-        let changed = false;
-        if ((meta.system === undefined ? config.defaultSystem : meta.system) === id) { meta.system = nextId; changed = true; }
-        if (meta.rebuild?.targetSystem === id) { meta.rebuild.targetSystem = nextId; changed = true; }
-        if (meta.archivedBySystem === id) { meta.archivedBySystem = nextId; changed = true; }
-        if (changed) edits.push(edit(file, json(meta)));
-      }
+      edits.push(edit(configFile, editStudioConfig(configSource, { systems: config.systems.map(value => value === id ? nextId : value) })));
       // Resolve relative imports/Markdown links against actual files, and system aliases/URLs against the old identity.
       const before = snapshotFiles(root);
       const prefix = `src/systems/${id}/`, target = `src/systems/${nextId}/`;
@@ -64,9 +64,9 @@ export function planSystemLifecycle(root, config, action, id, { name, restorePro
         if (!/\.(?:[cm]?[jt]sx?|md|css|json|excalidraw)$/.test(relative) || ['package-lock.json', 'pnpm-lock.yaml', 'studio.lock.json'].includes(relative) || relative.startsWith('public/') || relative.startsWith('dist/')) continue;
         const absolute = path.join(root, relative), existing = edits.find(change => change.file === absolute);
         const content = existing?.after ?? fs.readFileSync(absolute, 'utf8');
-        let next = repairText(content, relative, moves.get(relative) ?? relative, before, moves, [`/systems/${id}`, `/systems/${nextId}`]);
+        let next = repairText(content, relative, moves.get(relative) ?? relative, before, moves, [`/systems/${systemIdentity}`, `/systems/${systemIdentity}`]);
         // Exact path prefixes include source examples and declared package destinations.
-        for (const [from, to] of [[`@/systems/${id}/`, `@/systems/${nextId}/`], [prefix, target], [`/systems/${id}/`, `/systems/${nextId}/`]]) {
+        for (const [from, to] of [[`@/systems/${id}/`, `@/systems/${nextId}/`], [prefix, target]]) {
           next = next.replace(new RegExp(`(?<![A-Za-z0-9_:/.-])${from}`, 'g'), () => to);
         }
         if (new RegExp(String.raw`(?<![A-Za-z0-9_:/.-])(?:src/|@/|/)systems/${id}(?=[/\s"')\]#?]|$)`).test(next)) review.push(moves.get(relative) ?? relative);
@@ -81,31 +81,29 @@ export function planSystemLifecycle(root, config, action, id, { name, restorePro
     edits.push(edit(file, editStudioConfig(fs.readFileSync(file, 'utf8'), { status: 'archived' })));
     for (const { file, meta } of dependents) {
       if (meta.status === 'archived') continue;
-      meta.system = meta.system === undefined ? config.defaultSystem : meta.system;
-      meta.status = 'archived'; meta.archivedBySystem = id;
+      meta.status = 'archived'; meta.archivedBySystemId = systemIdentity;
       edits.push(edit(file, json(meta)));
     }
   } else if (action === 'restore') {
     if (spec.status !== 'archived') throw new Error('This system is already active.');
     edits.push(edit(file, editStudioConfig(fs.readFileSync(file, 'utf8'), { status: 'active' })));
     for (const { file, meta } of prototypeMetadata(root)) {
-      if (meta.archivedBySystem !== id) continue;
+      if (meta.archivedBySystemId !== systemIdentity) continue;
       if (restorePrototypes && !meta.systemMissing) delete meta.status;
-      delete meta.archivedBySystem;
+      delete meta.archivedBySystemId;
       edits.push(edit(file, json(meta)));
     }
   } else if (action === 'delete') {
     if (id === config.defaultSystem) throw new Error('Choose another default system before deleting this one.');
     remove = dir;
-    const configFile = path.join(root, 'studio.config.ts');
-    edits.push(edit(configFile, editStudioConfig(fs.readFileSync(configFile, 'utf8'), { systemMaintainers: Object.fromEntries(Object.entries(config.systemMaintainers).filter(([key]) => key !== id)), systems: config.systems.filter(value => value !== id) })));
+    edits.push(edit(configFile, editStudioConfig(configSource, { systemMaintainers: Object.fromEntries(Object.entries(persisted.systemMaintainers).filter(([key]) => key !== systemIdentity)), systems: config.systems.filter(value => value !== id) })));
     for (const { file, meta } of dependents) {
       // Keep the exact old assignment and code. Missing-system prototypes cannot render or deploy until rebuilt.
-      if ((meta.system === undefined ? config.defaultSystem : meta.system) === id) {
-        meta.system = id; meta.systemMissing = { id, label: spec.label };
+      if (meta.systemId === systemIdentity) {
+        meta.systemId = systemIdentity; meta.systemMissing = { systemId: systemIdentity, label: spec.label };
       }
-      if (meta.rebuild?.targetSystem === id) delete meta.rebuild;
-      if (meta.archivedBySystem === id) delete meta.archivedBySystem;
+      if (meta.rebuild?.targetSystemId === systemIdentity) delete meta.rebuild;
+      if (meta.archivedBySystemId === systemIdentity) delete meta.archivedBySystemId;
       edits.push(edit(file, json(meta)));
     }
   } else throw new Error('Unknown system lifecycle action.');

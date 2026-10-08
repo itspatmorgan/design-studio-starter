@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { duplicatePrototype } from '@/platform/app/data/files';
-import { prototypeLink, setManifest } from '@/platform/app/data/manifest';
+import { findPrototype, prototypeLink, setManifest } from '@/platform/app/data/manifest';
 import type { PrototypeInfo } from '@/platform/app/data/types';
 import { ACTIVE_PROTOTYPE_SYSTEMS } from '@/modules/systems/data/systems';
 import { Button } from '@/systems/studio/components/button';
@@ -32,7 +32,9 @@ export default function DuplicatePrototypeDialog({ proto, open, onOpenChange }: 
       setManifest(result.manifest);
       await router.invalidate();
       onOpenChange(false);
-      await navigate(prototypeLink({ contributorKey: proto.contributorKey, id: result.prototype }));
+      const copied = findPrototype(result.manifest, proto.contributorKey, result.prototype);
+      if (!copied) throw new Error('The copy is missing from the inventory.');
+      await navigate(prototypeLink(copied));
     } catch (e) {
       setError((e as Error).message);
     } finally { setSaving(false); }

@@ -4,15 +4,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFile, execFileSync } from 'node:child_process';
 import { promisify } from 'node:util';
-import { FILE_TYPES, fileTypeOf, systemContentTypeOf } from '../../lib/file-types.js';
+import { FILE_TYPES, INSTALLED_FILE_TYPES, fileTypeOf, systemContentTypeOf } from '../../lib/file-types.js';
+import { retainedResourceIds, allocateResourceIdentity } from '../../lib/resource-identity-lifecycle.js';
 import { STATUSES, parseStatus } from '../../../src/platform/core/archive.ts';
 import { afterChange, parentOf, parseOrder, place, withFolderOrder } from '../../../src/platform/core/order.ts';
 import { scaffold } from '../../../src/modules/systems/node/scaffold-docs.js';
 import { opProblem } from '../../../src/modules/systems/content/rules.ts';
 import { SKILL_FILE, descriptionProblem, nameProblem } from '../../../src/modules/systems/content/skills.ts';
 import { ROOT, TRASH, readOrder, readTree, resolveInside, validName } from './paths.js';
-import { readDeclaration } from '../../../src/platform/core/modules/pack.ts';
 import { prototypeAddress, repairReferences, snapshotFiles } from '../../lib/artifact-moves.js';
+import { prototypeAssignment } from '../../lib/prototype-assignment.js';
+import { PROTOTYPE_SYSTEMS } from '../../../src/modules/systems/node/systems.js';
 
 // The contents of a new file: its file type's template, by extension (src/modules/<type>/type.ts).
 // Files of no type start empty.
@@ -103,11 +105,19 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     const target = path.join(parent, name);
     if (fs.existsSync(target)) throw new Error(`Something named “${name}” already exists here.`);
     if (isDir) fs.mkdirSync(target);
-    else fs.writeFileSync(target, templateFor(name, Boolean(section)));
+    else {
+      let source = templateFor(name, Boolean(section));
+      const type = FILE_TYPES[fileTypeOf(name)];
+      if (!section && ![...rel.split('/'), name].some(part => part.startsWith('_')) && type?.inPrototype) {
+        if (!type.identity) throw new Error('This artifact file type needs an identity adapter.');
+        source = type.identity.write(source, allocateResourceIdentity(retainedResourceIds(ROOT, INSTALLED_FILE_TYPES)));
+      }
+      fs.writeFileSync(target, source, { flag: 'wx' });
+    }
     return { path: relOf(target) };
   }
   if (op === 'meta') {
-    // Only the fields given change; others in meta.json (created, system) are kept.
+    // Only the fields given change; others in meta.json (created, systemId) are kept.
     const metaFile = path.join(dir, 'meta.json');
     const meta = JSON.parse(fs.readFileSync(metaFile, 'utf8'));
     if (title !== undefined) {
@@ -118,14 +128,12 @@ export function runOp(dir, { op, path: rel = '', name, dir: isDir, to, before, t
     if (status !== undefined) {
       const next = parseStatus(status);
       if (!next) throw new Error(`A status is one of: ${STATUSES.join(', ')}.`);
-      if (next === 'active' && typeof meta.system === 'string') {
-        const file = path.join(ROOT, 'src/systems', meta.system, 'system.ts');
-        if (fs.existsSync(file)) {
-          const declaration = readDeclaration(fs.readFileSync(file, 'utf8'));
-          if (!('error' in declaration) && declaration.value.status === 'archived') throw new Error('Restore this prototype’s system before restoring the prototype.');
-        }
+      if (next === 'active') {
+        const assignment = prototypeAssignment(meta, PROTOTYPE_SYSTEMS);
+        if (assignment.problems.length || meta.systemMissing) throw new Error('Rebuild this prototype with an available system before restoring it.');
+        if (assignment.system !== null && PROTOTYPE_SYSTEMS[assignment.system]?.status === 'archived') throw new Error('Restore this prototype’s system before restoring the prototype.');
       }
-      if (next === 'active') { delete meta.status; delete meta.archivedBySystem; } else meta.status = next;
+      if (next === 'active') { delete meta.status; delete meta.archivedBySystemId; } else meta.status = next;
     }
     fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2) + '\n');
     return {};

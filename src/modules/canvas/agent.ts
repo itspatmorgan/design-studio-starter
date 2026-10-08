@@ -16,8 +16,8 @@ import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import { FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
 import { artifactLabel } from '@/platform/app/data/manifest';
 import type { Artifact, Manifest, Prototype } from '@/platform/app/data/types';
-import { appPathOf, isInPrototype, resolveArtifactPath } from '@/platform/app/artifacts/artifactLinks';
-import { addressOf, canonicalPath } from '@/platform/core/roots';
+import { appPathOf, isInPrototype, resolveArtifactPath, artifactPath } from '@/platform/app/artifacts/artifactLinks';
+import { prototypeAddress, resourceId } from '@/platform/core/fileTypes';
 import { boundsOf } from './elements';
 import { help, run, ToolError, type Ctx, type El, type ArtifactInfo } from './tools';
 
@@ -39,22 +39,22 @@ export function createCanvasAgent({ api, proto, item, manifest, editable, persis
   const file = `src/prototypes/${proto.contributorKey}/${proto.id}/${item.path}`;
 
   const ctx: Ctx = {
-    base: addressOf(proto.contributorKey, proto.id),
+    base: prototypeAddress(resourceId(proto.studioId)),
     artifact(path) {
       // A canvas shows only its own prototype's items.
       if (!isInPrototype(path, proto)) return null;
       const found = resolveArtifactPath(manifest(), path);
       if (!found) return null;
       const type = found.item.fileType;
-      return { path, title: artifactLabel(found.item.path), type, typeLabel: FILE_TYPES[type]?.label ?? 'File', preview: Boolean(embedFor(fileTypeModules[type], 'canvas')) };
+      return { path, sourcePath: found.item.path, title: artifactLabel(found.item.path), type, typeLabel: FILE_TYPES[type]?.label ?? 'File', preview: Boolean(embedFor(fileTypeModules[type], 'canvas')) };
     },
     artifacts() {
       const own = [...manifest().prototypes, ...Object.values(manifest().sections).flat()].find((p) => p.contributorKey === proto.contributorKey && p.id === proto.id);
       return (own?.artifacts ?? proto.artifacts)
-        .map((i) => ctx.artifact(`${addressOf(proto.contributorKey, proto.id)}/${i.path.replace(/\.[^./]+$/, '')}`) as ArtifactInfo)
+        .map((i) => ctx.artifact(artifactPath(proto, i)) as ArtifactInfo)
         .filter(Boolean);
     },
-    linkPath: (link) => appPathOf(link) ?? (link.startsWith('/') && !link.startsWith('//') ? canonicalPath(link) : null),
+    linkPath: appPathOf,
   };
 
   // Excalidraw wants whole URLs in links; the tools deal in app paths.

@@ -5,15 +5,18 @@ import os from 'node:os';
 import path from 'node:path';
 import { applySetupChanges } from './studio-setup.js';
 import { planSettings, readSettings, saveSettings } from './studio-settings.js';
+import { writeProfiles } from './fixtures/contributors.js';
+import { writeFixtureConfig } from './fixtures/identities.js';
 
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-settings-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const config = { name: 'Studio', usage: 'team', admins: ['sam'], modules: { contributors: true, prototypes: true, notes: true }, systems: ['studio', 'product', 'brand'], systemMaintainers: { product: [], brand: [] }, defaultSystem: 'product' };
-  fs.writeFileSync(path.join(root, 'studio.config.ts'), `// keep this comment\nexport default ${JSON.stringify(config)};\n`);
+  writeProfiles(root, { sam: { name: 'Sam' }, alex: { name: 'Alex' } });
+  const { directory } = writeFixtureConfig(root, config, { comment: '// keep this comment\n' });
   fs.writeFileSync(path.join(root, 'AGENTS.md'), 'Shared guidance\n<!-- studio:modules -->\n<!-- /studio:modules -->\n');
   const options = {
-    root, contributors: { sam: { name: 'Sam' }, alex: { name: 'Alex' } }, systems: ['product', 'brand'], platformId: 'studio', actor: 'sam',
+    root, directory, contributors: { sam: { name: 'Sam' }, alex: { name: 'Alex' } }, systems: ['product', 'brand'], platformId: 'studio', actor: 'sam',
     modules: [{ id: 'contributors', label: 'Contributors & Permissions', optional: true }, { id: 'prototypes', label: 'Prototypes', optional: false }, { id: 'notes', label: 'Notes', optional: true, instructions: [{ path: 'rules/notes.md', when: 'When making notes' }], section: { items: 'prototypes', folder: 'src/notes' } }],
   };
   options.base = readSettings(root, options.contributors).version;
@@ -41,17 +44,17 @@ test('stale configuration and contributor snapshots cannot overwrite current set
   assert.throws(() => saveSettings({ ...options, changes: { name: 'New' } }), (error) => error.status === 409);
 });
 
-test('default changes preserve implicit systems, explicit None, disabled content, and agent guidance', (t) => {
+test('default changes preserve explicit assignments, None, disabled content, and agent guidance', (t) => {
   const options = fixture(t);
   const add = (folder, meta) => { fs.mkdirSync(path.join(options.root, folder), { recursive: true }); fs.writeFileSync(path.join(options.root, folder, 'meta.json'), JSON.stringify(meta)); };
-  add('src/prototypes/alex/implicit', { title: 'Implicit' });
-  add('src/prototypes/sam/custom', { title: 'Custom', system: null });
-  add('src/notes/old', { title: 'Retained' });
+  add('src/prototypes/alex/implicit', { title: 'Pinned', systemId: options.directory.systemIds.product });
+  add('src/prototypes/sam/custom', { title: 'Custom', systemId: null });
+  add('src/notes/old', { title: 'Retained', systemId: options.directory.systemIds.product });
   const plan = saveSettings({ ...options, changes: { name: 'New Studio', defaultSystem: 'brand', modules: { notes: false } } });
-  assert.equal(plan.pins.length, 2);
-  assert.equal(JSON.parse(fs.readFileSync(path.join(options.root, 'src/prototypes/alex/implicit/meta.json'))).system, 'product');
-  assert.equal(JSON.parse(fs.readFileSync(path.join(options.root, 'src/prototypes/sam/custom/meta.json'))).system, null);
-  assert.equal(JSON.parse(fs.readFileSync(path.join(options.root, 'src/notes/old/meta.json'))).system, 'product');
+  assert.equal(plan.pins.length, 0);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(options.root, 'src/prototypes/alex/implicit/meta.json'))).systemId, options.directory.systemIds.product);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(options.root, 'src/prototypes/sam/custom/meta.json'))).systemId, null);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(options.root, 'src/notes/old/meta.json'))).systemId, options.directory.systemIds.product);
   const current = readSettings(options.root, options.contributors);
   assert.equal(current.config.modules.notes, false);
   assert.match(current.source, /keep this comment/);

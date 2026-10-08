@@ -100,15 +100,16 @@
       "height": 260,
       "id": "mustzxtkw1phxe",
       "index": "a4",
-      "link": "/prototypes/patrick/feedback-inbox/discovery/feedback-flow",
+      "link": "/prototypes/ccncfpcyaa1hvjts/artifacts/nmm7cmqq20sry69h",
       "seed": 675480691,
       "strokeColor": "transparent",
       "type": "embeddable",
-      "version": 4,
-      "versionNonce": 178224841,
+      "version": 5,
+      "versionNonce": 2118271341,
       "width": 1000,
       "x": 40.25,
-      "y": 220
+      "y": 220,
+      "updated": 1791474936291
     },
     {
       "autoResize": false,
@@ -695,5 +696,6 @@
     "viewBackgroundColor": "#ffffff",
     "gridSize": 20
   },
-  "files": {}
+  "files": {},
+  "studioId": "n897fx5zb7wr42cb"
 }

@@ -3,9 +3,12 @@
 // too: its files become plain files. The app finds the same folders with a glob (src/platform/app/data/fileTypes.ts).
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import { assertUniqueExtensions, systemContentType, matchFileType } from '../../src/platform/core/fileTypes.ts';
 import { ENABLED_MODULES } from './modules.js';
+
+import { INSTALLED_FILE_TYPES } from './installed-file-types.js';
+export { INSTALLED_FILE_TYPES } from './installed-file-types.js';
 
 const DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src/modules');
 
@@ -14,9 +17,7 @@ const ids = ENABLED_MODULES
   .filter((id) => fs.existsSync(path.join(DIR, id, 'type.ts')))
   .sort();
 
-export const FILE_TYPES = Object.fromEntries(await Promise.all(
-  ids.map(async (id) => [id, (await import(pathToFileURL(path.join(DIR, id, 'type.ts')).href)).default]),
-));
+export const FILE_TYPES = Object.fromEntries(ids.map(id => [id, INSTALLED_FILE_TYPES[id]]));
 assertUniqueExtensions(FILE_TYPES);
 
 // The id of the type that owns a file, by its extension, or null for a plain file.

@@ -1,3 +1,5 @@
+import { readDeclaration } from '../../../platform/core/declarations.ts';
+import { resourceId } from '../../../platform/core/fileTypes.ts';
 import path from 'node:path';
 import fs from 'node:fs';
 import { execFile } from 'node:child_process';
@@ -26,7 +28,9 @@ export function createSystem(root, me, body) {
       const options = { cwd: root, encoding: 'utf8', timeout: 30000 };
       await execute(process.execPath, args, options);
       await execute(process.execPath, [...args, '--yes'], options);
-      return { id };
+      const declaration = readDeclaration(fs.readFileSync(path.join(root, 'src/systems', id, 'system.ts'), 'utf8'));
+      if ('error' in declaration) throw new Error(declaration.error);
+      return { id, studioId: resourceId(declaration.value.studioId) };
     } catch (error) { throw new Error(error.code === 'EEXIST' ? 'Another system change is in progress. Try again when it finishes.' : error.stderr?.trim() || 'Could not create the system. Existing systems were preserved.'); }
     finally { if (locked) fs.rmSync(marker, { force: true }); }
   }

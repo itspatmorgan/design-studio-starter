@@ -19,11 +19,11 @@ This skill applies when Canvases is enabled. The [module README](../../README.md
 Read current tool help instead of assuming argument names or defaults:
 
 ```sh
-pnpm -s canvas help
-pnpm -s canvas help create
+pnpm canvas help
+pnpm canvas help create
 ```
 
-For file operations, run `pnpm -s canvas <file.excalidraw> <tool> '<json>'`.
+For file operations, run `pnpm canvas <file.excalidraw> <tool> '<json>'`.
 
 For an open local canvas, compatible browser tools can use `window.__studioCanvas`. Read its `help()` before use.
 
@@ -36,6 +36,8 @@ Create a canvas through the file menu or write this empty scene:
 ```json
 {"type":"excalidraw","version":2,"studioVersion":1,"elements":[],"appState":{"viewBackgroundColor":"#ffffff"},"files":{}}
 ```
+
+After writing new prototype artifact files directly, run `pnpm studio identify src/prototypes/<key>/<prototype> --json` to preview missing identity assignments, then `--yes` to apply. Preserve existing identity metadata when editing. System context and helpers do not need artifact IDs.
 
 ## Verify
 

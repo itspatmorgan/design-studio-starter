@@ -1,5 +1,6 @@
 import { cssProblems } from '../lib/css-scope.js';
 import { prototypeAssignment } from '../lib/prototype-assignment.js';
+import { prototypeSourceForIdentity } from '../lib/resource-directory.js';
 // Usage: node scripts/build/build-manifest.js [--strict] [--deploy]
 //   --strict  exits 1 if any meta.json is invalid
 //   --deploy  leaves archived prototypes and views out (src/platform/core/archive.ts), for the deployed site
@@ -8,14 +9,16 @@ import { knowledgeOwners, skillCatalog } from '../lib/agent-skills.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PROTOTYPE_SYSTEMS, DEFAULT_SYSTEM, SYSTEM_SOURCES, SYSTEM_SPECS, refreshSystems } from '../../src/modules/systems/node/systems.js';
+import { PROTOTYPE_SYSTEMS, SYSTEM_SOURCES, SYSTEM_SPECS, refreshSystems } from '../../src/modules/systems/node/systems.js';
 import { PLATFORM_ID } from '../../src/modules/systems/node/systems.js';
 import { isHelper, artifactSlug } from '../../src/platform/core/fileTypes.ts';
+import { jsonIdentity } from '../../src/platform/core/resourceIdentity.ts';
 import { SYSTEM_CONTENT_KEY, SYSTEM_CONTENT_SECTIONS, rootOf, contentId, systemRoot } from '../../src/platform/core/roots.ts';
 import { STATUSES, forDeploy, linksToArchived, parseStatus } from '../../src/platform/core/archive.ts';
 import { byOrder, parseOrder } from '../../src/platform/core/order.ts';
 import { parseMaintainers } from '../../src/platform/core/permissions.ts';
-import { FILE_TYPES, fileTypeOf, systemContentTypeOf, isTextFile } from '../lib/file-types.js';
+import { FILE_TYPES, INSTALLED_FILE_TYPES, fileTypeOf, systemContentTypeOf, isTextFile } from '../lib/file-types.js';
+import { auditResourceIdentities } from '../lib/resource-identity-audit.js';
 import { ENABLED_MODULES, MODULES, PROTOTYPE_SECTIONS, SECTION_KEYS } from '../lib/modules.js';
 import { frontmatter } from '../lib/frontmatter.js';
 import { manualChapterEnabled } from '../lib/manual-pages.js';
@@ -141,11 +144,26 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
     if (!order) return skip('has an "order" that isn\'t a list of paths');
   }
   const artifacts = artifactsIn(dir, '', { ...inPrototype, order });
+  let studioId;
+  try {
+    studioId = jsonIdentity(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8'));
+    for (const item of artifacts) {
+      const identity = FILE_TYPES[item.fileType].identity;
+      if (identity) {
+        const id = identity.read(fs.readFileSync(path.join(dir, item.path), 'utf8'));
+        if (id) item.studioId = id;
+      }
+    }
+  } catch (error) { return skip(`has invalid resource identity (${error.message})`); }
   // Two artifacts can't share a URL (main.tsx next to main.jsx or main.md), and each file type checks its own files.
-  errors += checkArtifacts(dir, artifacts, out, { contributor: contributorKey, id });
-  // "system" (optional) is the design system it builds with, one of the folders in src/systems/.
-  const { system, rebuild, problems: assignmentProblems } = prototypeAssignment(meta, DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS);
+  errors += checkArtifacts(dir, artifacts, out, { contributor: contributorKey, id, ...(studioId && { studioId }) });
+  // systemId is an explicit permanent assignment; source keys are derived for runtime imports.
+  const { system, systemId, rebuild, problems: assignmentProblems } = prototypeAssignment(meta, PROTOTYPE_SYSTEMS);
   if (assignmentProblems.length) return skip(assignmentProblems[0]);
+  if (rebuild) {
+    try { rebuild.sourcePath = prototypeSourceForIdentity(ROOT, rebuild.sourcePrototypeId); }
+    catch (error) { return skip(error.message); }
+  }
   // "status" (optional) is 'active' (the default) or 'archived'.
   let status = null;
   if (meta.status !== undefined) {
@@ -155,10 +173,10 @@ function readPrototype(dir, contributorKey, id, out, contributors, policy = 'own
   return {
     errors,
     entry: {
-      id, contributorKey, title: meta.title, ...(SECTION_KEYS.has(contributorKey) && { description: meta.description ?? '' }),
+      id, contributorKey, ...(studioId && { studioId }), ...(meta.ownerContributorId && { ownerContributorId: meta.ownerContributorId }), title: meta.title, ...(SECTION_KEYS.has(contributorKey) && { description: meta.description ?? '' }),
       contributor: maintained ? maintainers.map((k) => contributors[k]?.name ?? k).join(', ') : contributors[contributorKey]?.name ?? '',
       ...(!maintained && typeof contributors[contributorKey]?.github === 'string' && contributors[contributorKey].github.trim() && { contributorGithub: contributors[contributorKey].github.trim() }),
-      created: meta.created ?? null, system, artifacts,
+      created: meta.created ?? null, system, systemId, artifacts,
       ...(meta.systemMissing && { systemMissing: meta.systemMissing }),
       ...(rebuild !== undefined && { rebuild }),
       ...(maintained && { maintainers }),
@@ -243,6 +261,12 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
   // Items of the modules' sections of prototype-shaped folders, by section key.
   const sections = Object.fromEntries(PROTOTYPE_SECTIONS.map((s) => [s.key, []]));
   let errors = 0;
+  const identityAudit = auditResourceIdentities(ROOT, INSTALLED_FILE_TYPES);
+  for (const missing of identityAudit.missing) { out.error(`[identity] ${missing}: permanent identity is missing. Run pnpm studio identify <prototype-folder> --yes for newly authored files, or review a full identity migration.`); errors++; }
+  for (const problem of identityAudit.problems) { out.error(`[identity] ${problem}`); errors++; }
+  for (const resource of identityAudit.resources.filter(resource => resource.kind === 'prototype' && resource.studioId)) {
+    if (JSON.parse(fs.readFileSync(path.join(ROOT, resource.path), 'utf8')).ownerContributorId === undefined) { out.error(`[identity] ${resource.path}: declare the permanent contributor ownerContributorId. Run pnpm studio identify ${path.posix.dirname(resource.path)} --yes.`); errors++; }
+  }
   const people = contributorsSignature();
   if (people !== cachedFor) { cache.clear(); cachedFor = people; }
   const seen = new Set();
@@ -385,7 +409,7 @@ export function buildManifest({ deploy = false, write = true, quiet = false, tou
     if (links.length > DOC_WARNINGS) out.warn(`[manifest] and ${links.length - DOC_WARNINGS} more file(s) that link to an archived prototype.`);
   }
 
-  const manifest = { prototypes: deploy ? keptPrototypes : prototypes, sections: deploy ? keptSections : sections, manual: manual.map(({ order, ...page }) => page), systemContent, systemContentMaps: maps, platformReferences: platformReferences({ root: ROOT, modules: Object.values(MODULES).filter(Boolean), enabled: ENABLED_MODULES.map((m) => m.id), systemContent }), systems, skillCatalog: skillCatalog(ROOT, knowledgeOwners(ENABLED_MODULES, SYSTEM_SOURCES)) };
+  const manifest = { prototypes: deploy ? keptPrototypes : prototypes, sections: deploy ? keptSections : sections, manual: manual.map(({ order, ...page }) => page), systemContent, systemContentMaps: maps, platformReferences: platformReferences({ root: ROOT, modules: Object.values(MODULES).filter(Boolean), enabled: ENABLED_MODULES.map((m) => m.id), systemContent, systemIdentities: Object.fromEntries(Object.entries(SYSTEM_SPECS).map(([key, spec]) => [key, spec.studioId])) }), systems, skillCatalog: skillCatalog(ROOT, knowledgeOwners(ENABLED_MODULES, SYSTEM_SOURCES)) };
   if (write) writeManifest(manifest);
   out.log(`[manifest] ${manifest.prototypes.length} prototype(s), ${Object.entries(manifest.sections).map(([key, artifacts]) => `${artifacts.length} in ${key}`).join(', ') || 'no sections'}, ${manual.length} manual page(s), ${systemContent.length} systemContent section(s)${errors ? `, ${errors} problem(s) above` : ''}`);
   if (deploy && archived.length) out.log(`[manifest] Left out of the deployed site: ${archived.length} archived prototype(s)`);

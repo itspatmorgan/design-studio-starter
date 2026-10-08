@@ -51,7 +51,7 @@ export function migratedGuidancePath(path: string): string | null {
 }
 
 // Repository source links and saved reading URLs resolve to the same owner browser.
-export function markdownPath(path: string): string {
+function sourceMarkdownPath(path: string): string {
   const moved = migratedGuidancePath(path);
   if (moved) return moved;
   const chapter = path.match(/^\/modules\/documentation\/pages\/([a-z0-9-]+)\.md$/);
@@ -66,4 +66,11 @@ export function markdownPath(path: string): string {
   const contract = path.match(/^\/modules\/([^/]+)\/([^/]+)\.md$/);
   if (contract) return ownerPath('module.' + contract[1]) + (['prototypes','systems'].includes(contract[1]) && contract[2] === 'reference' ? '' : '/reference/' + contract[2] + '.md');
   return path;
+}
+
+// Translate filesystem links at render time. Stored public URLs already carry IDs.
+export function markdownPath(path: string, systemIdentities: Readonly<Record<string, string>> = {}): string {
+  const target = sourceMarkdownPath(path);
+  const parts = /^\/systems\/([^/]+)(.*)$/.exec(target);
+  return parts && systemIdentities[parts[1]] ? '/systems/' + systemIdentities[parts[1]] + parts[2] : target;
 }

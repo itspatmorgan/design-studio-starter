@@ -3,33 +3,24 @@
 // folders with a glob (src/platform/app/data/modules.ts).
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
-import CONFIG from '../../studio.config.ts';
+import { fileURLToPath } from 'node:url';
+import { readPersistedStudioConfig } from './persisted-studio-config.js';
 import { isEnabled } from '../../src/platform/core/config.ts';
-import { compatible, CORE_PAGE_KEYS, itemFolders, moduleProblems, sectionKeys } from '../../src/platform/core/modules/index.ts';
+import { compatible } from '../../src/platform/core/modules/index.ts';
+import { MODULES } from './module-catalog.js';
+export { MODULES, SECTION_KEYS, declarationProblems } from './module-catalog.js';
 import { setSections } from '../../src/platform/core/roots.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const { config: CONFIG } = readPersistedStudioConfig(ROOT);
 const DIR = path.join(ROOT, 'src', 'modules');
-
-const ids = fs.readdirSync(DIR, { withFileTypes: true })
-  .filter((d) => d.isDirectory() && fs.existsSync(path.join(DIR, d.name, 'module.ts')))
-  .map((d) => d.name)
-  .sort();
-
-// Every module, by id. Problems with a declaration are reported by scripts/check/check-modules.js.
-export const MODULES = Object.fromEntries(await Promise.all(
-  ids.map(async (id) => [id, (await import(pathToFileURL(path.join(DIR, id, 'module.ts')).href)).default]),
-));
-
-export const declarationProblems = () => ids.flatMap((id) => moduleProblems(MODULES[id], id));
 
 // The modules studio.config.ts explicitly enables and that work with this platform (`requires`). A module that is off keeps its files but is skipped everywhere.
 export const ENABLED_MODULES = Object.values(MODULES).filter((m) => m && isEnabled(CONFIG, m.id) && compatible(m));
 export { CONFIG, isEnabled };
 
 // App page addresses (/examples, /documentation, ...), so they can't be a contributor's folder.
-export const SECTION_KEYS = new Set([...CORE_PAGE_KEYS, ...sectionKeys(Object.values(MODULES).filter(Boolean))]);
+
 
 // Absolute folders of the modules that hold prototype-shaped folders, one per id (src/examples/), and the
 // system content's. src/prototypes/, where the folders are grouped by person, is the Prototypes module's own and isn't listed.

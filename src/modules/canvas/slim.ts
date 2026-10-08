@@ -10,6 +10,8 @@
 // - Numbers are rounded, keys are sorted, and volatile fields (`updated`) are dropped.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { resourceId, type ResourceId } from '../../platform/core/fileTypes.ts';
+
 export type Stored = Record<string, any>;
 
 // Excalidraw's own file version (keeps the file opening on excalidraw.com).
@@ -75,11 +77,13 @@ export function stringifyScene(
   elements: readonly Stored[],
   appState: { viewBackgroundColor?: string; gridSize?: number | null } = {},
   mapLink?: (link: string) => string,
+  studioId?: ResourceId | null,
 ): string {
   const scene = {
     type: 'excalidraw',
     version: EXCALIDRAW_FILE_VERSION,
     studioVersion: FORMAT_VERSION,
+    ...(studioId != null ? { studioId: resourceId(studioId) } : {}),
     elements: elements.filter((el) => !el.isDeleted && el.type !== 'image').map((el) => slimElement(el, mapLink)),
     appState: {
       viewBackgroundColor: appState.viewBackgroundColor || DEFAULT_BACKGROUND,

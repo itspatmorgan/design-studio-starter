@@ -7,7 +7,7 @@ import { emptyView } from '@/lib/emptyView';
 import { views } from './loader';
 
 export async function loadView({ proto, item }: ArtifactContext) {
-  if (proto.systemMissing) return { Component: () => null, viewKey: `${proto.contributorKey}/${proto.id}/${item.path}`, themeClass: 'prototype-unstyled', missingSystem: proto.systemMissing.label };
+  if (proto.systemMissing) return { prototype: { ...proto, currentArtifactId: item.studioId }, Component: () => null, viewKey: `${proto.contributorKey}/${proto.id}/${item.path}`, themeClass: 'prototype-unstyled', missingSystem: proto.systemMissing.label };
   const file = { contributor: proto.contributorKey, prototype: proto.id, path: item.path };
   const mod = await views.load(file, { inManifest: true });
   if (!mod) return undefined;
@@ -20,6 +20,7 @@ export async function loadView({ proto, item }: ArtifactContext) {
   const valid = typeof mod.default === 'function' || typeof mod.default === 'object';
   if (!valid) views.incomplete.add(repoFile);
   return {
+    prototype: { ...proto, currentArtifactId: item.studioId },
     Component: valid
       ? mod.default
       : () => { throw new Error(`${repoFile} has no default export. A view needs one: export default function MyView() { ... }`); },

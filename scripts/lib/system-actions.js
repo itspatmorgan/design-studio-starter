@@ -33,7 +33,7 @@ export async function systemAction(root, actor, body) {
     const items = config.systems.flatMap(id => {
       const declaration = readDeclaration(fs.readFileSync(path.join(root, 'src/systems', id, 'system.ts'), 'utf8'));
       if ('error' in declaration || declaration.value.status !== 'archived') return [];
-      return [{ id, label: declaration.value.label, prototypes: systemDependents(root, id, config.defaultSystem).filter(({ meta }) => meta.archivedBySystem === id).length }];
+      return [{ id, label: declaration.value.label, prototypes: systemDependents(root, declaration.value.studioId).filter(({ meta }) => meta.archivedBySystemId === declaration.value.studioId).length }];
     });
     return { items };
   }

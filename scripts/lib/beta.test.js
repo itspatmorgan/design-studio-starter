@@ -58,14 +58,19 @@ test('download enforces its limit while streaming', async () => {
 });
 
 test('prototype import allowlist includes its system and rejects unrelated local code', async () => {
-  const guard = importGuard();
-  guard.configResolved({ command: 'build' });
-  const root = path.resolve('src/prototypes/patrick/import-fixture');
-  for (const [target, allowed] of [['src/systems/product/components/button/index.ts', true], ['src/lib/store.ts', true], ['src/prototypes/patrick/import-fixture/_components/text.ts', true], ['scripts/lib/random.js', false], ['src/platform/app/router.tsx', false], ['src/prototypes/patrick/feedback-inbox/main.tsx', false]]) {
-    const context = { resolve: async () => ({ id: path.resolve(target) }), error: (message) => { throw new Error(message); } };
-    const request = guard.resolveId.call(context, './thing', path.join(root, 'main.tsx'), {});
-    if (allowed) await request; else await assert.rejects(request, /Prototype scope/);
-  }
+  const fixture = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'studio-import-policy-')));
+  try {
+    const root = path.join(fixture, 'src/prototypes/patrick/import-fixture');
+    fs.mkdirSync(root, { recursive: true });
+    fs.writeFileSync(path.join(root, 'meta.json'), JSON.stringify({ systemId: '1111111111111111' }));
+    const guard = importGuard({ root: fixture, systems: { product: { studioId: '1111111111111111', role: 'prototype', dir: path.join(fixture, 'src/systems/product') } }, defaultSystem: 'product', modules: [], prototypeDirs: [] });
+    guard.configResolved({ command: 'build' });
+    for (const [target, allowed] of [['src/systems/product/components/button/index.ts', true], ['src/lib/store.ts', true], ['src/prototypes/patrick/import-fixture/_components/text.ts', true], ['scripts/lib/random.js', false], ['src/platform/app/router.tsx', false], ['src/prototypes/patrick/feedback-inbox/main.tsx', false]]) {
+      const context = { resolve: async () => ({ id: path.join(fixture, target) }), error: (message) => { throw new Error(message); } };
+      const request = guard.resolveId.call(context, './thing', path.join(root, 'main.tsx'), {});
+      if (allowed) await request; else await assert.rejects(request, /Prototype scope/);
+    }
+  } finally { fs.rmSync(fixture, { recursive: true, force: true }); }
 });
 
 test('create and rename preserve addresses, file errors recover, and system removal protects prototypes', async () => {
@@ -83,9 +88,10 @@ test('create and rename preserve addresses, file errors recover, and system remo
       fs.writeFileSync(declaration, editStudioConfig(fs.readFileSync(declaration, 'utf8'), { status: 'active' }));
     }
     // CLI operations need a registered identity independent of the host's Git config.
+    const ownerContributorId = JSON.parse(fs.readFileSync(path.join(dir, 'contributors/patrick.json'), 'utf8')).studioId;
     fs.rmSync(path.join(dir, 'contributors'), { recursive: true, force: true });
     writeProfiles(dir, {
-      patrick: { name: 'Test Maintainer', email: 'maintainer@example.test', github: '', welcomeDismissed: false },
+      patrick: { studioId: ownerContributorId, name: 'Test Maintainer', email: 'maintainer@example.test', github: '', welcomeDismissed: false },
     });
     const script = `
       import fs from 'node:fs';
@@ -96,15 +102,19 @@ test('create and rename preserve addresses, file errors recover, and system remo
       const { createPrototype, renamePrototype } = await load('src/modules/' + 'prototypes/node/create.js');
       const { slug } = createPrototype({ title: 'Beta Journey', key: 'patrick' });
       const original = path.resolve('src/prototypes/patrick', slug);
-      const { DEFAULT_SYSTEM } = await load('src/modules/systems/node/systems.js');
-      assert.equal(JSON.parse(fs.readFileSync(path.join(original, 'meta.json'))).system, DEFAULT_SYSTEM);
+      const { DEFAULT_SYSTEM, PROTOTYPE_SYSTEMS } = await load('src/modules/systems/node/systems.js');
+      const defaultIdentity = PROTOTYPE_SYSTEMS[DEFAULT_SYSTEM].studioId;
+      const { createResourceId } = await load('src/platform/core/resourceIdentity.ts');
+      const { readDeclaration } = await load('src/platform/core/declarations.ts');
+      const originalMeta = JSON.parse(fs.readFileSync(path.join(original, 'meta.json')));
+      assert.equal(JSON.parse(fs.readFileSync(path.join(original, 'meta.json'))).systemId, defaultIdentity);
       const custom = createPrototype({ title: 'Custom Styling', key: 'patrick', system: null });
       assert.equal(custom.manifest.prototypes.find(p => p.id === custom.slug).system, null);
-      assert.equal(JSON.parse(fs.readFileSync('src/prototypes/patrick/' + custom.slug + '/meta.json')).system, null);
+      assert.equal(JSON.parse(fs.readFileSync('src/prototypes/patrick/' + custom.slug + '/meta.json')).systemId, null);
       assert.throws(() => createPrototype({title:'Invalid System',key:'patrick',system:'missing'}), /installed prototype system/);
       assert.ok(!fs.existsSync('src/prototypes/patrick/invalid-system'));
       const { scopePolicy } = await load('scripts/lib/scope.js');
-      const { PROTOTYPE_SYSTEMS } = await load('src/modules/systems/node/systems.js');
+
       const policy = scopePolicy({ root: path.resolve('.'), systems: PROTOTYPE_SYSTEMS, defaultSystem: DEFAULT_SYSTEM, modules: [] });
       const customView = path.resolve('src/prototypes/patrick', custom.slug, 'prototype.tsx');
       assert.equal(policy.scopeOf(customView).system, null);
@@ -114,25 +124,34 @@ test('create and rename preserve addresses, file errors recover, and system remo
       assert.equal(selected.manifest.prototypes.find(p => p.id === selected.slug).system, selectedSystem);
       const cliCreate = (await import('node:child_process')).spawnSync(process.execPath, ['src/modules/prototypes/node/create.js', 'CLI Custom', '--no-system'], {encoding:'utf8'});
       assert.equal(cliCreate.status, 0, cliCreate.stderr);
-      assert.equal(JSON.parse(fs.readFileSync('src/prototypes/patrick/cli-custom/meta.json')).system, null);
-      fs.writeFileSync(path.join(original, 'notes.md'), '[View](/prototypes/patrick/beta-journey/main)');
-      fs.writeFileSync(path.join(original, 'flow.excalidraw'), JSON.stringify({ type: 'excalidraw', version: 2, elements: [], appState: {}, files: {} }));
+      assert.equal(JSON.parse(fs.readFileSync('src/prototypes/patrick/cli-custom/meta.json')).systemId, null);
+      const viewIdentity = fs.readFileSync(path.join(original, 'prototype.tsx'), 'utf8').match(/@studio-id ([0-9a-z]+)/)[1];
+      const originalUrl = '/prototypes/' + originalMeta.studioId + '/artifacts/' + viewIdentity;
+      fs.writeFileSync(path.join(original, 'notes.md'), '---\\nstudioId: ' + createResourceId() + '\\n---\\n[View](' + originalUrl + ') [Source](./prototype.tsx)');
+      fs.writeFileSync(path.join(original, 'flow.excalidraw'), JSON.stringify({ studioId: createResourceId(), type: 'excalidraw', version: 2, elements: [], appState: {}, files: {} }));
       const { duplicatePrototype } = await load('src/modules/prototypes/node/duplicate.js');
       const before = fs.readFileSync(path.join(original, 'meta.json'), 'utf8');
       const copy = duplicatePrototype({key:'patrick',id:slug,title:'Beta Copy',system:DEFAULT_SYSTEM});
       const copiedMeta = JSON.parse(fs.readFileSync('src/prototypes/patrick/' + copy.id + '/meta.json'));
-      assert.equal(copiedMeta.system, DEFAULT_SYSTEM);
+      assert.equal(copiedMeta.systemId, defaultIdentity);
       assert.equal(copiedMeta.rebuild, undefined);
-      assert.match(fs.readFileSync('src/prototypes/patrick/' + copy.id + '/notes.md','utf8'), /beta-copy/);
+      const copiedViewIdentity = fs.readFileSync('src/prototypes/patrick/' + copy.id + '/prototype.tsx', 'utf8').match(/@studio-id ([0-9a-z]+)/)[1];
+      const copiedNotes = fs.readFileSync('src/prototypes/patrick/' + copy.id + '/notes.md', 'utf8');
+      assert.ok(copiedNotes.includes('/prototypes/' + copiedMeta.studioId + '/artifacts/' + copiedViewIdentity));
+      assert.ok(copiedNotes.includes('./prototype.tsx'));
+      assert.ok(!copiedNotes.includes(originalUrl));
       assert.equal(fs.readFileSync(path.join(original, 'meta.json'), 'utf8'), before);
       const rebuild = duplicatePrototype({key:'patrick',id:slug,title:'Beta Rebuild',system:null});
       const rebuildMeta = JSON.parse(fs.readFileSync('src/prototypes/patrick/' + rebuild.id + '/meta.json'));
-      assert.equal(rebuildMeta.system, DEFAULT_SYSTEM);
-      assert.deepEqual(rebuildMeta.rebuild, {targetSystem:null,source:'src/prototypes/patrick/' + slug});
-      assert.deepEqual(rebuild.manifest.prototypes.find(p => p.id === rebuild.id).rebuild, rebuildMeta.rebuild);
+      assert.equal(rebuildMeta.systemId, defaultIdentity);
+      assert.deepEqual(rebuildMeta.rebuild, {targetSystemId:null,sourcePrototypeId:originalMeta.studioId});
+      const projectedRebuild = rebuild.manifest.prototypes.find(p => p.id === rebuild.id).rebuild;
+      assert.equal(projectedRebuild.sourcePrototypeId, originalMeta.studioId);
+      assert.equal(projectedRebuild.sourcePath, 'src/prototypes/patrick/' + slug);
+      assert.equal(projectedRebuild.targetSystemId, null);
       const fromCustom = duplicatePrototype({key:'patrick',id:custom.slug,title:'Custom Rebuild',system:DEFAULT_SYSTEM});
       assert.equal(fromCustom.manifest.prototypes.find(p => p.id === fromCustom.id).system, null);
-      assert.equal(fromCustom.manifest.prototypes.find(p => p.id === fromCustom.id).rebuild.targetSystem, DEFAULT_SYSTEM);
+      assert.equal(fromCustom.manifest.prototypes.find(p => p.id === fromCustom.id).rebuild.targetSystemKey, DEFAULT_SYSTEM);
       assert.throws(() => duplicatePrototype({key:'patrick',id:slug,title:'Invalid Copy',system:'missing'}), /installed prototype system/);
       assert.ok(!fs.existsSync('src/prototypes/patrick/invalid-copy'));
       assert.throws(() => duplicatePrototype({key:'patrick',id:slug,title:'Beta Copy'}), /already exists/);
@@ -143,7 +162,8 @@ test('create and rename preserve addresses, file errors recover, and system remo
       const renamed = renamePrototype({ key: 'patrick', id: slug, title: 'Beta Roundtrip' });
       assert.equal(renamed.id, 'beta-roundtrip');
       const moved = path.resolve('src/prototypes/patrick', renamed.id);
-      assert.match(fs.readFileSync(path.join(moved, 'notes.md'), 'utf8'), /beta-roundtrip/);
+      assert.ok(fs.readFileSync(path.join(moved, 'notes.md'), 'utf8').includes(originalUrl));
+      assert.ok(fs.readFileSync(path.join(moved, 'notes.md'), 'utf8').includes('./prototype.tsx'));
       assert.throws(() => renamePrototype({key:'patrick',id:renamed.id,title:'Feedback Inbox'}), /already/);
       const { buildManifest } = await load('scripts/build/build-manifest.js');
       assert.equal(buildManifest().errors, 0);
@@ -177,9 +197,10 @@ test('create and rename preserve addresses, file errors recover, and system remo
       // Exercise both shared-source handlers with current grants, including revocation.
       const configBeforePermissions = fs.readFileSync('studio.config.ts', 'utf8');
       const permissionConfig = (await load('src/platform/core/declarations.ts')).readDeclaration(configBeforePermissions).value;
-      fs.writeFileSync('contributors/permission-admin.json', JSON.stringify({ name: 'Permission Admin', email: '', github: '', welcomeDismissed: false }));
-      permissionConfig.usage = 'team'; permissionConfig.admins = ['permission-admin'];
-      permissionConfig.systemMaintainers.product = ['patrick'];
+      fs.writeFileSync('contributors/permission-admin.json', JSON.stringify({ studioId: createResourceId(), name: 'Permission Admin', email: '', github: '', welcomeDismissed: false }));
+      permissionConfig.usage = 'team'; permissionConfig.admins = [JSON.parse(fs.readFileSync('contributors/permission-admin.json')).studioId];
+      const ownerContributorIdentity = JSON.parse(fs.readFileSync('contributors/patrick.json')).studioId;
+      permissionConfig.systemMaintainers[defaultIdentity] = [ownerContributorIdentity];
       const writePermissionConfig = () => fs.writeFileSync('studio.config.ts', 'export default ' + JSON.stringify(permissionConfig) + ';');
       const sourceRequest = async (url, body) => {
         const req = Readable.from([JSON.stringify(body)]); req.method = 'POST'; req.url = url; req.headers = {'sec-fetch-site':'same-origin'};
@@ -194,24 +215,27 @@ test('create and rename preserve addresses, file errors recover, and system remo
       const theme = JSON.parse(themeRead.body);
       const themeSaved = await sourceRequest('/system-source', {action:'write', path:themePath, base:theme.version, content:theme.content});
       assert.equal(themeSaved.statusCode, 200, themeSaved.body);
-      permissionConfig.systemMaintainers.product = []; writePermissionConfig();
+      permissionConfig.systemMaintainers[defaultIdentity] = []; writePermissionConfig();
       const themeDenied = await sourceRequest('/system-source', {action:'write', path:themePath, base:theme.version, content:theme.content});
       assert.equal(themeDenied.statusCode, 403);
       fs.writeFileSync('studio.config.ts', configBeforePermissions); fs.unlinkSync('contributors/permission-admin.json');
 
       fs.mkdirSync('src/systems/z-beta-fixture');
-      fs.copyFileSync('src/systems/product/system.ts', 'src/systems/z-beta-fixture/system.ts');
+      const newSystemIdentity = createResourceId();
+      const productSource = fs.readFileSync('src/systems/product/system.ts', 'utf8');
       const { editStudioConfig } = await load('scripts/lib/studio-setup.js');
-      fs.writeFileSync('studio.config.ts', editStudioConfig(fs.readFileSync('studio.config.ts', 'utf8'), { systems: ['studio', 'product', 'z-beta-fixture'], systemMaintainers: { product: [], 'z-beta-fixture': [] } }));
+      fs.writeFileSync('src/systems/z-beta-fixture/system.ts', editStudioConfig(productSource, { studioId: newSystemIdentity }));
+      const registeredConfig = readDeclaration(fs.readFileSync('studio.config.ts', 'utf8')).value;
+      fs.writeFileSync('studio.config.ts', editStudioConfig(fs.readFileSync('studio.config.ts', 'utf8'), { systems: [...registeredConfig.systems, 'z-beta-fixture'], systemMaintainers: { ...registeredConfig.systemMaintainers, [newSystemIdentity]: [] } }));
       const metaPath = path.join(moved, 'meta.json');
-      const meta = JSON.parse(fs.readFileSync(metaPath)); meta.system = 'z-beta-fixture';
+      const meta = JSON.parse(fs.readFileSync(metaPath)); meta.systemId = newSystemIdentity;
       fs.writeFileSync(metaPath, JSON.stringify(meta));
       const { spawnSync } = await import('node:child_process');
       const removal = spawnSync(process.execPath, ['scripts/cli/studio.js', 'remove', 'z-beta-fixture'], { encoding: 'utf8' });
       assert.equal(removal.status, 1);
       assert.equal((removal.stderr + removal.stdout).includes('patrick/beta-roundtrip'), true, removal.stderr + removal.stdout);
       assert.equal(fs.existsSync('src/systems/z-beta-fixture/system.ts'), true);
-      meta.system = DEFAULT_SYSTEM; meta.rebuild = {targetSystem:'z-beta-fixture',source:'src/prototypes/patrick/beta-journey'};
+      meta.systemId = defaultIdentity; meta.rebuild = {targetSystemId:newSystemIdentity,sourcePrototypeId:originalMeta.studioId};
       fs.writeFileSync(metaPath, JSON.stringify(meta));
       const pendingRemoval = spawnSync(process.execPath, ['scripts/cli/studio.js','remove','z-beta-fixture'], {encoding:'utf8'});
       assert.equal(pendingRemoval.status, 1);
@@ -255,12 +279,16 @@ test('CI accepts reviewed platform proposals and maintainer pushes, rejecting ot
     const { readDeclaration } = await import('../../src/platform/core/modules/pack.ts');
     const configFile = path.join(dir, 'studio.config.ts');
     const config = readDeclaration(fs.readFileSync(configFile, 'utf8')).value;
-    config.usage = 'team'; config.admins = ['patrick']; config.systemMaintainers.product = ['sam'];
     writeProfiles(dir, { sam: { name: 'Sam', github: 'sam-fixture' } });
+    const patrickId = JSON.parse(fs.readFileSync(path.join(dir, 'contributors/patrick.json'))).studioId;
+    const samId = JSON.parse(fs.readFileSync(path.join(dir, 'contributors/sam.json'))).studioId;
+    const productId = readDeclaration(fs.readFileSync(path.join(dir, 'src/systems/product/system.ts'), 'utf8')).value.studioId;
+    config.usage = 'team'; config.admins = [patrickId]; config.systemMaintainers[productId] = [samId];
     fs.writeFileSync(configFile, 'export default ' + JSON.stringify(config) + ';');
     const systemFile = path.join(dir, 'src/systems/product/system.ts');
-    fs.writeFileSync(systemFile, "export default { role: 'prototype', status: 'active' };");
-    runGit('add', 'studio.config.ts', 'contributors/sam.json', 'src/systems/product/system.ts'); runGit('commit', '-qm', 'Trusted grants');
+    const { editStudioConfig } = await import('./studio-setup.js');
+    fs.writeFileSync(systemFile, editStudioConfig(fs.readFileSync(systemFile, 'utf8'), { status: 'active' }));
+    runGit('add', 'studio.config.ts', 'contributors/sam.json', 'src/systems/product/system.ts', 'src/systems/marketing/system.ts', 'src/systems/studio/system.ts'); runGit('commit', '-qm', 'Trusted grants');
     const granted = runGit('rev-parse', 'HEAD');
     fs.writeFileSync(path.join(dir, 'src/systems/product/scope-fixture.md'), '# Assigned system');
     runGit('add', 'src/systems/product/scope-fixture.md'); runGit('commit', '-qm', 'Assigned system work');
@@ -273,8 +301,10 @@ test('CI accepts reviewed platform proposals and maintainer pushes, rejecting ot
     runGit('add', 'contributors/patrick.json'); runGit('commit', '-qm', 'Proposed identity change');
     assert.equal(check(beforeImpersonation).status, 1, 'Proposed profile cannot impersonate an Admin');
     assert.equal(check(beforeImpersonation, 'sam-fixture', true).status, 0, 'Out of scope proposals are allowed through review');
+    fs.writeFileSync(profileFile, JSON.stringify(profile));
+    runGit('add', 'contributors/patrick.json'); runGit('commit', '-qm', 'Restore profile');
     const beforeElevation = runGit('rev-parse', 'HEAD');
-    config.admins.push('sam'); fs.writeFileSync(configFile, 'export default ' + JSON.stringify(config) + ';');
+    config.admins.push(samId); fs.writeFileSync(configFile, 'export default ' + JSON.stringify(config) + ';');
     runGit('add', 'studio.config.ts'); runGit('commit', '-qm', 'Proposed Admin assignment');
     assert.equal(check(beforeElevation).status, 1, 'Proposed grants do not authorize themselves');
     const beforeMode = runGit('rev-parse', 'HEAD');
@@ -376,6 +406,10 @@ test('standalone diagrams are discovered by both extensions and disabling preser
       const meta=JSON.parse(fs.readFileSync(folder+'/meta.json','utf8'));
       meta.order=['_helper.mermaid','test-folder','about-this-prototype.md'];
       fs.writeFileSync(folder+'/meta.json',JSON.stringify(meta));
+      const { planPrototypeIdentification, applyPrototypeIdentification } = await import('./scripts/lib/prototype-identification.js');
+      const { INSTALLED_FILE_TYPES } = await import('./scripts/lib/installed-file-types.js');
+      const identityPlan = planPrototypeIdentification(process.cwd(), INSTALLED_FILE_TYPES, folder, 'patrick');
+      applyPrototypeIdentification(process.cwd(), INSTALLED_FILE_TYPES, identityPlan, 'patrick');
       const { buildManifest } = await import('./scripts/build/build-manifest.js');
       const { manifest, errors } = buildManifest({write:false,quiet:true});
       assert.equal(errors,0);

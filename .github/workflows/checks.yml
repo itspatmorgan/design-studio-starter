@@ -1,14 +1,26 @@
-name: Checks
+name: Checks and deployment
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      full_checks:
+        description: Run every regression group
+        type: boolean
+        default: true
   workflow_call:
+    inputs:
+      full_checks:
+        description: Force every regression group
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
   # Keep the tested OS stable when GitHub advances ubuntu-latest.
+  # Preserve the required check name "scope" (ownership, identity, and assets).
   scope:
     runs-on: ubuntu-24.04
     concurrency:
@@ -20,7 +32,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: jdx/mise-action@v5
-      - name: Check scope and asset sizes
+      - name: Check ownership, permanent identities, and asset sizes
         env:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
@@ -40,25 +52,40 @@ jobs:
           fi
           node scripts/check/check-asset-size.js --ci "$BASE_REF" "$HEAD_REF"
   regressions:
+    name: Selected regressions
     runs-on: ubuntu-24.04
     concurrency:
       group: regressions-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
       cancel-in-progress: true
+    env:
+      BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+      HEAD_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+      STUDIO_FULL_CHECKS: ${{ inputs.full_checks || false }}
     steps:
       - uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: jdx/mise-action@v5
+      - name: Select affected regression groups
+        id: plan
+        run: node scripts/check/test.js --changed "$BASE_REF" "$HEAD_REF" --plan-only
       - name: Locate dependency store
+        if: steps.plan.outputs.tests_needed == 'true'
         id: store
         run: echo "path=$(pnpm store path)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v6
+        if: steps.plan.outputs.tests_needed == 'true'
         with:
           path: ${{ steps.store.outputs.path }}
           key: pnpm-12-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml', 'patches/**') }}
       - run: pnpm install --frozen-lockfile
-      - run: pnpm test:release
+        if: steps.plan.outputs.tests_needed == 'true'
+      - name: Run selected regressions
+        if: steps.plan.outputs.tests_needed == 'true'
+        run: node scripts/check/test.js --changed "$BASE_REF" "$HEAD_REF"
   bundle:
+    name: Production build
     runs-on: ubuntu-24.04
     concurrency:
       group: bundle-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -105,8 +132,10 @@ jobs:
           REGRESSION_RESULT: ${{ needs.regressions.result }}
         run: test "$BUNDLE_RESULT" = success && test "$REGRESSION_RESULT" = success
   deploy:
+    name: Deploy Pages
     if: github.repository == 'itspatmorgan/design-studio-starter' && github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [scope, build]
+    # Wait for the actual checks directly; the required build summary runs alongside deployment.
+    needs: [scope, bundle, regressions]
     runs-on: ubuntu-24.04
     permissions:
       contents: read

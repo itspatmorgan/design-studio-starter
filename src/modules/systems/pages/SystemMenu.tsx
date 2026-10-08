@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/systems/studio/components/dropdown-menu';
 import { beginSystemDeletion, finishSystemCreation } from './creationTransition';
 import { canPerform } from '@/platform/core/permissions';
-import { DEFAULT_SYSTEM, SYSTEM_SPECS } from '../data/systems';
+import { DEFAULT_SYSTEM, SYSTEM_SPECS, systemPath } from '../data/systems';
 
 export const systemRequest = <T,>(action: string, system?: string, extra: object = {}) => callModule<T>('systems', 'action', { action, system, ...extra });
 type Action = { label: string; icon: typeof Link01Icon; onSelect: () => void; disabled?: boolean; destructive?: boolean };
@@ -33,14 +33,16 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
   const [error, setError] = useState('');
   const [checking, setChecking] = useState(false);
   const [allowed, setAllowed] = useState(false);
-  const dependents = [...manifest.prototypes, ...Object.values(manifest.sections).flat()].filter(proto => proto.system === system || proto.rebuild?.targetSystem === system);
+  const dependents = [...manifest.prototypes, ...Object.values(manifest.sections).flat()].filter(proto => proto.system === system || proto.rebuild?.targetSystemKey === system);
   const archiveTargets = dependents.filter(proto => proto.status !== 'archived');
   const defaultArchive = dialog === 'archive' && system === DEFAULT_SYSTEM;
 
   async function run(action: string) {
     try {
       const result = await systemRequest<{ message?: string }>(action, system);
-      if (action === 'default') window.location.assign(`/systems/${system}`);
+      // The configuration watcher refreshes this same URL with the new default.
+      // Deliver confirmation after that refresh rather than competing with it.
+      if (action === 'default') sessionStorage.setItem('studio:system-action', JSON.stringify({ title: `${spec.label} is now the default system.` }));
       else if (result.message) toast.add({ title: result.message });
     } catch (e) { toast.add({ type: 'error', title: (e as Error).message }); }
   }
@@ -60,11 +62,11 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
     try {
       // Keep reloads during a folder move or deletion on a stable route.
       if (action !== 'delete') await navigate({ to: '/systems' as never });
-      const result = await systemRequest<{ id: string; references: number }>(action, system, { name, restorePrototypes });
+      await systemRequest<{ id: string; references: number }>(action, system, { name, restorePrototypes });
       sessionStorage.setItem('studio:system-action', JSON.stringify({ title: action === 'rename' ? 'System renamed. References updated.' : action === 'archive' ? 'System and associated prototypes archived.' : action === 'restore' ? 'System restored.' : 'System deleted. Associated prototypes need a rebuild.' }));
       // Deletion's configuration restart opens the updated index behind the transition.
       if (action === 'delete') return;
-      window.location.assign(action === 'archive' ? '/systems' : `/systems/${result.id}`);
+      window.location.assign(action === 'archive' ? '/systems' : systemPath(system));
     } catch (e) {
       if (action === 'delete') {
         window.history.replaceState(null, '', previousUrl);
@@ -77,7 +79,7 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
     }
   }
   async function copyLink() {
-    try { await navigator.clipboard.writeText(new URL(`/systems/${system}`, location.origin).href); toast.add({ title: 'Link copied' }); }
+    try { await navigator.clipboard.writeText(new URL(import.meta.env.BASE_URL.replace(/\/$/, '') + systemPath(system), location.origin).href); toast.add({ title: 'Link copied' }); }
     catch { toast.add({ type: 'error', title: 'Could not copy the link.' }); }
   }
   async function copyPath() {
@@ -149,7 +151,7 @@ export default function SystemMenu({ system, variant = 'header' }: { system: str
           </DialogHeader>
           {checking && <p role="status" className="text-sm text-muted-foreground">Checking system dependencies</p>}
           {error && <p role="alert" className="text-sm text-destructive whitespace-pre-line">{error}</p>}
-          {dependents.length > 0 && <div className="grid gap-2 text-sm"><p>These prototypes depend on {spec.label}.</p><ul className="max-h-48 list-disc overflow-auto pl-5">{dependents.map(proto => <li key={`${proto.contributorKey}/${proto.id}`}><Link {...prototypeLink(proto)} className="underline">{proto.title}</Link>{proto.status === 'archived' ? ' (archived)' : ''}{proto.rebuild?.targetSystem === system ? ' (pending rebuild)' : ''}</li>)}</ul></div>}
+          {dependents.length > 0 && <div className="grid gap-2 text-sm"><p>These prototypes depend on {spec.label}.</p><ul className="max-h-48 list-disc overflow-auto pl-5">{dependents.map(proto => <li key={`${proto.contributorKey}/${proto.id}`}><Link {...prototypeLink(proto)} className="underline">{proto.title}</Link>{proto.status === 'archived' ? ' (archived)' : ''}{proto.rebuild?.targetSystemKey === system ? ' (pending rebuild)' : ''}</li>)}</ul></div>}
           <DialogFooter>
             {dialog === 'restore' ? <>
               <Button variant="outline" disabled={busy || checking || !allowed} onClick={() => void save(undefined, false)}>Restore system only</Button>

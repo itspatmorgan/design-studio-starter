@@ -13,18 +13,19 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an artifact.
 
 - **One file per canvas:** `<name>.excalidraw`, anywhere in a prototype. An Excalidraw scene as JSON.
   The name in the navigation comes from the file name.
+- **Source identity:** a declared top-level `studioId` survives browser and CLI saves. Creation assigns it explicitly; direct authoring uses `pnpm studio identify <prototype-folder> --yes`. Missing identity fails the build. See [Resource identity](../../platform/context/resource-identity.md).
 - **Items are embeds.** A view, diagram, or document on a canvas is an Excalidraw `embeddable` element whose
-  `link` is the artifact's address in the app (`/prototypes/patrick/hello-world/lofi/main`; one saved in the older form, without `/prototypes`, still resolves and is written back in the new form when the canvas is saved). The link resolves through
+  `link` is the artifact's address in the app (`/prototypes/<prototype-id>/artifacts/<artifact-id>`). The link resolves through
   the manifest (`src/platform/app/artifacts/artifactLinks.ts`) to a prototype and an artifact, and the artifact's file type
   decides how it looks: a type with an `Embed` in its `open.tsx` (views and diagrams on canvases) shows live, any other
   type shows a card (`src/platform/app/artifacts/ArtifactCard.tsx`), and a link to nothing shows "Not found".
 - **Views are pictures.** A view is laid out at 1440 px wide and scaled down to the element's width,
   cropped at the bottom. Resizing the element changes the crop. Nothing in it takes clicks.
-- **Agents** use the tools in tools.ts, live in the open canvas or on the file (src/modules/canvas/skills/use-canvas/SKILL.md).
+- **Agents** use the tools in tools.ts, live in the open canvas or on the file (src/modules/canvas/skills/use-canvas/SKILL.md). Tools select artifacts by source filename and store permanent links. CLI mutations require the owner or an Admin and an active prototype; read-only tools preserve the file.
 - **Dev:** edits save to the file through the same file layer as the Source view, and changes made to the
   file from outside (an agent) are taken in live. **Deployed:** the committed file, read-only.
 - **Opening:** the route prepares the canvas code, text, and local contributor identity before mounting. Development pre-bundles Excalidraw and the UI primitives used by embedded views to avoid dependency-discovery reloads on first opening. A loading status stays visible until the opening camera has painted.
-- **Moved embeds:** the prototype file layer repairs known moves in stored links and increments changed element versions so an open canvas can merge the update. See [Links and renaming](../prototypes/README.md#links-and-renaming) for scope and limits.
+- **Moved embeds:** permanent artifact links survive source moves. The prototype file layer still repairs filesystem dependencies; copied canvases remap links to the copied artifacts. See [Links and renaming](../prototypes/README.md#links-and-renaming) for scope and limits.
 
 ### Where things are
 

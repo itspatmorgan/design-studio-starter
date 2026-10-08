@@ -54,26 +54,11 @@ export function editStudioConfig(text, changes) {
   return edits.sort((a, b) => b.start - a.start).reduce((result, edit) => result.slice(0, edit.start) + edit.text + result.slice(edit.end), text);
 }
 
-// Preserve existing content's chosen system when the studio's default changes, including disabled modules.
-export function pinImplicitSystems(root, system, modules) {
-  const directories = (folder) => fs.existsSync(folder) ? fs.readdirSync(folder, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => path.join(folder, entry.name)) : [];
-  const personal = directories(path.join(root, 'src/prototypes')).flatMap(directories);
-  const sections = modules.filter((module) => module?.section?.items === 'prototypes' && !module.section.byPerson).flatMap((module) => directories(path.join(root, module.section.folder)));
-  return [...new Set([...personal, ...sections])].flatMap((folder) => {
-    const file = path.join(folder, 'meta.json');
-    if (!fs.existsSync(file)) return [];
-    if (!fs.lstatSync(file).isFile()) throw new Error(`${file}: metadata must be a regular file.`);
-    const before = fs.readFileSync(file, 'utf8');
-    let meta;
-    try { meta = JSON.parse(before); } catch { throw new Error(`${file}: fix invalid JSON before changing the default system.`); }
-    if (!meta || typeof meta !== 'object' || Array.isArray(meta)) throw new Error(`${file}: metadata must be an object.`);
-    if (meta.system !== undefined) return [];
-    return [{ file, before, after: JSON.stringify({ ...meta, system }, null, 2) + '\n' }];
-  });
-}
-
 // Prepare all reads before applying any changes. Same-folder renames prevent truncated files.
 export function applySetupChanges(changes) {
+  const unchanged = (file, content) => {
+    if (!fs.lstatSync(file).isFile() || fs.readFileSync(file, 'utf8') !== content) throw new Error(`${file} changed. Review the setup plan again.`);
+  };
   const atomicWrite = (file, content) => {
     const temporary = `${file}.studio-${randomUUID()}.tmp`;
     try {
@@ -82,15 +67,15 @@ export function applySetupChanges(changes) {
     } finally { fs.rmSync(temporary, { force: true }); }
   };
   for (const change of changes) {
-    if (!fs.lstatSync(change.file).isFile() || fs.readFileSync(change.file, 'utf8') !== change.before) throw new Error(`${change.file} changed. Review the setup plan again.`);
+    unchanged(change.file, change.before);
   }
   const applied = [];
   try {
-    for (const change of changes) { atomicWrite(change.file, change.after); applied.push(change); }
+    for (const change of changes) { unchanged(change.file, change.before); atomicWrite(change.file, change.after); applied.push(change); }
   } catch (error) {
     const failures = [];
     for (const change of applied.reverse()) {
-      try { atomicWrite(change.file, change.before); } catch (rollbackError) { failures.push(rollbackError); }
+      try { unchanged(change.file, change.after); atomicWrite(change.file, change.before); } catch (rollbackError) { failures.push(rollbackError); }
     }
     if (failures.length) throw new AggregateError([error, ...failures], 'Setup failed and some files could not be restored. Inspect the files before retrying.');
     throw error;

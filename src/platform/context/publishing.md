@@ -8,7 +8,7 @@ Publish when people need a shared viewing URL. The studio maintainer chooses the
 
 ## What the build provides
 
-Use Node 24 and pnpm 12, as declared in `mise.toml` and `package.json`. Run `pnpm install --frozen-lockfile`, then `pnpm build`. This validates the manifest, module boundaries, types, and production compilation and writes a static site to `dist/`. Tests are separate: `pnpm test` is the focused development suite; `pnpm build:release` adds the full maintainer regressions. The site includes active prototypes, design-system pages, the system context, and the Manual when enabled.
+Use Node 24 and pnpm 12, as declared in `mise.toml` and `package.json`. Run `pnpm install --frozen-lockfile`, then `pnpm build`. This validates the manifest, module boundaries, types, and production compilation and writes a static site to `dist/`. Tests are separate: `pnpm test:changed <base> <head>` runs groups selected by the [verification policy](checks.md#minimum-sufficient-verification); `pnpm test` is the focused development suite; `pnpm build:release` adds the full maintainer regressions. The site includes active prototypes, design-system pages, the system context, and the Manual when enabled.
 
 Archived prototypes are excluded from the production build. Individual items cannot be archived. Archive content you want to keep locally without including it in the site.
 
@@ -37,7 +37,7 @@ Ask your agent to help configure the chosen host when you are ready. Supply the 
 
 ## Make direct links work
 
-The app uses browser-history URLs, such as `/prototypes/alex/feedback-inbox`. Configure the host to serve `index.html` for app paths that do not identify an asset.
+The app uses browser-history URLs, such as `/prototypes/ccncfpcyaa1hvjts/artifacts/5b9z6sp9580ks01r`. Configure the host to serve `index.html` for app paths that do not identify an asset.
 
 Test a direct prototype URL and reload it. Opening the front page alone does not verify routing.
 

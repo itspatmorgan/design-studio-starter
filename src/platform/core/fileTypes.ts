@@ -10,8 +10,16 @@
 // To add a type, see src/platform/context/file-types.md. This file has no imports, so Node scripts can
 // load it directly.
 
+import { markdownIdentity } from './resourceIdentity.ts';
+import type { IdentityMetadata } from './resourceIdentity.ts';
+export { canvasIdentity, createResourceId, diagramIdentity, markdownIdentity, resourceId, viewIdentity, parsePrototypeAddress, prototypeAddress, artifactAddress, systemAddress } from './resourceIdentity.ts';
+export type { IdentityMetadata, ResourceId } from './resourceIdentity.ts';
+
 export type FileTypeSpec = {
   label: string;                        // "View", "Document"
+  // Prototype source identity travels with the file. System content retains paths.
+  // No generation during discovery: creation/migration assigns it explicitly.
+  identity?: IdentityMetadata;
   extensions: readonly string[];        // ".tsx", ".md"
   // The syntax the Source view highlights (src/platform/app/source/ArtifactSource.tsx). Leave it
   // out for a type with no source to show.
@@ -42,7 +50,7 @@ export type FileTypeSpec = {
   // Problems in a file, each a sentence that says what to fix. `frontmatter` is the leading
   // --- block as simple key: value pairs, or null when there isn't one. `prototype` is where the file is,
   // for a rule that depends on it (a canvas can't link to another prototype), and is left out in the system content.
-  check?: (file: { source: string; frontmatter: Record<string, unknown> | null; prototype?: { contributor: string; id: string } }) => string[];
+  check?: (file: { source: string; frontmatter: Record<string, unknown> | null; prototype?: { contributor: string; id: string; studioId?: string } }) => string[];
 };
 
 export const defineFileType = (spec: FileTypeSpec) => {
@@ -103,6 +111,7 @@ const titleOf = (name: string) => name.replace(/\.md$/, '').split(/[-_]/).filter
 
 export const markdownFileType: FileTypeSpec = {
   label: 'Document',
+  identity: markdownIdentity,
   preview: false,
   inPrototype: true,
   inSystemContent: false,

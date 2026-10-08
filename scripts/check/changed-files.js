@@ -26,7 +26,9 @@ export function changedFiles(mode, before, after, { filter } = {}) {
     if (!after) throw new Error('--ci needs <before> <after>');
     if (!before || ZERO.test(before)) {
       // First push of a branch: check only the latest commit.
-      return { files: lines(git('diff-tree', '--no-commit-id', '--name-only', '-r', '--root', ...f, after)), baseRef: `${after}^` };
+      let baseline = 'empty-tree';
+      try { baseline = git('rev-parse', '--verify', `${after}^`); } catch { /* Initial repository commit has no before-side authority. */ }
+      return { files: lines(git('diff-tree', '--no-commit-id', '--name-only', '-r', '--root', ...f, after)), baseRef: baseline };
     }
     return { files: lines(git('diff', '--name-only', ...f, `${before}..${after}`)), baseRef: before };
   }

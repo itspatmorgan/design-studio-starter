@@ -24,8 +24,8 @@ export default function DeletePrototypeDialog({ proto, open, onOpenChange }: Pro
       const result = await deletePrototype(proto);
       setManifest(result.manifest);
       onOpenChange(false);
-      // Leave first, so the deleted prototype's page is never reloaded.
-      await navigate({ to: '/' });
+      // Keep index filters in place. Leave an open prototype before invalidating it.
+      if (router.state.location.pathname !== '/prototypes') await navigate({ to: '/prototypes' as never });
       await router.invalidate();
       toast.add({ title: `Moved “${proto.title}” to the Trash` });
     } catch (e) {

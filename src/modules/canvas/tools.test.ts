@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { stringifyScene } from './slim.ts';
+import { canvasIdentity, resourceId } from '../../platform/core/fileTypes.ts';
 import { lineWidth, wrapText } from './elements.ts';
 import { run, ToolError, type Ctx, type El } from './tools.ts';
 
@@ -14,6 +15,17 @@ const ctx: Ctx = {
   artifact: (path) => (artifacts[path] ? { path, ...artifacts[path] } : null),
   artifacts: () => Object.entries(artifacts).map(([path, v]) => ({ path, ...v })),
 };
+
+test('canvas saves retain resource identity independently of element identities and filesystem links', () => {
+  const id = resourceId('0123456789abcdef');
+  const elements = [{ id: 'frame-id', type: 'frame', x: 20, y: 30 }, { id: 'embed-id', type: 'embeddable', link: '/pat/demo/main' }];
+  const written = stringifyScene(elements, { gridSize: 20 }, link => link, id);
+  assert.equal(canvasIdentity.read(written), id);
+  assert.deepEqual(JSON.parse(written).elements.map((el: { id: string }) => el.id), ['frame-id', 'embed-id']);
+  assert.equal(stringifyScene(JSON.parse(written).elements, { gridSize: 20 }, undefined, canvasIdentity.read(written)), written);
+  assert.equal(canvasIdentity.read(stringifyScene(elements)), null, 'unmigrated files do not get random identity during saves');
+  assert.throws(() => stringifyScene(elements, {}, undefined, 'bad' as never));
+});
 
 // Runs tools in turn on one scene, as a caller would.
 function session() {
@@ -253,4 +265,20 @@ test('a size that is not sensible is refused', () => {
   const s = session();
   assert.throws(() => s.call('create', { elements: [{ type: 'note', text: 'x', width: 5 }] }), /between 20 and 4000/);
   assert.throws(() => s.call('create', { elements: [{ type: 'text', text: 'x', width: 99999 }] }), /between 20 and 4000/);
+});
+
+test('relative canvas authoring paths resolve to permanent links and remain scoped to their prototype', () => {
+  const base = '/prototypes/0123456789abcdef';
+  const view = { path: `${base}/artifacts/abcdefghjkmnpqrs`, sourcePath: 'app/main.tsx', title: 'Main', type: 'view', typeLabel: 'View', preview: true };
+  const notes = { path: `${base}/artifacts/23456789abcdefgh`, sourcePath: 'notes.md', title: 'Notes', type: 'document', typeLabel: 'Document', preview: false };
+  const identified: Ctx = { base, artifacts: () => [view, notes], artifact: path => [view, notes].find(item => item.path === path) ?? null };
+  const created = run([], 'create', { elements: [{ type: 'artifact', artifact: './app/main.tsx' }, { type: 'artifact', artifact: 'notes' }] }, identified);
+  assert.deepEqual(created.elements.filter(element => element.type === 'embeddable').map(element => element.link), [view.path, notes.path]);
+  const list = run([], 'artifacts', {}, identified).result as { artifacts: { artifact: string }[] };
+  assert.deepEqual(list.artifacts.map(item => item.artifact), ['app/main.tsx', 'notes.md']);
+  const embed = created.elements.find(element => element.type === 'embeddable')!;
+  const updated = run(created.elements, 'update', { id: embed.id, artifact: 'notes.md' }, identified);
+  assert.equal(updated.elements.find(element => element.id === embed.id)!.link, notes.path);
+  assert.throws(() => run([], 'create', { type: 'artifact', artifact: '/prototypes/3456789abcdefghj/artifacts/abcdefghjkmnpqrs' }, identified), /another prototype/);
+  assert.throws(() => run([], 'create', { type: 'artifact', artifact: '../other/main.tsx' }, identified), /no artifact at/);
 });

@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { jsonIdentity } from '../../src/platform/core/resourceIdentity.ts';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 export const CONTRIBUTORS_DIR = path.join(ROOT, 'contributors');
@@ -27,13 +28,15 @@ export function readContributors(root = ROOT) {
     const entry = readJson(profile);
     if (!entry || typeof entry !== 'object' || Array.isArray(entry)) { problems.push(`contributors/${file} should be { "name": ..., "github": ..., "email": ... }.`); continue; }
     if (typeof entry.name !== 'string' || !entry.name.trim()) problems.push(`contributors/${file}: declare a nonempty name.`);
+    try { jsonIdentity(fs.readFileSync(profile, 'utf8')); }
+    catch (error) { problems.push(`contributors/${file}: ${error.message}`); }
     for (const field of ['email', 'github']) if (typeof entry[field] !== 'string') problems.push(`contributors/${file}: declare ${field} as a string. Use an empty string when unavailable.`);
     contributors[key] = entry;
   }
   for (const [key, entry] of Object.entries(contributors)) {
     if (entry?.welcomeDismissed !== undefined && typeof entry.welcomeDismissed !== 'boolean') problems.push(`Contributor "${key}": welcomeDismissed must be true or false.`);
   }
-  for (const field of ['email', 'github']) {
+  for (const field of ['email', 'github', 'studioId']) {
     const identities = new Map();
     for (const [key, entry] of Object.entries(contributors)) {
       const identity = typeof entry[field] === 'string' ? entry[field].trim().toLowerCase() : '';
@@ -45,7 +48,11 @@ export function readContributors(root = ROOT) {
   return { contributors, problems };
 }
 
-export const loadContributors = () => readContributors().contributors;
+export const loadContributors = () => {
+  const { contributors, problems } = readContributors();
+  if (problems.length) throw new Error(problems.join('\n'));
+  return contributors;
+};
 
 // Changes when anyone is added or edited: what a cache of anything worked out from the contributors must key on.
 export function contributorsSignature() {

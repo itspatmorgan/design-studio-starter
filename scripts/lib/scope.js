@@ -1,10 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { inside, realFile } from './imports.js';
+import { prototypeAssignment } from './prototype-assignment.js';
 
 export const systemDocumentation = (file, dir) => file === path.join(dir, 'system.ts') || /^intro\.[jt]sx?$/.test(path.relative(dir, file)) || /\.(?:examples\.[jt]sx?|md)$/.test(file);
 
-export function scopePolicy({ root, systems, defaultSystem, modules, prototypeDirs = [] }) {
+export function scopePolicy({ root, systems, modules, prototypeDirs = [] }) {
   root = realFile(root);
   const src = path.join(root, 'src');
   const protos = path.join(src, 'prototypes');
@@ -26,8 +27,13 @@ export function scopePolicy({ root, systems, defaultSystem, modules, prototypeDi
   const scopeOf = (file) => {
     const proto = prototypeRoot(file);
     if (proto) {
-      let system = defaultSystem; let missing = false;
-      try { const meta = JSON.parse(fs.readFileSync(path.join(proto, 'meta.json'), 'utf8')); system = meta.system === undefined ? defaultSystem : meta.system; missing = meta.systemMissing?.id === system && typeof meta.systemMissing?.label === 'string' && !Object.hasOwn(systems, system); } catch { /* manifest reports invalid metadata */ }
+      let system = null; let missing = false;
+      try {
+        const meta = JSON.parse(fs.readFileSync(path.join(proto, 'meta.json'), 'utf8'));
+        const prototypeSystems = Object.fromEntries(Object.entries(systems).filter(([, spec]) => spec.role === 'prototype'));
+        const assignment = prototypeAssignment(meta, prototypeSystems);
+        if (!assignment.problems.length) { system = assignment.system; missing = meta.systemMissing !== undefined; }
+      } catch { /* Invalid metadata grants no system boundary; manifest reports it. */ }
       return { kind: 'Prototype', dir: proto, system, missing };
     }
     const system = runtimeSystem(file);

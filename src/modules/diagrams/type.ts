@@ -1,4 +1,4 @@
-import { defineFileType } from '../../platform/core/fileTypes.ts';
+import { defineFileType, diagramIdentity } from '../../platform/core/fileTypes.ts';
 
 export default defineFileType({
   preview: true,
@@ -6,6 +6,7 @@ export default defineFileType({
   inSystemContent: false,
   fallback: false,
   label: 'Diagram',
+  identity: diagramIdentity,
   extensions: ['.mermaid', '.mmd'],
   language: 'mermaid',
   template: () => `flowchart LR
