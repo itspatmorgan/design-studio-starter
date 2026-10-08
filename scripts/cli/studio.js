@@ -1,5 +1,6 @@
 import { planSystemLifecycle, applySystemLifecycle } from '../lib/system-lifecycle.js';
 import { prototypeContext } from '../lib/prototype-context.js';
+import { auditResourceIdentities } from '../lib/resource-identity-audit.js';
 import { moduleConsumers } from '../lib/imports.js';
 // pnpm studio <command>: add, remove, turn on or off, and make modules and design systems. For your agent: designers
 // ask in plain words and the agent runs these. Every command that changes files says what it will do first, and
@@ -17,13 +18,14 @@ import { moduleConsumers } from '../lib/imports.js';
 //                                     start a new one; with --out, as a pack in that folder to publish
 //   sync [--check]                    synchronize routing and project skills; --check never writes
 //   context <prototype-folder> [--json] inspect assignment, rebuild target, scope, and guidance paths; never writes
+//   identity-audit [--json]             inspect existing/missing IDs, including retained types; never writes
 //   check                             pnpm check, and what has changed from the original of a module you added
 // Dry runs read declarations as data. --yes trusts the source: its checks run after packages install.
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import { knowledgeOwners, skillCatalog, syncSkillAdapters } from '../lib/agent-skills.js';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { compatible, listProblems, moduleProblems, PLATFORM_VERSION } from '../../src/platform/core/modules/index.ts';
 import {
   agentsBlock, applyAgentsBlock, editModulesFlag, licenseVerdict, packPlan, parseSource, readDeclaration,
@@ -488,7 +490,27 @@ function context() {
   } catch (error) { fail(error.message); }
 }
 
+async function identityAudit() {
+  if (positional.length || Object.keys(flags).some(key => key !== 'json')) fail('Usage: pnpm studio identity-audit [--json]. This command never changes source.');
+  const directory = rel('src/modules');
+  const types = {};
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const file = path.join(directory, entry.name, 'type.ts');
+    if (fs.existsSync(file)) types[entry.name] = (await import(pathToFileURL(file).href)).default;
+  }
+  const report = auditResourceIdentities(ROOT, types);
+  if (flags.json) say(JSON.stringify(report, null, 2));
+  else {
+    say(`${report.resources.length} resources; ${report.missing.length} need explicit identity migration.`);
+    for (const problem of report.problems) say(problem);
+    say('Read-only audit. Existing routing and ownership remain unchanged.');
+  }
+  if (report.problems.length) process.exitCode = 1;
+}
+
 const commands = {
+  'identity-audit': identityAudit,
   configure, status, context,
   list, check, sync: () => { say(syncAgents() ? 'Updated AGENTS.md.' : 'AGENTS.md is up to date.'); syncSkills(); },
   enable: () => setEnabled(positional[0], true), disable: () => setEnabled(positional[0], false),

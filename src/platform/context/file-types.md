@@ -25,6 +25,8 @@ Other prototype files remain plain files. Underscore helpers are excluded from n
 
 `src/platform/core/fileTypes.ts` defines `FileTypeSpec`, `defineFileType`, and artifact slug handling.
 
+The optional `identity` adapter reads and writes permanent prototype-artifact metadata. Views, Documents, Diagrams, and Canvases provide it. System content keeps its existing path identification. Source creation and routing have not migrated yet; see [Resource identity](resource-identity.md) for staged behavior.
+
 | File | Contract |
 | --- | --- |
 | `module.ts` | Standard module identity and optional status. |

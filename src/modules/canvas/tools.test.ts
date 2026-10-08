@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { stringifyScene } from './slim.ts';
+import { canvasIdentity, resourceId } from '../../platform/core/fileTypes.ts';
 import { lineWidth, wrapText } from './elements.ts';
 import { run, ToolError, type Ctx, type El } from './tools.ts';
 
@@ -14,6 +15,17 @@ const ctx: Ctx = {
   artifact: (path) => (artifacts[path] ? { path, ...artifacts[path] } : null),
   artifacts: () => Object.entries(artifacts).map(([path, v]) => ({ path, ...v })),
 };
+
+test('canvas saves retain resource identity independently of element identities and filesystem links', () => {
+  const id = resourceId('0123456789abcdef');
+  const elements = [{ id: 'frame-id', type: 'frame', x: 20, y: 30 }, { id: 'embed-id', type: 'embeddable', link: '/pat/demo/main' }];
+  const written = stringifyScene(elements, { gridSize: 20 }, link => link, id);
+  assert.equal(canvasIdentity.read(written), id);
+  assert.deepEqual(JSON.parse(written).elements.map((el: { id: string }) => el.id), ['frame-id', 'embed-id']);
+  assert.equal(stringifyScene(JSON.parse(written).elements, { gridSize: 20 }, undefined, canvasIdentity.read(written)), written);
+  assert.equal(canvasIdentity.read(stringifyScene(elements)), null, 'unmigrated files do not get random identity during saves');
+  assert.throws(() => stringifyScene(elements, {}, undefined, 'bad' as never));
+});
 
 // Runs tools in turn on one scene, as a caller would.
 function session() {

@@ -91,7 +91,7 @@ export function useCanvasFile({ proto, item, api, initial, editable }: {
     window.clearTimeout(timer.current);
     const snap = latest.current;
     if (saving.current || !dirty.current || !editableRef.current || !snap) return;
-    const content = serializeCanvas(snap.elements, snap.appState);
+    const content = serializeCanvas(snap.elements, snap.appState, parseCanvas(disk.current.content).studioId);
     if (content === disk.current.content) { dirty.current = false; burst.current = 0; setSaveState('saved'); return; }
     saving.current = true;
     dirty.current = false; // an edit during the save sets it again

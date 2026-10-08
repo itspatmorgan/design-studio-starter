@@ -13,6 +13,7 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an artifact.
 
 - **One file per canvas:** `<name>.excalidraw`, anywhere in a prototype. An Excalidraw scene as JSON.
   The name in the navigation comes from the file name.
+- **Source identity:** a declared top-level `studioId` survives browser and CLI saves. Existing files without identity remain unchanged until explicit migration. [Resource identity](../../platform/context/resource-identity.md) records the staged rollout; routes still use their current addresses.
 - **Items are embeds.** A view, diagram, or document on a canvas is an Excalidraw `embeddable` element whose
   `link` is the artifact's address in the app (`/prototypes/patrick/hello-world/lofi/main`; one saved in the older form, without `/prototypes`, still resolves and is written back in the new form when the canvas is saved). The link resolves through
   the manifest (`src/platform/app/artifacts/artifactLinks.ts`) to a prototype and an artifact, and the artifact's file type

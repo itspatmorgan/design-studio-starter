@@ -2,7 +2,7 @@
 // beside sticky notes, text, and arrows, drawn with Excalidraw. The file is Excalidraw's own
 // format (an .excalidraw file is JSON), so its name, without the extension, is the canvas's name
 // in the navigation.
-import { defineFileType } from '../../platform/core/fileTypes.ts';
+import { defineFileType, canvasIdentity } from '../../platform/core/fileTypes.ts';
 
 // Version 1 of the canvas file (see format.ts). A newer one is opened but never saved over.
 const KNOWN_VERSION = 1;
@@ -13,6 +13,7 @@ export default defineFileType({
   inSystemContent: false,
   fallback: false,
   label: 'Canvas',
+  identity: canvasIdentity,
   extensions: ['.excalidraw'],
   language: 'json',
 

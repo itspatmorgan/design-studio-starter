@@ -9,7 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { artifactSlug } from '../../platform/core/fileTypes.ts';
+import { artifactSlug, canvasIdentity } from '../../platform/core/fileTypes.ts';
 import { addressOf, canonicalPath, parseAddress } from '../../platform/core/roots.ts';
 import { FORMAT_VERSION, stringifyScene } from './slim.ts';
 import { help, run, ToolError, type Ctx, type El, type ArtifactInfo } from './tools.ts';
@@ -86,7 +86,7 @@ const ctx: Ctx = {
 try {
   const result = run(scene!.elements!, tool, args, ctx);
   if (!['describe', 'help'].includes(tool)) {
-    const next = stringifyScene(result.elements, scene!.appState);
+    const next = stringifyScene(result.elements, scene!.appState, undefined, canvasIdentity.read(text));
     const tmp = `${real}.${process.pid}.tmp`;
     fs.writeFileSync(tmp, next);
     fs.renameSync(tmp, real);
