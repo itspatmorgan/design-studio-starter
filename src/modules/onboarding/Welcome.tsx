@@ -16,7 +16,7 @@ const steps = [
   { id: 'welcome', title: `Welcome to ${APP_NAME}` },
   ...(CONFIG.modules.systems ? [{ id: 'systems', title: 'Make it yours' }] : []),
   { id: 'brief', title: 'Start with a brief' },
-  ...(['view', 'diagrams', 'canvas'].some(module => CONFIG.modules[module]) ? [{ id: 'artifacts', title: 'Choose what helps you explore' }] : []),
+  ...(['view', 'diagrams', 'canvas'].some(module => CONFIG.modules[module]) ? [{ id: 'artifacts', title: 'Give your idea shape' }] : []),
   { id: 'publish', title: 'Publish your prototype' },
   { id: 'share', title: 'Share it for feedback' },
   { id: 'collaborate', title: 'Build together' },
