@@ -22,6 +22,8 @@ Interactive views still run in the browser. The published site does not provide 
 
 ## Choose a deployment process
 
+Use [DEPLOY.md](../../../DEPLOY.md) for agent-assisted setup on ChatGPT Sites, GitHub Pages, Netlify, or Vercel. This contract defines the shared requirements for those provider workflows.
+
 The platform provides a portable static build. Configure a publishing workflow for the chosen host. Document repository-specific deployment configuration in its maintainer guidance. This starter’s configuration is in [Contributing](../../../CONTRIBUTING.md#starter-repository-publishing).
 
 For a host that serves the app below a URL prefix, pass that prefix through `STUDIO_BASE_PATH`. The build normalizes its trailing slash; local commands use `/` by default. For example:

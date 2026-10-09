@@ -1,27 +1,37 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowRight01Icon } from '@hugeicons/core-free-icons';
 import { Button } from '@/systems/studio/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/systems/studio/components/dialog';
-import { APP_NAME } from '@/platform/core/api';
+import { APP_NAME, CONFIG } from '@/platform/core/api';
 import { useManifest } from '@/platform/app/data/useManifest';
 import { useMe } from '@/platform/app/data/files';
-import { prototypeLink } from '@/platform/app/data/manifest';
 import { claimIntroduction, complete, progressKey, recordIntroduction } from './progress';
-import { ArtifactPreview, SystemPreview } from './ConceptPreview';
-import { AgentSketch } from './Illustrations';
+import { ArtifactPreview, CollaborationPreview, SystemPreview } from './ConceptPreview';
+import { AgentSketch, StorySketch } from './Illustrations';
 
 const steps = [
-  { title: `Welcome to ${APP_NAME}`, description: 'A place to turn product ideas into working prototypes you can explore, discuss, and refine.' },
-  { title: 'Keep the whole idea together', description: 'A prototype brings your screens, flows, and ideas together as artifacts. They’re files you own, saved in open formats for use with compatible tools.' },
-  { title: 'Give your prototypes a shared foundation', description: 'A system brings your design toolkit and product knowledge together, helping your agent build prototypes that feel like your product.' },
-  { title: 'Start by exploring', description: 'Open an example prototype, try its screens, and look through its artifacts. You’ll see how a prototype and its system work together.' },
+  { id: 'welcome', title: `Welcome to ${APP_NAME}` },
+  ...(CONFIG.modules.systems ? [{ id: 'systems', title: 'Make it yours' }] : []),
+  { id: 'brief', title: 'Start with a brief' },
+  ...(['view', 'diagrams', 'canvas'].some(module => CONFIG.modules[module]) ? [{ id: 'artifacts', title: 'Give your idea shape' }] : []),
+  { id: 'publish', title: 'Publish your prototype' },
+  { id: 'share', title: 'Share it for feedback' },
+  { id: 'collaborate', title: 'Build together' },
+  { id: 'modules', title: 'Extend when you need to' },
+  { id: 'next', title: 'Start exploring' },
 ];
+const stories = {
+  brief: { kind: CONFIG.modules.document ? 'brief' : 'brief-chat', description: CONFIG.modules.document
+    ? 'Save your brief as a Markdown document in your prototype with your agent. It becomes lasting context for the work.'
+    : 'Tell your agent the problem, who it’s for, and what you want to learn.' },
+  publish: { kind: 'publish', description: 'Easily publish Design Studio on ChatGPT Sites, Vercel, Netlify, GitHub Pages, or any host that serves static sites.' },
+  share: { kind: 'share', description: 'Share your site’s link. Teammates can try prototypes and browse artifacts in a read-only viewer. Protect private work through your host.' },
+  modules: { kind: 'modules', description: 'Design Studio is modular. Turn capabilities on or off, or work with your agent to improve one or build a new module.' },
+};
 
 export default function Welcome() {
   const manifest = useManifest();
-  const navigate = useNavigate();
   const me = useMe();
   const key = progressKey(import.meta.env.BASE_URL, me);
   const [open, setOpen] = useState(false);
@@ -36,41 +46,36 @@ export default function Welcome() {
     return () => { active = false; };
   }, [key, me]);
   const [step, setStep] = useState(0);
+  const current = steps[Math.min(step, steps.length - 1)];
   const examples = manifest.prototypes.filter(p => p.status !== 'archived' && p.contributorKey === 'patrick' && ['feedback-inbox', 'design-studio-marketing'].includes(p.id)).sort((a, b) => Number(b.system === 'product') - Number(a.system === 'product'));
+  const story = stories[current.id as keyof typeof stories];
   const finish = () => { complete(key); setOpen(false); };
   return <Dialog open={open} onOpenChange={value => { if (!value) finish(); }}>
     <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto gap-6 p-6 sm:max-w-xl sm:p-8" showCloseButton={false}>
-      <p className="text-xs font-medium text-muted-foreground" aria-live="polite">{step + 1} of {steps.length}</p>
-      <div className="space-y-3" aria-live="polite" aria-atomic="true">
-        <DialogTitle className="text-2xl font-semibold leading-tight tracking-tight">{steps[step].title}</DialogTitle>
-        <DialogDescription className="text-base leading-relaxed">{steps[step].description}</DialogDescription>
+      <div role="progressbar" aria-label="Introduction progress" aria-valuemin={1} aria-valuemax={steps.length} aria-valuenow={step + 1} aria-valuetext={current.title} className="flex items-center gap-2 h-2">
+        {steps.map((item, i) => <span key={item.id} aria-hidden="true" className={`h-1.5 rounded-full transition-all ${i === step ? 'w-6 bg-foreground' : i < step ? 'w-1.5 bg-foreground/40' : 'w-1.5 bg-muted-foreground/20'}`} />)}
       </div>
-      <div className="min-h-64">
-        {step === 0 && <div className="space-y-4">
+      <DialogTitle className="text-2xl font-semibold leading-tight tracking-tight" aria-live="polite">{current.title}</DialogTitle>
+      <div className="min-h-64 flex flex-col justify-center">
+        {current.id === 'welcome' && <div className="space-y-6">
           <AgentSketch />
-          <p className="text-sm leading-relaxed text-muted-foreground">Share your idea with your agent and let it handle the code. Then explore the result here and use your design judgment to guide what comes next.</p>
+          <DialogDescription className="text-base leading-relaxed">Let’s walk through making Studio yours, shaping your first prototype, and sharing the work with others.</DialogDescription>
         </div>}
-        {step === 1 && <ArtifactPreview />}
-        {step === 2 && <div className="space-y-4"><SystemPreview /><p className="text-sm leading-relaxed text-muted-foreground">The starter’s Product and Marketing systems are examples for learning. Customize or replace them with your own components, styles, and product knowledge, or remove the ones you don’t need.</p></div>}
-        {step === 3 && <div className="space-y-4">
-          {!!examples.length && <p className="text-sm leading-relaxed text-muted-foreground">Feedback Inbox and Design Studio Marketing are example prototypes for learning. After exploring, ask your agent to customize, replace, or remove them to fit your own needs.</p>}
-          {!!examples.length && <div className="flex flex-wrap gap-2">{examples.map(p => <Button key={p.id} variant="outline" onClick={() => { finish(); void navigate(prototypeLink(p)); }}>{p.system === 'product' ? 'Product example' : p.system === 'marketing' ? 'Marketing example' : p.title}<HugeiconsIcon icon={ArrowRight01Icon} /></Button>)}</div>}
-          <div className="space-y-4 rounded-xl border bg-muted/30 p-5">
-            <p className="text-sm font-medium">When you’re ready to make something, work with your agent to:</p>
-            <div className="space-y-1">
-              <h3 className="text-sm font-medium">Try your own prototype</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">Describe an idea and who it’s for. Use an existing system to build a first version you can try and refine.</p>
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-sm font-medium">Set up your own system</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">Design Studio supports shadcn/ui and Untitled UI out of the box, making them good sources for components to bring into your system. Your agent can also help adapt your team’s custom components.</p>
-            </div>
-          </div>
+        {current.id === 'artifacts' && <ArtifactPreview />}
+        {current.id === 'systems' && <SystemPreview />}
+        {current.id === 'collaborate' && <CollaborationPreview />}
+        {story && <div className="space-y-6">
+          <StorySketch kind={story.kind} />
+          <DialogDescription className="text-base leading-relaxed">{story.description}</DialogDescription>
+        </div>}
+        {current.id === 'next' && <div className="space-y-6">
+          {examples.length ? <StorySketch kind="explore" exampleIds={examples.map(p => p.id)} /> : <AgentSketch />}
+          <DialogDescription className="text-base leading-relaxed">{examples.length ? `${examples.length === 2 ? 'Two examples are' : 'An example is'} already in your studio to explore. Or ask your agent to build a prototype from your own idea.` : 'Describe your idea, who it’s for, and what you want to learn. Ask your agent for a first prototype you can try.'}</DialogDescription>
         </div>}
       </div>
-      <div className="flex items-center justify-between gap-3 pt-2">
+      <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
         <Button variant="ghost" onClick={finish}>Skip introduction</Button>
-        <div className="flex gap-2">
+        <div className="flex justify-end gap-2">
           {step > 0 && <Button variant="ghost" onClick={() => setStep(step - 1)}>Back</Button>}
           <Button onClick={() => step === steps.length - 1 ? finish() : setStep(step + 1)}>{step === 0 ? 'Show me around' : step === steps.length - 1 ? 'Explore my studio' : 'Next'}<HugeiconsIcon icon={ArrowRight01Icon} /></Button>
         </div>

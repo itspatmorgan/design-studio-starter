@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const FILES = new Set([
   '.gitignore', '.agents/studio-skills.json', 'AGENTS.md', 'CLAUDE.md', 'README.md',
-  'LICENSE', 'CHANGELOG.md', 'CONTRIBUTING.md', 'SECURITY.md', 'components.json',
+  'LICENSE', 'CHANGELOG.md', 'CONTRIBUTING.md', 'SECURITY.md', 'DEPLOY.md', 'components.json',
   'mise.toml', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml',
   'studio.config.ts', 'studio.lock.json', 'tsconfig.json', 'tsconfig.app.json',
   'tsconfig.node.json', 'vite.config.ts', 'contributors.json',
