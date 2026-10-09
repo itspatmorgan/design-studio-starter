@@ -79,7 +79,7 @@ const storyLabels: Record<string, string> = {
   share: 'A shared site link opens a read-only viewer of prototypes and artifacts.',
   source: 'Two teammates work from the same repository of code and context.',
   modules: 'A canvas module adds a capability to the existing studio.',
-  explore: 'An example prototype is open in Studio, ready to explore.',
+  explore: 'Curated prototype examples ready to explore.',
 };
 function Screen({ x, y, label, width = 150 }: { x: number; y: number; label: string; width?: number }) {
   return <g>
@@ -93,7 +93,9 @@ function Screen({ x, y, label, width = 150 }: { x: number; y: number; label: str
 function Arrow({ x, y, length = 48 }: { x: number; y: number; length?: number }) {
   return <path d={`M${x} ${y}h${length}m-7 -5l7 5l-7 5`} stroke={muted} fill="none" />;
 }
-export function StorySketch({ kind }: { kind: string }) {
+export function StorySketch({ kind, exampleIds }: { kind: string; exampleIds?: string[] }) {
+  const showProduct = exampleIds?.includes('feedback-inbox') ?? true;
+  const showMarketing = exampleIds?.includes('design-studio-marketing') ?? true;
   return <svg viewBox="0 0 440 180" className="h-40 w-full text-foreground" role="img" aria-label={storyLabels[kind]}>
     {kind === 'toolkit' && <>
       <rect x="24" y="24" width="158" height="132" rx="5" fill={paper} stroke={border} />
@@ -164,11 +166,33 @@ export function StorySketch({ kind }: { kind: string }) {
       <g fill="none" stroke={muted}><rect x="271" y="65" width="44" height="36" rx="3" /><rect x="347" y="98" width="51" height="36" rx="3" /><path d="M315 84H329V115H347" /></g>
     </>}
     {kind === 'explore' && <>
-      <Screen x={62} y={20} label="Example prototype" width={314} />
-      <rect x="124" y="62" width="159" height="33" rx="4" fill={paper} stroke={border} /><text x="136" y="82" fontSize="12" fill={ink}>Try an interaction</text>
-      <path d="M277 91V114L283 108L289 120L294 117L288 106H300Z" fill={ink} />
-      <path d="M171 125V149H264V125" stroke={border} fill="none" /><path d="M147 150H288" stroke={border} />
+      {showProduct && <g transform={showMarketing ? "rotate(-3 118 94)" : "translate(100 0)"}>
+        <rect x="20" y="27" width="195" height="137" rx="5" fill={paper} stroke={border} />
+        <path d="M20 53H215M62 53V164" stroke={border} />
+        <text x="33" y="44" fontSize="13" fill={muted}>Product example</text>
+        <path d="M32 69H50M32 82H45M32 95H49" stroke={ink} opacity=".25" />
+        <text x="74" y="72" fontSize="11" fill={ink}>Feedback Inbox</text>
+        {[0, 1, 2].map(row => <g key={row}>
+          <rect x="73" y={83 + row * 23} width="130" height="20" rx="3" fill={row === 0 ? ink : paper} fillOpacity={row === 0 ? .07 : 1} stroke={border} />
+          <circle cx="84" cy={93 + row * 23} r="3" fill={ink} opacity=".25" />
+          <path d={`M94 ${90 + row * 23}h${row === 1 ? 75 : 57}M94 ${96 + row * 23}h${row === 2 ? 53 : 88}`} stroke={ink} opacity=".3" />
+        </g>)}
+      </g>}
+      {showMarketing && <g transform={showProduct ? "rotate(3 320 91)" : "translate(-100 0)"}>
+        <rect x="235" y="16" width="185" height="146" rx="5" fill={paper} stroke={border} />
+        <path d="M235 42H420" stroke={border} />
+        <text x="248" y="33" fontSize="13" fill={muted}>Marketing example</text>
+        <text x="249" y="66" fontSize="13" fill={ink}>Design with intent.</text>
+        <text x="249" y="83" fontSize="13" fill={ink}>Build with an agent.</text>
+        <path d="M249 96H394M249 104H359" stroke={ink} opacity=".25" />
+        <rect x="249" y="118" width="58" height="19" rx="4" fill={ink} />
+        <text x="259" y="131" fontSize="9" fill={paper}>Get started</text>
+        <rect x="320" y="116" width="85" height="31" rx="3" fill={paper} stroke={border} />
+        <path d="M331 126H393M331 137H370" stroke={ink} opacity=".2" />
+      </g>}
+      {showProduct && <path transform={showMarketing ? undefined : "translate(100 0)"} d="M183 111V134L189 128L195 140L200 137L194 126H206Z" fill={ink} />}
     </>}
+
   </svg>;
 }
 
