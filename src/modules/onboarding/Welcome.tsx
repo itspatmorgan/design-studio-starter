@@ -60,7 +60,7 @@ export default function Welcome() {
       <div className="min-h-64 flex flex-col justify-center">
         {current.id === 'welcome' && <div className="space-y-6">
           <AgentSketch />
-          <DialogDescription className="text-base leading-relaxed">We’ll walk through making Studio yours, shaping your first prototype, and sharing the work with others.</DialogDescription>
+          <DialogDescription className="text-base leading-relaxed">Let’s walk through making Studio yours, shaping your first prototype, and sharing the work with others.</DialogDescription>
         </div>}
         {current.id === 'artifacts' && <ArtifactPreview />}
         {current.id === 'systems' && <SystemPreview />}
