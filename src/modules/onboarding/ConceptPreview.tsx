@@ -10,10 +10,10 @@ const systemParts = [
   { title: 'Skills', kind: 'skills', description: 'Skills teach your agent how to do repeatable tasks.' },
 ];
 const artifacts = [
-  { module: 'diagrams', title: 'Diagram', kind: 'diagrams', description: 'Map the journey or logic with your agent before filling in the screens.' },
-  { module: 'view', title: 'Lo-fi wireframe', kind: 'lofi', description: 'Explore layout, content, and navigation with a simple wireframe.' },
-  { module: 'view', title: 'Hi-fi prototype', kind: 'view', description: 'Try a clickable prototype, then guide your agent through refinements.' },
-  { module: 'canvas', title: 'Canvas', kind: 'canvas', description: 'Arrange screens, flows, and notes together to explore connections or compare ideas.' },
+  { module: 'diagrams', title: 'Diagram', kind: 'diagrams', description: 'Map a journey or decision flow with your agent.' },
+  { module: 'view', title: 'Lo-fi wireframe', kind: 'lofi', description: 'Explore layout and navigation with a simple wireframe.' },
+  { module: 'view', title: 'Hi-fi prototype', kind: 'view', description: 'Try the interactions, then refine them with your agent.' },
+  { module: 'canvas', title: 'Canvas', kind: 'canvas', description: 'Arrange screens, flows, and notes to connect your ideas.' },
 ].filter(type => CONFIG.modules[type.module] === true);
 const collaboration = [
   { title: 'Share the source', kind: 'source', description: 'Share the repository so teammates and their agents can adapt the code and continue the work with its context.' },
