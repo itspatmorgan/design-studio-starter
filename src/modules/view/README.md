@@ -52,6 +52,18 @@ The direct runtime remains available to harness tooling through `previewUrl` in 
 
 React render errors stay in the preview's error UI. Loading failures show an actionable error in the child, preserving Studio's source editor. Uncaught errors and rejected promises report error state; they do not automatically replace the component or recover exhausted CPU resources.
 
-## Research and verification
+## Boundary decision
 
-The investigation record at `scripts/experiments/preview-boundary/README.md` compares the parent portal and child runtime on real prototypes, with reproduction instructions and pinned OpenDesign/Open CoDesign references. [TanStack memory history](https://tanstack.com/router/latest/docs/guide/history-types) supplies the independent navigation context. Borrow execution separation and explicit bridge authority, while retaining Studio's real React authoring model.
+Use an independently bootstrapped child React runtime in a same-origin iframe for trusted repository code.
+
+| Option | Trade-off |
+| --- | --- |
+| Keep rendering in Studio's document | Simple coordination, but document styles and browser globals remain shared. |
+| Portal parent-loaded React into an iframe | Separate DOM placement, but components still execute against Studio's window and document. |
+| Bootstrap React inside the iframe | Components use the preview's own document, viewport and focus APIs. Requires explicit configuration, navigation and status messages. |
+
+The comparison used actual Product and Marketing prototypes. At a 420px frame, the portal's JavaScript measured the 1280px host. The child runtime measured its 418px content viewport. Document-level style and focus probes likewise favored child execution. Both candidates supported real components and live source updates. Production verification is recorded in [PR #22](https://github.com/itspatmorgan/design-studio-starter/pull/22).
+
+Keep the [isolation limits](#isolation-limits) explicit. A failed opaque-origin whole-Studio experiment does not establish that an artifact-only opaque runtime is impossible.
+
+[OpenDesign's FileViewer](https://github.com/nexu-io/open-design/blob/802708f6c9f294347ef777b1fda49b9cbe26ef72/apps/web/src/components/FileViewer.tsx) and [preview document construction](https://github.com/nexu-io/open-design/blob/802708f6c9f294347ef777b1fda49b9cbe26ef72/apps/web/src/runtime/srcdoc.ts) informed execution separation. [Open CoDesign's source-editing contract](https://github.com/OpenCoworkAI/open-codesign/blob/main/SOURCE_EDITING.md) informed preview identity and independent write authority. Their generated HTML and security assumptions are not copied into Studio. [TanStack memory history](https://tanstack.com/router/latest/docs/guide/history-types) supplies independent navigation.
