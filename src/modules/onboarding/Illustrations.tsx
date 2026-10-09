@@ -71,7 +71,7 @@ export function ArtifactSketch({ kind }: { kind: string }) {
 const storyLabels: Record<string, string> = {
   toolkit: 'Components and a theme become a screen that fits your product.',
   context: 'Product knowledge guides a design decision for your audience.',
-  skills: 'A reusable instruction helps the agent complete a familiar task.',
+  skills: 'A design critique skill is invoked with a slash command in the agent chat.',
   brief: 'A brief with a problem, audience, and learning goal becomes a first concept.',
   lofi: 'A simple wireframe shows layout and navigation without visual detail.',
   publish: 'A local prototype becomes a viewing site with a web address.',
@@ -113,14 +113,15 @@ export function StorySketch({ kind }: { kind: string }) {
     </>}
     {kind === 'skills' && <>
       <rect x="28" y="35" width="166" height="110" rx="5" fill={paper} stroke={border} />
-      <text x="43" y="58" fontSize="12" fill={ink}>A reusable instruction</text>
-      <text x="43" y="85" fontSize="11" fill={muted}>Follow our voice</text>
+      <text x="43" y="58" fontSize="12" fill={ink}>Design critique skill</text>
+      <text x="43" y="85" fontSize="11" fill={muted}>Run a design critique</text>
       <path d="M43 104H174M43 118H149" stroke={ink} opacity=".25" />
       <Arrow x={207} y={89} length={30} />
       <rect x="250" y="43" width="162" height="94" rx="5" fill={paper} stroke={border} />
       <text x="266" y="65" fontSize="12" fill={ink}>Your agent</text>
-      <path d="M266 85H395M266 100H369" stroke={ink} opacity=".25" />
-      <text x="266" y="121" fontSize="10" fill={muted}>Applied to the next task</text>
+      <rect x="260" y="77" width="142" height="24" rx="4" fill={paper} stroke={border} />
+      <text x="266" y="93" fontSize="10" fontFamily="monospace" fill={ink}>/design-critique</text>
+      <text x="266" y="121" fontSize="10" fill={muted}>Running design critique</text>
     </>}
     {kind === 'brief' && <>
       <rect x="24" y="15" width="183" height="150" rx="4" fill={paper} stroke={border} />

@@ -7,7 +7,7 @@ import { ArtifactSketch, SystemSketch, StorySketch } from './Illustrations';
 const systemParts = [
   { title: 'Theme & components', kind: 'toolkit', description: 'Start with an available system, or ask your agent to bring in your team’s components and theme.' },
   { title: 'Context', kind: 'context', description: 'Give your agent product knowledge and design principles so its decisions fit your audience.' },
-  { title: 'Skills', kind: 'skills', description: 'Give your agent reusable instructions for tasks your team does often.' },
+  { title: 'Skills', kind: 'skills', description: 'Skills teach your agent how to do repeatable tasks.' },
 ];
 const artifacts = [
   { module: 'diagrams', title: 'Diagram', kind: 'diagrams', description: 'Map the journey or logic with your agent before filling in the screens.' },
