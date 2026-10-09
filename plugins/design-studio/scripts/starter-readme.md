@@ -24,6 +24,10 @@ Product and Marketing are example design systems. Feedback Inbox and Design Stud
 
 Canonical skills live with their platform, module, or system. The generated `.agents/skills` entries expose them to Codex and Cursor; `.claude/skills` links expose the same entries to Claude. Run `pnpm studio sync` after changing registered capabilities. Preserve custom instructions and edit canonical skills instead of generated entries.
 
+## Publish a viewing link
+
+Ask your agent to follow [DEPLOY.md](DEPLOY.md) to publish with ChatGPT Sites, GitHub Pages, Netlify, or Vercel. It guides you through account setup and authentication, handles deployment, and verifies the viewing link. Authoring stays local; publish again when you want to share updates.
+
 ## Source and checks
 
 This folder is an independent local Git repository with no upstream remote. Its setup receipt records the source revision used to create it. Your code and design work belong to you.
