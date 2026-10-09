@@ -33,7 +33,7 @@ function ConceptPreview({ choices, label, id, system = false }: { choices: Choic
     </div>
     <div id={id} className="space-y-3 rounded-xl border bg-muted/30 p-4" aria-live="polite" aria-atomic="true">
       {system ? <SystemSketch selected={index} /> : ['source', 'permissions', 'lofi'].includes(choice.kind) ? <StorySketch kind={choice.kind} /> : <ArtifactSketch kind={choice.kind} />}
-      <DialogDescription className="text-base leading-relaxed">{choice.description}</DialogDescription>
+      <DialogDescription className="text-base leading-relaxed text-balance">{choice.description}</DialogDescription>
     </div>
   </div>;
 }
