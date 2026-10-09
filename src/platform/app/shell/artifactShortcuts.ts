@@ -11,3 +11,14 @@ export const shortcutLabel = (action: 'source' | 'grid' | 'save') => {
   if (action === 'grid') return mac ? "⌘⇧'" : "Ctrl+Shift+'";
   return mac ? "⌘'" : "Ctrl+'";
 };
+
+export type PreviewShortcut = 'source' | 'grid' | 'palette' | 'navigation';
+// Only these existing Studio commands cross the preview document boundary.
+export function previewShortcut(event: Parameters<typeof artifactShortcut>[0]): PreviewShortcut | null {
+  const artifact = artifactShortcut(event);
+  if (artifact) return artifact;
+  if (!(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey || event.repeat || event.isComposing) return null;
+  if (event.key.toLowerCase() === 'k') return 'palette';
+  if (event.key === ';') return 'navigation';
+  return null;
+}

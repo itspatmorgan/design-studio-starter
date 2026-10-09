@@ -3,7 +3,7 @@ import { artifactAvailability } from '@/platform/core/fileTypes';
 // contributed by Systems; their named surfaces remain relative to the system ID.
 // Module-owned sections retain their own declared routing contract.
 // https://tanstack.com/router/latest/docs/framework/react/routing/code-based-routing
-import { Suspense } from 'react';
+import { Suspense, useRef } from 'react';
 import { createRootRoute, createRoute, createRouter, notFound, redirect, useRouter, lazyRouteComponent } from '@tanstack/react-router';
 import { useSourceView } from '@/platform/core/source/useSourceView';
 import { shortcutLabel } from '@/platform/app/shell/artifactShortcuts';
@@ -146,13 +146,23 @@ const ArtifactSource = import.meta.env.DEV ? lazyRouteComponent(() => import('@/
 // prototype's navigation, and never renders without its loader's data.
 function ItemPage({ data }: { data: ItemData | undefined }) {
   const source = Boolean(data?.source);
+  const retained = useRef<ItemData | null>(null);
+  if (data?.fileType === 'view' && data.props && !source) retained.current = data;
+  const sameArtifact = data && retained.current && (data.artifactId ? data.artifactId === retained.current.artifactId : data.filePath === retained.current.filePath);
+  const preview = source ? (data?.fileType === 'view' && sameArtifact ? retained.current : null) : data;
   const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(data && FILE_TYPES[data.fileType]?.capabilities.source), source);
   if (!data) return null;
-  // Done goes back to the item's page; unsaved edits ask first (the shared SourceEditor).
   const done = <Button size="sm" variant="outline" onClick={toggle} title={`Return to rendered view (${shortcutLabel('source')})`}>Done</Button>;
-  if (data.source) return ArtifactSource && <Suspense fallback={null}><ArtifactSource key={data.source.item.path} {...data.source} actions={done} /></Suspense>;
-  const { Page } = fileTypeModules[data.fileType];
-  return <div ref={rendered} tabIndex={-1} className="flex min-h-0 min-w-0 flex-1 outline-none"><Suspense fallback={null}><Page {...data.props!} /></Suspense></div>;
+  const Page = preview && fileTypeModules[preview.fileType].Page;
+  // Keep an already-open React runtime alive during source editing. Its module state,
+  // viewport and live updates survive; hidden content receives no focus or input.
+  return <>
+    <div ref={rendered} tabIndex={source ? undefined : -1} inert={source || undefined}
+      className={source ? 'hidden' : 'flex min-h-0 min-w-0 flex-1 outline-none'}>
+      {Page && preview?.props && <Suspense fallback={null}><Page {...preview.props} /></Suspense>}
+    </div>
+    {data.source && ArtifactSource && <Suspense fallback={null}><ArtifactSource key={data.source.item.path} {...data.source} actions={done} /></Suspense>}
+  </>;
 }
 
 // The routes that open an item in the viewer: one set for a prototype (/prototypes/<person>/<id>) and one for an item

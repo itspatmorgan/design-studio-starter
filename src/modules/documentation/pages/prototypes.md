@@ -19,6 +19,14 @@ A prototype holds one exploration. Its pieces are called **artifacts**. Use the 
 
 Views are always available. Documents, Diagrams, and Canvases require their corresponding modules. Disabling one preserves its files but hides it from normal navigation.
 
+## How do previews work?
+
+Views run in their own browser document, with their assigned components, fonts, and theme. Changing color mode preserves the open view's interaction state. An already-open view stays alive while you edit its source.
+
+Canvas and document previews are pictures of the working view. Open the original to interact with it.
+
+Preview separation contains styles and overlays. It does not make untrusted prototype code safe to run.
+
 ## What belongs in a system?
 
 A system supplies the shared foundation for multiple prototypes.

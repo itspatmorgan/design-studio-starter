@@ -50,7 +50,8 @@
         "src/platform/core/permissions.test.ts",
         "src/platform/core/resourceIdentity.test.ts",
         "src/platform/core/resourceReferences.test.ts",
-        "src/platform/core/roots.test.ts"
+        "src/platform/core/roots.test.ts",
+        "src/modules/view/preview/protocol.test.ts"
       ],
       "dependencies": [
         "src/platform/**",
