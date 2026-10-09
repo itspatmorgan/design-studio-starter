@@ -173,7 +173,7 @@ export function StorySketch({ kind }: { kind: string }) {
 }
 
 export function ScopeDiagram() {
-  return <div role="img" aria-label="Nested editing scopes: Contributors edit their own prototypes. System maintainers also edit assigned systems. Admins can edit the whole Studio." className="mx-auto w-full max-w-[26rem] py-2">
+  return <div role="img" aria-label="Nested editing scopes: New contributors start with their own prototypes by default. System maintainers also edit assigned systems. Admins can edit the whole Studio." className="mx-auto w-full max-w-[26rem] py-2">
     <div className="rounded border border-border bg-background p-3">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-sm leading-5">
         <span>Admin</span><span className="text-muted-foreground">The whole Studio</span>
@@ -183,7 +183,7 @@ export function ScopeDiagram() {
           <span>System maintainer</span><span className="text-muted-foreground">Assigned systems</span>
         </div>
         <div className="mt-2 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 rounded border border-border px-3 py-2 text-sm leading-5">
-          <span>Contributor</span><span className="text-muted-foreground">Your prototypes</span>
+          <span>Contributor (default)</span><span className="text-muted-foreground">Your prototypes</span>
         </div>
       </div>
     </div>

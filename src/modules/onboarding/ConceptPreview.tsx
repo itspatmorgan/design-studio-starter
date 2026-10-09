@@ -17,9 +17,7 @@ const artifacts = [
 ].filter(type => CONFIG.modules[type.module] === true);
 const collaboration = [
   { title: 'Share the source', kind: 'source', description: 'Share the repository so teammates and their agents can adapt the code and continue the work with its context.' },
-  ...(CONFIG.modules.contributors ? [{ title: 'Contributor permissions', kind: 'permissions', description: CONFIG.usage === 'team'
-    ? 'Each contributor edits their own prototypes. Admins choose who can also maintain shared systems or manage the whole studio.'
-    : 'Switch to Team in Studio settings to collaborate with clear editing scopes. Admins choose who can maintain shared systems or manage the whole studio.' }] : []),
+  ...(CONFIG.modules.contributors ? [{ title: 'Contributor permissions', kind: 'permissions', description: 'In Team mode, each contributor’s agent keeps work scoped to their own prototypes by default. Admins can grant broader editing permissions.' }] : []),
 ];
 
 type Choice = { title: string; kind: string; description: string };
