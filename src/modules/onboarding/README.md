@@ -4,7 +4,9 @@ Onboarding welcomes designers and product managers after their studio opens. It 
 
 ## Behavior
 
-Each contributor’s first local home-page visit opens a four-step dialog over Home: Welcome, Prototypes, Systems, and Start by exploring. The system and artifact steps let people select a concept to see a short explanation and example. Only enabled artifact types appear. The introduction labels Product and Marketing as example systems and Feedback Inbox and Design Studio Marketing as example prototypes for learning. It invites people to customize, replace, or remove these examples for their own needs. The final step focuses on exploring available starter prototypes, then explains two paths with the agent: make a prototype with an existing system, or set up a system of your own. Removed or archived samples are omitted.
+Each contributor’s first local home-page visit opens a brief dialog over Home: Welcome, Make it yours, Shape your first idea, Share the work, and Choose where to start. Make it yours appears only when Systems is enabled. Interactive explanations introduce a system’s toolkit, context, and skills, then offer a brief, flow, lo-fi wireframe, hi-fi clickable prototype, or canvas according to enabled modules. People can start with whichever artifact helps answer their question; the dialog does not prescribe a sequence of projects.
+
+Sharing distinguishes a published viewing link from local preview links and source-repository access. The final step offers available sample prototypes, contributor guidance when that module is enabled, and extending the studio with modules. Contributor guidance reflects Personal or Team usage. Starter systems and prototypes are labeled as learning examples when present; removed or archived sample prototypes are omitted. Importing a system and customizing examples remain optional.
 
 **Explore my studio**, **Skip introduction**, Escape, backdrop dismissal, and opening a sample all record completion and close the introduction. It has no rail item, search entry, standalone page, or route. Later visits go directly to the studio. The Manual retains the concepts for later reading.
 
@@ -30,10 +32,10 @@ The module uses the application's `localOnly` extension, so published viewing si
 - `server.ts` exposes the same-origin local display claim; `node/progress.js` records the resolved contributor’s profile flag atomically.
 - [Use onboarding](skills/use-onboarding/SKILL.md) guides an agent helping a person take their first steps.
 
-Keep installation in the setup entry points and configuration in the platform Configure Studio skill. Onboarding complements both with an introduction after launch. This is a first scaffold to refine through designer feedback, not a complete guided tour or task-completion tracker.
+Keep installation in the setup entry points and configuration in the platform Configure Studio skill. Onboarding complements both with an introduction after launch. Keep the dialog focused on useful next actions; detailed walkthroughs belong outside the welcome flow.
 
 ## Design references
 
 [Linear’s introduction](https://linear.app/learn/intro-to-linear) explains core concepts before deeper workflows. [NN/g’s onboarding guidance](https://www.nngroup.com/articles/onboarding-tutorials/) recommends easy dismissal and progressive disclosure, and cautions against lengthy tours that interrupt work. This introduction adapts those principles into a brief, skippable first-use dialog; it does not claim to reproduce Linear’s current UI.
 
-The narrative follows the platform personas: start with what they can make and how they direct the agent, explain the pieces of a prototype, then show how a shared system makes the work fit their product. End with an example to explore and plain guidance for making a first prototype or setting up a system. Customization is an invitation, not a prerequisite. Marketing illustration references are `StudioOwnership.astro` and `StudioFoundation.astro` in the sibling `itspatmorgan.github.io` repository; local adaptations belong to this module and do not import from that repository.
+The narrative follows the platform personas: direct the agent with an idea, make the work fit their product, choose a useful artifact, and share both the result and its source. End with an example to explore and optional paths for collaboration and extending the studio. Follow the platform principle of minimum sufficient guidance for a high-quality outcome. Marketing illustration references are `StudioOwnership.astro` and `StudioFoundation.astro` in the sibling `itspatmorgan.github.io` repository; local adaptations belong to this module and do not import from that repository.

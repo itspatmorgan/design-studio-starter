@@ -9,10 +9,11 @@ const systemParts = [
   { title: 'Skills', kind: 'skills', description: 'Give your agent reusable instructions for tasks your team does often, from writing in your brand’s voice to following a familiar design pattern.' },
 ];
 const artifacts = [
-  { module: 'view', title: 'Views', kind: 'view', description: 'Explore how your idea feels with working screens, from filtering an inbox to opening a message. Views are saved as React code you can reuse in other React projects.' },
-  { module: 'document', title: 'Documents', kind: 'document', description: 'Keep your brief, notes, and decisions alongside your screens so the thinking stays with the work. Documents use Markdown, a plain text format that many writing tools support.' },
-  { module: 'diagrams', title: 'Diagrams', kind: 'diagrams', description: 'Show how an experience fits together, from a message arriving to its resolution. Diagrams use Mermaid, a text format you can edit and display in other compatible tools.' },
-  { module: 'canvas', title: 'Canvases', kind: 'canvas', description: 'Use Excalidraw’s drawing tools to sketch ideas, connect them with arrows, and add notes. Arrange your sketches alongside screens and flows to explore the whole idea.' },
+  { module: 'document', title: 'Brief', kind: 'document', description: 'Define the problem, audience, and what you want to learn. Keep your brief and decisions alongside the work.' },
+  { module: 'diagrams', title: 'Flow', kind: 'diagrams', description: 'Map the journey or logic before filling in the screens. Create a diagram your agent can edit with you.' },
+  { module: 'view', title: 'Lo-fi', kind: 'view', description: 'Ask your agent for a lo-fi wireframe to explore layout, content, and navigation. Keep visual detail light while you try the structure.' },
+  { module: 'view', title: 'Hi-fi', kind: 'view', description: 'Build a clickable prototype with your system’s components and theme. Try the interactions, then guide your agent through refinements. The code is yours to take with you.' },
+  { module: 'canvas', title: 'Canvas', kind: 'canvas', description: 'Sketch and arrange screens, flows, and notes together. Use a canvas to explore connections or compare ideas with your agent.' },
 ].filter(type => CONFIG.modules[type.module] === true);
 
 type Choice = { title: string; kind: string; description: string };
