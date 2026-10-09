@@ -78,7 +78,7 @@ const storyLabels: Record<string, string> = {
   publish: 'A local prototype becomes a viewing site with a web address.',
   share: 'A shared site link opens a read-only viewer of prototypes and artifacts.',
   source: 'Two teammates work from the same repository of code and context.',
-  permissions: 'Contributors are assigned to the areas they can maintain.',
+  permissions: 'Contributors edit their own prototypes. System maintainers also edit assigned systems. Admins can edit the whole studio.',
   modules: 'A canvas module adds a capability to the existing studio.',
   explore: 'A learning example is open in Studio, ready to explore.',
 };
@@ -159,10 +159,17 @@ export function StorySketch({ kind }: { kind: string }) {
       <path d="M97 90H158M282 90H343" stroke={muted} strokeDasharray="4 3" />
     </>}
     {kind === 'permissions' && <>
-      {['Studio admin', 'System maintainer', 'Contributor'].map((label, i) => <g key={label}>
-        <circle cx="44" cy={35 + i * 54} r="12" fill={paper} stroke={muted} /><text x="66" y={39 + i * 54} fontSize="11" fill={ink}>{label}</text>
-        <path d={`M190 ${35 + i * 54}H253`} stroke={muted} />
-        <rect x="253" y={18 + i * 54} width="158" height="34" rx="4" fill={paper} stroke={border} /><text x="267" y={39 + i * 54} fontSize="11" fill={muted}>{['Studio settings', 'Assigned system', 'Their prototypes'][i]}</text>
+      <text x="220" y="22" textAnchor="middle" fontSize="12" fill={muted}>Who can edit what</text>
+      {[
+        { title: 'Contributor', lines: ['Their prototypes'] },
+        { title: 'System maintainer', lines: ['Their prototypes', '+ assigned system'] },
+        { title: 'Admin', lines: ['The whole studio'] },
+      ].map((scope, i) => <g key={scope.title}>
+        <rect x={18 + i * 140} y="37" width="124" height="130" rx="6" fill={paper} stroke={border} />
+        <circle cx={80 + i * 140} cy="61" r="8" fill="none" stroke={muted} />
+        <path d={`M${67 + i * 140} 85v-3a13 13 0 0126 0v3`} fill="none" stroke={muted} />
+        <text x={80 + i * 140} y="106" textAnchor="middle" fontSize="11" fill={ink}>{scope.title}</text>
+        {scope.lines.map((line, row) => <text key={line} x={80 + i * 140} y={133 + row * 17} textAnchor="middle" fontSize="10" fill={muted}>{line}</text>)}
       </g>)}
     </>}
     {kind === 'modules' && <>

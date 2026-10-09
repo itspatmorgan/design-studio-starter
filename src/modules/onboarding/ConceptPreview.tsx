@@ -18,8 +18,8 @@ const artifacts = [
 const collaboration = [
   { title: 'Share the source', kind: 'source', description: 'Share the repository so teammates and their agents can adapt the code and continue the work with its context.' },
   ...(CONFIG.modules.contributors ? [{ title: 'Contributor permissions', kind: 'permissions', description: CONFIG.usage === 'team'
-    ? 'Ask your agent to help teammates join. Admins assign their studio and system permissions in Contributors. Repository access is separate.'
-    : 'Switch to Team in Studio settings, then ask your agent to help teammates join. Admins assign permissions. Repository access is separate.' }] : []),
+    ? 'Contributors edit their own prototypes. Admins can grant system maintenance permissions or Admin access to the whole studio.'
+    : 'Switch to Team in Studio settings. Contributors edit their own prototypes. Admins can grant system maintenance permissions or full Studio access.' }] : []),
 ];
 
 type Choice = { title: string; kind: string; description: string };
