@@ -1,6 +1,6 @@
 # Set up Design Studio
 
-Choose one of four paths: Codex plugin, Claude Code plugin, Cursor plugin, or direct from the source repository. Use the desktop app and a local session so the agent can create files and run Studio on your computer. Each plugin prompt requests installation and studio creation together. After setup, use [DEPLOY.md](DEPLOY.md) when you want a viewing link to share.
+Choose one of four paths: Codex plugin, Claude Code plugin, Cursor plugin, or direct from the source repository. Use the desktop app and a local session so the agent can create files and run Studio on your computer. Each plugin prompt requests installation and studio creation together. If ChatGPT Sites is available, use the [setup-and-publish prompt](#set-up-and-publish-with-chatgpt-sites) instead.
 
 If your account or organization cannot load a plugin, use the direct-source path below.
 
@@ -58,9 +58,13 @@ Open the local URL printed by Vite. You can explore the starter before configuri
 
 ## Set up and publish with ChatGPT Sites
 
-Publishing instructions now live in [DEPLOY.md](DEPLOY.md#chatgpt-sites). Complete one setup path above, then open your Studio folder and use that guide's ChatGPT Sites prompt. It also covers GitHub Pages, Netlify, and Vercel.
+Use this alternative prompt in a local Codex chat only if ChatGPT Sites is enabled and available. It requests plugin installation, studio creation, and publication together:
 
-If you explicitly request setup and publication together, the agent completes local setup first, then follows DEPLOY.md for your chosen provider and audience. If publishing is unavailable or fails, you can continue working locally.
+> Install the Design Studio plugin locally for Codex from https://github.com/itspatmorgan/design-studio-starter. Read SETUP.md and follow its Codex plugin installation, linked create-studio, and ChatGPT Sites publishing instructions. Handle the technical steps and preserve my other plugins and existing files. Create my Design Studio on this computer, verify its local preview, and publish a public review link with ChatGPT Sites. Keep authoring local, show me the published link, and help me continue working in my Design Studio folder. Guide me through any restart, plugin activation, or new chat needed. If ChatGPT Sites is unavailable, complete local setup and tell me what is needed to publish.
+
+This workflow publishes a public review link. Anyone with the link can explore your built work; source files and editing stay local. Ask for a private site if you prefer.
+
+After local changes, ask **“Publish my Studio”** to update the same Site with its existing audience. Local edits do not publish automatically. If publishing is unavailable or fails, you can continue working locally.
 
 ## What happens after setup
 
@@ -132,4 +136,4 @@ Without an installed plugin, download a temporary shallow checkout of this publi
 
 Follow that procedure through verified preview and workspace handoff. Preserve existing studios and use open-studio for them; a missing receipt does not authorize initialization.
 
-When publication is explicitly requested, continue with [DEPLOY.md](DEPLOY.md) after local setup. Its ChatGPT Sites path routes to the publish-studio skill; its other paths use the selected provider's tools. Setup alone does not request publication. Carry any chosen provider and audience through a restart handoff. If publishing is unavailable, complete local setup and explain the missing capability.
+For requested ChatGPT Sites publication, continue with the [publish-studio skill](plugins/design-studio/skills/publish-studio/SKILL.md). It owns capability checks, Site identity, audience, deployment, and verification. If Sites is unavailable, complete local setup and explain the missing capability.
