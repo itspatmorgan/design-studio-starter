@@ -18,8 +18,8 @@ const artifacts = [
 const collaboration = [
   { title: 'Share the source', kind: 'source', description: 'Share the repository so teammates and their agents can adapt the code and continue the work with its context.' },
   ...(CONFIG.modules.contributors ? [{ title: 'Contributor permissions', kind: 'permissions', description: CONFIG.usage === 'team'
-    ? 'Admins assign contributor permissions in Team mode. Each scope includes the areas inside it.'
-    : 'Switch to Team in Studio settings. Admins set permissions.' }] : []),
+    ? 'Each contributor edits their own prototypes. Admins choose who can also maintain shared systems or manage the whole studio.'
+    : 'Switch to Team in Studio settings to collaborate with clear editing scopes. Admins choose who can maintain shared systems or manage the whole studio.' }] : []),
 ];
 
 type Choice = { title: string; kind: string; description: string };
