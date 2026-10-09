@@ -76,7 +76,7 @@ const storyLabels: Record<string, string> = {
   'brief-chat': 'Discuss the problem, audience, and learning goal with your agent.',
   lofi: 'A simple wireframe shows layout and navigation without visual detail.',
   publish: 'A local prototype becomes a viewing site with a web address.',
-  share: 'A copied prototype link opens on a teammate’s device for feedback.',
+  share: 'A shared site link opens a read-only viewer of prototypes and artifacts.',
   source: 'Two teammates work from the same repository of code and context.',
   permissions: 'Contributors are assigned to the areas they can maintain.',
   modules: 'A canvas module adds a capability to the existing studio.',
@@ -146,9 +146,9 @@ export function StorySketch({ kind }: { kind: string }) {
     </>}
     {kind === 'share' && <>
       <rect x="22" y="56" width="169" height="66" rx="5" fill={paper} stroke={border} />
-      <text x="38" y="79" fontSize="12" fill={ink}>Copy prototype link</text>
+      <text x="38" y="79" fontSize="12" fill={ink}>Your published site</text>
       <path d="M38 100H171" stroke={ink} opacity=".3" /><Arrow x={204} y={88} length={28} />
-      <Screen x={249} y={26} label="A teammate’s view" width={164} />
+      <Screen x={249} y={26} label="Read-only viewer" width={164} />
       <rect x="283" y="139" width="132" height="29" rx="6" fill={paper} stroke={border} /><text x="294" y="157" fontSize="11" fill={muted}>“Let’s try this idea.”</text>
     </>}
     {kind === 'source' && <>

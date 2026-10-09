@@ -28,7 +28,7 @@ const stories = {
     ? 'Save your brief as a Markdown document in your prototype with your agent. It becomes lasting context for the work.'
     : 'Tell your agent the problem, who it’s for, and what you want to learn.' },
   publish: { kind: 'publish', description: 'Easily publish Design Studio on ChatGPT Sites, Vercel, Netlify, GitHub Pages, or any host that serves static sites.' },
-  share: { kind: 'share', description: 'Use Copy link on your published prototype so someone else can try it and give feedback.' },
+  share: { kind: 'share', description: 'Share your site’s link. Teammates can try prototypes and browse artifacts in a read-only viewer. Protect private work through your host.' },
   modules: { kind: 'modules', description: 'Modules add capabilities to your studio. Enable installed modules in Studio settings, or ask your agent to add one you need.' },
 };
 
