@@ -1,6 +1,6 @@
 # Preview boundary investigation — issue #18
 
-Status: artifact-only comparison completed; child-runtime recommendation recorded. Production integration and cross-harness acceptance remain open. Branch `codex/18-preview-boundary` starts from merged main `2ec2991`. [Issue #18](https://github.com/itspatmorgan/design-studio-starter/issues/18) retains its uncompleted implementation criteria.
+Status: shared child runtime implemented and verified in native Codex browser tools, including static publication under a subpath. Other harnesses require their own compatibility checks. Branch `codex/18-preview-boundary` starts from merged main `2ec2991`. [Issue #18](https://github.com/itspatmorgan/design-studio-starter/issues/18) retains its uncompleted implementation criteria.
 
 ## Question
 
@@ -126,3 +126,26 @@ pnpm dev --host 127.0.0.1 --port 5197
 Open /preview-boundary-compare.html. Select each prototype; exercise narrow/wide frames, the focus probe, CSS injection, color modes, real controls, and the direct-runtime link. Reload between CSS injection trials. A source-heading edit can test HMR; restore it immediately and verify the diff. A controlled throw can test the existing React error boundary; this does not prove asynchronous/uncaught failure or resource-exhaustion containment.
 
 After closing the comparison, remove only the two temporary copied source files. The experiment sources remain under scripts/ and are excluded from the production application. Fixture HTML URLs depend on Studio's dev-server HTML handling, not a new published runtime route.
+
+## Shared production implementation — 2026-10-09
+
+Views now owns one host/runtime foundation for interactive pages and inert canvas/document embeds. The platform index chooses the child entry before importing Studio's router. Actual components execute in the child realm; source components, assigned-system loaders, assets, and authoring contracts are retained. See the canonical contract in `src/modules/view/README.md`.
+
+| Production check | Evidence |
+| --- | --- |
+| Product system | Actual Feedback Inbox overview → filtered inbox updates Studio's permanent artifact URL. Real dialog autofocus, Cancel, Escape, and focus return to New feedback pass. No feedback submitted. |
+| Theme and source state | Typed dialog content survives host color-mode changes. Search state survives source-editor entry/Done. An already-open runtime remains hidden and inert while editing. |
+| Marketing system | Actual landing-v1 renders Geist Variable and its assigned theme; narrow viewport and Get started scrolling work. |
+| Live updates | A temporary real Overview heading update appears without manual reload; original bytes restored. A disposable no-system probe preserves count through HMR while source editing is open. |
+| Embeds | Actual handoff canvas and About This Prototype document render their view previews through the shared child runtime. All observed boundaries reach ready; frames exclude tab focus/pointer interaction and child roots are inert. |
+| No system, viewport, and portals | Disposable explicitly unassigned probe renders with native styling; JS viewport and matchMedia agree at desktop/narrow widths. A document-body style stays in the child; body portal autofocus works and does not create a host dialog. |
+| Fallbacks | Disposable empty-view and deleted-system cases render existing authoring guidance. Controlled React error leaves Studio usable and source repair recovers automatically. Probe removed after verification. |
+| Direct preview | Native context-menu action opens a fresh independent runtime; actual overview/inbox navigation and dialog interaction work. Static direct navigation also passes. |
+| Static publication | Built with /preview-fixture/ base path. Real Product navigation, modal focus, canvas previews, and direct runtime work. This caught and fixed a doubled basepath; protocol regression covers translation. |
+| Manual | Updated Prototypes & systems chapter renders its preview explanation and direct-preview instructions. |
+
+Bridge version 1 validates exact sender/origin, session, fresh document runtime identity, selected artifact, and bounded payloads. Stale document/render-attempt packets are discarded. Hidden source-mode previews and embeds cannot invoke host navigation/shortcuts. Validated status events provide the #19/future-inspector integration point; render counters are not source revision identifiers. File writes remain outside the bridge.
+
+The no-sandbox, same-origin choice is document/runtime separation for trusted code. Parent access, storage, local endpoints, CPU, and shared build dependencies remain outside that isolation guarantee. Codex nested DOM inspection, native clicks, focus, and screenshots are verified. Cursor, ChatGPT, and other harnesses were not available for equivalent testing; independently opening an artifact is the documented fallback, not evidence of those harnesses' compatibility. Component/props source mapping and a developer inspector remain deferred.
+
+Regression suite and production builds pass; Vite retains its large-chunk warning. Build inspection confirms all manifest asset references exist. Temporary probes were removed and real prototype sources restored without a diff.

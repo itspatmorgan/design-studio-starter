@@ -1,11 +1,8 @@
 import './styles.css';
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { RouterProvider } from '@tanstack/react-router';
-import { router } from '@/platform/app/router';
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-);
+// Both entry modes use the published index document, including subpath static hosts.
+// Loading Studio's router here would execute host code in the preview.
+if (new URLSearchParams(location.search).get('studio-preview') === '1') {
+  void import('@/modules/view/preview/main');
+} else {
+  void import('./StudioRoot');
+}
