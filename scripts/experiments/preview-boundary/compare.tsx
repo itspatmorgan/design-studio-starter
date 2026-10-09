@@ -47,4 +47,3 @@ if(child){
 }else root.render(<Host/>);
 // Editing this fixture itself must dispose its root, not create a second one.
 if(import.meta.hot) import.meta.hot.dispose(()=>{root.unmount();style.remove()});
-
