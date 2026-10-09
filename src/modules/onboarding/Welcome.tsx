@@ -62,18 +62,18 @@ export default function Welcome() {
       <div className="min-h-64 flex flex-col justify-center">
         {current.id === 'welcome' && <div className="space-y-6">
           <AgentSketch />
-          <DialogDescription className="text-base leading-relaxed text-balance">Let’s walk through making Studio yours, shaping your first prototype, and sharing the work with others.</DialogDescription>
+          <DialogDescription className="text-base leading-relaxed">Let’s walk through making Studio yours, shaping your first prototype, and sharing the work with others.</DialogDescription>
         </div>}
         {current.id === 'artifacts' && <ArtifactPreview />}
         {current.id === 'systems' && <SystemPreview />}
         {current.id === 'collaborate' && <CollaborationPreview />}
         {story && <div className="space-y-6">
           <StorySketch kind={story.kind} />
-          <DialogDescription className="text-base leading-relaxed text-balance">{story.description}</DialogDescription>
+          <DialogDescription className="text-base leading-relaxed">{story.description}</DialogDescription>
         </div>}
         {current.id === 'next' && <div className="space-y-6">
           <StorySketch kind="explore" />
-          <DialogDescription className="text-base leading-relaxed text-balance">{examples.length ? 'Try a learning example below, or describe your own idea to your agent to start a prototype.' : 'Describe your idea, who it’s for, and what you want to learn. Ask your agent for a first prototype you can try.'}</DialogDescription>
+          <DialogDescription className="text-base leading-relaxed">{examples.length ? 'Try a learning example below, or describe your own idea to your agent to start a prototype.' : 'Describe your idea, who it’s for, and what you want to learn. Ask your agent for a first prototype you can try.'}</DialogDescription>
           {!!examples.length && <div className="flex flex-wrap gap-2">{examples.map(p => <Button key={p.id} variant="outline" onClick={() => { finish(); void navigate(prototypeLink(p)); }}>{p.system === 'product' ? 'Product example' : p.system === 'marketing' ? 'Marketing example' : p.title}<HugeiconsIcon icon={ArrowRight01Icon} /></Button>)}</div>}
         </div>}
       </div>
