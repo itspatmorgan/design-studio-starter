@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CHANNEL, VERSION, identityOf, isHostMessage, isPreviewMessage, acceptsPreview, acceptsSender, acceptsHost, previewUrl, readBootstrap, routerHref, validHref, type Target, type Config } from './protocol.ts';
+import { CHANNEL, VERSION, identityOf, prototypeScopeOf, isHostMessage, isPreviewMessage, acceptsPreview, acceptsSender, acceptsHost, previewUrl, readBootstrap, routerHref, validHref, type Target, type Config } from './protocol.ts';
 const target: Target = { contributor: 'person', prototype: 'sample', prototypeId: '0123456789abcdef', artifact: 'screen.tsx', artifactId: 'fedcba9876543210' };
 const config: Config = { target, href: '/studio/prototypes/0123456789abcdef/artifacts/fedcba9876543210?q=hello#part', dark: false, surface: 'page' };
 const envelope = { channel: CHANNEL, version: VERSION, session: 'session-a', runtime: 'document-a', identity: identityOf(target) };
@@ -27,13 +27,15 @@ test('protocol accepts only declared operations and bounded payloads', () => {
   for (const render of [-1, 0.5, Infinity, Number.MAX_SAFE_INTEGER + 1]) assert.equal(isPreviewMessage({ ...ready, render }), false);
   assert.equal(isPreviewMessage({ ...ready, detail: 'x'.repeat(4097) }), false);
   assert.equal(isPreviewMessage({ ...ready, state: 'invented' }), false);
+  assert.equal(isPreviewMessage({ ...ready, state: new String('ready') }), false);
   assert.equal(isPreviewMessage({ ...envelope, kind: 'navigate', href: '/studio/prototypes', replace: false }), true);
   for (const href of ['//evil.example', 'https://evil.example', 'javascript:alert(1)', '/bad\\path', '/bad\npath', 'x'.repeat(2049)]) {
     assert.equal(validHref(href), false);
     assert.equal(isPreviewMessage({ ...envelope, kind: 'navigate', href, replace: false }), false);
   }
-  assert.equal(isPreviewMessage({ ...envelope, kind: 'shortcut', action: 'source' }), true);
+  for (const action of ['source', 'grid', 'palette', 'navigation']) assert.equal(isPreviewMessage({ ...envelope, kind: 'shortcut', action }), true);
   assert.equal(isPreviewMessage({ ...envelope, kind: 'shortcut', action: 'save' }), false);
+  assert.equal(isPreviewMessage({ ...envelope, kind: 'shortcut', action: new String('source') }), false);
 });
 
 test('configuration identity and surface are explicit and validated', () => {
@@ -59,8 +61,10 @@ test('direct preview URLs round-trip under a static base path without another HT
 
 test('host configuration rejects other senders and obsolete documents', () => {
   const message = { ...envelope, kind: 'configure', config };
-  const accept = (value: ReturnType<typeof event>) => acceptsHost(value, source, origin, envelope.session, envelope.runtime, 'page');
+  const accept = (value: ReturnType<typeof event>) => acceptsHost(value, source, origin, envelope.session, envelope.runtime, 'page', prototypeScopeOf(target));
   assert.equal(accept(event(message)), true);
+  const otherTarget = { ...target, prototypeId: '1234567890abcdef' };
+  assert.equal(accept(event({ ...message, identity: identityOf(otherTarget), config: { ...config, target: otherTarget } })), false);
   assert.equal(accept(event(message, {} as Window)), false);
   assert.equal(accept(event(message, source, 'https://elsewhere.example')), false);
   for (const change of [{ runtime: 'previous-document' }, { session: 'other-session' }, { config: { ...config, surface: 'embed' } }]) assert.equal(accept(event({ ...message, ...change })), false);

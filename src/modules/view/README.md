@@ -24,15 +24,15 @@ Embeds have their own child documents. They use a 1440px layout viewport, scale 
 | Child → host | hello | Same-session bootstrap/reload handshake; host supplies its current target |
 | Child → host | status | Loading, successful render commit, or error; bounded detail and render-attempt counter |
 | Child → host | navigate | Same-origin Studio address and replace/push intent |
-| Child → host | shortcut | Eligible source/grid shortcut, forwarded to existing host handlers |
+| Child → host | shortcut | Eligible source/grid/search/navigation shortcut, forwarded to existing host handlers |
 
-Both sides validate sender window, exact origin, version, session, fresh child-document runtime identity, message kind, and payload fields. Host status/navigation/shortcut messages must match the currently selected artifact identity. Only hello can announce an earlier bootstrap identity after a same-session runtime reload. Configuration identity must match its target; the surface cannot change during a session. Stale document and render-attempt notifications are ignored. Hidden source-mode previews cannot request navigation or shortcuts.
+Both sides validate sender window, exact origin, version, session, fresh child-document runtime identity, message kind, and payload fields. Host status/navigation/shortcut messages must match the currently selected artifact identity. Only hello can announce an earlier bootstrap identity after a same-session runtime reload. Configuration identity must match its target; the surface and prototype scope cannot change during a session. Stale document and render-attempt notifications are ignored. Hidden source-mode previews cannot request navigation or shortcuts.
 
 Targets use permanent prototype/artifact IDs when available, resolved against the current manifest. Registered section artifacts without IDs use explicit owner/path selectors. Source paths locate imports; they do not grant authority. There are no file-write, arbitrary execution, or inspection commands in this protocol.
 
 After validation, status emits a bubbling `studio:preview-state` event from the host boundary with `session`, `runtime`, `identity`, `surface`, `state`, and `render`. Boundary data attributes expose current state, identity, and session for native inspection. This is the integration point for #19 and future inspection modules. The counter identifies runtime load attempts, **not** a source revision or a source-to-component map. Future protocol extensions must add explicit validation and retain independent write authorization.
 
-The child memory router supplies normal TanStack hooks to prototypes. Page navigation is handed to Studio so its history, artifact selection, source mode, and outer routes remain authoritative. Hash anchors stay within the child document. External HTTP(S) links open separately. The direct runtime can navigate React artifacts independently and returns to Studio for other surfaces; crossing prototypes starts a fresh document. Public prototype navigation APIs remain unchanged.
+The host supplies its public history address, including the deployment basepath. The child memory router supplies normal TanStack hooks to prototypes. Page navigation is handed to Studio so its history, artifact selection, source mode, and outer routes remain authoritative. Relative native links resolve against the displayed artifact address, including modified clicks. Hash anchors stay within the child document. External HTTP(S) links open separately. The direct runtime can navigate React artifacts independently and returns to Studio for other surfaces; crossing prototypes starts a fresh document. Direct-preview navigation supports browser Back/Forward. Public prototype navigation APIs remain unchanged.
 
 ## Isolation limits
 
@@ -41,6 +41,8 @@ The iframe is same-origin and has no sandbox attribute. This is a trusted local 
 A stronger security boundary for untrusted code requires a separate origin, asset/CORS and network/server policy, and harness verification. Adding allow-scripts plus allow-same-origin would not establish that protection. See [MDN's iframe reference](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe).
 
 ## Development, inspection, and recovery
+
+Preview shortcuts preserve Studio search and navigation as well as source/grid commands. Text inputs and contenteditable regions retain their keystrokes. Source/grid/navigation keep the shell’s capture behavior. Prototype handlers can consume search before forwarding.
 
 Each child receives Vite HMR and manifest/file-loader notifications. Pending loads are cancelled logically so stale responses cannot replace the current artifact. Ordinary component updates preserve Fast Refresh state; missing/incomplete files and source repair use the existing loader and error handling.
 

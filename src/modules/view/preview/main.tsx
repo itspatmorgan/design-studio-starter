@@ -8,7 +8,7 @@ import PreviewSurface, { type LoadedView } from './PreviewSurface';
 import { loadManifest, setManifest, allPrototypes, withItems, findArtifactByIdentity, findArtifact } from '@/platform/app/data/manifest';
 import type { Manifest } from '@/platform/app/data/types';
 import { addressOf } from '@/platform/core/roots';
-import { artifactShortcut } from '@/platform/app/shell/artifactShortcuts';
+import { previewShortcut } from '@/platform/app/shell/artifactShortcuts';
 
 type Status = Extract<PreviewMessage, { kind: 'status' }>;
 const RuntimeContext = createContext<{ config: Config; refresh: number; status: (state: Status['state'], render: number, detail?: string) => void } | null>(null);
@@ -72,8 +72,11 @@ function start() {
   const bootstrap = readBootstrap(location.search);
   const hosted = window.parent !== window;
   const runtime = crypto.randomUUID();
+  // Native links (including modified clicks) and relative assets see the artifact address.
+  const addressBase = document.createElement('base');
+  addressBase.href = new URL(bootstrap.config.href, location.origin).href;
+  document.head.prepend(addressBase);
   let current = bootstrap.config;
-  let syncing = false;
   let request = 0;
   let lastRender = 0;
   const history = createMemoryHistory({ initialEntries: [current.href] });
@@ -81,7 +84,7 @@ function start() {
   const viewRoute = createRoute({ getParentRoute: () => rootRoute, path: '$', component: RuntimeView });
   const router = createRouter({ routeTree: rootRoute.addChildren([viewRoute]), history, basepath: import.meta.env.BASE_URL });
   const envelope = () => ({ channel: CHANNEL, version: VERSION, session: bootstrap.session, runtime, identity: identityOf(current.target) } as const);
-  const send = (event: Omit<Extract<PreviewMessage, { kind: 'status' }>, keyof ReturnType<typeof envelope>> | { kind: 'hello' } | { kind: 'navigate'; href: string; replace: boolean } | { kind: 'shortcut'; action: 'source' | 'grid' }) => {
+  const send = (event: Omit<Extract<PreviewMessage, { kind: 'status' }>, keyof ReturnType<typeof envelope>> | { kind: 'hello' } | { kind: 'navigate'; href: string; replace: boolean } | { kind: 'shortcut'; action: 'source' | 'grid' | 'palette' | 'navigation' }) => {
     if (hosted) window.parent.postMessage({ ...envelope(), ...event }, location.origin);
   };
   function Runtime() {
@@ -95,20 +98,20 @@ function start() {
     useEffect(() => {
       const apply = (next: Config) => {
         current = next;
+        addressBase.href = new URL(next.href, location.origin).href;
         document.documentElement.classList.toggle('dark', next.dark);
         setConfig(next);
         if (history.location.href !== next.href) {
-          syncing = true;
-          void router.navigate({ to: routerHref(next.href, import.meta.env.BASE_URL) as never, replace: true }).finally(() => { syncing = false; });
+          void router.navigate({ to: routerHref(next.href, import.meta.env.BASE_URL) as never, replace: true });
         }
       };
       const onMessage = (event: MessageEvent) => {
-        if (!acceptsHost(event, window.parent, location.origin, bootstrap.session, runtime, bootstrap.config.surface)) return;
+        if (!acceptsHost(event, window.parent, location.origin, bootstrap.session, runtime, bootstrap.config.surface, prototypeScopeOf(bootstrap.config.target))) return;
         apply(event.data.config);
       };
       const navigation = async (href: string, replace: boolean) => {
         if (!validHref(href)) return;
-        if (current.surface === 'embed' || syncing) return;
+        if (current.surface === 'embed' || href === current.href) return;
         if (hosted) { send({ kind: 'navigate', href, replace }); return; }
         const ticket = ++request;
         const target = await targetFromHref(href);
@@ -119,14 +122,15 @@ function start() {
           return;
         }
         apply({ ...current, target, href });
-        window.history.replaceState(null, '', previewUrl(current, bootstrap.session, import.meta.env.BASE_URL));
+        const url = previewUrl(current, bootstrap.session, import.meta.env.BASE_URL);
+        if (replace) window.history.replaceState(null, '', url); else window.history.pushState(null, '', url);
       };
       const unsubscribe = history.subscribe(({ action }) => { void navigation(history.location.href, action.type === 'REPLACE'); });
       const onClick = (event: MouseEvent) => {
         const anchor = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null;
         if (!anchor || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey || anchor.download || anchor.target === '_blank') return;
         const raw = anchor.getAttribute('href')!;
-        const url = new URL(raw, location.href);
+        const url = new URL(raw, document.baseURI);
         if (raw.startsWith('#')) {
           event.preventDefault();
           const hash = raw.slice(1);
@@ -142,19 +146,33 @@ function start() {
         }
       };
       const onKey = (event: KeyboardEvent) => {
-        const action = artifactShortcut(event);
+        const action = previewShortcut(event);
         if (!hosted || current.surface !== 'page' || event.defaultPrevented || !action) return;
-        if (event.target instanceof Element && event.target.closest('input,textarea,select,[contenteditable="true"]')) return;
-        if (document.querySelector('[role="dialog"],[role="alertdialog"],[role="menu"]')) return;
+        if (event.target instanceof HTMLElement && (event.target.isContentEditable || event.target.closest('input,textarea,select'))) return;
+        if ((action === 'source' || action === 'grid') && document.querySelector('[role="dialog"],[role="alertdialog"],[role="menu"]')) return;
         event.preventDefault(); event.stopImmediatePropagation(); send({ kind: 'shortcut', action });
       };
+      // Preserve the shell's reserved shortcuts; search can be consumed by prototype handlers.
+      const onReservedKey = (event: KeyboardEvent) => { if (previewShortcut(event) !== 'palette') onKey(event); };
+      const onSearchKey = (event: KeyboardEvent) => { if (previewShortcut(event) === 'palette') onKey(event); };
+      const onPopState = () => {
+        if (hosted) return;
+        try {
+          const next = readBootstrap(location.search);
+          if (next.session !== bootstrap.session || prototypeScopeOf(next.config.target) !== prototypeScopeOf(current.target) || next.config.surface !== current.surface) { window.location.reload(); return; }
+          ++request; // Cancel any pending direct navigation before restoring browser history.
+          apply(next.config);
+        } catch { window.location.reload(); }
+      };
+      window.addEventListener('popstate', onPopState);
       const reload = () => setRefresh(value => value + 1);
       const manifest = ({ manifest }: { manifest: Manifest }) => { setManifest(manifest); reload(); };
       const uncaught = (event: ErrorEvent) => send({ kind: 'status', state: 'error', render: lastRender, detail: event.message.slice(0, 4096) });
       const rejected = (event: PromiseRejectionEvent) => send({ kind: 'status', state: 'error', render: lastRender, detail: String(event.reason).slice(0, 4096) });
       window.addEventListener('message', onMessage);
       document.addEventListener('click', onClick);
-      window.addEventListener('keydown', onKey, true);
+      window.addEventListener('keydown', onReservedKey, true);
+      window.addEventListener('keydown', onSearchKey);
       window.addEventListener('error', uncaught);
       window.addEventListener('unhandledrejection', rejected);
       window.addEventListener('studio:views', reload);
@@ -166,9 +184,11 @@ function start() {
       send({ kind: 'hello' });
       return () => {
         unsubscribe();
+        window.removeEventListener('popstate', onPopState);
         window.removeEventListener('message', onMessage);
         document.removeEventListener('click', onClick);
-        window.removeEventListener('keydown', onKey, true);
+        window.removeEventListener('keydown', onReservedKey, true);
+        window.removeEventListener('keydown', onSearchKey);
         window.removeEventListener('error', uncaught);
         window.removeEventListener('unhandledrejection', rejected);
         window.removeEventListener('studio:views', reload);
@@ -184,7 +204,7 @@ function start() {
   if (current.surface === 'embed') mount.inert = true;
   const root = createRoot(mount);
   root.render(<Runtime />);
-  import.meta.hot?.dispose(() => root.unmount());
+  import.meta.hot?.dispose(() => { root.unmount(); addressBase.remove(); });
 }
 
 try { start(); }

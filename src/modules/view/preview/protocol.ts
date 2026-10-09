@@ -10,7 +10,7 @@ export type PreviewMessage = Envelope & (
   { kind: 'hello' } |
   { kind: 'status'; state: 'loading' | 'ready' | 'error'; render: number; detail: string } |
   { kind: 'navigate'; href: string; replace: boolean } |
-  { kind: 'shortcut'; action: 'source' | 'grid' }
+  { kind: 'shortcut'; action: 'source' | 'grid' | 'palette' | 'navigation' }
 );
 const record = (value: unknown): value is Record<string, unknown> => Boolean(value && typeof value === 'object' && !Array.isArray(value));
 const text = (value: unknown, max = 2048): value is string => typeof value === 'string' && value.length > 0 && value.length <= max && !/[\u0000-\u001f]/.test(value);
@@ -36,8 +36,8 @@ export function isPreviewMessage(value: unknown): value is PreviewMessage {
   if (!envelope(value)) return false;
   if (value.kind === 'hello') return true;
   if (value.kind === 'navigate') return validHref(value.href) && typeof value.replace === 'boolean';
-  if (value.kind === 'shortcut') return value.action === 'source' || value.action === 'grid';
-  return value.kind === 'status' && ['loading', 'ready', 'error'].includes(String(value.state))
+  if (value.kind === 'shortcut') return typeof value.action === 'string' && ['source', 'grid', 'palette', 'navigation'].includes(value.action);
+  return value.kind === 'status' && typeof value.state === 'string' && ['loading', 'ready', 'error'].includes(value.state)
     && Number.isSafeInteger(value.render) && Number(value.render) >= 0 && typeof value.detail === 'string' && value.detail.length <= 4096;
 }
 export function acceptsSender(event: Pick<MessageEvent, 'source' | 'origin'>, source: MessageEventSource | null, origin: string) {
@@ -60,9 +60,9 @@ export function readBootstrap(search: string): { config: Config; session: string
   return { config, session };
 }
 
-export function acceptsHost(event: Pick<MessageEvent, 'source' | 'origin' | 'data'>, source: MessageEventSource | null, origin: string, session: string, runtime: string, surface: Surface) {
+export function acceptsHost(event: Pick<MessageEvent, 'source' | 'origin' | 'data'>, source: MessageEventSource | null, origin: string, session: string, runtime: string, surface: Surface, prototypeScope: string) {
   return acceptsSender(event, source, origin) && isHostMessage(event.data) && event.data.session === session
-    && event.data.runtime === runtime && event.data.config.surface === surface;
+    && event.data.runtime === runtime && event.data.config.surface === surface && prototypeScopeOf(event.data.config.target) === prototypeScope;
 }
 
 // TanStack adds its basepath to navigation targets; bridge hrefs already include it.

@@ -149,3 +149,17 @@ Bridge version 1 validates exact sender/origin, session, fresh document runtime 
 The no-sandbox, same-origin choice is document/runtime separation for trusted code. Parent access, storage, local endpoints, CPU, and shared build dependencies remain outside that isolation guarantee. Codex nested DOM inspection, native clicks, focus, and screenshots are verified. Cursor, ChatGPT, and other harnesses were not available for equivalent testing; independently opening an artifact is the documented fallback, not evidence of those harnesses' compatibility. Component/props source mapping and a developer inspector remain deferred.
 
 Regression suite and production builds pass; Vite retains its large-chunk warning. Build inspection confirms all manifest asset references exist. Temporary probes were removed and real prototype sources restored without a diff.
+
+## PR #22 architecture and harness review
+
+Reviewed the shared runtime, manifest resolution, assigned-system rendering, source keepalive, surface controls, message guards, HMR cleanup, and navigation against issue #18 and platform principles. Kept the owner boundaries and trusted-code isolation decision.
+
+Fixed gaps found during review:
+
+- Studio search and section-navigation shortcuts now cross the child boundary alongside source/grid commands. Source/grid/navigation retain shell capture behavior; search forwards after prototype handlers. Form fields and contenteditable regions keep their input. Real Feedback Inbox verifies search, navigation hide/show, input protection, and source-state preservation.
+- Direct previews push/replace browser history deliberately and restore artifact/configuration on Back/Forward. Real Overview → Inbox → Back → Forward passes. Pending navigation is cancelled when restoring history.
+- Native relative links and modified clicks use an artifact-address base in the child document. The host supplies its public history address, preserving deployment prefixes that the router's internal location can omit. Production subpath inspection confirms the expected base; real prototype navigation and shell search work. Runtime HMR removes its owned base on disposal.
+- Message enum values require primitive strings; configuration cannot change a runtime's prototype scope. Regression tests reject boxed values, other prototype scopes, and invalid shortcut modifiers.
+- Configuration echo suppression compares the requested public address with current configuration rather than a shared asynchronous flag, avoiding overlap between rapid updates. A fresh document handshake resets displayed loading state.
+
+Other harnesses and component/props source mapping remain unverified/deferred as documented above. The shared build/runtime dependency graph remains separate from document isolation; no hostile-code security claim is added.

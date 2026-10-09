@@ -18,8 +18,9 @@ export default function PreviewHost({ target, href, title, surface, width, heigh
   const identity = identityOf(target);
   const latestRender = useRef({ identity, render: -1 });
   if (latestRender.current.identity !== identity) latestRender.current = { identity, render: -1 };
-  const location = useRouterState({ select: state => state.location });
-  const pageUrl = new URL(location.href, window.location.origin);
+  useRouterState({ select: state => state.location });
+  // Router locations may omit a deployment basepath; history retains the public address.
+  const pageUrl = new URL(router.history.location.href, window.location.origin);
   interactive.current = surface === 'page' && pageUrl.searchParams.get('mode') !== 'source';
   if (pageUrl.searchParams.get('mode') === 'source') pageUrl.searchParams.delete('mode');
   const currentHref = surface === 'page' ? pageUrl.pathname + pageUrl.search + pageUrl.hash : import.meta.env.BASE_URL.replace(/\/$/, '') + href;
@@ -52,7 +53,7 @@ export default function PreviewHost({ target, href, title, surface, width, heigh
       if (!acceptsPreview(event, frame.current?.contentWindow ?? null, window.location.origin, session.current, identityOf(config.target), runtime.current)) return;
       const message = event.data;
       setUnresponsive(false);
-      if (message.kind === 'hello') { runtime.current = message.runtime; latestRender.current.render = -1; send(); arm(); }
+      if (message.kind === 'hello') { setState('loading'); runtime.current = message.runtime; latestRender.current.render = -1; send(); arm(); }
       if (message.kind === 'status') {
         if (message.render < latestRender.current.render) return;
         latestRender.current.render = message.render;
@@ -64,7 +65,8 @@ export default function PreviewHost({ target, href, title, surface, width, heigh
       if (message.kind === 'navigate') void router.navigate({ to: routerHref(message.href, import.meta.env.BASE_URL) as never, replace: message.replace });
       if (message.kind === 'shortcut') {
         // Reuse the host's shortcut guards and behavior (source and canvas grid).
-        window.dispatchEvent(new KeyboardEvent('keydown', { key: "'", code: 'Quote', ctrlKey: true, shiftKey: message.action === 'grid', bubbles: true }));
+        const key = message.action === 'palette' ? 'k' : message.action === 'navigation' ? ';' : "'";
+        window.dispatchEvent(new KeyboardEvent('keydown', { key, code: key === 'k' ? 'KeyK' : key === ';' ? 'Semicolon' : 'Quote', ctrlKey: true, shiftKey: message.action === 'grid', bubbles: true }));
       }
     };
     arm();
