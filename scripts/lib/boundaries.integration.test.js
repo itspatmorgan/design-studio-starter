@@ -27,7 +27,8 @@ test('private module consumers and symlink scopes are rejected; disabled app and
     write(root, 'src/modules/extra/module.ts', "export default {id:'extra',label:'Extra',version:'0.1.0',optional:true,lib:true};");
     write(root, 'src/modules/extra/lib/index.ts', 'export const value = 1;');
     write(root, 'src/modules/extra/lib/private.ts', 'export const hidden = 1;');
-    for (const entry of ['app.tsx', 'open.tsx', 'type.ts']) write(root, `src/modules/extra/${entry}`, "Object.assign(globalThis, { __BOUNDARY_DISABLED_SENTINEL__: true }); export default {};");
+    for (const entry of ['app.tsx', 'open.tsx']) write(root, `src/modules/extra/${entry}`, "Object.assign(globalThis, { __BOUNDARY_DISABLED_SENTINEL__: true }); export default {};");
+    write(root, 'src/modules/extra/type.ts', "Object.assign(globalThis, { __BOUNDARY_DISABLED_SENTINEL__: true }); export default {label:'Extra',extensions:[],inPrototype:false,inSystemContent:false,fallback:false,capabilities:{source:false,create:false,fidelity:false,embeds:[],actions:[]}};");
     const consumer = write(root, 'src/lib/private-consumer.ts', "export {hidden} from '/modules/extra/lib/private.ts';");
     assert.equal(attempt('scripts/check/check-modules.js').status, 1);
     fs.writeFileSync(consumer, "export {value} from '@module/extra';");

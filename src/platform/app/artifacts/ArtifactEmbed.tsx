@@ -3,7 +3,7 @@ import { getRouteApi } from '@tanstack/react-router';
 import { DocBase } from '@/platform/app/docs/DocBase';
 import { findArtifact, findPrototype, loadPrototype } from '@/platform/app/data/manifest';
 import { artifactSlug } from '@/platform/core/fileTypes';
-import { fileTypeModules, fileTypeOf } from '@/platform/app/data/fileTypes';
+import { FILE_TYPES, fileTypeModules, fileTypeOf } from '@/platform/app/data/fileTypes';
 import type { Artifact, Prototype } from '@/platform/app/data/types';
 import { artifactReference } from './artifactReference';
 import { embedFor } from '@/platform/app/data/fileTypeModule';
@@ -45,7 +45,7 @@ export default function ArtifactEmbed({ source, label = 'Artifact' }: { source: 
     return () => { active = false; };
   }, [source, base, revision]);
   const previewType = target?.item.fileType ?? (reference ? fileTypeOf(reference.path) : null);
-  const Embed = previewType ? embedFor(fileTypeModules[previewType], 'document') : undefined;
+  const Embed = previewType ? embedFor(FILE_TYPES[previewType], fileTypeModules[previewType], 'document', 'prototype') : undefined;
   const height = Math.max(220, Math.min(440, width * 0.6));
   return <figure className="not-prose my-6 min-w-0">
     <EmbedFrame proto={target?.proto} item={target?.item} label={label}>

@@ -5,7 +5,6 @@ import DiagramEmbed from './DiagramEmbed';
 import { loadDiagram } from './load';
 
 export default {
-  embedSurfaces: ['document', 'canvas'],
   icon: Flowchart01Icon,
   load: loadDiagram,
   Page: Diagram,

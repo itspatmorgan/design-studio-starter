@@ -46,7 +46,7 @@ export function createCanvasAgent({ api, proto, item, manifest, editable, persis
       const found = resolveArtifactPath(manifest(), path);
       if (!found) return null;
       const type = found.item.fileType;
-      return { path, sourcePath: found.item.path, title: artifactLabel(found.item.path), type, typeLabel: FILE_TYPES[type]?.label ?? 'File', preview: Boolean(embedFor(fileTypeModules[type], 'canvas')) };
+      return { path, sourcePath: found.item.path, title: artifactLabel(found.item.path), type, typeLabel: FILE_TYPES[type]?.label ?? 'File', preview: Boolean(embedFor(FILE_TYPES[type], fileTypeModules[type], 'canvas', 'prototype')) };
     },
     artifacts() {
       const own = [...manifest().prototypes, ...Object.values(manifest().sections).flat()].find((p) => p.contributorKey === proto.contributorKey && p.id === proto.id);

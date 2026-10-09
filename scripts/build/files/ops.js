@@ -18,7 +18,10 @@ import { PROTOTYPE_SYSTEMS } from '../../../src/modules/systems/node/systems.js'
 
 // The contents of a new file: its file type's template, by extension (src/modules/<type>/type.ts).
 // Files of no type start empty.
-export const templateFor = (name, systemContent = false) => FILE_TYPES[(systemContent ? systemContentTypeOf : fileTypeOf)(name)]?.template?.(name) ?? '';
+export const templateFor = (name, systemContent = false) => {
+  const spec = FILE_TYPES[(systemContent ? systemContentTypeOf : fileTypeOf)(name)];
+  return spec?.capabilities.create ? spec.template(name) : '';
+};
 
 // The system content's files are platform files: anyone can change their copy here, and the changes go
 // through review before they reach everyone. So it's open to whoever runs the app; what it does

@@ -22,7 +22,6 @@ function TextPage({ proto, item, text }: Props) {
 }
 
 export default {
-  embedSurfaces: [],
   icon: CodeIcon,
 
   async load({ proto, item }) {

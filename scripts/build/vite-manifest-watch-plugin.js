@@ -51,7 +51,7 @@ function relevant(file, kind) {
   return kind !== 'change' || path.basename(file) === 'meta.json' || hasFidelity(file);
 }
 
-const hasFidelity = (file) => { const id = fileTypeOf(file); return Boolean(id && FILE_TYPES[id].fidelity); };
+const hasFidelity = (file) => { const id = fileTypeOf(file); return Boolean(id && FILE_TYPES[id].capabilities.fidelity); };
 
 export default function manifestWatch() {
   return {

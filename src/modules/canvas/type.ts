@@ -8,7 +8,7 @@ import { defineFileType, canvasIdentity, parsePrototypeAddress } from '../../pla
 const KNOWN_VERSION = 1;
 
 export default defineFileType({
-  preview: false,
+  capabilities: { source: true, create: true, fidelity: false, embeds: ['document'], actions: [] },
   inPrototype: true,
   inSystemContent: false,
   fallback: false,

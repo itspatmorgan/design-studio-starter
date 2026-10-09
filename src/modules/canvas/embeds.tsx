@@ -8,7 +8,7 @@ import { embedFor } from '@/platform/app/data/fileTypeModule';
 import { CaptureUpdateAction, newElementWith } from '@excalidraw/excalidraw';
 import type { ExcalidrawElement } from '@excalidraw/excalidraw/element/types';
 import type { AppState, ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
-import { fileTypeModules } from '@/platform/app/data/fileTypes';
+import { FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
 import { artifactLabel } from '@/platform/app/data/manifest';
 import type { Manifest, Prototype } from '@/platform/app/data/types';
 import ArtifactCard, { ITEM_CARD_HEIGHT } from '@/platform/app/artifacts/ArtifactCard';
@@ -35,7 +35,7 @@ const elsewhere = (link: string | null, current: Prototype) => {
 };
 const embedOf = (manifest: Manifest, link: string | null, current: Prototype) => {
   const target = resolve(manifest, link, current);
-  return target ? embedFor(fileTypeModules[target.item.fileType], 'canvas') : undefined;
+  return target ? embedFor(FILE_TYPES[target.item.fileType], fileTypeModules[target.item.fileType], 'canvas', 'prototype') : undefined;
 };
 
 // The size of a new embed: a preview is a screen, a card is a compact row.
@@ -104,7 +104,7 @@ type ItemProps = {
 function CanvasItemInner({ element, manifest, current, offscreen, overview, mounted }: ItemProps) {
   const link = element.type === 'embeddable' ? element.link : null;
   const target = resolve(manifest, link, current);
-  const Embed = target && embedFor(fileTypeModules[target.item.fileType], 'canvas');
+  const Embed = target && embedFor(FILE_TYPES[target.item.fileType], fileTypeModules[target.item.fileType], 'canvas', 'prototype');
   // A card fills the element. A missing one is a card too, and so is one from another prototype.
   if (!target || !Embed) return <div data-canvas-frame="" className="h-full w-full"><ArtifactCard proto={target?.proto} item={target?.item} elsewhere={elsewhere(link, current)} /></div>;
   const { proto, item } = target;

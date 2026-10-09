@@ -21,7 +21,7 @@ function setLofi(source: string, on: boolean) {
 }
 
 export default defineFileType({
-  preview: true,
+  capabilities: { source: true, create: true, fidelity: true, embeds: ['document','canvas'], actions: [] },
   inPrototype: true,
   inSystemContent: false,
   fallback: false,

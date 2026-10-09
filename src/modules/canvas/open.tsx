@@ -27,5 +27,4 @@ export default {
 
   Page: Canvas,
   Embed: CanvasEmbed,
-  embedSurfaces: ['document'],
 } satisfies FileTypeModule<{ proto: Prototype; item: Artifact; text: string; version: string }>;

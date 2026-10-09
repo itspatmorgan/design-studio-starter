@@ -4,7 +4,7 @@
 import { defineFileType } from '../../platform/core/fileTypes.ts';
 
 export default defineFileType({
-  preview: false,
+  capabilities: { source: true, create: false, fidelity: false, embeds: [], actions: [] },
   inPrototype: false,
   inSystemContent: true,
   fallback: true,

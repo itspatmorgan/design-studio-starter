@@ -3,7 +3,7 @@ import { compatible } from '@/platform/core/modules';
 // runs with any of them removed. (scripts/lib/file-types.js finds the same folders for the
 // build.) Core code reads types here and never imports a type's folder (scripts/check/check-modules.js).
 import { assertUniqueExtensions, matchFileType, type FileTypeSpec } from '@/platform/core/fileTypes';
-import type { FileTypeModule } from '@/platform/app/data/fileTypeModule';
+import { assertFileTypeModule, type FileTypeModule } from '@/platform/app/data/fileTypeModule';
 import { MODULES } from '@/platform/app/data/modules';
 import { isEnabled } from '@/platform/app/data/config';
 
@@ -19,11 +19,12 @@ const on = (path: string) => MODULES.some((m) => m.id === idOf(path) && compatib
 export const FILE_TYPES: Record<string, FileTypeSpec> = Object.fromEntries(Object.entries(specs).filter(([path]) => on(path)).map(([path, spec]) => [idOf(path), spec]));
 export const fileTypeModules: Record<string, FileTypeModule> = Object.fromEntries(Object.entries(modules).filter(([path]) => on(path)).map(([path, module]) => [idOf(path), module]));
 assertUniqueExtensions(FILE_TYPES);
+for (const [id, spec] of Object.entries(FILE_TYPES)) assertFileTypeModule(id, spec, fileTypeModules[id]);
 
 // The id of the type that owns a file, by its extension, or null for a plain file.
 export const fileTypeOf = (file: string) => matchFileType(FILE_TYPES, file);
 
 // The types you can make a new file of: those with a template, in the "+" menu.
 export const creatableTypes = Object.entries(FILE_TYPES)
-  .filter(([id, spec]) => spec.inPrototype === true && spec.template && fileTypeModules[id])
+  .filter(([id, spec]) => spec.inPrototype === true && spec.capabilities.create && fileTypeModules[id])
   .map(([id, spec]) => ({ id, label: spec.label, extension: spec.extensions[0], icon: fileTypeModules[id].icon }));

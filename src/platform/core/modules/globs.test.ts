@@ -77,15 +77,15 @@ test('SystemContent Markdown stays readable and validated without prototype Docu
 
 test('extension ownership is unique within each content scope', () => {
   assert.doesNotThrow(() => assertUniqueExtensions(types));
-  const type = { preview: false, inPrototype: true, inSystemContent: false, fallback: false, extensions: ['.md'], label: 'Document' };
+  const type = { capabilities: { source: false, create: false, fidelity: false, embeds: [], actions: [] }, inPrototype: true, inSystemContent: false, fallback: false, extensions: ['.md'], label: 'Document' };
   assert.throws(() => assertUniqueExtensions({ document: type, other: { ...type, label: 'Other' } }), /both use .md in prototype/);
   assert.throws(() => assertUniqueExtensions({ shared: { ...type, inPrototype: false, inSystemContent: true }, other: { ...type, inPrototype: false, inSystemContent: true } }), /both use .md in systemContent/);
 });
 
-test('file types cannot gain a scope or preview by omission', async () => {
+test('file types cannot gain a scope or capabilities by omission', async () => {
   const { defineFileType } = await import('../fileTypes.ts');
-  const spec = { label: 'Fixture', extensions: ['.fixture'], preview: false, inPrototype: false, inSystemContent: false, fallback: false };
-  for (const field of ['preview', 'inPrototype', 'inSystemContent', 'fallback']) {
+  const spec = { label: 'Fixture', extensions: ['.fixture'], capabilities: { source: false, create: false, fidelity: false, embeds: [], actions: [] }, inPrototype: false, inSystemContent: false, fallback: false };
+  for (const field of ['capabilities', 'inPrototype', 'inSystemContent', 'fallback']) {
     const incomplete = { ...spec };
     delete (incomplete as Record<string, unknown>)[field];
     assert.throws(() => defineFileType(incomplete), new RegExp(field));
