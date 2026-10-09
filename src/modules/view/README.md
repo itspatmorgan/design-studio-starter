@@ -48,7 +48,7 @@ Each child receives Vite HMR and manifest/file-loader notifications. Pending loa
 
 Native browser tooling can inspect and interact with real elements inside a page iframe. Codex's in-app browser is verified; Cursor, ChatGPT, and other harnesses require their own browser-tool checks. DOM access does not establish component/props inspection.
 
-Right-click a View and choose **Open preview directly** for a fresh, independently inspectable runtime of that artifact. It retains actual source and assignment; it does not copy the current interaction state. An unresponsive page preview also offers that fallback after a bounded wait. Embeds remain inert even when a harness can inspect their DOM.
+The direct runtime remains available to harness tooling through `previewUrl` in `preview/protocol.ts`. An agent can open a page preview’s iframe `src` in a separate tab when nested inspection is unavailable. This starts a fresh runtime using actual source and assignment. It does not copy interaction state. Studio does not expose this capability in menus or recovery links. An unresponsive page preview shows a notice after a bounded wait. Embeds remain inert even when a harness can inspect their DOM.
 
 React render errors stay in the preview's error UI. Loading failures show an actionable error in the child, preserving Studio's source editor. Uncaught errors and rejected promises report error state; they do not automatically replace the component or recover exhausted CPU resources.
 

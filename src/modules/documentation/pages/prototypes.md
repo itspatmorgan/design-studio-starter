@@ -25,8 +25,6 @@ Views run in their own browser document, with their assigned components, fonts, 
 
 Canvas and document previews are pictures of the working view. Open the original to interact with it.
 
-If your agent's browser tools have trouble inspecting an embedded view, right-click the View in navigation and choose **Open preview directly**. This opens a fresh preview of that artifact in its own tab. It does not copy your current interaction state.
-
 Preview separation contains styles and overlays. It does not make untrusted prototype code safe to run.
 
 ## What belongs in a system?

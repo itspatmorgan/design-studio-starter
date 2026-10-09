@@ -73,14 +73,13 @@ export default function PreviewHost({ target, href, title, surface, width, heigh
     window.addEventListener('message', onMessage);
     return () => { armWatchdog.current = () => {}; clearTimeout(timer); window.removeEventListener('message', onMessage); };
   }, [router]);
-  const direct = previewUrl({ ...config, surface: 'page' }, session.current + '-direct', import.meta.env.BASE_URL);
   return <div ref={boundary} className="relative flex min-h-0 min-w-0 flex-1 flex-col" data-preview-state={state} data-preview-identity={identity} data-preview-session={session.current}>
     <iframe ref={frame} src={src} title={title + ' preview'} onLoad={send}
       tabIndex={surface === 'embed' ? -1 : undefined} aria-hidden={surface === 'embed' || undefined}
       className="min-h-0 w-full flex-1 border-0 bg-background"
       style={{ ...(width !== undefined && { width }), ...(height !== undefined && { height }), ...(surface === 'embed' && { pointerEvents: 'none' }) }} />
     {surface === 'page' && unresponsive && <div role="status" className="absolute inset-x-0 bottom-0 bg-background p-3 text-sm">
-      Preview has not responded. <a className="underline" href={direct} target="_blank" rel="noopener noreferrer">Open preview directly</a>
+      Preview has not responded.
     </div>}
   </div>;
 }
