@@ -79,7 +79,7 @@ const storyLabels: Record<string, string> = {
   share: 'A shared site link opens a read-only viewer of prototypes and artifacts.',
   source: 'Two teammates work from the same repository of code and context.',
   modules: 'A canvas module adds a capability to the existing studio.',
-  explore: 'A learning example is open in Studio, ready to explore.',
+  explore: 'An example prototype is open in Studio, ready to explore.',
 };
 function Screen({ x, y, label, width = 150 }: { x: number; y: number; label: string; width?: number }) {
   return <g>
@@ -164,7 +164,7 @@ export function StorySketch({ kind }: { kind: string }) {
       <g fill="none" stroke={muted}><rect x="271" y="65" width="44" height="36" rx="3" /><rect x="347" y="98" width="51" height="36" rx="3" /><path d="M315 84H329V115H347" /></g>
     </>}
     {kind === 'explore' && <>
-      <Screen x={62} y={20} label="Learning example" width={314} />
+      <Screen x={62} y={20} label="Example prototype" width={314} />
       <rect x="124" y="62" width="159" height="33" rx="4" fill={paper} stroke={border} /><text x="136" y="82" fontSize="12" fill={ink}>Try an interaction</text>
       <path d="M277 91V114L283 108L289 120L294 117L288 106H300Z" fill={ink} />
       <path d="M171 125V149H264V125" stroke={border} fill="none" /><path d="M147 150H288" stroke={border} />

@@ -73,7 +73,7 @@ export default function Welcome() {
         </div>}
         {current.id === 'next' && <div className="space-y-6">
           <StorySketch kind="explore" />
-          <DialogDescription className="text-base leading-relaxed">{examples.length ? 'Try a learning example below, or describe your own idea to your agent to start a prototype.' : 'Describe your idea, who it’s for, and what you want to learn. Ask your agent for a first prototype you can try.'}</DialogDescription>
+          <DialogDescription className="text-base leading-relaxed">{examples.length ? 'Explore a curated example below, or ask your agent to build a new prototype from your own idea.' : 'Describe your idea, who it’s for, and what you want to learn. Ask your agent for a first prototype you can try.'}</DialogDescription>
           {!!examples.length && <div className="flex flex-wrap gap-2">{examples.map(p => <Button key={p.id} variant="outline" onClick={() => { finish(); void navigate(prototypeLink(p)); }}>{p.system === 'product' ? 'Product example' : p.system === 'marketing' ? 'Marketing example' : p.title}<HugeiconsIcon icon={ArrowRight01Icon} /></Button>)}</div>}
         </div>}
       </div>
