@@ -101,12 +101,13 @@ export type FileTypeSpec = {
 };
 
 export const defineFileType = (spec: FileTypeSpec) => {
+  if (!spec || typeof spec !== 'object' || Array.isArray(spec)) throw new Error('File type: provide a declaration object in type.ts.');
   for (const key of ['inSystemContent', 'inPrototype', 'fallback'] as const) {
     if (typeof spec[key] !== 'boolean') throw new Error(`File type ${spec.label}: declare ${key} as true or false.`);
   }
   if ('preview' in spec) throw new Error(`File type ${spec.label}: replace preview with capabilities.embeds in type.ts.`);
   const caps = spec.capabilities;
-  if (!caps || typeof caps !== 'object') throw new Error(`File type ${spec.label}: declare capabilities.`);
+  if (!caps || typeof caps !== 'object' || Array.isArray(caps)) throw new Error(`File type ${spec.label}: declare capabilities.`);
   for (const key of Object.keys(caps)) if (!['source', 'create', 'fidelity', 'embeds', 'actions'].includes(key)) throw new Error(`File type ${spec.label}: unknown capability ${key}. Use capabilities.actions for module-owned operations.`);
   for (const key of ['source', 'create', 'fidelity'] as const) {
     if (typeof caps[key] !== 'boolean') throw new Error(`File type ${spec.label}: declare capabilities.${key} as true or false.`);

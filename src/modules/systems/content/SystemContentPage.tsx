@@ -29,6 +29,8 @@ export async function prepareContent(proto: Prototype, slug?: string, mode?: 'so
   }
   const type = fileTypeModules[item.fileType];
   try {
+    const state = artifactAvailability(FILE_TYPES[item.fileType], { local: import.meta.env.DEV, editable: false, present: true, renderer: Boolean(type), scope: 'systemContent' });
+    if (!state.view.available) throw new Error(state.view.reason);
     const props = type && await prepareFile(type, { proto, item });
     if (!props) throw new Error('This file could not load.');
     return { type, props, editing, filePath };

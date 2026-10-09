@@ -125,7 +125,8 @@ async function itemLoader({ contributor, prototype, _splat, artifact }: { contri
     await ArtifactSource?.preload?.();
     return { fileType: item.fileType, props: null, source: { proto, item }, title, artifactId: item.studioId, artifactPath: item.path, filePath: '/' + rootOf(proto.contributorKey, proto.id) + '/' + item.path };
   }
-  const props = proto && item && type ? await prepareFile(type, { proto, item }) : undefined;
+  const view = artifactAvailability(item && FILE_TYPES[item.fileType], { local: import.meta.env.DEV, editable: false, present: Boolean(item), renderer: Boolean(type), scope: proto?.contributorKey === SYSTEM_CONTENT_KEY ? 'systemContent' : 'prototype' });
+  const props = proto && item && type && view.view.available ? await prepareFile(type, { proto, item }) : undefined;
   if (!proto || !item || !props || !title) throw notFound();
   return { fileType: item.fileType, props, title, artifactId: item.studioId, artifactPath: item.path, filePath: '/' + rootOf(proto.contributorKey, proto.id) + '/' + item.path };
 }

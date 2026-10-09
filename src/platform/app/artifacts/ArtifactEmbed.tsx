@@ -45,7 +45,7 @@ export default function ArtifactEmbed({ source, label = 'Artifact' }: { source: 
     return () => { active = false; };
   }, [source, base, revision]);
   const previewType = target?.item.fileType ?? (reference ? fileTypeOf(reference.path) : null);
-  const Embed = previewType ? embedFor(FILE_TYPES[previewType], fileTypeModules[previewType], 'document') : undefined;
+  const Embed = previewType ? embedFor(FILE_TYPES[previewType], fileTypeModules[previewType], 'document', 'prototype') : undefined;
   const height = Math.max(220, Math.min(440, width * 0.6));
   return <figure className="not-prose my-6 min-w-0">
     <EmbedFrame proto={target?.proto} item={target?.item} label={label}>

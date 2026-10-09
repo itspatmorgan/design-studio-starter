@@ -56,7 +56,7 @@ The enabled browser registry validates that declared embed surfaces have an `Emb
 
 `artifactAvailability(spec, context)` separates `supported` from `available`. Unavailable results include a reason. The caller explicitly supplies local/published mode, current edit authority, artifact presence, renderer availability, and content scope. Missing or disabled types have no active support.
 
-Source viewing remains available without edit permission. It does not depend on a working page renderer, so broken code remains repairable. Source edits and fidelity changes require current edit authority and local execution. Creation does not require an existing artifact. Embeds require an artifact and renderer on the declared surface. The resolver describes UI availability; server write checks remain authoritative.
+Source viewing remains available without edit permission. It does not depend on a working page renderer, so broken code remains repairable. Source edits and fidelity changes require current edit authority and local execution. Creation does not require an existing artifact. Pages and embeds require an artifact and renderer in the declared content scope. Embed resolution checks that scope as well as the declared surface. The resolver describes UI availability; server write checks remain authoritative.
 
 ### Module-owned actions
 
@@ -64,7 +64,7 @@ A type can add an action without changing the shared file menu. Declare its ID i
 
 Each implementation supplies `id`, `label`, `run`, and explicit `localOnly` and `mutates` booleans. An optional `icon` uses the shared icon type. An optional `unavailable(context)` returns a reason or `null`; it must be a read-only availability check. Context contains the prototype, artifact, and availability environment.
 
-The shared menu shows declared actions and explains unavailable ones. `runArtifactAction` checks availability again before invoking the handler. Mutating actions require local execution and edit authority regardless of `localOnly`. Handlers must use authorized server operations for writes; these flags are not authentication. Read-only actions with `localOnly: false` can appear in published artifact menus. Existing types declare no additional actions.
+The shared menu shows declared actions and explains unavailable ones. `runArtifactAction` requires a resolver that reads current declarations, artifact identity, and authority after the menu closes. A removed artifact, changed type, unmounted reader, or revoked permission cannot reuse a captured menu context. Studio applies its own refusals before calling module availability checks. Callback failures or invalid results keep the action unavailable with a diagnostic reason. Mutating actions require local execution and edit authority regardless of `localOnly`. Handlers must use authorized server operations for writes; these flags are not authentication. Read-only actions with `localOnly: false` can appear in published artifact menus. Existing types declare no additional actions.
 
 For example, a file type can declare `actions: ['view.inspect']` and implement a nonmutating `view.inspect` action that opens its inspection surface. This is an extension example, not an implemented inspector. Keep dependencies within module boundaries. A separate optional inspection module would need its own deliberate integration contract; do not import its private implementation into another module.
 

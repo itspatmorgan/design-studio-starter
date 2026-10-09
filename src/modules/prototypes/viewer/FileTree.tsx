@@ -11,7 +11,7 @@ import { FileActionItems } from '@/platform/app/shell/FileActionItems';
 // arrange artifacts to determine the opening artifact. Every change
 // is a plain file change, so agents see the same thing. On the deployed site, it lists the
 // prototype's items, from the manifest.
-import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useRouter } from '@tanstack/react-router';
 import { dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { extractInstruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item';
@@ -26,7 +26,7 @@ import {
 } from '@/platform/app/data/files';
 import type { Artifact, Manifest, Prototype } from '@/platform/app/data/types';
 import { artifactAvailability, isHelper } from '@/platform/core/fileTypes';
-import { artifactActions, runArtifactAction, type ArtifactActionContext } from '@/platform/app/data/fileTypeModule';
+import { artifactActions, runArtifactAction, type ArtifactActionTarget } from '@/platform/app/data/fileTypeModule';
 import { navIndent, navRow, navRowState } from '@/platform/app/shell/nav';
 import { SYSTEM_CONTENT_KEY, contentSection } from '@/platform/core/roots';
 import { creatableIn, isSkillFile, isSkillFolder, opProblem } from '@/modules/systems/content/rules';
@@ -203,9 +203,21 @@ export default function FileTree({ proto, current, embedded = false, rememberExp
   const fixed = (node: FileNode) => isSystemContent && isSkillFile(contentSection(proto.id), node.path);
   // What can be made in a folder: a prototype's file types and folders, or what the system content section holds there.
   const newOptions = (folder: string) => (isSystemContent
-    ? creatableIn(contentSection(proto.id), folder).map((kind) => ({ target: kind === 'document' ? 'systems' : kind, ...NEW_KINDS[kind] }))
+    ? creatableIn(contentSection(proto.id), folder).filter(kind => kind !== 'document' || artifactAvailability(FILE_TYPES.systems, { local: live, editable, present: false, renderer: Boolean(fileTypeModules.systems), scope: 'systemContent' }).create.available).map((kind) => ({ target: kind === 'document' ? 'systems' : kind, ...NEW_KINDS[kind] }))
     : [...creatableTypes.filter(t => artifactAvailability(FILE_TYPES[t.id], { local: import.meta.env.DEV, editable, present: false, renderer: Boolean(fileTypeModules[t.id]), scope: 'prototype' }).create.available).map((t) => ({ target: t.id, label: `New ${t.label.toLowerCase()}`, icon: t.icon })), { target: 'folder', ...NEW_KINDS.folder }]);
   const items = new Map(proto.artifacts.map((i) => [i.path, i]));
+  const actionTarget = useRef<(path: string) => ArtifactActionTarget | undefined>(() => undefined);
+  useLayoutEffect(() => {
+    actionTarget.current = path => {
+      const item = items.get(path);
+      if (!item) return undefined;
+      const module = fileTypeModules[item.fileType];
+      return { spec: FILE_TYPES[item.fileType], module, context: { proto, item, environment: {
+        local: live, editable, present: true, renderer: Boolean(module), scope: isSystemContent ? 'systemContent' : 'prototype',
+      } } };
+    };
+    return () => { actionTarget.current = () => undefined; };
+  });
   // Switched in the header's "…" menu, and remembered for every prototype.
   const [showAll] = useShowAllFiles();
   const nodes = !files ? itemsAsNodes(proto) : showAll ? files : visibleNodes(files, items);
@@ -407,10 +419,10 @@ export default function FileTree({ proto, current, embedded = false, rememberExp
     const local = import.meta.env.DEV && live;
     const changeable = local && editable && node.path !== 'meta.json' && !fixed(node);
     const menuItem = items.get(isSkills && node.dir ? node.path + '/SKILL.md' : node.path);
-    const environment = { local: import.meta.env.DEV, editable, present: Boolean(menuItem), renderer: Boolean(menuItem && fileTypeModules[menuItem.fileType]), scope: isSystemContent ? 'systemContent' as const : 'prototype' as const };
+    const environment = { local, editable, present: Boolean(menuItem), renderer: Boolean(menuItem && fileTypeModules[menuItem.fileType]), scope: isSystemContent ? 'systemContent' as const : 'prototype' as const };
     const spec = menuItem && FILE_TYPES[menuItem.fileType];
     const available = artifactAvailability(spec, environment);
-    const actionContext: ArtifactActionContext | undefined = menuItem ? { proto, item: menuItem, environment } : undefined;
+    const actionContext = menuItem ? { proto, item: menuItem, environment } : undefined;
     const actions = actionContext ? artifactActions(spec, fileTypeModules[menuItem!.fileType], actionContext) : [];
     if (!local && !actions.some(({ action }) => !action.localOnly && !action.mutates)) return <div key={key}>{children}</div>;
     return (
@@ -441,7 +453,10 @@ export default function FileTree({ proto, current, embedded = false, rememberExp
               ),
               ...actions.map(({ action, availability }) => <ContextMenuItem key={action.id} disabled={!availability.available} title={availability.available ? undefined : availability.reason} onClick={() => {
                 if (!availability.available || !actionContext) return;
-                setTimeout(() => { Promise.resolve().then(() => runArtifactAction(action.id, spec, fileTypeModules[menuItem!.fileType], actionContext)).catch(error => toast.add({ type: 'error', title: error instanceof Error ? error.message : 'Artifact action failed.' })); });
+                setTimeout(() => { Promise.resolve().then(() => runArtifactAction(action.id, () => {
+                  const latest = actionTarget.current(menuItem!.path);
+                  return latest?.context.item.studioId === menuItem!.studioId && latest?.context.item.fileType === menuItem!.fileType ? latest : undefined;
+                })).catch(error => toast.add({ type: 'error', title: error instanceof Error ? error.message : 'Artifact action failed.' })); });
               }}>{action.icon && <HugeiconsIcon icon={action.icon} />} {action.label}</ContextMenuItem>),
               changeable && <ContextMenuItem key="rename" onClick={() => setTimeout(() => setEditing({ kind: 'rename', path: node.path }))}><HugeiconsIcon icon={PencilEdit02Icon} /> Rename</ContextMenuItem>,
             ],
