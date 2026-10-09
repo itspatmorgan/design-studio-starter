@@ -17,7 +17,6 @@ const MarkdownPage = lazyRouteComponent(preload);
 
 export function markdownFileModule(documents: ReturnType<typeof createLoader<MarkdownModule>>): FileTypeModule {
   return {
-    embedSurfaces: [],
     icon: File01Icon,
 
     async load({ proto, item }) {

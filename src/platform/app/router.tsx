@@ -1,3 +1,4 @@
+import { artifactAvailability } from '@/platform/core/fileTypes';
 // Permanent prototype and artifact addresses use source IDs. System routes are
 // contributed by Systems; their named surfaces remain relative to the system ID.
 // Module-owned sections retain their own declared routing contract.
@@ -10,7 +11,7 @@ import { Button } from '@/systems/studio/components/button';
 import App, { NotFound } from '@/platform/app/shell/App';
 import Home from '@/platform/app/pages/home/Home';
 import PrototypeLayout from '@/modules/prototypes/viewer/PrototypeLayout';
-import { isSectionKey, rootOf } from '@/platform/core/roots';
+import { isSectionKey, rootOf, SYSTEM_CONTENT_KEY } from '@/platform/core/roots';
 import { resourceId } from '@/platform/core/resourceIdentity';
 import { findArtifact, findArtifactByIdentity, firstArtifact, artifactLabel, loadManifest, loadPrototype, loadPrototypeByIdentity, setManifest } from '@/platform/app/data/manifest';
 import { prepareFile } from '@/platform/app/data/fileTypeModule';
@@ -120,7 +121,7 @@ async function itemLoader({ contributor, prototype, _splat, artifact }: { contri
   const type = item && fileTypeModules[item.fileType];
   const title = proto && item && [proto.title, artifactLabel(item.path, proto), APP_NAME].join(' — ');
   // Source view: just the text, so a file that doesn't compile can still be read and fixed.
-  if (import.meta.env.DEV && mode === 'source' && proto && item && title && FILE_TYPES[item.fileType]?.language) {
+  if (import.meta.env.DEV && mode === 'source' && proto && item && title && artifactAvailability(FILE_TYPES[item.fileType], { local: import.meta.env.DEV, editable: false, present: true, renderer: Boolean(type), scope: proto.contributorKey === SYSTEM_CONTENT_KEY ? 'systemContent' : 'prototype' }).source.available) {
     await ArtifactSource?.preload?.();
     return { fileType: item.fileType, props: null, source: { proto, item }, title, artifactId: item.studioId, artifactPath: item.path, filePath: '/' + rootOf(proto.contributorKey, proto.id) + '/' + item.path };
   }
@@ -144,7 +145,7 @@ const ArtifactSource = import.meta.env.DEV ? lazyRouteComponent(() => import('@/
 // prototype's navigation, and never renders without its loader's data.
 function ItemPage({ data }: { data: ItemData | undefined }) {
   const source = Boolean(data?.source);
-  const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(data && FILE_TYPES[data.fileType]?.language), source);
+  const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(data && FILE_TYPES[data.fileType]?.capabilities.source), source);
   if (!data) return null;
   // Done goes back to the item's page; unsaved edits ask first (the shared SourceEditor).
   const done = <Button size="sm" variant="outline" onClick={toggle} title={`Return to rendered view (${shortcutLabel('source')})`}>Done</Button>;

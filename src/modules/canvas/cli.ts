@@ -9,7 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { artifactSlug, canvasIdentity, prototypeAddress, artifactAddress, parsePrototypeAddress, resourceId } from '../../platform/core/fileTypes.ts';
+import { artifactSlug, canvasIdentity, type FileTypeSpec, prototypeAddress, artifactAddress, parsePrototypeAddress, resourceId } from '../../platform/core/fileTypes.ts';
 import { addressOf, canonicalPath, parseAddress } from '../../platform/core/roots.ts';
 import { FORMAT_VERSION, stringifyScene } from './slim.ts';
 import { help, run, ToolError, type Ctx, type El, type ArtifactInfo } from './tools.ts';
@@ -60,7 +60,7 @@ const itemsOf = (x: PrototypeRef): { path: string; fileType: string; studioId?: 
   const file = path.join(ROOT, 'public', 'prototypes', 'artifacts', x.contributorKey, `${x.id}.json`);
   return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : [];
 };
-const { FILE_TYPES } = await import(pathToFileURL(path.join(ROOT, 'scripts', 'lib', 'file-types.js')).href) as { FILE_TYPES: Record<string, { label: string; preview?: boolean }> };
+const { FILE_TYPES } = await import(pathToFileURL(path.join(ROOT, 'scripts', 'lib', 'file-types.js')).href) as { FILE_TYPES: Record<string, FileTypeSpec> };
 
 const title = (p: string) => artifactSlug(p).split('/').pop()!.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 const current = everything.find(x => x.contributorKey === contributor && x.id === prototype) ?? fail('This canvas prototype is missing from the manifest. Rebuild it first.');
@@ -77,7 +77,7 @@ const ctx: Ctx = {
     const artifact = proto && itemsOf(proto).find(i => identityAddress ? i.studioId === identityAddress.artifactId : address && artifactSlug(i.path) === address.rest.join('/'));
     if (!artifact) return null;
     const type = FILE_TYPES[artifact.fileType];
-    return { path: appPath, sourcePath: artifact.path, title: title(artifact.path), type: artifact.fileType, typeLabel: type?.label ?? 'File', preview: Boolean(type?.preview) };
+    return { path: appPath, sourcePath: artifact.path, title: title(artifact.path), type: artifact.fileType, typeLabel: type?.label ?? 'File', preview: Boolean(type?.capabilities.embeds.includes('canvas')) };
   },
   artifacts: () => everything
     .filter((x) => x.contributorKey === contributor && x.id === prototype)

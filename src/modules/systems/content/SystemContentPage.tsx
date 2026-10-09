@@ -1,8 +1,9 @@
+import { artifactAvailability } from '@/platform/core/fileTypes';
 import { Suspense } from 'react';
 import { lazyRouteComponent, useRouter } from '@tanstack/react-router';
 import { Button } from '@/systems/studio/components/button';
 import { findArtifact } from '@/platform/app/data/manifest';
-import { fileTypeModules } from '@/platform/app/data/fileTypes';
+import { FILE_TYPES, fileTypeModules } from '@/platform/app/data/fileTypes';
 import { useSourceView } from '@/platform/core/source/useSourceView';
 import { NotFound } from '@/platform/app/shell/App';
 import type { Prototype } from '@/platform/app/data/types';
@@ -19,7 +20,7 @@ const explanations: Record<string, string> = {
 export type ContentData = { type?: FileTypeModule; props?: object; editing: boolean; filePath?: string; error?: string };
 export async function prepareContent(proto: Prototype, slug?: string, mode?: 'source'): Promise<ContentData> {
   const item = slug ? findArtifact(proto, slug) : undefined;
-  const editing = import.meta.env.DEV && mode === 'source' && Boolean(item);
+  const editing = mode === 'source' && artifactAvailability(item && FILE_TYPES[item.fileType], { local: import.meta.env.DEV, editable: false, present: Boolean(item), renderer: Boolean(item && fileTypeModules[item.fileType]), scope: 'systemContent' }).source.available;
   if (!item) return { editing: false };
   const filePath = '/' + rootOf(proto.contributorKey, proto.id) + '/' + item.path;
   if (editing) {
@@ -39,7 +40,7 @@ export default function SystemContentPage({ proto, slug, data }: { proto: Protot
   const router = useRouter();
   const item = slug ? findArtifact(proto, slug) : undefined;
   const editing = Boolean(data?.editing);
-  const { toggle, rendered } = useSourceView(import.meta.env.DEV && Boolean(item), editing);
+  const { toggle, rendered } = useSourceView(artifactAvailability(item && FILE_TYPES[item.fileType], { local: import.meta.env.DEV, editable: false, present: Boolean(item), renderer: Boolean(item && fileTypeModules[item.fileType]), scope: 'systemContent' }).source.available, editing);
   if (slug && !item) return <NotFound />;
   if (!item) return <div className="mx-auto w-full max-w-3xl px-8 py-10"><h1 className="text-3xl font-semibold">{proto.title}</h1><p className="mt-4 text-muted-foreground">{explanations[proto.title]}</p><p className="mt-4 text-sm">{proto.artifacts.length ? 'Select a file in navigation to read or edit it.' : 'No files yet. Ask your agent to add useful material.'}</p><p className="mt-4 text-sm text-muted-foreground">Agent instructions must point to the relevant files. Being listed here does not automatically load them into a conversation.</p></div>;
   if (data?.error) return <div role="alert" className="space-y-3 p-8"><p className="text-sm">{data.error}</p><Button variant="outline" onClick={() => { void router.invalidate(); }}>Try again</Button></div>;

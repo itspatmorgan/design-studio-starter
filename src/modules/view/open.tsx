@@ -6,7 +6,6 @@ import ViewEmbed from './ViewEmbed';
 import ViewFrame from './ViewFrame';
 
 export default {
-  embedSurfaces: ['document', 'canvas'],
   icon: CodeIcon,
   load: loadView,
   Page: ViewFrame,

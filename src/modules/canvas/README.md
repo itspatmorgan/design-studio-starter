@@ -7,7 +7,7 @@ Human orientation: [Prototypes & systems](/documentation/manual/prototypes#what-
 
 **This folder is a self-contained file type.** Core never imports it (`scripts/check/check-modules.js`),
 so the app runs with or without it. Canvas doesn't import another file type either: it asks the
-registry (`src/platform/app/data/fileTypes.ts`) how to show an artifact.
+registry (`src/platform/app/data/fileTypes.ts`) how to show an artifact. Browser and CLI sizing use the same surface declaration.
 
 ### The model
 
@@ -17,7 +17,7 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an artifact.
 - **Items are embeds.** A view, diagram, or document on a canvas is an Excalidraw `embeddable` element whose
   `link` is the artifact's address in the app (`/prototypes/<prototype-id>/artifacts/<artifact-id>`). The link resolves through
   the manifest (`src/platform/app/artifacts/artifactLinks.ts`) to a prototype and an artifact, and the artifact's file type
-  decides how it looks: a type with an `Embed` in its `open.tsx` (views and diagrams on canvases) shows live, any other
+  decides how it looks: a type that declares the canvas surface in `capabilities.embeds` and provides an `Embed` (views and diagrams on canvases) shows live, any other
   type shows a card (`src/platform/app/artifacts/ArtifactCard.tsx`), and a link to nothing shows "Not found".
 - **Views are pictures.** A view is laid out at 1440 px wide and scaled down to the element's width,
   cropped at the bottom. Resizing the element changes the crop. Nothing in it takes clicks.

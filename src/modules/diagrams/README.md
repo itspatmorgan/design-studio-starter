@@ -7,7 +7,7 @@ The optional module owns standalone files. Markdown Mermaid fences remain a shar
 ## Implementation
 
 - `module.ts`: optional module identity and agent routing.
-- `type.ts`: `.mermaid` and `.mmd` extensions, plain text editing, new-file template, and canvas preview capability.
+- `type.ts`: `.mermaid` and `.mmd` extensions, plain text editing, new-file template, and document and canvas preview capabilities.
 - `loader.ts`: raw source globs supplied by the shared file-type build layer; published archives are excluded.
 - `load.ts`: local file reads and published source loading.
 - `open.tsx`, `Diagram.tsx`, `DiagramEmbed.tsx`: page presentation, live local updates, and compact canvas previews.

@@ -61,7 +61,7 @@ A section can declare a content folder, prototype-shaped items, contributor grou
 
 The core page key `settings` is reserved. Modules and contributors cannot use it as a section or contributor key.
 
-Use the TypeScript declaration for exact fields. See the [file-type contract](file-types.md) for file capabilities.
+Use the TypeScript declaration for exact fields. See the [file-type contract](file-types.md) for artifact capability declarations, browser implementations, availability, and module-owned file actions.
 
 Design systems are content in `src/systems/`, not platform modules. Their [contract](../../modules/systems/README.md) defines system structure.
 

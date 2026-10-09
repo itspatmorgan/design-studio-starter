@@ -42,6 +42,7 @@
         "src/platform/app/data/prototypeUsage.test.ts",
         "src/platform/core/archive.test.ts",
         "src/platform/core/config.test.ts",
+        "src/platform/core/fileTypes.test.ts",
         "src/platform/core/modules/globs.test.ts",
         "src/platform/core/modules/modules.test.ts",
         "src/platform/core/modules/pack.test.ts",

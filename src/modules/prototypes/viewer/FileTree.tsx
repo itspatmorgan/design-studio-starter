@@ -25,7 +25,8 @@ import {
   canChangePrototype, fileOp, openInEditor, repoPath, revealInFinder, setArtifactLofi, useFileTree, useMe, type FileNode, type FileOp,
 } from '@/platform/app/data/files';
 import type { Artifact, Manifest, Prototype } from '@/platform/app/data/types';
-import { isHelper } from '@/platform/core/fileTypes';
+import { artifactAvailability, isHelper } from '@/platform/core/fileTypes';
+import { artifactActions, runArtifactAction, type ArtifactActionContext } from '@/platform/app/data/fileTypeModule';
 import { navIndent, navRow, navRowState } from '@/platform/app/shell/nav';
 import { SYSTEM_CONTENT_KEY, contentSection } from '@/platform/core/roots';
 import { creatableIn, isSkillFile, isSkillFolder, opProblem } from '@/modules/systems/content/rules';
@@ -203,7 +204,7 @@ export default function FileTree({ proto, current, embedded = false, rememberExp
   // What can be made in a folder: a prototype's file types and folders, or what the system content section holds there.
   const newOptions = (folder: string) => (isSystemContent
     ? creatableIn(contentSection(proto.id), folder).map((kind) => ({ target: kind === 'document' ? 'systems' : kind, ...NEW_KINDS[kind] }))
-    : [...creatableTypes.map((t) => ({ target: t.id, label: `New ${t.label.toLowerCase()}`, icon: t.icon })), { target: 'folder', ...NEW_KINDS.folder }]);
+    : [...creatableTypes.filter(t => artifactAvailability(FILE_TYPES[t.id], { local: import.meta.env.DEV, editable, present: false, renderer: Boolean(fileTypeModules[t.id]), scope: 'prototype' }).create.available).map((t) => ({ target: t.id, label: `New ${t.label.toLowerCase()}`, icon: t.icon })), { target: 'folder', ...NEW_KINDS.folder }]);
   const items = new Map(proto.artifacts.map((i) => [i.path, i]));
   // Switched in the header's "…" menu, and remembered for every prototype.
   const [showAll] = useShowAllFiles();
@@ -402,10 +403,16 @@ export default function FileTree({ proto, current, embedded = false, rememberExp
   // Menu actions run after the menu has closed, so a dialog or field they open isn't
   // dismissed by the same click.
   function rowMenu(key: string, node: FileNode, children: ReactNode) {
-    // import.meta.env.DEV is false in the build, so the menu isn't in the deployed site.
-    if (!import.meta.env.DEV || !live) return <div key={key}>{children}</div>;
-    const changeable = editable && node.path !== 'meta.json' && !fixed(node);
+    // Authoring actions need a local studio; explicitly public module actions can also appear in a published menu.
+    const local = import.meta.env.DEV && live;
+    const changeable = local && editable && node.path !== 'meta.json' && !fixed(node);
     const menuItem = items.get(isSkills && node.dir ? node.path + '/SKILL.md' : node.path);
+    const environment = { local: import.meta.env.DEV, editable, present: Boolean(menuItem), renderer: Boolean(menuItem && fileTypeModules[menuItem.fileType]), scope: isSystemContent ? 'systemContent' as const : 'prototype' as const };
+    const spec = menuItem && FILE_TYPES[menuItem.fileType];
+    const available = artifactAvailability(spec, environment);
+    const actionContext: ArtifactActionContext | undefined = menuItem ? { proto, item: menuItem, environment } : undefined;
+    const actions = actionContext ? artifactActions(spec, fileTypeModules[menuItem!.fileType], actionContext) : [];
+    if (!local && !actions.some(({ action }) => !action.localOnly && !action.mutates)) return <div key={key}>{children}</div>;
     return (
       <ContextMenu key={key}>
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
@@ -420,18 +427,22 @@ export default function FileTree({ proto, current, embedded = false, rememberExp
             [
               <FileActionItems key="file-actions" path={repoPath(proto, node.path)}
                 href={menuItem ? artifactUrl(proto, menuItem) : undefined}
-                edit={menuItem && FILE_TYPES[menuItem.fileType]?.language ? () => { void navigate({ ...artifactLink(proto, menuItem), search: { mode: 'source' } } as never); } : undefined}
+                edit={menuItem && available.source.available ? () => { void navigate({ ...artifactLink(proto, menuItem), search: { mode: 'source' } } as never); } : undefined}
                 sourceShortcut
-                sourceLabel={editable ? 'Edit source' : 'View source'}
-                open={!node.dir ? () => openInEditor(proto, node.path) : undefined}
-                reveal={() => revealInFinder(proto, node.path)} />,
+                sourceLabel={available.editSource.available ? 'Edit source' : 'View source'}
+                open={local && !node.dir ? () => openInEditor(proto, node.path) : undefined}
+                reveal={local ? () => revealInFinder(proto, node.path) : undefined} />,
             ],
             [
-              editable && !isSystemContent && FILE_TYPES[items.get(node.path)?.fileType ?? '']?.fidelity && (
+              available.fidelity.available && (
                 <ContextMenuItem key="lofi" onClick={() => setTimeout(() => setLofi(items.get(node.path)!, !items.get(node.path)!.lofi))}>
                   <HugeiconsIcon icon={PaintBoardIcon} /> {items.get(node.path)?.lofi ? 'Make hi-fi' : 'Make lo-fi'}
                 </ContextMenuItem>
               ),
+              ...actions.map(({ action, availability }) => <ContextMenuItem key={action.id} disabled={!availability.available} title={availability.available ? undefined : availability.reason} onClick={() => {
+                if (!availability.available || !actionContext) return;
+                setTimeout(() => { Promise.resolve().then(() => runArtifactAction(action.id, spec, fileTypeModules[menuItem!.fileType], actionContext)).catch(error => toast.add({ type: 'error', title: error instanceof Error ? error.message : 'Artifact action failed.' })); });
+              }}>{action.icon && <HugeiconsIcon icon={action.icon} />} {action.label}</ContextMenuItem>),
               changeable && <ContextMenuItem key="rename" onClick={() => setTimeout(() => setEditing({ kind: 'rename', path: node.path }))}><HugeiconsIcon icon={PencilEdit02Icon} /> Rename</ContextMenuItem>,
             ],
             [changeable && <ContextMenuItem key="delete" variant="destructive" onClick={() => setTimeout(() => setConfirmDelete(node))}><HugeiconsIcon icon={Delete02Icon} /> Delete</ContextMenuItem>],

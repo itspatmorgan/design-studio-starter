@@ -56,13 +56,14 @@ test('file references resolve nested files and remain within the document protot
   for (const path of ['app/main.tsx', 'board.excalidraw', 'context.md', 'notes.txt']) assert.equal(artifactReference(path, base)?.path, `research/${path}`);
 });
 
-test('file previews respect surface restrictions to bound canvas nesting', async () => {
+test('file previews respect the Node-readable capability surfaces to bound canvas nesting', async () => {
   const { embedFor } = await import('../../src/platform/app/data/fileTypeModule.ts');
   const Embed = () => null;
-  assert.equal(embedFor({ Embed }, 'document'), undefined);
-  assert.equal(embedFor({ Embed, embedSurfaces: [] }, 'canvas'), undefined);
-  assert.equal(embedFor({ Embed, embedSurfaces: ['document', 'canvas'] }, 'canvas'), Embed);
-  assert.equal(embedFor({ Embed, embedSurfaces: ['document'] }, 'document'), Embed);
-  assert.equal(embedFor({ Embed, embedSurfaces: ['document'] }, 'canvas'), undefined);
-  assert.equal(embedFor(undefined, 'document'), undefined);
+  const spec = surfaces => ({ capabilities: { embeds: surfaces } });
+  assert.equal(embedFor(undefined, { Embed }, 'document'), undefined);
+  assert.equal(embedFor(spec([]), { Embed }, 'canvas'), undefined);
+  assert.equal(embedFor(spec(['document', 'canvas']), { Embed }, 'canvas'), Embed);
+  assert.equal(embedFor(spec(['document']), { Embed }, 'document'), Embed);
+  assert.equal(embedFor(spec(['document']), { Embed }, 'canvas'), undefined);
+  assert.equal(embedFor(spec(['document']), undefined, 'document'), undefined);
 });

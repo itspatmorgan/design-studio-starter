@@ -7,13 +7,62 @@
 // Optional types can be removed: delete the folder and its files become plain files. A type has
 //   type.ts     what the build and the app both need to know (this file's FileTypeSpec)
 //   open.tsx    how the app opens it: its icon, how it loads, and its page
-// To add a type, see src/platform/context/file-types.md. This file has no imports, so Node scripts can
+// To add a type, see src/platform/context/file-types.md. This file stays free of browser and React dependencies, so Node scripts can
 // load it directly.
 
 import { markdownIdentity } from './resourceIdentity.ts';
 import type { IdentityMetadata } from './resourceIdentity.ts';
 export { canvasIdentity, createResourceId, diagramIdentity, markdownIdentity, resourceId, viewIdentity, parsePrototypeAddress, prototypeAddress, artifactAddress, systemAddress } from './resourceIdentity.ts';
 export type { IdentityMetadata, ResourceId } from './resourceIdentity.ts';
+
+export type EmbedSurface = 'document' | 'canvas';
+
+// Supported behavior, independent of a particular file's permissions or runtime state.
+export type ArtifactCapabilities = {
+  source: boolean;
+  create: boolean;
+  fidelity: boolean;
+  embeds: readonly EmbedSurface[];
+  // Module-owned menu actions implemented by open.tsx. Use namespaced IDs.
+  actions: readonly string[];
+};
+
+export type CapabilityAvailability =
+  | { supported: false; available: false; reason: string }
+  | { supported: true; available: false; reason: string }
+  | { supported: true; available: true };
+
+export type ArtifactAvailabilityContext = {
+  local: boolean;
+  editable: boolean; // supplied by current authority checks, never inferred from support
+  present: boolean;
+  renderer: boolean;
+  scope: 'prototype' | 'systemContent';
+};
+
+export function capabilityAvailability(supported: boolean, ...restrictions: (string | false | undefined)[]): CapabilityAvailability {
+  if (!supported) return { supported: false, available: false, reason: 'This artifact type does not support this operation.' };
+  const reason = restrictions.find((value): value is string => typeof value === 'string');
+  return reason ? { supported: true, available: false, reason } : { supported: true, available: true };
+}
+
+// This describes UI availability. The server must still authorize every write.
+export function artifactAvailability(spec: FileTypeSpec | undefined, context: ArtifactAvailabilityContext) {
+  const caps = spec?.capabilities;
+  const missing = !context.present && 'This artifact is unavailable.';
+  const local = !context.local && 'This operation is available only in a local studio.';
+  const readonly = !context.editable && 'You do not have permission to change this artifact.';
+  const renderer = !context.renderer && 'The artifact renderer is unavailable.';
+  const scope = Boolean(spec && !(context.scope === 'prototype' ? spec.inPrototype : spec.inSystemContent)) && 'This artifact type is unavailable in this scope.';
+  return {
+    view: capabilityAvailability(Boolean(spec), scope, missing, renderer),
+    source: capabilityAvailability(caps?.source === true, scope, missing, local),
+    editSource: capabilityAvailability(caps?.source === true, scope, missing, local, readonly),
+    create: capabilityAvailability(caps?.create === true, scope, local, readonly, renderer),
+    fidelity: capabilityAvailability(caps?.fidelity === true, scope, missing, local, readonly, context.scope !== 'prototype' && 'Fidelity changes apply only to prototype artifacts.'),
+    embeds: Object.fromEntries((['document', 'canvas'] as const).map(surface => [surface, capabilityAvailability(caps?.embeds.includes(surface) === true, scope, missing, renderer)])) as Record<EmbedSurface, CapabilityAvailability>,
+  };
+}
 
 export type FileTypeSpec = {
   label: string;                        // "View", "Document"
@@ -24,9 +73,7 @@ export type FileTypeSpec = {
   // The syntax the Source view highlights (src/platform/app/source/ArtifactSource.tsx). Leave it
   // out for a type with no source to show.
   language?: 'tsx' | 'markdown' | 'json' | 'mermaid' | 'text';
-  // True if the type shows itself live where another artifact includes it (on a canvas), and false for a card. Its open.tsx provides the Embed; this is for code that can't load that
-  // (the command line), to size things.
-  preview: boolean;
+  capabilities: ArtifactCapabilities;
   // True if the type opens in the system content (src/platform/), where every other file opens as plain
   // text instead of as its own type. (A script in a skill's folder is text there, not a view.)
   inSystemContent: boolean;
@@ -54,9 +101,21 @@ export type FileTypeSpec = {
 };
 
 export const defineFileType = (spec: FileTypeSpec) => {
-  for (const key of ['preview', 'inSystemContent', 'inPrototype', 'fallback'] as const) {
+  for (const key of ['inSystemContent', 'inPrototype', 'fallback'] as const) {
     if (typeof spec[key] !== 'boolean') throw new Error(`File type ${spec.label}: declare ${key} as true or false.`);
   }
+  if ('preview' in spec) throw new Error(`File type ${spec.label}: replace preview with capabilities.embeds in type.ts.`);
+  const caps = spec.capabilities;
+  if (!caps || typeof caps !== 'object') throw new Error(`File type ${spec.label}: declare capabilities.`);
+  for (const key of Object.keys(caps)) if (!['source', 'create', 'fidelity', 'embeds', 'actions'].includes(key)) throw new Error(`File type ${spec.label}: unknown capability ${key}. Use capabilities.actions for module-owned operations.`);
+  for (const key of ['source', 'create', 'fidelity'] as const) {
+    if (typeof caps[key] !== 'boolean') throw new Error(`File type ${spec.label}: declare capabilities.${key} as true or false.`);
+  }
+  if (!Array.isArray(caps.embeds) || caps.embeds.some(surface => !['document', 'canvas'].includes(surface)) || new Set(caps.embeds).size !== caps.embeds.length) throw new Error(`File type ${spec.label}: capabilities.embeds must list unique document/canvas surfaces, or [].`);
+  if (!Array.isArray(caps.actions) || caps.actions.some(id => typeof id !== 'string' || !/^[a-z][a-z0-9-]*\.[a-z][a-z0-9-]*$/.test(id)) || new Set(caps.actions).size !== caps.actions.length) throw new Error(`File type ${spec.label}: capabilities.actions must list unique namespaced action IDs (module.action), or [].`);
+  if (caps.source && !['tsx', 'markdown', 'json', 'mermaid', 'text'].includes(spec.language ?? '')) throw new Error(`File type ${spec.label}: source capability requires a supported language.`);
+  if (caps.create !== (typeof spec.template === 'function')) throw new Error(`File type ${spec.label}: create capability must match its template implementation.`);
+  if (caps.fidelity !== (spec.fidelity !== undefined) || (caps.fidelity && (typeof spec.fidelity?.isLofi !== 'function' || typeof spec.fidelity?.setLofi !== 'function'))) throw new Error(`File type ${spec.label}: fidelity capability must match its fidelity implementation.`);
   return spec;
 };
 
@@ -81,6 +140,7 @@ export function systemContentType(specs: Record<string, FileTypeSpec>, file: str
 
 // Two types cannot own the same extension within the same content scope.
 export function assertUniqueExtensions(specs: Record<string, FileTypeSpec>) {
+  for (const spec of Object.values(specs)) defineFileType(spec);
   const owners = new Map<string, string>();
   const fallbacks = Object.entries(specs).filter(([, spec]) => spec.fallback).map(([id]) => id);
   if (fallbacks.length > 1) throw new Error(`File types ${fallbacks.map((id) => `"${id}"`).join(' and ')} are both the fallback. Only one type can open the files no other type claims.`);
@@ -112,7 +172,7 @@ const titleOf = (name: string) => name.replace(/\.md$/, '').split(/[-_]/).filter
 export const markdownFileType: FileTypeSpec = {
   label: 'Document',
   identity: markdownIdentity,
-  preview: false,
+  capabilities: { source: true, create: true, fidelity: false, embeds: [], actions: [] },
   inPrototype: true,
   inSystemContent: false,
   fallback: false,
