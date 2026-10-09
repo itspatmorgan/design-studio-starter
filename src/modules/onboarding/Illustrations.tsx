@@ -72,7 +72,8 @@ const storyLabels: Record<string, string> = {
   toolkit: 'Components and a theme become a screen that fits your product.',
   context: 'Product knowledge guides a design decision for your audience.',
   skills: 'A design critique skill is invoked with a slash command in the agent chat.',
-  brief: 'A brief with a problem, audience, and learning goal becomes a first concept.',
+  brief: 'A Markdown brief stays inside the prototype as lasting context.',
+  'brief-chat': 'Discuss the problem, audience, and learning goal with your agent.',
   lofi: 'A simple wireframe shows layout and navigation without visual detail.',
   publish: 'A local prototype becomes a viewing site with a web address.',
   share: 'A copied prototype link opens on a teammate’s device for feedback.',
@@ -123,10 +124,12 @@ export function StorySketch({ kind }: { kind: string }) {
       <text x="266" y="93" fontSize="10" fontFamily="monospace" fill={ink}>/design-critique</text>
       <text x="266" y="121" fontSize="10" fill={muted}>Running design critique</text>
     </>}
-    {kind === 'brief' && <>
+    {(kind === 'brief' || kind === 'brief-chat') && <>
       <rect x="24" y="15" width="183" height="150" rx="4" fill={paper} stroke={border} />
-      {['The problem', 'Who it’s for', 'What we want to learn'].map((label, i) => <g key={label}><text x="40" y={39 + i * 43} fontSize="11" fill={ink}>{label}</text><path d={`M40 ${52 + i * 43}h146`} stroke={ink} opacity=".25" /></g>)}
-      <Arrow x={219} y={91} length={23} /><Screen x={257} y={38} label="First concept" width={157} />
+      <text x="40" y="35" fontSize="12" fill={ink}>{kind === 'brief' ? 'brief.md' : 'Your brief'}</text>
+      {['The problem', 'Who it’s for', 'What we want to learn'].map((label, i) => <g key={label}><text x="40" y={61 + i * 34} fontSize="10" fill={muted}>{label}</text><path d={`M40 ${72 + i * 34}h146`} stroke={ink} opacity=".25" /></g>)}
+      <Arrow x={219} y={91} length={23} /><Screen x={257} y={38} label={kind === 'brief' ? 'Your prototype' : 'First concept'} width={157} />
+      {kind === 'brief' && <><rect x="303" y="107" width="98" height="24" rx="3" fill={paper} stroke={border} /><text x="315" y="123" fontSize="11" fill={ink}>brief.md</text></>}
     </>}
     {kind === 'lofi' && <>
       <rect x="72" y="15" width="296" height="150" rx="3" fill={paper} stroke={border} />

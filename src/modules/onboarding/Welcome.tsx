@@ -24,7 +24,9 @@ const steps = [
   { id: 'next', title: 'Start exploring' },
 ];
 const stories = {
-  brief: { kind: 'brief', description: 'Tell your agent the problem, who it’s for, and what you want to learn.' },
+  brief: { kind: CONFIG.modules.document ? 'brief' : 'brief-chat', description: CONFIG.modules.document
+    ? 'Save your brief as a Markdown document in your prototype with your agent. It becomes lasting context for the work.'
+    : 'Tell your agent the problem, who it’s for, and what you want to learn.' },
   publish: { kind: 'publish', description: 'Ask your agent to publish your studio so others can view it online. A custom domain is optional.' },
   share: { kind: 'share', description: 'Use Copy link on your published prototype so someone else can try it and give feedback.' },
   modules: { kind: 'modules', description: 'Modules add capabilities to your studio. Enable installed modules in Studio settings, or ask your agent to add one you need.' },
