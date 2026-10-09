@@ -16,7 +16,7 @@ An open-source, local prototype sandbox for designers and product managers who b
 
 Use Codex, Claude Code, or Cursor in a local desktop session. Copy one prompt from [the setup guide](SETUP.md) to install the plugin and create your studio. Your agent handles setup and opens it on your computer.
 
-The guide also covers [direct setup without a plugin](SETUP.md#4-direct-from-the-source-repository) and [manual installation](SETUP.md#manual-installation). When you want a viewing link to share, ask your agent to follow [the deployment guide](DEPLOY.md) for ChatGPT Sites, GitHub Pages, Netlify, or Vercel. Editing stays local.
+The guide also covers [direct setup without a plugin](SETUP.md#4-direct-from-the-source-repository) and [manual installation](SETUP.md#manual-installation). If ChatGPT Sites is available, the [setup-and-publish prompt](SETUP.md#set-up-and-publish-with-chatgpt-sites) includes a viewing link you can share. Editing stays local.
 
 ## Explore further
 
