@@ -29,7 +29,7 @@ const stories = {
     : 'Tell your agent the problem, who it’s for, and what you want to learn.' },
   publish: { kind: 'publish', description: 'Easily publish Design Studio on ChatGPT Sites, Vercel, Netlify, GitHub Pages, or any host that serves static sites.' },
   share: { kind: 'share', description: 'Share your site’s link. Teammates can try prototypes and browse artifacts in a read-only viewer. Protect private work through your host.' },
-  modules: { kind: 'modules', description: 'Modules add capabilities to your studio. Enable installed modules in Studio settings, or ask your agent to add one you need.' },
+  modules: { kind: 'modules', description: 'Design Studio is modular. Turn capabilities on or off, or work with your agent to improve one or build a new module.' },
 };
 
 export default function Welcome() {
