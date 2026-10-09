@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowRight01Icon } from '@hugeicons/core-free-icons';
 import { Button } from '@/systems/studio/components/button';
@@ -7,7 +6,6 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/systems
 import { APP_NAME, CONFIG } from '@/platform/core/api';
 import { useManifest } from '@/platform/app/data/useManifest';
 import { useMe } from '@/platform/app/data/files';
-import { prototypeLink } from '@/platform/app/data/manifest';
 import { claimIntroduction, complete, progressKey, recordIntroduction } from './progress';
 import { ArtifactPreview, CollaborationPreview, SystemPreview } from './ConceptPreview';
 import { AgentSketch, StorySketch } from './Illustrations';
@@ -34,7 +32,6 @@ const stories = {
 
 export default function Welcome() {
   const manifest = useManifest();
-  const navigate = useNavigate();
   const me = useMe();
   const key = progressKey(import.meta.env.BASE_URL, me);
   const [open, setOpen] = useState(false);
@@ -73,8 +70,7 @@ export default function Welcome() {
         </div>}
         {current.id === 'next' && <div className="space-y-6">
           {examples.length ? <StorySketch kind="explore" exampleIds={examples.map(p => p.id)} /> : <AgentSketch />}
-          <DialogDescription className="text-base leading-relaxed">{examples.length ? 'Explore a curated example below, or ask your agent to build a new prototype from your own idea.' : 'Describe your idea, who it’s for, and what you want to learn. Ask your agent for a first prototype you can try.'}</DialogDescription>
-          {!!examples.length && <div className="flex flex-wrap gap-2">{examples.map(p => <Button key={p.id} variant="outline" onClick={() => { finish(); void navigate(prototypeLink(p)); }}>{p.system === 'product' ? 'Product example' : p.system === 'marketing' ? 'Marketing example' : p.title}<HugeiconsIcon icon={ArrowRight01Icon} /></Button>)}</div>}
+          <DialogDescription className="text-base leading-relaxed">{examples.length ? `${examples.length === 2 ? 'Two examples are' : 'An example is'} already in your studio to explore. Or ask your agent to build a prototype from your own idea.` : 'Describe your idea, who it’s for, and what you want to learn. Ask your agent for a first prototype you can try.'}</DialogDescription>
         </div>}
       </div>
       <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
