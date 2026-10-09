@@ -78,7 +78,6 @@ const storyLabels: Record<string, string> = {
   publish: 'A local prototype becomes a viewing site with a web address.',
   share: 'A shared site link opens a read-only viewer of prototypes and artifacts.',
   source: 'Two teammates work from the same repository of code and context.',
-  permissions: 'Contributors edit their own prototypes. System maintainers also edit assigned systems. Admins can edit the whole studio.',
   modules: 'A canvas module adds a capability to the existing studio.',
   explore: 'A learning example is open in Studio, ready to explore.',
 };
@@ -158,20 +157,6 @@ export function StorySketch({ kind }: { kind: string }) {
       {[71, 369].map(x => <g key={x}><circle cx={x} cy="69" r="15" fill={paper} stroke={muted} /><path d={`M${x - 23} 113v-6a23 23 0 0146 0v6`} fill="none" stroke={muted} /></g>)}
       <path d="M97 90H158M282 90H343" stroke={muted} strokeDasharray="4 3" />
     </>}
-    {kind === 'permissions' && <>
-      <text x="220" y="22" textAnchor="middle" fontSize="12" fill={muted}>Who can edit what</text>
-      {[
-        { title: 'Contributor', lines: ['Their prototypes'] },
-        { title: 'System maintainer', lines: ['Their prototypes', '+ assigned system'] },
-        { title: 'Admin', lines: ['The whole studio'] },
-      ].map((scope, i) => <g key={scope.title}>
-        <rect x={18 + i * 140} y="37" width="124" height="130" rx="6" fill={paper} stroke={border} />
-        <circle cx={80 + i * 140} cy="61" r="8" fill="none" stroke={muted} />
-        <path d={`M${67 + i * 140} 85v-3a13 13 0 0126 0v3`} fill="none" stroke={muted} />
-        <text x={80 + i * 140} y="106" textAnchor="middle" fontSize="11" fill={ink}>{scope.title}</text>
-        {scope.lines.map((line, row) => <text key={line} x={80 + i * 140} y={133 + row * 17} textAnchor="middle" fontSize="10" fill={muted}>{line}</text>)}
-      </g>)}
-    </>}
     {kind === 'modules' && <>
       <Screen x={24} y={39} label="Your studio" width={168} />
       <path d="M207 89H239M223 73V105" stroke={muted} />
@@ -185,4 +170,21 @@ export function StorySketch({ kind }: { kind: string }) {
       <path d="M171 125V149H264V125" stroke={border} fill="none" /><path d="M147 150H288" stroke={border} />
     </>}
   </svg>;
+}
+
+export function ScopeDiagram() {
+  return <div role="img" aria-label="Nested editing scopes: Contributors edit their own prototypes. System maintainers also edit assigned systems. Admins can edit the whole Studio." className="rounded-xl border border-foreground/30 bg-muted/40 p-4">
+    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-base">
+      <span className="font-medium">Admin</span><span className="text-muted-foreground">The whole Studio</span>
+    </div>
+    <div className="mt-4 rounded-lg border border-foreground/20 bg-background/50 p-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-base">
+        <span className="font-medium">System maintainer</span><span className="text-muted-foreground">Assigned systems</span>
+      </div>
+      <div className="mt-4 rounded-md border bg-background p-4 text-center text-base">
+        <p className="font-medium">Contributor</p>
+        <p className="mt-1 text-muted-foreground">Your prototypes</p>
+      </div>
+    </div>
+  </div>;
 }
