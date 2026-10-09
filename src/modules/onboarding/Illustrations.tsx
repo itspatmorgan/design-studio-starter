@@ -30,16 +30,7 @@ export function AgentSketch() {
 }
 
 export function SystemSketch({ selected }: { selected: number }) {
-  const labels = ['Theme + components', 'Context', 'Skills'];
-  return <svg viewBox="0 0 440 155" className="h-32 w-full text-foreground" role="img" aria-label="Theme and components, context, and skills work together to guide your prototypes.">
-    {labels.map((label, i) => <g key={label}>
-      <rect x="18" y={12 + i * 45} width="238" height="36" rx="4" fill={paper} stroke={selected === i ? ink : border} />
-      <text x="32" y={35 + i * 45} fill={selected === i ? ink : muted} fontSize="13">{label}</text>
-    </g>)}
-    <path d="M256 30H284V120H256M256 75H314" stroke="currentColor" opacity=".3" fill="none" />
-    <rect x="314" y="49" width="108" height="54" rx="4" fill={paper} stroke={border} />
-    <text x="328" y="81" fontSize="13" fill={ink}>Prototypes</text>
-  </svg>;
+  return <StorySketch kind={['toolkit', 'context', 'skills'][selected]} />;
 }
 
 export function ArtifactSketch({ kind }: { kind: string }) {
@@ -52,6 +43,8 @@ export function ArtifactSketch({ kind }: { kind: string }) {
       <path d="M140 77H360M140 98H360M140 119H360" stroke={border} />
       <path d="M144 87H231M144 108H259M144 129H218" stroke="currentColor" opacity=".4" />
       <rect x="326" y="83" width="28" height="7" rx="2" fill="currentColor" opacity=".15" />
+      <circle cx="343" cy="87" r="14" fill="none" stroke={ink} strokeDasharray="3 3" />
+      <path d="M349 98V115L354 110L358 117L362 115L357 108H365Z" fill={ink} />
     </>}
     {kind === 'document' && <>
       <rect x="102" y="8" width="236" height="135" rx="4" fill={paper} stroke={border} />
@@ -71,6 +64,114 @@ export function ArtifactSketch({ kind }: { kind: string }) {
       <g fontSize="11" fill={muted}><text x="48" y="39">A screen</text><text x="199" y="28">The brief</text><text x="329" y="50">A note</text></g>
       <path d="M49 54H141M49 66H132M49 78H139M200 42H271M200 52H262M200 62H267" stroke="currentColor" opacity=".25" />
       <g stroke="currentColor" fill="none" opacity=".35"><rect x="190" y="109" width="38" height="17" rx="2" /><path d="M228 118H243L257 104L271 118L257 132L243 118M271 118H299" /><rect x="299" y="109" width="44" height="17" rx="2" /></g>
+    </>}
+  </svg>;
+}
+
+const storyLabels: Record<string, string> = {
+  toolkit: 'Components and a theme become a screen that fits your product.',
+  context: 'Product knowledge guides a design decision for your audience.',
+  skills: 'A reusable instruction helps the agent complete a familiar task.',
+  brief: 'A brief with a problem, audience, and learning goal becomes a first concept.',
+  lofi: 'A simple wireframe shows layout and navigation without visual detail.',
+  publish: 'A local prototype becomes a viewing site with a web address.',
+  share: 'A copied prototype link opens on a teammate’s device for feedback.',
+  source: 'Two teammates work from the same repository of code and context.',
+  permissions: 'Contributors are assigned to the areas they can maintain.',
+  modules: 'A canvas module adds a capability to the existing studio.',
+  explore: 'A learning example is open in Studio, ready to explore.',
+};
+function Screen({ x, y, label, width = 150 }: { x: number; y: number; label: string; width?: number }) {
+  return <g>
+    <rect x={x} y={y} width={width} height="104" rx="5" fill={paper} stroke={border} />
+    <path d={`M${x} ${y + 25}h${width}`} stroke={border} />
+    <text x={x + 12} y={y + 17} fontSize="11" fill={muted}>{label}</text>
+    <rect x={x + 12} y={y + 37} width="28" height="52" rx="3" fill={ink} opacity=".07" />
+    <path d={`M${x + 52} ${y + 43}h${width - 65}M${x + 52} ${y + 61}h${width - 78}M${x + 52} ${y + 80}h${width - 70}`} stroke={ink} opacity=".25" />
+  </g>;
+}
+function Arrow({ x, y, length = 48 }: { x: number; y: number; length?: number }) {
+  return <path d={`M${x} ${y}h${length}m-7 -5l7 5l-7 5`} stroke={muted} fill="none" />;
+}
+export function StorySketch({ kind }: { kind: string }) {
+  return <svg viewBox="0 0 440 180" className="h-40 w-full text-foreground" role="img" aria-label={storyLabels[kind]}>
+    {kind === 'toolkit' && <>
+      <rect x="24" y="24" width="158" height="132" rx="5" fill={paper} stroke={border} />
+      <text x="38" y="46" fill={muted} fontSize="12">Your toolkit</text>
+      {[0, 1, 2].map(i => <circle key={i} cx={48 + i * 30} cy="69" r="9" fill={ink} opacity={.15 + i * .25} />)}
+      <rect x="38" y="92" width="64" height="21" rx="5" fill={ink} /><text x="49" y="107" fontSize="10" fill={paper}>Button</text>
+      <rect x="38" y="124" width="126" height="18" rx="3" fill={paper} stroke={border} />
+      <Arrow x={194} y={90} length={38} /><Screen x={249} y={38} label="Your product" width={166} />
+    </>}
+    {kind === 'context' && <>
+      <rect x="25" y="29" width="166" height="122" rx="4" fill={paper} stroke={border} />
+      <text x="40" y="53" fontSize="12" fill={ink}>Who we’re designing for</text>
+      <circle cx="53" cy="80" r="11" fill={ink} opacity=".1" />
+      <path d="M76 76H173M76 88H147M40 112H174M40 127H156" stroke={ink} opacity=".25" />
+      <Arrow x={204} y={89} length={30} /><Screen x={250} y={38} label="A choice that fits" width={165} />
+      <circle cx="365" cy="118" r="15" fill={paper} stroke={ink} /><path d="M358 118l5 5l9-11" stroke={ink} fill="none" />
+    </>}
+    {kind === 'skills' && <>
+      <rect x="28" y="35" width="166" height="110" rx="5" fill={paper} stroke={border} />
+      <text x="43" y="58" fontSize="12" fill={ink}>A reusable instruction</text>
+      <text x="43" y="85" fontSize="11" fill={muted}>Follow our voice</text>
+      <path d="M43 104H174M43 118H149" stroke={ink} opacity=".25" />
+      <Arrow x={207} y={89} length={30} />
+      <rect x="250" y="43" width="162" height="94" rx="5" fill={paper} stroke={border} />
+      <text x="266" y="65" fontSize="12" fill={ink}>Your agent</text>
+      <path d="M266 85H395M266 100H369" stroke={ink} opacity=".25" />
+      <text x="266" y="121" fontSize="10" fill={muted}>Applied to the next task</text>
+    </>}
+    {kind === 'brief' && <>
+      <rect x="24" y="15" width="183" height="150" rx="4" fill={paper} stroke={border} />
+      {['The problem', 'Who it’s for', 'What we want to learn'].map((label, i) => <g key={label}><text x="40" y={39 + i * 43} fontSize="11" fill={ink}>{label}</text><path d={`M40 ${52 + i * 43}h146`} stroke={ink} opacity=".25" /></g>)}
+      <Arrow x={219} y={91} length={23} /><Screen x={257} y={38} label="First concept" width={157} />
+    </>}
+    {kind === 'lofi' && <>
+      <rect x="72" y="15" width="296" height="150" rx="3" fill={paper} stroke={border} />
+      <path d="M72 44H368M133 44V165" stroke={border} />
+      <path d="M87 60H116M87 75H108M87 90H119" stroke={ink} opacity=".3" />
+      <rect x="149" y="59" width="200" height="42" fill="none" stroke={muted} strokeDasharray="4 4" />
+      <path d="M149 59L349 101M349 59L149 101M149 118H349M149 133H310" stroke={muted} opacity=".5" />
+      <rect x="149" y="145" width="52" height="9" fill="none" stroke={border} />
+    </>}
+    {kind === 'publish' && <>
+      <Screen x={22} y={39} label="Local prototype" width={151} /><Arrow x={187} y={92} length={43} />
+      <Screen x={247} y={39} label="prototype.example" width={169} />
+      <circle cx="392" cy="24" r="15" fill={paper} stroke={muted} /><ellipse cx="392" cy="24" rx="7" ry="15" fill="none" stroke={muted} /><path d="M377 24H407" stroke={muted} />
+    </>}
+    {kind === 'share' && <>
+      <rect x="22" y="56" width="169" height="66" rx="5" fill={paper} stroke={border} />
+      <text x="38" y="79" fontSize="12" fill={ink}>Copy prototype link</text>
+      <path d="M38 100H171" stroke={ink} opacity=".3" /><Arrow x={204} y={88} length={28} />
+      <Screen x={249} y={26} label="A teammate’s view" width={164} />
+      <rect x="283" y="139" width="132" height="29" rx="6" fill={paper} stroke={border} /><text x="294" y="157" fontSize="11" fill={muted}>“Let’s try this idea.”</text>
+    </>}
+    {kind === 'source' && <>
+      <rect x="158" y="27" width="124" height="123" rx="5" fill={paper} stroke={border} />
+      <text x="174" y="51" fontSize="12" fill={ink}>Shared source</text>
+      {['Code', 'Context', 'Assets'].map((label, i) => <text key={label} x="176" y={79 + i * 24} fontSize="11" fill={muted}>{label}</text>)}
+      {[71, 369].map(x => <g key={x}><circle cx={x} cy="69" r="15" fill={paper} stroke={muted} /><path d={`M${x - 23} 113v-6a23 23 0 0146 0v6`} fill="none" stroke={muted} /></g>)}
+      <path d="M97 90H158M282 90H343" stroke={muted} strokeDasharray="4 3" />
+    </>}
+    {kind === 'permissions' && <>
+      {['Studio admin', 'System maintainer', 'Contributor'].map((label, i) => <g key={label}>
+        <circle cx="44" cy={35 + i * 54} r="12" fill={paper} stroke={muted} /><text x="66" y={39 + i * 54} fontSize="11" fill={ink}>{label}</text>
+        <path d={`M190 ${35 + i * 54}H253`} stroke={muted} />
+        <rect x="253" y={18 + i * 54} width="158" height="34" rx="4" fill={paper} stroke={border} /><text x="267" y={39 + i * 54} fontSize="11" fill={muted}>{['Studio settings', 'Assigned system', 'Their prototypes'][i]}</text>
+      </g>)}
+    </>}
+    {kind === 'modules' && <>
+      <Screen x={24} y={39} label="Your studio" width={168} />
+      <path d="M207 89H239M223 73V105" stroke={muted} />
+      <rect x="255" y="27" width="161" height="126" rx="5" fill={paper} stroke={border} /><text x="270" y="49" fontSize="12" fill={ink}>Canvas module</text>
+      <g fill="none" stroke={muted}><rect x="271" y="65" width="44" height="36" rx="3" /><rect x="347" y="98" width="51" height="36" rx="3" /><path d="M315 84H329V115H347" /></g>
+    </>}
+    {kind === 'explore' && <>
+      <Screen x={62} y={20} label="Learning example" width={314} />
+      <rect x="124" y="62" width="159" height="33" rx="4" fill={paper} stroke={border} /><text x="136" y="82" fontSize="12" fill={ink}>Try an interaction</text>
+      <path d="M277 91V114L283 108L289 120L294 117L288 106H300Z" fill={ink} />
+      <path d="M171 125V149H264V125" stroke={border} fill="none" /><path d="M147 150H288" stroke={border} />
     </>}
   </svg>;
 }
