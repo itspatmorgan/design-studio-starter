@@ -1,3 +1,4 @@
+import { initialLifecycle } from '../../../platform/core/artifact-lifecycle/index.ts';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { CHANNEL, VERSION, identityOf, prototypeScopeOf, isHostMessage, isPreviewMessage, acceptsPreview, acceptsSender, acceptsHost, previewUrl, readBootstrap, routerHref, validHref, type Target, type Config } from './protocol.ts';
@@ -15,7 +16,7 @@ test('preview messages reject other frames, origins, sessions, versions and stal
   assert.equal(accept(event(ready, {} as Window)), false);
   assert.equal(accept(event(ready, null)), false);
   assert.equal(accept(event(ready, source, 'https://elsewhere.example')), false);
-  for (const change of [{ runtime: 'previous-document' }, { version: 2 }, { session: 'session-b' }, { identity: 'other-artifact' }, { channel: 'other-channel' }]) assert.equal(accept(event({ ...ready, ...change })), false);
+  for (const change of [{ runtime: 'previous-document' }, { version: VERSION + 1 }, { session: 'session-b' }, { identity: 'other-artifact' }, { channel: 'other-channel' }]) assert.equal(accept(event({ ...ready, ...change })), false);
   // A same-session runtime reload can announce its bootstrap artifact; the host
   // responds with its current target. This exception applies only to hello.
   assert.equal(accept(event({ ...envelope, kind: 'hello', identity: 'previous-artifact' })), true);
@@ -76,4 +77,13 @@ test('bridge hrefs lose exactly one router basepath before navigation', () => {
   assert.equal(routerHref('/studio?q=x', '/studio/'), '/?q=x');
   assert.equal(routerHref('/studio-other/page', '/studio/'), '/studio-other/page');
   assert.equal(routerHref('/prototypes/a', '/'), '/prototypes/a');
+});
+
+test('lifecycle reports require valid evidence and bounded transport ordering', () => {
+  const message = { ...envelope, kind: 'lifecycle', sequence: 1, lifecycle: initialLifecycle() };
+  assert.equal(isPreviewMessage(message), true);
+  assert.equal(acceptsPreview(event(message), source, origin, envelope.session, envelope.identity, envelope.runtime), true);
+  for (const sequence of [undefined, -1, Infinity, 0.5]) assert.equal(isPreviewMessage({ ...message, sequence }), false);
+  assert.equal(isPreviewMessage({ ...message, lifecycle: { ...initialLifecycle(), phase: 'ready' } }), false);
+  assert.equal(acceptsPreview(event({ ...message, identity: 'old-artifact' }), source, origin, envelope.session, envelope.identity, envelope.runtime), false);
 });

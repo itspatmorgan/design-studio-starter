@@ -32,6 +32,60 @@ Document scroll resets before paint when its identity changes. Content edits pre
 
 Development manifest and file-loader notifications share a serialized refresh queue. Prepared pages remain cached until repository notifications invalidate them. Known file changes invalidate matching active and cached file readers. Manifest changes refresh the shared inventory and route data. Bursts merge into one refresh. Edits arriving during a refresh schedule one trailing refresh. All Markdown scopes self-accept compiled updates. Manual and reference readers use `createMarkdownLoader`, which retains updated modules and distinguishes reference rendering from ordinary document rendering. Managed operations that restart the development server retain their separate operation status surfaces.
 
+## Artifact revision and preview lifecycle
+
+`core/artifact-lifecycle/index.ts` is the supported framework entrypoint. Its versioned state separates three facts:
+
+| Fact | Meaning |
+| --- | --- |
+| Source revision | SHA-256 of the observed artifact source, plus a separate digest of its relevant rendering inputs. |
+| Preparation | A generation and attempt ticket for that revision. A later observation, attempt, pause, or disposal invalidates older work. |
+| Displayed revision | Inputs acknowledged after the renderer commits its output. A successful file save or import alone cannot acknowledge them. |
+
+Permanent resource IDs locate artifacts. Content revisions describe inputs; they are neither permanent IDs nor repository history. Save-conflict versions remain independent of preview revisions.
+
+The lifecycle phase is `unknown`, `preparing`, `ready`, `error`, `paused`, or `disposed`. Freshness is separate: `current` matches the latest observed source inputs, `stale` retains older output, `unknown` lacks source evidence, and `empty` has no acknowledged output. A failure can retain working output or clear it, according to the renderer. Readiness requires matching source and displayed inputs. It does not imply successful backend requests or complete nested embeds.
+
+Views and file-backed Markdown use compiled-input evidence in development. The revision endpoint hashes the artifact, its local Vite dependency graph, the shared stylesheet, and registered theme inputs. Relative CSS imports join that inventory. Each evaluated module records the exact source input used in its transformation. Shared stylesheet evaluation also records its theme inputs. Matching records and a renderer commit are both required. Dependency-only changes can therefore make output stale even when the artifact hash is unchanged.
+
+This evidence covers local source and styles. Runtime-fetched data, remote assets, browser storage, layout dimensions, and interaction state are separate. Imported local assets without compiled evidence remain unverified. Limits, unavailable inputs, or a missing acknowledgement produce `unknown`, never fabricated readiness. Waiting for compilation evidence is bounded. Published compiled previews report `unknown` because they have no live repository comparison; rendering and error handling still work. Instrumentation and the revision endpoint are development-only.
+
+Mermaid uses the same lifecycle controller with its supplied source and actual theme inputs. It acknowledges a successful SVG after DOM insertion. A newer source or theme redraw invalidates older attempts. A 15-second deadline reports an unverified diagram and ignores a late render; a stalled Mermaid queue may require reloading the document. Markdown's own acknowledgement does not acknowledge the independent diagrams or view embeds inside it. Canvas scene saving keeps its existing version/conflict model; each live view or diagram on the canvas owns its preview lifecycle.
+
+### Updates and recovery
+
+Existing file notifications, loader caches, and the serialized route refresh queue remain authoritative. Lifecycle observation does not introduce another file watcher, agent runtime, or write path. Source reads ignore superseded responses and reread after save completion. Unsaved edits retain their conflict choice and server-side version protection.
+
+A source notification invalidates readiness. An old cached component can remain visible through a failed compilation, but cannot acknowledge new source. Compilation failures stay latched until matching repaired inputs commit. Render failures clear the affected output. Missing or incomplete files remain repairable through source mode. Preparation deadlines produce an actionable unknown state. Existing Vite diagnostics remain available during local compilation failures.
+
+Renderers cancel superseded asynchronous work logically. The child bridge additionally validates artifact, session, and document identity, and orders lifecycle messages by an independent monotonic sequence. This allows a source move to replace its controller without confusing a reset attempt count with stale transport. Disposal cancels pending observations and releases listeners and deadlines.
+
+### State and lifetime
+
+| Situation | Policy |
+| --- | --- |
+| Ordinary React edit | Preserve interaction state when Fast Refresh can preserve the component. Hook signature changes or incompatible exports may reset it. Revision observation does not force a remount. |
+| Color mode or source toggle | Keep the page runtime and state. A hidden source-mode preview is inert and continues HMR. |
+| Another view in the same prototype | Keep the child document; replace the selected component and its lifecycle controller. Component-local state does not transfer between artifacts. |
+| Another prototype or document reload | Dispose the previous runtime and create a fresh session/document. |
+| Offscreen canvas embed | Keep retained embeds mounted and receiving updates within the canvas budget. Hiding is not a lifecycle pause. |
+| Canvas eviction, removal, or page departure | Dispose the embed and its lifecycle. Returning creates a fresh preview; its interaction state is not durable. |
+| Explicit adapter pause | Invalidate pending preparation, retain displayed output, and require fresh preparation after resume. Current page and canvas adapters do not use pause. |
+
+Canvas keeps its existing admission and eviction rules: at most one new preview per 150 ms, a target budget of 30 retained previews, and a visibility/grace policy that protects recently seen content. Visible or grace-protected previews can temporarily exceed the budget. Lifecycle information does not create another scheduling policy.
+
+### Integration and inspection
+
+`lifecycleAttributes` exposes the same `data-artifact-*` phase, freshness, source/input/displayed revisions, and commit count across renderer boundaries. React previews retain their `data-preview-*` attributes and validated `studio:preview-state` event. Their new bubbling `studio:artifact-lifecycle` event includes artifact identity, session, runtime, surface, and lifecycle state. Non-iframe readers expose their own identity and revision attributes.
+
+A future inspector must associate findings with the artifact, runtime, and displayed input revision, then invalidate them when that evidence changes or becomes unknown. This contract does not provide component/prop/token mapping, write authorization, or cross-harness DOM access.
+
+Agent activity is nullable and independent. Only an explicit integration supplies a named provider and `idle` or `working` state. File/build/render changes never infer activity. Current adapters supply no provider; chat and progress remain in the coding harness.
+
+### Decision references
+
+[Open CoDesign's source-editing contract](https://github.com/OpenCoworkAI/open-codesign/blob/main/SOURCE_EDITING.md) informs separate source and preview revisions, stale acknowledgements, and independent save outcomes. [OpenDesign's runtime state](https://github.com/nexu-io/open-design/blob/802708f6c9f294347ef777b1fda49b9cbe26ef72/packages/contracts/src/runtime/preview-runtime-state.ts) and [preview observability](https://github.com/nexu-io/open-design/blob/802708f6c9f294347ef777b1fda49b9cbe26ef72/packages/contracts/src/runtime/preview-observability.ts) inform explicit, bounded evidence. Its [refresh service](https://github.com/nexu-io/open-design/blob/802708f6c9f294347ef777b1fda49b9cbe26ef72/apps/daemon/src/live-artifacts/refresh-service.ts) prepares a candidate before committing it and bounds refresh execution. Studio applies these patterns through its existing repository and React runtime rather than adopting their daemon or persistent refresh store.
+
 ## Source ownership
 
 Each module maps its navigation items to real files and supplies file access and permissions. Prototype ownership, system context constraints, and platform file allowlists continue to apply. Contributors edit their own prototypes. Assigned maintainers edit their active systems. Admins edit platform, module, and Studio sources and manage all prototypes. The server rechecks current grants and archive status on each write. System identity and availability fields use managed system actions so references and dependent prototypes stay consistent. The editor does not grant permission or infer a prototype from a platform document.

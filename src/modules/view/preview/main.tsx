@@ -1,3 +1,4 @@
+import { previewLifecycle } from './lifecycle';
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createMemoryHistory, createRootRoute, createRoute, createRouter, RouterProvider, Outlet } from '@tanstack/react-router';
@@ -10,6 +11,7 @@ import type { Manifest } from '@/platform/app/data/types';
 import { addressOf } from '@/platform/core/roots';
 import { previewShortcut } from '@/platform/app/shell/artifactShortcuts';
 
+let lifecycleSequence = 0; // Monotonic for this child document, including renderer remounts.
 type Status = Extract<PreviewMessage, { kind: 'status' }>;
 const RuntimeContext = createContext<{ config: Config; refresh: number; status: (state: Status['state'], render: number, detail?: string) => void } | null>(null);
 
@@ -19,11 +21,23 @@ function RuntimeView() {
   const [error, setError] = useState<{ identity: string; detail: string } | null>(null);
   const render = useRef(0);
   const identity = identityOf(config.target);
+  const lifecycle = useRef<ReturnType<typeof previewLifecycle> | null>(null);
+  useEffect(() => {
+    const controller = previewLifecycle(config.target, lifecycle => {
+      const bootstrap = readBootstrap(location.search);
+      if (window.parent !== window) window.parent.postMessage({ channel: CHANNEL, version: VERSION, session: bootstrap.session, runtime: document.documentElement.dataset.previewRuntime, identity, kind: 'lifecycle', sequence: ++lifecycleSequence, lifecycle }, location.origin);
+    });
+    lifecycle.current = controller;
+    const compileError = (event: Event) => controller.failed((event as CustomEvent<string>).detail, true);
+    window.addEventListener('studio:preview-compile-error', compileError);
+    return () => { window.removeEventListener('studio:preview-compile-error', compileError); lifecycle.current = null; controller.dispose(); };
+  }, [identity, config.target.contributor, config.target.prototype, config.target.artifact]);
   useEffect(() => {
     let live = true;
     const revision = ++render.current;
     setError(null);
     status('loading', revision);
+    lifecycle.current?.begin();
     void resolveTarget(config.target).then(loadView).then(result => {
       if (!live) return;
       if (!result) throw new Error('This React view could not load.');
@@ -32,12 +46,12 @@ function RuntimeView() {
     }).catch(error => {
       if (!live) return;
       const detail = error instanceof Error ? error.message : String(error);
-      setLoaded(null); setError({ identity, detail }); status('error', revision, detail);
+      setLoaded(null); setError({ identity, detail }); status('error', revision, detail); lifecycle.current?.failed(detail, false);
     });
     return () => { live = false; };
-  }, [identity, refresh, status]);
-  const ready = useCallback(() => status('ready', render.current), [status, loaded]);
-  const failed = useCallback((error: unknown) => status('error', render.current, error instanceof Error ? error.message : String(error)), [status]);
+  }, [identity, config.target.contributor, config.target.prototype, config.target.artifact, refresh, status]);
+  const ready = useCallback(() => { status('ready', render.current); lifecycle.current?.ready(); }, [status, loaded]);
+  const failed = useCallback((error: unknown) => { const detail = error instanceof Error ? error.message : String(error); status('error', render.current, detail); lifecycle.current?.failed(detail, false); }, [status]);
   // A new artifact must not display the previous component while its import resolves.
   if (error?.identity === identity) return <div role="alert" className="p-8 text-sm"><p>This page could not load. Give the error to your agent.</p><pre className="mt-4 whitespace-pre-wrap">{error.detail}</pre></div>;
   if (!loaded || loaded.identity !== identity) return <p role="status" className="p-4 text-sm">Loading preview</p>;
@@ -72,6 +86,7 @@ function start() {
   const bootstrap = readBootstrap(location.search);
   const hosted = window.parent !== window;
   const runtime = crypto.randomUUID();
+  document.documentElement.dataset.previewRuntime = runtime;
   // Native links (including modified clicks) and relative assets see the artifact address.
   const addressBase = document.createElement('base');
   addressBase.href = new URL(bootstrap.config.href, location.origin).href;
@@ -167,8 +182,14 @@ function start() {
       window.addEventListener('popstate', onPopState);
       const reload = () => setRefresh(value => value + 1);
       const manifest = ({ manifest }: { manifest: Manifest }) => { setManifest(manifest); reload(); };
-      const uncaught = (event: ErrorEvent) => send({ kind: 'status', state: 'error', render: lastRender, detail: event.message.slice(0, 4096) });
-      const rejected = (event: PromiseRejectionEvent) => send({ kind: 'status', state: 'error', render: lastRender, detail: String(event.reason).slice(0, 4096) });
+      let hmrTimer: ReturnType<typeof setTimeout> | undefined;
+      const hmrComplete = () => { clearTimeout(hmrTimer); hmrTimer = setTimeout(reload, 40); };
+      const reportError = (detail: string) => {
+        send({ kind: 'status', state: 'error', render: lastRender, detail: detail.slice(0, 4096) });
+        window.dispatchEvent(new CustomEvent('studio:preview-compile-error', { detail }));
+      };
+      const uncaught = (event: ErrorEvent) => reportError(event.message);
+      const rejected = (event: PromiseRejectionEvent) => reportError(String(event.reason));
       window.addEventListener('message', onMessage);
       document.addEventListener('click', onClick);
       window.addEventListener('keydown', onReservedKey, true);
@@ -179,10 +200,12 @@ function start() {
       if (import.meta.hot) {
         import.meta.hot.on('studio:manifest', manifest);
         import.meta.hot.on('studio:file', reload);
+        import.meta.hot.on('vite:afterUpdate', hmrComplete);
       }
       apply(current);
       send({ kind: 'hello' });
       return () => {
+        clearTimeout(hmrTimer);
         unsubscribe();
         window.removeEventListener('popstate', onPopState);
         window.removeEventListener('message', onMessage);
@@ -194,6 +217,7 @@ function start() {
         window.removeEventListener('studio:views', reload);
         import.meta.hot?.off('studio:manifest', manifest);
         import.meta.hot?.off('studio:file', reload);
+        import.meta.hot?.off('vite:afterUpdate', hmrComplete);
       };
     }, []);
     return <RuntimeContext.Provider value={{ config, refresh, status }}><RouterProvider router={router} /></RuntimeContext.Provider>;

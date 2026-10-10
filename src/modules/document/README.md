@@ -17,3 +17,5 @@ This optional module owns prototype Markdown. Follow the [manage-modules skill](
 Agent contract: `src/modules/document/skills/write-document/SKILL.md`.
 
 Page loading follows the [shared navigation handoff](../../platform/context/source.md#navigation-handoff). Route loaders prepare the reader and content before replacing the current page.
+
+File-backed Markdown readers use the [shared lifecycle contract](../../platform/context/source.md#artifact-revision-and-preview-lifecycle). Local compiled inputs and a DOM commit acknowledge the document revision. Nested diagrams and view embeds retain independent lifecycles. Content updates preserve document scroll; unknown revision evidence does not prevent reading.

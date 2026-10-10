@@ -16,12 +16,13 @@ Embeds have their own child documents. They use a 1440px layout viewport, scale 
 
 ## Communication and authority
 
-`preview/protocol.ts` defines version 1 of the `studio-preview` channel:
+`preview/protocol.ts` defines version 2 of the `studio-preview` channel:
 
 | Direction | Message | Purpose |
 | --- | --- | --- |
 | Host → child | configure | Explicit artifact target, public href, color mode, and immutable page/embed surface |
 | Child → host | hello | Same-session bootstrap/reload handshake; host supplies its current target |
+| Child → host | lifecycle | Source, preparation and displayed revisions; monotonic sequence and bounded lifecycle payload |
 | Child → host | status | Loading, successful render commit, or error; bounded detail and render-attempt counter |
 | Child → host | navigate | Same-origin Studio address and replace/push intent |
 | Child → host | shortcut | Eligible source/grid/search/navigation shortcut, forwarded to existing host handlers |
@@ -30,7 +31,7 @@ Both sides validate sender window, exact origin, version, session, fresh child-d
 
 Targets use permanent prototype/artifact IDs when available, resolved against the current manifest. Registered section artifacts without IDs use explicit owner/path selectors. Source paths locate imports; they do not grant authority. There are no file-write, arbitrary execution, or inspection commands in this protocol.
 
-After validation, status emits a bubbling `studio:preview-state` event from the host boundary with `session`, `runtime`, `identity`, `surface`, `state`, and `render`. Boundary data attributes expose current state, identity, and session for native inspection. This is the integration point for #19 and future inspection modules. The counter identifies runtime load attempts, **not** a source revision or a source-to-component map. Future protocol extensions must add explicit validation and retain independent write authorization.
+After validation, status emits a bubbling `studio:preview-state` event from the host boundary with `session`, `runtime`, `identity`, `surface`, `state`, and `render`. Boundary data attributes expose current state, identity, and session for native inspection. The separate lifecycle event and shared revision attributes support revision-aware inspection. The counter identifies runtime load attempts, **not** a source revision or a source-to-component map. Lifecycle reports follow the [artifact revision contract](../../platform/context/source.md#artifact-revision-and-preview-lifecycle). Future protocol extensions must add explicit validation and retain independent write authorization.
 
 The host supplies its public history address, including the deployment basepath. The child memory router supplies normal TanStack hooks to prototypes. Page navigation is handed to Studio so its history, artifact selection, source mode, and outer routes remain authoritative. Relative native links resolve against the displayed artifact address, including modified clicks. Hash anchors stay within the child document. External HTTP(S) links open separately. The direct runtime can navigate React artifacts independently and returns to Studio for other surfaces; crossing prototypes starts a fresh document. Direct-preview navigation supports browser Back/Forward. Public prototype navigation APIs remain unchanged.
 
@@ -44,7 +45,7 @@ A stronger security boundary for untrusted code requires a separate origin, asse
 
 Preview shortcuts preserve Studio search and navigation as well as source/grid commands. Text inputs and contenteditable regions retain their keystrokes. Source/grid/navigation keep the shell’s capture behavior. Prototype handlers can consume search before forwarding.
 
-Each child receives Vite HMR and manifest/file-loader notifications. Pending loads are cancelled logically so stale responses cannot replace the current artifact. Ordinary component updates preserve Fast Refresh state; missing/incomplete files and source repair use the existing loader and error handling.
+Each child receives Vite HMR and manifest/file-loader notifications. Pending loads are cancelled logically so stale responses cannot replace the current artifact. Ordinary component updates preserve state when Fast Refresh supports the edit; missing/incomplete files and source repair use the existing loader and error handling.
 
 Native browser tooling can inspect and interact with real elements inside a page iframe. Codex's in-app browser is verified; Cursor, ChatGPT, and other harnesses require their own browser-tool checks. DOM access does not establish component/props inspection.
 
@@ -67,3 +68,9 @@ The comparison used actual Product and Marketing prototypes. At a 420px frame, t
 Keep the [isolation limits](#isolation-limits) explicit. A failed opaque-origin whole-Studio experiment does not establish that an artifact-only opaque runtime is impossible.
 
 [OpenDesign's FileViewer](https://github.com/nexu-io/open-design/blob/802708f6c9f294347ef777b1fda49b9cbe26ef72/apps/web/src/components/FileViewer.tsx) and [preview document construction](https://github.com/nexu-io/open-design/blob/802708f6c9f294347ef777b1fda49b9cbe26ef72/apps/web/src/runtime/srcdoc.ts) informed execution separation. [Open CoDesign's source-editing contract](https://github.com/OpenCoworkAI/open-codesign/blob/main/SOURCE_EDITING.md) informed preview identity and independent write authority. Their generated HTML and security assumptions are not copied into Studio. [TanStack memory history](https://tanstack.com/router/latest/docs/guide/history-types) supplies independent navigation.
+
+## Revision evidence
+
+Page previews and inert embeds use the same lifecycle adapter. A renderer commit acknowledges source only when the compiled local inputs match the observed revision. Compilation failure can retain the previous preview, explicitly stale; render failure clears it. A bounded unverified update produces an actionable unknown state. Successful recovery clears the notice without forcing a document remount.
+
+The [shared lifecycle contract](../../platform/context/source.md#artifact-revision-and-preview-lifecycle) defines input coverage, static-preview limits, optional activity, message ordering, and state/lifetime policy. The legacy status counter continues to describe load attempts. It never stands in for source freshness. The child controller is also replaced when an identified artifact's source location changes.

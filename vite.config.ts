@@ -1,3 +1,4 @@
+import artifactRevisions from './scripts/build/vite-artifact-revisions-plugin.js';
 import moduleEntries from './scripts/build/vite-module-entries-plugin.js';
 import resourceDirectoryPlugin from './scripts/build/vite-resource-directory-plugin.js';
 import { defineConfig } from 'vite';
@@ -91,6 +92,7 @@ export default defineConfig({
     alias: [{ find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) }],
   },
   plugins: [
+    ...artifactRevisions(),
     // Markdown pages (Manual pages in src/modules/documentation/pages/, and prototype documents), as plain
     // Markdown (no JSX or expressions, so any .md file compiles; raw HTML shows as text): frontmatter (a first heading is the title when there's no `title`), GitHub-style Markdown, heading ids, and code highlighting with Shiki in both color modes.
     markdown(),

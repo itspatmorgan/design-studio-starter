@@ -57,3 +57,7 @@ Excalidraw's CDN.
 Follow the [manage-modules skill](../../platform/skills/manage-modules/SKILL.md) and use the removal preview. It identifies consumers and retained dependencies.
 
 The module owns the canvas CLI and agent rule. Its npm package and any unused patch configuration need separate cleanup after removal.
+
+### Preview lifetime
+
+Retained view and diagram embeds use the [shared artifact lifecycle contract](../../platform/context/source.md#artifact-revision-and-preview-lifecycle). Offscreen hiding preserves mounted runtimes and updates within the existing admission/eviction policy; it does not pause them. Eviction, removal, or leaving disposes their listeners and pending work. Canvas scene saving retains its separate version and conflict model.
