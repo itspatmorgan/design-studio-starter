@@ -1,6 +1,7 @@
+import { validLifecycle, type ArtifactLifecycle } from '../../../platform/core/artifact-lifecycle/index.ts';
 // Transport validation, not a security sandbox. Same-origin repository code is trusted.
 export const CHANNEL = 'studio-preview';
-export const VERSION = 1;
+export const VERSION = 2;
 export type Target = { contributor: string; prototype: string; prototypeId: string | null; artifact: string; artifactId: string | null };
 export type Surface = 'page' | 'embed';
 export type Config = { target: Target; href: string; dark: boolean; surface: Surface };
@@ -8,6 +9,7 @@ export type Envelope = { channel: typeof CHANNEL; version: typeof VERSION; sessi
 export type HostMessage = Envelope & { kind: 'configure'; config: Config };
 export type PreviewMessage = Envelope & (
   { kind: 'hello' } |
+  { kind: 'lifecycle'; sequence: number; lifecycle: ArtifactLifecycle } |
   { kind: 'status'; state: 'loading' | 'ready' | 'error'; render: number; detail: string } |
   { kind: 'navigate'; href: string; replace: boolean } |
   { kind: 'shortcut'; action: 'source' | 'grid' | 'palette' | 'navigation' }
@@ -35,6 +37,7 @@ export function isHostMessage(value: unknown): value is HostMessage {
 export function isPreviewMessage(value: unknown): value is PreviewMessage {
   if (!envelope(value)) return false;
   if (value.kind === 'hello') return true;
+  if (value.kind === 'lifecycle') return Number.isSafeInteger(value.sequence) && Number(value.sequence) >= 0 && validLifecycle(value.lifecycle);
   if (value.kind === 'navigate') return validHref(value.href) && typeof value.replace === 'boolean';
   if (value.kind === 'shortcut') return typeof value.action === 'string' && ['source', 'grid', 'palette', 'navigation'].includes(value.action);
   return value.kind === 'status' && typeof value.state === 'string' && ['loading', 'ready', 'error'].includes(value.state)

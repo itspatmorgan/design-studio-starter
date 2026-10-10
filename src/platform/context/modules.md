@@ -25,6 +25,8 @@ Prototypes access public libraries through `@module/<id>`. They cannot import pr
 Start with `src/platform/core/api.ts` for module declaration types, application extension types, and studio identity.
 File types use `src/platform/core/fileTypes.ts`, which can also load in Node.
 
+Artifact modules can implement the [shared revision and lifecycle contract](source.md#artifact-revision-and-preview-lifecycle) through `core/artifact-lifecycle/index.ts`, with evidence appropriate to their renderer.
+
 The explicit framework entrypoint inventory is `src/platform/core/modules/boundaries.ts`.
 It covers existing shared navigation, artifact, documentation, source, and data services.
 Module code can import those entries, but not other platform implementation files.

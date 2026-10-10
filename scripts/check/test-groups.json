@@ -51,7 +51,11 @@
         "src/platform/core/resourceIdentity.test.ts",
         "src/platform/core/resourceReferences.test.ts",
         "src/platform/core/roots.test.ts",
-        "src/modules/view/preview/protocol.test.ts"
+        "src/modules/view/preview/protocol.test.ts",
+        "src/platform/core/artifact-lifecycle/state.test.ts",
+        "src/platform/core/artifact-lifecycle/compiled.test.ts",
+        "scripts/build/vite-artifact-revisions-plugin.test.js",
+        "src/modules/canvas/liveViews.test.ts"
       ],
       "dependencies": [
         "src/platform/**",

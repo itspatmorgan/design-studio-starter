@@ -28,7 +28,8 @@ export function NavTabs({ label, children, wrap = false }: { label: string; chil
 
 // How a tab looks: small text, the open one raised.
 export const navTabClass = (active: boolean) => cn(
-  'rounded-md px-2 py-1 text-xs text-sidebar-foreground/80 transition-colors',
-  'hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground',
-  active && 'bg-sidebar-foreground/10 font-medium text-sidebar-accent-foreground',
+  'rounded-md px-2 py-1 text-xs',
+  active
+    ? 'bg-sidebar-foreground/10 font-medium text-sidebar-accent-foreground'
+    : 'text-sidebar-foreground/80 hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground',
 );

@@ -48,6 +48,9 @@ export default function SourceEditor({ label, actions, onDirty, source, language
   // The file changed on disk while there were unsaved edits.
   const [conflict, setConflict] = useState<Disk | null>(null);
   const save = useRef<() => void>(() => {});
+  const savingNow = useRef(false);
+  const refreshVersion = useRef(0);
+  const refreshSource = useRef<() => void>(() => {});
 
   useEffect(() => { onDirty?.(isDirty); }, [isDirty]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -112,36 +115,46 @@ export default function SourceEditor({ label, actions, onDirty, source, language
   useEffect(() => {
     const hot = import.meta.hot;
     if (!hot) return;
+    let active = true;
     const refresh = async () => {
+      if (savingNow.current) return; // The save acknowledgement is followed by a fresh read.
+      const ticket = ++refreshVersion.current;
       const next = await read().catch(() => null);
-      if (!next || !disk.current || next.version === disk.current.version) return;
+      if (!active || ticket !== refreshVersion.current || !next || !disk.current || next.version === disk.current.version) return;
       if (dirty.current) setConflict(next); else takeDisk(next);
     };
+    refreshSource.current = () => { void refresh(); };
     const onSource = (change: { path: string }) => { if (change.path === path) void refresh(); };
     hot.on('studio:source', onSource);
-    return () => hot.off?.('studio:source', onSource);
+    return () => { active = false; ++refreshVersion.current; refreshSource.current = () => {}; hot.off?.('studio:source', onSource); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [path, source]);
 
   save.current = async () => {
     const v = view.current;
-    if (!v || !editable || !dirty.current || !disk.current || saving) return;
+    if (!v || !editable || !dirty.current || !disk.current || savingNow.current) return;
     const content = v.state.doc.toString();
+    savingNow.current = true;
+    ++refreshVersion.current; // Older reads cannot overwrite the save acknowledgement.
     setSaving(true);
     setError(null);
     try {
       const { version, warnings } = await write(content, disk.current.version);
+      if (view.current !== v) return;
       disk.current = { content, version };
+      setConflict(null);
       dirty.current = v.state.doc.toString() !== content;
       setIsDirty(dirty.current);
       toast.add({ title: 'Saved', timeout: 2000 });
       // Saved anyway, but a skill out of the format would fail the build: say so now.
       for (const warning of warnings ?? []) toast.add({ type: 'error', title: warning });
     } catch (e) {
-      if (e instanceof SourceChanged) setConflict(await read().catch(() => null));
-      else toast.add({ type: 'error', title: (e as Error).message });
+      if (view.current !== v) return;
+      if (!(e instanceof SourceChanged)) toast.add({ type: 'error', title: (e as Error).message });
     } finally {
+      savingNow.current = false;
       setSaving(false);
+      refreshSource.current(); // The pane may have changed while this write completed.
     }
   };
 

@@ -1,3 +1,4 @@
+import { freshness, lifecycleAttributes, initialLifecycle, type ArtifactLifecycle } from '@/platform/core/artifact-lifecycle/index';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useRouterState } from '@tanstack/react-router';
 import { CHANNEL, VERSION, acceptsPreview, identityOf, routerHref, previewUrl, type Config, type Target, type Surface, type HostMessage } from './protocol';
@@ -14,6 +15,8 @@ export default function PreviewHost({ target, href, title, surface, width, heigh
   const interactive = useRef(false);
   const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
   const [state, setState] = useState('loading');
+  const [lifecycle, setLifecycle] = useState<ArtifactLifecycle>(initialLifecycle);
+  const lifecycleOrder = useRef(-1);
   const [unresponsive, setUnresponsive] = useState(false);
   const identity = identityOf(target);
   const latestRender = useRef({ identity, render: -1 });
@@ -42,7 +45,7 @@ export default function PreviewHost({ target, href, title, surface, width, heigh
     setDark(document.documentElement.classList.contains('dark'));
     return () => observer.disconnect();
   }, []);
-  useEffect(() => { setState('loading'); armWatchdog.current(); }, [identity]);
+  useEffect(() => { setState('loading'); setLifecycle(initialLifecycle()); lifecycleOrder.current = -1; armWatchdog.current(); }, [identity]);
   useEffect(send, [identity, currentHref, dark]);
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -53,7 +56,14 @@ export default function PreviewHost({ target, href, title, surface, width, heigh
       if (!acceptsPreview(event, frame.current?.contentWindow ?? null, window.location.origin, session.current, identityOf(config.target), runtime.current)) return;
       const message = event.data;
       setUnresponsive(false);
-      if (message.kind === 'hello') { setState('loading'); runtime.current = message.runtime; latestRender.current.render = -1; send(); arm(); }
+      if (message.kind === 'lifecycle') {
+        const next = message.lifecycle;
+        if (message.sequence <= lifecycleOrder.current) return;
+        lifecycleOrder.current = message.sequence;
+        setLifecycle(next);
+        boundary.current?.dispatchEvent(new CustomEvent('studio:artifact-lifecycle', { bubbles: true, detail: { identity: message.identity, session: session.current, runtime: message.runtime, surface: config.surface, lifecycle: next } }));
+      }
+      if (message.kind === 'hello') { setState('loading'); setLifecycle(initialLifecycle()); lifecycleOrder.current = -1; runtime.current = message.runtime; latestRender.current.render = -1; send(); arm(); }
       if (message.kind === 'status') {
         if (message.render < latestRender.current.render) return;
         latestRender.current.render = message.render;
@@ -73,11 +83,14 @@ export default function PreviewHost({ target, href, title, surface, width, heigh
     window.addEventListener('message', onMessage);
     return () => { armWatchdog.current = () => {}; clearTimeout(timer); window.removeEventListener('message', onMessage); };
   }, [router]);
-  return <div ref={boundary} className="relative flex min-h-0 min-w-0 flex-1 flex-col" data-preview-state={state} data-preview-identity={identity} data-preview-session={session.current}>
+  return <div ref={boundary} {...lifecycleAttributes(lifecycle)} data-artifact-identity={identity} className="relative flex min-h-0 min-w-0 flex-1 flex-col" data-preview-state={state} data-preview-identity={identity} data-preview-session={session.current} data-preview-freshness={freshness(lifecycle)} data-preview-phase={lifecycle.phase} data-preview-source-revision={lifecycle.source?.source} data-preview-input-revision={lifecycle.source?.inputs} data-preview-displayed-revision={lifecycle.displayed?.revision.inputs}>
     <iframe ref={frame} src={src} title={title + ' preview'} onLoad={send}
       tabIndex={surface === 'embed' ? -1 : undefined} aria-hidden={surface === 'embed' || undefined}
       className="min-h-0 w-full flex-1 border-0 bg-background"
       style={{ ...(width !== undefined && { width }), ...(height !== undefined && { height }), ...(surface === 'embed' && { pointerEvents: 'none' }) }} />
+    {surface === 'page' && !unresponsive && (freshness(lifecycle) === 'stale' || lifecycle.detail) && <div role="status" className="absolute inset-x-0 bottom-0 bg-background p-3 text-sm">
+      {freshness(lifecycle) === 'stale' ? 'This preview is out of date. ' : ''}{lifecycle.phase === 'error' ? 'The latest changes could not render. Give the error to your agent.' : lifecycle.detail || 'Updating preview'}
+    </div>}
     {surface === 'page' && unresponsive && <div role="status" className="absolute inset-x-0 bottom-0 bg-background p-3 text-sm">
       Preview has not responded.
     </div>}
