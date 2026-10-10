@@ -25,6 +25,7 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an artifact. Browser
 - **Dev:** edits save to the file through the same file layer as the Source view, and changes made to the
   file from outside (an agent) are taken in live. **Deployed:** the committed file, read-only.
 - **Opening:** the route prepares the canvas code, text, and local contributor identity before mounting. Development pre-bundles Excalidraw and the UI primitives used by embedded views to avoid dependency-discovery reloads on first opening. A loading status stays visible until the opening camera has painted.
+- **Color mode:** the editor and canvas previews follow Studio's mode, including on refresh. The mode subscription rechecks after mounting to catch saved preferences applied by the shell. Excalidraw controls use Studio tokens in both modes; embedded views keep their assigned system's mode rules.
 - **Moved embeds:** permanent artifact links survive source moves. The prototype file layer still repairs filesystem dependencies; copied canvases remap links to the copied artifacts. See [Links and renaming](../prototypes/README.md#links-and-renaming) for scope and limits.
 
 ### Where things are
@@ -36,6 +37,7 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an artifact. Browser
 | `loader.ts` | The glob of canvas files for the deployed site |
 | `CanvasEmbed.tsx` | Read-only, fitted document preview; no saving or editor tools |
 | `Canvas.tsx` | Wires the pieces into `<Excalidraw>` |
+| `theme.ts` | Shares Studio's current color mode between the editor and canvas previews |
 | `canvas.css` | The app's theme for Excalidraw's UI, from the app's tokens, and how its top row compacts when the canvas is narrow |
 | `format.ts` | The file format: slim and stable so canvases diff cleanly. No deleted elements, no images, defaults dropped, numbers rounded, keys sorted, links stored as app paths |
 | `useCanvasFile.ts` | Saving and taking in changes: debounce, one save at a time, base version and conflict merge, retry with backoff, flush on leaving |

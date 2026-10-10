@@ -9,6 +9,7 @@ import { useManifest } from '@/platform/app/data/useManifest';
 import { canvasFiles } from './loader';
 import { parseCanvas } from './format';
 import { CanvasItem, validateEmbed } from './embeds';
+import { useCanvasDark } from './theme';
 import '@excalidraw/excalidraw/index.css';
 import './canvas.css';
 
@@ -17,12 +18,7 @@ export default function CanvasEmbed({ proto, item, width, height }: EmbedProps) 
   const [text, setText] = useState<string>();
   const [error, setError] = useState(false);
   const [api, setApi] = useState<ExcalidrawImperativeAPI | null>(null);
-  const [dark, setDark] = useState(document.documentElement.classList.contains('dark'));
-  useEffect(() => {
-    const observer = new MutationObserver(() => setDark(document.documentElement.classList.contains('dark')));
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
+  const dark = useCanvasDark();
   useEffect(() => {
     let active = true;
     let revision = 0;
@@ -62,7 +58,7 @@ export default function CanvasEmbed({ proto, item, width, height }: EmbedProps) 
   if (error || (text !== undefined && !scene)) return <p role="alert" className="p-4 text-sm">This canvas could not load. Open it to inspect its source.</p>;
   if (!scene) return <p role="status" className="p-4 text-sm">Loading canvas…</p>;
   return <div className="canvas canvas-preview relative overflow-hidden" data-controls-hidden="" style={{ width, height, pointerEvents: 'none' }} aria-hidden>
-    <Excalidraw excalidrawAPI={setApi} initialData={{ elements: scene.elements, appState: { ...camera, viewBackgroundColor: scene.background } }} viewModeEnabled zenModeEnabled theme={dark ? 'dark' : 'light'}
+    <Excalidraw excalidrawAPI={setApi} initialData={{ elements: scene.elements, appState: { ...camera, theme: dark ? 'dark' : 'light', viewBackgroundColor: scene.background } }} viewModeEnabled zenModeEnabled theme={dark ? 'dark' : 'light'}
       validateEmbeddable={validateEmbed}
       renderEmbeddable={(element) => <CanvasItem element={element} manifest={manifest} current={proto} offscreen={false} overview={false} mounted />}
     />

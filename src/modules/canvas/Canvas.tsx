@@ -22,21 +22,11 @@ import { CanvasMenu, UI_OPTIONS } from './menu';
 import { useCanvasShortcuts } from './shortcuts';
 import { STICKY_IDS, STICKY_LIBRARY } from './stickyNotes';
 import { useCanvasFile } from './useCanvasFile';
+import { useCanvasDark } from './theme';
 import { Button } from '@/systems/studio/components/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/systems/studio/components/dialog';
 
 type Props = { proto: Prototype; item: Artifact; text: string; version: string };
-
-// The app's light or dark mode, which is a class on <html>.
-function useDark() {
-  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
-  useEffect(() => {
-    const watch = new MutationObserver(() => setDark(document.documentElement.classList.contains('dark')));
-    watch.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => watch.disconnect();
-  }, []);
-  return dark;
-}
 
 // The page is keyed by its file, so opening another canvas starts fresh.
 export default function Canvas(props: Props) {
@@ -47,7 +37,7 @@ function OpenCanvas({ proto, item, text, version }: Props) {
   const file = `${proto.contributorKey}/${proto.id}/${item.path}`;
   const me = useMe();
   const manifest = useManifest();
-  const dark = useDark();
+  const dark = useCanvasDark();
   const container = useRef<HTMLDivElement>(null);
   const [api, setApi] = useState<ExcalidrawImperativeAPI | null>(null);
 
@@ -105,7 +95,7 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
     const camera = initialCamera(loaded.elements, cameraKey(file), container.current);
     setInitialData({
       elements: loaded.elements,
-      appState: { viewBackgroundColor: loaded.parsed.background, gridSize: loaded.parsed.gridSize ?? undefined, currentItemFontFamily: FONT_FAMILY.Nunito, ...camera } as never,
+      appState: { theme: dark ? 'dark' : 'light', viewBackgroundColor: loaded.parsed.background, gridSize: loaded.parsed.gridSize ?? undefined, currentItemFontFamily: FONT_FAMILY.Nunito, ...camera } as never,
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
