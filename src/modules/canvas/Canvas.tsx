@@ -18,7 +18,7 @@ import { CanvasItem, normalizeEmbeds, onlyItemsSelected, openingEmbedIds, render
 import { parseCanvas } from './format';
 import { useHelpDialogPruning } from './helpDialog';
 import { MOUNT_INTERVAL_MS, SWEEP_INTERVAL_MS, createMountGate, pickEvictions } from './liveViews';
-import { OPENING_STATUS_DELAY_MS, OPENING_WAIT_MS, openingReady, settledEmbeds } from './opening';
+import { useCanvasOpening, CanvasOpeningSurface } from './CanvasOpening';
 import { CanvasMenu, UI_OPTIONS } from './menu';
 import { useCanvasShortcuts } from './shortcuts';
 import { STICKY_IDS, STICKY_LIBRARY } from './stickyNotes';
@@ -100,45 +100,8 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Keep startup behind one surface until the camera and initial visible previews are ready.
-  // Opacity preserves layout and admission. Never re-cover the canvas for later pans or HMR.
-  const [revealed, setRevealed] = useState(false);
-  const [openingStatus, setOpeningStatus] = useState(false);
-  useEffect(() => {
-    if (revealed) return undefined;
-    const timer = window.setTimeout(() => setOpeningStatus(true), OPENING_STATUS_DELAY_MS);
-    return () => window.clearTimeout(timer);
-  }, [revealed]);
-  useEffect(() => {
-    const root = container.current;
-    if (!api || !root) return undefined;
-    const started = Date.now();
-    let expected: string[] | undefined;
-    let finished = false;
-    let second = 0;
-    const check = () => {
-      if (finished || !expected || !openingReady(expected, settledEmbeds(root), Date.now() - started)) return;
-      finished = true;
-      observer.disconnect();
-      window.clearTimeout(deadline);
-      setRevealed(true);
-    };
-    const observer = new MutationObserver(check);
-    observer.observe(root, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-preview-state', 'data-artifact-phase', 'role'] });
-    const cameraPainted = () => {
-      if (expected) return;
-      expected = openingEmbedIds(api.getSceneElements(), api.getAppState(), manifestRef.current, proto);
-      check();
-    };
-    const first = requestAnimationFrame(() => { second = requestAnimationFrame(cameraPainted); });
-    // Hidden tabs may not run animation frames. Scene setup still gets a bounded handoff.
-    const cameraTimer = window.setTimeout(cameraPainted, 120);
-    const deadline = window.setTimeout(check, OPENING_WAIT_MS);
-    return () => {
-      observer.disconnect(); window.clearTimeout(cameraTimer); window.clearTimeout(deadline);
-      cancelAnimationFrame(first); cancelAnimationFrame(second);
-    };
-  }, [api]);
+  const { revealed, openingStatus } = useCanvasOpening(container, api, () =>
+    openingEmbedIds(api!.getSceneElements(), api!.getAppState(), manifest, proto));
 
   useEffect(() => {
     if (!empty || !revealed) { setHintReady(false); return undefined; }
@@ -244,11 +207,7 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
       data-canvas-opening={revealed ? 'ready' : 'loading'}
       aria-busy={!revealed || undefined}
     >
-      {!revealed && <div role="status" className="canvas-opening-surface absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
-        <span className={openingStatus ? 'flex items-center gap-2' : 'sr-only'}>
-          <span aria-hidden className="canvas-opening-spinner" />Opening canvas
-        </span>
-      </div>}
+      {!revealed && <CanvasOpeningSurface visible={openingStatus} />}
       <div inert={!revealed || undefined} aria-hidden={!revealed || undefined} className="canvas-scene absolute inset-0" style={{ opacity: revealed ? 1 : 0 }}>
         {initialData && (
           <Excalidraw

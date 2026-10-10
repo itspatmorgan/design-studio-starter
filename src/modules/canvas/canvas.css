@@ -417,16 +417,19 @@
 
 /* Scene and previews keep laying out while the quiet opening surface is visible. */
 .canvas .canvas-scene { transition: opacity 160ms ease-out; }
-.canvas .canvas-opening-spinner {
-  width: 14px;
-  height: 14px;
-  border: 1.5px solid var(--border);
-  border-top-color: var(--muted-foreground);
-  border-radius: 50%;
-  animation: canvas-opening-spin 900ms linear infinite;
+.canvas .canvas-opening-shimmer {
+  background: linear-gradient(100deg, var(--muted-foreground) 35%, var(--foreground) 50%, var(--muted-foreground) 65%);
+  background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: canvas-opening-shimmer 1800ms linear infinite;
 }
-@keyframes canvas-opening-spin { to { transform: rotate(360deg); } }
+@keyframes canvas-opening-shimmer {
+  from { background-position: 180% 0; }
+  to { background-position: -80% 0; }
+}
 @media (prefers-reduced-motion: reduce) {
   .canvas .canvas-scene { transition: none; }
-  .canvas .canvas-opening-spinner { animation: none; }
+  .canvas .canvas-opening-shimmer { animation: none; background: none; color: var(--muted-foreground); }
 }

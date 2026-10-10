@@ -24,7 +24,7 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an artifact. Browser
 - **Agents** use the tools in tools.ts, live in the open canvas or on the file (src/modules/canvas/skills/use-canvas/SKILL.md). Tools select artifacts by source filename and store permanent links. CLI mutations require the owner or an Admin and an active prototype; read-only tools preserve the file.
 - **Dev:** edits save to the file through the same file layer as the Source view, and changes made to the
   file from outside (an agent) are taken in live. **Deployed:** the committed file, read-only.
-- **Opening:** the route prepares the canvas code, text, and local contributor identity before mounting. Development pre-bundles Excalidraw and embedded UI primitives to avoid dependency-discovery reloads. One quiet surface hides scene initialization and staggered preview mounting. Its status appears after 200 ms. Once the opening camera has painted, the initial visible live embeds can hold the reveal for at most 2 seconds from editor readiness. Committed previews and errors settle the wait. Offscreen embeds and overview cards do not hold it. The scene reveals once with a 160 ms fade, disabled for reduced motion. Later panning and updates keep the canvas visible. Preview admission and retention remain unchanged.
+- **Opening:** the route prepares the canvas code, text, and local contributor identity before mounting. Development pre-bundles Excalidraw and embedded UI primitives to avoid dependency-discovery reloads. One quiet surface hides scene initialization and staggered preview mounting. Its status appears after 200 ms as a subtle, theme-aware text shimmer. The animation uses CSS and becomes static text for reduced motion. Once the opening camera has painted, the initial visible live embeds can hold the reveal for at most 2 seconds from editor readiness. Committed previews and errors settle the wait. Offscreen embeds and overview cards do not hold it. The scene reveals once with a 160 ms fade, disabled for reduced motion. Later panning and updates keep the canvas visible. Preview admission and retention remain unchanged.
 - **Color mode:** the editor and canvas previews follow Studio's mode, including on refresh. The mode subscription rechecks after mounting to catch saved preferences applied by the shell. Excalidraw controls use Studio tokens in both modes; embedded views keep their assigned system's mode rules.
 - **Moved embeds:** permanent artifact links survive source moves. The prototype file layer still repairs filesystem dependencies; copied canvases remap links to the copied artifacts. See [Links and renaming](../prototypes/README.md#links-and-renaming) for scope and limits.
 
@@ -45,6 +45,7 @@ registry (`src/platform/app/data/fileTypes.ts`) how to show an artifact. Browser
 | `embeds.tsx` | How an artifact renders on a canvas; sizing rules for new ones; culling off-screen ones |
 | `liveViews.ts` | Which previews stay mounted (30 at most; one new every 150 ms) |
 | `opening.ts` | The bounded opening wait and shared renderer readiness inspection |
+| `CanvasOpening.tsx` | The shared opening lifecycle and status surface for pages and document embeds |
 | `camera.ts` | Where a canvas opens: where you left it, or fitted to its content |
 | `tools.ts` | The agent tools, defined once: what each does and takes (`help`), and running them on a list of elements. Pure |
 | `elements.ts`, `slim.ts` | Building blocks for the tools (colors, text sizes, arrows), and the small stable stored form. Pure, shared with the command line |
@@ -60,6 +61,10 @@ Excalidraw's CDN.
 Follow the [manage-modules skill](../../platform/skills/manage-modules/SKILL.md) and use the removal preview. It identifies consumers and retained dependencies.
 
 The module owns the canvas CLI and agent rule. Its npm package and any unused patch configuration need separate cleanup after removal.
+
+### Document embeds
+
+Fitted, read-only canvases in Markdown use the same quiet opening surface, bounded wait, and single reveal as canvas pages. Their frames keep their dimensions while the scene and nested previews load. Fitted embeds still mount their nested previews together and do not use the editor's admission gate. Source and theme updates preserve the revealed canvas. Changing the embedded canvas identity starts a fresh opening.
 
 ### Preview lifetime
 

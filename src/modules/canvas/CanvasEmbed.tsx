@@ -1,5 +1,5 @@
 // A fitted, read-only picture of a canvas. No editor, saving, remembered camera, or agent API.
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Excalidraw, restoreElements, CaptureUpdateAction, getCommonBounds } from '@excalidraw/excalidraw';
 import type { AppState, ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 import type { EmbedProps } from '@/platform/app/data/fileTypeModule';
@@ -8,17 +8,25 @@ import { rootOf } from '@/platform/core/roots';
 import { useManifest } from '@/platform/app/data/useManifest';
 import { canvasFiles } from './loader';
 import { parseCanvas } from './format';
-import { CanvasItem, validateEmbed } from './embeds';
+import { CanvasItem, openingEmbedIds, validateEmbed } from './embeds';
+import { useCanvasOpening, CanvasOpeningSurface } from './CanvasOpening';
 import { useCanvasDark } from './theme';
 import '@excalidraw/excalidraw/index.css';
 import './canvas.css';
 
-export default function CanvasEmbed({ proto, item, width, height }: EmbedProps) {
+export default function CanvasEmbed(props: EmbedProps) {
+  return <FittedCanvas key={`${props.proto.contributorKey}/${props.proto.id}/${props.item.path}`} {...props} />;
+}
+
+function FittedCanvas({ proto, item, width, height }: EmbedProps) {
   const manifest = useManifest();
   const [text, setText] = useState<string>();
   const [error, setError] = useState(false);
   const [api, setApi] = useState<ExcalidrawImperativeAPI | null>(null);
   const dark = useCanvasDark();
+  const container = useRef<HTMLDivElement>(null);
+  const { revealed, openingStatus } = useCanvasOpening(container, api, () =>
+    openingEmbedIds(api!.getSceneElements(), api!.getAppState(), manifest, proto, false));
   useEffect(() => {
     let active = true;
     let revision = 0;
@@ -56,11 +64,13 @@ export default function CanvasEmbed({ proto, item, width, height }: EmbedProps) 
     api.updateScene({ elements: scene.elements, appState: { viewBackgroundColor: scene.background, ...camera }, captureUpdate: CaptureUpdateAction.NEVER });
   }, [api, scene, camera]);
   if (error || (text !== undefined && !scene)) return <p role="alert" className="p-4 text-sm">This canvas could not load. Open it to inspect its source.</p>;
-  if (!scene) return <p role="status" className="p-4 text-sm">Loading canvas…</p>;
-  return <div className="canvas canvas-preview relative overflow-hidden" data-controls-hidden="" style={{ width, height, pointerEvents: 'none' }} aria-hidden>
-    <Excalidraw excalidrawAPI={setApi} initialData={{ elements: scene.elements, appState: { ...camera, theme: dark ? 'dark' : 'light', viewBackgroundColor: scene.background } }} viewModeEnabled zenModeEnabled theme={dark ? 'dark' : 'light'}
+  return <div ref={container} className="canvas canvas-preview relative overflow-hidden bg-muted/30" data-controls-hidden="" data-canvas-opening={revealed ? 'ready' : 'loading'} style={{ width, height, pointerEvents: 'none' }} aria-hidden>
+    {!revealed && <CanvasOpeningSurface visible={openingStatus} />}
+    <div className="canvas-scene absolute inset-0" style={{ opacity: revealed ? 1 : 0 }}>
+    {scene && <Excalidraw excalidrawAPI={setApi} initialData={{ elements: scene.elements, appState: { ...camera, theme: dark ? 'dark' : 'light', viewBackgroundColor: scene.background } }} viewModeEnabled zenModeEnabled theme={dark ? 'dark' : 'light'}
       validateEmbeddable={validateEmbed}
       renderEmbeddable={(element) => <CanvasItem element={element} manifest={manifest} current={proto} offscreen={false} overview={false} mounted />}
-    />
+    />}
+    </div>
   </div>;
 }

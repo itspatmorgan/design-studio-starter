@@ -92,10 +92,10 @@ export function renderFlags(element: ExcalidrawElement, appState: AppState, marg
 }
 
 // Opening waits for the initial viewport, not the preloading margin or distant views.
-export function openingEmbedIds(elements: readonly ExcalidrawElement[], appState: AppState, manifest: Manifest, current: Prototype) {
+export function openingEmbedIds(elements: readonly ExcalidrawElement[], appState: AppState, manifest: Manifest, current: Prototype, overviewCards = true) {
   return elements.filter((element) => {
     const { offscreen, overview } = renderFlags(element, appState, 0);
-    return isItem(element) && !offscreen && !overview && Boolean(embedOf(manifest, element.type === 'embeddable' ? element.link : null, current));
+    return isItem(element) && !offscreen && !(overview && overviewCards) && Boolean(embedOf(manifest, element.type === 'embeddable' ? element.link : null, current));
   }).map((element) => element.id);
 }
 
