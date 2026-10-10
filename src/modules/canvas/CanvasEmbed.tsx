@@ -18,7 +18,7 @@ export default function CanvasEmbed(props: EmbedProps) {
   return <FittedCanvas key={`${props.proto.contributorKey}/${props.proto.id}/${props.item.path}`} {...props} />;
 }
 
-function FittedCanvas({ proto, item, width, height }: EmbedProps) {
+function FittedCanvas({ proto, item, width, height, loadingStartedAt }: EmbedProps) {
   const manifest = useManifest();
   const [text, setText] = useState<string>();
   const [error, setError] = useState(false);
@@ -26,7 +26,7 @@ function FittedCanvas({ proto, item, width, height }: EmbedProps) {
   const dark = useCanvasDark();
   const container = useRef<HTMLDivElement>(null);
   const { revealed, openingStatus } = useCanvasOpening(container, api, () =>
-    openingEmbedIds(api!.getSceneElements(), api!.getAppState(), manifest, proto, false));
+    openingEmbedIds(api!.getSceneElements(), api!.getAppState(), manifest, proto, false), loadingStartedAt);
   useEffect(() => {
     let active = true;
     let revision = 0;

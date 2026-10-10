@@ -84,6 +84,8 @@ The app record is `Artifact`, and a loaded `Prototype` holds an `artifacts` coll
 
 An `Embed` in `open.tsx` supplies a read-only preview for documents and canvases. Core resolves references and uses this contract without importing individual modules. The required `capabilities.embeds` array in `type.ts` explicitly permits `document`, `canvas`, both, or neither (`[]`). Omission never enables a surface. Types without a preview on that surface appear as cards. Canvas restricts its preview to documents, keeping canvas nesting bounded.
 
+A module can provide a lightweight `EmbedPending` in `open.tsx` for document loading. The shared reader uses it during reference resolution and lazy renderer loading. It passes the same `loadingStartedAt` timestamp to the pending surface and `Embed`, so delayed feedback can continue across the handoff. Modules without this surface retain generic loading feedback. The pending component must not import its heavy renderer.
+
 Prototype documents use `![Description](./relative/file.ext)` on its own line. The shared Markdown reader resolves the exact file within the same prototype, renders the registered preview or card, and provides an Open link. Inline references stay links. Missing or disabled types show an unavailable message. Ordinary image formats retain Markdown image behavior.
 
 Preview surfaces use the shared `EmbedFrame`: rounded corners and a full-width gray header link that darkens and reveals Open on hover or keyboard focus. Header text is never underlined. Preview contents are inert; interaction happens after opening the file.

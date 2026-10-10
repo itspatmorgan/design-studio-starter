@@ -10,7 +10,7 @@ export type ArtifactContext = { proto: Prototype; item: Artifact };
 
 // What a type shows where another item includes it (in documents or on canvases): a live preview, in a box of
 // this size. A type without one is shown as a card.
-export type EmbedProps = { proto: Prototype; item: Artifact; width: number; height: number };
+export type EmbedProps = { proto: Prototype; item: Artifact; width: number; height: number; loadingStartedAt?: number };
 
 export type FileTypeModule<Props extends object = any> = { // eslint-disable-line @typescript-eslint/no-explicit-any
   icon: typeof CodeIcon;
@@ -20,6 +20,8 @@ export type FileTypeModule<Props extends object = any> = { // eslint-disable-lin
   load(context: ArtifactContext): Promise<Props | undefined>;
   Page: ComponentType<Props> & { preload?: () => Promise<unknown> | undefined };
   Embed?: ComponentType<EmbedProps>;
+  // Lightweight, module-owned document loading surface, available before a lazy Embed.
+  EmbedPending?: ComponentType<{ loadingStartedAt: number }>;
   actions?: readonly ArtifactAction[];
 };
 

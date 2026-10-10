@@ -64,7 +64,7 @@ The module owns the canvas CLI and agent rule. Its npm package and any unused pa
 
 ### Document embeds
 
-Fitted, read-only canvases in Markdown use the same quiet opening surface, bounded wait, and single reveal as canvas pages. Their frames keep their dimensions while the scene and nested previews load. Fitted embeds still mount their nested previews together and do not use the editor's admission gate. Source and theme updates preserve the revealed canvas. Changing the embedded canvas identity starts a fresh opening.
+Fitted, read-only canvases in Markdown use the same quiet opening surface, bounded wait, and single reveal as canvas pages. Their frames keep their dimensions while the scene and nested previews load. A lightweight registered pending surface covers reference resolution and lazy canvas-code loading with the same appearance and status timing. Fitted embeds still mount their nested previews together and do not use the editor's admission gate. Source and theme updates preserve the revealed canvas. Changing the embedded canvas identity starts a fresh opening.
 
 ### Preview lifetime
 
