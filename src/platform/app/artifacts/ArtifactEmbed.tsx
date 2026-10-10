@@ -23,6 +23,8 @@ export default function ArtifactEmbed({ source, label = 'Artifact' }: { source: 
   const [target, setTarget] = useState<Target | null>(null);
   const [status, setStatus] = useState('Loading artifact…');
   const [width, setWidth] = useState(640);
+  const opening = useRef({ source, started: Date.now() });
+  if (opening.current.source !== source) opening.current = { source, started: Date.now() };
   const container = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     if (container.current) setWidth(Math.max(1, container.current.getBoundingClientRect().width));
@@ -46,11 +48,13 @@ export default function ArtifactEmbed({ source, label = 'Artifact' }: { source: 
   }, [source, base, revision]);
   const previewType = target?.item.fileType ?? (reference ? fileTypeOf(reference.path) : null);
   const Embed = previewType ? embedFor(FILE_TYPES[previewType], fileTypeModules[previewType], 'document', 'prototype') : undefined;
+  const Pending = Embed && previewType ? fileTypeModules[previewType]?.EmbedPending : undefined;
+  const pendingSurface = Pending ? <Pending loadingStartedAt={opening.current.started} /> : null;
   const height = Math.max(220, Math.min(440, width * 0.6));
   return <figure className="not-prose my-6 min-w-0">
     <EmbedFrame proto={target?.proto} item={target?.item} label={label}>
     <div ref={container} className="min-w-0" style={{ height: previewType && !Embed ? 88 : height }}>
-      {target ? (Embed ? <div inert className="h-full" style={{ pointerEvents: 'none' }}><ErrorBoundary resetKeys={[source]} fallback={<p role="alert" className="p-4 text-sm">This preview could not render. Open the file to inspect it.</p>}><Suspense fallback={<p role="status" className="p-4 text-sm">Loading preview…</p>}><Embed proto={target.proto} item={target.item} width={width} height={height} /></Suspense></ErrorBoundary></div> : <ArtifactCard proto={target.proto} item={target.item} />) : <p role="status" className="p-4 text-sm text-muted-foreground">{status}</p>}
+      {target ? (Embed ? <div inert className="h-full" style={{ pointerEvents: 'none' }}><ErrorBoundary resetKeys={[source]} fallback={<p role="alert" className="p-4 text-sm">This preview could not render. Open the file to inspect it.</p>}><Suspense fallback={pendingSurface ?? <p role="status" className="p-4 text-sm">Loading preview…</p>}><Embed proto={target.proto} item={target.item} width={width} height={height} loadingStartedAt={opening.current.started} /></Suspense></ErrorBoundary></div> : <ArtifactCard proto={target.proto} item={target.item} />) : status === 'Loading artifact…' && pendingSurface ? pendingSurface : <p role="status" className="p-4 text-sm text-muted-foreground">{status}</p>}
     </div>
     </EmbedFrame>
   </figure>;

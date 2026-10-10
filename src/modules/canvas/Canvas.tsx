@@ -14,10 +14,11 @@ import type { Artifact, Prototype } from '@/platform/app/data/types';
 import './canvas.css';
 import { cameraKey, initialCamera, useRememberCamera } from './camera';
 import { ControlTooltip } from './ControlTooltip';
-import { CanvasItem, normalizeEmbeds, onlyItemsSelected, renderFlags, validateEmbed } from './embeds';
+import { CanvasItem, normalizeEmbeds, onlyItemsSelected, openingEmbedIds, renderFlags, validateEmbed } from './embeds';
 import { parseCanvas } from './format';
 import { useHelpDialogPruning } from './helpDialog';
 import { MOUNT_INTERVAL_MS, SWEEP_INTERVAL_MS, createMountGate, pickEvictions } from './liveViews';
+import { useCanvasOpening, CanvasOpeningSurface } from './CanvasOpening';
 import { CanvasMenu, UI_OPTIONS } from './menu';
 import { useCanvasShortcuts } from './shortcuts';
 import { STICKY_IDS, STICKY_LIBRARY } from './stickyNotes';
@@ -99,16 +100,8 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Fade in once Excalidraw has painted with the opening camera (a timer backs it up: hidden
-  // tabs don't run animation frames).
-  const [revealed, setRevealed] = useState(false);
-  useEffect(() => {
-    if (!api) return undefined;
-    let second = 0;
-    const first = requestAnimationFrame(() => { second = requestAnimationFrame(() => setRevealed(true)); });
-    const timer = window.setTimeout(() => setRevealed(true), 120);
-    return () => { window.clearTimeout(timer); cancelAnimationFrame(first); cancelAnimationFrame(second); };
-  }, [api]);
+  const { revealed, openingStatus } = useCanvasOpening(container, api, () =>
+    openingEmbedIds(api!.getSceneElements(), api!.getAppState(), manifest, proto));
 
   useEffect(() => {
     if (!empty || !revealed) { setHintReady(false); return undefined; }
@@ -211,9 +204,11 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
       className="canvas relative min-h-0 min-w-0 flex-1 overflow-hidden bg-muted/30"
       data-items-only={itemsOnly ? '' : undefined}
       data-controls-hidden={controlsHidden ? '' : undefined}
+      data-canvas-opening={revealed ? 'ready' : 'loading'}
+      aria-busy={!revealed || undefined}
     >
-      {!revealed && <div role="status" className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">Opening canvas</div>}
-      <div className="absolute inset-0 transition-opacity duration-150" style={{ opacity: revealed || !initialData ? 1 : 0 }}>
+      {!revealed && <CanvasOpeningSurface visible={openingStatus} />}
+      <div inert={!revealed || undefined} aria-hidden={!revealed || undefined} className="canvas-scene absolute inset-0" style={{ opacity: revealed ? 1 : 0 }}>
         {initialData && (
           <Excalidraw
             initialData={initialData}
@@ -231,6 +226,10 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
             <CanvasMenu api={api} controlsHidden={controlsHidden} onToggleControls={toggleControls} editable={editable} />
           </Excalidraw>
         )}
+        {editable && <div role="status" className="absolute right-3 bottom-3 z-10 flex items-center gap-2 rounded-md border border-border bg-background px-3 py-1.5 text-xs text-muted-foreground">
+          {saveState === 'saved' ? 'Saved' : saveState === 'saving' ? 'Saving…' : saveState === 'failed' ? "Couldn't save" : 'Unsaved changes'}
+          {saveState === 'failed' && <Button size="sm" variant="outline" onClick={retry}>Retry</Button>}
+        </div>}
       </div>
       {empty && revealed && hintReady && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-8 duration-300 animate-in fade-in">
@@ -245,10 +244,6 @@ function Editor({ proto, item, file, version, text, manifest, dark, container, a
         </div>
       )}
       <ControlTooltip container={container} />
-      {editable && <div role="status" className="absolute right-3 bottom-3 z-10 flex items-center gap-2 rounded-md border border-border bg-background px-3 py-1.5 text-xs text-muted-foreground">
-        {saveState === 'saved' ? 'Saved' : saveState === 'saving' ? 'Saving…' : saveState === 'failed' ? "Couldn't save" : 'Unsaved changes'}
-        {saveState === 'failed' && <Button size="sm" variant="outline" onClick={retry}>Retry</Button>}
-      </div>}
       <Dialog open={blocker.status === 'blocked'} onOpenChange={(open) => { if (!open) blocker.reset?.(); }}>
         <DialogContent showCloseButton={false}>
           <DialogHeader><DialogTitle>This canvas has unsaved changes</DialogTitle><DialogDescription>Saving hasn't finished. Keep the canvas open to retry, or discard the unsaved changes.</DialogDescription></DialogHeader>

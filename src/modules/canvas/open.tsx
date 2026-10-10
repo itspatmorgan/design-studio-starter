@@ -7,6 +7,8 @@ import type { Artifact, Prototype } from '@/platform/app/data/types';
 import { preloadIdentity, readSource } from '@/platform/app/data/files';
 import { canvasFiles } from './loader';
 import { rootOf } from '@/platform/core/roots';
+import { CanvasEmbedPending } from './CanvasOpening';
+import './canvas.css';
 
 const preload = () => import('./Canvas');
 const Canvas = lazyRouteComponent(preload);
@@ -27,4 +29,5 @@ export default {
 
   Page: Canvas,
   Embed: CanvasEmbed,
+  EmbedPending: CanvasEmbedPending,
 } satisfies FileTypeModule<{ proto: Prototype; item: Artifact; text: string; version: string }>;
