@@ -80,15 +80,23 @@ const OVERVIEW_ZOOM = 0.12;
 
 // Whether an element is far off screen, and whether the canvas is zoomed out too far to read it.
 // Flips only at the edges, so a still canvas doesn't re-render.
-export function renderFlags(element: ExcalidrawElement, appState: AppState) {
+export function renderFlags(element: ExcalidrawElement, appState: AppState, marginPx = CULL_MARGIN_PX) {
   const zoom = appState.zoom.value || 1;
-  const margin = CULL_MARGIN_PX / zoom;
+  const margin = marginPx / zoom;
   const left = -appState.scrollX - margin;
   const top = -appState.scrollY - margin;
   const right = -appState.scrollX + appState.width / zoom + margin;
   const bottom = -appState.scrollY + appState.height / zoom + margin;
   const offscreen = element.x > right || element.x + element.width < left || element.y > bottom || element.y + element.height < top;
   return { offscreen, overview: zoom < OVERVIEW_ZOOM };
+}
+
+// Opening waits for the initial viewport, not the preloading margin or distant views.
+export function openingEmbedIds(elements: readonly ExcalidrawElement[], appState: AppState, manifest: Manifest, current: Prototype) {
+  return elements.filter((element) => {
+    const { offscreen, overview } = renderFlags(element, appState, 0);
+    return isItem(element) && !offscreen && !overview && Boolean(embedOf(manifest, element.type === 'embeddable' ? element.link : null, current));
+  }).map((element) => element.id);
 }
 
 type ItemProps = {
@@ -113,7 +121,7 @@ function CanvasItemInner({ element, manifest, current, offscreen, overview, moun
     <EmbedFrame proto={proto} item={item} className="h-full w-full">
       {/* Hidden means mounted but skipped for layout and paint (far off screen, or too small to
           read), so the live preview never reloads or jumps. */}
-      <div inert className="min-h-0 flex-1" style={hidden ? { visibility: 'hidden', contentVisibility: 'hidden' } : undefined}>
+      <div inert data-canvas-embed-id={element.id} className="min-h-0 flex-1" style={hidden ? { visibility: 'hidden', contentVisibility: 'hidden' } : undefined}>
         {mounted
           ? <Embed proto={proto} item={item} width={element.width - BORDER} height={element.height - HEADER_HEIGHT - BORDER} />
           : <div className="h-full bg-muted/50" />}

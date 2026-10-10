@@ -56,7 +56,8 @@
         "src/platform/core/artifact-lifecycle/state.test.ts",
         "src/platform/core/artifact-lifecycle/compiled.test.ts",
         "scripts/build/vite-artifact-revisions-plugin.test.js",
-        "src/modules/canvas/liveViews.test.ts"
+        "src/modules/canvas/liveViews.test.ts",
+        "src/modules/canvas/opening.test.ts"
       ],
       "dependencies": [
         "src/platform/**",
