@@ -41,9 +41,26 @@
  * (--primary, --card, --border, --radius).
  */
 .canvas .excalidraw,
+.canvas .excalidraw.theme--dark,
 /* Dialogs (Help, …) portal to <body>, outside the canvas wrapper. */
-.excalidraw.excalidraw-modal-container {
+.excalidraw.excalidraw-modal-container,
+.excalidraw.excalidraw-modal-container.theme--dark {
   --ui-font: var(--font-sans);
+  --color-on-surface: var(--foreground);
+  --color-surface-lowest: var(--card);
+  --color-surface-mid: var(--muted);
+  --color-border-outline: var(--ring);
+  --color-border-outline-variant: var(--border);
+  --color-disabled: var(--muted-foreground);
+  --input-bg-color: var(--background);
+  --input-border-color: var(--input);
+  --input-hover-bg-color: var(--accent);
+  --input-label-color: var(--muted-foreground);
+  --popup-secondary-bg-color: var(--muted);
+  --popup-text-color: var(--foreground);
+  --popup-text-inverted-color: var(--background);
+  --dialog-border-color: var(--border);
+  --focus-highlight-color: var(--ring);
 
   --color-primary: var(--primary);
   --color-primary-darker: color-mix(in oklab, var(--primary) 85%, black);
@@ -53,7 +70,7 @@
   --color-primary-light-darker: color-mix(in oklab, var(--primary) 20%, transparent);
   --color-brand-hover: color-mix(in oklab, var(--primary) 85%, black);
   --color-brand-active: color-mix(in oklab, var(--primary) 70%, black);
-  --color-on-primary-container: color-mix(in oklab, var(--primary) 55%, black);
+  --color-on-primary-container: var(--foreground);
   /* Canvas selection outline and handles (read from CSS by Excalidraw's renderer). */
   --color-selection: var(--primary);
 
@@ -137,7 +154,7 @@
 
 /* Selected tool: green tint instead of lavender. */
 .canvas .excalidraw .ToolIcon_type_radio:checked + .ToolIcon__icon {
-  --icon-fill-color: color-mix(in oklab, var(--primary) 55%, black);
+  --icon-fill-color: var(--foreground);
 }
 
 /* Shortcut numbers crowd 32px tools; shortcuts still work and show in tooltips. */
