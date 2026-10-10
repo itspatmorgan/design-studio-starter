@@ -14,3 +14,5 @@ The optional module owns standalone files. Markdown Mermaid fences remain a shar
 - `src/platform/app/diagrams/`: shared Mermaid renderer and theme, independent of this optional module. Markdown maps its Mermaid fences to the same component.
 
 The module adds a prototype file type rather than a separate rail destination. It does not add dependencies or a second renderer. Source syntax is validated when rendered, so malformed diagrams can still be opened and edited. Shared source editing supplies file permissions and conflict protection.
+
+The shared Mermaid renderer implements the [artifact lifecycle contract](../../platform/context/source.md#artifact-revision-and-preview-lifecycle) for page previews, canvas previews, and Markdown fences. Its input revision includes the supplied source and theme values. It keeps the prior SVG while preparing a replacement, marks stale output, commits after DOM insertion, and clears output on failure. Superseded renders cannot commit. Theme changes trigger redraws.

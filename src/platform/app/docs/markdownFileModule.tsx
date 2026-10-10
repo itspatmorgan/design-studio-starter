@@ -29,6 +29,7 @@ export function markdownFileModule(documents: ReturnType<typeof createLoader<Mar
       if (!mod) return undefined;
       const app = file.contributor === SYSTEM_CONTENT_KEY ? '/' + rootOf(file.contributor, file.prototype) : addressOf(file.contributor, file.prototype);
       return {
+        file,
         Component: mod instanceof Error
           ? () => { throw mod; }
           : mod.default,

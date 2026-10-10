@@ -23,6 +23,10 @@ Views are always available. Documents, Diagrams, and Canvases require their corr
 
 Views run in their own browser document, with their assigned components, fonts, and theme. Changing color mode preserves the open view's interaction state. An already-open view stays alive while you edit its source.
 
+While an agent changes files, the last working preview may remain visible. **Out of date** means it has not caught up with those changes. If an edit fails, give the error to your agent; source editing remains available. Repairing the files updates the preview.
+
+Ordinary edits preserve interaction state when possible. Opening another artifact or reloading can reset it. Live previews retained offscreen on a canvas continue updating; previews released to save memory start fresh when you return.
+
 Canvas and document previews are pictures of the working view. Open the original to interact with it.
 
 Preview separation contains styles and overlays. It does not make untrusted prototype code safe to run.

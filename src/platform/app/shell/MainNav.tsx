@@ -11,10 +11,9 @@ import { Logo } from '@/platform/app/shell/Logo';
 import { inSection, moduleApps, sectionPath } from '@/platform/app/modules';
 import { APP_NAME } from '@/platform/app/data/config';
 
-const railButton = cn(
-  'flex size-8 items-center justify-center rounded-md text-sidebar-foreground transition-colors',
-  'hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring',
+const railShape = 'flex size-8 items-center justify-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring';
+const railButton = cn(railShape,
+  'text-sidebar-foreground transition-colors hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground',
 );
 
 // One square button on the rail: a link with a tooltip to its right.
@@ -30,7 +29,9 @@ function RailLink({ to, label, active, children, className }: RailLinkProps) {
             aria-label={label}
             activeOptions={{ exact: true }}
             aria-current={active ? 'page' : undefined}
-            className={cn(railButton, active && 'bg-sidebar-foreground/10 text-sidebar-accent-foreground', className)}
+            className={cn(railShape, active
+              ? 'bg-sidebar-foreground/10 text-sidebar-accent-foreground'
+              : 'text-sidebar-foreground hover:bg-sidebar-foreground/5 hover:text-sidebar-accent-foreground', className)}
           />
         }
       >
