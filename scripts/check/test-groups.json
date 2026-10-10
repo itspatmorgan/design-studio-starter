@@ -6,6 +6,7 @@
         "scripts/build/files/editor.test.js",
         "scripts/build/rehype-mermaid.test.js",
         "scripts/build/vite-deployment-recovery-plugin.test.js",
+        "scripts/build/vite-preview-theme-plugin.test.js",
         "scripts/build/vite-resource-directory-plugin.test.js",
         "scripts/check/inspect-build.test.js",
         "scripts/check/navigation.test.js",
