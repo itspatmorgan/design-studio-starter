@@ -10,7 +10,7 @@ Studio loads an artifact descriptor. It does not import or render the prototype 
 
 The child uses the published `index.html` entry with validated `studio-preview=1`, session, and configuration parameters. This works with the same Vite development server and static base path as Studio, without another HTML deployment entry. The platform entry chooses the runtime before importing Studio's router. Preserve this separation.
 
-A page runtime persists between views of the same prototype. Changing prototype identity tears down the document and creates a new session. Color-mode updates preserve the runtime and component state. Source editing retains an already-open page runtime in a hidden, inert host container; HMR continues there. Directly opening source mode does not require a working preview.
+A page runtime persists between views of the same prototype. It retains the outgoing screen, inert, while the next view loads. The next prepared view replaces it without a loading-label flash; slow handoffs show status after 200 ms. Retained output cannot acknowledge the incoming artifact. Child attributes distinguish displayed and pending identities. Changing prototype identity tears down the document and creates a new session. Color-mode updates preserve the runtime and component state. Source editing retains an already-open page runtime in a hidden, inert host container; HMR continues there. Directly opening source mode does not require a working preview.
 
 Embeds have their own child documents. They use a 1440px layout viewport, scale and crop to their supplied dimensions, exclude focus and pointer interaction, and set the child root inert. They cannot request host navigation or shortcuts. Invalid or zero dimensions do not mount a runtime.
 

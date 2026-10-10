@@ -15,12 +15,25 @@ let lifecycleSequence = 0; // Monotonic for this child document, including rende
 type Status = Extract<PreviewMessage, { kind: 'status' }>;
 const RuntimeContext = createContext<{ config: Config; refresh: number; status: (state: Status['state'], render: number, detail?: string) => void } | null>(null);
 
+// Fast handoffs never show a loading label. A slow initial load or view change still
+// gets an accessible status, without replacing the outgoing screen.
+function LoadingStatus({ retained }: { retained: boolean }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(true), 200);
+    return () => clearTimeout(timer);
+  }, []);
+  return visible ? <p role="status" className="pointer-events-none absolute inset-x-0 bottom-0 bg-background p-3 text-sm">{retained ? 'Opening view' : 'Loading preview'}</p> : null;
+}
+
 function RuntimeView() {
   const { config, refresh, status } = useContext(RuntimeContext)!;
-  const [loaded, setLoaded] = useState<{ identity: string; value: LoadedView } | null>(null);
+  const [loaded, setLoaded] = useState<{ identity: string; selector: string; value: LoadedView } | null>(null);
   const [error, setError] = useState<{ identity: string; detail: string } | null>(null);
   const render = useRef(0);
   const identity = identityOf(config.target);
+  const selector = JSON.stringify([identity, config.target.contributor, config.target.prototype, config.target.artifact]);
+  const pending = loaded?.selector !== selector;
   const lifecycle = useRef<ReturnType<typeof previewLifecycle> | null>(null);
   useEffect(() => {
     const controller = previewLifecycle(config.target, lifecycle => {
@@ -42,7 +55,7 @@ function RuntimeView() {
       if (!live) return;
       if (!result) throw new Error('This React view could not load.');
       document.title = result.prototype.title + ' preview';
-      setLoaded({ identity, value: result });
+      setLoaded({ identity, selector, value: result });
     }).catch(error => {
       if (!live) return;
       const detail = error instanceof Error ? error.message : String(error);
@@ -50,12 +63,24 @@ function RuntimeView() {
     });
     return () => { live = false; };
   }, [identity, config.target.contributor, config.target.prototype, config.target.artifact, refresh, status]);
-  const ready = useCallback(() => { status('ready', render.current); lifecycle.current?.ready(); }, [status, loaded]);
-  const failed = useCallback((error: unknown) => { const detail = error instanceof Error ? error.message : String(error); status('error', render.current, detail); lifecycle.current?.failed(detail, false); }, [status]);
-  // A new artifact must not display the previous component while its import resolves.
+  const ready = useCallback(() => {
+    if (pending) return; // Retained output cannot acknowledge the incoming artifact.
+    status('ready', render.current); lifecycle.current?.ready();
+  }, [status, loaded, pending]);
+  const failed = useCallback((error: unknown) => {
+    if (pending) return;
+    const detail = error instanceof Error ? error.message : String(error);
+    status('error', render.current, detail); lifecycle.current?.failed(detail, false);
+  }, [status, pending]);
+  // Prepare before replacing the visible view. Keep outgoing output inert and explicitly
+  // identified until the current request succeeds; the load effect rejects late results.
   if (error?.identity === identity) return <div role="alert" className="p-8 text-sm"><p>This page could not load. Give the error to your agent.</p><pre className="mt-4 whitespace-pre-wrap">{error.detail}</pre></div>;
-  if (!loaded || loaded.identity !== identity) return <p role="status" className="p-4 text-sm">Loading preview</p>;
-  return <PreviewSurface loaded={loaded.value} surface={config.surface} ready={ready} failed={failed} />;
+  return <div className="relative flex min-h-0 flex-1 flex-col" aria-busy={pending || undefined} data-preview-displayed-identity={loaded?.identity} data-preview-pending-identity={pending ? identity : undefined}>
+    <div className="flex min-h-0 flex-1 flex-col" inert={pending}>
+      {loaded && <PreviewSurface loaded={loaded.value} surface={config.surface} ready={ready} failed={failed} />}
+    </div>
+    {pending && <LoadingStatus key={selector} retained={Boolean(loaded)} />}
+  </div>;
 }
 
 async function targetFromHref(href: string): Promise<Config['target'] | null> {
