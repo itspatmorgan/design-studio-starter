@@ -30,6 +30,7 @@ export function NavGroup({ heading, children }: { heading?: string; children: Re
 export const navLinkClass = cn(
   navRow,
   navRowState(false),
-  'data-[status=active]:bg-sidebar-foreground/10 data-[status=active]:font-medium data-[status=active]:text-sidebar-accent-foreground',
+  // Selected rows keep their surface when hovered, instead of dipping to the quieter hover color.
+  'data-[status=active]:bg-sidebar-foreground/10 data-[status=active]:hover:bg-sidebar-foreground/10 data-[status=active]:font-medium data-[status=active]:text-sidebar-accent-foreground',
 );
 export const navLinkStyle: CSSProperties = navIndent(0);
